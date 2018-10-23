@@ -14,7 +14,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();
@@ -27,7 +27,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             window.amazon = {
                 Login: {
@@ -35,7 +35,7 @@ describe('withAmazon test', () => {
                         callback('response');
                     }
                 }
-            }
+            };
             
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -55,7 +55,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             window.amazon = {
                 Login: {
@@ -63,7 +63,7 @@ describe('withAmazon test', () => {
                         callback({ error: 'error' });
                     }
                 }
-            }
+            };
     
 
             const Comp = withAmazon(MockComp);
@@ -80,7 +80,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: 'access_token',
@@ -97,7 +97,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
             
 
             const Comp = withAmazon(MockComp);
@@ -129,7 +129,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const mockFn = jest.fn();
             
@@ -147,7 +147,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
             
 
             const Comp = withAmazon(MockComp);
@@ -182,7 +182,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: null,
@@ -215,7 +215,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: 'access_token',
@@ -232,7 +232,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -258,12 +258,12 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const mockFn = jest.fn();
             const props = {
                 amazon_client_id: 'amazon_client_id'
-            }
+            };
             window.amazon = {
                 Login: {
                     setClientId: mockFn

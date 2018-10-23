@@ -89,7 +89,7 @@ export default class ForgotPassword extends AuthPiece {
                     />
                 </FormField>
             </div>
-        )
+        );
     }
 
     submitView() {
@@ -113,7 +113,7 @@ export default class ForgotPassword extends AuthPiece {
                     onChange={this.handleInputChange}
                 />
             </div>
-        )
+        );
     }
 
     showComponent(theme) {

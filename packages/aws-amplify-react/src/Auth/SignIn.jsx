@@ -177,6 +177,6 @@ export default class SignIn extends AuthPiece {
                     }
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

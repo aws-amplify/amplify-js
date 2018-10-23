@@ -94,7 +94,7 @@ export default class Connect extends Component {
     _unsubscribe() {
         if (this.subSubscription) {
             this.subSubscription.unsubscribe();
-        };
+        }
     }
 
     async componentDidMount() {
