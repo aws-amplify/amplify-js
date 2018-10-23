@@ -3,7 +3,7 @@ import SignUp from '../../src/Auth/SignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, Input, Button, SelectInput } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Header, Footer, Input, Button, SelectInput, InputLabel } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signUp'
@@ -20,7 +20,13 @@ const deniedStates = [
     'verifyContact'
 ];
 
-describe('signUp', () => {
+const mockResult = {
+    user: {
+        username: 'testuser'
+    }
+}
+
+describe('signUp without signUpConfig prop', () => {
     describe('normal case', () => {
         const wrapper = shallow(<SignUp/>);
 
@@ -47,6 +53,7 @@ describe('signUp', () => {
 
         test('when clicking signUp', async () => {
             const wrapper = shallow(<SignUp/>);
+
             wrapper.setProps({
                 authState: 'signUp',
                 theme: AmplifyTheme
@@ -55,7 +62,7 @@ describe('signUp', () => {
             const spyon = jest.spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
-                        res();
+                        res(mockResult);
                     });
                 });
 
@@ -83,16 +90,16 @@ describe('signUp', () => {
             const event_phone = {
                 target: {
                     name: 'phone_line_number',
-                    value: '2345678901'
+                    value: '2345678999'
                 }
             }
             const dial_code = {
                 target: {
                     name: 'dial_code',
-                    value: '+1'
+                    value: '1'
                 }
             }
-
+            
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
             wrapper.find(Input).at(2).simulate('change', event_email);
@@ -101,8 +108,7 @@ describe('signUp', () => {
             await wrapper.find(Button).simulate('click');
 
 
-            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678901"}, "password": "abc", "username": "user1"});
-
+            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678999"}, "password": "abc", "username": "user1"});
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
 
@@ -120,7 +126,7 @@ describe('signUp', () => {
             const spyon = jest.spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
-                        res();
+                        res(mockResult);
                     });
                 });
 
@@ -154,7 +160,7 @@ describe('signUp', () => {
             const dial_code = {
                 target: {
                     name: 'dial_code',
-                    value: '+1'
+                    value: '1'
                 }
             }
 
@@ -185,7 +191,7 @@ describe('signUp', () => {
             const spyon = jest.spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
-                        res();
+                        res(mockResult);
                     });
                 });
 
@@ -216,7 +222,6 @@ describe('signUp', () => {
                     value: undefined
                 }
             }
-
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
             wrapper.find(Input).at(2).simulate('change', event_email);
@@ -224,14 +229,22 @@ describe('signUp', () => {
             await wrapper.find(Button).simulate('click');
 
 
-            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com"}, "password": "abc", "username": "user1"});
-
-            expect(spyon_changeState).toBeCalled();
-            expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
+            expect(spyon).not.toBeCalled();
 
             spyon.mockClear();
             spyon_changeState.mockClear();
         });
+
+        test('default dial code should be +1', () => {
+            const wrapper = shallow(<SignUp/>);
+            wrapper.setProps({
+                authState: 'signUp',
+                theme: AmplifyTheme,
+            });
+    
+            let select = wrapper.find('select');
+            expect(select.props().defaultValue).toEqual('+1');
+       })
 
     });
 
@@ -249,4 +262,227 @@ describe('signUp', () => {
             }
         });
     });
+})
+
+describe('signUp with signUpConfig', () => {
+    let wrapper;
+    beforeEach(() => {
+        wrapper = shallow(<SignUp/>);
+    })
+
+    test('render correctly with authState signUp', () => {
+        for (var i = 0; i < acceptedStates.length; i += 1){
+            wrapper.setProps({
+                authState: acceptedStates[i],
+                theme: AmplifyTheme,
+                signUpConfig: {
+                    signUpFields: [
+                        {
+                            key: 'address',
+                            label: 'Address',
+                            required: true
+                        }
+                    ]
+                }
+            });
+            expect(wrapper).toMatchSnapshot();
+        }
+    });
+
+    test('render correctly with hide', () => {
+        for (var i = 0; i < acceptedStates.length; i += 1){
+            wrapper.setProps({
+                authState: acceptedStates[i],
+                theme: AmplifyTheme,
+                hide: [SignUp],
+                signUpConfig: {
+                    signUpFields: [
+                        {
+                            key: 'address',
+                            label: 'Address',
+                            required: true
+                        }
+                    ]
+                }
+            });
+            expect(wrapper).toMatchSnapshot();
+        }
+    });
+
+    test('expect custom field to be last if display order not defined', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                signUpFields: [
+                    {
+                        key: 'address',
+                        label: 'Address',
+                        required: true
+                    }
+                ]
+            }
+        });
+        const addressElementFound = wrapper.find({name: 'address'});
+        const addressChildFound = wrapper.find(Input).at(4);
+        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+    });
+
+    test('expect custom field to be first if display order is defined as 1, and it is prior to username alpabetically', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                signUpFields: [
+                    {
+                        key: 'address',
+                        label: 'Address',
+                        required: true,
+                        displayOrder: 1
+                    }
+                ]
+            }
+        });
+        const addressElementFound = wrapper.find({name: 'address'});
+        const addressChildFound = wrapper.find(Input).at(0);
+        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+    });
+
+    test('expect custom field to be second if display order is defined as 1, and it is after username alpabetically', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                        displayOrder: 1
+                    }
+                ]
+            }
+        });
+        const addressElementFound = wrapper.find({name: 'z'});
+        const addressChildFound = wrapper.find(Input).at(1);
+        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+    });
+
+    test('expect 5 fields to be present if hideDefaults is undefined', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                        displayOrder: 1
+                    }
+                ]
+            }
+        });
+        expect(wrapper.find(Input).length).toEqual(5);
+    });
+
+    test('expect 5 fields to be present if hideDefaults is false', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                hideDefaults: false,
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                        displayOrder: 1
+                    }
+                ]
+            }
+        });
+        expect(wrapper.find(Input).length).toEqual(5);
+    });
+
+    test('expect custom field to be the only field if hideDefaults is true', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                hideDefaults: true,
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                        displayOrder: 1
+                    }
+                ]
+            }
+        });
+        expect(wrapper.find(Input).length).toEqual(1);
+    });
+
+    test('expect default username to be overwritten if username field passed in via signUpConfig', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                    },
+                    {
+                        key: 'username',
+                        label: 'NEW USERNAME LABEL',
+                        required: true,
+                    }
+                ]
+            }
+        });
+
+        const signup = new SignUp;
+        const defaultUsernameLabel = signup.defaultSignUpFields.find((i) => {
+            return i.key === 'username'
+        }).label;
+
+        const customUsername = wrapper.find(InputLabel).findWhere((el) => {
+            return el.text() === 'NEW USERNAME LABEL';
+        });
+
+        const originalUsername = wrapper.find(InputLabel).findWhere((el) => {
+            return el.text() === defaultUsernameLabel;
+        });
+
+        expect(customUsername.length).toEqual(1);
+        expect(originalUsername.length).toEqual(0);
+    });
+
+   test('default dial code should be set to passed defaultCountryCode', () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                defaultCountryCode: '51',
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                    },
+                    {
+                        key: 'username',
+                        label: 'NEW USERNAME LABEL',
+                        required: true,
+                    }
+                ]
+            }
+        });
+
+        let select = wrapper.find('select');
+        expect(select.props().defaultValue).toEqual('+51');
+   })
 })

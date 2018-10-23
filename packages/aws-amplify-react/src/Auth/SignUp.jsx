@@ -33,18 +33,21 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import countryDialCodes from './common/country-dial-codes.js';
+import { valid } from 'semver';
 
 const defaultSignUpFields = [
     {
         label: 'Username',
         key: 'username',
         required: false,
-        displayOrder: 1
+        placeholder: 'Username',
+        displayOrder: 1,
     },
     {
         label: 'Password',
         key: 'password',
         required: true,
+        placeholder: 'Password',
         type: 'password',
         displayOrder: 2,
     },
@@ -52,12 +55,14 @@ const defaultSignUpFields = [
         label: 'Email',
         key: 'email',
         required: true,
+        placeholder: 'Email',
         type: 'email',
         displayOrder: 3
     },
     {
         label: 'Phone Number',
         key: 'phone_number',
+        placeholder: 'Phone Number',
         required: true,
         displayOrder: 4
     }
@@ -72,11 +77,9 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-
-        if (this.checkCustomSignUpFields()) {
-            this.signUpFields = this.props.signUpConfig.signUpFields;
-        }
+        this.defaultSignUpFields = defaultSignUpFields;
     }
+
 
     signUp() {
         if (!this.inputs.dial_code) {
@@ -106,10 +109,10 @@ export default class SignUp extends AuthPiece {
               if (key !== 'phone_line_number' && key !== 'dial_code') {
                 signup_info.attributes[key] = inputVals[index];
               } else {
-                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number}`
+                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
               }
             }
-          });
+        });
 
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
@@ -119,6 +122,9 @@ export default class SignUp extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
+        if (this.checkCustomSignUpFields()) {
+            this.signUpFields = this.props.signUpConfig.signUpFields;
+        }
         this.sortFields();
         if (hide && hide.includes(SignUp)) { return null; }
 
@@ -129,8 +135,12 @@ export default class SignUp extends AuthPiece {
                     {
                         this.signUpFields.map((field) => {
                             return field.key !== 'phone_number' ? (
-                                <FormField them={theme} key={field.key}>
-                                    <InputLabel>{I18n.get(field.label)} *</InputLabel>
+                                <FormField theme={theme} key={field.key}>
+                                {
+                                    field.required ? 
+                                    <InputLabel>{I18n.get(field.label)} *</InputLabel> :
+                                    <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                }
                                     <Input
                                         autoFocus={
                                             this.signUpFields.findIndex((f) => {
@@ -139,14 +149,13 @@ export default class SignUp extends AuthPiece {
                                         }
                                         placeholder={I18n.get(field.placeholder)}
                                         theme={theme}
-
                                         type={field.type}
                                         name={field.key}
                                         onChange={this.handleInputChange}
                                     />
                                 </FormField>
                             ) : (
-                                <FormField theme={theme} key="phone_line_number">
+                                <FormField theme={theme} key="phone_number">
                                     <InputLabel>{I18n.get('Phone Number')}</InputLabel>
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
@@ -161,7 +170,8 @@ export default class SignUp extends AuthPiece {
                                             placeholder={I18n.get(field.placeholder)}
                                             theme={theme}
                                             type="tel"
-
+                                            id="phone_line_number"
+                                            key="phone_line_number"
                                             name="phone_line_number"
                                             onChange={this.handleInputChange}
                                         />
@@ -212,10 +222,10 @@ export default class SignUp extends AuthPiece {
 
     sortFields() {
         if (this.checkCustomSignUpFields()) {
-    
+
           if (!this.props.signUpConfig || !this.props.signUpConfig.hideDefaults) {
             // see if fields passed to component should override defaults
-            defaultSignUpFields.forEach((f, i) => {
+            this.defaultSignUpFields.forEach((f, i) => {
               const matchKey = this.signUpFields.findIndex((d) => {
                 return d.key === f.key;
               });
@@ -257,7 +267,7 @@ export default class SignUp extends AuthPiece {
             }
           });
         } else {
-          this.signUpFields = defaultSignUpFields;
+          this.signUpFields = this.defaultSignUpFields;
         }
       }
 
