@@ -176,7 +176,7 @@ export default class S3Album extends Component {
         });
 
         let items = this.filter(list);
-        items = this.sort(list);
+        items = this.sort(items);
         this.setState({ items });
     }
 
