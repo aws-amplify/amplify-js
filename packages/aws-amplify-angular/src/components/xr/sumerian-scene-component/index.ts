@@ -1,0 +1,1 @@
+export { SumerianSceneComponent } from './sumerian-scene.component';
