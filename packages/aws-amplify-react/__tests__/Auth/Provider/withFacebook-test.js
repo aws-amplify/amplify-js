@@ -12,7 +12,7 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.FB = 'fb';
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -26,20 +26,20 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 status: 'connected',
                 authResponse: {
                     token: 'token'
                 }
-            }
+            };
 
    
             window.FB =  {
                 getLoginStatus(callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -60,18 +60,18 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 authResponse: { token: null },
                 status: 'not connected'
-            }
+            };
 
             const fbResponse2 = {
                 authResponse: {
                     authResponse: { token: 'token' },
                     status: 'connected'
                 }
-            }
+            };
 
             
             window.FB = {
@@ -81,7 +81,7 @@ describe('withFacebook test', () => {
                 login(callback, option) {
                     callback(fbResponse2);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -102,15 +102,15 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 authResponse: { token: null },
                 status: 'not connected'
-            }
+            };
 
             const fbResponse2 = {
                 authResponse: null
-            }
+            };
 
             
             window.FB = {
@@ -120,7 +120,7 @@ describe('withFacebook test', () => {
                 login(callback, option) {
                     callback(fbResponse2);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -143,10 +143,10 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 name: 'username'
-            }
+            };
 
             window.FB = {
                     api(path, callback) {
@@ -187,16 +187,16 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 name: 'username'
-            }
+            };
 
             window.FB = {
                 api(path, callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
             const mockFn = jest.fn();
 
@@ -236,16 +236,16 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 name: 'username'
-            }
+            };
 
             window.FB = {
                 api(path, callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -279,7 +279,7 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
                 callback('response')

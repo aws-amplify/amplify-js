@@ -146,7 +146,7 @@ export default class S3Image extends Component {
                 />
                 <div style={selected? theme.overlaySelected : theme.overlay}></div>
             </div>
-        )
+        );
     }
 
     render() {
@@ -177,6 +177,6 @@ export default class S3Image extends Component {
                           </div> : null
                 }
             </div>
-        )
+        );
     }
 }

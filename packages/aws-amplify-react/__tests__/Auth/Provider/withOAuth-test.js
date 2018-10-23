@@ -11,7 +11,7 @@ describe('withOAuth test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const Comp = withOAuth(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -30,7 +30,7 @@ describe('withOAuth test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
                 return {
@@ -41,8 +41,8 @@ describe('withOAuth test', () => {
                         responseType: 'responseType'
                     },
                     userPoolWebClientId: 'userPoolWebClientId'
-                }
-            })
+                };
+            });
             const Comp = withOAuth(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();

@@ -19,7 +19,7 @@ export function withFederated(Comp) {
             const federated = this.props.federated || {};
             return (
                 <Federated {...this.props} {...federated} />
-            )
+            );
         }
-    }
+    };
 }

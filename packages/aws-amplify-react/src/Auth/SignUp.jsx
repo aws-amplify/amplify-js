@@ -42,7 +42,7 @@ export default class SignUp extends AuthPiece {
 
         this.inputs = {
             dial_code: "+1",
-        }
+        };
     }
 
     signUp() {
@@ -145,6 +145,6 @@ export default class SignUp extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

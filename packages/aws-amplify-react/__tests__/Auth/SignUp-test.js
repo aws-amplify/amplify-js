@@ -35,7 +35,7 @@ describe('signUp', () => {
         });
 
         test('render correctly with hide', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme,
@@ -66,32 +66,32 @@ describe('signUp', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             const event_email = {
                 target: {
                     name: 'email',
                     value: 'email@amazon.com'
                 }
-            }
+            };
             const event_phone = {
                 target: {
                     name: 'phone_line_number',
                     value: '2345678901'
                 }
-            }
+            };
             const dial_code = {
                 target: {
                     name: 'dial_code',
                     value: '+1'
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
@@ -131,32 +131,32 @@ describe('signUp', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             const event_email = {
                 target: {
                     name: 'email',
                     value: 'email@amazon.com'
                 }
-            }
+            };
             const event_phone = {
                 target: {
                     name: 'phone_line_number',
                     value: '234-567-8901'
                 }
-            }
+            };
             const dial_code = {
                 target: {
                     name: 'dial_code',
                     value: '+1'
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
@@ -196,26 +196,26 @@ describe('signUp', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             const event_email = {
                 target: {
                     name: 'email',
                     value: 'email@amazon.com'
                 }
-            }
+            };
             const event_phone = {
                 target: {
                     name: 'phone_line_number',
                     value: undefined
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
@@ -239,7 +239,7 @@ describe('signUp', () => {
         test('render corrently', () => {
             const wrapper = shallow(<SignUp/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
