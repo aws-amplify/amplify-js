@@ -484,5 +484,231 @@ describe('signUp with signUpConfig', () => {
 
         let select = wrapper.find('select');
         expect(select.props().defaultValue).toEqual('+51');
-   })
+   });
+
+   test('signUp should not complete if required field is not filled out', async () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                defaultCountryCode: '51',
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                    },
+                    {
+                        key: 'username',
+                        label: 'NEW USERNAME LABEL',
+                        required: true,
+                    }
+                ]
+            }
+        });
+
+        const spyon = jest.spyOn(Auth, 'signUp')
+        .mockImplementationOnce((user, password) => {
+            return new Promise((res, rej) => {
+                res(mockResult);
+            });
+        });
+
+        const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+
+        const event_username = {
+            target: {
+                name: 'username',
+                value: 'user1'
+            }
+        }
+        const event_password = {
+            target: {
+                name: 'password',
+                value: 'abc'
+            }
+        }
+
+        const event_email = {
+            target: {
+                name: 'email',
+                value: 'email@amazon.com'
+            }
+        }
+        const event_phone = {
+            target: {
+                name: 'phone_line_number',
+                value: '2345678999'
+            }
+        }
+        const dial_code = {
+            target: {
+                name: 'dial_code',
+                value: '1'
+            }
+        }
+
+        wrapper.find(Input).at(0).simulate('change', event_username);
+        wrapper.find(Input).at(1).simulate('change', event_password);
+        wrapper.find(Input).at(2).simulate('change', event_email);
+        wrapper.find(Input).at(3).simulate('change', event_phone);
+        await wrapper.find(Button).simulate('click');
+
+
+        expect(spyon).not.toBeCalled();
+
+    });
+
+    test('signUp should  complete if optional field is not filled out', async () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                defaultCountryCode: '51',
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: false,
+                    },
+                    {
+                        key: 'username',
+                        label: 'NEW USERNAME LABEL',
+                        required: true,
+                    }
+                ]
+            }
+        });
+
+        const spyon = jest.spyOn(Auth, 'signUp')
+        .mockImplementationOnce((user, password) => {
+            return new Promise((res, rej) => {
+                res(mockResult);
+            });
+        });
+
+        const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+
+        const event_username = {
+            target: {
+                name: 'username',
+                value: 'user1'
+            }
+        }
+        const event_password = {
+            target: {
+                name: 'password',
+                value: 'abc'
+            }
+        }
+
+        const event_email = {
+            target: {
+                name: 'email',
+                value: 'email@amazon.com'
+            }
+        }
+        const event_phone = {
+            target: {
+                name: 'phone_line_number',
+                value: '2345678999'
+            }
+        }
+        const dial_code = {
+            target: {
+                name: 'dial_code',
+                value: '1'
+            }
+        }
+
+        wrapper.find(Input).at(0).simulate('change', event_username);
+        wrapper.find(Input).at(1).simulate('change', event_password);
+        wrapper.find(Input).at(2).simulate('change', event_email);
+        wrapper.find(Input).at(3).simulate('change', event_phone);
+        await wrapper.find(Button).simulate('click');
+
+
+        expect(spyon).toBeCalled();
+
+    });
+
+    test('signUp should  complete if required field is filled out', async () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            theme: AmplifyTheme,
+            signUpConfig: {
+                defaultCountryCode: '51',
+                signUpFields: [
+                    {
+                        key: 'z',
+                        label: 'Z',
+                        required: true,
+                    },
+                    {
+                        key: 'username',
+                        label: 'NEW USERNAME LABEL',
+                        required: true,
+                    }
+                ]
+            }
+        });
+
+        const spyon = jest.spyOn(Auth, 'signUp')
+        .mockImplementationOnce((user, password) => {
+            return new Promise((res, rej) => {
+                res(mockResult);
+            });
+        });
+
+        const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+
+        const event_username = {
+            target: {
+                name: 'username',
+                value: 'user1'
+            }
+        }
+        const event_password = {
+            target: {
+                name: 'password',
+                value: 'abc'
+            }
+        }
+
+        const event_email = {
+            target: {
+                name: 'email',
+                value: 'email@amazon.com'
+            }
+        }
+        const event_phone = {
+            target: {
+                name: 'phone_line_number',
+                value: '2345678999'
+            }
+        }
+        const dial_code = {
+            target: {
+                name: 'dial_code',
+                value: '1'
+            }
+        }
+        const event_z = {
+            target: {
+                name: 'z',
+                value: '1'
+            }
+        }
+
+        wrapper.find(Input).at(0).simulate('change', event_username);
+        wrapper.find(Input).at(1).simulate('change', event_password);
+        wrapper.find(Input).at(2).simulate('change', event_email);
+        wrapper.find(Input).at(3).simulate('change', event_phone);
+        wrapper.find(Input).at(4).simulate('change', event_z);
+        await wrapper.find(Button).simulate('click');
+
+
+        expect(spyon).toBeCalled();
+
+    });
 })
