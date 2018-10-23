@@ -16,7 +16,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
-import auth0 from 'auth0-js';
+// import auth0 from 'auth0-js';
 import { auth0SignInButton } from '@aws-amplify/ui';
 import {
     SignInButton,
@@ -39,7 +39,19 @@ export default function withAuth0(Comp, options) {
         }
 
         componentDidMount() {
-            this.initialize();
+            if (!window.auth0) {
+                this.createScript();
+            } else {
+                this.initialize();
+            }
+        }
+
+        createScript() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.auth0.com/js/auth0/9.8.1/auth0.min.js';
+            script.async = true;
+            script.onload = this.initialize;
+            document.body.appendChild(script);
         }
 
         initialize() {
@@ -54,8 +66,8 @@ export default function withAuth0(Comp, options) {
             logger.debug('withAuth0 configuration', config);
 
             if (!this._auth0) {
-                this._auth0 = new auth0.WebAuth(config);
-                window.auth0 = this._auth0;
+                this._auth0 = new window['auth0'].WebAuth(config);
+                window.auth0_client = this._auth0;
             }
             
             if (authState !== 'signedIn') {
@@ -119,7 +131,7 @@ export default function withAuth0(Comp, options) {
         }
 
         render() {
-            return <Comp {...this.props} auth0SignIn={this.signIn} />;
+            return <Comp {...this.props} auth0={this._auth0} auth0SignIn={this.signIn} />;
         }
     };
 }

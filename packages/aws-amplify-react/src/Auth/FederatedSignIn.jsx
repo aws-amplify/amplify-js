@@ -87,9 +87,9 @@ export class FederatedButtons extends Component {
         const { oauth={} } = Auth.configure();
         // backward compatibility
         if (oauth['domain']) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
         } else if (oauth.awsCognito) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth.awsCognito);
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
         }
 
         if (oauth.auth0) {
@@ -135,9 +135,9 @@ export default class FederatedSignIn extends Component {
          const { oauth={} } = Auth.configure();
         // backward compatibility
         if (oauth['domain']) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
         } else if (oauth.awsCognito) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth.awsCognito);
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
         }
 
         if (oauth.auth0) {
