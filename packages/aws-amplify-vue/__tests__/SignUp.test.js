@@ -82,7 +82,7 @@ describe('SignUp', () => {
           label: 'Username',
           key: 'username',
           required: true,
-          type: 'string',
+          type: 'text',
           displayOrder: 1,
         },
         {
@@ -96,7 +96,7 @@ describe('SignUp', () => {
           label: 'Email',
           key: 'email',
           required: true,
-          type: 'string',
+          type: 'text',
           displayOrder: 3,
         },
         {
