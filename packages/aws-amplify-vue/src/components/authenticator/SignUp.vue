@@ -17,7 +17,7 @@
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField"
           v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')"
-          :signUpField="signUpField"
+          :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
         <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
