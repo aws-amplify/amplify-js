@@ -76,7 +76,7 @@ export default function withAmazon(Comp) {
 
         componentDidMount() {
             const { amazon_client_id } = this.props;
-            if (amazon_client_id) this.createScript();
+            if (amazon_client_id && !window.amazon) this.createScript();
         }
 
         createScript() {

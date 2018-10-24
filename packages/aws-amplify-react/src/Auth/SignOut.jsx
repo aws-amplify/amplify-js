@@ -16,8 +16,10 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import { NavButton } from '../AmplifyUI';
-import AmplifyTheme from '../AmplifyTheme';
+import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+
+import Constants from './common/constants';
 
 const logger = new Logger('SignOut');
 
@@ -31,30 +33,6 @@ export default class SignOut extends AuthPiece {
             authState: props.authState,
             authData: props.authData
         };
-
-    }
-
-    signOutButton() {
-        let btn = (props) => {
-            <NavButton
-                theme={theme}
-                onClick={this.signOut}
-            >
-                {I18n.get('Sign Out')}
-            </NavButton>
-        }
-
-        const { federated={} } = this.props;
-        const config = Auth.configure();
-        const googleClientId = federated.google_client_id || config.googleClientId;
-        const facebookAppId = federated.facebook_app_id || config.facebookClientId;
-        const amazonClientId = federated.amazon_client_id || config.amazonClientId;
-
-        if (googleClientId) btn = withGoogle(btn);
-        if (facebookAppId) btn = withFacebook(btn);
-        if (amazonClientId) btn = withAmazon(btn);
-
-        return btn;
     }
 
     signOut() {
@@ -88,7 +66,6 @@ export default class SignOut extends AuthPiece {
             .catch(err => { logger.error(err); this.error(err); });
     }
 
-
     render() {
         const { hide } = this.props;
         if (hide && hide.includes(SignOut)) { return null; }
@@ -100,7 +77,12 @@ export default class SignOut extends AuthPiece {
         if (!signedIn) { return null; }
 
         return (
-            signOutButton()
+            <NavButton
+                theme={theme}
+                onClick={this.signOut}
+            >
+                {I18n.get('Sign Out')}
+            </NavButton>
         );
     }
 }

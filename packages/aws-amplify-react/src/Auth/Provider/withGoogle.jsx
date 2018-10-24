@@ -96,7 +96,7 @@ export default function withGoogle(Comp) {
 
         componentDidMount() {
             const { google_client_id } = this.props;
-            if (google_client_id) this.createScript();
+            if (google_client_id && !window.gapi) this.createScript();
         }
 
         createScript() {

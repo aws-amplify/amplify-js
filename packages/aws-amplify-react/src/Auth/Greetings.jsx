@@ -11,15 +11,15 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
-import { withGoogle, withAmazon, withFacebook, withOAuth } from './Provider';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
+import { withGoogle, withAmazon, withFacebook, withOAuth } from './Provider';
 
 const logger = new Logger('Greetings');
 
@@ -58,12 +58,27 @@ export default class Greetings extends AuthPiece {
         const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         const { federated } = this.props;
+
         return (
             <span>
                 <NavItem theme={theme}>{message}</NavItem>
-                <SignOut {...this.props} />
+                {this.renderSignOutButton(theme)}
             </span>
         )
+    }
+
+    renderSignOutButton() {
+        const { federated={} } = this.props;
+        const config = Auth.configure();
+        const googleClientId = federated.google_client_id || config.googleClientId;
+        const facebookAppId = federated.facebook_app_id || config.facebookClientId;
+        const amazonClientId = federated.amazon_client_id || config.amazonClientId;
+
+        if (googleClientId) SignOut = withGoogle(SignOut);
+        if (facebookAppId) SignOut = withFacebook(SignOut);
+        if (amazonClientId) SignOut = withAmazon(SignOut);
+
+        return <SignOut {...this.props}/>;
     }
 
     noUserGreetings(theme) {
