@@ -11,29 +11,26 @@
  * and limitations under the License.
  */
 
-import * as React from 'react';
+import React, { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
-
+import { withGoogle, withAmazon, withFacebook, withOAuth } from './Provider';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import Constants from './common/constants';
+import SignOut from './SignOut';
 
 const logger = new Logger('Greetings');
 
 export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
-
-        this.signOut = this.signOut.bind(this);
-        this.googleSignOut = this.googleSignOut.bind(this);
-        this.facebookSignOut = this.facebookSignOut.bind(this);
-       
-
+    
         this.state = {
             authState: props.authState,
             authData: props.authData
-        };
+        }
     }
 
     componentDidMount() {
@@ -44,57 +41,9 @@ export default class Greetings extends AuthPiece {
         this._isMounted = false;
     }
 
-    signOut() {
-        this.googleSignOut();
-        this.facebookSignOut();
-        if (!Auth || typeof Auth.signOut !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        Auth.signOut()
-            .then(() => this.changeState('signedOut'))
-            .catch(err => { logger.error(err); this.error(err); });
-    }
-
-    googleSignOut() {
-        const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
-        if (!authInstance) {
-            return Promise.resolve(null);
-        }
-
-        authInstance.then((googleAuth) => {
-            if (!googleAuth) {
-                logger.debug('google Auth undefined');
-                return Promise.resolve(null);
-            }
-
-            logger.debug('google signing out');
-            return googleAuth.signOut();
-        });
-    }
-
-    facebookSignOut() {
-        const fb = window.FB;
-        if (!fb) {
-            logger.debug('FB sdk undefined');
-            return Promise.resolve(null);
-        }
-
-        fb.getLoginStatus(response => {
-            if (response.status === 'connected') {
-                return new Promise((res, rej) => {
-                    logger.debug('facebook signing out');
-                    fb.logout(response => {
-                        res(response);
-                    });
-                });
-            } else {
-                return Promise.resolve(null);
-            }
-        });
-    }
-
     inGreeting(name) { return 'Hello ' + name; }
     outGreeting() { return ''; }
+
 
     userGreetings(theme) {
         const user = this.state.authData;
@@ -108,16 +57,11 @@ export default class Greetings extends AuthPiece {
 
         const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
+        const { federated } = this.props;
         return (
             <span>
                 <NavItem theme={theme}>{message}</NavItem>
-                <NavButton
-                    theme={theme}
-                    onClick={this.signOut}
-                >
-                    {I18n.get('Sign Out')}
-                </NavButton>
-
+                <SignOut {...this.props} />
             </span>
         )
     }
