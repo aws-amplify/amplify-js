@@ -98,9 +98,9 @@ export default function withAmazon(Comp) {
             const amz = window.amazon;
             return (
                 <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} />
-            )
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -117,6 +117,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Amazon')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const AmazonButton = withAmazon(Button);

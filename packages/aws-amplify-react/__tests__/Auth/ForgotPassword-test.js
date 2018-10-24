@@ -23,7 +23,7 @@ const deniedStates = [
 describe('forgotPassword', () => {
     describe('normal case', () => {
         test('render correctly with authState forgotPassword', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 const wrapper = shallow(<ForgotPassword/>);
                 wrapper.setProps({
                     authState: acceptedStates[i],
@@ -34,7 +34,7 @@ describe('forgotPassword', () => {
         });
 
         test('render correctly with state delivery set', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 const wrapper = shallow(<ForgotPassword/>);
                 wrapper.setProps({
                     authState: acceptedStates[i],
@@ -80,14 +80,14 @@ describe('forgotPassword', () => {
                     name: 'code',
                     value: 'code'
                 }
-            }
+            };
 
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_code);
             wrapper.find(Input).at(1).simulate('change', event_password);
@@ -119,7 +119,7 @@ describe('forgotPassword', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_username);
 
@@ -135,7 +135,7 @@ describe('forgotPassword', () => {
         test('render corrently', () => {
             const wrapper = shallow(<ForgotPassword/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme

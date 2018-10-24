@@ -10,7 +10,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
 
@@ -26,7 +26,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = mount(<CompWithAuth/>);
         
@@ -42,7 +42,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
         
@@ -58,7 +58,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
 

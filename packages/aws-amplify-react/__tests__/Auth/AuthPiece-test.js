@@ -8,7 +8,7 @@ class TestPiece extends AuthPiece {
     render() {
         return (
             <div/>
-        )
+        );
     }
 }
 
@@ -17,7 +17,7 @@ describe('AuthPiece test', () => {
         test('happy case with string type authdata', () => {
             const props = {
                 authData: 'username'
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
@@ -30,14 +30,14 @@ describe('AuthPiece test', () => {
                 authData: {
                     username: 'username'
                 }
-            }
+            };
             const props2 = {
                 authData: {
                     user: {
                         username: 'username'
                     }
                 }
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
@@ -80,7 +80,7 @@ describe('AuthPiece test', () => {
             const props = {
                 authState: 'state',
                 onAuthEvent: mockFn
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
@@ -93,7 +93,7 @@ describe('AuthPiece test', () => {
         test('no onAuthEvent', () => {
             const props = {
                 authState: 'state'
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
@@ -111,7 +111,7 @@ describe('AuthPiece test', () => {
             const mockFn = jest.fn();
             const props = {
                 onStateChange: mockFn
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
@@ -169,7 +169,7 @@ describe('AuthPiece test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
 
@@ -186,7 +186,7 @@ describe('AuthPiece test', () => {
                     type: 'other_type',
                     checked: ''
                 }
-            }
+            };
             const wrapper = shallow(<TestPiece/>);
             const testPiece = wrapper.instance();
 
