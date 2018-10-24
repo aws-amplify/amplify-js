@@ -30,26 +30,21 @@ const styles = {
         width: 'calc(100% - 90px - 15px)',
     }),
     button: Object.assign({}, Button, {
-        width: '90px',
+        width: '60px',
+        float: 'right',
+    }),
+    mic: Object.assign({}, Button, {
+        width: '40px',
         float: 'right',
     })
 };
 
 const STATES = {
-    INITIAL: 'Click to start conversation',
-    LISTENING: 'Speak now',
+    INITIAL: 'Type your message or click  🎤',
+    LISTENING: 'Speak now...',
     SENDING: 'Sending to Lex...',
     SPEAKING: 'Playing audio...'
 };
-
-const config = //should be passed from props instead
-    {
-        silenceDetection: true, 
-        silenceDetectionConfig: {
-          time: 2000,
-          amplitude: 0.2
-        }
-    }
 
 const audioControl = new global.LexAudio.audioControl()
 
@@ -65,7 +60,7 @@ export class ChatBot extends Component {
             }],
             inputText: '',
             currentVoiceState: STATES.INITIAL,
-            speechGiven: false
+            textInputDisabled: false
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -75,10 +70,10 @@ export class ChatBot extends Component {
         this.listItemsRef = React.createRef();
         this.onVoiceStateChange = this.onVoiceStateChange.bind(this)
         this.onSilence = this.onSilence.bind(this)
+        this.onError = this.onError.bind(this)
     }
 
     transition(newVoiceState) { 
-        console.log('transitioning to voice state ' + newVoiceState)
         this.setState({
             currentVoiceState: newVoiceState
         })
@@ -91,30 +86,27 @@ export class ChatBot extends Component {
         }
         // If we are transitioning in to sending and we are not detecting silence (this was a manual state change)
         // we need to do some cleanup: stop recording, and stop rendering.
-        if (this.state.currentVoiceState === STATES.SENDING && !config.silenceDetection) {
+        if (this.state.currentVoiceState === STATES.SENDING && !this.props.voiceConfig.silenceDetection) {
             audioControl.stopRecording();
         }
     }
 
     onVoiceStateChange(voiceState) {
-        console.log('voice state changed: current state is ' + voiceState)
+
     }
 
     onSilence() {
-        console.log('on silence')
-        if (config.silenceDetection) {
+        if (this.props.voiceConfig.silenceDetection) {
             audioControl.stopRecording();
             this.advanceConversation(); 
         }
     }
 
     onAudioData(data) {
-        // audio data visualization? 
-        // console.log('audio data received')
+        // TODO: visualize audio data
     }
 
     async onSuccess(response) {
-        console.log('on success!!!')
         await this.setState({
             dialog: [...this.state.dialog, { message: response.inputTranscript, from: 'me' }]
         }) 
@@ -126,21 +118,21 @@ export class ChatBot extends Component {
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
     }
 
+    onError(error) {
+        console.log(error)
+    }
+
     async advanceConversation() {
-        console.log('advancing conversation...')
         audioControl.supportsAudio((supported) => {
             if (!supported) {
-              console.log('Audio is not supported.');
-              // throw an error?
+              onError('Audio is not supported.')
             }
         });
 
         if (this.state.currentVoiceState === STATES.INITIAL) {
-            console.log(' advance conversation - state was ' + this.state.currentVoiceState)
-            audioControl.startRecording(this.onSilence, this.onAudioData, config.silenceDetectionConfig);
+            audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
             this.transition(STATES.LISTENING);
         } else if (this.state.currentVoiceState === STATES.LISTENING) {
-            console.log(' advance conversation - state was ' + this.state.currentVoiceState)
             audioControl.exportWAV((blob) => {
                 this.setState({
                     audioInput: blob
@@ -148,8 +140,6 @@ export class ChatBot extends Component {
                 this.transition(STATES.SENDING);
             });
         } else if (this.state.currentVoiceState === STATES.SENDING) {
-            console.log(' advance conversation - state was ' + this.state.currentVoiceState)
-
             if (!Interactions || typeof Interactions.send !== 'function') {
                 throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
             }
@@ -162,29 +152,30 @@ export class ChatBot extends Component {
             this.transition(STATES.SPEAKING)
             this.onSuccess(response)
 
-        } else if (this.state.currentVoiceState === STATES.SPEAKING) {
-            console.log(' advance conversation - current state was ' + this.state.currentVoiceState)
+        } else { // if (this.state.currentVoiceState === STATES.SPEAKING)
             if (this.state.audioOutput.contentType === 'audio/mpeg') {
                 audioControl.play(this.state.audioOutput.audioStream, () => {
                     console.log('dialogState ' + this.state.audioOutput.dialogState)
                     if (this.state.audioOutput.dialogState === 'ReadyForFulfillment' ||
                         this.state.audioOutput.dialogState === 'Fulfilled' ||
                         this.state.audioOutput.dialogState === 'Failed' ||
-                        !config.silenceDetection) {
+                        !this.props.voiceConfig.silenceDetection) {
+                            this.setState({
+                                textInputDisabled: false
+                            })
                         this.transition(STATES.INITIAL);
                     } else {
-                        audioControl.startRecording(this.onSilence, this.onAudioData, config.silenceDetectionConfig);
+                        audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
                         this.transition(STATES.LISTENING);
                     }
                 });
             } else {
+                this.setState({
+                    textInputDisabled: false
+                })
                 this.transition(STATES.INITIAL);
             }
-        } else {
-            console.log('oops')
-            // should never hit this, change to if statements
         }
-
     };
 
     listItems() {
@@ -196,6 +187,9 @@ export class ChatBot extends Component {
     };
 
     handleVoiceClick() {
+        this.setState({
+            textInputDisabled: true
+        })
         this.advanceConversation()
     }
 
@@ -224,7 +218,6 @@ export class ChatBot extends Component {
             inputText: ''
         });
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
-
     }
 
     async changeInputText(event) {
@@ -283,13 +276,13 @@ export class ChatBot extends Component {
                         <input
                             style={styles.textInput}
                             type='text'
-                            placeholder={I18n.get("Type your message here")}
+                            placeholder={I18n.get(this.state.currentVoiceState)}
                             onChange={this.changeInputText}
-                            value={this.state.inputText}>
+                            value={this.state.inputText}
+                            disabled={this.state.textInputDisabled}>
                         </input>
-                        <button type="submit" style={styles.button} >{I18n.get('Send')}</button>
-                        <button style={styles.button} onClick={this.handleVoiceClick}>{I18n.get('Voice')}</button>
-                        {this.state.currentVoiceState}
+                        <button type="submit" style={styles.button} disabled={this.state.textInputDisabled}>{I18n.get('Send')}</button>
+                        <button style={styles.mic} onClick={this.handleVoiceClick}>🎤</button>
                     </form>
                 </SectionFooter>
             </FormSection>
