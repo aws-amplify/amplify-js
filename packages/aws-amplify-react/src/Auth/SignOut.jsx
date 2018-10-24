@@ -34,7 +34,7 @@ export default class SignOut extends AuthPiece {
         this.state = {
             authState: props.authState,
             authData: props.authData
-        }
+        };
 
         Hub.listen('auth', this);
     }
@@ -146,6 +146,6 @@ export default class SignOut extends AuthPiece {
                 onClick={this.signOut}
             >{I18n.get('Sign Out')}
             </NavButton>
-        )
+        );
     }
 }

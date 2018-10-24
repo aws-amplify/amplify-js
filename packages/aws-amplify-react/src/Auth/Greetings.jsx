@@ -33,7 +33,7 @@ export default class Greetings extends AuthPiece {
         this.state = {
             authState: props.authState,
             authData: props.authData
-        }
+        };
     }
 
     componentDidMount() {

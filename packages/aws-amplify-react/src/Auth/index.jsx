@@ -73,7 +73,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             onStateChange={this.handleAuthStateChange}
                         />
                     </div>
-                )
+                );
             }
 
             return <Authenticator
@@ -83,9 +83,9 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
-            />
+            />;
         }
-    }
+    };
 }
 
 export class AuthenticatorWrapper extends Component {
@@ -107,6 +107,6 @@ export class AuthenticatorWrapper extends Component {
                 <Authenticator {...this.props} onStateChange={this.handleAuthState} />
                 {this.props.children(this.state.auth)}
             </div>
-        )
+        );
     }
 }

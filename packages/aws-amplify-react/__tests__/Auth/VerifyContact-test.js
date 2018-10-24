@@ -44,7 +44,7 @@ describe.only('VerifyContent test', () => {
             const props = {
                 authState: 'verifyContact',
                 theme: 'theme'
-            }
+            };
             wrapper.setProps(props);
             wrapper.setState({ verifyAttr: true });
 
@@ -57,7 +57,7 @@ describe.only('VerifyContent test', () => {
                 authState: 'verifyContact',
                 theme: 'theme',
                 authData: {}
-            }
+            };
             wrapper.setProps(props);
 
             expect(wrapper).toMatchSnapshot();
@@ -71,7 +71,7 @@ describe.only('VerifyContent test', () => {
                 authData: {
                     unverified: {}
                 }
-            }
+            };
             wrapper.setProps(props);
 
             expect(wrapper).toMatchSnapshot();
@@ -80,7 +80,7 @@ describe.only('VerifyContent test', () => {
         test('render null with denied states', () => {
             const wrapper = shallow(<VerifyContact/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: 'theme'
@@ -96,7 +96,7 @@ describe.only('VerifyContent test', () => {
                 authState: 'verifyContact',
                 theme: 'theme',
                 hide: [VerifyContact]
-            }
+            };
             wrapper.setProps(props);
 
             expect(wrapper).toMatchSnapshot();
@@ -112,7 +112,7 @@ describe.only('VerifyContent test', () => {
             const props = {
                 authState: 'verifyContact',
                 theme: 'theme'
-            }
+            };
             wrapper.setProps(props);
 
             wrapper.find(Link).simulate('click');
@@ -136,12 +136,12 @@ describe.only('VerifyContent test', () => {
                     phone_number: '+12345678901'
                     }
                 }   
-            }
+            };
             wrapper.setProps(props);
             
             wrapper.find(Button).at(0).simulate('click');
 
-            //expect(spyon).toBeCalled();
+            // expect(spyon).toBeCalled();
 
             spyon.mockClear();
         });
@@ -159,7 +159,7 @@ describe.only('VerifyContent test', () => {
             verifyContact.inputs = {
                 contact: true,
                 checkedValue: 'email'
-            }
+            };
 
             await verifyContact.verify();
             expect(spyon).toBeCalledWith('email');
@@ -176,7 +176,7 @@ describe.only('VerifyContent test', () => {
             const verifyContact = wrapper.instance();
             verifyContact.inputs = {
                 contact: null
-            }
+            };
 
             await verifyContact.verify();
             expect(spyon).toBeCalledWith('Neither Email nor Phone Number selected');
@@ -198,7 +198,7 @@ describe.only('VerifyContent test', () => {
             const verifyContact = wrapper.instance();
             verifyContact.inputs = {
                 contact: 'contact'
-            }
+            };
 
             await verifyContact.verify();
             expect(wrapper.state('verifyAttr')).toBeNull();
@@ -224,7 +224,7 @@ describe.only('VerifyContent test', () => {
             wrapper.setState({ verifyAttr: 'attr' });
             verifyContact.inputs = {
                 code: 'code'
-            }
+            };
 
             await verifyContact.submit();
             expect(spyon).toBeCalledWith('attr', 'code');
@@ -250,7 +250,7 @@ describe.only('VerifyContent test', () => {
             const verifyContact = wrapper.instance();
             verifyContact.inputs = {
                 code: 'code'
-            }
+            };
 
             await verifyContact.submit();
             expect(spyon3).not.toBeCalled();

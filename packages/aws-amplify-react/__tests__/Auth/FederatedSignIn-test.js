@@ -5,8 +5,8 @@ import FederatedSignIn, { FederatedButtons } from '../../src/Auth/FederatedSignI
 const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
     return {
         hostedUIOptions: {}
-    }
-})
+    };
+});
 
 describe('FederatedSignIn test', () => {
     describe('render test', () => {
