@@ -60,7 +60,7 @@ export class ChatBot extends Component {
             }],
             inputText: '',
             currentVoiceState: STATES.INITIAL,
-            textInputDisabled: false
+            inputDisabled: false
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -161,7 +161,7 @@ export class ChatBot extends Component {
                         this.state.audioOutput.dialogState === 'Failed' ||
                         !this.props.voiceConfig.silenceDetection) {
                             this.setState({
-                                textInputDisabled: false
+                                inputDisabled: false
                             })
                         this.transition(STATES.INITIAL);
                     } else {
@@ -171,7 +171,7 @@ export class ChatBot extends Component {
                 });
             } else {
                 this.setState({
-                    textInputDisabled: false
+                    inputDisabled: false
                 })
                 this.transition(STATES.INITIAL);
             }
@@ -188,7 +188,7 @@ export class ChatBot extends Component {
 
     handleVoiceClick() {
         this.setState({
-            textInputDisabled: true
+            inputDisabled: true
         })
         this.advanceConversation()
     }
@@ -279,10 +279,10 @@ export class ChatBot extends Component {
                             placeholder={I18n.get(this.state.currentVoiceState)}
                             onChange={this.changeInputText}
                             value={this.state.inputText}
-                            disabled={this.state.textInputDisabled}>
+                            disabled={this.state.inputDisabled}>
                         </input>
-                        <button type="submit" style={styles.button} disabled={this.state.textInputDisabled}>{I18n.get('Send')}</button>
-                        <button style={styles.mic} onClick={this.handleVoiceClick}>🎤</button>
+                        <button type="submit" style={styles.button} disabled={this.state.inputDisabled}>{I18n.get('Send')}</button>
+                        <button style={styles.mic} disabled={this.state.inputDisabled} onClick={this.handleVoiceClick}>🎤</button>
                     </form>
                 </SectionFooter>
             </FormSection>
