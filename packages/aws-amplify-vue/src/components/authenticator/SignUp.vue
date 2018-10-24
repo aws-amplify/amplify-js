@@ -15,26 +15,26 @@
   <div v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField" 
-          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')" 
-          :signUpField="signUpField" 
+      <div v-bind:class="amplifyUI.formField"
+          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')"
+          :signUpField="signUpField"
           v-bind:key="signUpField.key"
         >
         <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
-        <input 
-            v-if="signUpField.key !== 'phone_number'" 
-            :type = "signUpField.type" 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
-            v-model="signUpField.value" 
+        <input
+            v-if="signUpField.key !== 'phone_number'"
+            :type = "signUpField.type"
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
+            v-model="signUpField.value"
             :placeholder="signUpField.label"
-            v-on:change="clear(signUpField)" 
+            v-on:change="clear(signUpField)"
           />
         <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
           <select v-model="country">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
-          <input 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
+          <input
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
             v-model="signUpField.value"
             type="number"
             :placeholder="signUpField.label"
@@ -89,7 +89,7 @@ export default {
             label: 'Username',
             key: 'username',
             required: true,
-            type: 'string',
+            type: 'text',
             displayOrder: 1,
           },
           {
@@ -103,7 +103,7 @@ export default {
             label: 'Email',
             key: 'email',
             required: true,
-            type: 'string',
+            type: 'text',
             displayOrder: 3
           },
           {
@@ -155,8 +155,8 @@ export default {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
   watch: {
-    /* 
-    this operation is in place to avoid making country.value the select box 
+    /*
+    this operation is in place to avoid making country.value the select box
     bound key, which results in a duplicate key error in console
     */
     country: function() {
@@ -218,7 +218,7 @@ export default {
     },
     setError: function(e) {
       this.error = e.message || e;
-      this.logger.error(this.error) 
+      this.logger.error(this.error)
     },
   }
 }
