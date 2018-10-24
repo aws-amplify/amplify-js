@@ -47,12 +47,12 @@ describe('TextPicker test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
             const props = {
                 preview: true,
                 onPick: onPickFn,
                 onLoad: onLoadFn
-            }
+            };
             const wrapper = shallow(<TextPicker/>);
             const textPicker = wrapper.instance();
             wrapper.setProps(props);
@@ -77,11 +77,11 @@ describe('TextPicker test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
             const props = {
                 preview: false,
                 onLoad: onLoadFn
-            }
+            };
             const wrapper = shallow(<TextPicker/>);
             const textPicker = wrapper.instance();
             wrapper.setProps(props);

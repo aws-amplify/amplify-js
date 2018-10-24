@@ -12,7 +12,7 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -24,7 +24,7 @@ describe('SelectMFAType test', () => {
         test('render without totpsetup and with less than 2 mfa types', () => {
             const MFATypes = {
                 SMS: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -36,7 +36,7 @@ describe('SelectMFAType test', () => {
             const MFATypes = {
                 SMS: true,
                 TOTP: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -49,7 +49,7 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: true});
@@ -68,7 +68,7 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.find(Button).simulate('click');
@@ -89,7 +89,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
         });
     });
@@ -106,7 +106,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
@@ -132,7 +132,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
@@ -174,7 +174,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {

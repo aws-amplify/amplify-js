@@ -1,7 +1,7 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
@@ -207,7 +207,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
@@ -223,7 +223,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -239,7 +239,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onLoad: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -254,7 +254,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -270,7 +270,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onError: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);

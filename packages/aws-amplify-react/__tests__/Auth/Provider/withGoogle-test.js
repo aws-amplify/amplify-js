@@ -283,12 +283,12 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const authResponse = {
                 id_token: 'id_token',
                 expires_at: 0
-            }
+            };
 
             const googleAuth = {
                 currentUser: {
@@ -307,12 +307,12 @@ describe('withGoogle test', () => {
                                 return {
                                     getEmail() { return 'email' },
                                     getName() { return 'name' }
-                                }
+                                };
                             }
-                        }
+                        };
                     }
                 }
-            }
+            };
 
             window.gapi = {
                 auth2: {
@@ -323,7 +323,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -342,12 +342,12 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const authResponse = {
                 id_token: 'id_token',
                 expires_at: 0
-            }
+            };
 
             const googleAuth = {
                 currentUser: {
@@ -357,10 +357,10 @@ describe('withGoogle test', () => {
                             isSignedIn() {
                                 return false;
                             }
-                        }
+                        };
                     }
                 }
-            }
+            };
 
             window.gapi = {
                 auth2: {
@@ -371,7 +371,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -385,7 +385,7 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.gapi = null
 
             const Comp = withGoogle(MockComp);
@@ -400,7 +400,7 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.gapi = {
                 auth2: {
                     getAuthInstance() {
@@ -410,7 +410,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);

@@ -24,7 +24,7 @@ describe('SignOut', () => {
     describe('normal case', () => {
         test('render correctly with authState signedIn', () => {
             const wrapper = shallow(<SignOut/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme'
@@ -35,7 +35,7 @@ describe('SignOut', () => {
 
         test('render correctly with hide', () => {
             const wrapper = shallow(<SignOut/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme',
@@ -47,7 +47,7 @@ describe('SignOut', () => {
 
         test('render correctly with empty hide', () => {
             const wrapper = shallow(<SignOut/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme',
@@ -71,17 +71,17 @@ describe('SignOut', () => {
                     }
                 },
                 authState: 'signedIn'
-            })  
+            });
 
             expect(wrapper).toMatchSnapshot();
-        })
+        });
     });
 
    
     test('render correctly with other authStates', () => {
         const wrapper = shallow(<SignOut/>);
         
-        for (var i = 0; i < deniedStates.length; i += 1){
+        for (let i = 0; i < deniedStates.length; i += 1){
             wrapper.setProps({
                 authState: deniedStates[i],
                 theme: 'theme'
@@ -130,7 +130,7 @@ describe('SignOut', () => {
                     getAuthInstance() {
                         return Promise.resolve({
                             signOut: mockFn
-                        })
+                        });
                     }
                 }
             };
@@ -178,7 +178,7 @@ describe('SignOut', () => {
                 logout(callback) {
                     callback('response');
                 }
-            }
+            };
 
             const wrapper = shallow(<SignOut/>);
             const signOut = wrapper.instance();
@@ -191,12 +191,12 @@ describe('SignOut', () => {
                 getLoginStatus(callback) {
                     callback({
                         status: 'not connected'
-                    })
+                    });
                 },
                 logout(callback) {
                     callback('response');
                 }
-            }
+            };
             const wrapper = shallow(<SignOut/>);
             const signOut = wrapper.instance();
             
@@ -211,7 +211,7 @@ describe('SignOut', () => {
 
             const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.resolve('user');
-            })
+            });
 
             await signOut.checkUser();
 
@@ -224,7 +224,7 @@ describe('SignOut', () => {
 
             const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.reject('no user');
-            })
+            });
 
             await signOut.checkUser();
 
@@ -237,7 +237,7 @@ describe('SignOut', () => {
 
             const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.resolve('user');
-            })
+            });
 
             await signOut.componentDidMount();
 
