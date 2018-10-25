@@ -39,7 +39,7 @@ const defaultSignUpFields = [
     {
         label: 'Username',
         key: 'username',
-        required: false,
+        required: true,
         placeholder: 'Username',
         displayOrder: 1,
     },
@@ -122,12 +122,11 @@ export default class SignUp extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
+        if (hide && hide.includes(SignUp)) { return null; }
         if (this.checkCustomSignUpFields()) {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
-        if (hide && hide.includes(SignUp)) { return null; }
-
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
@@ -218,7 +217,7 @@ export default class SignUp extends AuthPiece {
           }
         });
         return invalids;
-      }
+    }
 
     sortFields() {
         if (this.checkCustomSignUpFields()) {
@@ -271,17 +270,17 @@ export default class SignUp extends AuthPiece {
         }
       }
 
-      getDefaultDialCode() {
+    getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
         countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
         `+${this.props.signUpConfig.defaultCountryCode}` :
         "+1"
-      }
+    }
 
-      checkCustomSignUpFields() {
-          return this.props.signUpConfig &&
-          this.props.signUpConfig.signUpFields &&
-          this.props.signUpConfig.signUpFields.length > 0
-      }
+    checkCustomSignUpFields() {
+        return this.props.signUpConfig &&
+        this.props.signUpConfig.signUpFields &&
+        this.props.signUpConfig.signUpFields.length > 0
+    }
 }
