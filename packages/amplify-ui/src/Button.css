@@ -40,7 +40,7 @@
   margin-bottom: 10px;
   cursor: pointer;
   padding: 0;
-  color: #152939;
+  color: var(--deepSquidInk);
   font-size: 14px;
   box-sizing: content-box;
 }
@@ -49,11 +49,11 @@
   background-color: #4285F4;
   font-family: Roboto;
   border: 1px solid #4285F4;
-  color: #fff;
+  color: var(--white);
 }
 
 #googleSignInButton > .signInButtonIcon {
-  background-color: #fff;
+  background-color: var(--white);
   border-radius: 4px 0 0 4px;
   height: 28px;
   width: 28px;
@@ -79,7 +79,7 @@
   background-color: #4267B2;
   border-color: #4267B2;
   font-family: "Helvetica Neue";
-  color: #fff;
+  color: var(--white);
 }
 
 #facebookSignInButton > .signInButtonIcon {
@@ -89,9 +89,9 @@
 }
 
 #amazonSignInButton {
-  background-color: #FF9900;
+  background-color: var(--amazonOrange);
   border: none;
-  color: #fff;
+  color: var(--white);
   font-family: "Amazon Ember";
 }
 
@@ -99,6 +99,11 @@
   padding: 10px;
   height: 32px;
   width: 32px;
+}
+
+#oAuthSignInButton {
+  background-color: var(--white);
+  color: var(--deepSquidInk);
 }
 
 .signInButtonIcon {

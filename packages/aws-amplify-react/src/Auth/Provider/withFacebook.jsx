@@ -11,9 +11,10 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { facebookSignInButton } from '@aws-amplify/ui';
@@ -34,6 +35,7 @@ export default function withFacebook(Comp) {
             this.fbAsyncInit = this.fbAsyncInit.bind(this);
             this.initFB = this.initFB.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -51,7 +53,7 @@ export default function withFacebook(Comp) {
                 } catch (e) {
                     logger.debug('Failed to cache auth source into localStorage', e);
                 }
-                
+
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
@@ -80,7 +82,7 @@ export default function withFacebook(Comp) {
             fb.api('/me', response => {
                 let user = {
                     name: response.name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {
@@ -98,9 +100,30 @@ export default function withFacebook(Comp) {
             });
         }
 
+        signOut() {
+            const fb = window.FB;
+            if (!fb) {
+                logger.debug('FB sdk undefined');
+                return Promise.resolve();
+            }
+
+            fb.getLoginStatus(response => {
+                if (response.status === 'connected') {
+                    return new Promise((res, rej) => {
+                        logger.debug('facebook signing out');
+                        fb.logout(response => {
+                            res(response);
+                        });
+                    });
+                } else {
+                    return Promise.resolve();
+                }
+            });
+        }
+
         componentDidMount() {
             const { facebook_app_id } = this.props;
-            if (facebook_app_id) this.createScript();
+            if (facebook_app_id && !window.FB) this.createScript();
         }
 
         fbAsyncInit() {
@@ -136,10 +159,10 @@ export default function withFacebook(Comp) {
         render() {
             const fb = window.FB;
             return (
-                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
-            )
+                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} facebookSignOut={this.signOut}/>
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -153,9 +176,9 @@ const Button = (props) => (
             <svg viewBox='0 0 279 538' xmlns='http://www.w3.org/2000/svg'><g id='Page-1' fill='none' fillRule='evenodd'><g id='Artboard' fill='#FFF'><path d='M82.3409742,538 L82.3409742,292.936652 L0,292.936652 L0,196.990154 L82.2410458,196.990154 L82.2410458,126.4295 C82.2410458,44.575144 132.205229,0 205.252865,0 C240.227794,0 270.306232,2.59855099 279,3.79788222 L279,89.2502322 L228.536175,89.2502322 C188.964542,89.2502322 181.270057,108.139699 181.270057,135.824262 L181.270057,196.89021 L276.202006,196.89021 L263.810888,292.836708 L181.16913,292.836708 L181.16913,538 L82.3409742,538 Z'id='Fill-1' /></g></g></svg>
         </SignInButtonIcon>
         <SignInButtonContent theme={props.theme || AmplifyTheme}>
-            Sign In with Facebook
+            {I18n.get('Sign In with Facebook')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const FacebookButton = withFacebook(Button);

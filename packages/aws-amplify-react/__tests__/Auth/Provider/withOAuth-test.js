@@ -1,5 +1,6 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
 
@@ -10,7 +11,7 @@ describe('withOAuth test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const Comp = withOAuth(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -31,7 +32,7 @@ describe('withOAuth test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
                 return {
@@ -44,8 +45,8 @@ describe('withOAuth test', () => {
                         }
                     },
                     userPoolWebClientId: 'userPoolWebClientId'
-                }
-            })
+                };
+            });
             const Comp = withOAuth(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();

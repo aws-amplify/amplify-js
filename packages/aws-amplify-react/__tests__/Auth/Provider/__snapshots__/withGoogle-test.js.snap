@@ -4,12 +4,14 @@ exports[`GoogleButton test render test render correctly 1`] = `
 <Button
   ga={null}
   googleSignIn={[Function]}
+  googleSignOut={[Function]}
 />
 `;
 
 exports[`withGoogle test render test render correctly 1`] = `
-<MockComp
+<class_1
   ga={null}
   googleSignIn={[Function]}
+  googleSignOut={[Function]}
 />
 `;

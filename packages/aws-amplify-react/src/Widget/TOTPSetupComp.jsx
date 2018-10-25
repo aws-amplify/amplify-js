@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -46,7 +47,7 @@ export default class TOTPSetupComp extends Component {
         this.state = {
             code: null,
             setupMessage: null
-        }
+        };
     }
 
     componentDidMount() {
@@ -121,12 +122,12 @@ export default class TOTPSetupComp extends Component {
                     onChange={this.handleInputChange}
                 />
             </div>
-        )
+        );
     }
 
     render() {
         const theme = this.props.theme ? this.props.theme: AmplifyTheme;
-        let code = this.state.code;
+        const code = this.state.code;
 
         return (
             <FormSection theme={theme}>
@@ -149,6 +150,6 @@ export default class TOTPSetupComp extends Component {
                     </Button>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

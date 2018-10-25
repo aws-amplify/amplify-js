@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import withGoogle from './withGoogle';
 import withFacebook from './withFacebook';
@@ -33,7 +34,7 @@ export function withFederated(Comp) {
             const federated = this.props.federated || {};
             return (
                 <Federated {...this.props} {...federated} />
-            )
+            );
         }
-    }
+    };
 }

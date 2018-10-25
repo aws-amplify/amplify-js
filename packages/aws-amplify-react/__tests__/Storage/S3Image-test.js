@@ -1,7 +1,7 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
@@ -10,7 +10,7 @@ import Storage from '@aws-amplify/storage';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
 import { PhotoPicker } from '../../src/Widget'
-import React from 'react';
+import * as React from 'react';
 
 describe('S3Image', () => {
     describe('render test', () => {
@@ -210,7 +210,7 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
@@ -236,10 +236,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onLoad: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);
@@ -266,10 +266,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onError: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);

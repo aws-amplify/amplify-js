@@ -11,26 +11,22 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
-
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
+import SignOut from './SignOut';
+import { withGoogle, withAmazon, withFacebook, withOAuth } from './Provider';
 
 const logger = new Logger('Greetings');
 
 export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
-
-        this.signOut = this.signOut.bind(this);
-        this.googleSignOut = this.googleSignOut.bind(this);
-        this.facebookSignOut = this.facebookSignOut.bind(this);
-       
-
+    
         this.state = {
             authState: props.authState,
             authData: props.authData
@@ -45,92 +41,9 @@ export default class Greetings extends AuthPiece {
         this._isMounted = false;
     }
 
-    signOut() {
-        let payload = {};
-        try {
-            payload = JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY)) || {};
-            localStorage.removeItem(Constants.AUTH_SOURCE_KEY);
-        } catch (e) {
-            logger.debug(`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
-        }
-
-        logger.debug('sign out from the source', payload);
-        switch (payload.provider) {
-            case Constants.GOOGLE:
-                this.googleSignOut();
-                break;
-            case Constants.FACEBOOK:
-                this.facebookSignOut();
-                break;
-            case Constants.AUTH0:
-                this.auth0SignOut(payload);
-                break;
-            default:
-                break;
-        }
-        if (!Auth || typeof Auth.signOut !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        Auth.signOut()
-            .then(() => this.changeState('signedOut'))
-            .catch(err => { logger.error(err); this.error(err); });
-    }
-
-    googleSignOut() {
-        const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
-        if (!authInstance) {
-            return Promise.resolve();
-        }
-
-        authInstance.then((googleAuth) => {
-            if (!googleAuth) {
-                logger.debug('google Auth undefined');
-                return Promise.resolve();
-            }
-
-            logger.debug('google signing out');
-            return googleAuth.signOut();
-        });
-    }
-
-    facebookSignOut() {
-        const fb = window.FB;
-        if (!fb) {
-            logger.debug('FB sdk undefined');
-            return Promise.resolve();
-        }
-
-        fb.getLoginStatus(response => {
-            if (response.status === 'connected') {
-                return new Promise((res, rej) => {
-                    logger.debug('facebook signing out');
-                    fb.logout(response => {
-                        res(response);
-                    });
-                });
-            } else {
-                return Promise.resolve();
-            }
-        });
-    }
-
-    auth0SignOut(payload) {
-        const auth0 = window.auth0;
-        const { returnTo, clientId, federated } = payload.opts || {};
-        if (!auth0) {
-            logger.debug('auth0 sdk undefined');
-            return Promise.resolve();
-        }
-
-        auth0.logout({
-            returnTo,
-            clientId,
-            federated
-        });
-    }
-
     inGreeting(name) { return 'Hello ' + name; }
     outGreeting() { return ''; }
+
 
     userGreetings(theme) {
         const user = this.state.authData;
@@ -144,18 +57,34 @@ export default class Greetings extends AuthPiece {
 
         const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
+        const { federated } = this.props;
+
         return (
             <span>
                 <NavItem theme={theme}>{message}</NavItem>
-                <NavButton
-                    theme={theme}
-                    onClick={this.signOut}
-                >
-                    {I18n.get('Sign Out')}
-                </NavButton>
-
+                {this.renderSignOutButton(theme)}
             </span>
         )
+    }
+
+    renderSignOutButton() {
+        const { federated={} } = this.props;
+        const { google_client_id, facebook_app_id, amazon_client_id } = federated;
+        const config = Auth.configure();
+        const googleClientId = google_client_id || config.googleClientId;
+        const facebookAppId = facebook_app_id || config.facebookClientId;
+        const amazonClientId = amazon_client_id || config.amazonClientId;
+
+        if (googleClientId) SignOut = withGoogle(SignOut);
+        if (facebookAppId) SignOut = withFacebook(SignOut);
+        if (amazonClientId) SignOut = withAmazon(SignOut);
+
+        return <SignOut 
+            {...this.props} 
+            google_client_id={google_client_id} 
+            facebook_app_id={facebook_app_id} 
+            amazon_client_id={amazon_client_id}
+            />;
     }
 
     noUserGreetings(theme) {
