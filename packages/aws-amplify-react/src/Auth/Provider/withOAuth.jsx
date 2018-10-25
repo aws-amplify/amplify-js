@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -43,9 +44,9 @@ export default function withOAuth(Comp, options) {
         render() {
             return (
                 <Comp {...this.props} OAuthSignIn={this.signIn} />
-            )
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -59,6 +60,6 @@ const Button = (props) => (
             {I18n.get(props.label || 'Sign in with AWS')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const OAuthButton = withOAuth(Button);

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -97,9 +98,9 @@ export default function withAmazon(Comp) {
             const amz = window.amazon;
             return (
                 <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} />
-            )
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -116,6 +117,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Amazon')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const AmazonButton = withAmazon(Button);

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -28,7 +29,7 @@ export class FederatedButtons extends Component {
                 google_client_id={google_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
     }
 
     facebook(facebook_app_id) {
@@ -39,7 +40,7 @@ export class FederatedButtons extends Component {
                 facebook_app_id={facebook_app_id}
                 theme={theme}
                 onStateChange={onStateChange}
-                />
+                />;
     }
 
     amazon(amazon_client_id) {
@@ -50,7 +51,7 @@ export class FederatedButtons extends Component {
                 amazon_client_id={amazon_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
     }
 
     OAuth(oauth_config) {
@@ -60,7 +61,7 @@ export class FederatedButtons extends Component {
                 label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
     }
 
     render() {
@@ -98,14 +99,14 @@ export class FederatedButtons extends Component {
                 </div>
                 <Strike>{I18n.get('or')}</Strike>
             </div>
-        )
+        );
     }
 }
 
 export default class FederatedSignIn extends Component {
     render() {
         const { authState, onStateChange } = this.props;
-        let federated = this.props.federated || {};
+        const federated = this.props.federated || {};
         if (!Auth || typeof Auth.configure !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -134,6 +135,6 @@ export default class FederatedSignIn extends Component {
                     />
                 </SectionBody>
             </FormSection>
-        )
+        );
     }
 }

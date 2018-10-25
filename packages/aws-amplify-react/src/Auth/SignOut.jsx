@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -34,7 +34,7 @@ export default class SignOut extends AuthPiece {
         this.state = {
             authState: props.authState,
             authData: props.authData
-        }
+        };
 
         Hub.listen('auth', this);
     }
@@ -146,6 +146,6 @@ export default class SignOut extends AuthPiece {
                 onClick={this.signOut}
             >{I18n.get('Sign Out')}
             </NavButton>
-        )
+        );
     }
 }

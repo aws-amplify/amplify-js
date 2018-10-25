@@ -1,5 +1,5 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import API from '@aws-amplify/api';
 
 
@@ -104,7 +104,7 @@ export default class Connect extends Component {
     _unsubscribe() {
         if (this.subSubscription) {
             this.subSubscription.unsubscribe();
-        };
+        }
     }
 
     async componentDidMount() {
