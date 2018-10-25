@@ -33,6 +33,8 @@ const BUFFER_SIZE = 1000;
 const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
+const REQUEST_SUCCESS = 0;
+const REQUEST_AUTH_FAIL = 403;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
 export default class AWSPinpointProvider implements AnalyticsProvider {
@@ -103,26 +105,32 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const cacheKey = this.getProviderName() + '_' + appId;
         config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
-        let success = true;
+        let requestStatus = REQUEST_SUCCESS;
         switch (event.name) {
             case '_session_start':
-                success = await this._startSession(params);
+                requestStatus = await this._startSession(params);
                 break;
             case '_session_stop':
-                success = await this._stopSession(params);
+                requestStatus = await this._stopSession(params);
                 break;
             case '_update_endpoint':
-                success = await this._updateEndpoint(params);
+                requestStatus = await this._updateEndpoint(params);
                 break;
             default:
-                success = await this._recordCustomEvent(params);
+                requestStatus = await this._recordCustomEvent(params);
                 break;
         }
         
-        if (!success) {
+        if (requestStatus === REQUEST_SUCCESS) {
             params.resendLimits = typeof params.resendLimits === 'number' ? 
                 params.resendLimits : resendLimit;
             if (params.resendLimits > 0) {
+                if(requestStatus) {
+                    logger.debug(
+                    `refreshing credentials for failed event ${params.eventName}`);
+                    const credentials = await this._getCredentials();
+                    Object.assign(params, { credentials });
+                }
                 logger.debug(
                     `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
                 params.resendLimits -= 1;
@@ -285,17 +293,18 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
             request.send((err, data) => {
                 if (err) {
+                    let { statusCode } = err;
                     logger.debug('record event failed. ', err);
                     logger.error(
                         'Please ensure you have updated you Pinpoint IAM Policy' +
                         'with the Action: \"mobiletargeting:PutEvents\" in order to' +
                         'continue using AWS Pinpoint Service'
                     );
-                    res(false);
+                    res(statusCode);
                 }
                 else {
                     logger.debug('record event success. ', data);
-                    res(true);
+                    res(REQUEST_SUCCESS);
                 }
             });
         });
@@ -343,7 +352,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return this._pinpointPutEvents(eventParams);
     }
 
-    private async _updateEndpoint(params) : Promise<boolean> {
+    private async _updateEndpoint(params) : Promise<number> {
         // credentials updated
         const { timestamp, config, credentials, event } = params;
         const { appId, region, endpointId } = config;
@@ -359,14 +368,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         const that = this;
         logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise<boolean>((res, rej) => {
+        return new Promise<number>((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
+                    let { statusCode } = err;
                     logger.debug('updateEndpoint failed', err);
-                    res(false);
+                    res(statusCode);
                 } else {
                     logger.debug('updateEndpoint success', data);
-                    res(true);
+                    res(REQUEST_SUCCESS);
                 }
             });
         });
