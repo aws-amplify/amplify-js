@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.2"></a>
+## [2.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.1...aws-amplify-react@2.1.2-unstable.2) (2018-10-25)
+
+
+### Features
+
+* **aws-amplify-react:** federated sign out methods refactor ([9edbd6e](https://github.com/aws/aws-amplify/commit/9edbd6e))
+
+
+
+
 <a name="2.1.2-unstable.1"></a>
 ## [2.1.2-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.0...aws-amplify-react@2.1.2-unstable.1) (2018-10-25)
 
