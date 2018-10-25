@@ -15,26 +15,26 @@
   <div v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField" 
-          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')" 
-          :signUpField="signUpField" 
+      <div v-bind:class="amplifyUI.formField"
+          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')"
+          :signUpField="signUpField"
           v-bind:key="signUpField.key"
         >
         <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
-        <input 
-            v-if="signUpField.key !== 'phone_number'" 
-            :type = "signUpField.type" 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
-            v-model="signUpField.value" 
+        <input
+            v-if="signUpField.key !== 'phone_number'"
+            :type = "signUpField.type"
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
+            v-model="signUpField.value"
             :placeholder="signUpField.label"
-            v-on:change="clear(signUpField)" 
+            v-on:change="clear(signUpField)"
           />
         <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
           <select v-model="country">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
-          <input 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
+          <input
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
             v-model="signUpField.value"
             type="number"
             :placeholder="signUpField.label"
@@ -115,48 +115,64 @@ export default {
         ]
       }
 
-      if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        defaults.signUpFields.forEach((f, i) => {
-          const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
-            return d.key === f.key;
-          });
+      let signUpFields = this.signUpConfig && this.signUpConfig.signUpFields
+
+      if (signUpFields && (!Array.isArray(signUpFields) || signUpFields.length === 0)) {
+        delete this.signUpConfig.signUpFields;
+      } else if ((signUpFields && signUpFields.length)){
+
+        // Keep an array of all the explicitly declared field orders
+        const declaredDisplayOrders = signUpFields.map(field => field.displayOrder).filter( val => val)
+
+        // Keep an array of all assigned field orders, including the explicitly declared ones
+        const displayOrders = [].concat([], declaredDisplayOrders)
+
+        defaults.signUpFields.forEach((defaultField, index) => {
+
+          const matchKey = signUpFields.findIndex(customField => customField.key === defaultField.key);
+
+          // Ensure that a field received through props, with a displayOrder equal to the displayOrder of a default field, is given order precedence
+          while (displayOrders.includes(defaultField.displayOrder)){
+            defaultField.displayOrder ++
+          }
+
+          // If there was no match, push the default field into the props signUpFields array
           if (matchKey === -1) {
-            this.signUpConfig.signUpFields.push(f);
+            displayOrders.push(defaultField.displayOrder)
+            signUpFields.push(defaultField);
+          } else {
+            // Otherwise use the field received from the props, merged with the default equivalent
+            signUpFields[matchKey] = Object.assign(defaultField, signUpFields[matchKey])
           }
         });
-        let counter = this.signUpConfig.signUpFields.filter((f) => {
-          return f.displayOrder;
-        }).length;
 
-        const unOrdered = this.signUpConfig.signUpFields.filter((f) => {
-          return !f.displayOrder;
-        }).sort((a, b) => {
-          if (a.key < b.key) {
-            return -1;
-          }
-          return 1
-        }).forEach((m) => {
-          counter++;
-          m.displayOrder = counter;
-          let index = this.signUpConfig.signUpFields.findIndex(y => y.key === m.key);
-          this.signUpConfig.signUpFields[index] = m;
-        })
-      } else if (this.signUpConfig &&
-          this.signUpConfig.signUpFields &&
-          (!Array.isArray(this.signUpConfig.signUpFields) || this.signUpConfig.signUpFields.length === 0)
-        ) {
-        delete this.signUpConfig.signUpFields;
+        // get rid of the fields that have been given a negative display order
+        this.signUpConfig.signUpFields = signUpFields.filter(field => !field.displayOrder || field.displayOrder >= 0)
+
+        // Get the number of signUpFields that have a display order
+        let numOfOrderedFields = this.signUpConfig.signUpFields.filter((f) => f.displayOrder).length;
+
+        // Get the fields that don't have a display order...
+        this.signUpConfig.signUpFields.filter((f) => !f.displayOrder)
+
+        // ...and order them by key instead...
+        .sort((a, b) => a.key < b.key ? -1 : 1)
+
+        // ...and then give them an explicit display order, beginning from the last explicitly ordered field
+        .forEach((m) => m.displayOrder = ++numOfOrderedFields)
+
       }
 
       return Object.assign(defaults, this.signUpConfig || {})
     }
+
   },
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
   watch: {
-    /* 
-    this operation is in place to avoid making country.value the select box 
+    /*
+    this operation is in place to avoid making country.value the select box
     bound key, which results in a duplicate key error in console
     */
     country: function() {
@@ -218,7 +234,7 @@ export default {
     },
     setError: function(e) {
       this.error = e.message || e;
-      this.logger.error(this.error) 
+      this.logger.error(this.error)
     },
   }
 }

@@ -187,6 +187,14 @@ describe('SignUp', () => {
         type: 'string',
       },
     ];
+
+    const omitFields = [
+      {
+        key: 'phone_number',
+        displayOrder: -1
+      }
+    ]
+
     beforeEach(() => {
       header = 'TestHeader';
       wrapper = shallowMount(SignUp, {
@@ -222,5 +230,37 @@ describe('SignUp', () => {
       const email = wrapper.vm.options.signUpFields.find(x => x.key === 'email');
       expect(email.label).toEqual('Test Email');
     });
+  });
+
+  describe('...when signUpFields are omitted...', () => {
+
+    const signUpFields = [
+      {
+        key: 'phone_number',
+        displayOrder: -1
+      }
+    ]
+
+    beforeEach(() => {
+      wrapper = shallowMount(SignUp, {
+        methods: {
+          signUp: mockSignUp
+        },
+        propsData: {
+          signUpConfig: {
+            signUpFields,
+          },
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockSignUp.mockReset();
+    });
+
+    it('...should omit the signUpFields given a displayOrder of -1', () => {
+      expect(wrapper.vm.options.signUpFields.length).toEqual(3);
+    });
+
   });
 });
