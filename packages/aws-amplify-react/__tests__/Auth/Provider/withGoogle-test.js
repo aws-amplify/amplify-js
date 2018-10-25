@@ -419,6 +419,51 @@ describe('withGoogle test', () => {
             await comp.refreshGoogleToken();
         });
     });
+
+    describe('google signOut test', () => {
+        test('happy case', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+            window.gapi = {
+                auth2: {
+                    getAuthInstance() {
+                        return Promise.resolve({
+                            signOut: mockFn
+                        })
+                    }
+                }
+            };
+
+            const Comp = withGoogle(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            await comp.signOut();
+
+            expect(mockFn).toBeCalled();
+        });
+
+        test('no auth2', async () => {
+            window.gapi = null;
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+            const Comp = withGoogle(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+
+            expect(await comp.signOut()).toBeUndefined();
+        });
+    });
+
 });
 
 describe('GoogleButton test', () => {

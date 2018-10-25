@@ -300,6 +300,58 @@ describe('withFacebook test', () => {
             expect(mockFn2).toBeCalled();
         });
     });
+
+    describe('facebook signout test', () => {
+        test('happy case', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback({
+                        status: 'connected'
+                    });
+                },
+                logout: mockFn
+            };
+
+            const Comp = withFacebook(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            await comp.signOut();
+            expect(mockFn).toBeCalled();
+        });
+
+        test('not connected', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+            const mockFn = jest.fn();
+
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback({
+                        status: 'not connected'
+                    });
+                },
+                logout: mockFn
+            };
+            const Comp = withFacebook(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+            
+            await comp.signOut();
+            expect(mockFn).not.toBeCalled();
+        });
+    });
 });
 
 describe('FacebookButton test', () => {
@@ -312,4 +364,3 @@ describe('FacebookButton test', () => {
         });
     });
 });
-
