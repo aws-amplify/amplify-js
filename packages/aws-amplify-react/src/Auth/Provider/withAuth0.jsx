@@ -126,7 +126,7 @@ export default function withAuth0(Comp, options) {
         async signIn() {
             if (this._auth0) this._auth0.authorize();
             else {
-                return new Error('the auth0 client is not configured');
+                throw new Error('the auth0 client is not configured');
             }
         }
 
