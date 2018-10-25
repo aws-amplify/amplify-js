@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.1"></a>
+## [2.1.2-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.0...aws-amplify-react@2.1.2-unstable.1) (2018-10-25)
+
+
+### Bug Fixes
+
+* **aws-amplify-react aws-amplify-react-native:** Connect component ([#1868](https://github.com/aws/aws-amplify/issues/1868)) ([8dd6b55](https://github.com/aws/aws-amplify/commit/8dd6b55))
+
+
+
+
 <a name="2.1.2-unstable.0"></a>
 ## [2.1.2-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.1...aws-amplify-react@2.1.2-unstable.0) (2018-10-23)
 
