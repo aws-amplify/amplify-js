@@ -279,6 +279,50 @@ describe('withAmazon test', () => {
             expect(mockFn).toBeCalledWith('amazon_client_id');
         });
     });
+
+    describe('amazon signOut', () => {
+        test('happy case', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+        
+            window.amazon = {
+                Login: {
+                    logout: mockFn
+                }
+            };
+            
+            const Comp = withAmazon(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signOut();
+            expect(mockFn).toBeCalled();
+        });
+
+        test('return if no amazon sdk', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+        
+            window.amazon = undefined;
+            
+            const Comp = withAmazon(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signOut();
+            expect(mockFn).not.toBeCalled();
+        });
+    });
 });
 
 describe('AmazonButton test', () => {
