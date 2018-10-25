@@ -3,6 +3,6 @@ const constants = {
     AUTH0: 'auth0',
     GOOGLE: 'google',
     FACEBOOK: 'facebook',
-    Amazon: 'amazon'
+    AMAZON: 'amazon'
 };
  export default constants; 

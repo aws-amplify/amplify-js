@@ -44,7 +44,7 @@ export default class SignOut extends AuthPiece {
             logger.debug(`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
         }
         logger.debug('sign out from the source', payload);
-        const { googleSignOut, facebookSignOut } = this.props;
+        const { googleSignOut, facebookSignOut, amazonSignOut } = this.props;
         switch (payload.provider) {
             case Constants.GOOGLE:
                 if (googleSignOut) googleSignOut();
@@ -53,6 +53,10 @@ export default class SignOut extends AuthPiece {
             case Constants.FACEBOOK:
                 if (facebookSignOut) facebookSignOut();
                 else logger.debug('No facebook signout method provided');
+                break;
+            case Constants.AMAZON:
+                if (amazonSignOut) amazonSignOut();
+                else logger.debug('No amazon signout method provided');
                 break;
             default:
                 break;

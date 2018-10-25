@@ -69,16 +69,22 @@ export default class Greetings extends AuthPiece {
 
     renderSignOutButton() {
         const { federated={} } = this.props;
+        const { google_client_id, facebook_app_id, amazon_client_id } = federated;
         const config = Auth.configure();
-        const googleClientId = federated.google_client_id || config.googleClientId;
-        const facebookAppId = federated.facebook_app_id || config.facebookClientId;
-        const amazonClientId = federated.amazon_client_id || config.amazonClientId;
+        const googleClientId = google_client_id || config.googleClientId;
+        const facebookAppId = facebook_app_id || config.facebookClientId;
+        const amazonClientId = amazon_client_id || config.amazonClientId;
 
         if (googleClientId) SignOut = withGoogle(SignOut);
         if (facebookAppId) SignOut = withFacebook(SignOut);
         if (amazonClientId) SignOut = withAmazon(SignOut);
 
-        return <SignOut {...this.props}/>;
+        return <SignOut 
+            {...this.props} 
+            google_client_id={google_client_id} 
+            facebook_app_id={facebook_app_id} 
+            amazon_client_id={amazon_client_id}
+            />;
     }
 
     noUserGreetings(theme) {
