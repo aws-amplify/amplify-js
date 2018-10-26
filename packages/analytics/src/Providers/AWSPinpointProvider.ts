@@ -371,7 +371,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return new Promise<number>((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
-                    let { statusCode } = err;
+                    const { statusCode } = err;
                     logger.debug('updateEndpoint failed', err);
                     res(statusCode);
                 } else {
