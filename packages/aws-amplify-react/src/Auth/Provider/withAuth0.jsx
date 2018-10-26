@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
- import React, { Component } from 'react';
+ import * as React from 'react';
+ import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -36,6 +37,7 @@ export default function withAuth0(Comp, options) {
 
             this.initialize = this.initialize.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
         }
 
         componentDidMount() {
@@ -130,8 +132,22 @@ export default function withAuth0(Comp, options) {
             }
         }
 
+        signOut(opts={}) {
+            const auth0 = window.auth0_client;
+            const { returnTo, clientID, federated } = opts;
+            if (!auth0) {
+                logger.debug('auth0 sdk undefined');
+                return Promise.resolve();
+            }
+            auth0.logout({
+                returnTo,
+                clientID,
+                federated
+            });
+        }
+
         render() {
-            return <Comp {...this.props} auth0={this._auth0} auth0SignIn={this.signIn} />;
+            return <Comp {...this.props} auth0={this._auth0} auth0SignIn={this.signIn} auth0SignOut={this.signOut}/>;
         }
     };
 }
