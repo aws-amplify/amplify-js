@@ -10,7 +10,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-
+import Constants from '../common/constants';
 
 const logger = new Logger('withGoogle');
 
@@ -21,6 +21,7 @@ export default function withGoogle(Comp) {
 
             this.initGapi = this.initGapi.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -30,7 +31,17 @@ export default function withGoogle(Comp) {
             const ga = window.gapi.auth2.getAuthInstance();
             const { onError } = this.props;
             ga.signIn().then(
-                googleUser => this.federatedSignIn(googleUser),
+                googleUser => {
+                    this.federatedSignIn(googleUser);
+                    const payload = {
+                        provider: Constants.GOOGLE
+                    }
+                     try {
+                        localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                    } catch (e) {
+                        logger.debug('Failed to cache auth source into localStorage', e);
+                    }
+                },
                 error => {
                     if (onError) onError(error);
                     else throw error;
@@ -66,9 +77,26 @@ export default function withGoogle(Comp) {
             }
         }
 
+        signOut() {
+            const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
+            if (!authInstance) {
+                return Promise.resolve();
+            }
+
+            authInstance.then((googleAuth) => {
+                if (!googleAuth) {
+                    logger.debug('google Auth undefined');
+                    return Promise.resolve();
+                }
+
+                logger.debug('google signing out');
+                return googleAuth.signOut();
+            });
+        }
+
         componentDidMount() {
             const { google_client_id } = this.props;
-            if (google_client_id) this.createScript();
+            if (google_client_id && !window.gapi) this.createScript();
         }
 
         createScript() {
@@ -98,7 +126,7 @@ export default function withGoogle(Comp) {
                 window.gapi && window.gapi.auth2
                     ? window.gapi.auth2.getAuthInstance()
                     : null;
-            return <Comp {...this.props} ga={ga} googleSignIn={this.signIn} />;
+            return <Comp {...this.props} ga={ga} googleSignIn={this.signIn} googleSignOut={this.signOut} />;
         }
     };
 }

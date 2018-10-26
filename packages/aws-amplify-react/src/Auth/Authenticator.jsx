@@ -126,7 +126,7 @@ export default class Authenticator extends Component {
         const props_children = this.props.children || [];
 
         const default_children = [
-            <Greetings/>,
+            <Greetings federated={federated}/>,
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
