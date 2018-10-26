@@ -62,6 +62,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             <Greetings
                                 authState={authState}
                                 authData={authData}
+                                federated={federated || this.props.federated}
                                 onStateChange={this.handleAuthStateChange}
                             />
                             : null
