@@ -293,7 +293,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
             request.send((err, data) => {
                 if (err) {
-                    let { statusCode } = err;
+                    const { statusCode } = err;
                     logger.debug('record event failed. ', err);
                     logger.error(
                         'Please ensure you have updated you Pinpoint IAM Policy' +
