@@ -33,7 +33,6 @@ const BUFFER_SIZE = 1000;
 const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
-const REQUEST_SUCCESS = 0;
 const REQUEST_AUTH_FAIL = 403;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
@@ -50,6 +49,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private _clientInfo;
 
     private _timer;
+    private _requestStatus;
 
     constructor(config?) {
         this._buffer = [];
@@ -105,29 +105,28 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const cacheKey = this.getProviderName() + '_' + appId;
         config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
-        let requestStatus = REQUEST_SUCCESS;
+        let success = true;
         switch (event.name) {
             case '_session_start':
-                requestStatus = await this._startSession(params);
+                success = await this._startSession(params);
                 break;
             case '_session_stop':
-                requestStatus = await this._stopSession(params);
+                success = await this._stopSession(params);
                 break;
             case '_update_endpoint':
-                requestStatus = await this._updateEndpoint(params);
+                success = await this._updateEndpoint(params);
                 break;
             default:
-                requestStatus = await this._recordCustomEvent(params);
+                success = await this._recordCustomEvent(params);
                 break;
         }
         
-        if (requestStatus === REQUEST_SUCCESS) {
+        if (!success) {
             params.resendLimits = typeof params.resendLimits === 'number' ? 
                 params.resendLimits : resendLimit;
             if (params.resendLimits > 0) {
-                if(requestStatus) {
-                    logger.debug(
-                    `refreshing credentials for failed event ${params.eventName}`);
+                if(this._requestStatus === REQUEST_AUTH_FAIL) {
+                    logger.debug(`refreshing credentials for failed event ${params.eventName}`);
                     const credentials = await this._getCredentials();
                     Object.assign(params, { credentials });
                 }
@@ -294,17 +293,18 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             request.send((err, data) => {
                 if (err) {
                     const { statusCode } = err;
+                    this._requestStatus = statusCode;
                     logger.debug('record event failed. ', err);
                     logger.error(
                         'Please ensure you have updated you Pinpoint IAM Policy' +
                         'with the Action: \"mobiletargeting:PutEvents\" in order to' +
                         'continue using AWS Pinpoint Service'
                     );
-                    res(statusCode);
+                    res(false);
                 }
                 else {
                     logger.debug('record event success. ', data);
-                    res(REQUEST_SUCCESS);
+                    res(true);
                 }
             });
         });
@@ -352,7 +352,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return this._pinpointPutEvents(eventParams);
     }
 
-    private async _updateEndpoint(params) : Promise<number> {
+    private async _updateEndpoint(params) : Promise<boolean> {
         // credentials updated
         const { timestamp, config, credentials, event } = params;
         const { appId, region, endpointId } = config;
@@ -368,15 +368,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         const that = this;
         logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise<number>((res, rej) => {
+        return new Promise<boolean>((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
-                    const { statusCode } = err;
                     logger.debug('updateEndpoint failed', err);
-                    res(statusCode);
+                    res(false);
                 } else {
                     logger.debug('updateEndpoint success', data);
-                    res(REQUEST_SUCCESS);
+                    res(true);
                 }
             });
         });
