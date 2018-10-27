@@ -11,7 +11,7 @@ describe('withFederated test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const Comp = withFederated(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();

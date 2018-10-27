@@ -10,6 +10,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 const logger = new Logger('withAmazon');
 
@@ -20,6 +21,7 @@ export default function withAmazon(Comp) {
 
             this.initAmazon = this.initAmazon.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -32,6 +34,15 @@ export default function withAmazon(Comp) {
                 if (response.error) {
                     logger.debug('Failed to login with amazon: ' + response.error);
                     return;
+                }
+
+                const payload = {
+                    provider: Constants.AMAZON
+                }
+                try {
+                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                } catch (e) {
+                    logger.debug('Failed to cache auth source into localStorage', e);
                 }
                 
                 this.federatedSignIn(response);
@@ -74,9 +85,20 @@ export default function withAmazon(Comp) {
             });
         }
 
+        signOut() {
+            const amz = window.amazon;
+            if (!amz) {
+                logger.debug('Amazon Login sdk undefined');
+                return Promise.resolve();
+            }
+
+            logger.debug('Amazon signing out');
+            amz.Login.logout();
+        }
+
         componentDidMount() {
             const { amazon_client_id } = this.props;
-            if (amazon_client_id) this.createScript();
+            if (amazon_client_id && !window.amazon) this.createScript();
         }
 
         createScript() {
@@ -97,10 +119,10 @@ export default function withAmazon(Comp) {
         render() {
             const amz = window.amazon;
             return (
-                <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} />
-            )
+                <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} amazonSignOut={this.signOut} />
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -117,6 +139,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Amazon')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const AmazonButton = withAmazon(Button);

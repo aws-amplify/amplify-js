@@ -10,7 +10,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-
+import Constants from '../common/constants';
 
 const logger = new Logger('withFacebook');
 
@@ -22,6 +22,7 @@ export default function withFacebook(Comp) {
             this.fbAsyncInit = this.fbAsyncInit.bind(this);
             this.initFB = this.initFB.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -31,6 +32,15 @@ export default function withFacebook(Comp) {
             const fb = window.FB;
 
             fb.getLoginStatus(response => {
+                const payload = {
+                    provider: Constants.FACEBOOK
+                }
+                try {
+                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                } catch (e) {
+                    logger.debug('Failed to cache auth source into localStorage', e);
+                }
+
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
@@ -59,7 +69,7 @@ export default function withFacebook(Comp) {
             fb.api('/me', response => {
                 let user = {
                     name: response.name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {
@@ -77,9 +87,30 @@ export default function withFacebook(Comp) {
             });
         }
 
+        signOut() {
+            const fb = window.FB;
+            if (!fb) {
+                logger.debug('FB sdk undefined');
+                return Promise.resolve();
+            }
+
+            fb.getLoginStatus(response => {
+                if (response.status === 'connected') {
+                    return new Promise((res, rej) => {
+                        logger.debug('facebook signing out');
+                        fb.logout(response => {
+                            res(response);
+                        });
+                    });
+                } else {
+                    return Promise.resolve();
+                }
+            });
+        }
+
         componentDidMount() {
             const { facebook_app_id } = this.props;
-            if (facebook_app_id) this.createScript();
+            if (facebook_app_id && !window.FB) this.createScript();
         }
 
         fbAsyncInit() {
@@ -115,10 +146,10 @@ export default function withFacebook(Comp) {
         render() {
             const fb = window.FB;
             return (
-                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
-            )
+                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} facebookSignOut={this.signOut}/>
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -135,6 +166,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Facebook')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const FacebookButton = withFacebook(Button);

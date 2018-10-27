@@ -44,7 +44,7 @@ describe('Picker test', () => {
                         type: 'type'
                     }]
                 }
-            }
+            };
             picker.handleInput(event);
             
             expect(onPickFn).toBeCalledWith({"file": {"name": "name", "size": "size", "type": "type"}, 
@@ -65,7 +65,7 @@ describe('Picker test', () => {
                         type: 'type'
                     }]
                 }
-            }
+            };
             picker.handleInput(event);
         });
     });

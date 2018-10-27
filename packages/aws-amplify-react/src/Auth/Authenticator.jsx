@@ -51,7 +51,7 @@ export default class Authenticator extends Component {
             Amplify.configure(config);
         }
         this._isMounted = true;
-        this.checkUser()
+        this.checkUser();
     }
 
     componentWillUnmount() {
@@ -126,7 +126,7 @@ export default class Authenticator extends Component {
         const props_children = this.props.children || [];
 
         const default_children = [
-            <Greetings/>,
+            <Greetings federated={federated}/>,
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
@@ -142,26 +142,26 @@ export default class Authenticator extends Component {
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
+                    theme,
+                    messageMap,
                     authState: auth,
-                    authData: authData,
+                    authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide
+                    hide
                 });
         });
        
         const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
+                    theme,
+                    messageMap,
                     authState: auth,
-                    authData: authData,
+                    authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide
+                    hide
                 });
             });
 
@@ -177,6 +177,6 @@ export default class Authenticator extends Component {
                 }
                 {render_children}
             </Container>
-        )
+        );
     }
 }
