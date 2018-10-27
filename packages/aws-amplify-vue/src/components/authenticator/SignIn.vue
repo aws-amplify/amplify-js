@@ -32,7 +32,7 @@
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
         <button v-bind:class="amplifyUI.button" v-on:click="signIn">Sign In</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent" v-if="signInConfig.isSignUpDisplayed">
+      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent" v-if="options.isSignUpDisplayed">
         No Account?
         <a v-bind:class="amplifyUI.a" v-on:click="signUp">Sign Up</a>
       </span>
