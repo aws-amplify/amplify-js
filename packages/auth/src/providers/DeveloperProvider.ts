@@ -5,6 +5,8 @@ import BaseProvider from './BaseProvider';
 const logger = new Logger('DeveloperProvider');
 
 export default class DeveloperProvider extends BaseProvider implements AuthProvider {
+    static NAME = 'Developer';
+
     constructor(options?) {
         super(options);
         this._credentialsDomain = 'cognito-identity.amazonaws.com';
@@ -20,6 +22,6 @@ export default class DeveloperProvider extends BaseProvider implements AuthProvi
     }
 
     public getProviderName() {
-        return 'Developer';
+        return DeveloperProvider.NAME;
     }
 }

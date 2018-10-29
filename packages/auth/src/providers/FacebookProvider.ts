@@ -5,6 +5,8 @@ import BaseProvider from './BaseProvider';
 const logger = new Logger('FacebookProvider');
 
 export default class FacebookProvider extends BaseProvider implements AuthProvider {
+    static NAME = 'Facebook';
+
     constructor(options?) {
         super(options);
         this._credentialsDomain = 'graph.facebook.com';
@@ -14,10 +16,6 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
         super.configure(options);
         const { refreshHandlers = {}, facebookClientId } = this._config;
 
-        FacebookOAuth.configure({
-            facebookClientId
-        });
-
         this._refreshHandler = 
             refreshHandlers['facebook'] || 
             refreshHandlers[this.getProviderName()] || 
@@ -25,7 +23,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
     }
 
     public getProviderName() {
-        return 'Facebook';
+        return FacebookProvider.NAME;
     } 
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {

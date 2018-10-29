@@ -378,7 +378,7 @@ export default class AuthClass {
         const that = this;
         return {
             onSuccess: async (session) => {
-                this._addSessionSource('AWSCognito');
+                this._addSessionSource(AWSCognitoProvider.NAME);
                 logger.debug(session);
                 delete(user['challengeName']);
                 delete(user['challengeParam']);
@@ -494,7 +494,7 @@ export default class AuthClass {
                 code, {
                     onSuccess: async (session) => {
                         logger.debug(session);
-                        this._addSessionSource('AWSCognito');
+                        this._addSessionSource(AWSCognitoProvider.NAME);
                         try {
                             await Credentials.clear();
                             const cred = await Credentials.set(session, 'session');
@@ -806,7 +806,7 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: async (session) => {
-                    this._addSessionSource('AWSCognito');
+                    this._addSessionSource(AWSCognitoProvider.NAME);
                     logger.debug(session);
                     try {
                         await Credentials.clear();
@@ -1124,7 +1124,7 @@ export default class AuthClass {
 
         await this._storageSync;
         const sessionSource = this._getSessionSource();
-        if (!sessionSource || sessionSource === 'AWSCognito') {
+        if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             logger.debug('get current authenticated userpool user');
             let user = null;
             try {
@@ -1156,7 +1156,7 @@ export default class AuthClass {
         return new Promise((res, rej) => {
             this._storageSync.then(() => {
                 const sessionSource = this._getSessionSource();
-                if (!sessionSource || sessionSource === 'AWSCognito') {
+                if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
                     if (!this.userPool) { 
                         return rej('No userPool'); 
                     }
@@ -1218,7 +1218,7 @@ export default class AuthClass {
         logger.debug('Getting current user credentials');
         
         const sessionSource = this._getSessionSource();
-        if (!sessionSource || sessionSource === 'AWSCognito') {
+        if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             return this.currentSession()
                 .then(session => {
                     logger.debug('getting session success', session);
@@ -1257,7 +1257,7 @@ export default class AuthClass {
      */
     public async currentUserInfo() {
         const sessionSource = this._getSessionSource();
-         if (!sessionSource || sessionSource === 'AWSCognito') {
+         if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             const user = await this.currentUserPoolUser()
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
@@ -1341,7 +1341,7 @@ export default class AuthClass {
         await this._storageSync;
         const sessionSource = this._getSessionSource();
         this._removeSessionSource();
-        if (!sessionSource || sessionSource === 'AWSCognito') {
+        if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             if (!this.userPool) {
                 throw('No userPool'); 
             }

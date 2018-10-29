@@ -5,6 +5,8 @@ import BaseProvider from './BaseProvider';
 const logger = new Logger('AmazonProvider');
 
 export default class AmazonProvider extends BaseProvider implements AuthProvider {
+    static NAME = 'Amazon';
+
     constructor(options?) {
         super(options);
         this._credentialsDomain = 'www.amazon.com';
@@ -20,6 +22,6 @@ export default class AmazonProvider extends BaseProvider implements AuthProvider
     }
 
     public getProviderName() {
-        return 'Amazon';
+        return AmazonProvider.NAME;
     }
 }

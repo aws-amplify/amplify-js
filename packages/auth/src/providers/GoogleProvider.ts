@@ -5,6 +5,8 @@ import BaseProvider from './BaseProvider';
 const logger = new Logger('GoogleProvider');
 
 export default class GoogleProvider extends BaseProvider implements AuthProvider {
+    static NAME = 'Google';
+
     constructor(options?) {
         super(options);
         this._credentialsDomain = 'accounts.google.com';
@@ -13,10 +15,6 @@ export default class GoogleProvider extends BaseProvider implements AuthProvider
     public configure(options) {
         super.configure(options);
         const { refreshHandlers = {}, googleClientId } = this._config;
-
-        GoogleOAuth.configure({
-            googleClientId
-        });
         
         this._refreshHandler = 
             refreshHandlers['google'] || 
@@ -25,6 +23,6 @@ export default class GoogleProvider extends BaseProvider implements AuthProvider
     }
 
     public getProviderName() {
-        return 'Google';
+        return GoogleProvider.NAME;
     } 
 }

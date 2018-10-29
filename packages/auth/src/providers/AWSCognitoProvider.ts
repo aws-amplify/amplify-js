@@ -11,6 +11,8 @@ export default class AWSCognitoProvider implements AuthProvider {
     private _userPool;
     private _keyPrefix;
 
+    static NAME = 'AWSCognito';
+
     constructor(options?) {
         this._config = {};
 
@@ -34,11 +36,11 @@ export default class AWSCognitoProvider implements AuthProvider {
     }
 
     public getProviderName() {
-        return 'AWSCognito';
+        return AWSCognitoProvider.NAME;
     }
 
     public getCategory() {
-        return 'Auth'
+        return 'Auth';
     }
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {

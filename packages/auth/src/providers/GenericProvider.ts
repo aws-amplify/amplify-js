@@ -5,6 +5,8 @@ import BaseProvider from './BaseProvider';
 const logger = new Logger('GenericProvider');
 
 export default class GenericProvider extends BaseProvider implements AuthProvider {
+    static NAME = 'Generic';
+
     constructor(options?) {
         super(options);
     }
@@ -19,6 +21,6 @@ export default class GenericProvider extends BaseProvider implements AuthProvide
     }
 
     public getProviderName() {
-        return 'Generic';
+        return GenericProvider.NAME;
     } 
 }
