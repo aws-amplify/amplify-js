@@ -127,7 +127,22 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const observersForTopic = this._topicObservers.get(topic) || new Set();
+            let observersForTopic = new Set();
+
+            this._topicObservers.forEach((observerForTopic, observerTopic) => {
+
+                // Observer topic use ending #
+                if (observerTopic.slice(-1) === '#') {
+                    // Construct subset of observer topic and topic
+                    const observerTopicSubset = observerTopic.slice(0, -1);
+                    const topicSubset = topic.slice(0, observerTopicSubset.length)
+
+                    // Topic match with subset, merge
+                    if (observerTopicSubset === topicSubset) {
+                        observerForTopic.forEach(i => observersForTopic.add(i));
+                    }
+                }
+            })
             const parsedMessage = JSON.parse(msg);
 
             if (typeof parsedMessage === 'object') {
