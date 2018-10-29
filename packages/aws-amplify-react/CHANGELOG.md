@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.4"></a>
+## [2.1.2-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.3...aws-amplify-react@2.1.2-unstable.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** pass the user name when signin error happens ([b857101](https://github.com/aws/aws-amplify/commit/b857101))
+
+
+
+
 <a name="2.1.2-unstable.3"></a>
 ## [2.1.2-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.2...aws-amplify-react@2.1.2-unstable.3) (2018-10-29)
 
