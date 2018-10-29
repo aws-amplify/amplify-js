@@ -1,1 +1,2 @@
-export { SumerianSceneComponent } from './sumerian-scene.component';
+export { SumerianSceneComponentCore } from './sumerian-scene.component.core';
+export { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic';

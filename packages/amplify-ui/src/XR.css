@@ -45,18 +45,11 @@
   fill: var(--white);
 }
 
-/* .loadingLogo > svg {
-  width: 100px;
-}
-
-.loadingIcon {
-  fill: var(--white);
-} */
-
 .loadingSceneName {
   color: var(--white);
   margin: 0 2px 20px 2px;
   font-size: 18px;
+  font-family: 'Amazon Ember';
 }
 
 .loadingBar {
@@ -123,8 +116,8 @@
 }
 
 .actionButton > svg {
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.8em;
+  height: 1.8em;
 }
 
 .actionIcon {
@@ -146,7 +139,7 @@
 .tooltip:after {
   background-color: var(--deepSquidInk);
   border-radius: 2px;
-  bottom: 44px;
+  bottom: 46px;
   color: var(--white);
   content: attr(data-text);
   text-decoration: none;
@@ -167,7 +160,7 @@
   border: solid;
   border-color: var(--deepSquidInk) transparent transparent transparent;
   border-width: 5px;
-  bottom: 34px;
+  bottom: 36px;
   content:"";
   left: 50%;
   -webkit-transform: translateX(-50%);
