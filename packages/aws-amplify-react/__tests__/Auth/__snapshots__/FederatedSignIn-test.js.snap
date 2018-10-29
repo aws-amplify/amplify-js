@@ -18,6 +18,7 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
   </div>
   <div />
   <div />
+  <div />
   <Component>
     or
   </Component>
@@ -31,6 +32,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
       google_client_id="google_client_id"
     />
   </div>
+  <div />
   <div />
   <div />
   <div />
@@ -48,6 +50,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
       facebook_app_id="facebook_app_id"
     />
   </div>
+  <div />
   <div />
   <div />
   <Component>

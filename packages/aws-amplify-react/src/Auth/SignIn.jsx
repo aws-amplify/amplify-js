@@ -115,7 +115,7 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide = [], federated, onStateChange } = this.props;
+        const { authState, hide = [], federated, onStateChange, onAuthEvent } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
         const hideSignUp = hide.some(component => component.name === 'SignUp')
         const hideForgotPassword = hide.some(component => component.name === 'ForgotPassword')
@@ -128,6 +128,7 @@ export default class SignIn extends AuthPiece {
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
+                        onAuthEvent={onAuthEvent}
                     />
                     <FormField theme={theme}>
                         <InputLabel>{I18n.get('Username')} *</InputLabel>
