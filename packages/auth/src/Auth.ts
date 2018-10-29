@@ -187,7 +187,7 @@ export default class AuthClass {
                 logger.debug('user already logged in');
             }).catch(e => {
                 logger.debug('not logged in, try to parse the url');
-                if (!window || !window.location) {
+                if (!JS.browserOrNode().isBrowser || !window.location) {
                     logger.debug('not in the browser');
                     return;
                 }
@@ -907,6 +907,9 @@ export default class AuthClass {
                         res(user);
                     });
                 });
+            }).catch(e => {
+                logger.debug('Failed to sync cache info into memory', e);
+                return rej(e);
             });
         });
     }

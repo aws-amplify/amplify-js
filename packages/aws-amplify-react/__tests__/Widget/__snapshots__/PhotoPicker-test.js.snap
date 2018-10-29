@@ -1,20 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PhotoPicker test render test render with previewSrc 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
+      "facebookSignInButton": Object {},
       "formContainer": Object {},
       "formField": Object {},
       "formRow": Object {},
       "formSection": Object {},
+      "googleSignInButton": Object {},
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -31,21 +35,25 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     }
   }
 >
-  <SectionHeader
+  <Component
     hint="Add you photos by clicking below"
     theme={
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -63,10 +71,10 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     }
   >
     Photos
-  </SectionHeader>
-  <SectionBody>
+  </Component>
+  <Component>
     The image has been selected
-  </SectionBody>
+  </Component>
   <Picker
     accept="image/*"
     onPick={[Function]}
@@ -74,15 +82,19 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -100,24 +112,28 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     }
     title="Select a Photo"
   />
-</FormSection>
+</Component>
 `;
 
 exports[`PhotoPicker test render test render without previewSrc 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
+      "facebookSignInButton": Object {},
       "formContainer": Object {},
       "formField": Object {},
       "formRow": Object {},
       "formSection": Object {},
+      "googleSignInButton": Object {},
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -134,21 +150,25 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
     }
   }
 >
-  <SectionHeader
+  <Component
     hint="Add you photos by clicking below"
     theme={
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -166,10 +186,10 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
     }
   >
     Photos
-  </SectionHeader>
-  <SectionBody>
-    <PhotoPlaceholder />
-  </SectionBody>
+  </Component>
+  <Component>
+    <Component />
+  </Component>
   <Picker
     accept="image/*"
     onPick={[Function]}
@@ -177,15 +197,19 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -203,5 +227,5 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
     }
     title="Select a Photo"
   />
-</FormSection>
+</Component>
 `;

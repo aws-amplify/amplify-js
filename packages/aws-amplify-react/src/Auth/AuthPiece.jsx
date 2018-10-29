@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';

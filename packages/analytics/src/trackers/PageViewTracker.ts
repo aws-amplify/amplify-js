@@ -13,13 +13,14 @@
 
 import { pageViewTrackOpts } from '../types';
 import MethodEmbed from '../utils/MethodEmbed';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
 const PREV_URL_KEY = 'aws-amplify-analytics-prevUrl';
 
 const getUrl = () => {
-    return window.location.origin + window.location.pathname;
+    if (!JS.browserOrNode().isBrowser) return '';
+    else return window.location.origin + window.location.pathname;
 };
 
 const defaultOpts: pageViewTrackOpts = {
@@ -72,7 +73,7 @@ export default class PageViewTracker {
     }
 
     private async _pageViewTrackDefault() {
-        if (!window || !window.addEventListener || !window.sessionStorage) {
+        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !window.sessionStorage) {
             logger.debug('not in the supported web enviroment');
             return;
         }
@@ -101,7 +102,7 @@ export default class PageViewTracker {
     }
 
     private async _trackFunc() {
-        if (!window || !window.addEventListener || !history.pushState || !window.sessionStorage) {
+        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !history.pushState || !window.sessionStorage) {
             logger.debug('not in the supported web enviroment');
             return;
         }
@@ -132,7 +133,7 @@ export default class PageViewTracker {
     
 
     private _pageViewTrackSPA() {
-        if (!window || !window.addEventListener || !history.pushState) {
+        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !history.pushState) {
             logger.debug('not in the supported web enviroment');
             return;
         }
