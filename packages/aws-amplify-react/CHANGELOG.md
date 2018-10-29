@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.5"></a>
+## [2.1.2-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.4...aws-amplify-react@2.1.2-unstable.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** show the link of create account when using customized signup component ([1b4de49](https://github.com/aws/aws-amplify/commit/1b4de49))
+
+
+
+
 <a name="2.1.2-unstable.4"></a>
 ## [2.1.2-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.3...aws-amplify-react@2.1.2-unstable.4) (2018-10-29)
 
