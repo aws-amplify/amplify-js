@@ -1155,16 +1155,8 @@ export default class AuthClass {
             logger.debug('no Congito User pool');
         }
         
-
-        try {
-            await Credentials.set(null, 'guest');
-        } catch (e) {
-            logger.debug('cannot load guest credentials for unauthenticated user', e);
-        } finally {
-            dispatchAuthEvent('signOut', this.user);
-            this.user = null;
-            return;
-        }
+        dispatchAuthEvent('signOut', this.user);
+        this.user = null;
     }
 
     private async cleanCachedItems() {
