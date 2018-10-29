@@ -56,10 +56,11 @@ export default class SignIn extends AuthPiece {
     }
 
     onKeyDown(e) {
-        if (this.props.authState === 'signIn' && !this.props.hide) {
-            if (e.keyCode === 13) { // when press enter
-                this.signIn();
-            }
+        if (e.keyCode !== 13) return;
+
+        const { hide = [] } = this.props;
+        if (this.props.authState === 'signIn' && !hide.includes(SignIn)) {
+            this.signIn();
         }
     }
 
@@ -104,7 +105,7 @@ export default class SignIn extends AuthPiece {
                 if (err.code === 'UserNotConfirmedException') {
                     logger.debug('the user is not confirmed');
                     this.changeState('confirmSignUp', { username });
-                } 
+                }
                 else if (err.code === 'PasswordResetRequiredException') {
                     logger.debug('the user requires a new password');
                     this.changeState('requireNewPassword', { username });
@@ -160,7 +161,7 @@ export default class SignIn extends AuthPiece {
                             </Hint>
                         }
                     </FormField>
-                    
+
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
