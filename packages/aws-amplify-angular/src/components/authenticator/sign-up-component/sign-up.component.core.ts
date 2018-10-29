@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
-import { stringType } from 'aws-sdk/clients/iam';
+
 
 
 const template = `
@@ -90,7 +90,7 @@ export class SignUpField{
   label: string;
   key: string;
   required?: boolean;
-  type?: stringType;
+  type?: string;
   displayOrder?:number;
   invalid?: boolean;
 }
@@ -129,7 +129,7 @@ const defaultSignUpFields: SignUpField[] = [
   template,
 })
 
-export class SignUpComponentCore implements OnInit {
+export class SignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
@@ -137,19 +137,19 @@ export class SignUpComponentCore implements OnInit {
   local_phone_number: string;
   country_code: string = '1';
   countries: country[];
-  signUpFields: SignUpField[];
+  signUpFields: SignUpField[] = defaultSignUpFields;
   errorMessage: string;
   amplifyService: AmplifyService;
 
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
   }
 
-  ngOnInit() {
-    this.sortFields();
-  }
+  // ngOnInit() {
+  //   this.sortFields();
+  // }
 
   @Input()
   set data(data: any) {
@@ -173,13 +173,16 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set signUpConfig(signUpConfig: SignUpField[]) {
-    this._signUpConfig = signUpConfig;
-    if (this._signUpConfig.defaultCountryCode) {
-      this.country_code = this._signUpConfig.defaultCountryCode;
-    }
-    if (this._signUpConfig.signUpFields) {
-      this.signUpFields = this._signUpConfig.signUpFields;
+  set signUpConfig(signUpConfig: any) {
+    if (signUpConfig) {
+      this._signUpConfig = signUpConfig;
+      if (this._signUpConfig.defaultCountryCode) {
+        this.country_code = this._signUpConfig.defaultCountryCode;
+      }
+      if (this._signUpConfig.signUpFields) {
+        this.signUpFields = this._signUpConfig.signUpFields;
+      }
+      this.sortFields();
     }
   }
 

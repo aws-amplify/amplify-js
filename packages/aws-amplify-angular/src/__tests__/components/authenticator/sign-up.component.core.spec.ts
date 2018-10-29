@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+// tslint:disable
+import { By } from '@angular/platform-browser';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { SignUpComponentCore } from '../../../components/authenticator/sign-up-component/sign-up.component.core'
+import { SignUpComponentCore, SignUpField } from '../../../components/authenticator/sign-up-component/sign-up.component.core'
+import Amplify from 'aws-amplify';
+// tslint:enable
 
-
-describe('SignUpComponentCore: ', () => {
+describe('SignUpComponentCore (basics): ', () => {
 
   let component: SignUpComponentCore;
   let service: AmplifyService;
@@ -37,4 +41,107 @@ describe('SignUpComponentCore: ', () => {
     expect(component.onSignUp).toBeTruthy();
   });
 
+  it('...should have an sortFields method', () => {
+    expect(component.sortFields).toBeTruthy();
+  });
+
+  it('...should have a countryList', () => {
+    expect(Array.isArray(component.countries)).toBeTruthy();
+  });
+
 });
+
+describe('SignUpComponentCore (methods and UI): ', () => {
+
+  let component: SignUpComponentCore;
+  let fixture: ComponentFixture<SignUpComponentCore>; 
+  let amplifyService: AmplifyService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SignUpComponentCore],
+      providers: [AmplifyService],
+      imports: [FormsModule]
+    });
+
+    fixture = TestBed.createComponent(SignUpComponentCore); 
+    component = fixture.componentInstance; 
+    amplifyService = TestBed.get(AmplifyService); 
+  });
+
+  afterEach(() => {
+    component.signUpConfig = undefined;
+  });
+
+  it('...should be created with 4 default signUpFields', () => {
+    expect(component.signUpFields.length).toBe(4);
+    expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'password')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'phone_number')).toBeTruthy();
+  });
+
+  it('...should insert fields passed via signUpConfig', () => {
+    component.signUpConfig = {
+      signUpFields: [
+        {
+          key: 'testkey',
+          label: 'testlabel'
+        }
+      ]
+    };
+    expect(component.signUpFields.length).toBe(5);  
+    expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'password')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'phone_number')).toBeTruthy();
+    expect(component.signUpFields.find(e => e.key === 'testkey')).toBeTruthy();
+  });
+
+  it('...should call sortFields when signUpConfig is present', () => {
+    spyOn(component, 'sortFields');
+    component.signUpConfig = {
+      signUpFields: [
+        {
+          key: 'testkey',
+          label: 'testlabel'
+        }
+      ]
+    };
+    expect(component.sortFields).toHaveBeenCalledTimes(1);
+  });
+
+  it('...should insert only passed fields when hideDefaults is true', () => {
+    component.signUpConfig = {
+      hideDefaults: true,
+      signUpFields: [
+        {
+          key: 'testkey',
+          label: 'testlabel'
+        }
+      ]
+    };
+    expect(component.signUpFields.length).toBe(1);  
+  });
+
+  it('...should order fields by display order', () => {
+    component.signUpConfig = {
+      signUpFields: [
+        {
+          key: 'testkey1',
+          label: 'testlabel1',
+          displayOrder: 6
+        },
+        {
+          key: 'testkey2',
+          label: 'testlabel2',
+          displayOrder: 5
+        }
+      ]
+    };
+    expect(component.signUpFields[5].key).toBe('testkey1');  
+    expect(component.signUpFields[4].key).toBe('testkey2');  
+  });
+
+});
+
