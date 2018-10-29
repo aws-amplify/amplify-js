@@ -1,5 +1,6 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
 import { Header, Footer, InputRow, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
@@ -57,7 +58,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
         });
     });
@@ -120,7 +121,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'verifyTotpToken').mockImplementationOnce(() => {
@@ -170,7 +171,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'verifyTotpToken').mockImplementationOnce(() => {

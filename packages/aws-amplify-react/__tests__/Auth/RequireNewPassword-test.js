@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import RequireNewPassword from '../../src/Auth/RequireNewPassword';
 
@@ -114,7 +114,7 @@ describe('RequireNewPassword test', () => {
                         requiredAttributes: []
                     } 
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -129,7 +129,7 @@ describe('RequireNewPassword test', () => {
             wrapper.setProps(props);
             requireNewPassword.inputs = {
                 password: 'password'
-            }
+            };
 
             await requireNewPassword.change();
 
@@ -148,7 +148,7 @@ describe('RequireNewPassword test', () => {
                         requiredAttributes: []
                     } 
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -165,7 +165,7 @@ describe('RequireNewPassword test', () => {
             wrapper.setProps(props);
             requireNewPassword.inputs = {
                 password: 'password'
-            }
+            };
 
             await requireNewPassword.change();
 
@@ -184,7 +184,7 @@ describe('RequireNewPassword test', () => {
                         requiredAttributes: []
                     } 
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -201,7 +201,7 @@ describe('RequireNewPassword test', () => {
             wrapper.setProps(props);
             requireNewPassword.inputs = {
                 password: 'password'
-            }
+            };
 
             await requireNewPassword.change();
 
@@ -220,7 +220,7 @@ describe('RequireNewPassword test', () => {
                         requiredAttributes: 'requiredAttributes'
                     } 
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -235,7 +235,7 @@ describe('RequireNewPassword test', () => {
             wrapper.setProps(props);
             requireNewPassword.inputs = {
                 password: 'password'
-            }
+            };
 
             await requireNewPassword.change();
 
@@ -250,7 +250,7 @@ describe('RequireNewPassword test', () => {
                         requiredAttributes: ['given_name', 'family_name']
                     } 
                 }
-            }
+            };
 
             const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -267,7 +267,7 @@ describe('RequireNewPassword test', () => {
                 password: 'password',
                 given_name: 'Max',
                 family_name: 'Power'
-            }
+            };
 
             await requireNewPassword.change();
 
@@ -290,7 +290,7 @@ describe('RequireNewPassword test', () => {
                     verified: {
                         email: 'xxx@xxx.com'
                     }
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(rnp, 'changeState');

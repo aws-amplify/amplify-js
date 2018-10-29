@@ -1,4 +1,18 @@
-import React, { Component } from 'react';
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import * as React from 'react';
+import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -9,7 +23,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-
+import Constants from '../common/constants';
 
 const logger = new Logger('withFacebook');
 
@@ -21,6 +35,7 @@ export default function withFacebook(Comp) {
             this.fbAsyncInit = this.fbAsyncInit.bind(this);
             this.initFB = this.initFB.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -30,6 +45,15 @@ export default function withFacebook(Comp) {
             const fb = window.FB;
 
             fb.getLoginStatus(response => {
+                const payload = {
+                    provider: Constants.FACEBOOK
+                }
+                try {
+                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                } catch (e) {
+                    logger.debug('Failed to cache auth source into localStorage', e);
+                }
+
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
@@ -58,7 +82,7 @@ export default function withFacebook(Comp) {
             fb.api('/me', response => {
                 let user = {
                     name: response.name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {
@@ -76,9 +100,30 @@ export default function withFacebook(Comp) {
             });
         }
 
+        signOut() {
+            const fb = window.FB;
+            if (!fb) {
+                logger.debug('FB sdk undefined');
+                return Promise.resolve();
+            }
+
+            fb.getLoginStatus(response => {
+                if (response.status === 'connected') {
+                    return new Promise((res, rej) => {
+                        logger.debug('facebook signing out');
+                        fb.logout(response => {
+                            res(response);
+                        });
+                    });
+                } else {
+                    return Promise.resolve();
+                }
+            });
+        }
+
         componentDidMount() {
             const { facebook_app_id } = this.props;
-            if (facebook_app_id) this.createScript();
+            if (facebook_app_id && !window.FB) this.createScript();
         }
 
         fbAsyncInit() {
@@ -114,10 +159,10 @@ export default function withFacebook(Comp) {
         render() {
             const fb = window.FB;
             return (
-                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
-            )
+                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} facebookSignOut={this.signOut}/>
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -134,6 +179,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Facebook')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const FacebookButton = withFacebook(Button);

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 
 import { I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -42,7 +42,7 @@ export default class SignUp extends AuthPiece {
 
         this.inputs = {
             dial_code: "+1",
-        }
+        };
     }
 
     signUp() {
@@ -145,6 +145,6 @@ export default class SignUp extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

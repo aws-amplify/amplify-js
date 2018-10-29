@@ -64,7 +64,7 @@ export default class FacebookOAuth {
         }
 
         return new Promise((res, rej) => {
-            fb.login(
+            fb.getLoginStatus(
                 fbResponse => {
                     if (!fbResponse || !fbResponse.authResponse) {
                         logger.debug('no response from facebook when refreshing the jwt token');

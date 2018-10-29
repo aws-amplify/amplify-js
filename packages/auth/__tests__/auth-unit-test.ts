@@ -2190,7 +2190,11 @@ describe('auth unit test', () => {
 
     describe('hosted ui test', () => {
         test('happy case', () => {
-            const oauth = {};
+            const oauth = {
+                awsCognito: {
+                    domain: 'domain'
+                }
+            };
 
             const authOptions = {
                 Auth: {
