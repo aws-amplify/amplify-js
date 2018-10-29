@@ -103,11 +103,11 @@ export default class SignIn extends AuthPiece {
             .catch(err => {
                 if (err.code === 'UserNotConfirmedException') {
                     logger.debug('the user is not confirmed');
-                    this.changeState('confirmSignUp');
+                    this.changeState('confirmSignUp', { username });
                 } 
                 else if (err.code === 'PasswordResetRequiredException') {
                     logger.debug('the user requires a new password');
-                    this.changeState('requireNewPassword');
+                    this.changeState('requireNewPassword', { username });
                 } else {
                     this.error(err);
                 }
