@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.5-unstable.1"></a>
+## [0.1.5-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.5-unstable.0...aws-amplify-vue@0.1.5-unstable.1) (2018-10-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.1.5-unstable.0"></a>
 ## [0.1.5-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.4...aws-amplify-vue@0.1.5-unstable.0) (2018-10-24)
 

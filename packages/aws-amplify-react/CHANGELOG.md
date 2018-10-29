@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.3"></a>
+## [2.1.2-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.2...aws-amplify-react@2.1.2-unstable.3) (2018-10-29)
+
+
+### Features
+
+* **aws-amplify-react:** Add Auth0 button ([b16ded3](https://github.com/aws/aws-amplify/commit/b16ded3))
+
+
+
+
 <a name="2.1.2-unstable.2"></a>
 ## [2.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.1...aws-amplify-react@2.1.2-unstable.2) (2018-10-25)
 
