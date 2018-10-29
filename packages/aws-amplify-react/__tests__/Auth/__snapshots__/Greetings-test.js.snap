@@ -5,31 +5,29 @@ exports[`Greetings normal case render correctly with authState signedIn 1`] = `"
 exports[`Greetings normal case render correctly with hide 1`] = `""`;
 
 exports[`Greetings normal case render name from attributes 1`] = `
-<NavBar
+<Component
   theme="theme"
 >
-  <Nav
+  <Component
     theme="theme"
   >
-    <NavRight
+    <Component
       theme="theme"
     >
       <span>
-        <NavItem
+        <Component
           theme="theme"
         >
           Hello name
-        </NavItem>
-        <NavButton
-          onClick={[Function]}
+        </Component>
+        <SignOut
+          authState="signedIn"
           theme="theme"
-        >
-          Sign Out
-        </NavButton>
+        />
       </span>
-    </NavRight>
-  </Nav>
-</NavBar>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`Greetings render corrently with other authStates 1`] = `""`;

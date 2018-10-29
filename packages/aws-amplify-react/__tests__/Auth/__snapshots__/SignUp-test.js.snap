@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`signUp normal case render correctly with authState signUp 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -245,7 +245,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -490,8 +490,8 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
     }
   >
     Create a new account
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -735,7 +735,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
       }
     }
   >
-    <FormField
+    <Component
       theme={
         Object {
           "a": Object {
@@ -979,11 +979,11 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       }
     >
-      <InputLabel>
+      <Component>
         Username
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoFocus={true}
         key="username"
         name="username"
@@ -1232,8 +1232,8 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
           }
         }
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1477,11 +1477,11 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       }
     >
-      <InputLabel>
+      <Component>
         Password
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         key="password"
         name="password"
         onChange={[Function]}
@@ -1730,8 +1730,8 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
         type="password"
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1975,11 +1975,11 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       }
     >
-      <InputLabel>
+      <Component>
         Email Address
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         key="email"
         name="email"
         onChange={[Function]}
@@ -2227,8 +2227,8 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
           }
         }
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -2472,10 +2472,10 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       }
     >
-      <InputLabel>
+      <Component>
         Phone Number
-      </InputLabel>
-      <SelectInput
+      </Component>
+      <Component
         theme={
           Object {
             "a": Object {
@@ -3956,7 +3956,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             +998
           </option>
         </select>
-        <Input
+        <Component
           key="phone_line_number"
           name="phone_line_number"
           onChange={[Function]}
@@ -4204,10 +4204,10 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             }
           }
         />
-      </SelectInput>
-    </FormField>
-  </SectionBody>
-  <SectionFooter
+      </Component>
+    </Component>
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -4451,7 +4451,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
       }
     }
   >
-    <SectionFooterPrimaryContent
+    <Component
       theme={
         Object {
           "a": Object {
@@ -4695,7 +4695,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       }
     >
-      <Button
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -4941,9 +4941,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       >
         Create Account
-      </Button>
-    </SectionFooterPrimaryContent>
-    <SectionFooterSecondaryContent
+      </Component>
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -5188,7 +5188,7 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
       }
     >
       Have an account? 
-      <Link
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -5434,10 +5434,10 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         }
       >
         Sign in
-      </Link>
-    </SectionFooterSecondaryContent>
-  </SectionFooter>
-</FormSection>
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`signUp normal case render correctly with hide 1`] = `""`;

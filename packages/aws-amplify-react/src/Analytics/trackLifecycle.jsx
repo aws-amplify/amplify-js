@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
@@ -90,7 +91,7 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
 
         render() {
             this.track('render');
-            return <Comp {...this.props} />
+            return <Comp {...this.props} />;
         }
-    }
+    };
 }

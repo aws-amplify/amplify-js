@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -24,7 +24,6 @@ import {
     SectionFooter,
     Input,
     RadioRow,
-    MessageRow,
     Button,
     Link,
     SectionFooterPrimaryContent,
@@ -41,7 +40,7 @@ export default class VerifyContact extends AuthPiece {
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
 
-        this.state = { verifyAttr: null }
+        this.state = { verifyAttr: null };
     }
 
     verify() {
@@ -128,7 +127,7 @@ export default class VerifyContact extends AuthPiece {
                     onChange={this.handleInputChange}
                 />
             </div>
-        )
+        );
     }
 
     showComponent(theme) {
