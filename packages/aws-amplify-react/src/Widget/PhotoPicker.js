@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Picker from './Picker';
@@ -21,7 +22,7 @@ import { FormSection, SectionHeader, SectionBody, PhotoPlaceholder } from '../Am
 
 const PickerPreview = {
     maxWidth: '100%'
-}
+};
 
 const logger = new Logger('PhotoPicker');
 
@@ -37,7 +38,7 @@ export default class PhotoPicker extends Component {
     }
 
     handlePick(data) {
-        var that = this;
+        const that = this;
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
 
@@ -49,7 +50,7 @@ export default class PhotoPicker extends Component {
                 const url = e.target.result;
                 that.setState({ previewSrc: url });
                 if (onLoad) { onLoad(url); }
-            }
+            };
             reader.readAsDataURL(file);
         }
     }
@@ -91,6 +92,6 @@ export default class PhotoPicker extends Component {
                     onPick={this.handlePick}
                 />
             </FormSection>
-        )
+        );
     }
 }

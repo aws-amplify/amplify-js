@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import React from 'react';
+import * as React from 'react';
 import Authenticator from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
 import AmplifyTheme  from '../../src/AmplifyTheme';
@@ -55,13 +55,13 @@ describe('Authenticator', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             const signInWrapper = wrapper.find(SignIn).dive();
             signInWrapper.find(InputRow).at(0).simulate('change', event_username);
@@ -94,13 +94,13 @@ describe('Authenticator', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
             const signInWrapper = wrapper.find(SignIn).dive();
             signInWrapper.find(Input).at(0).simulate('change', event_username);
@@ -122,7 +122,7 @@ describe('Authenticator', () => {
 
             const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.resolve('user');
-            })
+            });
 
             await authenticator.checkUser();
 

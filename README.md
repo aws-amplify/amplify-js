@@ -7,9 +7,6 @@
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
   </a>
-  <a href="https://badge.fury.io/js/aws-amplify">
-    <img src="https://badge.fury.io/js/aws-amplify.svg" alt="npm version" height="18">
-  </a>
   <a href="https://npmjs.org/aws-amplify">
     <img src="https://img.shields.io/npm/dm/aws-amplify.svg" alt="npm downloads" height="18">
   </a>
@@ -348,7 +345,7 @@ Storage.put(key, fileObj, {level: 'private'})
   .then (result => console.log(result))
   .catch(err => console.log(err));
       
-  // Stores data with specifying its MIME type
+  // Store data with specifying its MIME type
 Storage.put(key, fileObj, {
   level: 'private',
   contentType: 'text/plain'

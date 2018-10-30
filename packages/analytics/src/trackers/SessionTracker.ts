@@ -13,7 +13,7 @@
 
  // the session tracker for web
 
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
 
 const logger = new Logger('SessionTracker');
@@ -45,6 +45,10 @@ export default class SessionTracker {
     }
 
     private _envCheck() {
+        if (!JS.browserOrNode().isBrowser) {
+            return false;
+        }
+
         if (!document || !document.addEventListener) {
             logger.debug('not in the supported web environment');
             return false;

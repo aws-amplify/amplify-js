@@ -11,6 +11,8 @@
  * and limitations under the License.
  */
 
+import JS from '../JS';
+
 const Linking = {};
 const AppState = {
     addEventListener(action, handler) {
@@ -19,6 +21,6 @@ const AppState = {
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = window? window.localStorage : undefined;
+const AsyncStorage = JS.browserOrNode().isBrowser ? window.localStorage : undefined;
 
 export { Linking, AppState, AsyncStorage };
