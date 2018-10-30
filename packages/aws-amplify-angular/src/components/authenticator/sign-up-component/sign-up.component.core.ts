@@ -137,6 +137,7 @@ export class SignUpComponentCore {
       if (this._signUpConfig.signUpFields) {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
+      this.sortFields();
     }
   }
 
