@@ -15,7 +15,7 @@ npm i aws-amplify aws-amplify-vue
 Then, alter main.js:
 
 ```
-import * as AmplifyModules from 'aws-amplify';
+import Amplify, * as AmplifyModules from 'aws-amplify';
 import { AmplifyPlugin } from 'aws-amplify-vue';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports)
@@ -49,7 +49,7 @@ export default {
 
 ## AmplifyEventBus
 
-The aws-amplify-vue package implments a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
+The aws-amplify-vue package implements a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
 
 To listen to these events within one of your components, import the EventBus:
 ```
@@ -67,9 +67,9 @@ AmplifyEventBus.$on('authState', info => {
 
 The aws-amplify-vue package provides a Vue plugin to access the Amplify library.  You installed the plugin when you set up your application:
 
-```Vue.use(AmplifyPlugin, AmplifyModules)```
+```Vue.use(AmplifyPlugin, AmplifyModules);```
 
-This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
+This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restrict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
 
 ### Using the AmplifyPlugin
 
@@ -134,7 +134,7 @@ Events:
 
 ### ConfirmSignIn
 
-The ConfirmSignIn component provides your users with the ability answer an MFA challenge.  
+The ConfirmSignIn component provides your users with the ability to answer an MFA challenge.  
 
 Usage: ```<amplify-confirm-sign-in></amplify-confirm-sign-in>```
 
@@ -220,7 +220,7 @@ Events:
 
 ### SignOut
 
-The ForgotPassword component provides your users with the ability to sign out.  
+The SignOut component provides your users with the ability to sign out.  
 
 Usage: ```<amplify-sign-out></amplify-sign-out>```
 
@@ -240,7 +240,7 @@ Events:
 
 ### SetMFA
 
-The SetMFA component provides your users with the ability to set their preferrend Multifactor Authentication (MFA) method.  It has the ability to show three options - SMS Text Message, TOTP, or None (depending on the options that you pass into it).
+The SetMFA component provides your users with the ability to set their preferred Multifactor Authentication (MFA) method.  It has the ability to show three options - SMS Text Message, TOTP, or None (depending on the options that you pass into it).
 
 Usage: ```<amplify-set-mfa></amplify-set-mfa>```
 
@@ -285,6 +285,176 @@ By default the SignUp Component will display Username, Password, Email and Phone
 Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
 
 
+## API Components
+
+### Connect
+
+The Connect component can be used to execute a GraphQL query, subscription, or mutation. You can execute GraphQL queries by passing your queries in `query` or `mutation` attributes. For example:
+
+```
+<template>
+  <div class="home">
+      <amplify-connect :query="listTodosQuery">
+        <template slot-scope="{loading, data, errors}">
+          <div v-if="loading">Loading...</div>
+
+          <div v-else-if="errors.length > 0">{{ errors }}</div>
+
+          <div v-else-if="data">
+            <TodoList :items="data.listTodos.items"></TodoList>
+          </div>
+        </template>
+      </amplify-connect>
+  </div>
+</template>
+
+<script>
+import { components } from 'aws-amplify-vue';
+import TodoList from '@/components/TodoList.vue';
+
+const ListTodosQuery = `query ListTodos {
+    listTodos {
+      items {
+        id
+        name
+      }
+    }
+  }`;
+
+export default {
+  components: {
+    TodoList,
+    ...components
+  },
+  computed: {
+    listTodosQuery() {
+      return this.$Amplify.graphqlOperation(ListTodosQuery);
+    }
+  }
+}
+</script>
+```
+
+You can also subscribe to changes in query data via the `subscription` and `onSubscriptionMsg` attributes:
+
+```
+<template>
+  <div class="home">
+      <amplify-connect :query="listTodosQuery"
+          :subscription="createTodoSubscription"
+          :onSubscriptionMsg="onCreateTodo">
+        <template slot-scope="{loading, data, errors}">
+          <div v-if="loading">Loading...</div>
+
+          <div v-else-if="errors.length > 0">{{ errors }}</div>
+
+          <div v-else-if="data">
+            <TodoList :items="data.listTodos.items"></TodoList>
+          </div>
+        </template>
+      </amplify-connect>
+  </div>
+</template>
+
+<script>
+import { components } from 'aws-amplify-vue';
+import TodoList from '@/components/TodoList.vue';
+
+const ListTodosQuery = `query ListTodos {
+    listTodos {
+      items {
+        id
+        name
+      }
+    }
+  }`;
+
+  const OnCreateTodoSubscription = `subscription OnCreateTodo {
+      onCreateTodo {
+        id
+        name
+      }
+    }`;
+
+export default {
+  name: 'home',
+  components: {
+    TodoList,
+    ...components
+  },
+  computed: {
+    listTodosQuery() {
+      return this.$Amplify.graphqlOperation(ListTodosQuery);
+    },
+    createTodoSubscription() {
+      return this.$Amplify.graphqlOperation(OnCreateTodoSubscription);
+    }
+  },
+  methods: {
+    onCreateTodo(prevData, newData) {
+      console.log('New todo from subscription...');
+      const newTodo = newData.onCreateTodo;
+      prevData.data.listTodos.items.push(newTodo);
+      return prevData.data;
+    }
+  }
+}
+</script>
+```
+
+The Connect component also supports mutations by passing a GraphQL query and (optionally) variables via the `mutation` attribute. Call the provided `mutate` method to trigger the operation. `mutation` returns a promise that resolves with the result of the GraphQL mutation, use `@done` to listen for it to complete.
+
+```
+<template>
+  <div>
+    <amplify-connect :mutation="createTodoMutation"
+        @done="onCreateFinished">
+      <template slot-scope="{ loading, mutate, errors }">
+        <input v-model="name" placeholder="item name" />
+        <input v-model="description" placeholder="item description" />
+        <button :disabled="loading" @click="mutate">Create Todo</button>
+      </template>
+    </amplify-connect>
+  </div>
+</template>
+
+<script>
+import { components } from 'aws-amplify-vue';
+
+const CreateTodoMutation = `mutation CreateTodo($name: String!, $description: String) {
+    createTodo(input: { name: $name, description: $description }) {
+      id
+      name
+    }
+  }`;
+
+export default {
+  name: 'NewTodo',
+  components: {
+    ...components
+  },
+  data() {
+    return {
+      name: '',
+      description: ''
+    }
+  },
+  computed: {
+    createTodoMutation() {
+      return this.$Amplify.graphqlOperation(CreateTodoMutation,
+        { name: this.name, description: this.description });
+    }
+  },
+  methods: {
+    onCreateFinished() {
+      console.log('Todo created!');
+    }
+  }
+}
+</script>
+```
+
+
 ## Storage Components
 
 ### PhotoPicker
@@ -326,7 +496,7 @@ Events: None
 
 ### S3Image
 
-The S3Image component displays the a single image from the provided path.
+The S3Image component displays a single image from the provided path.
 
 Usage: ```<amplify-s3-image imagePath="path"></amplify-s3-image>```
 
@@ -354,6 +524,20 @@ Config:
 | bot           | string  | the name of the chatbot as defined in your Amplify configuration under "aws_bots_config.name" | N/A       | yes      |
 | clearComplete | boolean | specifies whether the chat messages clear out at the end of the chat session                  | true      | no       |
 | botTitle      | string  | the name of the chatbot component in your frontend app                                        | 'Chatbot' | no       |
+
+
+If not in your aws.exports file, the bot can also be defined in the AWS configure method:
+```
+ Interactions: {
+    bots: {
+      "BookTrip": {
+        "name": "BookTrip",
+        "alias": "$LATEST",
+        "region": "us-east-1",
+      },
+    }
+  }
+```
 
 Events:
 

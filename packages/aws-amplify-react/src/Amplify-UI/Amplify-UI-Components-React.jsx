@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { JS } from '@aws-amplify/core';
 
@@ -16,8 +16,8 @@ export const Container = (props) => {
         <div {...p} className={AmplifyUI.container} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormContainer = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -25,8 +25,8 @@ export const FormContainer = (props) => {
         <div className={AmplifyUI.formContainer} style={theme.formContainer}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -39,8 +39,8 @@ export const FormSection = (props) => {
                 </div>
             )}
         </FormContainer>
-    )
-}
+    );
+};
 
 export const SectionHeader = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -57,8 +57,8 @@ export const SectionHeader = (props) => {
                 }
             </SectionHeaderContent>
         </div>
-    )
-}
+    );
+};
 
 export const SectionHeaderContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -67,8 +67,8 @@ export const SectionHeaderContent = (props) => {
         <span className={AmplifyUI.sectionHeaderContent} style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -78,8 +78,8 @@ export const SectionFooter = (props) => {
         <div {...p} className={AmplifyUI.sectionFooter} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const SectionFooterPrimaryContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -88,8 +88,8 @@ export const SectionFooterPrimaryContent = (props) => {
         <span className={AmplifyUI.sectionFooterPrimaryContent} style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionFooterSecondaryContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -98,8 +98,8 @@ export const SectionFooterSecondaryContent = (props) => {
         <span className={AmplifyUI.sectionFooterSecondaryContent} style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionBody = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -109,8 +109,8 @@ export const SectionBody = (props) => {
         <div {...p} className={AmplifyUI.sectionBody} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const ActionRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -120,8 +120,8 @@ export const ActionRow = (props) => {
         <div {...p} className="amplify-action-row" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const Strike = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -130,8 +130,8 @@ export const Strike = (props) => {
         <div className={AmplifyUI.strike} style={style}>
             <StrikeContent theme={theme}>{props.children}</StrikeContent>
         </div>
-    )
-}
+    );
+};
 
 export const StrikeContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -139,8 +139,8 @@ export const StrikeContent = (props) => {
         <span className={AmplifyUI.strikeContent} style={theme.strikeContent}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const FormRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -150,8 +150,8 @@ export const FormRow = (props) => {
         <div {...p} className={AmplifyUI.formRow} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const RadioRow = (props) => {
     const id = props.id || '_' + props.value;
@@ -167,8 +167,8 @@ export const RadioRow = (props) => {
                 theme={theme}
             >{props.placeholder}</Label>
         </FormRow>
-    )
-}
+    );
+};
 
 export const Radio = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -181,8 +181,8 @@ export const Radio = (props) => {
                 className={AmplifyUI.radio}
                 style={style}
             />
-    )
-}
+    );
+};
 
 export const InputRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -194,8 +194,8 @@ export const InputRow = (props) => {
                 <input {...p} className={AmplifyUI.input} style={style} />
             )}
         </FormRow>
-    )
-}
+    );
+};
 
 export const Input = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -203,8 +203,8 @@ export const Input = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return (
         <input {...p} className={AmplifyUI.input} style={style} />
-    )
-}
+    );
+};
 
 export const SelectInput = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -213,8 +213,8 @@ export const SelectInput = (props) => {
         <div className={AmplifyUI.selectInput} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormField = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -224,8 +224,8 @@ export const FormField = (props) => {
         <div {...p} className={AmplifyUI.formField} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const Button = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -235,8 +235,8 @@ export const Button = (props) => {
         <button {...p} className={AmplifyUI.button} style={style}>
             {props.children}
         </button>
-    )
-}
+    );
+};
 
 export const PhotoPickerButton = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -246,23 +246,20 @@ export const PhotoPickerButton = (props) => {
         <button {...p} className={[AmplifyUI.photoPickerButton, AmplifyUI.button].join(' ')} style={style}>
             {props.children}
         </button>
-    )
-}
+    );
+};
 
 export const SignInButton = (props) => {
     const theme = props.theme || AmplifyTheme;
-    const style = propStyle(props, theme.signInButton);
+    const styles = Object.assign({}, theme.signInButton, theme[props.variant]);    
     const p = JS.objectLessAttributes(props, 'theme');
 
-    const classes = [AmplifyUI.signInButton];
-    if (props.variant) classes.push(props.variant);
-
     return beforeAfter(
-        <button {...p} className={classes.join(' ')} style={style}>
+        <button {...p} className={AmplifyUI.signInButton} style={styles}>
             {props.children}
         </button>
-    )
-}
+    );
+};
 
 export const SignInButtonIcon = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -272,8 +269,8 @@ export const SignInButtonIcon = (props) => {
         <span {...p} className={AmplifyUI.signInButtonIcon} style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SignInButtonContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -282,8 +279,8 @@ export const SignInButtonContent = (props) => {
         <span className={AmplifyUI.signInButtonContent} style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const Link = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -291,8 +288,8 @@ export const Link = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
         <a {...p} className={AmplifyUI.a} style={style}>{props.children}</a>
-    )
-}
+    );
+};
 
 export const Label = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -300,8 +297,8 @@ export const Label = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
         <label {...p} className={AmplifyUI.label} style={style}>{props.children}</label>
-    )
-}
+    );
+};
 
 export const Hint = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -310,8 +307,8 @@ export const Hint = (props) => {
         <div className={AmplifyUI.hint} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const InputLabel = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -320,8 +317,8 @@ export const InputLabel = (props) => {
         <div className={AmplifyUI.inputLabel} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavBar = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -331,8 +328,8 @@ export const NavBar = (props) => {
         <div {...p} className={AmplifyUI.navBar} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const Nav = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -342,8 +339,8 @@ export const Nav = (props) => {
         <div {...p} className={AmplifyUI.nav} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavRight = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -353,8 +350,8 @@ export const NavRight = (props) => {
         <div {...p} className={AmplifyUI.navRight} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavItem = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -364,8 +361,8 @@ export const NavItem = (props) => {
         <div {...p} className={AmplifyUI.navItem} style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavButton = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -377,8 +374,8 @@ export const NavButton = (props) => {
                 <span>{props.children}</span>
             )}
         </button>
-    )
-}
+    );
+};
 
 export const Toast = (props) => {
     const { onClose } = props;
@@ -389,12 +386,12 @@ export const Toast = (props) => {
             <span>{props.children}</span>
             <a className={AmplifyUI.toastClose} onClick={onClose}/>
         </div>
-    )
-}
+    );
+};
 
 Toast.defaultProps = {
     onClose: () => void(0)
-}
+};
 
 export const PhotoPlaceholder = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -410,8 +407,8 @@ export const PhotoPlaceholder = (props) => {
                 </svg>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export const beforeAfter = (el) => {
     const style = el.props.style || {};
@@ -424,8 +421,8 @@ export const beforeAfter = (el) => {
             {el}
             {after ? <span style={after}>{after.content}</span> : null}
         </span>
-    )
-}
+    );
+};
 
 export const propStyle = (props, themeStyle) => {
     const { id, style } = props;
@@ -435,4 +432,4 @@ export const propStyle = (props, themeStyle) => {
     const selector = '#' + id;
     Object.assign(styl, styl[selector]);
     return styl;
-}
+};

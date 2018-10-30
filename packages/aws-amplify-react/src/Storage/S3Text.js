@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
@@ -145,7 +146,7 @@ export default class S3Text extends Component {
                 <pre style={theme.pre}>{text}</pre>
                 <div style={selected? theme.overlaySelected : theme.overlay}></div>
             </div>
-        )
+        );
     }
 
     render() {
@@ -177,6 +178,6 @@ export default class S3Text extends Component {
                         : null
                 }
             </div>
-        )
+        );
     }
 }

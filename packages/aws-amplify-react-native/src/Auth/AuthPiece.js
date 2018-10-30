@@ -65,7 +65,7 @@ export default class AuthPiece extends React.Component {
             msg = JSON.stringify(err);
         }
 
-        const map = this.props.errorMessage || AmplifyMessageMap;
+        const map = this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
         msg = (typeof map === 'string')? map : map(msg);
         this.setState({ error: msg });
     }
