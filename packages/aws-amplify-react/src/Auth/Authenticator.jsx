@@ -95,11 +95,11 @@ export default class Authenticator extends Component {
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event) {
+    handleAuthEvent(state, event, showToast = true) {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message, showToast: true });
+            this.setState({ error: message, showToast });
             
         }
     }
