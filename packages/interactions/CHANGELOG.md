@@ -3,8 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
-=======
+<a name="1.0.17-beta.0"></a>
+## [1.0.17-beta.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.16...@aws-amplify/interactions@1.0.17-beta.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.16-unstable.4...@aws-amplify/interactions@1.0.16) (2018-10-17)
 
