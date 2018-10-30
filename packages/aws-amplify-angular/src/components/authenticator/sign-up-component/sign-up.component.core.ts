@@ -93,6 +93,7 @@ export class SignUpField{
   type?: string;
   displayOrder?:number;
   invalid?: boolean;
+  custom?: boolean;
 }
 
 const defaultSignUpFields: SignUpField[] = [
@@ -188,17 +189,29 @@ export class SignUpComponentCore {
 
   onSignUp() {
 
+    // validate  required inputs
     const validation = this.validate();
     if (validation && validation.length > 0) {
       return this._setError(`The following fields need to be filled out: ${validation.join(', ')}`);
     }
+
+    // create user attribute property
     this.user.attributes = {};
+
+    // format phone number
     this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+
+    // create user key and value arrays
     const userKeys = Object.keys(this.user);
     const userValues = userKeys.map(key => this.user[key]);
+
+    // format data for Cognito user pool
     userKeys.forEach((key, index) => {
       if (key !== 'username' && key !== 'password' && key !== 'attributes') {
-        this.user.attributes[key] = userValues[index];
+        // needsPrefix determines if a custom attribute is indicated
+        // and prepends 'custom:' to the key before sending to Cognito if needed
+        const v = `${this.needPrefix(key, userValues[index]) ? 'custom:' : ''}${userValues[index]}`;
+        this.user.attributes[key] = v;
       }
     });
     this.amplifyService.auth()
@@ -214,6 +227,13 @@ export class SignUpComponentCore {
 
   onSignIn() {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
+  }
+
+  needPrefix(key, val) {
+    if (val.indexOf('custom:') !== 0) {
+      return this.signUpFields.find(e => e.key === key).custom;
+    }
+    return null;
   }
 
   onConfirmSignUp() {
