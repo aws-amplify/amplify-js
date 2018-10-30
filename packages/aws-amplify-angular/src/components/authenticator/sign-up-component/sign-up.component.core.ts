@@ -210,8 +210,8 @@ export class SignUpComponentCore {
       if (key !== 'username' && key !== 'password' && key !== 'attributes') {
         // needsPrefix determines if a custom attribute is indicated
         // and prepends 'custom:' to the key before sending to Cognito if needed
-        const v = `${this.needPrefix(key, userValues[index]) ? 'custom:' : ''}${userValues[index]}`;
-        this.user.attributes[key] = v;
+        const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+        this.user.attributes[newKey] = userValues[index];
       }
     });
     this.amplifyService.auth()
@@ -229,9 +229,14 @@ export class SignUpComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  needPrefix(key, val) {
-    if (val.indexOf('custom:') !== 0) {
-      return this.signUpFields.find(e => e.key === key).custom;
+  needPrefix(key) {
+    const field = this.signUpFields.find(e => e.key === key);
+    if (key.indexOf('custom:') !== 0) {
+      return field.custom ;
+    } else if (key.indexOf('custom:') === 0 && field.custom === false) {
+      this.amplifyService.logger('SignUpComponent', 'WARN')
+      .log('Custom prefix prepended to key but custom field flag is set to false');
+      
     }
     return null;
   }
