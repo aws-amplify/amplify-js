@@ -178,7 +178,7 @@ export default class Authenticator extends Component {
         return (
             <Container theme={theme}>
                 {this.state.showToast && 
-                    <Toast onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }
