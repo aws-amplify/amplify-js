@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.3-unstable.0"></a>
+## [2.1.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2...aws-amplify-react@2.1.3-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.5...aws-amplify-react@2.1.2) (2018-10-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.2-unstable.5"></a>
+## [2.1.2-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.4...aws-amplify-react@2.1.2-unstable.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** show the link of create account when using customized signup component ([1b4de49](https://github.com/aws/aws-amplify/commit/1b4de49))
+
+
+
+
+<a name="2.1.2-unstable.4"></a>
+## [2.1.2-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.3...aws-amplify-react@2.1.2-unstable.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** pass the user name when signin error happens ([b857101](https://github.com/aws/aws-amplify/commit/b857101))
+
+
+
+
+<a name="2.1.2-unstable.3"></a>
+## [2.1.2-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.2...aws-amplify-react@2.1.2-unstable.3) (2018-10-29)
+
+
+### Features
+
+* **aws-amplify-react:** Add Auth0 button ([b16ded3](https://github.com/aws/aws-amplify/commit/b16ded3))
+
+
+
+
 <a name="2.1.2-unstable.2"></a>
 ## [2.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.1...aws-amplify-react@2.1.2-unstable.2) (2018-10-25)
 
