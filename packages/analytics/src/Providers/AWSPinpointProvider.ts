@@ -15,7 +15,8 @@ import {
     ClientDevice, 
     Platform, 
     Credentials,
-    Signer
+    Signer,
+    JS
 } from '@aws-amplify/core';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
@@ -350,7 +351,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         this._initClients(config, credentials);
         
-        const request = this._endpointRequest(config, event);
+        const request = this._endpointRequest(config, JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes']));
         const update_params = {
             ApplicationId: appId,
             EndpointId: endpointId,
@@ -427,15 +428,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             modelVersion: clientInfo.version,
             platform: clientInfo.platform
         };
-        const demographicByClientContext = { ...clientContext };
-        // if (clientContext['make']) demographicByClientContext['Make'] = clientContext['make'];
-        // if (clientContext['model']) demographicByClientContext['Model'] = clientContext['model'];
-        // if (clientContext['locale']) demographicByClientContext['Locale'] = clientContext['local'];
-        // if (clientContext['appVersion']) demographicByClientContext['AppVersion'] = clientContext['appVersion'];
-        // if (clientContext['platform']) demographicByClientContext['Platform'] = clientContext['platform'];
-        // if (clientContext['platformVersion']) {
-        //     demographicByClientContext['PlatformVersion'] = clientContext['platformVersion'];
-        // }
+        const { clientId, appTitle, appVersionName, appVersionCode, appPackageName, ...demographicByClientContext } = clientContext;
         const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {
             channelType,
@@ -457,22 +450,22 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 ...defaultEndpointConfig.location,
                 ...event.location
             },
-            Metrics: {
-                ...defaultEndpointConfig.Metrics,
-                ...event.Metrics
+            metrics: {
+                ...defaultEndpointConfig.metrics,
+                ...event.metrics
             },
-            User: {
-                UserId: event.UserId|| defaultEndpointConfig.UserId || credentials.identityId,
-                UserAttributes: {
-                    ...defaultEndpointConfig.UserAttributes,
-                    ...event.UserAttributes
+            user: {
+                userId: event.userId || defaultEndpointConfig.userId || credentials.identityId,
+                userAttributes: {
+                    ...defaultEndpointConfig.userAttributes,
+                    ...event.userAttributes
                 }
             }
         };
 
         // eliminate unnecessary params
-        const { UserId, UserAttributes, name, session, eventId, immediate, ...ret } = tmp;
-        return ret;
+        const { userId, userAttributes, name, session, eventId, immediate, ...ret } = tmp;
+        return JS.transferKeyToUpperCase(ret, [], ['metrics', 'userAttributes', 'attributes']);
     }
 
     /**

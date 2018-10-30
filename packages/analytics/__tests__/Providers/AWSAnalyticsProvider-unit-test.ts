@@ -48,84 +48,84 @@ import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 
 const endpointConfigure = {
-    Address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
-    Attributes: {
+    address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
+    attributes: {
         // Custom attributes that your app reports to Amazon Pinpoint. You can use these attributes as selection criteria when you create a segment.
         hobbies: ['configured'],
     },
-    ChannelType: 'configured', // The channel type. Valid values: APNS, GCM
-    Demographic: {
-        AppVersion: 'configured', // The version of the application associated with the endpoint.
-        Locale: 'configured', // The endpoint locale in the following format: The ISO 639-1 alpha-2 code, followed by an underscore, followed by an ISO 3166-1 alpha-2 value
-        Make: 'configured', // The manufacturer of the endpoint device, such as Apple or Samsung.
-        Model: 'configured', // The model name or number of the endpoint device, such as iPhone.
-        ModelVersion: 'configured', // The model version of the endpoint device.
-        Platform: 'configured', // The platform of the endpoint device, such as iOS or Android.
-        PlatformVersion: 'configured', // The platform version of the endpoint device.
-        Timezone: 'configured' // The timezone of the endpoint. Specified as a tz database value, such as Americas/Los_Angeles.
+    channelType: 'configured', // The channel type. Valid values: APNS, GCM
+    demographic: {
+        appVersion: 'configured', // The version of the application associated with the endpoint.
+        locale: 'configured', // The endpoint locale in the following format: The ISO 639-1 alpha-2 code, followed by an underscore, followed by an ISO 3166-1 alpha-2 value
+        make: 'configured', // The manufacturer of the endpoint device, such as Apple or Samsung.
+        model: 'configured', // The model name or number of the endpoint device, such as iPhone.
+        modelVersion: 'configured', // The model version of the endpoint device.
+        platform: 'configured', // The platform of the endpoint device, such as iOS or Android.
+        platformVersion: 'configured', // The platform version of the endpoint device.
+        timezone: 'configured' // The timezone of the endpoint. Specified as a tz database value, such as Americas/Los_Angeles.
     },
-    Location: {
-        City: 'configured', // The city where the endpoint is located.
-        Country: 'configured', // The two-letter code for the country or region of the endpoint. Specified as an ISO 3166-1 alpha-2 code, such as "US" for the United States.
-        Latitude: 0, // The latitude of the endpoint location, rounded to one decimal place.
-        Longitude: 0, // The longitude of the endpoint location, rounded to one decimal place.
-        PostalCode: 'configured', // The postal code or zip code of the endpoint.
-        Region: 'configured' // The region of the endpoint location. For example, in the United States, this corresponds to a state.
+    location: {
+        city: 'configured', // The city where the endpoint is located.
+        country: 'configured', // The two-letter code for the country or region of the endpoint. Specified as an ISO 3166-1 alpha-2 code, such as "US" for the United States.
+        latitude: 0, // The latitude of the endpoint location, rounded to one decimal place.
+        longitude: 0, // The longitude of the endpoint location, rounded to one decimal place.
+        postalCode: 'configured', // The postal code or zip code of the endpoint.
+        region: 'configured' // The region of the endpoint location. For example, in the United States, this corresponds to a state.
     },
-    Metrics: {
+    metrics: {
         // Custom metrics that your app reports to Amazon Pinpoint.
     },
     /** Indicates whether a user has opted out of receiving messages with one of the following values:
         * ALL - User has opted out of all messages.
         * NONE - Users has not opted out and receives all messages.
         */
-    OptOut: 'configured',
+    optOut: 'configured',
     // Customized userId
-    UserId: 'configured',
+    userId: 'configured',
     // User attributes
-    UserAttributes: {
+    userAttributes: {
         interests: ['configured']
         // ...
     }
 };
 
 const defaultEndpointConfigure = {
-    Address: 'default', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
-    Attributes: {
+    address: 'default', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
+    attributes: {
         // Custom attributes that your app reports to Amazon Pinpoint. You can use these attributes as selection criteria when you create a segment.
         hobbies: ['default'],
     },
-    ChannelType: 'default', // The channel type. Valid values: APNS, GCM
-    Demographic: {
-        AppVersion: 'default', // The version of the application associated with the endpoint.
-        Locale: 'default', // The endpoint locale in the following format: The ISO 639-1 alpha-2 code, followed by an underscore, followed by an ISO 3166-1 alpha-2 value
-        Make: 'default', // The manufacturer of the endpoint device, such as Apple or Samsung.
-        Model: 'default', // The model name or number of the endpoint device, such as iPhone.
-        ModelVersion: 'default', // The model version of the endpoint device.
-        Platform: 'default', // The platform of the endpoint device, such as iOS or Android.
-        PlatformVersion: 'default', // The platform version of the endpoint device.
-        Timezone: 'default' // The timezone of the endpoint. Specified as a tz database value, such as Americas/Los_Angeles.
+    channelType: 'default', // The channel type. Valid values: APNS, GCM
+    demographic: {
+        appVersion: 'default', // The version of the application associated with the endpoint.
+        locale: 'default', // The endpoint locale in the following format: The ISO 639-1 alpha-2 code, followed by an underscore, followed by an ISO 3166-1 alpha-2 value
+        make: 'default', // The manufacturer of the endpoint device, such as Apple or Samsung.
+        model: 'default', // The model name or number of the endpoint device, such as iPhone.
+        modelVersion: 'default', // The model version of the endpoint device.
+        platform: 'default', // The platform of the endpoint device, such as iOS or Android.
+        platformVersion: 'default', // The platform version of the endpoint device.
+        timezone: 'default' // The timezone of the endpoint. Specified as a tz database value, such as Americas/Los_Angeles.
     },
-    Location: {
-        City: 'default', // The city where the endpoint is located.
-        Country: 'default', // The two-letter code for the country or region of the endpoint. Specified as an ISO 3166-1 alpha-2 code, such as "US" for the United States.
-        Latitude: 0, // The latitude of the endpoint location, rounded to one decimal place.
-        Longitude: 0, // The longitude of the endpoint location, rounded to one decimal place.
-        PostalCode: 'default', // The postal code or zip code of the endpoint.
-        Region: 'default' // The region of the endpoint location. For example, in the United States, this corresponds to a state.
+    location: {
+        city: 'default', // The city where the endpoint is located.
+        country: 'default', // The two-letter code for the country or region of the endpoint. Specified as an ISO 3166-1 alpha-2 code, such as "US" for the United States.
+        latitude: 0, // The latitude of the endpoint location, rounded to one decimal place.
+        longitude: 0, // The longitude of the endpoint location, rounded to one decimal place.
+        postalCode: 'default', // The postal code or zip code of the endpoint.
+        region: 'default' // The region of the endpoint location. For example, in the United States, this corresponds to a state.
     },
-    Metrics: {
+    metrics: {
         // Custom metrics that your app reports to Amazon Pinpoint.
     },
     /** Indicates whether a user has opted out of receiving messages with one of the following values:
         * ALL - User has opted out of all messages.
         * NONE - Users has not opted out and receives all messages.
         */
-    OptOut: 'default',
+    optOut: 'default',
     // Customized userId
-    UserId: 'default',
+    userId: 'default',
     // User attributes
-    UserAttributes: {
+    userAttributes: {
         interests: ['default']
         // ...
     }
