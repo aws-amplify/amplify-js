@@ -6,10 +6,11 @@ const logger = new Logger('GoogleProvider');
 
 export default class GoogleProvider extends BaseProvider implements AuthProvider {
     static NAME = 'Google';
-
+    static DEFAULT_DOMAIN = 'accounts.google.com';
+    
     constructor(options?) {
         super(options);
-        this._credentialsDomain = 'accounts.google.com';
+        this._credentialsDomain = GoogleProvider.DEFAULT_DOMAIN;
     }
 
     public configure(options) {

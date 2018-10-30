@@ -6,10 +6,11 @@ const logger = new Logger('AmazonProvider');
 
 export default class AmazonProvider extends BaseProvider implements AuthProvider {
     static NAME = 'Amazon';
+    static DEFAULT_DOMAIN = 'www.amazon.com';
 
     constructor(options?) {
         super(options);
-        this._credentialsDomain = 'www.amazon.com';
+        this._credentialsDomain = AmazonProvider.DEFAULT_DOMAIN;
     }
 
     public configure(options) {

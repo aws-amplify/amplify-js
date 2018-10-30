@@ -30,7 +30,7 @@ export default class BaseProvider implements AuthProvider {
     }
 
     public getCategory() {
-        return 'Auth'
+        return 'Auth';
     }
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
@@ -53,7 +53,7 @@ export default class BaseProvider implements AuthProvider {
         const user: FederatedUser = {
             name: username,
             attributes
-        }
+        };
         
         // cache information
         await this._storageSync;

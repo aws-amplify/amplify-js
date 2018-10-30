@@ -6,10 +6,11 @@ const logger = new Logger('FacebookProvider');
 
 export default class FacebookProvider extends BaseProvider implements AuthProvider {
     static NAME = 'Facebook';
+    static DEFAULT_DOMAIN = 'graph.facebook.com';
 
     constructor(options?) {
         super(options);
-        this._credentialsDomain = 'graph.facebook.com';
+        this._credentialsDomain = FacebookProvider.DEFAULT_DOMAIN;
     }
 
     public configure(options) {

@@ -1392,30 +1392,30 @@ export default class AuthClass {
 
         // for backward compatiblity
         switch(provider) {
-            case 'google' || 'Google':
-                authProvider = 'Google';
-                credentialsDomain = 'accounts.google.com';
+            case 'google' || GoogleProvider.NAME:
+                authProvider = GoogleProvider.NAME;
+                credentialsDomain = GoogleProvider.DEFAULT_DOMAIN;
                 break;
-            case 'facebook' || 'Facebook': 
-                authProvider = 'Facebook';
-                credentialsDomain = 'graph.facebook.com';
+            case 'facebook' || FacebookProvider.NAME: 
+                authProvider = FacebookProvider.NAME;
+                credentialsDomain = FacebookProvider.DEFAULT_DOMAIN;
                 break;
-            case 'amazon' || 'Amazon':
-                authProvider = 'Amazon';
-                credentialsDomain = 'www.amazon.com';
+            case 'amazon' || AmazonProvider.NAME:
+                authProvider = AmazonProvider.NAME;
+                credentialsDomain = AmazonProvider.DEFAULT_DOMAIN;
                 break;
-            case 'developer' || 'Developer':
-                authProvider = 'Developer';
-                credentialsDomain = 'cognito-identity.amazonaws.com';
+            case 'developer' || DeveloperProvider.NAME:
+                authProvider = DeveloperProvider.NAME;
+                credentialsDomain = DeveloperProvider.DEFAULT_DOMAIN;
                 break;
             default:
-                authProvider = 'Generic';
+                authProvider = GenericProvider.NAME;
                 credentialsDomain = provider;
                 break;
         }
 
-        const idToken = authProvider === 'Facebook' ? undefined : token;
-        const accessToken = authProvider === 'Facebook' ? token : undefined;
+        const idToken = authProvider === FacebookProvider.NAME ? undefined : token;
+        const accessToken = authProvider === FacebookProvider.NAME ? token : undefined;
 
         const { credentials } = await this.setSession({
             username: user.name,
