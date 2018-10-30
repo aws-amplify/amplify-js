@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
+import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
 
 
@@ -96,35 +97,6 @@ export class SignUpField{
   custom?: boolean;
 }
 
-const defaultSignUpFields: SignUpField[] = [
-  {
-    label: 'Username',
-    key: 'username',
-    required: false,
-    displayOrder: 1
-  },
-  {
-    label: 'Password',
-    key: 'password',
-    required: true,
-    type: 'password',
-    displayOrder: 2,
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    required: true,
-    type: 'email',
-    displayOrder: 3
-  },
-  {
-    label: 'Phone Number',
-    key: 'phone_number',
-    required: true,
-    displayOrder: 4
-  }
-];
-
 @Component({
   selector: 'amplify-auth-sign-up-core',
   template,
@@ -138,7 +110,8 @@ export class SignUpComponentCore {
   local_phone_number: string;
   country_code: string = '1';
   countries: country[];
-  signUpFields: SignUpField[] = defaultSignUpFields;
+  defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
+  signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
   amplifyService: AmplifyService;
 
@@ -254,7 +227,7 @@ export class SignUpComponentCore {
 
       if (!this._signUpConfig.hideDefaults) {
         // see if fields passed to component should override defaults
-        defaultSignUpFields.forEach((f, i) => {
+        this.defaultSignUpFields.forEach((f, i) => {
           const matchKey = this.signUpFields.findIndex((d) => {
             return d.key === f.key;
           });
@@ -295,8 +268,6 @@ export class SignUpComponentCore {
           }
         }
       });
-    } else {
-      this.signUpFields = defaultSignUpFields;
     }
 
   }
