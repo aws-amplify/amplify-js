@@ -3,8 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
-=======
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.16-unstable.4...@aws-amplify/interactions@1.0.16) (2018-10-17)
 
@@ -109,7 +107,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/interactions
 
->>>>>>> master
 <a name="1.0.13-unstable.1"></a>
 ## [1.0.13-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.13-unstable.0...@aws-amplify/interactions@1.0.13-unstable.1) (2018-09-25)
 
