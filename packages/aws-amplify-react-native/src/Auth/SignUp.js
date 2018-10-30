@@ -34,39 +34,8 @@ import {
     AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import defaultSignUpFields from './common/default-sign-in-fields'
 
-const defaultSignUpFields = [
-    {
-        label: 'Username',
-        key: 'username',
-        required: true,
-        placeholder: 'Username',
-        displayOrder: 1,
-    },
-    {
-        label: 'Password',
-        key: 'password',
-        required: true,
-        placeholder: 'Password',
-        type: 'password',
-        displayOrder: 2,
-    },
-    {
-        label: 'Email',
-        key: 'email',
-        required: true,
-        placeholder: 'Email',
-        type: 'email',
-        displayOrder: 3
-    },
-    {
-        label: 'Phone Number',
-        key: 'phone_number',
-        placeholder: 'Phone Number',
-        required: true,
-        displayOrder: 4
-    }
-];
 
 const logger = new Logger('SignUp');
 export default class SignUp extends AuthPiece {
@@ -80,6 +49,7 @@ export default class SignUp extends AuthPiece {
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
+        this.needPrefix = this.needPrefix.bind(this);
     }
 
     signUp() {
@@ -104,7 +74,8 @@ export default class SignUp extends AuthPiece {
 
         inputKeys.forEach((key, index) => {
             if (!['username', 'password', 'checkedValue'].includes(key)) {
-                signup_info.attributes[key] = inputVals[index]; 
+                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                signup_info.attributes[newKey] = inputVals[index];
             }
         });
 
@@ -231,6 +202,19 @@ export default class SignUp extends AuthPiece {
           this.signUpFields = this.defaultSignUpFields;
         }
     }
+
+    needPrefix(key) {
+        const field = this.signUpFields.find(e => e.key === key);
+        if (key.indexOf('custom:') !== 0) {
+          return field.custom ;
+        } else if (key.indexOf('custom:') === 0 && field.custom === false) {
+          this.amplifyService.logger('SignUpComponent', 'WARN')
+          .log('Custom prefix prepended to key but custom field flag is set to false');
+          
+        }
+        return null;
+    }
+
 
     getDefaultDialCode() {
         return this.props.signUpConfig &&
