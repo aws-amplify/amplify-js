@@ -669,7 +669,7 @@ describe("AnalyticsProvider test", () => {
                     "ChannelType": undefined, 
                     "Demographic": {
                         "AppVersion": "clientInfoAppVersion", 
-                        "Locale": undefined,
+                        "Locale": "locale",
                         "Make": "make",
                         "Model": "model",
                         "ModelVersion": "clientInfoVersion", 
@@ -700,24 +700,53 @@ describe("AnalyticsProvider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
-            const {UserId, UserAttributes, ...endpointRequestContext} = defaultEndpointConfigure;
-
+            
             const params = {event: { name: '_update_endpoint', immediate: true}};
             await analytics.record(params);
             
             expect(spyon.mock.calls[0][0]).toEqual({
-                "ApplicationId": "appId", 
-                "EndpointId": "endpointId", 
-                "EndpointRequest": {
-                    "EffectiveDate": "isoString", 
-                    "RequestId": "sessionId", 
-                    "User": {
-                        "UserAttributes": {
-                            "interests": [ 'default' ]
-                        }, 
-                        "UserId": "default"
+                "ApplicationId":"appId",
+                "EndpointId":"endpointId",
+                "EndpointRequest":{
+                    "Address":"default",
+                    "Attributes":{
+                        "hobbies":[
+                            "default"
+                        ]
                     },
-                    ...endpointRequestContext
+                    "ChannelType":"default",
+                    "Demographic":{
+                        "AppVersion":"default",
+                        "Locale":"default",
+                        "Make":"default",
+                        "Model":"default",
+                        "ModelVersion":"default",
+                        "Platform":"default",
+                        "PlatformVersion":"default",
+                        "Timezone":"default"
+                    },
+                    "EffectiveDate":"isoString",
+                    "Location":{
+                        "City":"default",
+                        "Country":"default",
+                        "Latitude":0,
+                        "Longitude":0,
+                        "PostalCode":"default",
+                        "Region":"default"
+                    },
+                    "Metrics":{
+
+                    },
+                    "OptOut":"default",
+                    "RequestId":"sessionId",
+                    "User":{
+                        "UserAttributes":{
+                            "interests":[
+                            "default"
+                            ]
+                        },
+                        "UserId":"default"
+                    }
                 }
             });
 
@@ -740,18 +769,48 @@ describe("AnalyticsProvider test", () => {
             await analytics.record(params);
             
             expect(spyon.mock.calls[0][0]).toEqual({
-                "ApplicationId": "appId", 
-                "EndpointId": "endpointId", 
-                "EndpointRequest": {
-                    "EffectiveDate": "isoString", 
-                    "RequestId": "sessionId", 
-                    "User": {
-                        "UserAttributes": {
-                            "interests": [ 'configured' ]
-                        }, 
-                        "UserId": "configured"
+                "ApplicationId":"appId",
+                "EndpointId":"endpointId",
+                "EndpointRequest":{
+                    "Address":"configured",
+                    "Attributes":{
+                        "hobbies":[
+                            "configured"
+                        ]
                     },
-                    ...endpointRequestContext
+                    "ChannelType":"configured",
+                    "Demographic":{
+                        "AppVersion":"configured",
+                        "Locale":"configured",
+                        "Make":"configured",
+                        "Model":"configured",
+                        "ModelVersion":"configured",
+                        "Platform":"configured",
+                        "PlatformVersion":"configured",
+                        "Timezone":"configured"
+                    },
+                    "EffectiveDate":"isoString",
+                    "Location":{
+                        "City":"configured",
+                        "Country":"configured",
+                        "Latitude":0,
+                        "Longitude":0,
+                        "PostalCode":"configured",
+                        "Region":"configured"
+                    },
+                    "Metrics":{
+
+                    },
+                    "OptOut":"configured",
+                    "RequestId":"sessionId",
+                    "User":{
+                        "UserAttributes":{
+                            "interests":[
+                            "configured"
+                            ]
+                        },
+                        "UserId":"configured"
+                    }
                 }
             });
 

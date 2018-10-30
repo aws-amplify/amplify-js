@@ -351,7 +351,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         this._initClients(config, credentials);
         
-        const request = this._endpointRequest(config, JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes']));
+        const request = this._endpointRequest(
+            config, 
+            JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes'])
+        );
         const update_params = {
             ApplicationId: appId,
             EndpointId: endpointId,
@@ -428,7 +431,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             modelVersion: clientInfo.version,
             platform: clientInfo.platform
         };
-        const { clientId, appTitle, appVersionName, appVersionCode, appPackageName, ...demographicByClientContext } = clientContext;
+        // for backward compatibility
+        const { 
+            clientId, 
+            appTitle, 
+            appVersionName, 
+            appVersionCode, 
+            appPackageName, 
+            ...demographicByClientContext 
+        } = clientContext;
         const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {
             channelType,
