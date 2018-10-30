@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
@@ -9,7 +10,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
 
@@ -25,7 +26,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = mount(<CompWithAuth/>);
         
@@ -41,7 +42,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
         
@@ -57,7 +58,7 @@ describe('trackLifecycle test', () => {
             render() {
                 return <div />;
             }
-        }
+        };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
         const wrapper = shallow(<CompWithAuth/>);
 

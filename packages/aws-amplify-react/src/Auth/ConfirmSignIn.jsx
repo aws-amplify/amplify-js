@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -42,7 +42,7 @@ export default class ConfirmSignIn extends AuthPiece {
         this.checkContact = this.checkContact.bind(this);
         this.state = {
             mfaType: 'SMS'
-        }
+        };
     }
 
     checkContact(user) {
@@ -55,8 +55,8 @@ export default class ConfirmSignIn extends AuthPiece {
                 if (!JS.isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
+                    const newUser = Object.assign(user, data);
+                    this.changeState('verifyContact', newUser);
                 }
             });
     }
@@ -77,7 +77,7 @@ export default class ConfirmSignIn extends AuthPiece {
     }
 
     componentDidUpdate() {
-        //logger.debug('component did update with props', this.props);
+        // logger.debug('component did update with props', this.props);
         const user = this.props.authData;
         const mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA'?
             'TOTP' : 'SMS';
@@ -118,6 +118,6 @@ export default class ConfirmSignIn extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }
