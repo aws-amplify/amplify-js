@@ -121,6 +121,6 @@ export default class ConfirmSignUp extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

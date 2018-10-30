@@ -103,7 +103,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             expect(s3Album.getKey(file)).toBe('fileToKey');
         });
@@ -123,7 +123,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             s3Album.getKey(file);
 
@@ -149,7 +149,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             expect(s3Album.getKey(file)).toBe("%7B%22attr%22:%22attr%22%7D");
         });
@@ -456,7 +456,7 @@ describe('S3Album test', () => {
 
             s3Album.contentType({
                 key: 'key'
-            })
+            });
 
             expect(spyon).toBeCalledWith('key', 'image/*');
 

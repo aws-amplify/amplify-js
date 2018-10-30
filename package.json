@@ -9,7 +9,7 @@
     "cypress": "lerna exec yarn cypress",
     "cypress:open": "lerna exec yarn cypress:open",
     "coverage": "codecov || exit 0",
-    "docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api",
+    "docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/",
     "build": "lerna exec yarn build",
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
