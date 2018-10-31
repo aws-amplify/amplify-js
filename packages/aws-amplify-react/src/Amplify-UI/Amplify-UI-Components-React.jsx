@@ -369,7 +369,7 @@ export const NavButton = (props) => {
     const style = propStyle(props, theme.navButton);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <button {...p} className={AmplifyUI.button} style={theme.toast}>
+        <button {...p} className={AmplifyUI.button} style={style}>
             {beforeAfter(
                 <span>{props.children}</span>
             )}

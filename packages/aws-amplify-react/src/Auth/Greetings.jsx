@@ -19,7 +19,7 @@ import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
-import { withGoogle, withAmazon, withFacebook, withOAuth } from './Provider';
+import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
 
 const logger = new Logger('Greetings');
 
@@ -69,21 +69,25 @@ export default class Greetings extends AuthPiece {
 
     renderSignOutButton() {
         const { federated={} } = this.props;
-        const { google_client_id, facebook_app_id, amazon_client_id } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, auth0 } = federated;
         const config = Auth.configure();
+        const { oauth={} } = config;
         const googleClientId = google_client_id || config.googleClientId;
         const facebookAppId = facebook_app_id || config.facebookClientId;
         const amazonClientId = amazon_client_id || config.amazonClientId;
+        const auth0_config = auth0 || oauth.auth0;
 
         if (googleClientId) SignOut = withGoogle(SignOut);
         if (facebookAppId) SignOut = withFacebook(SignOut);
         if (amazonClientId) SignOut = withAmazon(SignOut);
+        if (auth0_config) SignOut = withAuth0(SignOut);
 
         return <SignOut 
             {...this.props} 
             google_client_id={google_client_id} 
             facebook_app_id={facebook_app_id} 
             amazon_client_id={amazon_client_id}
+            auth0={auth0_config}
             />;
     }
 
