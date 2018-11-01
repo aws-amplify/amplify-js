@@ -1332,6 +1332,51 @@ export default class AuthClass {
         };
     }
 
+    /**
+     * Set device status as remembered for the current cognito user
+     * @return - A promise resolve if success
+     */
+    public async setDeviceStatusRemembered() {
+      const user = await this.currentUserPoolUser();
+
+      return new Promise((resolve, reject) => {
+        user.setDeviceStatusRemembered({
+          onSuccess: resolve,
+          onFailure: reject,
+        });
+      });
+    }
+
+    /**
+     * Set device status as not remembered for the current cognito user
+     * @return - A promise resolve if success
+     */
+    public async setDeviceStatusNotRemembered() {
+      const user = await this.currentUserPoolUser();
+
+      return new Promise((resolve, reject) => {
+        user.setDeviceStatusNotRemembered({
+          onSuccess: resolve,
+          onFailure: reject,
+        });
+      });
+    }
+
+    /**
+     * Set device status as not forgotten for the current cognito user
+     * @return - A promise resolve if success
+     */
+    public async forgetDevice() {
+      const user = await this.currentUserPoolUser();
+
+      return new Promise((resolve, reject) => {
+        user.forgetDevice({
+          onSuccess: resolve,
+          onFailure: reject,
+        });
+      });
+    }
+
     private attributesToObject(attributes) {
         const obj = {};
         if (attributes) {
