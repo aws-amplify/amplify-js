@@ -400,6 +400,7 @@ border: 0px solid var(--color-white) !important;
 
 .amplify-form-actions {
   margin-top:1.8em;
+  padding-bottom: 1.5em;
 }
 
 .amplify-signin-username {
@@ -479,6 +480,10 @@ color: var(--color-primary-highlight);
 
 .amplify-footer {
   clear: both;
+}
+
+.amplify-input-invalid {
+  border-color: red !important;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {

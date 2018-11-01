@@ -95,11 +95,11 @@ export default class Authenticator extends Component {
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event) {
+    handleAuthEvent(state, event, showToast = true) {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message, showToast: true });
+            this.setState({ error: message, showToast });
             
         }
     }
@@ -109,7 +109,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide = [], federated } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -130,7 +130,7 @@ export default class Authenticator extends Component {
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
@@ -178,7 +178,7 @@ export default class Authenticator extends Component {
         return (
             <Container theme={theme}>
                 {this.state.showToast && 
-                    <Toast onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }

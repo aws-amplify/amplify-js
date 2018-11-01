@@ -8,25 +8,6 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username</ion-label>
-        <ion-input type="text"
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-          [value]="username"
-        ></ion-input>
-      </ion-item>
-  
-      <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code</ion-label>
-        <ion-input 
-          #code
-          type="text"
-          class="amplify-form-input"
-          (keyup)="setCode(code.value)"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item lines="none">
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
         <ion-input 
           #password
@@ -42,8 +23,8 @@ const template = `
     <div class="amplify-form-row">
     <ion-button
       expand="block"
-      (click)="onSend()"
-    >Send Code</ion-button>
+      (click)="onSignIn()"
+    >Back to Sign In</ion-button>
     <ion-button
       expand="block"
       (click)="onSubmit()"
