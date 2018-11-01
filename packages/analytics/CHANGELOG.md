@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.5-unstable.1"></a>
+## [1.2.5-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.5-unstable.0...@aws-amplify/analytics@1.2.5-unstable.1) (2018-11-01)
+
+
+### Features
+
+* **@aws-amplify/analytics:** allow users to fully configure pinpoint endpoint ([55727cf](https://github.com/aws/aws-amplify/commit/55727cf))
+
+
+
+
 <a name="1.2.5-unstable.0"></a>
 ## [1.2.5-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.4...@aws-amplify/analytics@1.2.5-unstable.0) (2018-10-30)
 
