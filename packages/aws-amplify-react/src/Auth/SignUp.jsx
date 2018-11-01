@@ -50,47 +50,6 @@ export default class SignUp extends AuthPiece {
         this.needPrefix = this.needPrefix.bind(this);
     }
 
-
-    signUp() {
-        if (!this.inputs.dial_code) {
-            this.inputs.dial_code = this.getDefaultDialCode();
-        }
-        const validation = this.validate();
-        if (validation && validation.length > 0) {
-          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
-        }
-        if (!Auth || typeof Auth.signUp !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-
-        let signup_info = {
-            username: this.inputs.username,
-            password: this.inputs.password,
-            attributes: {
-                
-            }
-        };
-
-        const inputKeys = Object.keys(this.inputs);
-        const inputVals = Object.values(this.inputs);
-
-        inputKeys.forEach((key, index) => {
-            if (!['username', 'password', 'checkedValue'].includes(key)) {
-              if (key !== 'phone_line_number' && key !== 'dial_code') {
-                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                signup_info.attributes[newKey] = inputVals[index];
-              } else {
-                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
-              }
-            }
-        });
-
-        Auth.signUp(signup_info).then((data) => {
-            this.changeState('confirmSignUp', data.user.username)
-        })
-        .catch(err => this.error(err));
-    }
-
     showComponent(theme) {
         const { hide } = this.props;
         if (hide && hide.includes(SignUp)) { return null; }
@@ -246,8 +205,7 @@ export default class SignUp extends AuthPiece {
         if (key.indexOf('custom:') !== 0) {
           return field.custom ;
         } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-          this.amplifyService.logger('SignUpComponent', 'WARN')
-          .log('Custom prefix prepended to key but custom field flag is set to false');
+            logger.warn('Custom prefix prepended to key but custom field flag is set to false');
           
         }
         return null;
@@ -265,5 +223,45 @@ export default class SignUp extends AuthPiece {
         return this.props.signUpConfig &&
         this.props.signUpConfig.signUpFields &&
         this.props.signUpConfig.signUpFields.length > 0
+    }
+
+    signUp() {
+        if (!this.inputs.dial_code) {
+            this.inputs.dial_code = this.getDefaultDialCode();
+        }
+        const validation = this.validate();
+        if (validation && validation.length > 0) {
+          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
+        }
+        if (!Auth || typeof Auth.signUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
+        let signup_info = {
+            username: this.inputs.username,
+            password: this.inputs.password,
+            attributes: {
+                
+            }
+        };
+
+        const inputKeys = Object.keys(this.inputs);
+        const inputVals = Object.values(this.inputs);
+
+        inputKeys.forEach((key, index) => {
+            if (!['username', 'password', 'checkedValue'].includes(key)) {
+              if (key !== 'phone_line_number' && key !== 'dial_code') {
+                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                signup_info.attributes[newKey] = inputVals[index];
+              } else {
+                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
+              }
+            }
+        });
+
+        Auth.signUp(signup_info).then((data) => {
+            this.changeState('confirmSignUp', data.user.username)
+        })
+        .catch(err => this.error(err));
     }
 }

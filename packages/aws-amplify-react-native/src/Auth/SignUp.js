@@ -52,41 +52,6 @@ export default class SignUp extends AuthPiece {
         this.needPrefix = this.needPrefix.bind(this);
     }
 
-    signUp() {
-        const validation = this.validate();
-        if (validation && validation.length > 0) {
-          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
-        }
-        if (!Auth || typeof Auth.signUp !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-
-        let signup_info = {
-            username: this.state.username,
-            password: this.state.password,
-            attributes: {
-                
-            }
-        };
-
-        const inputKeys = Object.keys(this.state);
-        const inputVals = Object.values(this.state);
-
-        inputKeys.forEach((key, index) => {
-            if (!['username', 'password', 'checkedValue'].includes(key)) {
-                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                signup_info.attributes[newKey] = inputVals[index];
-            }
-        });
-
-        console.log('signup_info', signup_info)
-
-        Auth.signUp(signup_info).then((data) => {
-            this.changeState('confirmSignUp', data.user.username)
-        })
-        .catch(err => this.error(err));
-    }
-
     showComponent(theme) {
         if (this.checkCustomSignUpFields()) {
             this.signUpFields = this.props.signUpConfig.signUpFields;
@@ -208,9 +173,7 @@ export default class SignUp extends AuthPiece {
         if (key.indexOf('custom:') !== 0) {
           return field.custom ;
         } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-          this.amplifyService.logger('SignUpComponent', 'WARN')
-          .log('Custom prefix prepended to key but custom field flag is set to false');
-          
+          logger.warn('Custom prefix prepended to key but custom field flag is set to false');
         }
         return null;
     }
@@ -229,4 +192,40 @@ export default class SignUp extends AuthPiece {
         this.props.signUpConfig.signUpFields &&
         this.props.signUpConfig.signUpFields.length > 0
     }
+
+    signUp() {
+        const validation = this.validate();
+        if (validation && validation.length > 0) {
+          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
+        }
+        if (!Auth || typeof Auth.signUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
+        let signup_info = {
+            username: this.state.username,
+            password: this.state.password,
+            attributes: {
+                
+            }
+        };
+
+        const inputKeys = Object.keys(this.state);
+        const inputVals = Object.values(this.state);
+
+        inputKeys.forEach((key, index) => {
+            if (!['username', 'password', 'checkedValue'].includes(key)) {
+                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                signup_info.attributes[newKey] = inputVals[index];
+            }
+        });
+
+        console.log('signup_info', signup_info)
+
+        Auth.signUp(signup_info).then((data) => {
+            this.changeState('confirmSignUp', data.user.username)
+        })
+        .catch(err => this.error(err));
+    }
+
 }
