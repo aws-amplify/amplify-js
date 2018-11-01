@@ -72,7 +72,7 @@ export default {
   props: ['signUpConfig'],
   data () {
     return {
-      country: 'USA (+1)',
+      country: '',
       countryCode: '1',
       countries,
       amplifyUI: AmplifyUI,
@@ -181,7 +181,8 @@ export default {
         } else if (e.key === 'phone_number') {
           user.attributes.phone_number = `+${this.countryCode}${e.value}`
         } else {
-          user.attributes[e.key] = e.value;
+          const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+          user.attributes[newKey] = e.value;
         };
       })
 
@@ -219,6 +220,15 @@ export default {
     setError: function(e) {
       this.error = e.message || e;
       this.logger.error(this.error) 
+    },
+    needPrefix: function(key) {
+      const field = this.signUpFields.find(e => e.key === key);
+      if (key.indexOf('custom:') !== 0) {
+        return field.custom ;
+      } else if (key.indexOf('custom:') === 0 && field.custom === false) {
+          this.logger.warn('Custom prefix prepended to key but custom field flag is set to false');
+      }
+      return null;
     },
   }
 }
