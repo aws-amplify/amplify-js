@@ -91,7 +91,7 @@ export default class Authenticator extends Component {
         if (state === this.state.auth) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        this.setState({ auth: state, authData: data, error: null, showToast: false });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
