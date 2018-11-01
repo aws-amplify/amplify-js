@@ -52,58 +52,6 @@ export default class SignUp extends AuthPiece {
         this.needPrefix = this.needPrefix.bind(this);
     }
 
-    showComponent(theme) {
-        if (this.checkCustomSignUpFields()) {
-            this.signUpFields = this.props.signUpConfig.signUpFields;
-        }
-        this.sortFields();
-        return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Create a new account')}</Header>
-                    <View style={theme.sectionBody}>
-                    {
-                        this.signUpFields.map((field) => {
-                            return  (
-                                <FormField
-                                    key = {field.key}
-                                    theme={theme}
-                                    type={field.type}
-                                    secureTextEntry={field.type === 'password' ? true: false}
-                                    onChangeText={(text) => {
-                                            const stateObj = this.state;
-                                            stateObj[field.key] = text;
-                                            this.setState(stateObj)
-                                        }
-                                    }
-                                    label={I18n.get(field.label)}
-                                    placeholder={I18n.get(field.placeholder)}
-                                    required={field.required}
-                                />
-                            )
-                        })
-                    }
-                        <AmplifyButton
-                            text={I18n.get('Sign Up').toUpperCase()}
-                            theme={theme}
-                            onPress={this.signUp}
-                            disabled={!this.state.username || !this.state.password}
-                        />
-                    </View>
-                    <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('confirmSignUp')}>
-                            {I18n.get('Confirm a Code')}
-                        </LinkCell>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
-                            {I18n.get('Sign In')}
-                        </LinkCell>
-                    </View>
-                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-                </View>
-            </TouchableWithoutFeedback>
-        );
-    }
-
     validate() {
         const invalids = [];
         this.signUpFields.map((el) => {
@@ -227,5 +175,58 @@ export default class SignUp extends AuthPiece {
         })
         .catch(err => this.error(err));
     }
+
+    showComponent(theme) {
+        if (this.checkCustomSignUpFields()) {
+            this.signUpFields = this.props.signUpConfig.signUpFields;
+        }
+        this.sortFields();
+        return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Create a new account')}</Header>
+                    <View style={theme.sectionBody}>
+                    {
+                        this.signUpFields.map((field) => {
+                            return  (
+                                <FormField
+                                    key = {field.key}
+                                    theme={theme}
+                                    type={field.type}
+                                    secureTextEntry={field.type === 'password' ? true: false}
+                                    onChangeText={(text) => {
+                                            const stateObj = this.state;
+                                            stateObj[field.key] = text;
+                                            this.setState(stateObj)
+                                        }
+                                    }
+                                    label={I18n.get(field.label)}
+                                    placeholder={I18n.get(field.placeholder)}
+                                    required={field.required}
+                                />
+                            )
+                        })
+                    }
+                        <AmplifyButton
+                            text={I18n.get('Sign Up').toUpperCase()}
+                            theme={theme}
+                            onPress={this.signUp}
+                            disabled={!this.state.username || !this.state.password}
+                        />
+                    </View>
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('confirmSignUp')}>
+                            {I18n.get('Confirm a Code')}
+                        </LinkCell>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Sign In')}
+                        </LinkCell>
+                    </View>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                </View>
+            </TouchableWithoutFeedback>
+        );
+    }
+
 
 }

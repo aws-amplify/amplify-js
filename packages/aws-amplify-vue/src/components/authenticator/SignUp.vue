@@ -72,7 +72,7 @@ export default {
   props: ['signUpConfig'],
   data () {
     return {
-      country: '',
+      country: 'USA (+1)',
       countryCode: '1',
       countries,
       amplifyUI: AmplifyUI,
@@ -115,15 +115,21 @@ export default {
         ]
       }
 
+      if (this.signUpConfig && this.signUpConfig.defaultCountryCode) {
+        this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
+      }
+
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        defaults.signUpFields.forEach((f, i) => {
-          const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
-            return d.key === f.key;
+        if (!this.signUpConfig.hideDefaults) {
+          defaults.signUpFields.forEach((f, i) => {
+            const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
+              return d.key === f.key;
+            });
+            if (matchKey === -1) {
+              this.signUpConfig.signUpFields.push(f);
+            }
           });
-          if (matchKey === -1) {
-            this.signUpConfig.signUpFields.push(f);
-          }
-        });
+        }
         let counter = this.signUpConfig.signUpFields.filter((f) => {
           return f.displayOrder;
         }).length;
@@ -181,7 +187,7 @@ export default {
         } else if (e.key === 'phone_number') {
           user.attributes.phone_number = `+${this.countryCode}${e.value}`
         } else {
-          const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+          const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;
         };
       })
@@ -222,7 +228,7 @@ export default {
       this.logger.error(this.error) 
     },
     needPrefix: function(key) {
-      const field = this.signUpFields.find(e => e.key === key);
+      const field = this.options.signUpFields.find(e => e.key === key);
       if (key.indexOf('custom:') !== 0) {
         return field.custom ;
       } else if (key.indexOf('custom:') === 0 && field.custom === false) {

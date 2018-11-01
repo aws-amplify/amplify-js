@@ -50,83 +50,6 @@ export default class SignUp extends AuthPiece {
         this.needPrefix = this.needPrefix.bind(this);
     }
 
-    showComponent(theme) {
-        const { hide } = this.props;
-        if (hide && hide.includes(SignUp)) { return null; }
-        if (this.checkCustomSignUpFields()) {
-            this.signUpFields = this.props.signUpConfig.signUpFields;
-        }
-        this.sortFields();
-        return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
-                <SectionBody theme={theme}>
-                    {
-                        this.signUpFields.map((field) => {
-                            return field.key !== 'phone_number' ? (
-                                <FormField theme={theme} key={field.key}>
-                                {
-                                    field.required ? 
-                                    <InputLabel>{I18n.get(field.label)} *</InputLabel> :
-                                    <InputLabel>{I18n.get(field.label)}</InputLabel>
-                                }
-                                    <Input
-                                        autoFocus={
-                                            this.signUpFields.findIndex((f) => {
-                                                return f.key === field.key
-                                            }) === 0 ? true : false
-                                        }
-                                        placeholder={I18n.get(field.placeholder)}
-                                        theme={theme}
-                                        type={field.type}
-                                        name={field.key}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </FormField>
-                            ) : (
-                                <FormField theme={theme} key="phone_number">
-                                    <InputLabel>{I18n.get('Phone Number')}</InputLabel>
-                                    <SelectInput theme={theme}>
-                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}>
-                                            {countryDialCodes.map(dialCode =>
-                                                <option key={dialCode} value={dialCode}>
-                                                    {dialCode}
-                                                </option>
-                                            )}
-                                        </select>
-                                        <Input
-                                            placeholder={I18n.get(field.placeholder)}
-                                            theme={theme}
-                                            type="tel"
-                                            id="phone_line_number"
-                                            key="phone_line_number"
-                                            name="phone_line_number"
-                                            onChange={this.handleInputChange}
-                                        />
-                                    </SelectInput>
-                                </FormField>
-                            )
-                        })
-                    }
-                </SectionBody>
-                <SectionFooter theme={theme}>
-                    <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme}>
-                            {I18n.get('Create Account')}
-                        </Button>
-                    </SectionFooterPrimaryContent>
-                    <SectionFooterSecondaryContent theme={theme}>
-                        {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                            {I18n.get('Sign in')}
-                        </Link>
-                    </SectionFooterSecondaryContent>
-                </SectionFooter>
-            </FormSection>
-        );
-    }
-
     validate() {
         const invalids = [];
         this.signUpFields.map((el) => {
@@ -264,4 +187,83 @@ export default class SignUp extends AuthPiece {
         })
         .catch(err => this.error(err));
     }
+
+    showComponent(theme) {
+        const { hide } = this.props;
+        if (hide && hide.includes(SignUp)) { return null; }
+        if (this.checkCustomSignUpFields()) {
+            this.signUpFields = this.props.signUpConfig.signUpFields;
+        }
+        this.sortFields();
+        return (
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
+                <SectionBody theme={theme}>
+                    {
+                        this.signUpFields.map((field) => {
+                            return field.key !== 'phone_number' ? (
+                                <FormField theme={theme} key={field.key}>
+                                {
+                                    field.required ? 
+                                    <InputLabel>{I18n.get(field.label)} *</InputLabel> :
+                                    <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                }
+                                    <Input
+                                        autoFocus={
+                                            this.signUpFields.findIndex((f) => {
+                                                return f.key === field.key
+                                            }) === 0 ? true : false
+                                        }
+                                        placeholder={I18n.get(field.placeholder)}
+                                        theme={theme}
+                                        type={field.type}
+                                        name={field.key}
+                                        onChange={this.handleInputChange}
+                                    />
+                                </FormField>
+                            ) : (
+                                <FormField theme={theme} key="phone_number">
+                                    <InputLabel>{I18n.get('Phone Number')}</InputLabel>
+                                    <SelectInput theme={theme}>
+                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
+                                        onChange={this.handleInputChange}>
+                                            {countryDialCodes.map(dialCode =>
+                                                <option key={dialCode} value={dialCode}>
+                                                    {dialCode}
+                                                </option>
+                                            )}
+                                        </select>
+                                        <Input
+                                            placeholder={I18n.get(field.placeholder)}
+                                            theme={theme}
+                                            type="tel"
+                                            id="phone_line_number"
+                                            key="phone_line_number"
+                                            name="phone_line_number"
+                                            onChange={this.handleInputChange}
+                                        />
+                                    </SelectInput>
+                                </FormField>
+                            )
+                        })
+                    }
+                </SectionBody>
+                <SectionFooter theme={theme}>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button onClick={this.signUp} theme={theme}>
+                            {I18n.get('Create Account')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        {I18n.get('Have an account? ')}
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Sign in')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
+                </SectionFooter>
+            </FormSection>
+        );
+    }
+
+
 }
