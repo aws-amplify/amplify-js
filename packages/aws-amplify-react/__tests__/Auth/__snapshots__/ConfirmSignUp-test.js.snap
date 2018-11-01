@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -245,7 +245,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -490,8 +490,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
     }
   >
     Confirm Sign Up
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -735,7 +735,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       }
     }
   >
-    <FormField
+    <Component
       theme={
         Object {
           "a": Object {
@@ -979,11 +979,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       }
     >
-      <InputLabel>
+      <Component>
         Username
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         disabled=""
         key="username"
         name="username"
@@ -1233,8 +1233,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
         value=""
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1478,11 +1478,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       }
     >
-      <InputLabel>
+      <Component>
         Confirmation Code
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoComplete="off"
         autoFocus={true}
         key="code"
@@ -1732,7 +1732,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           }
         }
       />
-      <Hint
+      <Component
         theme={
           Object {
             "a": Object {
@@ -1977,7 +1977,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       >
         Lost your code? 
-        <Link
+        <Component
           onClick={[Function]}
           theme={
             Object {
@@ -2223,11 +2223,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           }
         >
           Resend Code
-        </Link>
-      </Hint>
-    </FormField>
-  </SectionBody>
-  <SectionFooter
+        </Component>
+      </Component>
+    </Component>
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -2471,7 +2471,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       }
     }
   >
-    <SectionFooterPrimaryContent
+    <Component
       theme={
         Object {
           "a": Object {
@@ -2715,7 +2715,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       }
     >
-      <Button
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -2961,9 +2961,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       >
         Confirm
-      </Button>
-    </SectionFooterPrimaryContent>
-    <SectionFooterSecondaryContent
+      </Component>
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -3207,7 +3207,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       }
     >
-      <Link
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -3453,10 +3453,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       >
         Back to Sign In
-      </Link>
-    </SectionFooterSecondaryContent>
-  </SectionFooter>
-</FormSection>
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`ConfirmSignIn normal case render correctly with hide 1`] = `""`;

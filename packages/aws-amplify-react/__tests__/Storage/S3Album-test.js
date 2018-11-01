@@ -2,7 +2,7 @@ import Storage from '@aws-amplify/storage';
 import S3Album from '../../src/Storage/S3Album';
 import S3Text from '../../src/Storage/S3Text';
 import S3Image from '../../src/Storage/S3Image';
-import React from 'react';
+import * as React from 'react';
 import { JS } from '@aws-amplify/core';
 
 const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
@@ -103,7 +103,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             expect(s3Album.getKey(file)).toBe('fileToKey');
         });
@@ -123,7 +123,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             s3Album.getKey(file);
 
@@ -149,7 +149,7 @@ describe('S3Album test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
 
             expect(s3Album.getKey(file)).toBe("%7B%22attr%22:%22attr%22%7D");
         });
@@ -456,7 +456,7 @@ describe('S3Album test', () => {
 
             s3Album.contentType({
                 key: 'key'
-            })
+            });
 
             expect(spyon).toBeCalledWith('key', 'image/*');
 

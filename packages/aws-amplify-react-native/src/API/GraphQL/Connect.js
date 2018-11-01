@@ -16,8 +16,18 @@ export default class Connect extends Component {
     constructor(props) {
         super(props);
 
-        this.state = this.getDefaultState();
+        this.state = this.getInitialState();
         this.subSubscription = null;
+    }
+
+    getInitialState() {
+        const { query } = this.props;
+        return {
+            loading: query && !!query.query,
+            data: {},
+            errors: [],
+            mutation: () => console.warn('Not implemented'),
+        };
     }
 
     getDefaultState() {

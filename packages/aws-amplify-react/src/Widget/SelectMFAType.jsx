@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -86,7 +87,8 @@ export default class SelectMFAType extends Component {
             
         }).catch(err => {
             const { message } = err;
-            if (message === 'User has not set up software token mfa' || message === 'User has not verified software token mfa') {
+            if (message === 'User has not set up software token mfa'
+                || message === 'User has not verified software token mfa') {
                 this.setState({
                     TOTPSetup: true,
                     selectMessage: 'You need to setup TOTP',
@@ -98,7 +100,7 @@ export default class SelectMFAType extends Component {
                 this.setState({
                     selectMessage: 'Failed! You cannot select MFA Type for now!',
                     showToast: true
-                })
+                });
             }
         });
     }
@@ -111,7 +113,7 @@ export default class SelectMFAType extends Component {
                 <div>
                     <a>less than 2 mfa types available</a>
                 </div>
-            )
+            );
         }
         const { SMS, TOTP, Optional } = MFATypes;
         return (
@@ -158,19 +160,19 @@ export default class SelectMFAType extends Component {
                     <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 
 
 
     render() {  
-        const theme = this.props.theme? theme: AmplifyTheme;
+        const theme = this.props.theme ? theme: AmplifyTheme;
         return (
             <div>
             {this.selectView(theme)}
-            { this.state.TOTPSetup?
+            { this.state.TOTPSetup ?
                 <TOTPSetupComp {...this.props}/> : null
             }</div>
-        )
+        );
     }
 }
