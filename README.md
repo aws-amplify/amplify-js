@@ -32,7 +32,7 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 ### Features / APIs
 
 - [__Authentication__](https://aws.github.io/aws-amplify/media/authentication_guide): APIs and building blocks for developers who want to create user authentication experiences.  
-- [__Analytics__](https://aws.github.io/aws-amplify/media/analytics_guide): Easily collect analytics data for you app. Analytics data includes user sessions and other custom events that you want to track in your app.  
+- [__Analytics__](https://aws.github.io/aws-amplify/media/analytics_guide): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.  
 - [__API__](https://aws.github.io/aws-amplify/media/api_guide): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
 - [__GraphQL Client__](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server): Interact with your GraphQL server or AWS AppSync API with an easy to use & configure GraphQL client.  
 - [__Storage__](https://aws.github.io/aws-amplify/media/storage_guide): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.  
