@@ -73,6 +73,13 @@ export interface GraphQLOptions {
 
 export interface GraphQLResult {
     data?: object,
-    errors?: [object],
+    errors?: [{
+        message: string,
+        locations?: [{
+            line: number,
+            column: number
+        }],
+        path?: [string | number]
+    }],
     extensions?: { [key: string]: any },
 }
