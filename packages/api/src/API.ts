@@ -19,6 +19,7 @@ import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { v4 as uuid } from 'uuid';
+import { TransformerClass } from './Transformer';
 
 const logger = new Logger('API');
 
@@ -38,6 +39,7 @@ export default class APIClass implements APIInterface {
     private _options;
     private _api = null;
     private _pubSub = Amplify.PubSub;
+    private _transformer: TransformerClass;
 
     /**
      * Initialize Storage with AWS configuration
@@ -497,5 +499,12 @@ export default class APIClass implements APIInterface {
                 logger.warn('ensure credentials error', err);
                 return false;
             });
+    }
+
+    getTransformer() : TransformerClass {
+        if(!this._transformer) {
+            this._transformer = new TransformerClass(this);
+        }
+        return this._transformer;
     }
 }
