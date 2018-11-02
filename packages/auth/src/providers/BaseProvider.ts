@@ -1,4 +1,11 @@
-import { AuthProvider, ExternalSession, SetSessionResult, FederatedProviderSession, FederatedUser } from '../types';
+import { 
+    AuthProvider, 
+    ExternalSession, 
+    SetSessionResult, 
+    FederatedProviderSession, 
+    FederatedUser, 
+    SessionType 
+} from '../types';
 import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('BaseProvider');
@@ -43,12 +50,12 @@ export default class BaseProvider implements AuthProvider {
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             expires_at: tokens.expires_at,
-            type: 'FederatedProviderSession',
+            type: SessionType.Federated_Provider_Session,
             provider: this.getProviderName(),
             identityId,
             credentialsDomain: this._credentialsDomain,
             credentialsToken: tokens.idToken
-        }
+        };
 
         const user: FederatedUser = {
             name: username,
@@ -79,7 +86,7 @@ export default class BaseProvider implements AuthProvider {
             session,
             user,
             credentials
-        }
+        };
     }
 
     public async getSession(): Promise<any> {
@@ -108,11 +115,11 @@ export default class BaseProvider implements AuthProvider {
                         return session;
                     }).catch(e => {
                         logger.debug('refresh federated token failed', e);
-                        throw('refreshing federation token failed: ' + e);
+                        throw new Error('refreshing federation token failed: ' + e);
                     });
                 } else {
                     logger.debug('no refresh handler for provider:', this.getProviderName());
-                    throw('no refresh handler for provider');
+                    throw new Error('no refresh handler for provider');
                 }
             }
         } catch (e) {

@@ -1343,7 +1343,9 @@ export default class AuthClass {
         this._removeSessionSource();
         if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             if (!this.userPool) {
-                throw('No userPool'); 
+                // throw('No userPool'); 
+                logger.debug('no Congito User pool');
+                return;
             }
             const user = this.userPool.getCurrentUser();
             if (user) {

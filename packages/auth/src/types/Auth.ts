@@ -11,7 +11,13 @@
  * and limitations under the License.
  */
 
-import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute, CognitoUser, CognitoUserSession } from "amazon-cognito-identity-js";
+import { 
+    ICookieStorageData, 
+    ICognitoStorage, 
+    CognitoUserAttribute, 
+    CognitoUser, 
+    CognitoUserSession 
+} from "amazon-cognito-identity-js";
 import { ICredentials } from '@aws-amplify/core';
 /**
 * Parameters for user sign up
@@ -142,3 +148,7 @@ export interface AuthProvider {
     clearSession(): Promise<void>;
     getUser(): Promise<any>;
 }
+
+export const SessionType = {
+    Federated_Provider_Session: 'FederatedProviderSession'
+};

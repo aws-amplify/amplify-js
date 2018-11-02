@@ -42,12 +42,12 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
             identityId,
             credentialsDomain: this._credentialsDomain,
             credentialsToken: tokens.accessToken
-        }
+        };
 
         const user: FederatedUser = {
             name: username,
             attributes
-        }
+        };
         
         // cache information
         await this._storageSync;
@@ -73,7 +73,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
             session,
             user,
             credentials
-        }
+        };
     }
 
     public async getSession(): Promise<any> {
@@ -102,11 +102,11 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
                         return session;
                     }).catch(e => {
                         logger.debug('refresh federated token failed', e);
-                        throw('refreshing federation token failed: ' + e);
+                        throw new Error('refreshing federation token failed: ' + e);
                     });
                 } else {
                     logger.debug('no refresh handler for provider:', this.getProviderName());
-                    throw('no refresh handler for provider');
+                    throw new Error('no refresh handler for provider');
                 }
             }
         } catch (e) {

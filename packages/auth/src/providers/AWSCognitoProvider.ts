@@ -1,5 +1,12 @@
 import { AuthProvider, ExternalSession, SetSessionResult } from '../types';
-import { CognitoUser, CognitoUserPool, CognitoUserSession, CognitoIdToken, CognitoAccessToken, CognitoRefreshToken } from 'amazon-cognito-identity-js';
+import { 
+    CognitoUser, 
+    CognitoUserPool, 
+    CognitoUserSession, 
+    CognitoIdToken, 
+    CognitoAccessToken, 
+    CognitoRefreshToken 
+} from 'amazon-cognito-identity-js';
 import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AWSCognitoProvider');
@@ -16,7 +23,7 @@ export default class AWSCognitoProvider implements AuthProvider {
     constructor(options?) {
         this._config = {};
 
-        if (options) this.configure(options);
+        this.configure(options);
     }
 
 
@@ -61,9 +68,6 @@ export default class AWSCognitoProvider implements AuthProvider {
 
         // cache information
         user.setSignInUserSession(userSession);
-        this._storageSync.then(() => {
-            this._storage.setItem(`${_keyPrefix}_sessionSource`, this.getProviderName());
-        });
 
         let credentials = undefined;
         try {
@@ -76,10 +80,10 @@ export default class AWSCognitoProvider implements AuthProvider {
         }
         
         return {
-            session: Object.assign(userSession, { type: 'CognitoUserSession' }) ,
+            session: userSession,
             user,
             credentials
-        }
+        };
     }
 
     public async getSession(): Promise<any> {
