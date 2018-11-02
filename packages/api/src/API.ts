@@ -24,10 +24,14 @@ const logger = new Logger('API');
 
 export const graphqlOperation = (query, variables = {}) => ({ query, variables });
 
+export interface APIInterface {
+    graphql({ query, variables }: GraphQLOptions);
+}
+
 /**
  * Export Cloud Logic APIs
  */
-export default class APIClass {
+export default class APIClass implements APIInterface {
     /**
      * @private
      */
