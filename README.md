@@ -345,7 +345,7 @@ Storage.put(key, fileObj, {level: 'private'})
   .then (result => console.log(result))
   .catch(err => console.log(err));
       
-  // Store data with specifying its MIME type
+  // Stores data with specifying its MIME type
 Storage.put(key, fileObj, {
   level: 'private',
   contentType: 'text/plain'
