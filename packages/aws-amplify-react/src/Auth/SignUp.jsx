@@ -265,5 +265,4 @@ export default class SignUp extends AuthPiece {
         );
     }
 
-
 }
