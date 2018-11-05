@@ -52,7 +52,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             this.theme,
             this.signUpConfig;
 
-            if (typeof includeGreetings === 'object'){
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
                 this.includeGreetings = includeGreetings.includeGreetings || includeGreetings
                 this.authenticatorComponents = includeGreetings.authenticatorComponents || authenticatorComponents;
                 this.federated = includeGreetings.federated || federated;
@@ -82,7 +82,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             <Greetings
                                 authState={authState}
                                 authData={authData}
-                                federated={this.federated}
+                                federated={this.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
                                 theme={theme}
                             />
