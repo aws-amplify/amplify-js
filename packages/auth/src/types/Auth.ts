@@ -117,7 +117,6 @@ export interface ExternalSession {
     tokens: AuthTokens,
     provider: string,
     identityId?: string,
-    refreshHandler?: Function,
     errorHandler?: Function,
     credentialsDomain?: string
 }

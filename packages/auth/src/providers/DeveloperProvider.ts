@@ -18,8 +18,8 @@ export default class DeveloperProvider extends BaseProvider implements AuthProvi
         const { refreshHandlers = {} } = this._config;
 
         this._refreshHandler = 
-            refreshHandlers['developer'] || 
-            refreshHandlers[this.getProviderName()];
+            this._refreshHandler ||
+            refreshHandlers['developer'];
     }
 
     public getProviderName() {

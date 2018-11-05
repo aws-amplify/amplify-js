@@ -18,8 +18,8 @@ export default class AmazonProvider extends BaseProvider implements AuthProvider
         const { refreshHandlers = {} } = this._config;
 
         this._refreshHandler = 
-            refreshHandlers['amazon'] || 
-            refreshHandlers[this.getProviderName()];
+            this._refreshHandler || 
+            refreshHandlers['amazon'];
     }
 
     public getProviderName() {

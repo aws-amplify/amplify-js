@@ -15,11 +15,11 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
     public configure(options) {
         super.configure(options);
-        const { refreshHandlers = {}, facebookClientId } = this._config;
+        const { refreshHandlers = {} } = this._config;
 
         this._refreshHandler = 
+            this._refreshHandler || 
             refreshHandlers['facebook'] || 
-            refreshHandlers[this.getProviderName()] || 
             FacebookOAuth.refreshFacebookToken;
     }
 
@@ -79,38 +79,36 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
     public async getSession(): Promise<any> {
         const { _keyPrefix } = this._config;
         await this._storageSync;
-        try {
-            const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
-            if (!session) throw new Error('Session is not cached.');
-            const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
-            if (expires_at > new Date().getTime()) {
-                logger.debug('token not expired');
-                return session;
+    
+        const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
+        if (!session) throw new Error('session is not cached.');
+        const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
+        if (expires_at > new Date().getTime()) {
+            logger.debug('token not expired');
+            return session;
+        } else {
+            // refresh
+            if (this._refreshHandler && typeof this._refreshHandler === 'function') {
+                logger.debug('getting refreshed jwt token from federation provider');
+                return this._refreshHandler().then((data) => {
+                    logger.debug('refresh federated token sucessfully', data);
+                    const session: FederatedProviderSession = {
+                        accessToken: data.token,
+                        expires_at: data.expires_at,
+                        credentialsToken: data.token,
+                        ...otherSessionInfo
+                    };
+                
+                    return session;
+                }).catch(e => {
+                    logger.debug('refresh federated token failed', e);
+                    throw new Error('refreshing federation token failed: ' + e);
+                });
             } else {
-                // refresh
-                if (this._refreshHandler && typeof this._refreshHandler === 'function') {
-                    logger.debug('getting refreshed jwt token from federation provider');
-                    return this._refreshHandler().then((data) => {
-                        logger.debug('refresh federated token sucessfully', data);
-                        const session: FederatedProviderSession = {
-                            accessToken: data.token,
-                            expires_at: data.expired,
-                            credentialsToken: data.token,
-                            ...otherSessionInfo
-                        };
-                    
-                        return session;
-                    }).catch(e => {
-                        logger.debug('refresh federated token failed', e);
-                        throw new Error('refreshing federation token failed: ' + e);
-                    });
-                } else {
-                    logger.debug('no refresh handler for provider:', this.getProviderName());
-                    throw new Error('no refresh handler for provider');
-                }
+                logger.debug('no refresh handler for provider:', this.getProviderName());
+                throw new Error('no refresh handler for provider');
             }
-        } catch (e) {
-            throw e;
         }
+       
     }
 }
