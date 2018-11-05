@@ -118,7 +118,8 @@ export interface ExternalSession {
     provider: string,
     identityId?: string,
     errorHandler?: Function,
-    credentialsDomain?: string
+    credentialsDomain?: string,
+    credentialsToken?: string
 }
 
 export interface SetSessionResult {

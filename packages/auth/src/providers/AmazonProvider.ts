@@ -11,6 +11,7 @@ export default class AmazonProvider extends BaseProvider implements AuthProvider
     constructor(options?) {
         super(options);
         this._credentialsDomain = AmazonProvider.DEFAULT_DOMAIN;
+        this._credentialsTokenSource = BaseProvider.ACCESS_TOKEN;
     }
 
     public configure(options) {

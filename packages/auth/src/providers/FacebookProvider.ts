@@ -11,6 +11,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
     constructor(options?) {
         super(options);
         this._credentialsDomain = FacebookProvider.DEFAULT_DOMAIN;
+        this._credentialsTokenSource = BaseProvider.ACCESS_TOKEN;
     }
 
     public configure(options) {
@@ -26,89 +27,4 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
     public getProviderName() {
         return FacebookProvider.NAME;
     } 
-
-    public async setSession(params: ExternalSession): Promise<SetSessionResult> {
-        const { _keyPrefix } = this._config;
-        const { username, attributes, tokens, errorHandler, identityId, credentialsDomain } = params;
-        this._credentialsDomain = credentialsDomain || this._credentialsDomain;
-
-        const session: FederatedProviderSession = {
-            idToken: tokens.idToken,
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            expires_at: tokens.expires_at,
-            type: 'FederatedProviderSession',
-            provider: this.getProviderName(),
-            identityId,
-            credentialsDomain: this._credentialsDomain,
-            credentialsToken: tokens.accessToken
-        };
-
-        const user: FederatedUser = {
-            name: username,
-            attributes
-        };
-        
-        // cache information
-        await this._storageSync;
-        const sessionKey = `${_keyPrefix}_session`;
-        const userKey = `${_keyPrefix}_user`;
-
-        this._storage.setItem(sessionKey, JSON.stringify(session));
-        this._storage.setItem(userKey, JSON.stringify(user));
-
-        let credentials = undefined;
-        try {
-            credentials = await Credentials.set(session, 'federation');
-            user.id = credentials.identityId;
-            this._storage.setItem(userKey, JSON.stringify(user));
-        } catch (e) {
-            logger.debug('Failed to get the aws credentials with the tokens provided', e);
-            if (errorHandler) {
-                errorHandler(e);
-            }
-        }
-        
-        return {
-            session,
-            user,
-            credentials
-        };
-    }
-
-    public async getSession(): Promise<any> {
-        const { _keyPrefix } = this._config;
-        await this._storageSync;
-    
-        const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
-        if (!session) throw new Error('session is not cached.');
-        const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
-        if (expires_at > new Date().getTime()) {
-            logger.debug('token not expired');
-            return session;
-        } else {
-            // refresh
-            if (this._refreshHandler && typeof this._refreshHandler === 'function') {
-                logger.debug('getting refreshed jwt token from federation provider');
-                return this._refreshHandler().then((data) => {
-                    logger.debug('refresh federated token sucessfully', data);
-                    const session: FederatedProviderSession = {
-                        accessToken: data.token,
-                        expires_at: data.expires_at,
-                        credentialsToken: data.token,
-                        ...otherSessionInfo
-                    };
-                
-                    return session;
-                }).catch(e => {
-                    logger.debug('refresh federated token failed', e);
-                    throw new Error('refreshing federation token failed: ' + e);
-                });
-            } else {
-                logger.debug('no refresh handler for provider:', this.getProviderName());
-                throw new Error('no refresh handler for provider');
-            }
-        }
-       
-    }
 }

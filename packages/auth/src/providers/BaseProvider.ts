@@ -11,6 +11,9 @@ import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('BaseProvider');
 
 export default class BaseProvider implements AuthProvider {
+    static ACCESS_TOKEN = 'access_token';
+    static ID_TOKEN = 'id_token';
+
     protected _config;
     protected _storage;
     protected _storageSync;
@@ -18,6 +21,7 @@ export default class BaseProvider implements AuthProvider {
     protected _keyPrefix;
     protected _refreshHandler;
     protected _credentialsDomain;
+    protected _credentialsTokenSource;
 
     constructor(options?) {
         this._config = {};
@@ -46,7 +50,15 @@ export default class BaseProvider implements AuthProvider {
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { _keyPrefix } = this._config;
-        const { username, attributes, tokens, errorHandler, identityId, credentialsDomain } = params;
+        const { 
+            username, 
+            attributes, 
+            tokens, 
+            errorHandler, 
+            identityId, 
+            credentialsDomain, 
+            credentialsToken 
+        } = params;
         this._credentialsDomain = credentialsDomain || this._credentialsDomain;
 
         const session: FederatedProviderSession = {
@@ -58,7 +70,10 @@ export default class BaseProvider implements AuthProvider {
             provider: this.getProviderName(),
             identityId,
             credentialsDomain: this._credentialsDomain,
-            credentialsToken: tokens.idToken
+            credentialsToken: 
+                credentialsToken || 
+                (this._credentialsTokenSource === BaseProvider.ACCESS_TOKEN ? 
+                    tokens.accessToken : tokens.idToken)
         };
 
         const user: FederatedUser = {
@@ -99,8 +114,7 @@ export default class BaseProvider implements AuthProvider {
 
         const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
         if (!session) throw new Error('session is not cached.');
-        const { expires_at, idToken, credentialsToken, ...otherSessionInfo } = session;
-        if (expires_at > new Date().getTime()) {
+        if (session.expires_at > new Date().getTime()) {
             logger.debug('token not expired');
             return session;
         } else {
@@ -109,14 +123,27 @@ export default class BaseProvider implements AuthProvider {
                 logger.debug('getting refreshed jwt token from federation provider');
                 return this._refreshHandler().then((data) => {
                     logger.debug('refresh federated token sucessfully', data);
-                    const session: FederatedProviderSession = {
-                        idToken: data.token,
-                        expires_at: data.expires_at,
-                        credentialsToken: data.token,
-                        ...otherSessionInfo
-                    };
-                
-                    return session;
+                    let newSession : FederatedProviderSession = null;
+                    if (this._credentialsTokenSource === BaseProvider.ACCESS_TOKEN) {
+                        const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
+                        newSession = {
+                            accessToken: data.token,
+                            expires_at: data.expires_at,
+                            credentialsToken: data.token,
+                            ...otherSessionInfo
+                        };
+                    } else {
+                        const { expires_at, idToken, credentialsToken, ...otherSessionInfo } = session;
+                        newSession = {
+                            idToken: data.token,
+                            expires_at: data.expires_at,
+                            credentialsToken: data.token,
+                            ...otherSessionInfo
+                        };
+                    }
+                    // restore the new session
+                    this._storage.setItem(`${_keyPrefix}_session`, JSON.stringify(newSession));
+                    return newSession;
                 }).catch(e => {
                     logger.debug('refresh federated token failed', e);
                     throw new Error('refreshing federation token failed: ' + e);
