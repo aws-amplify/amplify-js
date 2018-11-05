@@ -12,7 +12,7 @@
  */
 
 import AuthClass from './Auth';
-import { CookieStorage }from 'amazon-cognito-identity-js';
+import { CookieStorage } from 'amazon-cognito-identity-js';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
@@ -29,3 +29,5 @@ Amplify.register(Auth);
 
 export default Auth;
 export { AuthClass, CookieStorage };
+export * from './providers';
+export * from './types';

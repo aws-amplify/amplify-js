@@ -1416,8 +1416,14 @@ export default class AuthClass {
                 break;
         }
 
-        const idToken = authProvider === FacebookProvider.NAME ? undefined : token;
-        const accessToken = authProvider === FacebookProvider.NAME ? token : undefined;
+        const idToken = 
+            authProvider === FacebookProvider.NAME || 
+            authProvider === AmazonProvider.NAME ? 
+                undefined : token;
+        const accessToken = 
+            authProvider === FacebookProvider.NAME || 
+            authProvider === AmazonProvider.NAME ? 
+                token : undefined;
 
         const { credentials } = await this.setSession({
             username: user.name,
