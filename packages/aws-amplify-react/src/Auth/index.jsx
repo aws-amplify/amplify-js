@@ -45,6 +45,26 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authState: props.authState || null,
                 authData: props.authData || null
             };
+
+            this.includeGreetings, 
+            this.authenticatorComponents,
+            this.federated,
+            this.theme,
+            this.signUpConfig;
+
+            if (typeof includeGreetings === 'object'){
+                this.includeGreetings = includeGreetings.includeGreetings || includeGreetings
+                this.authenticatorComponents = includeGreetings.authenticatorComponents || authenticatorComponents;
+                this.federated = includeGreetings.federated || federated;
+                this.theme = includeGreetings.theme || theme;
+                this.signUpConfig = includeGreetings.signUpConfig || signUpConfig;
+            } else {
+                this.includeGreetings = includeGreetings;
+                this.authenticatorComponents = authenticatorComponents;
+                this.federated = federated;
+                this.theme = theme;
+                this.signUpConfig = signUpConfig;
+            }
         }
 
         handleAuthStateChange(state, data) {
@@ -58,11 +78,11 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 return (
                     <div>
                         {
-                            includeGreetings?
+                            this.includeGreetings?
                             <Greetings
                                 authState={authState}
                                 authData={authData}
-                                federated={federated || this.props.federated}
+                                federated={this.federated}
                                 onStateChange={this.handleAuthStateChange}
                                 theme={theme}
                             />
@@ -80,12 +100,12 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
             return <Authenticator
                 {...this.props}
-                theme={theme}
-                federated={federated || this.props.federated}
-                hideDefault={authenticatorComponents.length > 0}
-                signUpConfig={signUpConfig}
+                theme={this.theme}
+                federated={this.federated}
+                hideDefault={this.authenticatorComponents && this.authenticatorComponents.length > 0}
+                signUpConfig={this.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authenticatorComponents}
             />;
         }
     };
