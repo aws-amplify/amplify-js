@@ -421,7 +421,7 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-form-body {
-  padding: 1.5em;
+  padding: 1.5em 1.5em 3em 1.5em;
 }
 
 .amplify-form-row {
