@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.4-unstable.1"></a>
+## [2.1.4-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.0...aws-amplify-react@2.1.4-unstable.1) (2018-11-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** only call Auth signOut if some error happens during signed in ([1ceb3ef](https://github.com/aws/aws-amplify/commit/1ceb3ef))
+
+
+
+
+<a name="2.1.4-unstable.0"></a>
+## [2.1.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3...aws-amplify-react@2.1.4-unstable.0) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3"></a>
+## [2.1.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.4...aws-amplify-react@2.1.3) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.4"></a>
+## [2.1.3-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.3...aws-amplify-react@2.1.3-unstable.4) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.3"></a>
+## [2.1.3-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.2...aws-amplify-react@2.1.3-unstable.3) (2018-10-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Adding theme support to the FederatedButtons "or" Strike ([554c1fc](https://github.com/aws/aws-amplify/commit/554c1fc))
+
+
+
+
+<a name="2.1.3-unstable.2"></a>
+## [2.1.3-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.1...aws-amplify-react@2.1.3-unstable.2) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.1"></a>
+## [2.1.3-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.0...aws-amplify-react@2.1.3-unstable.1) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.1.3-unstable.0"></a>
 ## [2.1.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2...aws-amplify-react@2.1.3-unstable.0) (2018-10-30)
 
