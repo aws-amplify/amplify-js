@@ -24,7 +24,8 @@ const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 export default class PushNotification {
     private _config;
     private handlers;
-
+    private _currentState;
+    
     constructor(config) {
         if (config) {
             this.configure(config);
@@ -35,6 +36,12 @@ export default class PushNotification {
         this.updateEndpoint = this.updateEndpoint.bind(this);
         this.handleCampaignPush = this.handleCampaignPush.bind(this);
         this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
+        this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
+        this._currentState = AppState.currentState;
+        	
+        if ( Platform.OS === 'ios' ) {	
+            AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);	
+        }
     }
 
     getModuleName() {
@@ -102,14 +109,20 @@ export default class PushNotification {
         });
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
+    }
 
-        PushNotificationIOS.getInitialNotification().then(data => {
-            if (data) {
-                this.handleCampaignOpened(data);
-            }
-        }).catch(e => {
-            logger.debug('Failed to get the initial notification.', e);
-        });
+    _checkIfOpenedByCampaign(nextAppState) {	                  
+        // the app is turned from background to foreground	            
+        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {	     
+            PushNotificationIOS.getInitialNotification().then(data => {	   
+                if (data) {	          
+                    this.handleCampaignOpened(data);	  
+                }	
+            }).catch(e => {	
+                logger.debug('Failed to get the initial notification.', e);	
+            });	
+        };
+        this._currentState = nextAppState;	
     }
 
     handleCampaignPush(rawMessage) {
