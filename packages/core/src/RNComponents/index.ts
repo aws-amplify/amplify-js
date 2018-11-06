@@ -21,11 +21,7 @@ const AppState = {
     }
 };
 
-let AsyncStorage = undefined;
-
 // if not in react native, just use local storage
-if (JS.browserOrNode().isBrowser) {
-    AsyncStorage = new MemoryStorage().getStorage();
-}
+const AsyncStorage = JS.browserOrNode().isBrowser ? new MemoryStorage().getStorage() : undefined;
 
 export { Linking, AppState, AsyncStorage };
