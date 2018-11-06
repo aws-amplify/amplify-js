@@ -31,6 +31,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Authenticator');
+const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export default class Authenticator extends Component {
     constructor(props) {
@@ -75,7 +76,17 @@ export default class Authenticator extends Component {
             })
             .catch(err => {
                 if (!this._isMounted) { return; }
-                Auth.signOut().then(() => this.handleStateChange(this._initialAuthState));
+                let cachedAuthState = null;
+                try {
+                    cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+                } catch (e) {
+                    logger.debug('Failed to get the auth state from local storage', e);
+                }
+                const promise = cachedAuthState === 'signedIn'? Auth.signOut() : Promise.resolve();
+                promise.then(() => this.handleStateChange(this._initialAuthState))
+                    .catch((e) => {
+                        logger.debug('Failed to sign out', e);
+                    });
             });
     }
 
@@ -91,6 +102,11 @@ export default class Authenticator extends Component {
         if (state === this.state.auth) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
+        try {
+            localStorage.setItem(AUTHENTICATOR_AUTHSTATE, state);
+        } catch (e) {
+            logger.debug('Failed to set the auth state into local storage', e);
+        }
         this.setState({ auth: state, authData: data, error: null, showToast: false });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
