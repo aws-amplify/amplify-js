@@ -1793,10 +1793,6 @@ describe('auth unit test', () => {
                 });
             });
 
-            const spyon4 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
-                return 'aws';
-            });
-
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({
                 username: 'username',
@@ -1813,7 +1809,6 @@ describe('auth unit test', () => {
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
-            spyon4.mockClear();
         });
 
         test('return empty object if error happens', async () => {
@@ -1846,17 +1841,12 @@ describe('auth unit test', () => {
                 });
             });
 
-            const spyon4 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
-                return 'aws';
-            });
-
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({});
 
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
-            spyon4.mockClear();
         });
 
         test('no current userpool user', async () => {
@@ -1874,15 +1864,10 @@ describe('auth unit test', () => {
                     });
                 });
 
-            const spyon2 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
-                return 'aws';
-            });
-
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBeNull();
 
             spyon.mockClear();
-            spyon2.mockClear();
         });
 
         test('federated user', async () => {
@@ -1934,11 +1919,13 @@ describe('auth unit test', () => {
         test('happy case', async () => {
             const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
-                return Promise.resolve('cred');
+            const spyon = jest.spyOn(Auth.prototype, 'setSession').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    credentials: 'credentials'
+                });
             });
 
-            auth.federatedSignIn('google', { token: 'token', expires_at: 1234 }, { user: 'user' });
+            auth.federatedSignIn('google', { token: 'token', expires_at: 1234 }, { name: 'userName' });
 
             expect(spyon).toBeCalled();
             spyon.mockClear();
