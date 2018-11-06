@@ -46,51 +46,47 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
             this.aws_lex = new LexRuntime({ region: this._config[botname].region, credentials });
             //  TODO: Implement for content
+            let params = {
+                botAlias: this._config[botname].alias,
+                botName: botname,
+                userId: credentials.identityId
+            };
             if (typeof message === 'string') {
-                const params = {
-                    'botAlias': this._config[botname].alias,
-                    'botName': botname,
-                    'inputText': message,
-                    'userId': credentials.identityId
-                };
-                logger.debug('postText to lex', message);
+                params = Object.assign({ inputText: message }, params);
+            } else {
+                params = Object.assign({}, message, params);
+            }
+            // logger.debug('postText params', params);
 
-                this.aws_lex.postText(params, (err, data) => {
-                    if (err) {
-                        rej(err);
-                        return;
-
-                    } else {
-                        // Check if state is fulfilled to resolve onFullfilment promise
-                        logger.debug('postText state', data.dialogState);
-                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
-                            }
-                            
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
-                            }
+            this.aws_lex.postText(<LexRuntime.PostTextRequest> params, (err, data) => {
+                if (err) {
+                    rej(err);
+                    return;
+                } else {
+                    // Check if state is fulfilled to resolve onFullfilment promise
+                    logger.debug('postText state', data.dialogState);
+                    if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
+                        if (typeof this._botsCompleteCallback[botname] === 'function') {
+                            setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
                         }
                         
-                        res(data);
-                        if (data.dialogState === 'Failed') {
-
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(
-                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
-                            }
-
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
-                            }
+                        if (this._config && typeof this._config[botname].onComplete === 'function') {
+                            setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
                         }
-
                     }
-                });
-            } else {
-                rej("Not implemented yet");
-            }
+
+                    res(data);
+                    if (data.dialogState === 'Failed') {
+                        if (typeof this._botsCompleteCallback[botname] === 'function') {
+                            setTimeout(
+                                () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
+                        }
+                        if (this._config && typeof this._config[botname].onComplete === 'function') {
+                            setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
+                        }
+                    }
+                }
+            });
         });
     }
 
@@ -101,4 +97,3 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
         this._botsCompleteCallback[botname] = callback;
     }
 }
-
