@@ -5,6 +5,7 @@
 const requiredModules = [
   'Auth',
   'AuthClass',
+  'I18n',
   'Logger',
 ];
 

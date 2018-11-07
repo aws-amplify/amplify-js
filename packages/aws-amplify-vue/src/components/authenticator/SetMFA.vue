@@ -18,7 +18,7 @@
         {{options.mfaDescription}}
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup">Verify Authentication Token
+    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup">{{$Amplify.I18n.get('Verify Authentication Token')}}
       <div style="font-size: 16px; color: #828282; margin-top: 10px;">
         {{options.tokenInstructions}}
       </div>
@@ -46,17 +46,17 @@
     <div v-bind:class="amplifyUI.sectionBody" v-if="displayTotpSetup">
       <qrcode-vue v-bind:class="amplifyUI.totpQrcode" :value="token" :size="300" level="H"></qrcode-vue>
       <div v-bind:class="amplifyUI.formField" >
-        <div v-bind:class="amplifyUI.inputLabel">Verification Code *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" placeholder="Verification Code" autofocus />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Verification Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Verification Code')" autofocus />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup">Set MFA</button>
-        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup">Verify Token</button>
+        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup">{{$Amplify.I18n.get('Set MFA')}}</button>
+        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup">{{$Amplify.I18n.get('Verify Token')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="cancel">Cancel</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="cancel">{{$Amplify.I18n.get('Cancel')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -161,7 +161,7 @@ export default {
           .catch(e => this.setError(e));
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     },
     cancel: function() {
