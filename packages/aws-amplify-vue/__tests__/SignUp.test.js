@@ -164,8 +164,6 @@ describe('SignUp', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterPrimaryContent} > button`);
       el.trigger('click');
       expect(mockSignUp).toHaveBeenCalled();
-      console.log('here!!!')
-
     });
   });
 

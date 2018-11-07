@@ -240,6 +240,8 @@ export default {
       this.error = e.message || e;
       this.logger.error(this.error) 
     },
+
+    // determines whether or not key needs to be prepended with 'custom:' for Cognito User Pool custom attributes.
     needPrefix: function(key) {
       const field = this.options.signUpFields.find(e => e.key === key);
       if (key.indexOf('custom:') !== 0) {
