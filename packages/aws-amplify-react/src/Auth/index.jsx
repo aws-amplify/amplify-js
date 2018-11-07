@@ -45,6 +45,20 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authState: props.authState || null,
                 authData: props.authData || null
             };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, this.includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    federated,
+                    theme,
+                    signUpConfig
+                }
+            }
         }
 
         handleAuthStateChange(state, data) {
@@ -58,11 +72,11 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 return (
                     <div>
                         {
-                            includeGreetings?
+                            this.authConfig.includeGreetings?
                             <Greetings
                                 authState={authState}
                                 authData={authData}
-                                federated={federated || this.props.federated}
+                                federated={this.authConfig.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
                                 theme={theme}
                             />
@@ -80,12 +94,12 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
             return <Authenticator
                 {...this.props}
-                theme={theme}
-                federated={federated || this.props.federated}
-                hideDefault={authenticatorComponents.length > 0}
-                signUpConfig={signUpConfig}
+                theme={this.authConfig.theme}
+                federated={this.authConfig.federated}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authConfig.authenticatorComponents}
             />;
         }
     };

@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 
-import { I18n } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
@@ -35,6 +35,8 @@ import {
 import countryDialCodes from './common/country-dial-codes.js';
 import defaultSignUpFields from './common/default-sign-in-fields'
 import { valid } from 'semver';
+
+const logger = new Logger('SignUp');
 
 
 export default class SignUp extends AuthPiece {
@@ -128,7 +130,7 @@ export default class SignUp extends AuthPiece {
         if (key.indexOf('custom:') !== 0) {
           return field.custom ;
         } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-            logger.warn('Custom prefix prepended to key but custom field flag is set to false');
+            logger.warn('Custom prefix prepended to key but custom field flag is set to false; retaining manually entered prefix');
           
         }
         return null;
