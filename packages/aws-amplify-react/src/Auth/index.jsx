@@ -46,24 +46,24 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authData: props.authData || null
             };
 
-            this.includeGreetings, 
-            this.authenticatorComponents,
-            this.federated,
-            this.theme,
-            this.signUpConfig;
+            this.authConfig;
 
             if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                this.includeGreetings = includeGreetings.includeGreetings || includeGreetings
-                this.authenticatorComponents = includeGreetings.authenticatorComponents || authenticatorComponents;
-                this.federated = includeGreetings.federated || federated;
-                this.theme = includeGreetings.theme || theme;
-                this.signUpConfig = includeGreetings.signUpConfig || signUpConfig;
+                this.authConfig = {
+                    includeGreetings: includeGreetings.includeGreetings || includeGreetings,
+                    authenticatorComponents: includeGreetings.authenticatorComponents || authenticatorComponents,
+                    federated: includeGreetings.federated || federated,
+                    theme: includeGreetings.theme || theme,
+                    signUpConfig: includeGreetings.signUpConfig || signUpConfig
+                }
             } else {
-                this.includeGreetings = includeGreetings;
-                this.authenticatorComponents = authenticatorComponents;
-                this.federated = federated;
-                this.theme = theme;
-                this.signUpConfig = signUpConfig;
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    federated,
+                    theme,
+                    signUpConfig
+                }
             }
         }
 
@@ -78,11 +78,11 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 return (
                     <div>
                         {
-                            this.includeGreetings?
+                            this.authConfig.includeGreetings?
                             <Greetings
                                 authState={authState}
                                 authData={authData}
-                                federated={this.federated || {} }
+                                federated={this.authConfig.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
                                 theme={theme}
                             />
@@ -100,12 +100,12 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
             return <Authenticator
                 {...this.props}
-                theme={this.theme}
-                federated={this.federated}
-                hideDefault={this.authenticatorComponents && this.authenticatorComponents.length > 0}
-                signUpConfig={this.signUpConfig}
+                theme={this.authConfig.theme}
+                federated={this.authConfig.federated}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={this.authenticatorComponents}
+                children={this.authConfig.authenticatorComponents}
             />;
         }
     };

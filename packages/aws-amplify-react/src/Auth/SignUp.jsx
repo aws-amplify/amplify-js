@@ -36,7 +36,7 @@ import countryDialCodes from './common/country-dial-codes.js';
 import defaultSignUpFields from './common/default-sign-in-fields'
 import { valid } from 'semver';
 
-const logger = new Logger('Authenticator');
+const logger = new Logger('SignUp');
 
 
 export default class SignUp extends AuthPiece {
