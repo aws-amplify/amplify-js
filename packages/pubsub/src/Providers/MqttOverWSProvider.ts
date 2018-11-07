@@ -127,20 +127,24 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const observersForTopic = new Set();
+            const mqttTopicMath = (filter: string, topic: string) => {
+                const filterArray = filter.split('/');
+                const length = filterArray.length;
+                const topicArray = topic.split('/');
 
+                for (let i = 0; i < length; ++i) {
+                    const left = filterArray[i];
+                    const right = topicArray[i];
+                    if (left === '#') return topicArray.length >= length - 1;
+                    if (left !== '+' && left !== right) return false;
+                }
+                return length === topicArray.length;
+            };
+
+            const matchedTopicObservers = [];
             this._topicObservers.forEach((observerForTopic, observerTopic) => {
-
-                // Observer topic use ending #
-                if (observerTopic.slice(-1) === '#') {
-                    // Construct subset of observer topic and topic
-                    const observerTopicSubset = observerTopic.slice(0, -1);
-                    const topicSubset = topic.slice(0, observerTopicSubset.length);
-
-                    // Topic match with subset, merge
-                    if (observerTopicSubset === topicSubset) {
-                        observerForTopic.forEach(i => observersForTopic.add(i));
-                    }
+                if (mqttTopicMath(observerTopic, topic)) {
+                    matchedTopicObservers.push(observerForTopic);
                 }
             });
             const parsedMessage = JSON.parse(msg);
@@ -149,7 +153,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                 parsedMessage[topicSymbol] = topic;
             }
 
-            observersForTopic.forEach(observer => observer.next(parsedMessage));
+            matchedTopicObservers.forEach(observersForTopic =>{
+                observersForTopic.forEach(observer => observer.next(parsedMessage));
+            });
         } catch (error) {
             logger.warn('Error handling message', error, msg);
         }
