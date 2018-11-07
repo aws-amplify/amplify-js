@@ -115,12 +115,16 @@ export default {
         ]
       }
 
+      // sets value in country code dropdown if defaultCountryCode value is present in props 
       if (this.signUpConfig && this.signUpConfig.defaultCountryCode) {
         this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
       };
 
+      // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
+        // if hideDefaults is not present on props...
         if (!this.signUpConfig.hideDefaults) {
+          // ...add default fields to signUpField array unless user has passed in custom field with matching key
           defaults.signUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
               return d.key === f.key;
@@ -130,30 +134,38 @@ export default {
             }
           });
         }
-        let counter = this.signUpConfig.signUpFields.filter((f) => {
-          return f.displayOrder;
-        }).length;
-
-        const unOrdered = this.signUpConfig.signUpFields.filter((f) => {
-          return !f.displayOrder;
-        }).sort((a, b) => {
-          if (a.key < b.key) {
+        /* 
+          sort fields based on following rules:
+          1. Fields with displayOrder are sorted before those without displayOrder
+          2. Fields with conflicting displayOrder are sorted alphabetically by key
+          3. Fields without displayOrder are sorted alphabetically by key
+        */
+        this.signUpConfig.signUpFields.sort((a, b) => {
+          if (a.displayOrder && b.displayOrder) {
+            if (a.displayOrder < b.displayOrder) {
+              return -1;
+            } else if (a.displayOrder > b.displayOrder) {
+              return 1;
+            } else {
+              if (a.key < b.key) {
+                return -1;
+              } else {
+                return 1;
+              }
+            }
+          } else if (!a.displayOrder && b.displayOrder) {
+            return 1;
+          } else if (a.displayOrder && !b.displayOrder) {
             return -1;
+          } else if (!a.displayOrder && !b.displayOrder) {
+            if (a.key < b.key) {
+              return -1;
+            } else {
+              return 1;
+            }
           }
-          return 1
-        }).forEach((m) => {
-          counter++;
-          m.displayOrder = counter;
-          let index = this.signUpConfig.signUpFields.findIndex(y => y.key === m.key);
-          this.signUpConfig.signUpFields[index] = m;
-        })
-      } else if (this.signUpConfig &&
-          this.signUpConfig.signUpFields &&
-          (!Array.isArray(this.signUpConfig.signUpFields) || this.signUpConfig.signUpFields.length === 0)
-        ) {
-        delete this.signUpConfig.signUpFields;
-      }
-
+        });
+      } 
       return Object.assign(defaults, this.signUpConfig || {})
     }
   },
@@ -179,6 +191,7 @@ export default {
         attributes: {},
       };
 
+      // puts field data into 'Auth.signUp' parameter structure
       this.options.signUpFields.forEach((e) => {
         if (e.key === 'username') {
           user.username = e.value

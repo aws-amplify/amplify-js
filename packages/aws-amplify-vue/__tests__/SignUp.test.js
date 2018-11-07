@@ -164,11 +164,8 @@ describe('SignUp', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterPrimaryContent} > button`);
       el.trigger('click');
       expect(mockSignUp).toHaveBeenCalled();
-    });
+      console.log('here!!!')
 
-    it('...should keep default signUpFields if passed fields are empty array', () => {
-      signUpFields = [];
-      expect(wrapper.vm.options.signUpFields.length).toEqual(4);
     });
   });
 
