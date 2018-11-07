@@ -45,11 +45,11 @@
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">Create Account</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        Have an Account?
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">Sign In</a>
+        {{$Amplify.I18n.get('Have an account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -83,31 +83,31 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'Sign Up',
+        header: this.$Amplify.I18n.get('Sign Up Account'),
         signUpFields: [
           {
-            label: 'Username',
+            label: this.$Amplify.I18n.get('Username'),
             key: 'username',
             required: true,
             type: 'string',
             displayOrder: 1,
           },
           {
-            label: 'Password',
+            label: this.$Amplify.I18n.get('Password'),
             key: 'password',
             required: true,
             type: 'password',
             displayOrder: 2,
           },
           {
-            label: 'Email',
+            label: this.$Amplify.I18n.get('Email'),
             key: 'email',
             required: true,
             type: 'string',
             displayOrder: 3
           },
           {
-            label: 'Phone Number',
+            label: this.$Amplify.I18n.get('Phone Number'),
             key: 'phone_number',
             required: true,
             displayOrder: 4
@@ -237,7 +237,7 @@ export default {
       }
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error) 
     },
 
