@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.4-unstable.2"></a>
+## [2.1.4-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.1...aws-amplify-react@2.1.4-unstable.2) (2018-11-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** change to forgetpassword state if need to reset password ([0c1e994](https://github.com/aws/aws-amplify/commit/0c1e994))
+
+
+
+
 <a name="2.1.4-unstable.1"></a>
 ## [2.1.4-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.0...aws-amplify-react@2.1.4-unstable.1) (2018-11-06)
 
