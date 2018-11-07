@@ -78,20 +78,11 @@ export default function withGoogle(Comp) {
                 throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
             }
 
-            await Auth.setSession({
-                username: user.name,
-                tokens: {
-                    idToken: id_token,
-                    expires_at
-                },
-                attributes: {
-                    email: user.email
-                },
-                provider: 'Google',
-                errorHandler: (e) => {
-                    throw e;
-                }
-            });
+            await Auth.federatedSignIn(
+                'google',
+                { token: id_token, expires_at },
+                user
+            );
 
             user = await Auth.currentAuthenticatedUser();
 
