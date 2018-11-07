@@ -46,10 +46,10 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authData: props.authData || null
             };
 
-            this.authConfig;
+            this.authConfig = {};
 
             if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                Object.assign(this.authConfig, this.includeGreetings)
+                this.authConfig = Object.assign(this.authConfig, this.includeGreetings)
             } else {
                 this.authConfig = {
                     includeGreetings,
