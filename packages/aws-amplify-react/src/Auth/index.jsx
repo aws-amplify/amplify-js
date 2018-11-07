@@ -49,13 +49,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             this.authConfig;
 
             if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                this.authConfig = {
-                    includeGreetings: includeGreetings.includeGreetings || includeGreetings,
-                    authenticatorComponents: includeGreetings.authenticatorComponents || authenticatorComponents,
-                    federated: includeGreetings.federated || federated,
-                    theme: includeGreetings.theme || theme,
-                    signUpConfig: includeGreetings.signUpConfig || signUpConfig
-                }
+                Object.assign(this.authConfig, this.includeGreetings)
             } else {
                 this.authConfig = {
                     includeGreetings,
