@@ -9,25 +9,29 @@ const defaultType: any = {
                     {
                         name: "StringField",
                         type: {
-                            name: "String"
+                            name: "String",
+                            kind: "SCALAR"
                         }
                     },
                     {
                         name: "IntField",
                         type: {
-                            name: "Int"
+                            name: "Int",
+                            kind: "SCALAR"
                         }
                     },
                     {
                         name: "FloatField",
                         type: {
-                            name: "Float"
+                            name: "Float",
+                            kind: "SCALAR"
                         }
                     },
                     {
                         name: "BooleanField",
                         type: {
-                            name: "Boolean"
+                            name: "Boolean",
+                            kind: "SCALAR"
                         }
                     }
                 ]
@@ -64,7 +68,6 @@ class APIMock {
     graphql({ query, variables = {} }: GraphQLOptions) {
         return new Promise((resolve, reject) => {
             for(let i in this.keywordResults) {
-                console.log(i);
                 if(query.indexOf(i) >= 0) {
                     resolve(this.keywordResults[i]);
                     return;
@@ -89,7 +92,7 @@ describe('Transformer test', () => {
 
         test('Test AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
             obj.field1 = '{"test":1}';
@@ -103,7 +106,7 @@ describe('Transformer test', () => {
 
         test('Test missing field of AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
 
@@ -115,21 +118,57 @@ describe('Transformer test', () => {
 
         test('Test nested field of AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"subclass",type:{name:"Subclass"}});
+            type.ObjectDef.data.__type.fields.push({name:"subclass",type:{name:"Subclass",kind:"OBJECT"}});
 
             type.Subclass = getDefaultTypeDef().ObjectDef;
-            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
 
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
             obj.subclass = getDefaultTypeObject();
             obj.subclass.field1 = '{"test":1}';
 
-            await transformer.convertFromAWSJSONFields('ObjectDef', obj);
+            obj = await transformer.convertFromAWSJSONFields('ObjectDef', obj);
             
             var expected = getDefaultTypeObject();
             expected.subclass = getDefaultTypeObject();
             expected.subclass.field1 = {test:1};
+            expect(obj).toEqual(expected);
+        });
+
+        test('Test list field of AWSJSON in type', async () => {
+            let type = getDefaultTypeDef();
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"",kind:"LIST", ofType: { name:"AWSJSON", kind:"SCALAR" }}});
+
+            let transformer = new TransformerClass(new APIMock(type));
+            let obj = getDefaultTypeObject();
+            obj.field1 = ['{"test":1}'];
+
+            obj = await transformer.convertFromAWSJSONFields('ObjectDef', obj);
+            
+            var expected = getDefaultTypeObject();
+            expected.field1 = [{test:1}];
+            expect(obj).toEqual(expected);
+        });
+
+        test('Test list field of Objects in type', async () => {
+            let type = getDefaultTypeDef();
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"",kind:"LIST", ofType: { name:"Subclass", kind:"OBJECT" }}});
+            type.Subclass = getDefaultTypeDef().ObjectDef;
+            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
+
+            let transformer = new TransformerClass(new APIMock(type));
+            let obj = getDefaultTypeObject();
+            let subObj = getDefaultTypeObject();
+            subObj.field1 = '{"test":1}';
+            obj.field1 = [subObj];
+
+            obj = await transformer.convertFromAWSJSONFields('ObjectDef', obj);
+            
+            var expected = getDefaultTypeObject();
+            var expSub = getDefaultTypeObject();
+            expSub.field1 = {test:1};
+            expected.field1 = [expSub];
             expect(obj).toEqual(expected);
         });
 
@@ -161,7 +200,7 @@ describe('Transformer test', () => {
 
         test('Test AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
             obj.field1 = { test:1 };
@@ -176,7 +215,7 @@ describe('Transformer test', () => {
 
         test('Test missing field of AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
 
@@ -188,10 +227,10 @@ describe('Transformer test', () => {
 
         test('Test nested field of AWSJSON in type', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"subclass",type:{name:"Subclass"}});
+            type.ObjectDef.data.__type.fields.push({name:"subclass",type:{name:"Subclass",kind:"OBJECT"}});
 
             type.Subclass = getDefaultTypeDef().ObjectDef;
-            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
 
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
@@ -207,9 +246,46 @@ describe('Transformer test', () => {
             expect(obj).toEqual(expected);
         });
 
+        
+        test('Test list field of AWSJSON in type', async () => {
+            let type = getDefaultTypeDef();
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"",kind:"LIST", ofType: { name:"AWSJSON", kind:"SCALAR" }}});
+
+            let transformer = new TransformerClass(new APIMock(type));
+            let obj = getDefaultTypeObject();
+            obj.field1 = [{test:1}];
+
+            obj = await transformer.convertToAWSJSONFields('ObjectDef', obj);
+            
+            var expected = getDefaultTypeObject();
+            expected.field1 = ['{"test":1}'];
+            expect(obj).toEqual(expected);
+        });
+
+        test('Test list field of Objects in type', async () => {
+            let type = getDefaultTypeDef();
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"",kind:"LIST", ofType: { name:"Subclass", kind:"OBJECT" }}});
+            type.Subclass = getDefaultTypeDef().ObjectDef;
+            type.Subclass.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
+
+            let transformer = new TransformerClass(new APIMock(type));
+            let obj = getDefaultTypeObject();
+            let subObj = getDefaultTypeObject();
+            subObj.field1 = {test:1};
+            obj.field1 = [subObj];
+
+            obj = await transformer.convertToAWSJSONFields('ObjectDef', obj);
+            
+            var expected = getDefaultTypeObject();
+            var expSub = getDefaultTypeObject();
+            expSub.field1 = '{"test":1}';
+            expected.field1 = [expSub];
+            expect(obj).toEqual(expected);
+        });
+
         test('Test AWSJSON in type serialized twice', async () => {
             let type = getDefaultTypeDef();
-            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON"}});
+            type.ObjectDef.data.__type.fields.push({name:"field1",type:{name:"AWSJSON",kind:"SCALAR"}});
             let transformer = new TransformerClass(new APIMock(type));
             let obj = getDefaultTypeObject();
             obj.field1 = { test:1 };

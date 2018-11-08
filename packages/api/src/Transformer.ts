@@ -65,20 +65,39 @@ export class TransformerClass {
     private applyDeserializeTypeDef<T>(typedef: any, object: T) { 
         // Walk through the abstract fields for the type
         for(const i in typedef) {
-            const typeName: string = typedef[i];
-            if(typeName === 'AWSJSON') {
+            if(!object[i]) {
+                continue;
+            }
+            const field: any = typedef[i];
+            const type: string = field.type;
+            if(type === 'AWSJSON') {
                 // We're dealing with a AWSJSON field, check to see if we can deserialize it, and if so deserialize
                 if(object[i] && typeof object[i] === 'string') {
                     object[i] = JSON.parse(object[i]);
                 }
+            } else if (type === 'LIST') {
+                // Check the list type to see if we need to deserialize or go through another typedef evaluation
+                const innerType: string = field.innerType;
+                if(innerType === 'AWSJSON') {
+                    for(const ii in object[i]) {
+                        if(typeof object[i][ii] === 'string') {
+                            object[i][ii] = JSON.parse(object[i][ii]);
+                        }
+                    }
+                } else {
+                    // Deserialize using child type
+                    for(const ii in object[i]) {
+                        object[i][ii] = this.applyDeserializeTypeDef(field.innerType, object[i][ii]);
+                    }
+                }
             } else {
                 // In this case we're dealing with a defined class, rather than a value type
                 // use recursion to check child fields for AWSJSON fields to deserialize
-                this.applyDeserializeTypeDef(typedef[i], object[i]);
+                object[i] = this.applyDeserializeTypeDef(typedef[i].type, object[i]);
             }
         }
 
-        console.log(JSON.stringify(object));
+        return object;
     }
 
     /**
@@ -87,22 +106,33 @@ export class TransformerClass {
      * @param object The object to transform
      */
     private applySerializeTypeDef<T>(typedef: any, object: T) {
-        // Walk through fields for the type which are abstract fields      
-        for(const i in typedef) {
+	    // Walk through fields for the type which are abstract fields      
+        for (const i in typedef) {
             // Check to see if the object has the field
-            if(object[i]) {
+            if (object[i]) {
                 // Check if we're dealing with a class or an AWSJSON type
-                const typeName: string = typedef[i];
-                if(typeName === 'AWSJSON') {
-                    if(typeof object[i] !== 'string') {
+                if (typedef[i].type === 'AWSJSON') {
+                    if (typeof object[i] !== 'string') {
                         object[i] = JSON.stringify(object[i]);
+                    }
+                } else if(typedef[i].type === 'LIST') {
+                    for(const ii in object[i]) {
+                        if(typedef[i].innerType === 'AWSJSON') {
+                            if(typeof object[i][ii] !== 'string') {
+                                object[i][ii] = JSON.stringify(object[i][ii]);
+                            }
+                        } else {
+                            object[i][ii] = this.applySerializeTypeDef(typedef[i].innerType, object[i][ii]);
+                        }
                     }
                 } else {
                     // Use recursion to handle child properties
-                    this.applySerializeTypeDef(typedef[i], object[i]);
+                    this.applySerializeTypeDef(typedef[i].type, object[i]);
                 }
             }
         }
+
+        return object;
     }
 
     /**
@@ -127,6 +157,11 @@ export class TransformerClass {
                         name
                         type {
                             name
+                            kind
+                            ofType {
+                                name
+                                kind
+                            }
                         }
                     }
                 }
@@ -147,17 +182,32 @@ export class TransformerClass {
             // graphql
             const field = fields[i];
             const typeName: string = field.type.name;
-            if(typeName === 'AWSJSON') {
-                typedef[field.name] = 'AWSJSON';
-            } else if (typeName !== 'String' && typeName !== 'Int' && typeName !== 'Float' 
-                        && typeName !== 'Boolean' && typeName !== '' && typeName !== 'ID') {
+            const kind: string = field.type.kind;
+            if (typeName === 'AWSJSON') {
+                typedef[field.name] = {};
+                typedef[field.name].type = 'AWSJSON';
+            } else if (kind === 'OBJECT') {
                 // Retrieve the definition for the type which is not a primitive type
-                typedef[field.name] = await this.retrieveTypeDefinition(field.type.name);
+                typedef[field.name] = {};
+                typedef[field.name].type = await this.retrieveTypeDefinition(typeName);
+            } else if(kind === 'LIST') {
+                const oftype: string = field.type.ofType.name;
+                const oftypeKind: string = field.type.ofType.kind;
+                if(oftype === 'AWSJSON') {
+                    typedef[field.name] = {};
+                    typedef[field.name].type = 'LIST';
+                    typedef[field.name].innerType = 'AWSJSON';
+                } else if(oftypeKind === 'OBJECT') {
+                    typedef[field.name] = {};
+                    typedef[field.name].type = 'LIST';
+                    typedef[field.name].innerType = await this.retrieveTypeDefinition(oftype);
+                }
             }
         }
 
         // cache the type definition
         this.typedefs[graphqlType] = typedef;
+            
         return typedef;
     }
 }
