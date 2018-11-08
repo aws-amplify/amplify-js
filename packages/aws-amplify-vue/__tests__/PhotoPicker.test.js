@@ -67,8 +67,8 @@ describe('PhotoPicker', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('File Upload');
-      expect(wrapper.vm.options.title).toEqual('Upload');
+      expect(wrapper.vm.options.header).toEqual('i18n File Upload');
+      expect(wrapper.vm.options.title).toEqual('i18n Upload');
       expect(wrapper.vm.options.accept).toEqual('*/*');
     });
   });
