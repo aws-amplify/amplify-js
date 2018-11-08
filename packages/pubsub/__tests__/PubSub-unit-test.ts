@@ -73,7 +73,7 @@ describe('PubSub', () => {
             await pubsub.publish('topicA', 'my message');
         });
 
-        test('subscribe using wildcards and publish to the matching topic using AWSIoTProvider', async (done) => {
+        test('subscribe using wildcards and publish to the matching topic using AWSIoTProvider', done => {
             expect.assertions(5);
             const config = {
                 PubSub : {
@@ -93,19 +93,25 @@ describe('PubSub', () => {
                 value: 'my message',
                 provider: awsIotProvider
             };
+            let cbCounter = 0;
             const expectedObserver = {
                 next: data => {
                     expect(data).toEqual(expectedData);
-                    done()},
+
+                    cbCounter++;
+                    if (cbCounter >= 4)
+                        done();
+                },
                 close: () => console.log('done'),
-                error: error => console.log('error', error),
+                error: error => console.log('error', error)
             };
             var obs1 = pubsub.subscribe('topic/A/B/C').subscribe(expectedObserver);
             var obs2 = pubsub.subscribe('topic/A/#').subscribe(expectedObserver);
             var obs3 = pubsub.subscribe('topic/A/+/C').subscribe(expectedObserver);
             var obs4 = pubsub.subscribe('topic/A/+/#').subscribe(expectedObserver);
+            var obs5 = pubsub.subscribe('topic/A/B/C/#').subscribe(expectedObserver); // Should not match
 
-            await pubsub.publish('topic/A/B/C', 'my message');
+            pubsub.publish('topic/A/B/C', 'my message');
         });
     });
 

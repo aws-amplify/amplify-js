@@ -127,7 +127,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const mqttTopicMath = (filter: string, topic: string) => {
+            const mqttTopicMatch = (filter: string, topic: string) => {
                 const filterArray = filter.split('/');
                 const length = filterArray.length;
                 const topicArray = topic.split('/');
@@ -135,7 +135,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                 for (let i = 0; i < length; ++i) {
                     const left = filterArray[i];
                     const right = topicArray[i];
-                    if (left === '#') return topicArray.length >= length - 1;
+                    if (left === '#') return topicArray.length >= length;
                     if (left !== '+' && left !== right) return false;
                 }
                 return length === topicArray.length;
@@ -143,7 +143,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
             const matchedTopicObservers = [];
             this._topicObservers.forEach((observerForTopic, observerTopic) => {
-                if (mqttTopicMath(observerTopic, topic)) {
+                if (mqttTopicMatch(observerTopic, topic)) {
                     matchedTopicObservers.push(observerForTopic);
                 }
             });
