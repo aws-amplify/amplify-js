@@ -146,7 +146,7 @@ export default class S3Text extends Component {
                 <pre style={theme.pre}>{text}</pre>
                 <div style={selected? theme.overlaySelected : theme.overlay}></div>
             </div>
-        )
+        );
     }
 
     render() {
@@ -178,6 +178,6 @@ export default class S3Text extends Component {
                         : null
                 }
             </div>
-        )
+        );
     }
 }

@@ -32,7 +32,7 @@
 				<input
 					type='text'
 					class="amplify-form-input"
-					placeholder="Write a message"
+					:placeholder="$Amplify.I18n.get('Write a message')"
 					v-model="inputText"
 					v-on:keyup="keymonitor"
         />
@@ -73,7 +73,7 @@ export default {
   mounted() {
 		this.logger = new this.$Amplify.Logger(this.$options.name);
 		if (!this.options.bot){
-			this.setError('Bot not provided.')
+			this.setError('Bot not provided.');
 		}
 		this.$Amplify.Interactions.onComplete(this.options.bot,this.performOnComplete);
   },
@@ -112,7 +112,7 @@ export default {
 				.catch(e => this.setError(e));
 		},
 		setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
   }

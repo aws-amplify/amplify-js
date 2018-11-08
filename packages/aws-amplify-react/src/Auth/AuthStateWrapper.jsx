@@ -68,7 +68,7 @@ export default class AuthStateWrapper extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent
                 });
-            })
+            });
 
         return (
             <div className="amplify-state-wrapper" style={theme.stateWrapper}>

@@ -9,7 +9,7 @@ describe('hoc tests', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const CompWithAuth = withAuthenticator(MockComp);
             const wrapper = shallow(<CompWithAuth authState={'signedIn'}/>);
             expect(wrapper).toMatchSnapshot();
@@ -20,7 +20,7 @@ describe('hoc tests', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const CompWithAuth = withAuthenticator(MockComp);
             const wrapper = shallow(<CompWithAuth amplifyConfig={'amplifyConfig'}/>);
             expect(wrapper).toMatchSnapshot();
