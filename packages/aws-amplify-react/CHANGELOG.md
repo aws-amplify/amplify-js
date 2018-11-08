@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.4-unstable.3"></a>
+## [2.1.4-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.2...aws-amplify-react@2.1.4-unstable.3) (2018-11-08)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** change the way to import qrcode ([8afd5dd](https://github.com/aws/aws-amplify/commit/8afd5dd))
+
+
+
+
 <a name="2.1.4-unstable.2"></a>
 ## [2.1.4-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.1...aws-amplify-react@2.1.4-unstable.2) (2018-11-07)
 
