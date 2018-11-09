@@ -20,12 +20,10 @@ exports[`Greetings normal case render name from attributes 1`] = `
         >
           Hello name
         </Component>
-        <Component
-          onClick={[Function]}
+        <SignOut
+          authState="signedIn"
           theme="theme"
-        >
-          Sign Out
-        </Component>
+        />
       </span>
     </Component>
   </Component>
