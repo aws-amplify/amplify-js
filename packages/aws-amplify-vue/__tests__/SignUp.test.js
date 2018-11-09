@@ -165,11 +165,6 @@ describe('SignUp', () => {
       el.trigger('click');
       expect(mockSignUp).toHaveBeenCalled();
     });
-
-    it('...should keep default signUpFields if passed fields are empty array', () => {
-      signUpFields = [];
-      expect(wrapper.vm.options.signUpFields.length).toEqual(4);
-    });
   });
 
   describe('...when signUpFields are passed...', () => {
