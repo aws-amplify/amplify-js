@@ -19,15 +19,7 @@ import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
-    SectionHeader,
-    SectionBody,
-    SectionFooter,
-    Input,
-    RadioRow,
-    Button,
-    Link,
-    SectionFooterPrimaryContent,
-    SectionFooterSecondaryContent
+    SectionBody
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Loading');
