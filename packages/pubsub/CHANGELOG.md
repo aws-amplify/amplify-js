@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.18-unstable.1"></a>
+## [1.0.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18-unstable.0...@aws-amplify/pubsub@1.0.18-unstable.1) (2018-11-09)
+
+
+### Bug Fixes
+
+* **pubsub,appsync:** Fix NPE when unsubscribing ([#1955](https://github.com/aws/aws-amplify/issues/1955)) ([e651728](https://github.com/aws/aws-amplify/commit/e651728)), closes [#1940](https://github.com/aws/aws-amplify/issues/1940)
+
+
+
+
+<a name="1.0.18-unstable.0"></a>
+## [1.0.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.17...@aws-amplify/pubsub@1.0.18-unstable.0) (2018-11-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.17-unstable.0...@aws-amplify/pubsub@1.0.17) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.17-unstable.0"></a>
+## [1.0.17-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.16...@aws-amplify/pubsub@1.0.17-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.16-unstable.3...@aws-amplify/pubsub@1.0.16) (2018-10-17)
 
