@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.4-unstable.4"></a>
+## [2.1.4-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.3...aws-amplify-react@2.1.4-unstable.4) (2018-11-09)
+
+
+### Features
+
+* **aws-amplify-react:** adding loading page ([c47f72a](https://github.com/aws/aws-amplify/commit/c47f72a))
+
+
+
+
 <a name="2.1.4-unstable.3"></a>
 ## [2.1.4-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.2...aws-amplify-react@2.1.4-unstable.3) (2018-11-08)
 
