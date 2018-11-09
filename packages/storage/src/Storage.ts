@@ -18,7 +18,7 @@ import {
     Credentials
 } from '@aws-amplify/core';
 import AWSS3Provider from './Providers/AWSS3Provider';
-import { StorageOptions, StorageProvider } from './types';
+import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
 
@@ -151,18 +151,10 @@ export default class StorageClass {
 
     private _get(key: string, config?) {
         const provider = config.provider? config.provider: 'AWSS3';
-        
-        this._pluggables.forEach((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                if(config){
-                    pluggable.get(key,config);
-                } else {
-                    pluggable.get(key);
-                }
-            }
-        });
-        // return Promise.resolve();
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.get(key, config);
     }
+
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
@@ -170,23 +162,14 @@ export default class StorageClass {
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, config?) {
+    public async get(key: string, config?): Promise<String|Object> {
         return this._get(key, config);
     }
 
     private _put(key: string, object, config?) {
         const provider = config.provider? config.provider: 'AWSS3';
-        
-        this._pluggables.forEach((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                if(config){
-                    pluggable.put(key,object,config);
-                } else {
-                    pluggable.put(key, object);
-                }
-            }
-        });
-        // return Promise.resolve();
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.put(key,object,config);
     }
 
     /**
@@ -197,9 +180,8 @@ export default class StorageClass {
      *  progressCallback: function }
      * @return - promise resolves to object on success
      */
-    public async put(key: string, object, config?) {
-        return this._put(key, object, config);
-        
+    public async put(key: string, object, config?):Promise<Object> { 
+        return this._put(key, object, config);    
     }
 
     /**
@@ -214,30 +196,15 @@ export default class StorageClass {
 
     private _remove(key, config){
         const provider = config.provider? config.provider: 'AWSS3';
-        
-        this._pluggables.forEach((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                if(config){
-                    pluggable.remove(key,config);
-                } else {
-                    pluggable.remove(key);
-                }
-            }
-        });
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.remove(key,config);   
     }
 
     private _list(path, config) {
         const provider = config.provider? config.provider: 'AWSS3';
         
-        this._pluggables.forEach((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                if(config){
-                    pluggable.list(path,config);
-                } else {
-                    pluggable.list(path);
-                }
-            }
-        });
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.list(path,config);  
     }
 
     /**
