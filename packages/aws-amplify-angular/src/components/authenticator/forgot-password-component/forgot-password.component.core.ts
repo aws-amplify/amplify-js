@@ -39,22 +39,20 @@ const template = `
 
       <div class="amplify-form-actions">
 
+        <div class="amplify-form-cell-left">
+            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">Resend Code</a>
+            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
+        </div>
+
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
-            *ngIf="!code_sent"
-            (click)="onSend()">Submit</button>
-        
+          *ngIf="!code_sent"
+          (click)="onSend()">Submit</button>
+    
           <button class="amplify-form-button"
             *ngIf="code_sent"
             (click)="onSubmit()">Verify</button>
-        </div>
-
-        <div class="amplify-form-cell-left">
-          <div class="amplify-form-actions-left">
-            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">Resend Code</a>
-            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
           </div>
-        </div>
       
       </div>
     </div>

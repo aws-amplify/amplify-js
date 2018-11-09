@@ -399,6 +399,8 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-form-actions {
+  display: flex;
+  justify-content: space-between;
   margin-top:1.8em;
 }
 
@@ -421,7 +423,7 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-form-body {
-  padding: 1.5em 1.5em 3em 1.5em;
+  padding: 1.5em;
 }
 
 .amplify-form-row {
@@ -429,12 +431,10 @@ display: block;
 }
 
 .amplify-form-cell-left {
-float: left;
 margin: 8px 0 8px 8px;
 }
 
 .amplify-form-cell-right {
-float:right;
 margin: 8px 8px 8px 0;
 }
 

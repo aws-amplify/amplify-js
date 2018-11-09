@@ -37,16 +37,14 @@ const template = `
       </div>
 
       <div class="amplify-form-actions">
-
-        <div class="amplify-form-cell-right">
-          <button class="amplify-form-button"
-            (click)="onSignIn()"
-          >Sign In</button>
-        </div>
-
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
         </div>
+        <div class="amplify-form-cell-right">
+        <button class="amplify-form-button"
+          (click)="onSignIn()"
+        >Sign In</button>
+      </div>
       </div>
     </div>
   </div>
