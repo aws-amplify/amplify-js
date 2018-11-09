@@ -73,45 +73,16 @@ describe('PubSub', () => {
             await pubsub.publish('topicA', 'my message');
         });
 
-        test('subscribe using wildcards and publish to the matching topic using AWSIoTProvider', done => {
+        test('subscriber is matching MQTT topic wildcards', () => {
             expect.assertions(5);
-            const config = {
-                PubSub : {
-                    aws_pubsub_region: 'region',
-                    aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt'
-                }
-            }
-            const pubsub = new PubSub({});
-            pubsub.configure(config);
 
+            const publishTopic = 'topic/A/B/C';
             const awsIotProvider = new AWSIoTProvider();
-            pubsub.addPluggable(awsIotProvider);
-
-            expect(awsIotProvider.getCategory()).toBe('PubSub');
-
-            const expectedData = {
-                value: 'my message',
-                provider: awsIotProvider
-            };
-            let cbCounter = 0;
-            const expectedObserver = {
-                next: data => {
-                    expect(data).toEqual(expectedData);
-
-                    cbCounter++;
-                    if (cbCounter >= 4)
-                        done();
-                },
-                close: () => console.log('done'),
-                error: error => console.log('error', error)
-            };
-            var obs1 = pubsub.subscribe('topic/A/B/C').subscribe(expectedObserver);
-            var obs2 = pubsub.subscribe('topic/A/#').subscribe(expectedObserver);
-            var obs3 = pubsub.subscribe('topic/A/+/C').subscribe(expectedObserver);
-            var obs4 = pubsub.subscribe('topic/A/+/#').subscribe(expectedObserver);
-            var obs5 = pubsub.subscribe('topic/A/B/C/#').subscribe(expectedObserver); // Should not match
-
-            pubsub.publish('topic/A/B/C', 'my message');
+            expect(awsIotProvider.mqttTopicMatch('topic/A/B/C', publishTopic)).toBe(true);
+            expect(awsIotProvider.mqttTopicMatch('topic/A/#', publishTopic)).toBe(true);
+            expect(awsIotProvider.mqttTopicMatch('topic/A/+/C', publishTopic)).toBe(true);
+            expect(awsIotProvider.mqttTopicMatch('topic/A/+/#', publishTopic)).toBe(true);
+            expect(awsIotProvider.mqttTopicMatch('topic/A/B/C/#', publishTopic)).toBe(false);
         });
     });
 

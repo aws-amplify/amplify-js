@@ -125,25 +125,25 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
+    public mqttTopicMatch(filter: string, topic: string) {
+        const filterArray = filter.split('/');
+        const length = filterArray.length;
+        const topicArray = topic.split('/');
+
+        for (let i = 0; i < length; ++i) {
+            const left = filterArray[i];
+            const right = topicArray[i];
+            if (left === '#') return topicArray.length >= length;
+            if (left !== '+' && left !== right) return false;
+        }
+        return length === topicArray.length;
+    }
+
     private _onMessage(topic: string, msg: any) {
         try {
-            const mqttTopicMatch = (filter: string, topic: string) => {
-                const filterArray = filter.split('/');
-                const length = filterArray.length;
-                const topicArray = topic.split('/');
-
-                for (let i = 0; i < length; ++i) {
-                    const left = filterArray[i];
-                    const right = topicArray[i];
-                    if (left === '#') return topicArray.length >= length;
-                    if (left !== '+' && left !== right) return false;
-                }
-                return length === topicArray.length;
-            };
-
             const matchedTopicObservers = [];
             this._topicObservers.forEach((observerForTopic, observerTopic) => {
-                if (mqttTopicMatch(observerTopic, topic)) {
+                if (this.mqttTopicMatch(observerTopic, topic)) {
                     matchedTopicObservers.push(observerForTopic);
                 }
             });
