@@ -18,6 +18,7 @@ import {
     Credentials
 } from '@aws-amplify/core';
 import AWSS3Provider from './Providers/AWSS3Provider';
+import FirebaseProvider from './Providers/FirebaseProvider';
 import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
@@ -122,7 +123,9 @@ export default class StorageClass {
         logger.debug('configure Storage');
         if (!config) return this._config;
         let opt = config ? config.Storage || config : {};
-
+        if(config['Firebase']){
+            this.addPluggable(new FirebaseProvider());
+        }
         if (config['aws_user_files_s3_bucket']) {
             opt = {
                 bucket: config['aws_user_files_s3_bucket'],
@@ -216,67 +219,4 @@ export default class StorageClass {
     public async list(path, config?): Promise<any> {
         return this._list(path, config);
     }
-
-    // /**
-    //  * @private
-    //  */
-    // _ensureCredentials() {
-    //     // commented
-    //     // will cause bug if another user logged in without refreshing page
-    //     // if (this._config.credentials) { return Promise.resolve(true); }
-
-    //     return Credentials.get()
-    //         .then(credentials => {
-    //             if (!credentials) return false;
-    //             const cred = Credentials.shear(credentials);
-    //             logger.debug('set credentials for storage', cred);
-    //             this._config.credentials = cred;
-
-    //             return true;
-    //         })
-    //         .catch(err => {
-    //             logger.warn('ensure credentials error', err);
-    //             return false;
-    //         });
-    // }
-
-    // /**
-    //  * @private
-    //  */
-    // private _prefix(config) {
-    //     const { credentials, level } = config;
-
-    //     const customPrefix = config.customPrefix || {};
-    //     const identityId = config.identityId || credentials.identityId;
-    //     const privatePath = (customPrefix.private !== undefined ?
-    // customPrefix.private : 'private/') + identityId + '/';
-    //     const protectedPath = (customPrefix.protected !== undefined ?
-    //         customPrefix.protected : 'protected/') + identityId + '/';
-    //     const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
-
-    //     switch (level) {
-    //         case 'private':
-    //             return privatePath;
-    //         case 'protected':
-    //             return protectedPath;
-    //         default:
-    //             return publicPath;
-    //     }
-    // }
-
-    // /**
-    //  * @private
-    //  */
-    // private _createS3(config) {
-    //     const { bucket, region, credentials } = config;
-    //     AWS.config.update({
-    //         region,
-    //         credentials
-    //     });
-    //     return new S3({
-    //         apiVersion: '2006-03-01',
-    //         params: { Bucket: bucket },
-    //         region
-    //     });
-    // }
 }

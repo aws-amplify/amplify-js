@@ -18,5 +18,5 @@ export interface StorageOptions {
     bucket?: string;
     region?: string;
     level?: string;
-    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
+    credentials?: object;
 }
