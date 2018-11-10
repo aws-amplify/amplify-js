@@ -407,6 +407,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         logger.debug('init clients with credentials', credentials);
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
+        if (Platform.isReactNative) {
+            this.pinpointClient.customizeRequests(function(request) {
+                request.on('build', function(req) {
+                    req.httpRequest.headers['user-agent'] = Platform.userAgent;
+                });
+            });
+        }
+        
     }
 
     private async _getEndpointId(cacheKey) {
