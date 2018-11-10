@@ -1,5 +1,5 @@
 import PubSub from '../src/PubSub';
-import { MqttOverWSProvider, AWSIoTProvider } from '../src/Providers';
+import { MqttOverWSProvider, AWSIoTProvider, mqttTopicMatch } from '../src/Providers';
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
 import { Client } from '../src/vendor/paho-mqtt';
@@ -77,12 +77,11 @@ describe('PubSub', () => {
             expect.assertions(5);
 
             const publishTopic = 'topic/A/B/C';
-            const awsIotProvider = new AWSIoTProvider();
-            expect(awsIotProvider.mqttTopicMatch('topic/A/B/C', publishTopic)).toBe(true);
-            expect(awsIotProvider.mqttTopicMatch('topic/A/#', publishTopic)).toBe(true);
-            expect(awsIotProvider.mqttTopicMatch('topic/A/+/C', publishTopic)).toBe(true);
-            expect(awsIotProvider.mqttTopicMatch('topic/A/+/#', publishTopic)).toBe(true);
-            expect(awsIotProvider.mqttTopicMatch('topic/A/B/C/#', publishTopic)).toBe(false);
+            expect(mqttTopicMatch('topic/A/B/C', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/#', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/+/C', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/+/#', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/B/C/#', publishTopic)).toBe(false);
         });
     });
 

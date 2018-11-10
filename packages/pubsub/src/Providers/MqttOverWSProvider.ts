@@ -20,6 +20,20 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
+export function mqttTopicMatch(filter: string, topic: string) {
+    const filterArray = filter.split('/');
+    const length = filterArray.length;
+    const topicArray = topic.split('/');
+
+    for (let i = 0; i < length; ++i) {
+        const left = filterArray[i];
+        const right = topicArray[i];
+        if (left === '#') return topicArray.length >= length;
+        if (left !== '+' && left !== right) return false;
+    }
+    return length === topicArray.length;
+}
+
 export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
@@ -125,25 +139,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
-    public mqttTopicMatch(filter: string, topic: string) {
-        const filterArray = filter.split('/');
-        const length = filterArray.length;
-        const topicArray = topic.split('/');
-
-        for (let i = 0; i < length; ++i) {
-            const left = filterArray[i];
-            const right = topicArray[i];
-            if (left === '#') return topicArray.length >= length;
-            if (left !== '+' && left !== right) return false;
-        }
-        return length === topicArray.length;
-    }
-
     private _onMessage(topic: string, msg: any) {
         try {
             const matchedTopicObservers = [];
             this._topicObservers.forEach((observerForTopic, observerTopic) => {
-                if (this.mqttTopicMatch(observerTopic, topic)) {
+                if (mqttTopicMatch(observerTopic, topic)) {
                     matchedTopicObservers.push(observerForTopic);
                 }
             });
