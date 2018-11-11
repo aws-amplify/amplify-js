@@ -89,6 +89,9 @@ export class RestClient {
         if (initParams.body) {
             libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(initParams.body);
+        } else if (initParams.data) {
+            libraryHeaders['Content-Type'] = 'text/plain; charset=UTF-8';
+            params.data = initParams.data;
         }
 
         params['signerServiceInfo'] = initParams.signerServiceInfo;
