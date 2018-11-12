@@ -3,6 +3,7 @@ const constants = {
     AUTH0: 'auth0',
     GOOGLE: 'google',
     FACEBOOK: 'facebook',
-    AMAZON: 'amazon'
+    AMAZON: 'amazon',
+    SIGN_IN_WITH_HOSTEDUI_KEY: 'amplify-react-signin-with-hostedUI'
 };
  export default constants; 
