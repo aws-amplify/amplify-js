@@ -79,9 +79,10 @@ export default function withFacebook(Comp) {
             }
 
             const fb = window.FB;
-            fb.api('/me', response => {
+            fb.api('/me', { fields: 'name,email' }, response => {
                 let user = {
-                    name: response.name
+                    name: response.name,
+                    email: response.email
                 };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 

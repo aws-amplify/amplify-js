@@ -39,6 +39,12 @@ export const AmazonSignInButton = {};
 export const FacebookSignInButton = {};
 export const GoogleSignInButton = {};
 export const OAuthSignInButton = {};
+export const Toast = {};
+export const NavBar = {};
+export const NavRight = {};
+export const Nav = {};
+export const NavItem = {};
+export const NavButton = {};
 
 const AmplifyTheme = {
   container: Container,
@@ -72,7 +78,14 @@ const AmplifyTheme = {
 
   hint: Hint,
   radio: Radio,
-  inputLabel: InputLabel
+  inputLabel: InputLabel,
+  toast: Toast,
+  
+  navBar: NavBar,
+  nav: Nav,
+  navRight: NavRight,
+  navItem: NavItem,
+  navButton: NavButton
 };
 
 export default AmplifyTheme;

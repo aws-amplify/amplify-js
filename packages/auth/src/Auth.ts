@@ -180,6 +180,7 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug("Error in cognito hosted auth response", err);
                     dispatchAuthEvent('signIn_failure', err);
+                    dispatchAuthEvent('cognitoHostedUI_failure', err);
                 }
             };
             // if not logged in, try to parse the url.
@@ -196,6 +197,7 @@ export default class AuthClass {
                     this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
                 } catch (err) {
                     logger.debug('something wrong when parsing the url', err);
+                    dispatchAuthEvent('parsingUrl_failure', null);
                 }
             });
         }
@@ -1155,16 +1157,8 @@ export default class AuthClass {
             logger.debug('no Congito User pool');
         }
         
-
-        try {
-            await Credentials.set(null, 'guest');
-        } catch (e) {
-            logger.debug('cannot load guest credentials for unauthenticated user', e);
-        } finally {
-            dispatchAuthEvent('signOut', this.user);
-            this.user = null;
-            return;
-        }
+        dispatchAuthEvent('signOut', this.user);
+        this.user = null;
     }
 
     private async cleanCachedItems() {

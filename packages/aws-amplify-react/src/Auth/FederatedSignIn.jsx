@@ -119,7 +119,7 @@ export class FederatedButtons extends Component {
                 <div>
                 {this.auth0(auth0)}
                 </div>
-                <Strike>{I18n.get('or')}</Strike>
+                <Strike theme={theme}>{I18n.get('or')}</Strike>
             </div>
         );
     }
