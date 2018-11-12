@@ -49,7 +49,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             this.authConfig = {};
 
             if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                this.authConfig = Object.assign(this.authConfig, this.includeGreetings)
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
             } else {
                 this.authConfig = {
                     includeGreetings,
@@ -99,7 +99,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={this.authConfig.authenticatorComponents}
+                children={this.authConfig.authenticatorComponents || []}
             />;
         }
     };

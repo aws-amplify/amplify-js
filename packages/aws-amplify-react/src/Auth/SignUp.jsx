@@ -50,6 +50,8 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
+        this.header = this.props.signUpConfig.header || 'Create a new account';
+        this.removeHiddenFields = this.removeHiddenFields.bind(this);
     }
 
     validate() {
@@ -136,6 +138,12 @@ export default class SignUp extends AuthPiece {
         return null;
     }
 
+    removeHiddenFields() {
+        this.signUpFields = this.signUpFields.filter((f) => {
+            return !f.displayOrder || f.displayOrder !== -1;
+        });
+    }
+
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
@@ -178,7 +186,7 @@ export default class SignUp extends AuthPiece {
               if (key !== 'phone_line_number' && key !== 'dial_code') {
                 const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                 signup_info.attributes[newKey] = inputVals[index];
-              } else {
+              } else if (inputVals[index]) {
                   signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
               }
             }
@@ -197,9 +205,10 @@ export default class SignUp extends AuthPiece {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
+        this.removeHiddenFields();
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
                 <SectionBody theme={theme}>
                     {
                         this.signUpFields.map((field) => {
@@ -220,6 +229,7 @@ export default class SignUp extends AuthPiece {
                                         theme={theme}
                                         type={field.type}
                                         name={field.key}
+                                        key={field.key}
                                         onChange={this.handleInputChange}
                                     />
                                 </FormField>

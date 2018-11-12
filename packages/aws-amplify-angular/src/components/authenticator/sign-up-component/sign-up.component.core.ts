@@ -9,7 +9,7 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">Create a new account</div>
+      <div class="amplify-form-header">{{this.header}}</div>
 
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
@@ -110,6 +110,7 @@ export class SignUpComponentCore {
   local_phone_number: string;
   country_code: string = '1';
   countries: country[];
+  header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
@@ -120,10 +121,6 @@ export class SignUpComponentCore {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
   }
-
-  // ngOnInit() {
-  //   this.sortFields();
-  // }
 
   @Input()
   set data(data: any) {
@@ -137,6 +134,10 @@ export class SignUpComponentCore {
       if (this._signUpConfig.signUpFields) {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
+      if (this._signUpConfig.header) {
+        this.header = this._signUpConfig.header;
+      }
+      this.removeHiddenFields();
       this.sortFields();
     }
   }
@@ -157,6 +158,10 @@ export class SignUpComponentCore {
       if (this._signUpConfig.signUpFields) {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
+      if (this._signUpConfig.header) {
+        this.header = this._signUpConfig.header;
+      }
+      this.removeHiddenFields();
       this.sortFields();
     }
   }
@@ -275,6 +280,12 @@ export class SignUpComponentCore {
 
   onAlertClose() {
     this._setError(null);
+  }
+
+  removeHiddenFields() {
+    this.signUpFields = this.signUpFields.filter((f) => {
+        return !f.displayOrder || f.displayOrder !== -1;
+    });
   }
 
   validate() {
