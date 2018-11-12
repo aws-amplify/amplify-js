@@ -3,6 +3,188 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.4-unstable.4"></a>
+## [2.1.4-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.3...aws-amplify-react@2.1.4-unstable.4) (2018-11-09)
+
+
+### Features
+
+* **aws-amplify-react:** adding loading page ([c47f72a](https://github.com/aws/aws-amplify/commit/c47f72a))
+
+
+
+
+<a name="2.1.4-unstable.3"></a>
+## [2.1.4-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.2...aws-amplify-react@2.1.4-unstable.3) (2018-11-08)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** change the way to import qrcode ([8afd5dd](https://github.com/aws/aws-amplify/commit/8afd5dd))
+
+
+
+
+<a name="2.1.4-unstable.2"></a>
+## [2.1.4-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.1...aws-amplify-react@2.1.4-unstable.2) (2018-11-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** change to forgetpassword state if need to reset password ([0c1e994](https://github.com/aws/aws-amplify/commit/0c1e994))
+
+
+
+
+<a name="2.1.4-unstable.1"></a>
+## [2.1.4-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.4-unstable.0...aws-amplify-react@2.1.4-unstable.1) (2018-11-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** only call Auth signOut if some error happens during signed in ([1ceb3ef](https://github.com/aws/aws-amplify/commit/1ceb3ef))
+
+
+
+
+<a name="2.1.4-unstable.0"></a>
+## [2.1.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3...aws-amplify-react@2.1.4-unstable.0) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3"></a>
+## [2.1.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.4...aws-amplify-react@2.1.3) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.4"></a>
+## [2.1.3-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.3...aws-amplify-react@2.1.3-unstable.4) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.3"></a>
+## [2.1.3-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.2...aws-amplify-react@2.1.3-unstable.3) (2018-10-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Adding theme support to the FederatedButtons "or" Strike ([554c1fc](https://github.com/aws/aws-amplify/commit/554c1fc))
+
+
+
+
+<a name="2.1.3-unstable.2"></a>
+## [2.1.3-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.1...aws-amplify-react@2.1.3-unstable.2) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.1"></a>
+## [2.1.3-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.3-unstable.0...aws-amplify-react@2.1.3-unstable.1) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.3-unstable.0"></a>
+## [2.1.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2...aws-amplify-react@2.1.3-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.5...aws-amplify-react@2.1.2) (2018-10-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.2-unstable.5"></a>
+## [2.1.2-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.4...aws-amplify-react@2.1.2-unstable.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** show the link of create account when using customized signup component ([1b4de49](https://github.com/aws/aws-amplify/commit/1b4de49))
+
+
+
+
+<a name="2.1.2-unstable.4"></a>
+## [2.1.2-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.3...aws-amplify-react@2.1.2-unstable.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** pass the user name when signin error happens ([b857101](https://github.com/aws/aws-amplify/commit/b857101))
+
+
+
+
+<a name="2.1.2-unstable.3"></a>
+## [2.1.2-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.2...aws-amplify-react@2.1.2-unstable.3) (2018-10-29)
+
+
+### Features
+
+* **aws-amplify-react:** Add Auth0 button ([b16ded3](https://github.com/aws/aws-amplify/commit/b16ded3))
+
+
+
+
+<a name="2.1.2-unstable.2"></a>
+## [2.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.1...aws-amplify-react@2.1.2-unstable.2) (2018-10-25)
+
+
+### Features
+
+* **aws-amplify-react:** federated sign out methods refactor ([9edbd6e](https://github.com/aws/aws-amplify/commit/9edbd6e))
+
+
+
+
+<a name="2.1.2-unstable.1"></a>
+## [2.1.2-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.2-unstable.0...aws-amplify-react@2.1.2-unstable.1) (2018-10-25)
+
+
+### Bug Fixes
+
+* **aws-amplify-react aws-amplify-react-native:** Connect component ([#1868](https://github.com/aws/aws-amplify/issues/1868)) ([8dd6b55](https://github.com/aws/aws-amplify/commit/8dd6b55))
+
+
+
+
+<a name="2.1.2-unstable.0"></a>
+## [2.1.2-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.1...aws-amplify-react@2.1.2-unstable.0) (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.8-unstable.2...aws-amplify-react@2.1.1) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.0.8-unstable.2"></a>
 ## [2.0.8-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.8-unstable.1...aws-amplify-react@2.0.8-unstable.2) (2018-10-16)
 

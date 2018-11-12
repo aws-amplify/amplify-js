@@ -20,10 +20,12 @@ import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import RequireNewPassword from './RequireNewPassword';
 import SignUp from './SignUp';
+import Loading from './Loading';
 import ConfirmSignUp from './ConfirmSignUp';
 import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 import TOTPSetup from './TOTPSetup';
+import Constants from './common/constants';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -31,6 +33,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Authenticator');
+const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export default class Authenticator extends Component {
     constructor(props) {
@@ -51,7 +54,14 @@ export default class Authenticator extends Component {
             Amplify.configure(config);
         }
         this._isMounted = true;
-        this.checkUser()
+        // the workaround for Cognito Hosted UI
+        // don't check the user immediately if redirected back from Hosted UI
+        // instead waiting for the hub event sent from Auth module
+        // the item in the localStorage is a mark to indicate whether
+        // the app is redirected back from Hosted UI or not
+        const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
+        localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
+        if (!byHostedUI) this.checkUser();
     }
 
     componentWillUnmount() {
@@ -65,24 +75,40 @@ export default class Authenticator extends Component {
         return Auth.currentAuthenticatedUser()
             .then(user => {
                 if (!this._isMounted) { return; }
-                if (auth !== 'signedIn') {
-                    this.setState({
-                        authState: 'signedIn',
-                        authData: user
-                    });
-                    this.handleStateChange('signedIn', user);
-                }
+                this.handleStateChange('signedIn', user);
             })
             .catch(err => {
                 if (!this._isMounted) { return; }
-                Auth.signOut().then(() => this.handleStateChange(this._initialAuthState));
+                let cachedAuthState = null;
+                try {
+                    cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+                } catch (e) {
+                    logger.debug('Failed to get the auth state from local storage', e);
+                }
+                const promise = cachedAuthState === 'signedIn'? Auth.signOut() : Promise.resolve();
+                promise.then(() => this.handleStateChange(this._initialAuthState))
+                    .catch((e) => {
+                        logger.debug('Failed to sign out', e);
+                    });
             });
     }
 
     onHubCapsule(capsule) {
         const { channel, payload, source } = capsule;
-        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
-            this.checkUser(); 
+        if (channel === 'auth') {
+            switch (payload.event) {
+                case 'cognitoHostedUI':
+                    this.handleStateChange('signedIn', payload.data);
+                    break;
+                case 'cognitoHostedUI_failure':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'parsingUrl_failure':
+                    this.handleStateChange('signIn', null);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -91,15 +117,20 @@ export default class Authenticator extends Component {
         if (state === this.state.auth) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        try {
+            localStorage.setItem(AUTHENTICATOR_AUTHSTATE, state);
+        } catch (e) {
+            logger.debug('Failed to set the auth state into local storage', e);
+        }
+        this.setState({ auth: state, authData: data, error: null, showToast: false });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event) {
+    handleAuthEvent(state, event, showToast = true) {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message, showToast: true });
+            this.setState({ error: message, showToast });
             
         }
     }
@@ -120,13 +151,14 @@ export default class Authenticator extends Component {
                 ConfirmSignUp,
                 VerifyContact,
                 ForgotPassword,
-                TOTPSetup
+                TOTPSetup,
+                Loading
             ]);
         }
         const props_children = this.props.children || [];
 
         const default_children = [
-            <Greetings/>,
+            <Greetings federated={federated}/>,
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
@@ -134,34 +166,42 @@ export default class Authenticator extends Component {
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
-            <TOTPSetup/>
+            <TOTPSetup/>,
+            <Loading/>
         ];
 
-        const props_children_names  = React.Children.map(props_children, child => child.type.name)
-        hide = hide.filter((component) =>!props_children_names.includes(component.name))
+        const props_children_names  = React.Children.map(props_children, child => child.type.name);
+        const props_children_override =  React.Children.map(props_children, child => child.props.override);
+        hide = hide.filter((component) =>!props_children_names.includes(component.name));
+        const hideLink = hide.filter((component) => {
+            return !props_children_override.some(comp => comp === component);
+        });
+        
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
+                    theme,
+                    messageMap,
                     authState: auth,
-                    authData: authData,
+                    authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide
+                    hide: hide,
+                    hideLink: hideLink
                 });
         });
        
         const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
+                    theme,
+                    messageMap,
                     authState: auth,
-                    authData: authData,
+                    authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide
+                    hide: hide,
+                    hideLink: hideLink
                 });
             });
 
@@ -171,12 +211,12 @@ export default class Authenticator extends Component {
         return (
             <Container theme={theme}>
                 {this.state.showToast && 
-                    <Toast onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }
                 {render_children}
             </Container>
-        )
+        );
     }
 }

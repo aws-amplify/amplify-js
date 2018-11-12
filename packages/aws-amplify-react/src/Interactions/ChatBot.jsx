@@ -52,11 +52,11 @@ export class ChatBot extends Component {
 
     listItems() {
         return this.state.dialog.map((m, i) => {
-            if (m.from === 'me') { return <div key={i} style={styles.itemMe}>{m.message}</div> }
-            else if (m.from === 'system') { return <div key={i} style={styles.itemBot}>{m.message}</div> }
-            else { return <div key={i} style={styles.itemBot}>{m.message}</div> }
+            if (m.from === 'me') { return <div key={i} style={styles.itemMe}>{m.message}</div>; }
+            else if (m.from === 'system') { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
+            else { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
         });
-    };
+    }
 
     async submit(e) {
         e.preventDefault();
@@ -103,7 +103,7 @@ export class ChatBot extends Component {
             }, () => {
                 this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
             });
-        }
+        };
     }
 
     componentDidMount() {

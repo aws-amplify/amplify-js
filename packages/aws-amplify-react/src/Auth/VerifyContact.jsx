@@ -24,7 +24,6 @@ import {
     SectionFooter,
     Input,
     RadioRow,
-    MessageRow,
     Button,
     Link,
     SectionFooterPrimaryContent,
@@ -41,7 +40,7 @@ export default class VerifyContact extends AuthPiece {
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
 
-        this.state = { verifyAttr: null }
+        this.state = { verifyAttr: null };
     }
 
     verify() {
@@ -128,7 +127,7 @@ export default class VerifyContact extends AuthPiece {
                     onChange={this.handleInputChange}
                 />
             </div>
-        )
+        );
     }
 
     showComponent(theme) {

@@ -58,7 +58,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
         });
     });
@@ -121,7 +121,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'verifyTotpToken').mockImplementationOnce(() => {
@@ -171,7 +171,7 @@ describe('TOTPSetupComp test', () => {
                     name: 'name',
                     value: 'value'
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'verifyTotpToken').mockImplementationOnce(() => {
