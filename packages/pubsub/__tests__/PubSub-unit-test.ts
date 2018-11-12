@@ -1,5 +1,5 @@
 import PubSub from '../src/PubSub';
-import { MqttOverWSProvider, AWSIoTProvider } from '../src/Providers';
+import { MqttOverWSProvider, AWSIoTProvider, mqttTopicMatch } from '../src/Providers';
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
 import * as Paho from '../src/vendor/paho-mqtt';
@@ -92,6 +92,17 @@ describe('PubSub', () => {
             });
 
             await pubsub.publish('topicA', 'my message');
+        });
+
+        test('subscriber is matching MQTT topic wildcards', () => {
+            expect.assertions(5);
+
+            const publishTopic = 'topic/A/B/C';
+            expect(mqttTopicMatch('topic/A/B/C', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/#', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/+/C', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/+/#', publishTopic)).toBe(true);
+            expect(mqttTopicMatch('topic/A/B/C/#', publishTopic)).toBe(false);
         });
     });
 
