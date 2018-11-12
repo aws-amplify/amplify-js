@@ -20,6 +20,20 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
+export function mqttTopicMatch(filter: string, topic: string) {
+    const filterArray = filter.split('/');
+    const length = filterArray.length;
+    const topicArray = topic.split('/');
+
+    for (let i = 0; i < length; ++i) {
+        const left = filterArray[i];
+        const right = topicArray[i];
+        if (left === '#') return topicArray.length >= length;
+        if (left !== '+' && left !== right) return false;
+    }
+    return length === topicArray.length;
+}
+
 export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
@@ -127,14 +141,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const observersForTopic = this._topicObservers.get(topic) || new Set();
+            const matchedTopicObservers = [];
+            this._topicObservers.forEach((observerForTopic, observerTopic) => {
+                if (mqttTopicMatch(observerTopic, topic)) {
+                    matchedTopicObservers.push(observerForTopic);
+                }
+            });
             const parsedMessage = JSON.parse(msg);
 
             if (typeof parsedMessage === 'object') {
                 parsedMessage[topicSymbol] = topic;
             }
 
-            observersForTopic.forEach(observer => observer.next(parsedMessage));
+            matchedTopicObservers.forEach(observersForTopic =>{
+                observersForTopic.forEach(observer => observer.next(parsedMessage));
+            });
         } catch (error) {
             logger.warn('Error handling message', error, msg);
         }
