@@ -22,6 +22,7 @@ import {
     SignInButton, 
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 const logger = new Logger('withOAuth');
 
@@ -44,7 +45,7 @@ export default function withOAuth(Comp, options) {
 
             logger.debug('withOAuth configuration', config);
             const { 
-                domain,  
+                domain, 
                 redirectSignIn,
                 redirectSignOut,
                 responseType
@@ -55,7 +56,13 @@ export default function withOAuth(Comp, options) {
                 + '/login?redirect_uri=' + redirectSignIn 
                 + '&response_type=' + responseType 
                 + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
-            window.location.assign(url);  
+
+            try {
+                localStorage.setItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY, 'true');
+            } catch (e) {
+                logger.debug('Failed to set item into localStorage', e);
+            }
+            window.location.assign(url);
         }
 
         render() {
