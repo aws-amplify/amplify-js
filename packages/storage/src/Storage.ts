@@ -11,23 +11,12 @@
  * and limitations under the License.
  */
 
-import {
-    AWS,
-    ConsoleLogger as Logger,
-    Hub,
-    Credentials
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AWSS3Provider from './Providers/AWSS3Provider';
-import FirebaseProvider from './Providers/FirebaseProvider';
 import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
 
-const dispatchStorageEvent = (track, attrs, metrics) => {
-    if (track) {
-        Hub.dispatch('storage', { attrs, metrics }, 'Storage');
-    }
-};
 
 /**
  * Provide storage methods to use AWS S3
@@ -123,9 +112,6 @@ export default class StorageClass {
         logger.debug('configure Storage');
         if (!config) return this._config;
         let opt = config ? config.Storage || config : {};
-        if(config['Firebase']){
-            this.addPluggable(new FirebaseProvider());
-        }
         if (config['aws_user_files_s3_bucket']) {
             opt = {
                 bucket: config['aws_user_files_s3_bucket'],
@@ -152,12 +138,6 @@ export default class StorageClass {
         return this._config;
     }
 
-    private _get(key: string, config?) {
-        const provider = config.provider? config.provider: 'AWSS3';
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        return prov.get(key, config);
-    }
-
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
@@ -166,13 +146,14 @@ export default class StorageClass {
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
     public async get(key: string, config?): Promise<String|Object> {
-        return this._get(key, config);
-    }
-
-    private _put(key: string, object, config?) {
-        const provider = config.provider? config.provider: 'AWSS3';
+        let provider;
+        if(config){
+            provider = config.provider? config.provider: 'AWSS3';
+        } else {
+            provider = 'AWSS3';
+        }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        return prov.put(key,object,config);
+        return prov.get(key, config);
     }
 
     /**
@@ -184,7 +165,14 @@ export default class StorageClass {
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, config?):Promise<Object> { 
-        return this._put(key, object, config);    
+        let provider;
+        if(config){
+            provider = config.provider? config.provider: 'AWSS3';
+        } else {
+            provider = 'AWSS3';
+        }
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.put(key,object,config);  
     }
 
     /**
@@ -194,20 +182,14 @@ export default class StorageClass {
      * @return - Promise resolves upon successful removal of the object
      */
     public async remove(key: string, config?): Promise<any> {
-        return this._remove(key, config);
-    }
-
-    private _remove(key, config){
-        const provider = config.provider? config.provider: 'AWSS3';
+        let provider;
+        if(config){
+            provider = config.provider? config.provider: 'AWSS3';
+        } else {
+            provider = 'AWSS3';
+        }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        return prov.remove(key,config);   
-    }
-
-    private _list(path, config) {
-        const provider = config.provider? config.provider: 'AWSS3';
-        
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        return prov.list(path,config);  
+        return prov.remove(key,config);
     }
 
     /**
@@ -217,6 +199,13 @@ export default class StorageClass {
      * @return - Promise resolves to list of keys for all objects in path
      */
     public async list(path, config?): Promise<any> {
-        return this._list(path, config);
+        let provider;
+        if(config){
+            provider = config.provider? config.provider: 'AWSS3';
+        } else {
+            provider = 'AWSS3';
+        }
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        return prov.list(path,config); 
     }
 }

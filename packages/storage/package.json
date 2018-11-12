@@ -50,8 +50,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.16",
-    "firebase": "^5.5.8"
+    "@aws-amplify/core": "^1.0.16"
   },
   "jest": {
     "transform": {

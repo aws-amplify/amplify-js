@@ -34,13 +34,12 @@ export default class AWSS3Provider implements StorageProvider{
     
     static category = 'Storage';
     static providerName = 'AWSS3';
+    
     /**
      * @private
      */
     private _config;
     
-
-
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} config - Configuration object for storage
