@@ -85,12 +85,12 @@ export class SumerianSceneComponentCore implements OnInit {
     this.sceneName = data.sceneName;
   }
 
-  constructor(amplifyService: AmplifyService, amplifyUI: AmplifyUI) {
+  constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
-    this.amplifyUI = amplifyUI;
+    this.amplifyUI = AmplifyUI;
   }
 
-  ngOnInit() {
+  ngOnInit() {   
     document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));

@@ -9,9 +9,7 @@ import { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic'
 @Component({
   selector: 'amplify-sumerian-scene',
   template: `
-              <div class="amplify-component">
-                <ng-template component-host></ng-template>
-              </div>
+              <ng-template component-host></ng-template>
             `
 })
 export class SumerianSceneComponent implements OnInit, OnDestroy {

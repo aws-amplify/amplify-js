@@ -70,13 +70,11 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-loading-ionic',
-  template
+  template,
+  styleUrls: ['../../../../node_modules/@aws-amplify/ui/dist/style.css']
 })
 export class SumerianSceneLoadingComponentIonic extends SumerianSceneLoadingComponentCore {
-  AmplifyUI: AmplifyUI;
-
   constructor() {
     super();
-    this.AmplifyUI = AmplifyUI;
   }
 }

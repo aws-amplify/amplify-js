@@ -68,7 +68,8 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-loading-core',
-  template
+  template,
+  styleUrls: ['../../../../node_modules/@aws-amplify/ui/dist/style.css']
 })
 export class SumerianSceneLoadingComponentCore implements OnInit {
   @Input() loadPercentage: number;
@@ -81,5 +82,6 @@ export class SumerianSceneLoadingComponentCore implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.loadPercentage);
   }
 }

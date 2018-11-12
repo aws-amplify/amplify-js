@@ -6,7 +6,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 const template = `
 <div id="sumerian-scene-container" [ngClass]="amplifyUI.sumerianSceneContainer">
   <div id='sumerian-scene-dom-id' [class]="amplifyUI.sumerianScene">
-    <sumerian-scene-loading *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}}></sumerian-scene-loading>
+    <sumerian-scene-loading-ionic *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}}></sumerian-scene-loading-ionic>
   </div>
   <div *ngIf="!loading" class={{amplifyUI.sceneBar}}>
     <span class={{amplifyUI.sceneActions}}>
@@ -60,15 +60,14 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-ionic',
-  template
+  template,
+  styleUrls: ['../../../../node_modules/@aws-amplify/ui/dist/style.css']
 })
 export class SumerianSceneComponentIonic extends SumerianSceneComponentCore {
   amplifyUI: AmplifyUI;
   amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService, amplifyUI: AmplifyUI) {
-    super(amplifyService, amplifyUI);
-    // this.amplifyService = amplifyService;
-    // this.amplifyUI = amplifyUI;
+  constructor(amplifyService: AmplifyService) {
+    super(amplifyService);
   }
 }
