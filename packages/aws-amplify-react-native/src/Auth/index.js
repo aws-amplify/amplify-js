@@ -62,6 +62,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                     signUpConfig
                 }
             }
+            console.log('this.authConfig', this.authConfig)
         }
 
         handleAuthStateChange(state, data) {
@@ -103,7 +104,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
 
             return <Authenticator
                 {...this.props}
-                hideDefault={this.authConfig.authenticatorComponents.length > 0}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents}

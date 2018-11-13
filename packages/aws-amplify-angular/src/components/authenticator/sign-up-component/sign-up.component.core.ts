@@ -36,7 +36,7 @@ const template = `
                 name="countryCode" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 class="amplify-select-phone-country" 
-                [value]="country_code">
+                [(ngModel)]="country_code">
                 <option *ngFor="let country of countries"  
                   value={{country.value}}>{{country.label}} 
                 </option>
@@ -137,7 +137,6 @@ export class SignUpComponentCore {
       if (this._signUpConfig.header) {
         this.header = this._signUpConfig.header;
       }
-      this.removeHiddenFields();
       this.sortFields();
     }
   }
@@ -161,7 +160,6 @@ export class SignUpComponentCore {
       if (this._signUpConfig.header) {
         this.header = this._signUpConfig.header;
       }
-      this.removeHiddenFields();
       this.sortFields();
     }
   }
@@ -231,13 +229,16 @@ export class SignUpComponentCore {
       this._signUpConfig.signUpFields.length > 0
     ) {
 
-      if (!this._signUpConfig.hideDefaults) {
+      if (!this._signUpConfig.hideAllDefaults) {
         // see if fields passed to component should override defaults
         this.defaultSignUpFields.forEach((f, i) => {
           const matchKey = this.signUpFields.findIndex((d) => {
             return d.key === f.key;
           });
-          if (matchKey === -1) {
+          if (matchKey === -1 && 
+            (this._signUpConfig &&
+              this._signUpConfig.hiddenDefaults &&
+              !this._signUpConfig.hiddenDefaults.includes(f.key))) {
             this.signUpFields.push(f);
           }
         });
@@ -274,6 +275,7 @@ export class SignUpComponentCore {
           }
         }
       });
+      this.signUpFields = this.removeHiddenFields();
     }
 
   }
@@ -283,7 +285,7 @@ export class SignUpComponentCore {
   }
 
   removeHiddenFields() {
-    this.signUpFields = this.signUpFields.filter((f) => {
+    return this.signUpFields.filter((f) => {
         return !f.displayOrder || f.displayOrder !== -1;
     });
   }
