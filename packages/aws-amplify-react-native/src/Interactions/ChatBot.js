@@ -64,8 +64,7 @@ const STATES = {
 
 const MIC_BUTTON_TEXT = {
     PASSIVE: '🎤',
-    RECORDING: '🔴',
-    PLAYING: '🔊'
+    RECORDING: '🔴'
 }
 
 let timer = null;
@@ -79,10 +78,10 @@ export class ChatBot extends Component {
                 from: 'system'
             }],
             inputText: '',
-            currentVoiceState: STATES.INITIAL,
             inputEditable: true,
             silenceDelay: this.props.silenceDelay || 1000,
-            micText: MIC_BUTTON_TEXT.PASSIVE
+            micText: MIC_BUTTON_TEXT.PASSIVE,
+            voice: false,
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
@@ -139,20 +138,35 @@ export class ChatBot extends Component {
         console.log(response);
 
         console.log("playAudioResponse : " + playAudioResponse)
-        if (playAudioResponse === true) {
+        if (this.state.voice === true) {
             this.setState({
-                micText: MIC_BUTTON_TEXT.PLAYING
+                voice: false
             }) ////
 
             const path = `${RNFS.DocumentDirectoryPath}/test.mp3`;
             const data = Buffer.from(response.audioStream).toString('base64');
             await RNFS.writeFile(path, data, 'base64');
-            const speech = new Sound(path, '', err => {
-              if (!err) speech.play(() => speech.release());
-              else console.log('Play sound error', err);
+            const speech = new Sound(path, '', async(err) => {
+              if (!err) {
+                speech.play(async () => { 
+                    speech.release();
+                    // await this.startRecognizing();
+                    if (response.dialogState === 'ReadyForFulfillment' ||
+                        response.dialogState === 'Fulfilled' ||
+                        response.dialogState === 'Failed') {
+                            //back to "initial"
+                    } else {
+                        await this.startRecognizing();
+                        //start recording again
+                    }
+
+
+                });
+              } else {
+                console.log('Play sound error', err);
+              }
             });
         }
-
 
 
     }
@@ -196,7 +210,7 @@ export class ChatBot extends Component {
         // eslint-disable-next-line
         // console.log('onSpeechStart: ', e);
         this.setState({
-          started: '√',
+          currentConversationState: STATES.LISTENING
         });
     };
     
@@ -217,6 +231,9 @@ export class ChatBot extends Component {
             inputDisabled: true
         });
 
+        this.setState({
+            currentConversationState: STATES.SENDING
+        });
         await this.submit(true);
 
     };
@@ -252,6 +269,7 @@ export class ChatBot extends Component {
             inputText: 'Speak into the mic...',
             inputEditable: false,
             micText: MIC_BUTTON_TEXT.RECORDING,
+            voice: true,
           recognized: '',
           pitch: '',
           error: '',
@@ -294,7 +312,6 @@ export class ChatBot extends Component {
                         value={this.state.inputText}
                         returnKeyType="send"
                         onSubmitEditing={this.submit}
-                        // onSubmitEditing={this.submit(false)}
                         blurOnSubmit={false}
                         editable={this.state.inputEditable}
                         selectTextOnFocus={this.state.inputDisabled}
@@ -306,7 +323,6 @@ export class ChatBot extends Component {
                         text={this.state.micText} />
                     <AmplifyButton
                         onPress={this.submit}
-                        // onPress={this.submit(false)}
                         type="submit"
                         style={[styles.button, overrideStyles.button]}
                         text={I18n.get("Send")} />
