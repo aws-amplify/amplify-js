@@ -29,8 +29,19 @@ export default class Parser {
             amplifyConfig.Auth = Auth;
         }
 
+        // Storage
+        if (config['aws_user_files_s3_bucket']) {
+            
+            const Storage = {
+                bucket: config['aws_user_files_s3_bucket'],
+                region: config['aws_user_files_s3_bucket_region']
+            };
+            amplifyConfig.Storage = Storage;
+        }
+
         amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
+        amplifyConfig.Storage = Object.assign({},amplifyConfig.Storage, config.Storage);
         logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
         return amplifyConfig;
     }

@@ -1,16 +1,6 @@
 
-import { Hub, Credentials } from '@aws-amplify/core';
 import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import {StorageOptions} from '../src/types';
 import { default as Storage } from "../src/Storage";
-
-
-const options_no_cred = {
-        bucket: 'bucket',
-        region: 'region',
-        credentials: null,
-        level: 'level'
-    };
 
 const credentials = {
         accessKeyId: 'accessKeyId',
@@ -23,29 +13,9 @@ const credentials = {
 const options = {
             bucket: 'bucket',
             region: 'region',
-            credentials: credentials,
+            credentials,
             level: 'level'
 };
-
-const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-    return ;
-});
-
-const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
-    return ;
-});
-
-const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {
-    return ;
-});
-
-const list_spyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => {
-    return ;
-});
-
-// const getObject_sypon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-//     return (null, 'data');
-// });
 
 describe('Storage', () => {
     describe('constructor test', () => {
@@ -96,8 +66,10 @@ describe('Storage', () => {
     });
 
     describe('get test', async () => {
-        test('get object without download', async () => {
-            
+        test('get object without download', async () => { 
+            const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+                return ;
+            });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -111,13 +83,16 @@ describe('Storage', () => {
             }
             }) ;
             expect(get_spyon).toBeCalled();
+            get_spyon.mockClear();
         });
     });
     
 
     describe('put test', () => {
         test('put object succefully', async () => {
-            
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+                return ;
+            });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -131,12 +106,15 @@ describe('Storage', () => {
             }
             }) ;
             expect(put_spyon).toBeCalled();
+            put_spyon.mockClear();
         });
     });
 
     describe('remove test', () => {
         test('remove object successfully', async () => {
-
+            const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {
+                return ;
+            });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -150,12 +128,15 @@ describe('Storage', () => {
             }
             }) ;
             expect(remove_spyon).toBeCalled();
+            remove_spyon.mockClear();
         });
     });
 
     describe('list test', () => {
         test('list object successfully', async () => {
-
+            const list_spyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => {
+                return ;
+            });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -169,6 +150,7 @@ describe('Storage', () => {
             }
             }) ;
             expect(list_spyon).toBeCalled();
+            list_spyon.mockClear();
         });
     });
 });

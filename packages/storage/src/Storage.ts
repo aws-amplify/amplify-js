@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Parser, invalidParameter } from '@aws-amplify/core';
 import AWSS3Provider from './Providers/AWSS3Provider';
 import { StorageProvider } from './types';
 
@@ -29,7 +29,7 @@ export default class StorageClass {
     private _pluggables: StorageProvider[];
 
     /**
-     * Initialize Storage with AWS configurations
+     * Initialize Storage
      * @param {Object} config - Configuration object for storage
      */
     constructor() {
@@ -48,7 +48,7 @@ export default class StorageClass {
     }
 
     /**
-     * add plugin into Analytics category
+     * add plugin into Storage category
      * @param {Object} pluggable - an instance of the plugin
      */
     public addPluggable(pluggable: StorageProvider) {
@@ -104,21 +104,15 @@ export default class StorageClass {
     }
 
     /**
-     * Configure Storage part with aws configuration
-     * @param {Object} config - Configuration of the Storage
+     * Configure Storage
+     * @param {Object} config - Configuration object for storage
      * @return {Object} - Current configuration
      */
     configure(config?) {
         logger.debug('configure Storage');
         if (!config) return this._config;
-        let opt = config ? config.Storage || config : {};
-        if (config['aws_user_files_s3_bucket']) {
-            opt = {
-                bucket: config['aws_user_files_s3_bucket'],
-                region: config['aws_user_files_s3_bucket_region']
-            };
-        }
-        this._config = Object.assign({}, this._config, opt);
+        const amplifyConfig = Parser.parseMobilehubConfig(config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage, config);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
         
         this._pluggables.forEach((pluggable) => {
@@ -143,7 +137,7 @@ export default class StorageClass {
     *
     * @param {String} key - key of the object
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
-    * @return - A promise resolves to Amazon S3 presigned URL on success
+    * @return - A promise resolves to either a presigned url or the object
     */
     public async get(key: string, config?): Promise<String|Object> {
         let provider;
@@ -153,13 +147,17 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov == undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            throw new Error('Storage Plugin not found');
+        }
         return prov.get(key, config);
     }
 
     /**
-     * Put a file in S3 bucket specified to configure method
+     * Put a file in storage bucket specified to configure method
      * @param {Stirng} key - key of the object
-     * @param {Object} object - File to be put in Amazon S3 bucket
+     * @param {Object} object - File to be put in bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
      * @return - promise resolves to object on success
@@ -172,6 +170,10 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov == undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            throw new Error('Storage Plugin not found');
+        }
         return prov.put(key,object,config);  
     }
 
@@ -189,6 +191,10 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov == undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            throw new Error('Storage Plugin not found');
+        }
         return prov.remove(key,config);
     }
 
@@ -206,6 +212,10 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov == undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            throw new Error('Storage Plugin not found');
+        }
         return prov.list(path,config); 
     }
 }

@@ -14,12 +14,13 @@ import {
     AWS,
     ConsoleLogger as Logger,
     Hub,
-    Credentials
+    Credentials,
+    Parser
 } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
 
-const logger = new Logger('StorageClass');
+const logger = new Logger('AWSS3Provider');
 
 const dispatchStorageEvent = (track, attrs, metrics) => {
     if (track) {
@@ -32,8 +33,8 @@ const dispatchStorageEvent = (track, attrs, metrics) => {
  */
 export default class AWSS3Provider implements StorageProvider{
     
-    static category = 'Storage';
-    static providerName = 'AWSS3';
+    static CATEGORY = 'Storage';
+    static PROVIDER_NAME = 'AWSS3';
     
     /**
      * @private
@@ -53,14 +54,14 @@ export default class AWSS3Provider implements StorageProvider{
      * get the category of the plugin
      */
     public getCategory(): string {
-        return AWSS3Provider.category;
+        return AWSS3Provider.CATEGORY;
     }
 
     /**
      * get provider name of the plugin
      */
     getProviderName(): string {
-        return AWSS3Provider.providerName;
+        return AWSS3Provider.PROVIDER_NAME;
     }
 
     /**
@@ -70,15 +71,8 @@ export default class AWSS3Provider implements StorageProvider{
      */
     public configure(config?): object {
         logger.debug('configure Storage', config);
-        let opt = config ? config.Storage || config : {};
-
-        if (config['aws_user_files_s3_bucket']) {
-            opt = {
-                bucket: config['aws_user_files_s3_bucket'],
-                region: config['aws_user_files_s3_bucket_region']
-            };
-        }
-        this._config = Object.assign({}, this._config, opt);
+        const amplifyConfig = Parser.parseMobilehubConfig(config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage, config);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
 
         return this._config;
