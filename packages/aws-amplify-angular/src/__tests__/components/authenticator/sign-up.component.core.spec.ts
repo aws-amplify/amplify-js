@@ -73,6 +73,7 @@ describe('SignUpComponentCore (methods and UI): ', () => {
     component.signUpConfig = undefined;
   });
 
+
   it('...should be created with 4 default signUpFields', () => {
     expect(component.signUpFields.length).toBe(4);
     expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
@@ -81,67 +82,93 @@ describe('SignUpComponentCore (methods and UI): ', () => {
     expect(component.signUpFields.find(e => e.key === 'phone_number')).toBeTruthy();
   });
 
-  it('...should insert fields passed via signUpConfig', () => {
-    component.signUpConfig = {
-      signUpFields: [
-        {
-          key: 'testkey',
-          label: 'testlabel'
-        }
-      ]
-    };
-    expect(component.signUpFields.length).toBe(5);  
-    expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
-    expect(component.signUpFields.find(e => e.key === 'password')).toBeTruthy();
-    expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
-    expect(component.signUpFields.find(e => e.key === 'phone_number')).toBeTruthy();
-    expect(component.signUpFields.find(e => e.key === 'testkey')).toBeTruthy();
+  describe('...with component ngOnInit...', () => {
+    beforeEach(async() => {
+      component.signUpConfig = {
+        signUpFields: [
+          {
+            key: 'testkey',
+            label: 'testlabel'
+          }
+        ]
+      };
+      component.ngOnInit();
+      await fixture.whenStable();
+    });
+    it('...should insert fields passed via signUpConfig', () => {
+
+      expect(component.signUpFields.length).toBe(5);  
+      expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
+      expect(component.signUpFields.find(e => e.key === 'password')).toBeTruthy();
+      expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
+      expect(component.signUpFields.find(e => e.key === 'phone_number')).toBeTruthy();
+      expect(component.signUpFields.find(e => e.key === 'testkey')).toBeTruthy();
+    });
   });
 
-  it('...should call sortFields when signUpConfig is present', () => {
-    spyOn(component, 'sortFields');
-    component.signUpConfig = {
-      signUpFields: [
-        {
-          key: 'testkey',
-          label: 'testlabel'
-        }
-      ]
-    };
-    expect(component.sortFields).toHaveBeenCalledTimes(1);
+  describe('...with component ngOnInit...', () => {
+    beforeEach(async() => {
+      component.signUpConfig = {
+        signUpFields: [
+          {
+            key: 'testkey',
+            label: 'testlabel'
+          }
+        ]
+      };
+      component.ngOnInit();
+      await fixture.whenStable();
+    });
+    it('...should insert only passed fields when hideDefaults is true', () => {
+      component.signUpConfig = {
+        hideDefaults: true,
+        signUpFields: [
+          {
+            key: 'testkey',
+            label: 'testlabel'
+          }
+        ]
+      };
+      expect(component.signUpFields.length).toBe(1);  
+    });
   });
 
-  it('...should insert only passed fields when hideDefaults is true', () => {
-    component.signUpConfig = {
-      hideDefaults: true,
-      signUpFields: [
-        {
-          key: 'testkey',
-          label: 'testlabel'
-        }
-      ]
-    };
-    expect(component.signUpFields.length).toBe(1);  
+  describe('...with component ngOnInit...', () => {
+    beforeEach(async() => {
+      component.signUpConfig = {
+        hiddenDefaults: ['email'],
+      };
+      component.ngOnInit();
+      await fixture.whenStable();
+    });
+    it('...should exclude hiddentDefaults', () => {
+      expect(component.signUpFields.length).toBe(3);  
+    });
   });
 
-  it('...should order fields by display order', () => {
-    component.signUpConfig = {
-      signUpFields: [
-        {
-          key: 'testkey1',
-          label: 'testlabel1',
-          displayOrder: 6
-        },
-        {
-          key: 'testkey2',
-          label: 'testlabel2',
-          displayOrder: 5
-        }
-      ]
-    };
-    expect(component.signUpFields[5].key).toBe('testkey1');  
-    expect(component.signUpFields[4].key).toBe('testkey2');  
+  describe('...with component ngOnInit...', () => {
+    beforeEach(async() => {
+      component.signUpConfig = {
+        signUpFields: [
+          {
+            key: 'testkey1',
+            label: 'testlabel1',
+            displayOrder: 6
+          },
+          {
+            key: 'testkey2',
+            label: 'testlabel2',
+            displayOrder: 5
+          }
+        ]
+      };
+      component.ngOnInit();
+      await fixture.whenStable();
+    });
+    it('...should order fields by display order', () => {
+      expect(component.signUpFields[5].key).toBe('testkey1');  
+      expect(component.signUpFields[4].key).toBe('testkey2');  
+    });
   });
-
 });
 

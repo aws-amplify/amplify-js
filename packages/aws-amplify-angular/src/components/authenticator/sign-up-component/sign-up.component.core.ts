@@ -102,7 +102,7 @@ export class SignUpField{
   template,
 })
 
-export class SignUpComponentCore {
+export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
@@ -115,6 +115,7 @@ export class SignUpComponentCore {
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
   amplifyService: AmplifyService;
+  hiddenFields: any = [];
 
 
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
@@ -137,7 +138,9 @@ export class SignUpComponentCore {
       if (this._signUpConfig.header) {
         this.header = this._signUpConfig.header;
       }
-      this.sortFields();
+      if (this._signUpConfig.hiddenDefaults) {
+        this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
     }
   }
 
@@ -160,8 +163,14 @@ export class SignUpComponentCore {
       if (this._signUpConfig.header) {
         this.header = this._signUpConfig.header;
       }
-      this.sortFields();
+      if (this._signUpConfig.hiddenDefaults) {
+        this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
     }
+  }
+
+  ngOnInit() {
+    this.sortFields();
   }
 
   onSignUp() {
@@ -224,6 +233,13 @@ export class SignUpComponentCore {
   }
 
   sortFields() {
+
+    if (this.hiddenFields.length > 0){
+      this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+        return !this.hiddenFields.includes(d.key);
+      });
+    }
+    
     if (this._signUpConfig &&
       this._signUpConfig.signUpFields &&
       this._signUpConfig.signUpFields.length > 0
@@ -235,10 +251,7 @@ export class SignUpComponentCore {
           const matchKey = this.signUpFields.findIndex((d) => {
             return d.key === f.key;
           });
-          if (matchKey === -1 && 
-            (this._signUpConfig &&
-              this._signUpConfig.hiddenDefaults &&
-              !this._signUpConfig.hiddenDefaults.includes(f.key))) {
+          if (matchKey === -1) {
             this.signUpFields.push(f);
           }
         });
