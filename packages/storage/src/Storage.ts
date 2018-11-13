@@ -147,7 +147,7 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov == undefined) {
+        if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             throw new Error('Storage Plugin not found');
         }
@@ -170,7 +170,7 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov == undefined) {
+        if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             throw new Error('Storage Plugin not found');
         }
@@ -191,7 +191,7 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov == undefined) {
+        if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             throw new Error('Storage Plugin not found');
         }
@@ -212,7 +212,7 @@ export default class StorageClass {
             provider = 'AWSS3';
         }
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov == undefined) {
+        if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             throw new Error('Storage Plugin not found');
         }
