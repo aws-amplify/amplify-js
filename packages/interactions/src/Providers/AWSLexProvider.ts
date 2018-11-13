@@ -32,7 +32,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
     }
 
     getProviderName() { return 'AWSLexProvider'; }
-
+    
     sendMessage(botname: string, message: string | Object): Promise<object> {
         return new Promise(async (res, rej) => {
             if (!this._config[botname]) {
@@ -45,94 +45,72 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
             });
 
             this.aws_lex = new LexRuntime({ region: this._config[botname].region, credentials });
-            //  TODO: Implement for content
+
+            let params;
             if (typeof message === 'string') {
-                const params = {
+                params = {
                     'botAlias': this._config[botname].alias,
                     'botName': botname,
-                    'inputText': message,
-                    'userId': credentials.identityId
+                    'contentType': 'text/plain; charset=utf-8',
+                    'inputStream': message,
+                    'userId': credentials.identityId,
+                    'accept': 'audio/mpeg',
                 };
-                logger.debug('postText to lex', message);
-
-                this.aws_lex.postText(params, (err, data) => {
-                    if (err) {
-                        rej(err);
-                        return;
-
-                    } else {
-                        // Check if state is fulfilled to resolve onFullfilment promise
-                        logger.debug('postText state', data.dialogState);
-                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
-                            }
-                            
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
-                            }
-                        }
-                        
-                        res(data);
-                        if (data.dialogState === 'Failed') {
-
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(
-                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
-                            }
-
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
-                            }
-                        }
-
-                    }
-                });
             } else {
-                const params = {
+                params = {
                     'botAlias': this._config[botname].alias,
-                    'botName': botname,
+                    'botName': botname, 
                     'contentType': 'audio/x-l16; sample-rate=16000',
                     'inputStream': message,
                     'userId': credentials.identityId,
                     'accept': 'audio/mpeg',
                 };
-                logger.debug('postContent to lex', message);
+            }
 
-                this.aws_lex.postContent(params, (err, data) => {
-                    if (err) {
-                        rej(err);
-                        return;
+            // params = {
+            //     'botAlias': "BOGUS",
+            //     'botName': "BOGUS",
+            //     'contentType': "BOGUS",
+            //     'inputStream': "BOGUS",
+            //     'userId': "BOGUS",
+            //     'accept': "BOGUS",
+            // };
 
-                    } else {
-                        // Check if state is fulfilled to resolve onFullfilment promise
-                        logger.debug('postContent state', data.dialogState);
-                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
-                            }
-                            
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
-                            }
+            logger.debug('postContent to lex', message);
+
+            this.aws_lex.postContent(params, (err, data) => {
+                if (err) {
+                    rej(err);
+                    return;
+
+                } else {
+                    // Check if state is fulfilled to resolve onFullfilment promise
+                    logger.debug('postContent state', data.dialogState);
+                    if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
+                        if (typeof this._botsCompleteCallback[botname] === 'function') {
+                            setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
                         }
                         
-                        res(data);
-                        if (data.dialogState === 'Failed') {
+                        if (this._config && typeof this._config[botname].onComplete === 'function') {
+                            setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
+                        }
+                    }
+                    
+                    res(data);
+                    if (data.dialogState === 'Failed') {
 
-                            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(
-                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
-                            }
-
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
-                            }
+                        if (typeof this._botsCompleteCallback[botname] === 'function') {
+                            setTimeout(
+                                () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
                         }
 
+                        if (this._config && typeof this._config[botname].onComplete === 'function') {
+                            setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
+                        }
                     }
-                });
-            }
+
+                }
+            });
         });
     }
 

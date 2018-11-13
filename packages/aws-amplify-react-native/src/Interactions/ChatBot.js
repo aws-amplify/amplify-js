@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import { View, TextInput, Text, KeyboardAvoidingView, ScrollView } from "react-native";
-import { Interactions } from 'aws-amplify';
+import Interactions from '@aws-amplify/interactions';
 import { I18n } from "aws-amplify";
 import { AmplifyButton } from "../AmplifyUI";
+
+import Voice from 'react-native-voice';
+import RNFS from 'react-native-fs';
+import Sound from 'react-native-sound';
+
+var Buffer = require('buffer/').Buffer
 
 const styles = {
     container: {
@@ -19,7 +25,7 @@ const styles = {
         alignSelf: 'stretch',
         padding: 5,
     },
-    itemMe: {
+    itemMe: { 
         textAlign: 'right',
         alignSelf: 'flex-end',
         padding: 8,
@@ -43,8 +49,26 @@ const styles = {
     },
     textInput: {
         flex: 1,
+    },
+    buttonMic: {
+        backgroundColor: "#ffc266"
     }
 };
+
+const STATES = {
+    INITIAL: 'INITIAL',
+    LISTENING: 'LISTENING',
+    SENDING: 'SENDING',
+    SPEAKING: 'SPEAKING'
+};
+
+const MIC_BUTTON_TEXT = {
+    PASSIVE: '🎤',
+    RECORDING: '🔴',
+    PLAYING: '🔊'
+}
+
+let timer = null;
 
 export class ChatBot extends Component {
     constructor(props) {
@@ -55,11 +79,22 @@ export class ChatBot extends Component {
                 from: 'system'
             }],
             inputText: '',
+            currentVoiceState: STATES.INITIAL,
+            inputEditable: true,
+            silenceDelay: this.props.silenceDelay || 1000,
+            micText: MIC_BUTTON_TEXT.PASSIVE
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
-
         this.listItemsRef = React.createRef();
+
+        this.startRecognizing = this.startRecognizing.bind(this);
+
+        Voice.onSpeechStart = this.onSpeechStart.bind(this);
+        Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
+        Voice.onSpeechEnd = this.onSpeechEnd.bind(this);
+        Voice.onSpeechError = this.onSpeechError.bind(this);
+        Voice.onSpeechResults = this.onSpeechResults.bind(this);
     }
 
     listItems() {
@@ -72,7 +107,7 @@ export class ChatBot extends Component {
         });
     };
 
-    async submit() {
+    async submit(playAudioResponse) {
         if (!this.state.inputText) {
             return;
         }
@@ -86,17 +121,39 @@ export class ChatBot extends Component {
 
         const response = await Interactions.send(this.props.botName, this.state.inputText);
 
+
         this.setState({
             dialog: [
                 ...this.state.dialog,
                 response && response.message && { from: 'bot', message: response.message }
             ].filter(Boolean),
-            inputText: ''
+            inputText: '',
+            inputEditable: true,
+            micText: MIC_BUTTON_TEXT.PASSIVE,
         }, () => {
             setTimeout(() => {
                 this.listItemsRef.current.scrollToEnd();
             }, 50);
-        });
+        });        
+
+        console.log(response);
+
+        console.log("playAudioResponse : " + playAudioResponse)
+        if (playAudioResponse === true) {
+            this.setState({
+                micText: MIC_BUTTON_TEXT.PLAYING
+            }) ////
+
+            const path = `${RNFS.DocumentDirectoryPath}/test.mp3`;
+            const data = Buffer.from(response.audioStream).toString('base64');
+            await RNFS.writeFile(path, data, 'base64');
+            const speech = new Sound(path, '', err => {
+              if (!err) speech.play(() => speech.release());
+              else console.log('Play sound error', err);
+            });
+        }
+
+
 
     }
 
@@ -135,6 +192,87 @@ export class ChatBot extends Component {
         }
     }
 
+    onSpeechStart(e) {
+        // eslint-disable-next-line
+        // console.log('onSpeechStart: ', e);
+        this.setState({
+          started: '√',
+        });
+    };
+    
+    onSpeechRecognized(e) {
+        // eslint-disable-next-line
+        // console.log('onSpeechRecognized: ', e);
+        this.setState({
+            recognized: '√',
+        });
+    };
+
+    async onSpeechEnd(e) {
+        // eslint-disable-next-line
+        // console.log('onSpeechEnd: ', e);
+        timer = null;
+        this.setState({
+            end: '√',
+            inputDisabled: true
+        });
+
+        await this.submit(true);
+
+    };
+
+    onSpeechError(e) {
+        // eslint-disable-next-line
+        console.log('onSpeechError: ', e);
+        this.setState({
+            error: JSON.stringify(e.error),
+        });
+    };
+
+    onSpeechResults(e) {
+        // eslint-disable-next-line
+        // console.log('onSpeechResults: ', e);
+        this.setState({
+            results: e.value,
+            inputText: e.value.join(" ")
+        });
+        if (timer !== null) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout( async () => {
+            await Voice.stop();
+        }, this.state.silenceDelay)
+
+        this.setState({timer});
+    };
+
+    async startRecognizing() {
+        // console.log("Starting recognition")
+        this.setState({
+            inputText: 'Speak into the mic...',
+            inputEditable: false,
+            micText: MIC_BUTTON_TEXT.RECORDING,
+          recognized: '',
+          pitch: '',
+          error: '',
+          started: '',
+          results: [],
+          partialResults: [],
+          end: '',
+        });
+
+    
+        try {
+          await Voice.start('en-US');
+        } catch (e) {
+          //eslint-disable-next-line
+          console.error(e);
+        }
+      };
+
+
+
+
     render() {
         const { styles: overrideStyles } = this.props;
 
@@ -147,21 +285,32 @@ export class ChatBot extends Component {
                     {this.listItems()}
                 </ScrollView>
                 <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
+
+
                     <TextInput
                         style={[styles.textInput, overrideStyles.textInput]}
                         placeholder={I18n.get("Type your message here")}
                         onChangeText={inputText => this.setState({ inputText })}
                         value={this.state.inputText}
                         returnKeyType="send"
-                        onSubmitEditing={this.submit.bind(this)}
+                        onSubmitEditing={this.submit}
+                        // onSubmitEditing={this.submit(false)}
                         blurOnSubmit={false}
+                        editable={this.state.inputEditable}
+                        selectTextOnFocus={this.state.inputDisabled}
                     >
                     </TextInput>
                     <AmplifyButton
-                        onPress={this.submit.bind(this)}
+                        onPress={this.startRecognizing}
+                        style={[styles.buttonMic, overrideStyles.buttonMic]}
+                        text={this.state.micText} />
+                    <AmplifyButton
+                        onPress={this.submit}
+                        // onPress={this.submit(false)}
                         type="submit"
                         style={[styles.button, overrideStyles.button]}
-                        title={I18n.get("Send")} />
+                        text={I18n.get("Send")} />
+
                 </View>
             </KeyboardAvoidingView>
         );

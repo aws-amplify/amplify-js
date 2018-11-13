@@ -46,6 +46,12 @@ const STATES = {
     SPEAKING: 'Playing audio...'
 };
 
+const MIC_BUTTON_TEXT = {
+    PASSIVE: '🎤',
+    RECORDING: '🔴',
+    PLAYING: '🔊'
+}
+
 const audioControl = new global.LexAudio.audioControl()
 
 export class ChatBot extends Component {
@@ -60,7 +66,8 @@ export class ChatBot extends Component {
             }],
             inputText: '',
             currentVoiceState: STATES.INITIAL,
-            inputDisabled: false
+            inputDisabled: false,
+            micText: MIC_BUTTON_TEXT.PASSIVE
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -130,6 +137,9 @@ export class ChatBot extends Component {
         });
 
         if (this.state.currentVoiceState === STATES.INITIAL) {
+            this.setState({
+                micText: MIC_BUTTON_TEXT.RECORDING
+            });
             audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
             this.transition(STATES.LISTENING);
         } else if (this.state.currentVoiceState === STATES.LISTENING) {
@@ -147,24 +157,27 @@ export class ChatBot extends Component {
             const response = await Interactions.send(this.props.botName, this.state.audioInput);
 
             this.setState({
-                audioOutput: response
+                lexResponse: response
             })
             this.transition(STATES.SPEAKING)
             this.onSuccess(response)
 
         } else { // if (this.state.currentVoiceState === STATES.SPEAKING)
-            if (this.state.audioOutput.contentType === 'audio/mpeg') {
-                audioControl.play(this.state.audioOutput.audioStream, () => {
-                    console.log('dialogState ' + this.state.audioOutput.dialogState)
-                    if (this.state.audioOutput.dialogState === 'ReadyForFulfillment' ||
-                        this.state.audioOutput.dialogState === 'Fulfilled' ||
-                        this.state.audioOutput.dialogState === 'Failed' ||
+            if (this.state.lexResponse.contentType === 'audio/mpeg') {
+                audioControl.play(this.state.lexResponse.audioStream, () => {
+                    console.log('dialogState ' + this.state.lexResponse.dialogState)
+                    if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                        this.state.lexResponse.dialogState === 'Fulfilled' ||
+                        this.state.lexResponse.dialogState === 'Failed' ||
                         !this.props.voiceConfig.silenceDetection) {
                             this.setState({
                                 inputDisabled: false
                             })
                         this.transition(STATES.INITIAL);
                     } else {
+                        this.setState({
+                            micText: MIC_BUTTON_TEXT.RECORDING
+                        });
                         audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
                         this.transition(STATES.LISTENING);
                     }
@@ -282,7 +295,7 @@ export class ChatBot extends Component {
                             disabled={this.state.inputDisabled}>
                         </input>
                         <button type="submit" style={styles.button} disabled={this.state.inputDisabled}>{I18n.get('Send')}</button>
-                        <button style={styles.mic} disabled={this.state.inputDisabled} onClick={this.handleVoiceClick}>🎤</button>
+                        <button style={styles.mic} disabled={this.state.inputDisabled} onClick={this.handleVoiceClick}>{this.state.micText}</button>
                     </form>
                 </SectionFooter>
             </FormSection>
