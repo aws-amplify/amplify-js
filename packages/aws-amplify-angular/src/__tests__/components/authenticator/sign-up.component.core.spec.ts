@@ -142,7 +142,7 @@ describe('SignUpComponentCore (methods and UI): ', () => {
       await fixture.whenStable();
     });
     it('...should exclude hiddentDefaults', () => {
-      expect(component.signUpFields.length).toBe(3);  
+      expect(component.defaultSignUpFields.length).toBe(3);  
     });
   });
 
