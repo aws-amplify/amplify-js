@@ -110,9 +110,6 @@ export class ChatBot extends Component {
     };
 
     async submit(playAudioResponse) {
-        // if (this.state.conversationOngoing === false) {
-        //     return
-        // }
         if (!this.state.inputText) {
             return;
         }
@@ -146,7 +143,7 @@ export class ChatBot extends Component {
         if (this.state.voice === true) {
             this.setState({
                 voice: false
-            }) ////
+            }) 
 
             const path = `${RNFS.DocumentDirectoryPath}/test.mp3`;
             const data = Buffer.from(response.audioStream).toString('base64');
@@ -155,18 +152,13 @@ export class ChatBot extends Component {
               if (!err) {
                 speech.play(async () => { 
                     speech.release();
-                    // await this.startRecognizing();
                     if (response.dialogState === 'ReadyForFulfillment' ||
                         response.dialogState === 'Fulfilled' ||
-                        response.dialogState === 'Failed' 
-                        // || this.state.conversationOngoing === false
-                        ) {
+                        response.dialogState === 'Failed') {
                             //back to "initial"
                     } else {
                         await this.startRecognizing();
-                        //start recording again
                     }
-
 
                 });
               } else {
@@ -174,8 +166,6 @@ export class ChatBot extends Component {
               }
             });
         }
-
-
     }
 
     getOnComplete(fn) {
@@ -214,24 +204,18 @@ export class ChatBot extends Component {
     }
 
     onSpeechStart(e) {
-        // eslint-disable-next-line
-        // console.log('onSpeechStart: ', e);
         this.setState({
           currentConversationState: STATES.LISTENING
         });
     };
     
     onSpeechRecognized(e) {
-        // eslint-disable-next-line
-        // console.log('onSpeechRecognized: ', e);
         this.setState({
             recognized: '√',
         });
     };
 
     async onSpeechEnd(e) {
-        // eslint-disable-next-line
-        // console.log('onSpeechEnd: ', e);
         timer = null;
         this.setState({
             end: '√',
@@ -246,7 +230,6 @@ export class ChatBot extends Component {
     };
 
     onSpeechError(e) {
-        // eslint-disable-next-line
         console.log('onSpeechError: ', e);
         this.setState({
             error: JSON.stringify(e.error),
@@ -254,8 +237,6 @@ export class ChatBot extends Component {
     };
 
     onSpeechResults(e) {
-        // eslint-disable-next-line
-        // console.log('onSpeechResults: ', e);
         this.setState({
             results: e.value,
             inputText: e.value.join(" ")
@@ -291,7 +272,6 @@ export class ChatBot extends Component {
         try {
             await Voice.start('en-US');
         } catch (e) {
-            //eslint-disable-next-line
             console.error(e);
         }
         
@@ -317,10 +297,6 @@ export class ChatBot extends Component {
         await Voice.stop()
 
     }
-
-
-
-
 
     render() {
         const { styles: overrideStyles } = this.props;
