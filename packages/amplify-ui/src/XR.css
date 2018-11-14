@@ -111,6 +111,11 @@
   display: block;
 }
 
+.actionButton:hover > svg {
+  -webkit-filter: none;
+  filter: none;
+}
+
 .actionButton:focus {
   outline: none;
 }
@@ -118,6 +123,8 @@
 .actionButton > svg {
   width: 1.8em;
   height: 1.8em;
+  -webkit-filter: drop-shadow(1px 1px 1px var(--grey));
+  filter: drop-shadow(1px 1px 1px var(--grey));
 }
 
 .actionIcon {
