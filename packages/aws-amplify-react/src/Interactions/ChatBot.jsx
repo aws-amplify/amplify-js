@@ -41,9 +41,9 @@ const styles = {
 
 const STATES = {
     INITIAL: 'Type your message or click  🎤',
-    LISTENING: 'Speak now...',
-    SENDING: 'Sending to Lex...',
-    SPEAKING: 'Playing audio...'
+    LISTENING: 'Listening... click 🔴 again to cancel',
+    SENDING: 'Please wait...',
+    SPEAKING: 'Speaking...'
 };
 
 const MIC_BUTTON_TEXT = {
@@ -56,7 +56,6 @@ const MIC_BUTTON_TEXT = {
 const audioControl = new global.LexAudio.audioControl()
 
 export class ChatBot extends Component {
-
     constructor(props) {
         super(props);
 
@@ -70,6 +69,15 @@ export class ChatBot extends Component {
             inputDisabled: false,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             continueConversation: false,
+            micButtonDisabled: false,
+            voiceConfig: {
+                conversations: this.props.config.conversations || true,
+                silenceDetection: true,
+                silenceDetectionConfig: {
+                    time: this.props.config.silenceDetectionTime || 2000,
+                    amplitude: this.props.config.silenceDetectionAmplitude || 0.2
+                }   
+            }
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -81,42 +89,47 @@ export class ChatBot extends Component {
         this.onError = this.onError.bind(this)
     }
 
-    async transition(newVoiceState) { 
+    transition(newVoiceState) { 
         if (this.state.continueConversation !== true) {
             return;
         }
+
         this.setState({
             currentVoiceState: newVoiceState
         })
 
         if (this.state.currentVoiceState === STATES.INITIAL) {
             this.setState({
-                micText: MIC_BUTTON_TEXT.PASSIVE
+                micText: MIC_BUTTON_TEXT.PASSIVE,
+                micButtonDisabled: false,
             })
 
         } else if (this.state.currentVoiceState === STATES.LISTENING) {
             this.setState({
-                micText: MIC_BUTTON_TEXT.RECORDING
+                micText: MIC_BUTTON_TEXT.RECORDING,
+                micButtonDisabled: false,
             })
 
         } else if (this.state.currentVoiceState === STATES.SENDING) {
             this.advanceConversation();
             this.setState({
-                micText: MIC_BUTTON_TEXT.LOADING
+                micText: MIC_BUTTON_TEXT.LOADING,
+                micButtonDisabled: true,
             })
-            if (!this.props.voiceConfig.silenceDetection) {
+            if (!this.state.voiceConfig.silenceDetection) {
                 audioControl.stopRecording();
             }
         } else {
             this.setState({
-                micText: MIC_BUTTON_TEXT.PLAYING
+                micText: MIC_BUTTON_TEXT.PLAYING,
+                micButtonDisabled: true,
             })
             this.advanceConversation();
         }
     }
 
     onSilence() {
-        if (this.props.voiceConfig.silenceDetection) {
+        if (this.state.voiceConfig.silenceDetection) {
             audioControl.stopRecording();
             this.advanceConversation(); 
         }
@@ -142,33 +155,27 @@ export class ChatBot extends Component {
         console.log(error)
     }
 
-    async reset() {
-        console.log("resetting")
+    reset() {
         this.setState({
             inputText: '',
             currentVoiceState: STATES.INITIAL,
             inputDisabled: false,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             continueConversation: false,
-            audioInput: null,
-            lexResponse: null
+            micButtonDisabled: false,
         });
         audioControl.clear();
-        console.log("audioInput: " + this.state.audioInput)
     }
 
     async advanceConversation() {
-        if (this.state.continueConversation !== true) {
-            return;
-        }
         audioControl.supportsAudio((supported) => {
             if (!supported) {
-              onError('Audio is not supported.')
+                onError('Audio is not supported.')
             }
         });
 
         if (this.state.currentVoiceState === STATES.INITIAL) {
-            audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
+            audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
             this.transition(STATES.LISTENING);
         } else if (this.state.currentVoiceState === STATES.LISTENING) {
             audioControl.exportWAV((blob) => {
@@ -189,21 +196,20 @@ export class ChatBot extends Component {
             })
             this.transition(STATES.SPEAKING)
             this.onSuccess(response)
-
         } else { 
             if (this.state.lexResponse.contentType === 'audio/mpeg') {
                 audioControl.play(this.state.lexResponse.audioStream, () => {
                     if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
                         this.state.lexResponse.dialogState === 'Fulfilled' ||
                         this.state.lexResponse.dialogState === 'Failed' ||
-                        !this.props.voiceConfig.silenceDetection) {
+                        !this.state.voiceConfig.silenceDetection) {
                             this.setState({
                                 inputDisabled: false,
                                 micText: MIC_BUTTON_TEXT.PASSIVE
                             })
                         this.transition(STATES.INITIAL);
                     } else {
-                        audioControl.startRecording(this.onSilence, this.onAudioData, this.props.voiceConfig.silenceDetectionConfig);
+                        audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
                         this.transition(STATES.LISTENING);
                     }
                 });
@@ -213,6 +219,7 @@ export class ChatBot extends Component {
                 })
                 this.transition(STATES.INITIAL);
             }
+            
         }
     };
 
@@ -226,17 +233,14 @@ export class ChatBot extends Component {
 
     async handleVoiceClick() {
         if (this.state.continueConversation === true) {
-            await this.reset();
-            return;
+            this.reset();
         } else {
             await this.setState({
                 inputDisabled: true,
                 continueConversation: true
             })
-
             this.advanceConversation()
         }
-
     }
 
     async submit(e) {
@@ -328,7 +332,7 @@ export class ChatBot extends Component {
                             disabled={this.state.inputDisabled}>
                         </input>
                         <button type="submit" style={styles.button} disabled={this.state.inputDisabled}>{I18n.get('Send')}</button>
-                        <button style={styles.mic} onClick={this.handleVoiceClick}>{this.state.micText}</button>
+                        <button style={styles.mic} disabled={this.state.micButtonDisabled} onClick={this.handleVoiceClick}>{this.state.micText}</button>
                     </form>
                 </SectionFooter>
             </FormSection>
