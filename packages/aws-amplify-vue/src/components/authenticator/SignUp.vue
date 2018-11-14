@@ -166,7 +166,10 @@ export default {
           }
         });
       }
-      this.signUpConfig.signUpFields = this.removeHiddenFields(this.signUpConfig.signUpFields); 
+      
+      if (this.signUpConfig) {
+        this.signUpConfig.signUpFields = this.removeHiddenFields(this.signUpConfig.signUpFields); 
+      }
       return Object.assign(defaults, this.signUpConfig || {})
     }
   },
