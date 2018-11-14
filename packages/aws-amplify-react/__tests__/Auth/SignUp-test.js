@@ -96,7 +96,7 @@ describe('signUp without signUpConfig prop', () => {
             const dial_code = {
                 target: {
                     name: 'dial_code',
-                    value: '1'
+                    value: '+1'
                 }
             };
 
@@ -160,7 +160,7 @@ describe('signUp without signUpConfig prop', () => {
             const dial_code = {
                 target: {
                     name: 'dial_code',
-                    value: '1'
+                    value: '+1'
                 }
             };
 
@@ -392,7 +392,7 @@ describe('signUp with signUpConfig', () => {
             authState: 'signUp',
             theme: AmplifyTheme,
             signUpConfig: {
-                hideDefaults: false,
+                hideAllDefaults: false,
                 signUpFields: [
                     {
                         key: 'z',
@@ -411,7 +411,7 @@ describe('signUp with signUpConfig', () => {
             authState: 'signUp',
             theme: AmplifyTheme,
             signUpConfig: {
-                hideDefaults: true,
+                hideAllDefaults: true,
                 signUpFields: [
                     {
                         key: 'z',
@@ -545,7 +545,7 @@ describe('signUp with signUpConfig', () => {
         const dial_code = {
             target: {
                 name: 'dial_code',
-                value: '1'
+                value: '+1'
             }
         }
 
@@ -691,7 +691,7 @@ describe('signUp with signUpConfig', () => {
         const dial_code = {
             target: {
                 name: 'dial_code',
-                value: '1'
+                value: '+1'
             }
         }
         const event_z = {

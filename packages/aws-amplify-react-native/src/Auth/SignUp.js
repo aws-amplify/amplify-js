@@ -51,7 +51,6 @@ export default class SignUp extends AuthPiece {
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
         this.header = this.props.signUpConfig.header || 'Create a new account';
-        this.removeHiddenFields = this.removeHiddenFields.bind(this);
     }
 
     validate() {
@@ -68,9 +67,16 @@ export default class SignUp extends AuthPiece {
       }
 
     sortFields() {
+
+        if (this.props.signUpConfig && this.props.signUpConfig.hiddenFields && this.props.signUpConfig.hiddenFields.length > 0){
+            this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+              return !this.props.signUpConfig.hiddenFields.includes(d.key);
+            });
+        }
+
         if (this.checkCustomSignUpFields()) {
 
-          if (!this.props.signUpConfig || !this.props.signUpConfig.hideDefaults) {
+          if (!this.props.signUpConfig || !this.props.signUpConfig.hideAllDefaults) {
             // see if fields passed to component should override defaults
             this.defaultSignUpFields.forEach((f, i) => {
               const matchKey = this.signUpFields.findIndex((d) => {
@@ -126,12 +132,6 @@ export default class SignUp extends AuthPiece {
           logger.warn('Custom prefix prepended to key but custom field flag is set to false');
         }
         return null;
-    }
-
-    removeHiddenFields() {
-        this.signUpFields = this.signUpFields.filter((f) => {
-            return !f.displayOrder || f.displayOrder !== -1;
-        });
     }
 
     getDefaultDialCode() {
@@ -190,7 +190,6 @@ export default class SignUp extends AuthPiece {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
-        this.removeHiddenFields();
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={theme.section}>

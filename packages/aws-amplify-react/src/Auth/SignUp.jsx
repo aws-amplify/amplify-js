@@ -51,7 +51,6 @@ export default class SignUp extends AuthPiece {
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
         this.header = this.props && this.props.signUpConfig && this.props.signUpConfig.header || 'Create a new account';
-        this.removeHiddenFields = this.removeHiddenFields.bind(this);
     }
 
     validate() {
@@ -77,9 +76,16 @@ export default class SignUp extends AuthPiece {
     }
 
     sortFields() {
+
+        if (this.props.signUpConfig && this.props.signUpConfig.hiddenFields && this.props.signUpConfig.hiddenFields.length > 0){
+            this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+              return !this.props.signUpConfig.hiddenFields.includes(d.key);
+            });
+        }
+
         if (this.checkCustomSignUpFields()) {
 
-          if (!this.props.signUpConfig || !this.props.signUpConfig.hideDefaults) {
+          if (!this.props.signUpConfig || !this.props.signUpConfig.hideAllDefaults) {
             // see if fields passed to component should override defaults
             this.defaultSignUpFields.forEach((f, i) => {
               const matchKey = this.signUpFields.findIndex((d) => {
@@ -138,11 +144,6 @@ export default class SignUp extends AuthPiece {
         return null;
     }
 
-    removeHiddenFields() {
-        this.signUpFields = this.signUpFields.filter((f) => {
-            return !f.displayOrder || f.displayOrder !== -1;
-        });
-    }
 
     getDefaultDialCode() {
         return this.props.signUpConfig &&
@@ -187,7 +188,7 @@ export default class SignUp extends AuthPiece {
                 const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                 signup_info.attributes[newKey] = inputVals[index];
               } else if (inputVals[index]) {
-                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
+                  signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
               }
             }
         });
@@ -205,7 +206,6 @@ export default class SignUp extends AuthPiece {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
-        this.removeHiddenFields();
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
@@ -235,7 +235,11 @@ export default class SignUp extends AuthPiece {
                                 </FormField>
                             ) : (
                                 <FormField theme={theme} key="phone_number">
-                                    <InputLabel>{I18n.get('Phone Number')}</InputLabel>
+                                    {
+                                        field.required ? 
+                                        <InputLabel>{I18n.get(field.label)} *</InputLabel> :
+                                        <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                    }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
                                         onChange={this.handleInputChange}>

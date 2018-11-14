@@ -11,7 +11,6 @@ exports[`AuthenticatorWrapper test render test render correctly 1`] = `
 exports[`hoc tests withAuthenticator test when not signed in 1`] = `
 <Authenticator
   amplifyConfig="amplifyConfig"
-  federated={null}
   hideDefault={false}
   onStateChange={[Function]}
   signUpConfig={Object {}}

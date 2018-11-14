@@ -77,7 +77,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             <Greetings
                                 authState={authState}
                                 authData={authData}
-                                federated={this.authConfig.federated || {} }
+                                federated={this.authConfig.federated || this.props.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
                                 theme={theme}
                             />
@@ -96,7 +96,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             return <Authenticator
                 {...this.props}
                 theme={this.authConfig.theme}
-                federated={this.authConfig.federated}
+                federated={this.authConfig.federated || this.props.federated}
                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
