@@ -82,12 +82,15 @@ export class ChatBot extends Component {
             silenceDelay: this.props.silenceDelay || 1000,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             voice: false,
+            conversationOngoing: false,
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
         this.listItemsRef = React.createRef();
+        this.reset = this.reset.bind(this);
 
         this.startRecognizing = this.startRecognizing.bind(this);
+        this.handleMicButton = this.handleMicButton.bind(this);
 
         Voice.onSpeechStart = this.onSpeechStart.bind(this);
         Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
@@ -107,6 +110,9 @@ export class ChatBot extends Component {
     };
 
     async submit(playAudioResponse) {
+        // if (this.state.conversationOngoing === false) {
+        //     return
+        // }
         if (!this.state.inputText) {
             return;
         }
@@ -119,7 +125,6 @@ export class ChatBot extends Component {
         }, resolve));
 
         const response = await Interactions.send(this.props.botName, this.state.inputText);
-
 
         this.setState({
             dialog: [
@@ -153,7 +158,9 @@ export class ChatBot extends Component {
                     // await this.startRecognizing();
                     if (response.dialogState === 'ReadyForFulfillment' ||
                         response.dialogState === 'Fulfilled' ||
-                        response.dialogState === 'Failed') {
+                        response.dialogState === 'Failed' 
+                        // || this.state.conversationOngoing === false
+                        ) {
                             //back to "initial"
                     } else {
                         await this.startRecognizing();
@@ -264,29 +271,53 @@ export class ChatBot extends Component {
     };
 
     async startRecognizing() {
-        // console.log("Starting recognition")
+        console.log("startRecognizing; conversationOngoing " + this.state.conversationOngoing)
+
         this.setState({
             inputText: 'Speak into the mic...',
             inputEditable: false,
             micText: MIC_BUTTON_TEXT.RECORDING,
             voice: true,
-          recognized: '',
-          pitch: '',
-          error: '',
-          started: '',
-          results: [],
-          partialResults: [],
-          end: '',
+            conversationOngoing: true,
+            recognized: '',
+            pitch: '',
+            error: '',
+            started: '',
+            results: [],
+            partialResults: [],
+            end: '',
         });
 
-    
         try {
-          await Voice.start('en-US');
+            await Voice.start('en-US');
         } catch (e) {
-          //eslint-disable-next-line
-          console.error(e);
+            //eslint-disable-next-line
+            console.error(e);
         }
-      };
+        
+    };
+
+    async handleMicButton() {
+        if (this.state.conversationOngoing === true) {
+            await this.reset();
+        } else {
+            await this.startRecognizing();
+        }
+    }
+
+    async reset() {
+        this.setState({
+            inputText: '',
+            inputEditable: true,
+            silenceDelay: this.props.silenceDelay || 1000,
+            micText: MIC_BUTTON_TEXT.PASSIVE,
+            voice: false,
+            conversationOngoing: false,
+        })
+        await Voice.stop()
+
+    }
+
 
 
 
@@ -303,8 +334,6 @@ export class ChatBot extends Component {
                     {this.listItems()}
                 </ScrollView>
                 <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
-
-
                     <TextInput
                         style={[styles.textInput, overrideStyles.textInput]}
                         placeholder={I18n.get("Type your message here")}
@@ -318,7 +347,7 @@ export class ChatBot extends Component {
                     >
                     </TextInput>
                     <AmplifyButton
-                        onPress={this.startRecognizing}
+                        onPress={this.handleMicButton}
                         style={[styles.buttonMic, overrideStyles.buttonMic]}
                         text={this.state.micText} />
                     <AmplifyButton
@@ -326,7 +355,6 @@ export class ChatBot extends Component {
                         type="submit"
                         style={[styles.button, overrideStyles.button]}
                         text={I18n.get("Send")} />
-
                 </View>
             </KeyboardAvoidingView>
         );
