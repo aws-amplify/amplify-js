@@ -81,7 +81,7 @@ export class ChatBot extends Component {
         this.onError = this.onError.bind(this)
     }
 
-    transition(newVoiceState) { 
+    async transition(newVoiceState) { 
         if (this.state.continueConversation !== true) {
             return;
         }
@@ -143,13 +143,18 @@ export class ChatBot extends Component {
     }
 
     async reset() {
+        console.log("resetting")
         this.setState({
             inputText: '',
             currentVoiceState: STATES.INITIAL,
             inputDisabled: false,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             continueConversation: false,
-        })
+            audioInput: null,
+            lexResponse: null
+        });
+        audioControl.clear();
+        console.log("audioInput: " + this.state.audioInput)
     }
 
     async advanceConversation() {
@@ -170,7 +175,7 @@ export class ChatBot extends Component {
                 this.setState({
                     audioInput: blob,
                 })
-                this.transition(STATES.SENDING);
+            this.transition(STATES.SENDING);
             });
         } else if (this.state.currentVoiceState === STATES.SENDING) {
             if (!Interactions || typeof Interactions.send !== 'function') {
@@ -222,6 +227,7 @@ export class ChatBot extends Component {
     async handleVoiceClick() {
         if (this.state.continueConversation === true) {
             await this.reset();
+            return;
         } else {
             await this.setState({
                 inputDisabled: true,
