@@ -120,6 +120,12 @@ export default {
         this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
       };
 
+      if (this.signUpConfig && this.signUpConfig.hiddenDefaults && this.signUpConfig.hiddenDefaults.length > 0){
+        defaults.signUpFields = defaults.signUpFields.filter((d) => {
+          return !this.signUpConfig.hiddenDefaults.includes(d.key);
+        });
+      }
+
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
         // if hideDefaults is not present on props...
@@ -154,22 +160,19 @@ export default {
               }
             }
           } else if (!a.displayOrder && b.displayOrder) {
-            return 1;
-          } else if (a.displayOrder && !b.displayOrder) {
             return -1;
+          } else if (a.displayOrder && !b.displayOrder) {
+            return 1;
           } else if (!a.displayOrder && !b.displayOrder) {
             if (a.key < b.key) {
-              return -1;
-            } else {
               return 1;
+            } else {
+              return -1;
             }
           }
         });
       }
       
-      if (this.signUpConfig) {
-        this.signUpConfig.signUpFields = this.removeHiddenFields(this.signUpConfig.signUpFields); 
-      }
       return Object.assign(defaults, this.signUpConfig || {})
     }
   },
@@ -222,15 +225,16 @@ export default {
 
     },
     validate: function() {
-      let allValid = true;
+      let invalids = [];
       this.options.signUpFields.map((el) => {
         if (el.required && !el.value) {
-          allValid = false;
+          invalids.push(el.label)
           Vue.set(el, 'invalid', true);
         }
         return el;
       })
-      return allValid;
+      this.setError(`The following fields must be completed: ${invalids.join(', ')}`)
+      return invalids.length < 1;
     },
     signIn: function() {
       AmplifyEventBus.$emit('authState', 'signedOut')
@@ -243,11 +247,6 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error) 
-    },
-    removeHiddenFields(fields) {
-      return fields.filter((f) => {
-          return !f.displayOrder || f.displayOrder !== -1;
-      });
     },
 
     // determines whether or not key needs to be prepended with 'custom:' for Cognito User Pool custom attributes.

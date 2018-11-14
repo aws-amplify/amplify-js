@@ -2481,6 +2481,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
     >
       <Component>
         Phone Number
+         *
       </Component>
       <Component
         theme={
@@ -8429,6 +8430,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
     >
       <Component>
         Phone Number
+         *
       </Component>
       <Component
         theme={
