@@ -45,11 +45,11 @@
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">Create Account</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        Have an Account?
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">Sign In</a>
+        {{$Amplify.I18n.get('Have an account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -83,31 +83,31 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'Sign Up',
+        header: this.$Amplify.I18n.get('Sign Up Account'),
         signUpFields: [
           {
-            label: 'Username',
+            label: this.$Amplify.I18n.get('Username'),
             key: 'username',
             required: true,
             type: 'string',
             displayOrder: 1,
           },
           {
-            label: 'Password',
+            label: this.$Amplify.I18n.get('Password'),
             key: 'password',
             required: true,
             type: 'password',
             displayOrder: 2,
           },
           {
-            label: 'Email',
+            label: this.$Amplify.I18n.get('Email'),
             key: 'email',
             required: true,
             type: 'string',
             displayOrder: 3
           },
           {
-            label: 'Phone Number',
+            label: this.$Amplify.I18n.get('Phone Number'),
             key: 'phone_number',
             required: true,
             displayOrder: 4
@@ -115,12 +115,16 @@ export default {
         ]
       }
 
+      // sets value in country code dropdown if defaultCountryCode value is present in props 
       if (this.signUpConfig && this.signUpConfig.defaultCountryCode) {
         this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
-      }
+      };
 
+      // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
+        // if hideDefaults is not present on props...
         if (!this.signUpConfig.hideDefaults) {
+          // ...add default fields to signUpField array unless user has passed in custom field with matching key
           defaults.signUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
               return d.key === f.key;
@@ -130,30 +134,42 @@ export default {
             }
           });
         }
-        let counter = this.signUpConfig.signUpFields.filter((f) => {
-          return f.displayOrder;
-        }).length;
-
-        const unOrdered = this.signUpConfig.signUpFields.filter((f) => {
-          return !f.displayOrder;
-        }).sort((a, b) => {
-          if (a.key < b.key) {
+        /* 
+          sort fields based on following rules:
+          1. Fields with displayOrder are sorted before those without displayOrder
+          2. Fields with conflicting displayOrder are sorted alphabetically by key
+          3. Fields without displayOrder are sorted alphabetically by key
+        */
+        this.signUpConfig.signUpFields.sort((a, b) => {
+          if (a.displayOrder && b.displayOrder) {
+            if (a.displayOrder < b.displayOrder) {
+              return -1;
+            } else if (a.displayOrder > b.displayOrder) {
+              return 1;
+            } else {
+              if (a.key < b.key) {
+                return -1;
+              } else {
+                return 1;
+              }
+            }
+          } else if (!a.displayOrder && b.displayOrder) {
+            return 1;
+          } else if (a.displayOrder && !b.displayOrder) {
             return -1;
+          } else if (!a.displayOrder && !b.displayOrder) {
+            if (a.key < b.key) {
+              return -1;
+            } else {
+              return 1;
+            }
           }
-          return 1
-        }).forEach((m) => {
-          counter++;
-          m.displayOrder = counter;
-          let index = this.signUpConfig.signUpFields.findIndex(y => y.key === m.key);
-          this.signUpConfig.signUpFields[index] = m;
-        })
-      } else if (this.signUpConfig &&
-          this.signUpConfig.signUpFields &&
-          (!Array.isArray(this.signUpConfig.signUpFields) || this.signUpConfig.signUpFields.length === 0)
-        ) {
-        delete this.signUpConfig.signUpFields;
+        });
       }
-
+      
+      if (this.signUpConfig) {
+        this.signUpConfig.signUpFields = this.removeHiddenFields(this.signUpConfig.signUpFields); 
+      }
       return Object.assign(defaults, this.signUpConfig || {})
     }
   },
@@ -179,12 +195,13 @@ export default {
         attributes: {},
       };
 
+      // puts field data into 'Auth.signUp' parameter structure
       this.options.signUpFields.forEach((e) => {
         if (e.key === 'username') {
           user.username = e.value
         } else if (e.key === 'password') {
           user.password = e.value
-        } else if (e.key === 'phone_number') {
+        } else if (e.key === 'phone_number' && e.value) {
           user.attributes.phone_number = `+${this.countryCode}${e.value}`
         } else {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
@@ -224,9 +241,16 @@ export default {
       }
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error) 
     },
+    removeHiddenFields(fields) {
+      return fields.filter((f) => {
+          return !f.displayOrder || f.displayOrder !== -1;
+      });
+    },
+
+    // determines whether or not key needs to be prepended with 'custom:' for Cognito User Pool custom attributes.
     needPrefix: function(key) {
       const field = this.options.signUpFields.find(e => e.key === key);
       if (key.indexOf('custom:') !== 0) {

@@ -9,6 +9,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+
 **Note:** Version bump only for package aws-amplify-vue
 
 <a name="0.1.6-unstable.0"></a>

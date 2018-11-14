@@ -50,6 +50,8 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
+        this.header = this.props.signUpConfig.header || 'Create a new account';
+        this.removeHiddenFields = this.removeHiddenFields.bind(this);
     }
 
     validate() {
@@ -126,6 +128,11 @@ export default class SignUp extends AuthPiece {
         return null;
     }
 
+    removeHiddenFields() {
+        this.signUpFields = this.signUpFields.filter((f) => {
+            return !f.displayOrder || f.displayOrder !== -1;
+        });
+    }
 
     getDefaultDialCode() {
         return this.props.signUpConfig &&
@@ -163,12 +170,14 @@ export default class SignUp extends AuthPiece {
 
         inputKeys.forEach((key, index) => {
             if (!['username', 'password', 'checkedValue'].includes(key)) {
-                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                signup_info.attributes[newKey] = inputVals[index];
-            }
+                if (key !== 'phone_line_number' && key !== 'dial_code') {
+                  const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                  signup_info.attributes[newKey] = inputVals[index];
+                } else if (inputVals[index]) {
+                    signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
+                }
+              }
         });
-
-        console.log('signup_info', signup_info)
 
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
@@ -181,10 +190,11 @@ export default class SignUp extends AuthPiece {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
+        this.removeHiddenFields();
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Create a new account')}</Header>
+                    <Header theme={theme}>{I18n.get(this.header)}</Header>
                     <View style={theme.sectionBody}>
                     {
                         this.signUpFields.map((field) => {

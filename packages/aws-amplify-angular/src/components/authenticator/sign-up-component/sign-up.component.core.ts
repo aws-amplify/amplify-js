@@ -9,7 +9,7 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">Create a new account</div>
+      <div class="amplify-form-header">{{this.header}}</div>
 
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
@@ -36,7 +36,7 @@ const template = `
                 name="countryCode" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 class="amplify-select-phone-country" 
-                [value]="country_code">
+                [(ngModel)]="country_code">
                 <option *ngFor="let country of countries"  
                   value={{country.value}}>{{country.label}} 
                 </option>
@@ -102,7 +102,7 @@ export class SignUpField{
   template,
 })
 
-export class SignUpComponentCore {
+export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
@@ -110,20 +110,18 @@ export class SignUpComponentCore {
   local_phone_number: string;
   country_code: string = '1';
   countries: country[];
+  header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
   amplifyService: AmplifyService;
+  hiddenFields: any = [];
 
 
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
   }
-
-  // ngOnInit() {
-  //   this.sortFields();
-  // }
 
   @Input()
   set data(data: any) {
@@ -137,7 +135,12 @@ export class SignUpComponentCore {
       if (this._signUpConfig.signUpFields) {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
-      this.sortFields();
+      if (this._signUpConfig.header) {
+        this.header = this._signUpConfig.header;
+      }
+      if (this._signUpConfig.hiddenDefaults) {
+        this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
     }
   }
 
@@ -157,8 +160,17 @@ export class SignUpComponentCore {
       if (this._signUpConfig.signUpFields) {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
-      this.sortFields();
+      if (this._signUpConfig.header) {
+        this.header = this._signUpConfig.header;
+      }
+      if (this._signUpConfig.hiddenDefaults) {
+        this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
     }
+  }
+
+  ngOnInit() {
+    this.sortFields();
   }
 
   onSignUp() {
@@ -221,12 +233,19 @@ export class SignUpComponentCore {
   }
 
   sortFields() {
+
+    if (this.hiddenFields.length > 0){
+      this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+        return !this.hiddenFields.includes(d.key);
+      });
+    }
+    
     if (this._signUpConfig &&
       this._signUpConfig.signUpFields &&
       this._signUpConfig.signUpFields.length > 0
     ) {
 
-      if (!this._signUpConfig.hideDefaults) {
+      if (!this._signUpConfig.hideAllDefaults) {
         // see if fields passed to component should override defaults
         this.defaultSignUpFields.forEach((f, i) => {
           const matchKey = this.signUpFields.findIndex((d) => {
@@ -269,12 +288,19 @@ export class SignUpComponentCore {
           }
         }
       });
+      this.signUpFields = this.removeHiddenFields();
     }
 
   }
 
   onAlertClose() {
     this._setError(null);
+  }
+
+  removeHiddenFields() {
+    return this.signUpFields.filter((f) => {
+        return !f.displayOrder || f.displayOrder !== -1;
+    });
   }
 
   validate() {

@@ -50,6 +50,19 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
             this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
             this.state = { authState: props.authState };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    signUpConfig
+                }
+            }
+            console.log('this.authConfig', this.authConfig)
         }
 
         handleAuthStateChange(state, data) {
@@ -61,7 +74,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
             const { authState, authData } = this.state;
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
-                if (!includeGreetings) {
+                if (!this.authConfig.includeGreetings) {
                     return (
                         <Comp
                             {...this.props}
@@ -91,10 +104,10 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
 
             return <Authenticator
                 {...this.props}
-                hideDefault={authenticatorComponents.length > 0}
-                signUpConfig={signUpConfig}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authConfig.authenticatorComponents}
             />
         }
     }
