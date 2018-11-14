@@ -71,7 +71,7 @@ const template = `
   template,
   styleUrls: ['../../../../node_modules/@aws-amplify/ui/dist/style.css']
 })
-export class SumerianSceneLoadingComponentCore implements OnInit {
+export class SumerianSceneLoadingComponentCore {
   @Input() loadPercentage: number;
   @Input() sceneName: string;
 
@@ -79,9 +79,5 @@ export class SumerianSceneLoadingComponentCore implements OnInit {
 
   constructor() {
     this.AmplifyUI = AmplifyUI;
-  }
-
-  ngOnInit() {
-    console.log(this.loadPercentage);
   }
 }
