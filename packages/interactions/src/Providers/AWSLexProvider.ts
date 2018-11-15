@@ -67,15 +67,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                 };
             }
 
-            // params = {
-            //     'botAlias': "BOGUS",
-            //     'botName': "BOGUS",
-            //     'contentType': "BOGUS",
-            //     'inputStream': "BOGUS",
-            //     'userId': "BOGUS",
-            //     'accept': "BOGUS",
-            // };
-
             logger.debug('postContent to lex', message);
 
             this.aws_lex.postContent(params, (err, data) => {
@@ -108,7 +99,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                             setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
                         }
                     }
-
                 }
             });
         });
