@@ -83,6 +83,7 @@ export class ChatBot extends Component {
             micText: MIC_BUTTON_TEXT.PASSIVE,
             voice: false,
             conversationOngoing: false,
+            conversations: this.props.conversations || false
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
@@ -154,7 +155,7 @@ export class ChatBot extends Component {
                         response.dialogState === 'Failed') {
                             //back to "initial"
                     } else {
-                        if (this.props.conversations === true) {
+                        if (this.state.conversations === true) {
                             await this.startRecognizing();
                         }
                     }
@@ -265,7 +266,7 @@ export class ChatBot extends Component {
             end: '',
         });
 
-        if (this.props.conversations === true) {
+        if (this.state.conversations === true) {
             this.setState({
                 conversationOngoing: true,
             })
