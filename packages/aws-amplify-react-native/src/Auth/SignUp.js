@@ -19,7 +19,8 @@ import {
     Button, 
     TouchableWithoutFeedback,
     Keyboard,
-    Picker
+    Picker,
+    ScrollView
 } from 'react-native';
 import {
     Auth,
@@ -68,9 +69,9 @@ export default class SignUp extends AuthPiece {
 
     sortFields() {
 
-        if (this.props.signUpConfig && this.props.signUpConfig.hiddenFields && this.props.signUpConfig.hiddenFields.length > 0){
+        if (this.props.signUpConfig && this.props.signUpConfig.hiddenDefaults && this.props.signUpConfig.hiddenDefaults.length > 0){
             this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
-              return !this.props.signUpConfig.hiddenFields.includes(d.key);
+              return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
             });
         }
 
@@ -192,7 +193,7 @@ export default class SignUp extends AuthPiece {
         this.sortFields();
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
+                <ScrollView style={theme.section}>
                     <Header theme={theme}>{I18n.get(this.header)}</Header>
                     <View style={theme.sectionBody}>
                     {
@@ -232,7 +233,7 @@ export default class SignUp extends AuthPiece {
                         </LinkCell>
                     </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-                </View>
+                </ScrollView>
             </TouchableWithoutFeedback>
         );
     }

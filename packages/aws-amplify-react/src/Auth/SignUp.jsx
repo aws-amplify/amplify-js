@@ -77,9 +77,9 @@ export default class SignUp extends AuthPiece {
 
     sortFields() {
 
-        if (this.props.signUpConfig && this.props.signUpConfig.hiddenFields && this.props.signUpConfig.hiddenFields.length > 0){
+        if (this.props.signUpConfig && this.props.signUpConfig.hiddenDefaults && this.props.signUpConfig.hiddenDefaults.length > 0){
             this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
-              return !this.props.signUpConfig.hiddenFields.includes(d.key);
+              return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
             });
         }
 
