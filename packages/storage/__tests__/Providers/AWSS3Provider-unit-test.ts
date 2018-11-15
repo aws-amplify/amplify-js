@@ -54,7 +54,7 @@ const credentials = {
 const options = {
         bucket: 'bucket',
         region: 'region',
-        credentials: credentials,
+        credentials,
         level: 'level'
     };
 
@@ -82,12 +82,6 @@ describe('StorageProvider test', () => {
         });
     });
 
-    // describe('constructor test', () => {
-    //     test('happy case', () => {
-    //         const storage = new Storage();
-    //     });
-    // });
-
     describe('configure test', () => {
         test('happy case', () => {
             const storage = new StorageProvider();
@@ -111,17 +105,13 @@ describe('StorageProvider test', () => {
                 .mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
-            console.log('we got till here 1');
             const storage = new StorageProvider();
             storage.configure(options);
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
-            console.log('we got till here 2');
             expect.assertions(2);
             expect(await storage.get('key', { downloaded: false })).toBe('url');
-            
-            console.log('we got till here 3');
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
-            console.log('we got till here 4');
+            
             spyon.mockClear();
             curCredSpyOn.mockClear();
         });

@@ -23,16 +23,6 @@ let _instance: StorageClass = null;
 if (!_instance) {
     logger.debug('Create Storage Instance');
     _instance = new StorageClass();
-    // _instance.vault = new StorageClass({ level: 'private' });
-
-    // const old_configure = _instance.configure;
-    // _instance.configure = (options) => {
-    //     logger.debug('configure called');
-    //     old_configure.call(_instance, options);
-
-    //     const vault_options = Object.assign({}, options, { level: 'private' });
-    //     _instance.vault.configure(vault_options);
-    // };
 }
 
 const Storage = _instance;

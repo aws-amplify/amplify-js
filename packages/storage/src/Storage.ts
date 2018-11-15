@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Parser, invalidParameter } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import AWSS3Provider from './Providers/AWSS3Provider';
 import { StorageProvider } from './types';
 
@@ -112,7 +112,7 @@ export default class StorageClass {
         logger.debug('configure Storage');
         if (!config) return this._config;
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Storage, config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
         
         this._pluggables.forEach((pluggable) => {
@@ -127,7 +127,6 @@ export default class StorageClass {
         if (this._pluggables.length === 0) {
             this.addPluggable(new AWSS3Provider());
         }
-
 
         return this._config;
     }

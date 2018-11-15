@@ -71,10 +71,10 @@ export default class AWSS3Provider implements StorageProvider{
      */
     public configure(config?): object {
         logger.debug('configure Storage', config);
+        if (!config) return this._config;
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Storage, config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
-
         return this._config;
     }
 
@@ -91,7 +91,6 @@ export default class AWSS3Provider implements StorageProvider{
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
-
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
         const s3 = this._createS3(opt);
@@ -308,10 +307,7 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     _ensureCredentials() {
-        // commented
-        // will cause bug if another user logged in without refreshing page
-        // if (this._config.credentials) { return Promise.resolve(true); }
-
+       
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;
