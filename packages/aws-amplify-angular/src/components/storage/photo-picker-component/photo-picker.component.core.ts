@@ -34,11 +34,11 @@ const template = `
   </div>
 </div>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-photo-picker-core',
-  template: template
+  template
 })
 export class PhotoPickerComponentCore {
   photoUrl: string;
@@ -47,6 +47,7 @@ export class PhotoPickerComponentCore {
   uploading: boolean = false;
   s3ImagePath: string = "";
   s3ImageFile: any = null;
+  s3ImageLevel: string = 'private';
   errorMessage: string;
   
   @Input()
@@ -56,9 +57,15 @@ export class PhotoPickerComponentCore {
   }
 
   @Input()
+  set imageLevel(imageLevel: string){
+    this.s3ImageLevel = imageLevel;
+  }
+
+  @Input()
   set data(data: any) {
     this.photoUrl = data.url;
     this.path = data.path;
+    this.s3ImageLevel = data.imageLevel;
     this.hasPhoto = true;
   }
 
@@ -90,17 +97,19 @@ export class PhotoPickerComponentCore {
       that.photoUrl = url;
       that.hasPhoto = true;
       that.loaded.emit(url);
-    }
+    };
     reader.readAsDataURL(file);
   }
 
   uploadFile() {
+    const options: any = { 'contentType': this.s3ImageFile.type };
+    if (this.s3ImageLevel) {
+      options.level = this.s3ImageLevel;
+    }
   	this.uploading = true;
   	this.amplify.storage().put( 
   			this.s3ImagePath, 
-  			this.s3ImageFile, {
-    			'contentType': this.s3ImageFile.type
-		})
+  			this.s3ImageFile, options)
 		.then ( result => {
       this.uploaded.emit(result);
 			this.completeFileUpload();
@@ -114,7 +123,8 @@ export class PhotoPickerComponentCore {
   	if (error) {
   		return this._setError(error);
   	}
-  	this.s3ImagePath = "";
+    this.s3ImagePath = "";
+    this.photoUrl = null;
   	this.s3ImageFile = null;
 	  this.uploading = false;
   }

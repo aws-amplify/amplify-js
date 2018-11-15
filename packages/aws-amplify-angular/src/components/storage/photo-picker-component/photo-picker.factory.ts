@@ -18,6 +18,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() url: string;
   @Input() path: string;
+  @Input() imageLevel: string;
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
   @Output()
@@ -39,7 +40,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url, path: this.path}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url, path: this.path});
+    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url, path: this.path, imageLevel: this.imageLevel}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url, path: this.path, imageLevel: this.imageLevel});
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(photoPickerComponent.component);
 

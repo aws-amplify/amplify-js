@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers';
 
 const template = `
@@ -8,6 +8,7 @@ const template = `
       class="amplify-image-container"
       *ngFor="let item of list"
       path="{{item.path}}"
+      [options]="_options"
       (selected)="onImageSelected($event)"
     ></amplify-s3-image-core>
   </div>
@@ -18,9 +19,10 @@ const template = `
   selector: 'amplify-s3-album-core',
   template
 })
-export class S3AlbumComponentCore {
+export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
-
+  _path: string;
+  _options: any;
   amplifyService: AmplifyService;
 
   @Output()
@@ -36,27 +38,30 @@ export class S3AlbumComponentCore {
 
   @Input() set data(data: any){
     if (!data.path) { return; }
-    const that = this;
-    this.amplifyService.storage()
-      .list(data.path)
-      .then(res => {
-        that.list = res.map(item => {
-          return { path: item.key };
-        });
-      })
-      .catch(err => console.error(err));
+    this._path = data.path;
+    this._options = data.options;
   }
 
   @Input() set path(path: string) {
-    if (!path) { return; }
-    const that = this;
+    this._path = path;
+  }
+
+  @Input() set options(options: any) {
+    this._options = options;
+  }
+   ngOnInit() {
+    this.getList(this._path, this._options);
+  }
+
+  getList(path, options) {
+    if (!path) {return; }
     this.amplifyService.storage()
-      .list(path)
+      .list(path, options)
       .then(data => {
-        that.list = data.map(item => {
+        this.list = data.map(item => {
           return { path: item.key };
         });
       })
-      .catch(err => console.error(err));
+      .catch(e => console.error(e));
   }
 }

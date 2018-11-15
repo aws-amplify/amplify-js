@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers';
 
 const template = `
@@ -13,8 +13,10 @@ const template = `
   selector: 'amplify-s3-image-core',
   template
 })
-export class S3ImageComponentCore {
+export class S3ImageComponentCore implements OnInit {
   url: any;
+  _path: string;
+  _options: string;
   amplifyService: AmplifyService;
 
   @Output()
@@ -30,21 +32,30 @@ export class S3ImageComponentCore {
 
   @Input()
   set data(data:any){
-    if (!data.imagePath) { return; }
-
-    this.amplifyService.storage()
-      .get(data.imagePath)
-      .then(url => this.url = url)
-      .catch(err => console.error(err));
+    if (!data.path) { return; }
+    this._path = data.path;
+    this._options = data.options;
   }
 
   @Input()
-  set path(imagePath: string) {
-    if (!imagePath) { return; }
+  set path(path: string) {
+    this._path = path;
+  }
 
+  @Input()
+  set options(options: any) {
+    this._options = options;
+  }
+
+  ngOnInit() {
+    if (!this._path) { return; }
+    this.getImage(this._path, this._options);
+  }
+
+  getImage(path, options) {
     this.amplifyService.storage()
-      .get(imagePath)
-      .then(url => this.url = url)
-      .catch(err => console.error(err));
+    .get(path, options)
+    .then(url => this.url = url)
+    .catch(e => console.error(e));
   }
 }

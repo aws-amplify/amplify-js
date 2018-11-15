@@ -17,6 +17,7 @@ import { S3AlbumComponentCore } from './s3-album.component.core';
 export class S3AlbumComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() path: string;
+  @Input() options: any;
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
@@ -32,8 +33,8 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const albumComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(S3AlbumComponentIonic,{path: this.path}) :
-    new ComponentMount(S3AlbumComponentCore, {path: this.path});
+    new ComponentMount(S3AlbumComponentIonic,{path: this.path, options: this.options}) :
+    new ComponentMount(S3AlbumComponentCore, {path: this.path, options: this.options});
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(albumComponent.component);
 
