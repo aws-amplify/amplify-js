@@ -53,6 +53,14 @@ const MIC_BUTTON_TEXT = {
     LOADING: '...',
 }
 
+const defaultVoiceConfig = {
+    conversations: false,
+    silenceDetectionConfig: {
+        time: 2000,
+        amplitude: 0.2
+    }   
+}
+
 const audioControl = new global.LexAudio.audioControl()
 
 export class ChatBot extends Component {
@@ -70,14 +78,8 @@ export class ChatBot extends Component {
             micText: MIC_BUTTON_TEXT.PASSIVE,
             continueConversation: false,
             micButtonDisabled: false,
-            voiceConfig: {
-                conversations: this.props.config.conversations || true,
-                silenceDetection: true,
-                silenceDetectionConfig: {
-                    time: this.props.config.silenceDetectionTime || 2000,
-                    amplitude: this.props.config.silenceDetectionAmplitude || 0.2
-                }   
-            }
+            voiceConfig: this.props.config || defaultVoiceConfig
+        
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -117,9 +119,6 @@ export class ChatBot extends Component {
                 micText: MIC_BUTTON_TEXT.LOADING,
                 micButtonDisabled: true,
             })
-            if (!this.state.voiceConfig.silenceDetection) {
-                audioControl.stopRecording();
-            }
         } else {
             this.setState({
                 micText: MIC_BUTTON_TEXT.PLAYING,
@@ -130,10 +129,8 @@ export class ChatBot extends Component {
     }
 
     onSilence() {
-        if (this.state.voiceConfig.silenceDetection) {
-            audioControl.stopRecording();
-            this.advanceConversation(); 
-        } 
+        audioControl.stopRecording();
+        this.advanceConversation(); 
     }
 
     onAudioData(data) {
@@ -203,7 +200,6 @@ export class ChatBot extends Component {
                     if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
                         this.state.lexResponse.dialogState === 'Fulfilled' ||
                         this.state.lexResponse.dialogState === 'Failed' ||
-                        !this.state.voiceConfig.silenceDetection ||
                         this.props.conversations === false) {
                             this.setState({
                                 inputDisabled: false,
