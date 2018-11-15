@@ -137,9 +137,6 @@ export class ChatBot extends Component {
             }, 50);
         });        
 
-        console.log(response);
-
-        console.log("playAudioResponse : " + playAudioResponse)
         if (this.state.voice === true) {
             this.setState({
                 voice: false
@@ -157,7 +154,9 @@ export class ChatBot extends Component {
                         response.dialogState === 'Failed') {
                             //back to "initial"
                     } else {
-                        await this.startRecognizing();
+                        if (this.props.conversations === true) {
+                            await this.startRecognizing();
+                        }
                     }
 
                 });
@@ -252,14 +251,11 @@ export class ChatBot extends Component {
     };
 
     async startRecognizing() {
-        console.log("startRecognizing; conversationOngoing " + this.state.conversationOngoing)
-
         this.setState({
             inputText: 'Speak into the mic...',
             inputEditable: false,
             micText: MIC_BUTTON_TEXT.RECORDING,
             voice: true,
-            conversationOngoing: true,
             recognized: '',
             pitch: '',
             error: '',
@@ -268,6 +264,12 @@ export class ChatBot extends Component {
             partialResults: [],
             end: '',
         });
+
+        if (this.props.conversations === true) {
+            this.setState({
+                conversationOngoing: true,
+            })
+        }
 
         try {
             await Voice.start('en-US');
