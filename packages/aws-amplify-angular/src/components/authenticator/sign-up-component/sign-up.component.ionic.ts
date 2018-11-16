@@ -7,7 +7,7 @@ import { countrylist, country }  from '../../../assets/countries';
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">Create a new account</div>
+    <div class="amplify-form-header">{{this.header}}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
         <ion-label class="amplify-input-label" 
@@ -52,10 +52,8 @@ const template = `
           #phone_number
           [ngClass]="{'amplify-input-invalid ': field.invalid}"
           *ngIf="field.key === 'phone_number'"
-          type="tel"
-          slot="end"
+          type={{field.type}}
           class="amplify-form-input"
-          style="margin: 2em 0.5em 0.5em 0.5em"
           placeholder={{field.label}}
           (ionChange)="onNumberChange($event.target.value)"
           name="local_phone_number"
