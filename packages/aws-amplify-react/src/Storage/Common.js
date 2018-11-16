@@ -19,7 +19,7 @@ export function calcKey(file, fileToKey) {
         if (callback_type === 'string') {
             key = fileToKey;
         } else if (callback_type === 'function') {
-            key = fileToKey({ name: name, size: size, type: type });
+            key = fileToKey({ name, size, type });
         } else {
             key = encodeURI(JSON.stringify(fileToKey));
         }

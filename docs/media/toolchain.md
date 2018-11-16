@@ -1,6 +1,1 @@
----
-
-# Page settings
-layout: toolchain
-
----
+ <meta http-equiv="refresh" content="0; URL='https://aws-amplify.github.io/docs/cli'" />

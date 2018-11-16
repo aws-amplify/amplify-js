@@ -20,7 +20,7 @@ import { Button, PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-R
 
 const PickerPicker = {
     position: 'relative'
-}
+};
 
 // const PickerButton = {
 //     width: '10em',
@@ -38,13 +38,13 @@ const PickerInput = {
     top: 0,
     opacity: 0,
     cursor: 'pointer'
-}
+};
 
 const logger = new Logger('Picker');
 
 export default class Picker extends Component {
     handleInput(e) {
-        var that = this;
+        const that = this;
 
         const file = e.target.files[0];
         if (!file) { return; }
@@ -55,10 +55,10 @@ export default class Picker extends Component {
         const { onPick } = this.props;
         if (onPick) {
             onPick({
-                file: file,
-                name: name,
-                size: size,
-                type: type
+                file,
+                name,
+                size,
+                type
             });
         }
     }
@@ -89,6 +89,6 @@ export default class Picker extends Component {
                     onChange={(e) => this.handleInput(e)}
                 />
             </div>
-        )
+        );
     }
 }

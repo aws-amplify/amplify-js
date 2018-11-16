@@ -24,7 +24,7 @@ describe('ConfirmSignIn', () => {
     describe('render test', () => {
         test('render correctly with Props confirmSignIn', () => {
             const wrapper = shallow(<ConfirmSignIn/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -36,7 +36,7 @@ describe('ConfirmSignIn', () => {
         test('render corrently with other authstate', () => {
             const wrapper = shallow(<ConfirmSignIn/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -91,7 +91,7 @@ describe('ConfirmSignIn', () => {
                 .mockImplementation((user, code) => {
                     return new Promise((res, rej) => {
                         res();
-                    })
+                    });
                 });
 
             const wrapper = shallow(<ConfirmSignIn/>);
@@ -107,7 +107,7 @@ describe('ConfirmSignIn', () => {
                     name: 'code',
                     value: '123456'
                 }
-            }
+            };
 
             wrapper.find(Input).at(0).simulate('change', event_code);
             await wrapper.find(Button).at(0).simulate('click');
@@ -147,7 +147,7 @@ describe('ConfirmSignIn', () => {
                     verified: {
                         email: 'xxx@xxx.com'
                     }
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
@@ -169,7 +169,7 @@ describe('ConfirmSignIn', () => {
             const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
                 return Promise.resolve({
                     verified: {}
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');

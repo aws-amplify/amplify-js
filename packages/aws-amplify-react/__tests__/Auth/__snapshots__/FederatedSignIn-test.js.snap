@@ -18,6 +18,7 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
   </div>
   <div />
   <div />
+  <div />
   <Component>
     or
   </Component>
@@ -31,6 +32,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
       google_client_id="google_client_id"
     />
   </div>
+  <div />
   <div />
   <div />
   <div />
@@ -50,6 +52,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
   </div>
   <div />
   <div />
+  <div />
   <Component>
     or
   </Component>
@@ -64,15 +67,19 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
+      "facebookSignInButton": Object {},
       "formContainer": Object {},
       "formField": Object {},
       "formRow": Object {},
       "formSection": Object {},
+      "googleSignInButton": Object {},
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -94,15 +101,19 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -127,15 +138,19 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
         Object {
           "a": Object {},
           "actionRow": Object {},
+          "amazonSignInButton": Object {},
           "button": Object {},
           "container": Object {},
+          "facebookSignInButton": Object {},
           "formContainer": Object {},
           "formField": Object {},
           "formRow": Object {},
           "formSection": Object {},
+          "googleSignInButton": Object {},
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
           "radio": Object {},
@@ -162,15 +177,19 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
+      "facebookSignInButton": Object {},
       "formContainer": Object {},
       "formField": Object {},
       "formRow": Object {},
       "formSection": Object {},
+      "googleSignInButton": Object {},
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -192,15 +211,19 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -225,15 +248,19 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         Object {
           "a": Object {},
           "actionRow": Object {},
+          "amazonSignInButton": Object {},
           "button": Object {},
           "container": Object {},
+          "facebookSignInButton": Object {},
           "formContainer": Object {},
           "formField": Object {},
           "formRow": Object {},
           "formSection": Object {},
+          "googleSignInButton": Object {},
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
           "radio": Object {},
