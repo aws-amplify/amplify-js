@@ -65,7 +65,7 @@ export class PhotoPickerComponentCore {
   set data(data: any) {
     this.photoUrl = data.url;
     this.path = data.path;
-    this.s3ImageLevel = data.imageLevel;
+    this.s3ImageLevel = data.imageLevel || 'private';
     this.hasPhoto = true;
   }
 

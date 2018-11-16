@@ -1,5 +1,13 @@
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { S3AlbumClass } from './s3-album.class';
@@ -36,7 +44,8 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
     new ComponentMount(S3AlbumComponentIonic,{path: this.path, options: this.options}) :
     new ComponentMount(S3AlbumComponentCore, {path: this.path, options: this.options});
 
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(albumComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(albumComponent.component);
 
     const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
