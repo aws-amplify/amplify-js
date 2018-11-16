@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -29,7 +29,6 @@ import {
     Hint,
     Input,
     InputLabel,
-    Strike,
     SectionFooterPrimaryContent,
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
@@ -57,10 +56,11 @@ export default class SignIn extends AuthPiece {
     }
 
     onKeyDown(e) {
-        if (this.props.authState === 'signIn' && !this.props.hide) {
-            if (e.keyCode === 13) { // when press enter
-                this.signIn();
-            }
+        if (e.keyCode !== 13) return;
+
+        const { hide = [] } = this.props;
+        if (this.props.authState === 'signIn' && !hide.includes(SignIn)) {
+            this.signIn();
         }
     }
 
@@ -104,11 +104,11 @@ export default class SignIn extends AuthPiece {
             .catch(err => {
                 if (err.code === 'UserNotConfirmedException') {
                     logger.debug('the user is not confirmed');
-                    this.changeState('confirmSignUp');
-                } 
+                    this.changeState('confirmSignUp', { username });
+                }
                 else if (err.code === 'PasswordResetRequiredException') {
                     logger.debug('the user requires a new password');
-                    this.changeState('requireNewPassword');
+                    this.changeState('forgotPassword', { username });
                 } else {
                     this.error(err);
                 }
@@ -116,23 +116,21 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide = [], federated, onStateChange } = this.props;
+        const { authState, hide = [], federated, onStateChange, onAuthEvent, hideLink=[] } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
-        const hideSignUp = hide.some(component => component.name === 'SignUp')
-        const hideForgotPassword = hide.some(component => component.name === 'ForgotPassword')
+        const hideSignUp = hideLink.some(component => component.name === 'SignUp');
+        const hideForgotPassword =hideLink.some(component => component.name === 'ForgotPassword');
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <div>
-                        <FederatedButtons
-                            federated={federated}
-                            theme={theme}
-                            authState={authState}
-                            onStateChange={onStateChange}
-                        />
-                        <Strike>or</Strike>
-                    </div>
+                    <FederatedButtons
+                        federated={federated}
+                        theme={theme}
+                        authState={authState}
+                        onStateChange={onStateChange}
+                        onAuthEvent={onAuthEvent}
+                    />
                     <FormField theme={theme}>
                         <InputLabel>{I18n.get('Username')} *</InputLabel>
                         <Input
@@ -154,14 +152,16 @@ export default class SignIn extends AuthPiece {
                             name="password"
                             onChange={this.handleInputChange}
                         />
-                        <Hint theme={theme}>
-                            {I18n.get('Forget your password? ')}
-                            <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
-                                {I18n.get('Reset password')}
-                            </Link>
-                        </Hint>
+                        {
+                            !hideForgotPassword && <Hint theme={theme}>
+                                {I18n.get('Forget your password? ')}
+                                <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
+                                    {I18n.get('Reset password')}
+                                </Link>
+                            </Hint>
+                        }
                     </FormField>
-                    
+
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
@@ -169,14 +169,16 @@ export default class SignIn extends AuthPiece {
                             {I18n.get('Sign In')}
                         </Button>
                     </SectionFooterPrimaryContent>
-                    <SectionFooterSecondaryContent theme={theme}>
-                        {I18n.get('No account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signUp')}>
-                            {I18n.get('Create account')}
-                        </Link>
-                    </SectionFooterSecondaryContent>
+                    {
+                        !hideSignUp && <SectionFooterSecondaryContent theme={theme}>
+                            {I18n.get('No account? ')}
+                            <Link theme={theme} onClick={() => this.changeState('signUp')}>
+                                {I18n.get('Create account')}
+                            </Link>
+                        </SectionFooterSecondaryContent>
+                    }
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

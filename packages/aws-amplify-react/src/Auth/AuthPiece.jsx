@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
@@ -81,10 +81,12 @@ export default class AuthPiece extends Component {
     render() {
         if (!this._validAuthStates.includes(this.props.authState)) {
             this._isHidden = true;
+            this.inputs = {};
             return null;
         }
 
         if (this._isHidden) {
+            this.inputs = {};
             const { track } = this.props;
             if (track) track();
         }

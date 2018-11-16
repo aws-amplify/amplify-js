@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 
 import { I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -42,28 +42,30 @@ export default class SignUp extends AuthPiece {
 
         this.inputs = {
             dial_code: "+1",
-        }
+        };
     }
 
     signUp() {
-        const { username, password, email, dial_code, phone_line_number } = this.inputs;
+        const { username, password, email, dial_code='+1', phone_line_number } = this.inputs;
         if (!Auth || typeof Auth.signUp !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let phone_number = null;
-        if (dial_code && phone_line_number) {
-            phone_number = dial_code + phone_line_number;
-        }
-        
-        Auth.signUp({
+        let signup_info = {
             username,
             password, 
             attributes: {
-                email, 
-                phone_number
+                email
             }
-        }).then(() => this.changeState('confirmSignUp', username))
+        };
+
+        let phone_number = phone_line_number? `${dial_code}${phone_line_number.replace(/[-()]/g, '')}`: null;
+
+        if (phone_number) {
+            signup_info.attributes.phone_number = phone_number;
+        }
+
+        Auth.signUp(signup_info).then(() => this.changeState('confirmSignUp', username))
         .catch(err => this.error(err));
     }
 
@@ -143,6 +145,6 @@ export default class SignUp extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

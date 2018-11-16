@@ -14,7 +14,9 @@ import {
     ConsoleLogger as Logger, 
     ClientDevice, 
     Platform, 
-    Credentials
+    Credentials,
+    Signer,
+    JS
 } from '@aws-amplify/core';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
@@ -42,6 +44,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
+    private _sessionStartTimestamp;
     private _buffer;
     private _clientInfo;
 
@@ -169,6 +172,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             return Promise.resolve(false);
         } 
         const timestamp = new Date().getTime();
+        // attach the session and eventId
+        this._generateSession(params);
+        params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
         // temporary solution, will refactor in the future
@@ -179,12 +185,52 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         }
     }
 
+    private _generateSession(params) {
+        this._sessionId = this._sessionId || uuid();
+        const { event } = params;
+
+        switch (event.name) {
+            case '_session_start':
+                // refresh the session id and session start time
+                this._sessionStartTimestamp = new Date().getTime();
+                this._sessionId = uuid();
+                event.session = {
+                    Id: this._sessionId,
+                    StartTimestamp: new Date(this._sessionStartTimestamp).toISOString()
+                };
+                break;
+            case '_session_stop':
+                const stopTimestamp = new Date().getTime();
+                this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
+                this._sessionId = this._sessionId || uuid();
+                event.session = {
+                    Id: this._sessionId,
+                    Duration: stopTimestamp - this._sessionStartTimestamp,
+                    StartTimestamp: new Date(this._sessionStartTimestamp).toISOString(),
+                    StopTimestamp: new Date(stopTimestamp).toISOString()
+                };
+                this._sessionId = undefined;
+                this._sessionStartTimestamp = undefined;
+                break;
+            default:
+                this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
+                this._sessionId = this._sessionId || uuid();
+                event.session = {
+                    Id: this._sessionId,
+                    StartTimestamp: new Date(this._sessionStartTimestamp).toISOString()
+                };
+                break;
+        }
+    }
+
     private async _send(params) {
         const { event, config } = params;
-         const { appId, region } = config;
+
+        const { appId, region } = config;
         const cacheKey = this.getProviderName() + '_' + appId;
         config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
-         switch (event.name) {
+
+        switch (event.name) {
             case '_session_start':
                 return this._startSession(params);
             case '_session_stop':
@@ -196,40 +242,55 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         }
     }
 
-    /**
-     * @private
-     * @param params 
-     */
-    private async _startSession(params) {
-        // credentials updated
-        const { timestamp, config, credentials } = params;
+    private _generateBatchItemContext(params) {
+        const { event, timestamp, config, credentials } = params;
+        const { name, attributes, metrics, eventId, session } = event;
+        const { appId, endpointId } = config;
 
-        this._initClients(config, credentials);
+        const endpointContext = {};
 
-        logger.debug('record session start');
-        this._sessionId = uuid();
-        const sessionId = this._sessionId;
-        
-        const clientContext = this._generateClientContext(config);
         const eventParams = {
-            clientContext,
-            events: [
-                {
-                    eventType: '_session.start',
-                    timestamp: new Date(timestamp).toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date(timestamp).toISOString()
-                    }
-                }
-            ]
+            ApplicationId: appId,
+            EventsRequest: {
+                BatchItem: {}
+            }
         };
-        
 
+        eventParams.EventsRequest.BatchItem[endpointId] = {};
+        const endpointObj = eventParams.EventsRequest.BatchItem[endpointId];
+        endpointObj['Endpoint'] = endpointContext;
+        endpointObj['Events'] = {};
+        endpointObj['Events'][eventId] = {
+            EventType: name,
+            Timestamp: new Date(timestamp).toISOString(),
+            Attributes: attributes,
+            Metrics: metrics,
+            Session: session
+        };
+
+        return eventParams;
+    }
+
+    private async _pinpointPutEvents(eventParams) {
+        logger.debug('pinpoint put events with params', eventParams);
         return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(eventParams, (err, data) => {
+            const request = this.pinpointClient.putEvents(eventParams);
+            // in order to keep backward compatiblity
+            // we are using a legacy api: /apps/{appid}/events/legacy
+            // so that users don't need to update their IAM Policy
+            // will use the formal one in the next break release
+            request.on('build', function() {
+                request.httpRequest.path = request.httpRequest.path + '/legacy';
+            });
+
+            request.send((err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
+                    logger.error(
+                        'Please ensure you have updated you Pinpoint IAM Policy' +
+                        'with the Action: \"mobiletargeting:PutEvents\" in order to' +
+                        'continue using AWS Pinpoint Service'
+                    );
                     res(false);
                 }
                 else {
@@ -244,41 +305,42 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * @private
      * @param params 
      */
+    private async _startSession(params) {
+        // credentials updated
+        const { event, timestamp, config, credentials } = params;
+        this._initClients(config, credentials);
+
+        logger.debug('record session start');
+        const eventParams = this._generateBatchItemContext(params);
+        return this._pinpointPutEvents(eventParams);
+    }
+
+    /**
+     * @private
+     * @param params 
+     */
     private async _stopSession(params) {
         // credentials updated
-        const { timestamp, config, credentials } = params;
-
+        const { event, timestamp, config, credentials } = params;
         this._initClients(config, credentials);
 
         logger.debug('record session stop');
-    
-        const sessionId = this._sessionId ? this._sessionId : uuid();
-        const clientContext = this._generateClientContext(config);
-        const eventParams = {
-            clientContext,
-            events: [
-                {
-                    eventType: '_session.stop',
-                    timestamp: new Date(timestamp).toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date(timestamp).toISOString()
-                    }
-                }
-            ]
-        };
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    res(false);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(true);
-                }
-            });
-        });
+        const eventParams = this._generateBatchItemContext(params);
+        return this._pinpointPutEvents(eventParams);
+    }
+
+    /**
+     * @private
+     * @param params 
+     */
+    private async _recordCustomEvent(params) {
+        // credentials updated
+        const { event, timestamp, config, credentials } = params;
+        this._initClients(config, credentials);
+        
+        logger.debug('record event with params');
+        const eventParams = this._generateBatchItemContext(params);
+        return this._pinpointPutEvents(eventParams);
     }
 
     private async _updateEndpoint(params) : Promise<boolean> {
@@ -288,7 +350,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         this._initClients(config, credentials);
         
-        const request = this._endpointRequest(config, event);
+        const request = this._endpointRequest(
+            config, 
+            JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes'])
+        );
         const update_params = {
             ApplicationId: appId,
             EndpointId: endpointId,
@@ -304,45 +369,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     res(false);
                 } else {
                     logger.debug('updateEndpoint success', data);
-                    res(true);
-                }
-            });
-        });
-    }
-
-    /**
-     * @private
-     * @param params 
-     */
-    private async _recordCustomEvent(params) {
-        // credentials updated
-        const { event, timestamp, config, credentials } = params;
-        const { name, attributes, metrics } = event;
-
-        this._initClients(config, credentials);
-        
-        const clientContext = this._generateClientContext(config);
-        const eventParams = {
-            clientContext,
-            events: [
-                {
-                    eventType: name,
-                    timestamp: new Date(timestamp).toISOString(),
-                    attributes,
-                    metrics
-                }
-            ]
-        };
-
-        logger.debug('record event with params', eventParams);
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    res(false);
-                }
-                else {
-                    logger.debug('record event success. ', data);
                     res(true);
                 }
             });
@@ -371,6 +397,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         logger.debug('init clients with credentials', credentials);
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
+        if (Platform.isReactNative) {
+            this.pinpointClient.customizeRequests(function(request) {
+                request.on('build', function(req) {
+                    req.httpRequest.headers['user-agent'] = Platform.userAgent;
+                });
+            });
+        }
+        
     }
 
     private async _getEndpointId(cacheKey) {
@@ -390,72 +424,66 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private _endpointRequest(config, event) {
         const { credentials } = config;
-        const clientInfo = this._clientInfo;
-        const {
-            Address, 
-            RequestId, 
-            Attributes,
-            UserAttributes,
-            UserId,
-            OptOut
-        } = event;
-
-        const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-
-        const ret = {
-            Address,
-            Attributes,
-            ChannelType,
-            Demographic: {
-                AppVersion: event.appVersion || clientInfo.appVersion,
-                Make: clientInfo.make,
-                Model: clientInfo.model,
-                ModelVersion: clientInfo.version,
-                Platform: clientInfo.platform
-            },
-            OptOut,
-            RequestId,
-            EffectiveDate: Address? new Date().toISOString() : undefined,
-            User: { 
-                UserId: UserId? UserId: credentials.identityId,
-                UserAttributes
-            }
-        };
-        return ret;
-    }
-
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    private _generateClientContext(config) {
-        const { endpointId, appId } = config;
-
+        const clientInfo = this._clientInfo || {};
         const clientContext = config.clientContext || {};
-        const clientInfo = this._clientInfo;
-        const clientCtx = {
-            client: {
-                client_id: clientContext.clientId || endpointId,
-                app_title: clientContext.appTitle,
-                app_version_name: clientContext.appVersionName,
-                app_version_code: clientContext.appVersionCode,
-                app_package_name: clientContext.appPackageName,
+        // for now we have three different ways for default endpoint configurations
+        // clientInfo
+        // clientContext (deprecated)
+        // config.endpoint
+        const defaultEndpointConfig = config.endpoint || {};
+        const demographicByClientInfo = {
+            appVersion: clientInfo.appVersion,
+            make: clientInfo.make,
+            model: clientInfo.model,
+            modelVersion: clientInfo.version,
+            platform: clientInfo.platform
+        };
+        // for backward compatibility
+        const { 
+            clientId, 
+            appTitle, 
+            appVersionName, 
+            appVersionCode, 
+            appPackageName, 
+            ...demographicByClientContext 
+        } = clientContext;
+        const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        const tmp = {
+            channelType,
+            requestId: uuid(),
+            effectiveDate:new Date().toISOString(),
+            ...defaultEndpointConfig,
+            ...event,
+            attributes: {
+                ...defaultEndpointConfig.attributes,
+                ...event.attributes
             },
-            env: {
-                platform: clientContext.platform || clientInfo.platform,
-                platform_version: clientContext.platformVersion || clientInfo.version,
-                model: clientContext.model || clientInfo.model,
-                make: clientContext.make || clientInfo.make,
-                locale: clientContext.locale
+            demographic: {
+                ...demographicByClientInfo,
+                ...demographicByClientContext,
+                ...defaultEndpointConfig.demographic,
+                ...event.demographic
             },
-            services: {
-                mobile_analytics: {
-                    app_id: appId,
-                    sdk_name: Platform.userAgent
+            location: {
+                ...defaultEndpointConfig.location,
+                ...event.location
+            },
+            metrics: {
+                ...defaultEndpointConfig.metrics,
+                ...event.metrics
+            },
+            user: {
+                userId: event.userId || defaultEndpointConfig.userId || credentials.identityId,
+                userAttributes: {
+                    ...defaultEndpointConfig.userAttributes,
+                    ...event.userAttributes
                 }
             }
         };
-        return JSON.stringify(clientCtx);
+
+        // eliminate unnecessary params
+        const { userId, userAttributes, name, session, eventId, immediate, ...ret } = tmp;
+        return JS.transferKeyToUpperCase(ret, [], ['metrics', 'userAttributes', 'attributes']);
     }
 
     /**

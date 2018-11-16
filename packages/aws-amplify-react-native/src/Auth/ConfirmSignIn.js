@@ -20,7 +20,8 @@ import {
 import {
     Auth,
     I18n,
-    Logger
+    Logger,
+    JS
 } from 'aws-amplify';
 import {
     AmplifyButton,
@@ -44,6 +45,7 @@ export default class ConfirmSignIn extends AuthPiece {
         }
 
         this.confirm = this.confirm.bind(this);
+        this.checkContact = this.checkContact.bind(this);
     }
 
     confirm() {
@@ -51,7 +53,7 @@ export default class ConfirmSignIn extends AuthPiece {
         const { code } = this.state;
         logger.debug('Confirm Sign In for ' + user.username);
         Auth.confirmSignIn(user, code)
-            .then(data => this.changeState('signedIn'))
+            .then(data => this.checkContact(user))
             .catch(err => this.error(err));
     }
 

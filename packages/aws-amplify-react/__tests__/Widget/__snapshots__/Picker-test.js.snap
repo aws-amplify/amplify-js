@@ -2,20 +2,24 @@
 
 exports[`Picker test render test render correcly 1`] = `
 <div>
-  <PhotoPickerButton
+  <Component
     theme={
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
+        "facebookSignInButton": Object {},
         "formContainer": Object {},
         "formField": Object {},
         "formRow": Object {},
         "formSection": Object {},
+        "googleSignInButton": Object {},
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -33,7 +37,7 @@ exports[`Picker test render test render correcly 1`] = `
     }
   >
     Pick a File
-  </PhotoPickerButton>
+  </Component>
   <input
     accept="*/*"
     onChange={[Function]}

@@ -22,6 +22,8 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
   picked: EventEmitter<string> = new EventEmitter<string>();
   @Output()
   loaded: EventEmitter<string> = new EventEmitter<string>();
+  @Output()
+  uploaded: EventEmitter<Object> = new EventEmitter<Object>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { 
@@ -53,6 +55,10 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
     componentRef.instance.loaded.subscribe((e) => {
       this.loaded.emit(e);
+    });
+
+    componentRef.instance.uploaded.subscribe((e) => {
+      this.uploaded.emit(e);
     });
 
   }

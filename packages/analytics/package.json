@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.0.8",
+  "version": "1.2.7-unstable.0",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -15,6 +15,9 @@
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
+  },
+  "react-native": {
+    "./lib/trackers": "./lib/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -50,9 +53,8 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.7",
-    "@aws-amplify/core": "^1.0.7",
-    "aws-sdk": "2.198.0",
+    "@aws-amplify/cache": "^1.0.19-unstable.0",
+    "@aws-amplify/core": "^1.0.19-unstable.0",
     "uuid": "^3.2.1"
   },
   "jest": {
