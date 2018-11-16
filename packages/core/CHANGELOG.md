@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.19-unstable.0"></a>
+## [1.0.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.18...@aws-amplify/core@1.0.19-unstable.0) (2018-11-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** check if window.addListener is a function ([eaca33b](https://github.com/aws/aws-amplify/commit/eaca33b))
+
+
+
+
+<a name="1.0.18"></a>
+## [1.0.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.18-unstable.0...@aws-amplify/core@1.0.18) (2018-11-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
 <a name="1.0.18-unstable.0"></a>
 ## [1.0.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.17...@aws-amplify/core@1.0.18-unstable.0) (2018-11-06)
 
