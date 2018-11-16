@@ -1,16 +1,16 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
 
+import Storage from '@aws-amplify/storage';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
 import { PhotoPicker } from '../../src/Widget'
-import { Storage, Logger } from 'aws-amplify';
-import React from 'react';
+import * as React from 'react';
 
 describe('S3Image', () => {
     describe('render test', () => {
@@ -104,17 +104,10 @@ describe('S3Image', () => {
         });
 
         test('nothing to do if no imgKey and path set', async () => {
-            const spyon = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
 
             await s3Image.load();
-
-            expect.assertions(1);
-            expect(spyon).toBeCalledWith('empty imgKey and path');
-
-            spyon.mockClear();
         });
 
         test('only get image source when body no specified', async () => {
@@ -191,8 +184,6 @@ describe('S3Image', () => {
                 });
             });
 
-            const spyon2 = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps({
@@ -211,7 +202,6 @@ describe('S3Image', () => {
             await s3Image.handlePick(data);
 
             spyon.mockClear();
-            spyon2.mockClear();
         });
     });
 
@@ -220,7 +210,7 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
@@ -246,10 +236,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onLoad: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);
@@ -276,10 +266,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onError: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);

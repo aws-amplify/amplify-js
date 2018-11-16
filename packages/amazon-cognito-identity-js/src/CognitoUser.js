@@ -16,9 +16,7 @@
  */
 
 import { Buffer } from 'buffer/';
-//import createHmac from 'create-hmac';
-import * as crypto from 'crypto-browserify';
-const createHmac = crypto.createHmac;
+import * as CryptoJS from 'crypto-js';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -197,7 +195,7 @@ export default class CognitoUser {
   authenticateUser(authDetails, callback) {
     if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
       return this.authenticateUserPlainUsernamePassword(authDetails, callback);
-    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+    } else if (this.authenticationFlowType === 'USER_SRP_AUTH' || this.authenticationFlowType === 'CUSTOM_AUTH') {
       return this.authenticateUserDefaultAuth(authDetails, callback);
     }
     return callback.onFailure(new Error('Authentication flow type is invalid.'));
@@ -281,14 +279,16 @@ export default class CognitoUser {
 
             const dateNow = dateHelper.getNowString();
 
-            const signatureString = createHmac('sha256', hkdf)
-              .update(Buffer.concat([
+            const message = CryptoJS.lib.WordArray.create(
+              Buffer.concat([
                 Buffer.from(this.pool.getUserPoolId().split('_')[1], 'utf8'),
                 Buffer.from(this.username, 'utf8'),
                 Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
                 Buffer.from(dateNow, 'utf8'),
-              ]))
-              .digest('base64');
+              ])
+            );
+            const key = CryptoJS.lib.WordArray.create(hkdf);
+            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -329,32 +329,7 @@ export default class CognitoUser {
               if (errAuthenticate) {
                 return callback.onFailure(errAuthenticate);
               }
-
-              const challengeName = dataAuthenticate.ChallengeName;
-              if (challengeName === 'NEW_PASSWORD_REQUIRED') {
-                this.Session = dataAuthenticate.Session;
-                let userAttributes = null;
-                let rawRequiredAttributes = null;
-                const requiredAttributes = [];
-                const userAttributesPrefix = authenticationHelper
-                  .getNewPasswordRequiredChallengeUserAttributePrefix();
-
-                if (dataAuthenticate.ChallengeParameters) {
-                  userAttributes = JSON.parse(
-                    dataAuthenticate.ChallengeParameters.userAttributes);
-                  rawRequiredAttributes = JSON.parse(
-                    dataAuthenticate.ChallengeParameters.requiredAttributes);
-                }
-
-                if (rawRequiredAttributes) {
-                  for (let i = 0; i < rawRequiredAttributes.length; i++) {
-                    requiredAttributes[i] = rawRequiredAttributes[i].substr(
-                      userAttributesPrefix.length
-                    );
-                  }
-                }
-                return callback.newPasswordRequired(userAttributes, requiredAttributes);
-              }
+              
               return this.authenticateUserInternal(
                 dataAuthenticate,
                 authenticationHelper,
@@ -450,6 +425,32 @@ export default class CognitoUser {
     if (challengeName === 'CUSTOM_CHALLENGE') {
       this.Session = dataAuthenticate.Session;
       return callback.customChallenge(challengeParameters);
+    }
+
+    if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+      this.Session = dataAuthenticate.Session;
+
+      let userAttributes = null;
+      let rawRequiredAttributes = null;
+      const requiredAttributes = [];
+      const userAttributesPrefix = authenticationHelper
+        .getNewPasswordRequiredChallengeUserAttributePrefix();
+
+      if (challengeParameters) {
+        userAttributes = JSON.parse(
+          dataAuthenticate.ChallengeParameters.userAttributes);
+        rawRequiredAttributes = JSON.parse(
+          dataAuthenticate.ChallengeParameters.requiredAttributes);
+      }
+
+      if (rawRequiredAttributes) {
+        for (let i = 0; i < rawRequiredAttributes.length; i++) {
+          requiredAttributes[i] = rawRequiredAttributes[i].substr(
+            userAttributesPrefix.length
+          );
+        }
+      }
+      return callback.newPasswordRequired(userAttributes, requiredAttributes);
     }
 
     if (challengeName === 'DEVICE_SRP_AUTH') {
@@ -619,14 +620,16 @@ export default class CognitoUser {
 
             const dateNow = dateHelper.getNowString();
 
-            const signatureString = createHmac('sha256', hkdf)
-            .update(Buffer.concat([
-              Buffer.from(this.deviceGroupKey, 'utf8'),
-              Buffer.from(this.deviceKey, 'utf8'),
-              Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-              Buffer.from(dateNow, 'utf8'),
-            ]))
-            .digest('base64');
+            const message = CryptoJS.lib.WordArray.create(
+              Buffer.concat([
+                Buffer.from(this.deviceGroupKey, 'utf8'),
+                Buffer.from(this.deviceKey, 'utf8'),
+                Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+                Buffer.from(dateNow, 'utf8'),
+              ])
+            );
+            const key = CryptoJS.lib.WordArray.create(hkdf);
+            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -695,7 +698,7 @@ export default class CognitoUser {
 
   /**
    * This is used by the user once he has the responses to a custom challenge
-   * @param {string} answerChallenge The custom challange answer.
+   * @param {string} answerChallenge The custom challenge answer.
    * @param {object} callback Result callback map.
    * @param {onFailure} callback.onFailure Called on any error.
    * @param {customChallenge} callback.customChallenge
@@ -863,6 +866,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to enable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -917,6 +921,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to disable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -1153,7 +1158,7 @@ export default class CognitoUser {
         return callback(null, this.signInUserSession);
       }
 
-      if (refreshToken.getToken() == null) {
+      if (!refreshToken.getToken()) {
         return callback(new Error('Cannot retrieve a new session. Please authenticate.'), null);
       }
 
@@ -1289,11 +1294,13 @@ export default class CognitoUser {
     const accessTokenKey = `${keyPrefix}.${this.username}.accessToken`;
     const refreshTokenKey = `${keyPrefix}.${this.username}.refreshToken`;
     const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const clockDriftKey = `${keyPrefix}.${this.username}.clockDrift`;
 
     this.storage.removeItem(idTokenKey);
     this.storage.removeItem(accessTokenKey);
     this.storage.removeItem(refreshTokenKey);
     this.storage.removeItem(lastUserKey);
+    this.storage.removeItem(clockDriftKey);
   }
 
   /**

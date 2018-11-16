@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Authenticator normal case render if no error 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -119,6 +119,9 @@ exports[`Authenticator normal case render if no error 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -243,7 +246,7 @@ exports[`Authenticator normal case render if no error 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
@@ -366,6 +369,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -490,7 +496,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
@@ -613,6 +619,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -737,7 +746,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
@@ -860,6 +869,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -984,7 +996,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
@@ -1107,6 +1119,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1231,7 +1246,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
@@ -1354,6 +1369,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1478,7 +1496,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
@@ -1601,6 +1619,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1725,7 +1746,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
@@ -1848,6 +1869,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1972,7 +1996,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
@@ -2095,6 +2119,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2219,7 +2246,7 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
@@ -2343,6 +2370,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -2465,11 +2495,11 @@ exports[`Authenticator normal case render if no error 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;
 
 exports[`Authenticator normal case render if no error with children 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -2587,6 +2617,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -2711,7 +2744,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
@@ -2834,6 +2867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2958,7 +2994,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
@@ -3081,6 +3117,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3205,7 +3244,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
@@ -3328,6 +3367,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3452,7 +3494,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
@@ -3575,6 +3617,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3699,7 +3744,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
@@ -3822,6 +3867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3946,7 +3994,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
@@ -4069,6 +4117,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4193,7 +4244,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
@@ -4316,6 +4367,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4440,7 +4494,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
@@ -4563,6 +4617,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4687,7 +4744,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
@@ -4810,6 +4867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4934,7 +4994,8 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <div
-    authState="signIn"
+    authState="loading"
+    hide={Array []}
     key="aws-amplify-authenticator-props-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
@@ -5056,6 +5117,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5179,11 +5243,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;
 
 exports[`Authenticator normal case render with hidedefault 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -5301,6 +5365,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -5425,7 +5492,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
@@ -5548,6 +5615,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5672,7 +5742,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
@@ -5795,6 +5865,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5919,7 +5992,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
@@ -6042,6 +6115,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6166,7 +6242,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
@@ -6289,6 +6365,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6413,7 +6492,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
@@ -6536,6 +6615,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6660,7 +6742,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
@@ -6783,6 +6865,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6907,7 +6992,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
@@ -7030,6 +7115,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7154,7 +7242,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
@@ -7277,6 +7365,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7401,7 +7492,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
@@ -7525,6 +7616,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -7647,5 +7741,5 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;

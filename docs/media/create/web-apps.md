@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Web Apps with AWS Amplify
+# Web Apps with AWS Amplify
 
 #### AWS Amplify helps developers to create high-quality web apps quickly
 
@@ -44,48 +44,46 @@ In the example, AWS Amplify Storage category already knows about the authenticat
 
 #### Command line support
 
-AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify add api
 ```
 
-AWS Mobile CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
+Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
 After working with your backend code, deploying your app backend is very simple with CLI:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
-#### Manage your Backend with AWS Mobile Hub
+#### Manage your Backend with Amplify CLI
 
 If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify.
 
-Otherwise, AWS Mobile Hub is a great tool for creating AWS resources, related user roles, and security policies.
+Otherwise, Amplify CLI is a great tool for creating AWS resources, related user roles, and security policies.
 
 Mix and match building blocks for your app, and start implementing cloud operations like Authorization, Storage and Cloud API.  
-
-![Services](../images/mobile_hub_services.png?raw=true "Services")
 
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
 ```bash
-awsmobile pull
+amplify push
 ```
 
 #### Deploy your Web App
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). This is your apps' hosting environment with media streaming features.
+Amplify CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). This is your apps' hosting environment with media streaming features.
 
 Using a CDN dramatically increases your app's loading performance by serving static assets to your users from the nearest edge location.
 
-With AWS Mobile CLI, you can deploy your app with single line command:
+With Amplify CLI, you can deploy your app with single line command:
 
 ```bash
-awsmobile publish
+amplify publish
 ```
 Amazon CloudFront will handle the delivery of your static assets to the browser.
 
@@ -137,5 +135,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building now!
 
-Start building your Web app today with AWS Amplify by visiting our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=web-apps&utm_campaign=build-pages).
+Start building your Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?utm_source=web-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

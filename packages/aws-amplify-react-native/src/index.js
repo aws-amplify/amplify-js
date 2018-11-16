@@ -21,7 +21,7 @@ export * from './AmplifyUI';
 export * from './Auth';
 export * from './API';
 export * from './Storage';
-export { default as PushNotification } from './PushNotification'
+export * from './Interactions';
 
 const configure = function(config) {
   const msg = [

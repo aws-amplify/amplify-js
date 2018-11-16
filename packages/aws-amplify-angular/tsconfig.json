@@ -1,32 +1,32 @@
 {
   "compilerOptions": {
-    "outDir": "./lib/",
-    "allowSyntheticDefaultImports": true,
-    "declaration": false,
-    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
     "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2015",
-      "esnext"
-    ],
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "module": "es2015",
     "moduleResolution": "node",
+    "paths": {
+      "@angular/core": ["node_modules/@angular/core"],
+      "rxjs/*": ["node_modules/rxjs/*"]
+    },
+    "rootDir": ".",
+    "outDir": "dist",
     "sourceMap": true,
-    "target": "es5"
+    "inlineSources": true,
+    "target": "es5",
+    "skipLibCheck": true,
+    "lib": [
+      "es2015", 
+      "dom"
+    ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.css",
-    "src/**/*.html"
+  "files": [
+    "index.ts",
   ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts",
-    "src/**/__tests__/*.ts"
-  ],
-  "compileOnSave": false,
-  "atom": {
-    "rewriteTsconfig": false
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
   }
 }

@@ -16,10 +16,9 @@
         "moduleResolution": "node",
         "allowJs": false,
         "declaration": true,
-        "typeRoots": [
-            "./node_modules/@types",
-            "../../node_modules/@types"
-        ]
+        "typeRoots": [ "./node_modules/@types" ],
+        // temporary fix
+        "types": ["node", "lodash"]
     },
     "include": [
         "src/**/*"
