@@ -230,7 +230,6 @@ export class ChatBot extends Component {
     }
 
     async handleVoiceClick() {
-        console.log(this.state)
         if (this.state.continueConversation === true && this.props.conversations === true) {
             this.reset();
         } else {
