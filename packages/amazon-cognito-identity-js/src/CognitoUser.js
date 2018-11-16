@@ -865,7 +865,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to enable MFA for himself
+   * This is used by an authenticated user to enable MFA for itself
    * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
@@ -895,7 +895,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to enable MFA for himself
+   * This is used by an authenticated user to enable MFA for itself
    * @param {string[]} smsMfaSettings the sms mfa settings
    * @param {string[]} softwareTokenMfaSettings the software token mfa settings
    * @param {nodeCallback<string>} callback Called on success or error.
@@ -920,7 +920,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to disable MFA for himself
+   * This is used by an authenticated user to disable MFA for itself
    * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
@@ -946,7 +946,7 @@ export default class CognitoUser {
 
 
   /**
-   * This is used by an authenticated user to delete himself
+   * This is used by an authenticated user to delete itself
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
