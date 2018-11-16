@@ -29,6 +29,7 @@
     "@angular/forms": "^6.0.3",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
+    "@aws-amplify/ui": "^1.0.9",
     "@types/jest": "^23.1.5",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
@@ -70,6 +71,5 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.106",
-    "@aws-amplify/ui": "^1.0.9"
   }
 }
