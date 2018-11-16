@@ -94,7 +94,6 @@ export class ChatBot extends Component {
         this.handleMicButton = this.handleMicButton.bind(this);
 
         Voice.onSpeechStart = this.onSpeechStart.bind(this);
-        Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
         Voice.onSpeechEnd = this.onSpeechEnd.bind(this);
         Voice.onSpeechError = this.onSpeechError.bind(this);
         Voice.onSpeechResults = this.onSpeechResults.bind(this);
@@ -197,7 +196,6 @@ export class ChatBot extends Component {
     componentDidUpdate(prevProps) {
         const { onComplete, botName } = this.props;
 
-
         if ((botName !== prevProps.botName) || (onComplete !== prevProps.onComplete)) {
             Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
         }
@@ -208,17 +206,10 @@ export class ChatBot extends Component {
           currentConversationState: STATES.LISTENING
         });
     };
-    
-    onSpeechRecognized(e) {
-        this.setState({
-            recognized: '√',
-        });
-    };
 
     async onSpeechEnd(e) {
         timer = null;
         this.setState({
-            end: '√',
             inputDisabled: true
         });
 
@@ -238,7 +229,6 @@ export class ChatBot extends Component {
 
     onSpeechResults(e) {
         this.setState({
-            results: e.value,
             inputText: e.value.join(" ")
         });
         if (timer !== null) {
@@ -257,13 +247,6 @@ export class ChatBot extends Component {
             inputEditable: false,
             micText: MIC_BUTTON_TEXT.RECORDING,
             voice: true,
-            recognized: '',
-            pitch: '',
-            error: '',
-            started: '',
-            results: [],
-            partialResults: [],
-            end: '',
         });
 
         if (this.state.conversations === true) {
