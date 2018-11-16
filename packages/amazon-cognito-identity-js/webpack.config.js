@@ -1,3 +1,7 @@
+// version 3.11.0
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin")
+
 /* eslint-disable */
 var webpack = require('webpack');
 
@@ -19,38 +23,42 @@ var banner = '/*!\n' +
 ' */\n\n';
 
 var config = {
-  entry: './src/index.js',
+  entry: {
+    'amazon-cognito-identity': './src/index.js',
+    'amazon-cognito-identity.min': './src/index.js'
+  },
   output: {
+    filename: '[name].js',
+    path: __dirname + '/dist',
     libraryTarget: 'umd',
     library: 'AmazonCognitoIdentity'
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin(banner, { raw: true })
+    new webpack.BannerPlugin({ banner, raw: true }),
+    new UglifyJsPlugin({
+        minimize: true,
+        sourceMap: true,
+        include: /\.min\.js$/,
+    }),
+    new CompressionPlugin({
+        include: /\.min\.js$/,
+    })
   ],
   module: {
-    loaders: [
+    rules: [
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      //{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: {
-          cacheDirectory: './node_modules/.cache/babel'
-        }
+           cacheDirectory: './node_modules/.cache/babel'
+         }
       }
     ]
   }
 };
-
-if (process.env.NODE_ENV === 'production') {
-  config.devtool = 'source-map';
-  config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    })
-  );
-}
 
 module.exports = config;

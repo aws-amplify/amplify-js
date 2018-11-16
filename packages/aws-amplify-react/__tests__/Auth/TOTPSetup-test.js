@@ -1,9 +1,9 @@
+import Auth from '@aws-amplify/auth';
 import TOTPSetup from '../../src/Auth/TOTPSetup';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'TOTPSetup'
@@ -24,7 +24,7 @@ describe('TOTPSetup', () => {
     describe('render test', () => {
         test('render correctly', () => {
             const wrapper = shallow(<TOTPSetup/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -36,7 +36,7 @@ describe('TOTPSetup', () => {
         test('render hidden', () => {
             const wrapper = shallow(<TOTPSetup/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -49,7 +49,7 @@ describe('TOTPSetup', () => {
         test('hide props', () => {
             const wrapper = shallow(<TOTPSetup hide={[TOTPSetup]}/>);
             
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -64,10 +64,10 @@ describe('TOTPSetup', () => {
             const wrapper = shallow(<TOTPSetup/>);
             const TOTPSetupInstance = wrapper.instance();
 
-            const spyon = jest.spyOn(TOTPSetupInstance, 'changeState');
+            const spyon = jest.spyOn(TOTPSetupInstance, 'checkContact');
             TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'SUCCESS', 'user');
 
-            expect(spyon).toBeCalledWith('signedIn', 'user');
+            expect(spyon).toBeCalledWith('user');
             spyon.mockClear();
         });
 
@@ -82,4 +82,52 @@ describe('TOTPSetup', () => {
             spyon.mockClear();
         });
     });
-})
+
+    describe('checkContact test', () => {
+        test('contact verified', async () => {
+            const wrapper = shallow(<TOTPSetup/>);
+            const totpSetup = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {
+                        email: 'xxx@xxx.com'
+                    }
+                });
+            });
+
+            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+
+            await totpSetup.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('contact not verified', async () => {
+            const wrapper = shallow(<TOTPSetup/>);
+            const totpSetup = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {}
+                });
+            });
+
+            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+
+            await totpSetup.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+    });
+});

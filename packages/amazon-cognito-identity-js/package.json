@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "2.0.5",
+  "version": "3.0.4-unstable.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -26,7 +26,7 @@
     "type": "git",
     "url": "https://github.com/aws/aws-amplify.git"
   },
-  "license": "See LICENSE",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "licenses": [
     {
       "type": "Amazon Software License",
@@ -45,9 +45,8 @@
     "clean": "rimraf lib es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack -p dist/amazon-cognito-identity.js",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack -p dist/amazon-cognito-identity.min.js",
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build:umd": "webpack",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "test": "eslint src",
@@ -63,7 +62,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "buffer": "4.9.1",
-    "crypto-browserify": "3.0.0",
+    "crypto-js": "^3.1.9-1",
     "js-cookie": "^2.1.4"
   },
   "devDependencies": {
@@ -86,6 +85,6 @@
     "react": "^16.0.0",
     "react-native": "^0.44.0",
     "rimraf": "^2.5.4",
-    "webpack": "^1.13.1"
+    "webpack": "^3.5.5"
   }
 }

@@ -1,23 +1,26 @@
-import 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
-import { parse } from 'graphql/language/parser';
+import regeneratorRuntime from 'regenerator-runtime/runtime';
+import { Component } from 'react';
+import API from '@aws-amplify/api';
 
-import { API } from "aws-amplify";
 
-const getOperationType = operation => {
-    const doc = parse(operation);
-    const { definitions: [{ operation: operationType },] } = doc
-
-    return operationType;
-}
 
 export default class Connect extends Component {
 
     constructor(props) {
         super(props);
 
-        this.state = this.getDefaultState();
+        this.state = this.getInitialState();
         this.subSubscription = null;
+    }
+
+    getInitialState() {
+        const { query } = this.props;
+        return {
+            loading: query && !!query.query,
+            data: {},
+            errors: [],
+            mutation: () => console.warn('Not implemented'),
+        };
     }
 
     getDefaultState() {
@@ -42,9 +45,13 @@ export default class Connect extends Component {
 
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
-        const hasValidQuery = query && getOperationType(query) === 'query';
-        const hasValidMutation = mutation && getOperationType(mutation) === 'mutation';
-        const hasValidSubscription = subscription && getOperationType(subscription.query) === 'subscription';
+        if (!API || typeof API.graphql !== 'function' || typeof API.getGraphqlOperationType !== 'function') {
+            throw new Error('No API module found, please ensure @aws-amplify/api is imported');
+        }
+
+        const hasValidQuery = query && API.getGraphqlOperationType(query) === 'query';
+        const hasValidMutation = mutation && API.getGraphqlOperationType(mutation) === 'mutation';
+        const hasValidSubscription = subscription && API.getGraphqlOperationType(subscription.query) === 'subscription';
 
         if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
             console.warn('No query, mutation or subscription was specified');
@@ -97,7 +104,7 @@ export default class Connect extends Component {
     _unsubscribe() {
         if (this.subSubscription) {
             this.subSubscription.unsubscribe();
-        };
+        }
     }
 
     async componentDidMount() {
@@ -131,7 +138,6 @@ export default class Connect extends Component {
 
     render() {
         const { data, loading, mutation, errors } = this.state;
-
         return this.props.children({ data, errors, loading, mutation }) || null;
     }
 }

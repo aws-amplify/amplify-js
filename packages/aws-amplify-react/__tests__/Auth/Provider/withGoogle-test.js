@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
+import { Component } from 'react';
 import withGoogle, {
     GoogleButton
 } from '../../../src/Auth/Provider/withGoogle';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 describe('withGoogle test', () => {
     describe('render test', () => {
@@ -161,6 +162,10 @@ describe('withGoogle test', () => {
                     });
                 });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn(googleUser);
 
             expect(spyon).toBeCalledWith(
@@ -170,6 +175,7 @@ describe('withGoogle test', () => {
             );
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('happy case with onStateChange exists', async () => {
@@ -215,6 +221,10 @@ describe('withGoogle test', () => {
                     });
                 });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn(googleUser);
 
             expect(spyon).toBeCalledWith(
@@ -222,9 +232,10 @@ describe('withGoogle test', () => {
                 { expires_at: 0, token: 'id_token' },
                 { email: 'email', name: 'name' }
             );
-            expect(mockFn).toBeCalledWith('signedIn');
+            expect(mockFn).toBeCalledWith('signedIn', 'user');
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
     });
 
@@ -272,12 +283,12 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const authResponse = {
                 id_token: 'id_token',
                 expires_at: 0
-            }
+            };
 
             const googleAuth = {
                 currentUser: {
@@ -296,12 +307,12 @@ describe('withGoogle test', () => {
                                 return {
                                     getEmail() { return 'email' },
                                     getName() { return 'name' }
-                                }
+                                };
                             }
-                        }
+                        };
                     }
                 }
-            }
+            };
 
             window.gapi = {
                 auth2: {
@@ -312,7 +323,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -331,12 +342,12 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const authResponse = {
                 id_token: 'id_token',
                 expires_at: 0
-            }
+            };
 
             const googleAuth = {
                 currentUser: {
@@ -346,10 +357,10 @@ describe('withGoogle test', () => {
                             isSignedIn() {
                                 return false;
                             }
-                        }
+                        };
                     }
                 }
-            }
+            };
 
             window.gapi = {
                 auth2: {
@@ -360,7 +371,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -374,7 +385,7 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.gapi = null
 
             const Comp = withGoogle(MockComp);
@@ -389,7 +400,7 @@ describe('withGoogle test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.gapi = {
                 auth2: {
                     getAuthInstance() {
@@ -399,7 +410,7 @@ describe('withGoogle test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -408,6 +419,51 @@ describe('withGoogle test', () => {
             await comp.refreshGoogleToken();
         });
     });
+
+    describe('google signOut test', () => {
+        test('happy case', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+            window.gapi = {
+                auth2: {
+                    getAuthInstance() {
+                        return Promise.resolve({
+                            signOut: mockFn
+                        })
+                    }
+                }
+            };
+
+            const Comp = withGoogle(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            await comp.signOut();
+
+            expect(mockFn).toBeCalled();
+        });
+
+        test('no auth2', async () => {
+            window.gapi = null;
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+            const Comp = withGoogle(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+
+            expect(await comp.signOut()).toBeUndefined();
+        });
+    });
+
 });
 
 describe('GoogleButton test', () => {

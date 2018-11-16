@@ -30,7 +30,7 @@
 	display: none !important;
 }
 
-@media (max-width: $screen-xs-max) {
+@media (max-width: 828px) {
 	@include responsive-visibility('.visible-xs');
 }
 
@@ -118,7 +118,7 @@
 	}
 }
 
-@media (max-width: $screen-xs-max) {
+@media (max-width: 828px) {
 	@include responsive-invisibility('.hidden-xs');
 }
 

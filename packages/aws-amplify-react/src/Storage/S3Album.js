@@ -11,15 +11,11 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import {
-    Storage,
-    Logger,
-    Hub,
-    ClientDevice,
-    JS
-} from 'aws-amplify';
+import { ClientDevice, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import Storage from '@aws-amplify/storage';
 
 import { Picker } from '../Widget';
 import AmplifyTheme from '../AmplifyTheme';
@@ -40,7 +36,7 @@ export default class S3Album extends Component {
 
         const theme = this.props.theme || AmplifyTheme;
         this.state = {
-            theme: theme,
+            theme,
             items: [],
             ts: new Date().getTime()
         };
@@ -58,7 +54,7 @@ export default class S3Album extends Component {
             if (callback_type === 'string') {
                 key = fileToKey;
             } else if (callback_type === 'function') {
-                key = fileToKey({ name: name, size: size, type: type });
+                key = fileToKey({ name, size, type });
             } else {
                 key = encodeURI(JSON.stringify(fileToKey));
             }
@@ -80,6 +76,10 @@ export default class S3Album extends Component {
         const path = this.props.path || '';
         const { file, name, size, type } = data;
         const key = path + this.getKey(data);
+        if (!Storage || typeof Storage.put !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
+
         Storage.put(key, file, {
             level: level? level: 'public',
             contentType: type,
@@ -128,9 +128,9 @@ export default class S3Album extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.path == prevProps.path &&
-            this.props.ts == prevProps.ts &&
-            this.props.select == prevProps.select
+        if (this.props.path === prevProps.path &&
+            this.props.ts === prevProps.ts &&
+            this.props.select === prevProps.select
         ) {
             return;
         }
@@ -148,6 +148,9 @@ export default class S3Album extends Component {
     list() {
         const { path, level, track } = this.props;
         logger.debug('Album path: ' + path);
+        if (!Storage || typeof Storage.list !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         return Storage.list(path, { level: level? level : 'public', track })
             .then(data => {
                 logger.debug('album list', data);
@@ -172,9 +175,9 @@ export default class S3Album extends Component {
             if (!item.contentType) { item.contentType = this.contentType(item); }
         });
 
-        list = this.filter(list);
-        list = this.sort(list);
-        this.setState({ items: list });
+        let items = this.filter(list);
+        items = this.sort(items);
+        this.setState({ items });
     }
 
     filter(list) {
@@ -216,7 +219,7 @@ export default class S3Album extends Component {
 
         const list = items.map(item => {
             const isText = item.contentType && JS.isTextFile(item.contentType);
-            return isText? <S3Text
+            return isText ? <S3Text
                              key={item.key}
                              textKey={item.key}
                              theme={theme}
@@ -235,7 +238,7 @@ export default class S3Album extends Component {
                              translate={translateItem}
                              level={level}
                              onClick={() => this.handleClick(item)}
-                           />
+                           />;
         });
         return (
             <div>
@@ -252,6 +255,6 @@ export default class S3Album extends Component {
                         : null
                 }
             </div>
-        )
+        );
     }
 }

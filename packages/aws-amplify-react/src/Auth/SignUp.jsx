@@ -11,92 +11,140 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 
-import { Auth, I18n } from 'aws-amplify';
+import { I18n } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    FormField,
+    Input,
+    InputLabel,
+    SelectInput,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
+import countryDialCodes from './common/country-dial-codes.js';
 export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
         this._validAuthStates = ['signUp'];
         this.signUp = this.signUp.bind(this);
+
+        this.inputs = {
+            dial_code: "+1",
+        };
     }
 
     signUp() {
-        const { username, password, email, phone_number } = this.inputs;
-        Auth.signUp(username, password, email, phone_number)
-            .then(() => this.changeState('confirmSignUp', username))
-            .catch(err => this.error(err));
+        const { username, password, email, dial_code='+1', phone_line_number } = this.inputs;
+        if (!Auth || typeof Auth.signUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
+        let signup_info = {
+            username,
+            password, 
+            attributes: {
+                email
+            }
+        };
+
+        let phone_number = phone_line_number? `${dial_code}${phone_line_number.replace(/[-()]/g, '')}`: null;
+
+        if (phone_number) {
+            signup_info.attributes.phone_number = phone_number;
+        }
+
+        Auth.signUp(signup_info).then(() => this.changeState('confirmSignUp', username))
+        .catch(err => this.error(err));
     }
 
     showComponent(theme) {
         const { hide } = this.props;
         if (hide && hide.includes(SignUp)) { return null; }
 
+        // console.log(countryDialCodes.sort());
+
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Sign Up Account')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Username')}
-                        theme={theme}
-                        key="username"
-                        name="username"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Password')}
-                        theme={theme}
-                        type="password"
-                        key="password"
-                        name="password"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Email')}
-                        theme={theme}
-                        key="email"
-                        name="email"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Phone Number')}
-                        theme={theme}
-                        key="phone_number"
-                        name="phone_number"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow onClick={this.signUp} theme={theme}>
-                        {I18n.get('Sign Up')}
-                    </ButtonRow>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Username')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Create a username')}
+                            theme={theme}
+                            key="username"
+                            name="username"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Password')} *</InputLabel>
+                        <Input
+                            placeholder={I18n.get('Create a password')}
+                            theme={theme}
+                            type="password"
+                            key="password"
+                            name="password"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Email Address')} *</InputLabel>
+                        <Input
+                            placeholder="janedoe@email.com"
+                            theme={theme}
+                            key="email"
+                            name="email"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Phone Number')}</InputLabel>
+                        <SelectInput theme={theme}>
+                            <select key="dial_code" name="dial_code" defaultValue="+1" onChange={this.handleInputChange}>
+                                {countryDialCodes.map(dialCode =>
+                                    <option key={dialCode} value={dialCode}>
+                                        {dialCode}
+                                    </option>
+                                )}
+                            </select>
+                            <Input
+                                placeholder="555-555-1212"
+                                theme={theme}
+                                key="phone_line_number"
+                                name="phone_line_number"
+                                onChange={this.handleInputChange}
+                            />
+                        </SelectInput>
+                    </FormField>
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <div style={theme.col6}>
-                        <Link theme={theme} onClick={() => this.changeState('confirmSignUp')}>
-                            {I18n.get('Confirm a Code')}
-                        </Link>
-                    </div>
-                    <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button onClick={this.signUp} theme={theme}>
+                            {I18n.get('Create Account')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        {I18n.get('Have an account? ')}
                         <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                            {I18n.get('Sign In')}
+                            {I18n.get('Sign in')}
                         </Link>
-                    </div>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }
