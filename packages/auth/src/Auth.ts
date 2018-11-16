@@ -189,6 +189,7 @@ export default class AuthClass {
                 onSuccess: (result) => {
                     that.user = that.userPool.getCurrentUser();
                     logger.debug("Cognito Hosted authentication result", result);
+                    this._addSessionSource(AWSCognitoProvider.NAME);
                     that.currentSession().then(async (session) => {
                         try {
                             await Credentials.clear();
