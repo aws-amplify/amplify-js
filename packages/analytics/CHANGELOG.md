@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.7-unstable.0"></a>
+## [1.2.7-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.6...@aws-amplify/analytics@1.2.7-unstable.0) (2018-11-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.6"></a>
+## [1.2.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.6-unstable.2...@aws-amplify/analytics@1.2.6) (2018-11-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.6-unstable.2"></a>
+## [1.2.6-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.6-unstable.1...@aws-amplify/analytics@1.2.6-unstable.2) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.6-unstable.1"></a>
+## [1.2.6-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.6-unstable.0...@aws-amplify/analytics@1.2.6-unstable.1) (2018-11-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** send session stop events when app turns into background/inactive ([e2e9b66](https://github.com/aws/aws-amplify/commit/e2e9b66))
+
+
+
+
+<a name="1.2.6-unstable.0"></a>
+## [1.2.6-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.5...@aws-amplify/analytics@1.2.6-unstable.0) (2018-11-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.5"></a>
+## [1.2.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.5-unstable.1...@aws-amplify/analytics@1.2.5) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.5-unstable.1"></a>
+## [1.2.5-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.5-unstable.0...@aws-amplify/analytics@1.2.5-unstable.1) (2018-11-01)
+
+
+### Features
+
+* **@aws-amplify/analytics:** allow users to fully configure pinpoint endpoint ([55727cf](https://github.com/aws/aws-amplify/commit/55727cf))
+
+
+
+
+<a name="1.2.5-unstable.0"></a>
+## [1.2.5-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.4...@aws-amplify/analytics@1.2.5-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 <a name="1.2.4"></a>
 ## [1.2.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.4-unstable.4...@aws-amplify/analytics@1.2.4) (2018-10-17)
 

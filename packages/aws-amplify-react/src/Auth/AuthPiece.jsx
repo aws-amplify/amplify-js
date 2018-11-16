@@ -81,6 +81,7 @@ export default class AuthPiece extends Component {
     render() {
         if (!this._validAuthStates.includes(this.props.authState)) {
             this._isHidden = true;
+            this.inputs = {};
             return null;
         }
 
