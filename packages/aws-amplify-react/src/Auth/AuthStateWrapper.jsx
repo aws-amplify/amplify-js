@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as React from 'react';
+import { Component } from 'react';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const logger = new Logger('AuthStateWrapper');
 
@@ -67,7 +68,7 @@ export default class AuthStateWrapper extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent
                 });
-            })
+            });
 
         return (
             <div className="amplify-state-wrapper" style={theme.stateWrapper}>

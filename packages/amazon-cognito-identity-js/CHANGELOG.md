@@ -3,6 +3,634 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.4-unstable.2"></a>
+## [3.0.4-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.4-unstable.1...amazon-cognito-identity-js@3.0.4-unstable.2) (2018-11-16)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.4-unstable.1"></a>
+## [3.0.4-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.4-unstable.0...amazon-cognito-identity-js@3.0.4-unstable.1) (2018-11-16)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.4-unstable.0"></a>
+## [3.0.4-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.3...amazon-cognito-identity-js@3.0.4-unstable.0) (2018-11-13)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.3-unstable.0...amazon-cognito-identity-js@3.0.3) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.3-unstable.0"></a>
+## [3.0.3-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.2-unstable.0...amazon-cognito-identity-js@3.0.3-unstable.0) (2018-10-05)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.2"></a>
+## [3.0.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.2-unstable.0...amazon-cognito-identity-js@3.0.2) (2018-10-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.2-unstable.0"></a>
+## [3.0.2-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.31-unstable.2...amazon-cognito-identity-js@3.0.2-unstable.0) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.31-unstable.2...amazon-cognito-identity-js@3.0.1) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.31-unstable.2"></a>
+## [2.0.31-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.31-unstable.1...amazon-cognito-identity-js@2.0.31-unstable.2) (2018-09-27)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** replace crypto-browserify with crypto-js ([4d2409a](https://github.com/aws/aws-amplify/commit/4d2409a))
+
+
+
+
+<a name="2.0.31-unstable.1"></a>
+## [2.0.31-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.31-unstable.0...amazon-cognito-identity-js@2.0.31-unstable.1) (2018-09-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.31-unstable.0"></a>
+## [2.0.31-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30...amazon-cognito-identity-js@2.0.31-unstable.0) (2018-09-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30"></a>
+## [2.0.30](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.9...amazon-cognito-identity-js@2.0.30) (2018-09-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.9"></a>
+## [2.0.30-unstable.9](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.8...amazon-cognito-identity-js@2.0.30-unstable.9) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.8"></a>
+## [2.0.30-unstable.8](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.7...amazon-cognito-identity-js@2.0.30-unstable.8) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.7"></a>
+## [2.0.30-unstable.7](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.6...amazon-cognito-identity-js@2.0.30-unstable.7) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.6"></a>
+## [2.0.30-unstable.6](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.4...amazon-cognito-identity-js@2.0.30-unstable.6) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.5"></a>
+## [2.0.30-unstable.5](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.4...amazon-cognito-identity-js@2.0.30-unstable.5) (2018-09-25)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.4"></a>
+## [2.0.30-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.3...amazon-cognito-identity-js@2.0.30-unstable.4) (2018-09-25)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.3"></a>
+## [2.0.30-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.2...amazon-cognito-identity-js@2.0.30-unstable.3) (2018-09-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.2"></a>
+## [2.0.30-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.1...amazon-cognito-identity-js@2.0.30-unstable.2) (2018-09-22)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.1"></a>
+## [2.0.30-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.30-unstable.0...amazon-cognito-identity-js@2.0.30-unstable.1) (2018-09-22)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.30-unstable.0"></a>
+## [2.0.30-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.29...amazon-cognito-identity-js@2.0.30-unstable.0) (2018-09-22)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.29"></a>
+## [2.0.29](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.29-unstable.0...amazon-cognito-identity-js@2.0.29) (2018-09-21)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** clean clockDrift item when signing out ([f07d800](https://github.com/aws/aws-amplify/commit/f07d800))
+
+
+
+
+<a name="2.0.29-unstable.0"></a>
+## [2.0.29-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.28-unstable.3...amazon-cognito-identity-js@2.0.29-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+
+
+
+
+<a name="2.0.28"></a>
+## [2.0.28](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.27...amazon-cognito-identity-js@2.0.28) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.28-unstable.3"></a>
+## [2.0.28-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.28-unstable.2...amazon-cognito-identity-js@2.0.28-unstable.3) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.28-unstable.2"></a>
+## [2.0.28-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.28-unstable.1...amazon-cognito-identity-js@2.0.28-unstable.2) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.28-unstable.1"></a>
+## [2.0.28-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.28-unstable.0...amazon-cognito-identity-js@2.0.28-unstable.1) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.28-unstable.0"></a>
+## [2.0.28-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.27...amazon-cognito-identity-js@2.0.28-unstable.0) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.27"></a>
+## [2.0.27](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.26...amazon-cognito-identity-js@2.0.27) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.26"></a>
+## [2.0.26](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.25...amazon-cognito-identity-js@2.0.26) (2018-09-12)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.25"></a>
+## [2.0.25](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.25-unstable.0...amazon-cognito-identity-js@2.0.25) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.25-unstable.0"></a>
+## [2.0.25-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24...amazon-cognito-identity-js@2.0.25-unstable.0) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24"></a>
+## [2.0.24](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.11...amazon-cognito-identity-js@2.0.24) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.11"></a>
+## [2.0.24-unstable.11](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.10...amazon-cognito-identity-js@2.0.24-unstable.11) (2018-09-08)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.10"></a>
+## [2.0.24-unstable.10](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.9...amazon-cognito-identity-js@2.0.24-unstable.10) (2018-09-07)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.9"></a>
+## [2.0.24-unstable.9](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.8...amazon-cognito-identity-js@2.0.24-unstable.9) (2018-09-07)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.8"></a>
+## [2.0.24-unstable.8](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.7...amazon-cognito-identity-js@2.0.24-unstable.8) (2018-09-07)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.7"></a>
+## [2.0.24-unstable.7](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.6...amazon-cognito-identity-js@2.0.24-unstable.7) (2018-09-06)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.6"></a>
+## [2.0.24-unstable.6](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.5...amazon-cognito-identity-js@2.0.24-unstable.6) (2018-09-06)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.5"></a>
+## [2.0.24-unstable.5](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.4...amazon-cognito-identity-js@2.0.24-unstable.5) (2018-09-05)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.4"></a>
+## [2.0.24-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.24-unstable.3...amazon-cognito-identity-js@2.0.24-unstable.4) (2018-09-05)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.3"></a>
+## [2.0.24-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.23...amazon-cognito-identity-js@2.0.24-unstable.3) (2018-08-31)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.2"></a>
+## [2.0.24-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.23...amazon-cognito-identity-js@2.0.24-unstable.2) (2018-08-30)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.24-unstable.1"></a>
+## [2.0.24-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.23...amazon-cognito-identity-js@2.0.24-unstable.1) (2018-08-30)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.23"></a>
+## [2.0.23](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.26...amazon-cognito-identity-js@2.0.23) (2018-08-28)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.26"></a>
+## [2.0.22-unstable.26](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.25...amazon-cognito-identity-js@2.0.22-unstable.26) (2018-08-28)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.25"></a>
+## [2.0.22-unstable.25](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.24...amazon-cognito-identity-js@2.0.22-unstable.25) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.24"></a>
+## [2.0.22-unstable.24](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.23...amazon-cognito-identity-js@2.0.22-unstable.24) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.23"></a>
+## [2.0.22-unstable.23](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.21...amazon-cognito-identity-js@2.0.22-unstable.23) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.22"></a>
+## [2.0.22-unstable.22](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.21...amazon-cognito-identity-js@2.0.22-unstable.22) (2018-08-25)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.21"></a>
+## [2.0.22-unstable.21](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.20...amazon-cognito-identity-js@2.0.22-unstable.21) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.20"></a>
+## [2.0.22-unstable.20](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.19...amazon-cognito-identity-js@2.0.22-unstable.20) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.19"></a>
+## [2.0.22-unstable.19](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.17...amazon-cognito-identity-js@2.0.22-unstable.19) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.18"></a>
+## [2.0.22-unstable.18](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.17...amazon-cognito-identity-js@2.0.22-unstable.18) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.17"></a>
+## [2.0.22-unstable.17](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.15...amazon-cognito-identity-js@2.0.22-unstable.17) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.16"></a>
+## [2.0.22-unstable.16](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.15...amazon-cognito-identity-js@2.0.22-unstable.16) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.15"></a>
+## [2.0.22-unstable.15](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.14...amazon-cognito-identity-js@2.0.22-unstable.15) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.14"></a>
+## [2.0.22-unstable.14](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.13...amazon-cognito-identity-js@2.0.22-unstable.14) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.13"></a>
+## [2.0.22-unstable.13](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.11...amazon-cognito-identity-js@2.0.22-unstable.13) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.12"></a>
+## [2.0.22-unstable.12](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.11...amazon-cognito-identity-js@2.0.22-unstable.12) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.11"></a>
+## [2.0.22-unstable.11](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.10...amazon-cognito-identity-js@2.0.22-unstable.11) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.10"></a>
+## [2.0.22-unstable.10](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.9...amazon-cognito-identity-js@2.0.22-unstable.10) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.9"></a>
+## [2.0.22-unstable.9](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.8...amazon-cognito-identity-js@2.0.22-unstable.9) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.8"></a>
+## [2.0.22-unstable.8](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.7...amazon-cognito-identity-js@2.0.22-unstable.8) (2018-08-22)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.7"></a>
+## [2.0.22-unstable.7](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.6...amazon-cognito-identity-js@2.0.22-unstable.7) (2018-08-22)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.6"></a>
+## [2.0.22-unstable.6](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.5...amazon-cognito-identity-js@2.0.22-unstable.6) (2018-08-21)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.5"></a>
+## [2.0.22-unstable.5](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.4...amazon-cognito-identity-js@2.0.22-unstable.5) (2018-08-21)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.4"></a>
+## [2.0.22-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.3...amazon-cognito-identity-js@2.0.22-unstable.4) (2018-08-20)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.3"></a>
+## [2.0.22-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.2...amazon-cognito-identity-js@2.0.22-unstable.3) (2018-08-19)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.2"></a>
+## [2.0.22-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.1...amazon-cognito-identity-js@2.0.22-unstable.2) (2018-08-18)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.1"></a>
+## [2.0.22-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.22-unstable.0...amazon-cognito-identity-js@2.0.22-unstable.1) (2018-08-16)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.22-unstable.0"></a>
+## [2.0.22-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21...amazon-cognito-identity-js@2.0.22-unstable.0) (2018-08-15)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.21"></a>
+## [2.0.21](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.5...amazon-cognito-identity-js@2.0.21) (2018-08-14)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.21-unstable.5"></a>
+## [2.0.21-unstable.5](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.4...amazon-cognito-identity-js@2.0.21-unstable.5) (2018-08-14)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.21-unstable.4"></a>
+## [2.0.21-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.3...amazon-cognito-identity-js@2.0.21-unstable.4) (2018-08-13)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="2.0.21-unstable.3"></a>
+## [2.0.21-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.2...amazon-cognito-identity-js@2.0.21-unstable.3) (2018-08-13)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** throw network error if in the offline ([d5808f1](https://github.com/aws/aws-amplify/commit/d5808f1))
+
+
+
+
 <a name="2.0.21-unstable.2"></a>
 ## [2.0.21-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.1...amazon-cognito-identity-js@2.0.21-unstable.2) (2018-08-09)
 

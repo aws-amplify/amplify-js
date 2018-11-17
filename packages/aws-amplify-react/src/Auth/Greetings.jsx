@@ -11,124 +11,39 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { I18n, Hub, ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as React from 'react';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-
 import AuthPiece from './AuthPiece';
-import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
-import AmplifyTheme from '../AmplifyTheme';
+import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import Constants from './common/constants';
+import SignOut from './SignOut';
+import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
 
 const logger = new Logger('Greetings');
 
 export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
-
-        this.signOut = this.signOut.bind(this);
-        this.googleSignOut = this.googleSignOut.bind(this);
-        this.facebookSignOut = this.facebookSignOut.bind(this);
-        this.checkUser = this.checkUser.bind(this);
-        this.onHubCapsule = this.onHubCapsule.bind(this);
-
+    
         this.state = {
             authState: props.authState,
             authData: props.authData
         }
-
-        Hub.listen('auth', this);
     }
 
     componentDidMount() {
         this._isMounted = true;
-        this.checkUser();
     }
 
     componentWillUnmount() {
         this._isMounted = false;
     }
 
-    signOut() {
-        this.googleSignOut();
-        this.facebookSignOut();
-        if (!Auth || typeof Auth.signOut !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        Auth.signOut()
-            .then(() => this.changeState('signedOut'))
-            .catch(err => { logger.error(err); this.error(err); });
-    }
-
-    googleSignOut() {
-        const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
-        if (!authInstance) {
-            return Promise.resolve(null);
-        }
-
-        authInstance.then((googleAuth) => {
-            if (!googleAuth) {
-                logger.debug('google Auth undefined');
-                return Promise.resolve(null);
-            }
-
-            logger.debug('google signing out');
-            return googleAuth.signOut();
-        });
-    }
-
-    facebookSignOut() {
-        const fb = window.FB;
-        if (!fb) {
-            logger.debug('FB sdk undefined');
-            return Promise.resolve(null);
-        }
-
-        fb.getLoginStatus(response => {
-            if (response.status === 'connected') {
-                return new Promise((res, rej) => {
-                    logger.debug('facebook signing out');
-                    fb.logout(response => {
-                        res(response);
-                    });
-                });
-            } else {
-                return Promise.resolve(null);
-            }
-        });
-    }
-
-    checkUser() {
-        const that = this;
-        const { authState } = this.state;
-        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        return Auth.currentAuthenticatedUser()
-            .then(user => {
-                if (!that._isMounted) { return; }
-                if (authState !== 'signedIn') {
-                    this.setState({
-                        authState: 'signedIn',
-                        authData: user
-                    });
-                    this.changeState('signedIn', user);
-                }
-            })
-            .catch(err => {
-                if (!that._isMounted) { return; }
-                this.signOut();
-            });
-    }
-
-    onHubCapsule(capsule) {
-        const { channel, payload, source } = capsule;
-        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
-            this.checkUser(); 
-        }
-    }
-
     inGreeting(name) { return 'Hello ' + name; }
     outGreeting() { return ''; }
+
 
     userGreetings(theme) {
         const user = this.state.authData;
@@ -142,17 +57,38 @@ export default class Greetings extends AuthPiece {
 
         const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
+        const { federated } = this.props;
+
         return (
             <span>
                 <NavItem theme={theme}>{message}</NavItem>
-                <NavButton
-                    theme={theme}
-                    onClick={this.signOut}
-                >{I18n.get('Sign Out')}
-                </NavButton>
-
+                {this.renderSignOutButton(theme)}
             </span>
         )
+    }
+
+    renderSignOutButton() {
+        const { federated={} } = this.props;
+        const { google_client_id, facebook_app_id, amazon_client_id, auth0 } = federated;
+        const config = Auth.configure();
+        const { oauth={} } = config;
+        const googleClientId = google_client_id || config.googleClientId;
+        const facebookAppId = facebook_app_id || config.facebookClientId;
+        const amazonClientId = amazon_client_id || config.amazonClientId;
+        const auth0_config = auth0 || oauth.auth0;
+
+        if (googleClientId) SignOut = withGoogle(SignOut);
+        if (facebookAppId) SignOut = withFacebook(SignOut);
+        if (amazonClientId) SignOut = withAmazon(SignOut);
+        if (auth0_config) SignOut = withAuth0(SignOut);
+
+        return <SignOut 
+            {...this.props} 
+            google_client_id={google_client_id} 
+            facebook_app_id={facebook_app_id} 
+            amazon_client_id={amazon_client_id}
+            auth0={auth0_config}
+            />;
     }
 
     noUserGreetings(theme) {

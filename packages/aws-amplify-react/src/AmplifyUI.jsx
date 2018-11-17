@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 
 import { JS } from '@aws-amplify/core';
 
@@ -25,8 +25,8 @@ export const Container = (props) => {
         <div {...p} className="amplify-container" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormContainer = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -35,8 +35,8 @@ export const FormContainer = (props) => {
         <div className="amplify-form-container" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -49,8 +49,8 @@ export const FormSection = (props) => {
                 </div>
             )}
         </FormContainer>
-    )
-}
+    );
+};
 
 export const ErrorSection = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -62,8 +62,8 @@ export const ErrorSection = (props) => {
                 {props.children}
             </ErrorSectionContent>
         </div>
-    )
-}
+    );
+};
 
 export const ErrorSectionContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -72,8 +72,8 @@ export const ErrorSectionContent = (props) => {
         <span className="amplify-error-section-content" style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionHeader = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -85,8 +85,8 @@ export const SectionHeader = (props) => {
                 {props.children}
             </SectionHeaderContent>
         </div>
-    )
-}
+    );
+};
 
 export const SectionHeaderContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -95,8 +95,8 @@ export const SectionHeaderContent = (props) => {
         <span className="amplify-section-header-content" style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -108,8 +108,8 @@ export const SectionFooter = (props) => {
                 {props.children}
             </SectionFooterContent>
         </div>
-    )
-}
+    );
+};
 
 export const SectionFooterContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -118,8 +118,8 @@ export const SectionFooterContent = (props) => {
         <span className="amplify-section-footer-content" style={style}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SectionBody = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -129,8 +129,8 @@ export const SectionBody = (props) => {
         <div {...p} className="amplify-section-body" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const ActionRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -140,8 +140,8 @@ export const ActionRow = (props) => {
         <div {...p} className="amplify-action-row" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const FormRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -151,8 +151,8 @@ export const FormRow = (props) => {
         <div {...p} className="amplify-form-row" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const InputRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -168,8 +168,8 @@ export const InputRow = (props) => {
                 />
             )}
         </FormRow>
-    )
-}
+    );
+};
 
 export const RadioRow = (props) => {
     const id = props.id || '_' + props.value;
@@ -185,8 +185,8 @@ export const RadioRow = (props) => {
                 theme={theme}
             >{props.placeholder}</Label>
         </FormRow>
-    )
-}
+    );
+};
 
 export const Radio = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -199,8 +199,8 @@ export const Radio = (props) => {
                 className="amplify-radio"
                 style={style}
             />
-    )
-}
+    );
+};
 
 export const CheckboxRow = (props) => {
     const id = props.id || '_' + props.name;
@@ -216,8 +216,8 @@ export const CheckboxRow = (props) => {
                 theme={theme}
             >{props.placeholder}</Label>
         </FormRow>
-    )
-}
+    );
+};
 
 export const Checkbox = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -230,8 +230,8 @@ export const Checkbox = (props) => {
             className="amplify-checkbox"
             style={style}
         />
-    )
-}
+    );
+};
 
 export const MessageRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -239,8 +239,8 @@ export const MessageRow = (props) => {
         <FormRow theme={theme}>
             <MessageContent theme={theme}>{props.children}</MessageContent>
         </FormRow>
-    )
-}
+    );
+};
 
 export const MessageContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -248,8 +248,8 @@ export const MessageContent = (props) => {
         <span className="amplify-message-content" style={theme.messageContent}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const ButtonRow = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -257,8 +257,8 @@ export const ButtonRow = (props) => {
         <div className="amplify-action-row" style={theme.actionRow}>
             <Button {...props} />
         </div>
-    )
-}
+    );
+};
 
 export const Button = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -268,8 +268,8 @@ export const Button = (props) => {
         <button {...p} className="amplify-button" style={style}>
             <ButtonContent theme={theme}>{props.children}</ButtonContent>
         </button>
-    )
-}
+    );
+};
 
 export const ButtonContent = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -277,8 +277,8 @@ export const ButtonContent = (props) => {
         <span className="amplify-button-content" style={theme.buttonContent}>
             {props.children}
         </span>
-    )
-}
+    );
+};
 
 export const SignInButton = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -289,8 +289,8 @@ export const SignInButton = (props) => {
         <button {...p} className="amplify-signin-button" style={style}>
             {props.children}
         </button>
-    )
-}
+    );
+};
 
 export const Link = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -298,8 +298,8 @@ export const Link = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
         <a {...p} className="amplify-a" style={style}>{props.children}</a>
-    )
-}
+    );
+};
 
 export const Label = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -307,8 +307,8 @@ export const Label = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
         <label {...p} className="amplify-label" style={style}>{props.children}</label>
-    )
-}
+    );
+};
 
 export const Space = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -316,8 +316,8 @@ export const Space = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
         <span {...p} className="amplify-space" style={style}>{props.children}</span>
-    )
-}
+    );
+};
 
 export const NavBar = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -327,8 +327,8 @@ export const NavBar = (props) => {
         <div {...p} className="amplify-nav-bar" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const Nav = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -338,8 +338,8 @@ export const Nav = (props) => {
         <div {...p} className="amplify-nav" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavRight = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -349,8 +349,8 @@ export const NavRight = (props) => {
         <div {...p} className="amplify-nav-right" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavItem = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -360,8 +360,8 @@ export const NavItem = (props) => {
         <div {...p} className="amplify-nav-item" style={style}>
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export const NavButton = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -373,8 +373,8 @@ export const NavButton = (props) => {
                 <span style={theme.navButtonContent}>{props.children}</span>
             )}
         </button>
-    )
-}
+    );
+};
 
 export const beforeAfter = (el) => {
     const style = el.props.style || {};
@@ -387,8 +387,8 @@ export const beforeAfter = (el) => {
             {el}
             {after? <span style={after}>{after.content}</span> : null}
         </span>
-    )
-}
+    );
+};
 
 export const propStyle = (props, themeStyle) => {
     const { id, style } = props;
@@ -398,7 +398,7 @@ export const propStyle = (props, themeStyle) => {
     const selector = '#' + id;
     Object.assign(styl, styl[selector]);
     return styl;
-}
+};
 
 export const transparent1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 
