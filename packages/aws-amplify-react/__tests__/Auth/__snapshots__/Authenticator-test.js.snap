@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Authenticator normal case render if no error 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -2495,11 +2495,11 @@ exports[`Authenticator normal case render if no error 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;
 
 exports[`Authenticator normal case render if no error with children 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -5243,11 +5243,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;
 
 exports[`Authenticator normal case render with hidedefault 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -7741,5 +7741,5 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;

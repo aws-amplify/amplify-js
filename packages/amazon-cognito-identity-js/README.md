@@ -23,18 +23,20 @@ Setup
 There are two ways to install the Amazon Cognito Identity SDK for JavaScript and its dependencies,
 depending on your project setup and experience with modern JavaScript build tools:
 
-* Download the JavaScript library and include it in your HTML, or
+* Download the bundle file from npm and include it in your HTML, or
 
 * Install the dependencies with npm and use a bundler like webpack.
 
 **Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill.
+
+Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
 ## Install using separate JavaScript file
 
 This method is simpler and does not require additional tools, but may have worse performance due to
 the browser having to download multiple files.
 
-Download the JavaScript [library file](https://raw.githubusercontent.com/aws/aws-amplify/master/packages/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js) and place it in your project.
+Download the amazon-cognito-identity-js package from npm and get `amazon-cognito-identity.min.js` file from the `dist` folder. Place it in your project.
 
 Optionally, to use other AWS services, include a build of the [AWS SDK for JavaScript](http://aws.amazon.com/sdk-for-browser/).
 
@@ -226,7 +228,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
             alert(err.message || JSON.stringify(err));
             return;
         }
-        cognitoUser = result.user;
+        var cognitoUser = result.user;
         console.log('user name is ' + cognitoUser.getUsername());
     });
 ```
@@ -896,6 +898,8 @@ For most frameworks you can whitelist the domain by whitelisting all AWS endpoin
 In order to authenticate with the Amazon Cognito User Pool Service, the client needs to generate a random number as part of the SRP protocol. The AWS SDK is only compatible with modern browsers, and these include [support for cryptographically strong random values](https://caniuse.com/#feat=cryptography). If you do need to support older browsers then you should include a strong polyfill for `window.crypto.getRandomValues()` before including this library.
 
 ## Change Log
+
+Latest change logs have been moved to [CHANGELOG.md](./CHANGELOG.md).
 
 **v2.0.2:**
 * What has changed

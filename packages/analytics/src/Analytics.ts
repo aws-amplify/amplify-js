@@ -94,9 +94,6 @@ export default class AnalyticsClass {
         if (this._config['autoSessionRecord'] === undefined) {
             this._config['autoSessionRecord'] = true;
         }
-        this.autoTrack('session', {
-            enable: this._config['autoSessionRecord']
-        });
 
         dispatchAnalyticsEvent('configured', null);
         logger.debug('current configuration', this._config);

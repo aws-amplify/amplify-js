@@ -1,7 +1,1 @@
----
----
-
-# Vue.js
-
-To help you start working with AWS Amplify, we provide a Starter App. See our [Vue.js Starter App in Github](https://github.com/aws-samples/aws-amplify-vue).
-
+ <meta http-equiv="refresh" content="0; URL='https://aws-amplify.github.io/docs/js/vue'" />

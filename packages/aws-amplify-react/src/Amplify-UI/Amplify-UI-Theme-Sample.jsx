@@ -13,13 +13,13 @@
 export const Container = {
   fontFamily: `"Amazon Ember", "Helvetica Neue", sans-serif`,
   fontWeight: '400',
-}
+};
 
 export const FormContainer = {
   textAlign: 'center',
   marginTop: '20px',
   margin: '5% auto 50px',
-}
+};
 
 export const FormSection = {
   position: 'relative',
@@ -31,22 +31,22 @@ export const FormSection = {
   minWidth: '380px',
   borderRadius: '6px',
   boxShadow: '1px 1px 4px 0 rgba(0,0,0,0.15)'
-}
+};
 
 export const FormField = {
   marginBottom: '22px',
-}
+};
 
 export const SectionHeader = {
   color:'#152939',
   marginBottom: '30px',
   fontSize: '18px',
   fontWeight: '500',
-}
+};
 
 export const SectionBody = {
   marginBottom: '30px',
-}
+};
 
 export const SectionFooter = {
   fontSize: '14px',
@@ -54,16 +54,16 @@ export const SectionFooter = {
   display: 'flex',
   flexDirection: 'row-reverse',
   alignItems: 'flex-start',
-}
+};
 
 export const SectionFooterPrimaryContent = {
   marginLeft: 'auto'
-}
+};
 
 export const SectionFooterSecondaryContent = {
   marginRight: 'auto',
   alignSelf: 'center',
-}
+};
 
 export const Input = {
   display: 'block',
@@ -78,7 +78,7 @@ export const Input = {
   borderRadius: '3px',
   boxSizing: 'border-box',
   marginBottom: '10px',
-}
+};
 
 export const Button = {
   minWidth: '153px',
@@ -101,7 +101,7 @@ export const Button = {
   padding: '14px 0',
   letterSpacing: '1.1px',
   border: 'none',
-}
+};
 
 export const SignInButton = {
   position: 'relative',
@@ -126,7 +126,7 @@ export const SignInButton = {
     backgroundColor: '#FF9900',
     border: 'none',
   }
-}
+};
 
 export const SignInButtonIcon = {
   position: 'absolute',
@@ -148,18 +148,16 @@ export const SignInButtonIcon = {
     height: '32px',
     width: '32px',
   }
-}
+};
 
 export const SignInButtonContent = {
-  textAlign: 'center',
   display: 'block',
   padding: '18px 0',
-  textAlign: 'left',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   textAlign: 'center',
-}
+};
 
 export const Strike = {
   width: '100%',
@@ -168,43 +166,43 @@ export const Strike = {
   lineHeight: '0.1em',
   margin: '32px 0',
   color: '#828282',
-}
+};
 
 export const StrikeContent = {
   background: '#fff', 
   padding: '0 25px',
   fontSize: '14px',
   fontWeight: '500',
-}
+};
 
 export const ActionRow = {
   marginBottom: '15px'
-}
+};
 
 export const FormRow = {
   marginBottom: '12px'
-}
+};
 
 export const A = {
   color: '#FF9900',
   cursor: 'pointer',
-}
+};
 
 export const Hint = {
   color: '#828282',
   fontSize: '12px',
-}
+};
 
 export const Radio = {
   marginRight: '18px',
   verticalAlign: 'bottom',
-}
+};
 
 export const InputLabel = {
   color: '#152939',
   fontSize: '14px',
   marginBottom: '8px',
-}
+};
 
 const Bootstrap = {
   container: Container,
@@ -232,6 +230,6 @@ const Bootstrap = {
   hint: Hint,
   radio: Radio,
   inputLabel: InputLabel,
-}
+};
 
 export default Bootstrap;

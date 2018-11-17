@@ -3,6 +3,165 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.19-unstable.0"></a>
+## [1.0.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.18...@aws-amplify/core@1.0.19-unstable.0) (2018-11-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** check if window.addListener is a function ([eaca33b](https://github.com/aws/aws-amplify/commit/eaca33b))
+
+
+
+
+<a name="1.0.18"></a>
+## [1.0.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.18-unstable.0...@aws-amplify/core@1.0.18) (2018-11-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.18-unstable.0"></a>
+## [1.0.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.17...@aws-amplify/core@1.0.18-unstable.0) (2018-11-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use existing methods to load localStorage ([3ec680d](https://github.com/aws/aws-amplify/commit/3ec680d))
+
+
+
+
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.17-unstable.0...@aws-amplify/core@1.0.17) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.17-unstable.0"></a>
+## [1.0.17-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16...@aws-amplify/core@1.0.17-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.16"></a>
+## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16-unstable.3...@aws-amplify/core@1.0.16) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.16-unstable.3"></a>
+## [1.0.16-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16-unstable.2...@aws-amplify/core@1.0.16-unstable.3) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.16-unstable.2"></a>
+## [1.0.16-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16-unstable.1...@aws-amplify/core@1.0.16-unstable.2) (2018-10-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** throw error when failed to sync items from AsyncStorage into Memory ([85c3f32](https://github.com/aws/aws-amplify/commit/85c3f32))
+
+
+
+
+<a name="1.0.16-unstable.1"></a>
+## [1.0.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16-unstable.0...@aws-amplify/core@1.0.16-unstable.1) (2018-10-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** fix aws-sdk version to 2.329.0 ([#1851](https://github.com/aws/aws-amplify/issues/1851)) ([c6519e7](https://github.com/aws/aws-amplify/commit/c6519e7))
+
+
+
+
+<a name="1.0.16-unstable.0"></a>
+## [1.0.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.15-unstable.1...@aws-amplify/core@1.0.16-unstable.0) (2018-10-05)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.15"></a>
+## [1.0.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.15-unstable.1...@aws-amplify/core@1.0.15) (2018-10-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.15-unstable.1"></a>
+## [1.0.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.15-unstable.0...@aws-amplify/core@1.0.15-unstable.1) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.15-unstable.0"></a>
+## [1.0.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.14-unstable.1...@aws-amplify/core@1.0.15-unstable.0) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.14"></a>
+## [1.0.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.14-unstable.1...@aws-amplify/core@1.0.14) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.14-unstable.1"></a>
+## [1.0.14-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.14-unstable.0...@aws-amplify/core@1.0.14-unstable.1) (2018-10-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.14-unstable.0"></a>
+## [1.0.14-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.13...@aws-amplify/core@1.0.14-unstable.0) (2018-09-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.13"></a>
+## [1.0.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.13-unstable.1...@aws-amplify/core@1.0.13) (2018-09-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.13-unstable.1"></a>
+## [1.0.13-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.13-unstable.0...@aws-amplify/core@1.0.13-unstable.1) (2018-09-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** remove the polyfill ([728bf20](https://github.com/aws/aws-amplify/commit/728bf20))
+
+
+
+
 <a name="1.0.13-unstable.0"></a>
 ## [1.0.13-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.12...@aws-amplify/core@1.0.13-unstable.0) (2018-09-22)
 

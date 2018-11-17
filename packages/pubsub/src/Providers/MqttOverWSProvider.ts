@@ -20,15 +20,29 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
+export function mqttTopicMatch(filter: string, topic: string) {
+    const filterArray = filter.split('/');
+    const length = filterArray.length;
+    const topicArray = topic.split('/');
+
+    for (let i = 0; i < length; ++i) {
+        const left = filterArray[i];
+        const right = topicArray[i];
+        if (left === '#') return topicArray.length >= length;
+        if (left !== '+' && left !== right) return false;
+    }
+    return length === topicArray.length;
+}
+
 export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
 }
 
 class ClientsQueue {
-    private promises: Map<string, Promise<Paho.Client>> = new Map();
+    private promises: Map<string, Promise<any>> = new Map();
 
-    async get(clientId: string, clientFactory: (string) => Promise<Paho.Client>) {
+    async get(clientId: string, clientFactory: (string) => Promise<any>) {
         let promise = this.promises.get(clientId);
         if (promise) {
             return promise;
@@ -74,7 +88,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         }
     }
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Paho.Client> {
+    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
         logger.debug('Creating new MQTT client', clientId);
 
         const client = new Paho.Client(url, clientId);
@@ -98,7 +112,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         return client;
     }
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<Paho.Client> {
+    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<any> {
         return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
     }
 
@@ -127,14 +141,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const observersForTopic = this._topicObservers.get(topic) || new Set();
+            const matchedTopicObservers = [];
+            this._topicObservers.forEach((observerForTopic, observerTopic) => {
+                if (mqttTopicMatch(observerTopic, topic)) {
+                    matchedTopicObservers.push(observerForTopic);
+                }
+            });
             const parsedMessage = JSON.parse(msg);
 
             if (typeof parsedMessage === 'object') {
                 parsedMessage[topicSymbol] = topic;
             }
 
-            observersForTopic.forEach(observer => observer.next(parsedMessage));
+            matchedTopicObservers.forEach(observersForTopic =>{
+                observersForTopic.forEach(observer => observer.next(parsedMessage));
+            });
         } catch (error) {
             logger.warn('Error handling message', error, msg);
         }

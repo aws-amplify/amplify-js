@@ -14,7 +14,6 @@ import {
     ConsoleLogger as Logger,
 } from '../Logger';
 import JS from '../JS';
-import '../Polyfills';
 
 const logger = new Logger('CognitoCredentials');
 
@@ -58,14 +57,14 @@ export default class FacebookOAuth {
 
     private _refreshFacebookTokenImpl() {
         let fb = null;
-        if (window) fb = window['FB'];
+        if (JS.browserOrNode().isBrowser) fb = window['FB'];
         if (!fb) {
             logger.debug('no fb sdk available');
             return Promise.reject('no fb sdk available');
         }
 
         return new Promise((res, rej) => {
-            fb.login(
+            fb.getLoginStatus(
                 fbResponse => {
                     if (!fbResponse || !fbResponse.authResponse) {
                         logger.debug('no response from facebook when refreshing the jwt token');

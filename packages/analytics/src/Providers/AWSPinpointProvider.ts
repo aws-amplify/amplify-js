@@ -15,7 +15,8 @@ import {
     ClientDevice, 
     Platform, 
     Credentials,
-    Signer
+    Signer,
+    JS
 } from '@aws-amplify/core';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
@@ -60,12 +61,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         // flush event buffer
         this._setupTimer();
-
-        logger.warn(
-            'Please ensure you have updated you Pinpoint IAM Policy' +
-            'with the Action: \"mobiletargeting:PutEvents\" in order to' +
-            'continue using AWS Pinpoint Service'
-        );
     }
 
     private _setupTimer() {
@@ -253,7 +248,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { name, attributes, metrics, eventId, session } = event;
         const { appId, endpointId } = config;
 
-        const endpointContext = this._generateEndpointContext(config);
+        const endpointContext = {};
 
         const eventParams = {
             ApplicationId: appId,
@@ -356,7 +351,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         this._initClients(config, credentials);
         
-        const request = this._endpointRequest(config, event);
+        const request = this._endpointRequest(
+            config, 
+            JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes'])
+        );
         const update_params = {
             ApplicationId: appId,
             EndpointId: endpointId,
@@ -400,6 +398,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         logger.debug('init clients with credentials', credentials);
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
+        if (Platform.isReactNative) {
+            this.pinpointClient.customizeRequests(function(request) {
+                request.on('build', function(req) {
+                    req.httpRequest.headers['user-agent'] = Platform.userAgent;
+                });
+            });
+        }
+        
     }
 
     private async _getEndpointId(cacheKey) {
@@ -419,62 +425,66 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private _endpointRequest(config, event) {
         const { credentials } = config;
-        const clientInfo = this._clientInfo;
-        const {
-            Address, 
-            RequestId, 
-            Attributes,
-            UserAttributes,
-            UserId,
-            OptOut
-        } = event;
-
-        const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-
-        const ret = {
-            Address,
-            Attributes,
-            ChannelType,
-            Demographic: {
-                AppVersion: event.appVersion || clientInfo.appVersion,
-                Make: clientInfo.make,
-                Model: clientInfo.model,
-                ModelVersion: clientInfo.version,
-                Platform: clientInfo.platform
-            },
-            OptOut,
-            RequestId,
-            EffectiveDate: Address? new Date().toISOString() : undefined,
-            User: { 
-                UserId: UserId? UserId: credentials.identityId,
-                UserAttributes
-            }
-        };
-        return ret;
-    }
-
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    private _generateEndpointContext(config) {
-        const { endpointId, appId } = config;
-
+        const clientInfo = this._clientInfo || {};
         const clientContext = config.clientContext || {};
-        const clientInfo = this._clientInfo;
-
-        const endpointCtx = {
-            Demographic: {
-                Make: clientContext.make || clientInfo.make,
-                Model: clientContext.model || clientInfo.model,
-                Locale: clientContext.locale,
-                AppVersion: clientContext.appVersionName,
-                Platform: clientContext.platform || clientInfo.platform,
-                PlatformVersion: clientContext.platformVersion || clientInfo.version
+        // for now we have three different ways for default endpoint configurations
+        // clientInfo
+        // clientContext (deprecated)
+        // config.endpoint
+        const defaultEndpointConfig = config.endpoint || {};
+        const demographicByClientInfo = {
+            appVersion: clientInfo.appVersion,
+            make: clientInfo.make,
+            model: clientInfo.model,
+            modelVersion: clientInfo.version,
+            platform: clientInfo.platform
+        };
+        // for backward compatibility
+        const { 
+            clientId, 
+            appTitle, 
+            appVersionName, 
+            appVersionCode, 
+            appPackageName, 
+            ...demographicByClientContext 
+        } = clientContext;
+        const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        const tmp = {
+            channelType,
+            requestId: uuid(),
+            effectiveDate:new Date().toISOString(),
+            ...defaultEndpointConfig,
+            ...event,
+            attributes: {
+                ...defaultEndpointConfig.attributes,
+                ...event.attributes
+            },
+            demographic: {
+                ...demographicByClientInfo,
+                ...demographicByClientContext,
+                ...defaultEndpointConfig.demographic,
+                ...event.demographic
+            },
+            location: {
+                ...defaultEndpointConfig.location,
+                ...event.location
+            },
+            metrics: {
+                ...defaultEndpointConfig.metrics,
+                ...event.metrics
+            },
+            user: {
+                userId: event.userId || defaultEndpointConfig.userId || credentials.identityId,
+                userAttributes: {
+                    ...defaultEndpointConfig.userAttributes,
+                    ...event.userAttributes
+                }
             }
         };
 
-        return endpointCtx;
+        // eliminate unnecessary params
+        const { userId, userAttributes, name, session, eventId, immediate, ...ret } = tmp;
+        return JS.transferKeyToUpperCase(ret, [], ['metrics', 'userAttributes', 'attributes']);
     }
 
     /**
