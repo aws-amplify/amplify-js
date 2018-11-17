@@ -30,7 +30,7 @@ import {
 
 import { totpQrcode } from '@aws-amplify/ui';
 
-import QRCode from 'qrcode.react';
+const QRCode = require('qrcode.react');
 
 const logger = new Logger('TOTPSetupComp');
 
@@ -47,7 +47,7 @@ export default class TOTPSetupComp extends Component {
         this.state = {
             code: null,
             setupMessage: null
-        }
+        };
     }
 
     componentDidMount() {
@@ -122,12 +122,12 @@ export default class TOTPSetupComp extends Component {
                     onChange={this.handleInputChange}
                 />
             </div>
-        )
+        );
     }
 
     render() {
         const theme = this.props.theme ? this.props.theme: AmplifyTheme;
-        let code = this.state.code;
+        const code = this.state.code;
 
         return (
             <FormSection theme={theme}>
@@ -150,6 +150,6 @@ export default class TOTPSetupComp extends Component {
                     </Button>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

@@ -49,8 +49,8 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'File Upload',
-        title: 'Upload',
+        header: this.$Amplify.I18n.get('File Upload'),
+        title: this.$Amplify.I18n.get('Upload'),
         accept: '*/*',
       }
       return Object.assign(defaults, this.photoPickerConfig || {})
@@ -95,7 +95,7 @@ export default {
       AmplifyEventBus.$emit('fileUpload', img);
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
   }

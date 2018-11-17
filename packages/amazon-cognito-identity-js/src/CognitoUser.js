@@ -16,7 +16,10 @@
  */
 
 import { Buffer } from 'buffer/';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js/core';
+import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
+import Base64 from 'crypto-js/enc-base64';
+import HmacSHA256 from 'crypto-js/hmac-sha256';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -195,7 +198,7 @@ export default class CognitoUser {
   authenticateUser(authDetails, callback) {
     if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
       return this.authenticateUserPlainUsernamePassword(authDetails, callback);
-    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+    } else if (this.authenticationFlowType === 'USER_SRP_AUTH' || this.authenticationFlowType === 'CUSTOM_AUTH') {
       return this.authenticateUserDefaultAuth(authDetails, callback);
     }
     return callback.onFailure(new Error('Authentication flow type is invalid.'));
@@ -288,7 +291,7 @@ export default class CognitoUser {
               ])
             );
             const key = CryptoJS.lib.WordArray.create(hkdf);
-            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
+            const signatureString = Base64.stringify(HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -629,7 +632,7 @@ export default class CognitoUser {
               ])
             );
             const key = CryptoJS.lib.WordArray.create(hkdf);
-            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
+            const signatureString = Base64.stringify(HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -865,7 +868,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to enable MFA for himself
+   * This is used by an authenticated user to enable MFA for itself
    * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
@@ -895,7 +898,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to enable MFA for himself
+   * This is used by an authenticated user to enable MFA for itself
    * @param {string[]} smsMfaSettings the sms mfa settings
    * @param {string[]} softwareTokenMfaSettings the software token mfa settings
    * @param {nodeCallback<string>} callback Called on success or error.
@@ -920,7 +923,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated user to disable MFA for himself
+   * This is used by an authenticated user to disable MFA for itself
    * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
@@ -946,7 +949,7 @@ export default class CognitoUser {
 
 
   /**
-   * This is used by an authenticated user to delete himself
+   * This is used by an authenticated user to delete itself
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */

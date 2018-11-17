@@ -91,7 +91,7 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
 
         render() {
             this.track('render');
-            return <Comp {...this.props} />
+            return <Comp {...this.props} />;
         }
-    }
+    };
 }

@@ -55,7 +55,7 @@ describe('SignOut', () => {
 
     it('...have default options', () => {
       expect(wrapper.vm.options.msg).toEqual(null);
-      expect(wrapper.vm.options.signOutButton).toEqual('Sign Out');
+      expect(wrapper.vm.options.signOutButton).toEqual('i18n Sign Out');
     });
   });
 

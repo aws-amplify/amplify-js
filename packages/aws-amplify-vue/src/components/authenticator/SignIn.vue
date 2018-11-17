@@ -16,25 +16,25 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Username *</div>
-        <input v-bind:class="amplifyUI.input"  v-model="options.username" placeholder="Username" autofocus v-on:keyup.enter="signIn" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
+        <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" />
       </div>
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Password *</div>
-        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" placeholder="Password" v-on:keyup.enter="signIn" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
+        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" />
         <div v-bind:class="amplifyUI.hint">
-          Forgot your password?
-          <a v-bind:class="amplifyUI.a" v-on:click="forgot">Reset</a>
+          {{$Amplify.I18n.get('Forget your password? ')}}
+          <a v-bind:class="amplifyUI.a" v-on:click="forgot">{{$Amplify.I18n.get('Reset password')}}</a>
         </div>
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signIn">Sign In</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        No Account?
-        <a v-bind:class="amplifyUI.a" v-on:click="signUp">Sign Up</a>
+        {{$Amplify.I18n.get('No account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -63,7 +63,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'Sign In',
+        header: this.$Amplify.I18n.get('Sign In Account'),
         username: ''
       }
       return Object.assign(defaults, this.signInConfig || {})
@@ -93,7 +93,7 @@ export default {
       AmplifyEventBus.$emit('authState', 'signUp')
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
     }
   }
