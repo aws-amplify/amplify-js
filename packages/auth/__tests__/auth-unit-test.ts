@@ -113,6 +113,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
     };
 
+    CognitoUser.prototype.globalSignOut = (callback) => {
+        callback.onSuccess();
+    };
+
     CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
         callback(null, 'Success');
     };
@@ -141,6 +145,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback(null, 'session');
     }
 
+    CognitoUser.prototype.getUsername = () => {
+        return 'username';
+    }
+    
     CognitoUser.prototype.getUserData = (callback) => {
         callback(null, 'data');
     }
@@ -1200,7 +1208,8 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            expect(await auth.verifyUserAttribute(user, {})).toBe("success");
+            await auth.verifyUserAttribute(user, {email: 'xxx@xxx.com'});
+            expect(spyon).toBeCalled();
 
             spyon.mockClear();
 
@@ -1349,7 +1358,7 @@ describe('auth unit test', () => {
         });
     });
 
-    describe('signOut', () => {
+    describe('signOut test', () => {
         test('happy case', async () => {
             const auth = new Auth(authOptions);
 
@@ -1399,6 +1408,33 @@ describe('auth unit test', () => {
             // @ts-ignore
 
             await auth.signOut();
+
+            expect.assertions(1);
+            expect(spyon2).toBeCalled();
+
+            spyonAuth.mockClear();
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('happy case for globalSignOut', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            const spyonAuth = jest.spyOn(Credentials, "clear")
+            .mockImplementationOnce(() => {
+                return Promise.resolve();
+            });
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+            .mockImplementationOnce(() => {
+                return user;
+            });
+            const spyon2 = jest.spyOn(CognitoUser.prototype, "globalSignOut");
+
+            await auth.signOut({global: true});
 
             expect.assertions(1);
             expect(spyon2).toBeCalled();
@@ -1624,9 +1660,7 @@ describe('auth unit test', () => {
             const spyon = jest.spyOn(Auth.prototype, 'currentUserPoolUser')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
-                        res({
-                            username: 'username'
-                        });
+                        res(user);
                     });
                 });
 
@@ -2156,7 +2190,11 @@ describe('auth unit test', () => {
 
     describe('hosted ui test', () => {
         test('happy case', () => {
-            const oauth = {};
+            const oauth = {
+                awsCognito: {
+                    domain: 'domain'
+                }
+            };
 
             const authOptions = {
                 Auth: {

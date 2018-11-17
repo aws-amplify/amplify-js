@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
 
 import Authenticator from './Authenticator';
 
@@ -29,6 +29,7 @@ export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
 export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
 export { default as TOTPSetup } from './TOTPSetup';
+export { default as Loading } from './Loading';
 
 export * from './Provider';
 
@@ -62,7 +63,9 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             <Greetings
                                 authState={authState}
                                 authData={authData}
+                                federated={federated || this.props.federated}
                                 onStateChange={this.handleAuthStateChange}
+                                theme={theme}
                             />
                             : null
                         }
@@ -73,19 +76,19 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             onStateChange={this.handleAuthStateChange}
                         />
                     </div>
-                )
+                );
             }
 
             return <Authenticator
                 {...this.props}
                 theme={theme}
-                federated={federated}
+                federated={federated || this.props.federated}
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
-            />
+            />;
         }
-    }
+    };
 }
 
 export class AuthenticatorWrapper extends Component {
@@ -107,10 +110,6 @@ export class AuthenticatorWrapper extends Component {
                 <Authenticator {...this.props} onStateChange={this.handleAuthState} />
                 {this.props.children(this.state.auth)}
             </div>
-        )
+        );
     }
-}
-
-AuthenticatorWrapper.propTypes = {
-    children: PropTypes.func.isRequired
 }

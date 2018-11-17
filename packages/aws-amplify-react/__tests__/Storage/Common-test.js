@@ -2,7 +2,7 @@ import { calcKey } from '../../src/Storage/Common';
 
 window.encodeURI = (name) => {
     return name;
-}
+};
 
 describe('Storage Common test', () => {
     describe('calcKey test', () => {

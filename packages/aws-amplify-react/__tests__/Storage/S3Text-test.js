@@ -1,7 +1,7 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
@@ -9,7 +9,7 @@ import Storage from '@aws-amplify/storage';
 import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
 import { TextPicker } from '../../src/Widget'
-import React, { Component }from 'react';
+import * as React from 'react';
 
 describe('S3Text test', () => {
     describe('render test', () => {
@@ -207,7 +207,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
@@ -223,7 +223,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -239,7 +239,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onLoad: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -254,7 +254,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -270,7 +270,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onError: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
