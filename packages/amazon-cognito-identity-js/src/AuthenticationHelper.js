@@ -16,7 +16,11 @@
  */
 
 import { Buffer } from 'buffer/';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js/core';
+import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
+import SHA256 from 'crypto-js/sha256';
+import HmacSHA256 from 'crypto-js/hmac-sha256';
+
 
 const randomBytes = function(nBytes) {
   return Buffer.from((CryptoJS.lib.WordArray.random(nBytes)).toString(), 'hex');
@@ -204,7 +208,7 @@ export default class AuthenticationHelper {
    */
   hash(buf) {
     const str = buf instanceof Buffer ? CryptoJS.lib.WordArray.create(buf) : buf;
-    const hashHex = CryptoJS.SHA256(str).toString();
+    const hashHex = SHA256(str).toString();
 
     return (new Array(64 - hashHex.length).join('0')) + hashHex;
   }
@@ -236,8 +240,8 @@ export default class AuthenticationHelper {
     const ikmWordArray = ikm instanceof Buffer ? CryptoJS.lib.WordArray.create(ikm) : ikm;
     const saltWordArray = salt instanceof Buffer ? CryptoJS.lib.WordArray.create(salt) : salt;
 
-    const prk = CryptoJS.HmacSHA256(ikmWordArray, saltWordArray);
-    const hmac = CryptoJS.HmacSHA256(infoBitsWordArray, prk);
+    const prk = HmacSHA256(ikmWordArray, saltWordArray);
+    const hmac = HmacSHA256(infoBitsWordArray, prk);
     return Buffer.from(hmac.toString(), 'hex').slice(0, 16);
   }
 
