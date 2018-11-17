@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 const Tooltip = (props) => {

@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+import * as React from 'react';
 import XR from '@aws-amplify/xr';
 
 import IconButton from './IconButton';
 import Loading from './Loading';
 import * as AmplifyUI from '@aws-amplify/ui';
 
+const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 const SCENE_DOM_ID = 'scene-dom-id';
 
-class SumerianScene extends Component {
+class SumerianScene extends React.Component {
   constructor(props) {
     super(props);
 
@@ -15,7 +17,8 @@ class SumerianScene extends Component {
       showEnableAudio: false,
       muted: false,
       loading: true,
-      percentage: 0
+      percentage: 0,
+      isFullscreen: false
     };
   }
 
@@ -26,6 +29,11 @@ class SumerianScene extends Component {
   }
 
   componentDidMount() {
+    document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+    document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
+    document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
+    document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
+
     this.loadAndSetupScene(this.props.sceneName, SCENE_DOM_ID)
   }
   
@@ -59,16 +67,31 @@ class SumerianScene extends Component {
     this.setState({ muted: muted });
   }
 
+  onFullscreenChange() {
+    const doc = document;
+    this.setState({ isFullscreen: doc.fullscreenElement !== null });
+  }
+
   async maximize() {
-    const sceneDomElement = document.getElementById(SCENE_DOM_ID);
+    const sceneDomElement = document.getElementById(SCENE_CONTAINER_DOM_ID);
     await sceneDomElement.requestFullScreen();
   }
-  
+
+  async minimize() {
+    const doc = document;
+    if(doc.exitFullscreen) {
+      doc.exitFullscreen();
+    } else if(doc.mozCancelFullScreen) {
+      doc.mozCancelFullScreen();
+    } else if(doc.webkitExitFullscreen) {
+      doc.webkitExitFullscreen();
+    }
+  }
 
   render() {
     let muteButton;
     let enterVRButton;
-    let maximizeButton;
+    let screenSizeButton;
 
     if (XR.isSceneLoaded(this.props.sceneName)) {
       if (this.state.showEnableAudio) {
@@ -82,11 +105,15 @@ class SumerianScene extends Component {
       if (XR.isVRCapable(this.props.sceneName)) {
         enterVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => XR.enterVR(this.props.sceneName)} />
       }
-      maximizeButton = <IconButton variant="maximize" tooltip="Fullscreen" onClick={() => this.maximize()} />
+      if (this.state.isFullscreen) {
+        screenSizeButton = <IconButton variant="minimize" tooltip="Exit Fullscreen" onClick={() => this.minimize()} />
+      } else {
+        screenSizeButton = <IconButton variant="maximize" tooltip="Fullscreen" onClick={() => this.maximize()} />
+      }
     }
 
     return (
-      <div className={AmplifyUI.sumerianSceneContainer}>
+      <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer}>
         <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene}>
           {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} />}
         </div>
@@ -94,7 +121,7 @@ class SumerianScene extends Component {
           <span className={AmplifyUI.sceneActions}>
             {muteButton}
             {enterVRButton}
-            {maximizeButton}
+            {screenSizeButton}
           </span>
         </div>
       </div>
