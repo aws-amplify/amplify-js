@@ -1,7 +1,7 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
@@ -210,7 +210,7 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
@@ -236,10 +236,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onLoad: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);
@@ -266,10 +266,10 @@ describe('S3Image', () => {
             const mockFn = jest.fn();
             const props = {
                 onError: mockFn
-            }
+            };
             const state = {
                 src: 'src'
-            }
+            };
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps(props);
