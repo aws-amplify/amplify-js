@@ -318,13 +318,31 @@ border: 0px solid var(--color-white) !important;
 }
 
 /** Ionic styles for material design */
-.md .amplify-select-phone-country {
+.amplify-select-phone-country-ionic {
   border: none;
+  height: 55px;
   border-bottom: var(--input-border);
   background-color: transparent;
   margin-top: 0em;
-  width: 110px;
+  min-width: 100% !important;
   height: 44px;
+  padding-left: 0;
+}
+
+.amplify-form-input-phone-ionic {
+  height: 36px;
+  min-width: 100%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
+  border: none;
+  border-bottom: var(--input-border);
+  border-radius: 0px;
+}
+
+.amplify-ionic-grid-padding-left {
+  padding-left: 0
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -573,3 +591,10 @@ z-index: 1;
 visibility: visible;
 }
   
+/************************************
+** Ionic
+************************************/
+
+.amplify-phone-ion-content {
+  height: 125px;
+}
