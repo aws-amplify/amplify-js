@@ -43,7 +43,7 @@ export default class Parser {
         } 
         amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
-        amplifyConfig.Storage = Object.assign({}, config.Storage, storageConfig);
+        amplifyConfig.Storage = Object.assign({}, storageConfig);
         logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
         return amplifyConfig;
     }
