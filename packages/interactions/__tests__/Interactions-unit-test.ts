@@ -1,10 +1,10 @@
 jest.mock('aws-sdk/clients/lexruntime', () => {
     const LexRuntime = () => { };
 
-    LexRuntime.prototype.postText = (params, callback) => {
-        if (params.inputText === 'done') {
+    LexRuntime.prototype.postContent = (params, callback) => {
+        if (params.inputStream === 'done') {
             callback(null, {
-                message: 'echo:' + params.inputText,
+                message: 'echo:' + params.inputStream,
                 dialogState: 'ReadyForFulfillment',
                 slots: {
                     m1: 'hi',
@@ -12,7 +12,7 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
                 }
             });
         } else {
-            callback(null, { message: 'echo:' + params.inputText, dialogState: 'ElicitSlot' });
+            callback(null, { message: 'echo:' + params.inputStream, dialogState: 'ElicitSlot' });
         }
     }
 
