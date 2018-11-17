@@ -17,7 +17,7 @@ import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
 
-
+const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
@@ -27,7 +27,7 @@ export default class StorageClass {
      */
     private _config;
     private _pluggables: StorageProvider[];
-    private DEFAULT_PROVIDER = 'AWSS3';
+    
 
     /**
      * @public
@@ -62,7 +62,7 @@ export default class StorageClass {
             this._pluggables.push(pluggable);
             let config = {};
             // for backward compatibility
-            if (pluggable.getProviderName() === this.DEFAULT_PROVIDER && !this._config[this.DEFAULT_PROVIDER]) {
+            if (pluggable.getProviderName() === DEFAULT_PROVIDER && !this._config[DEFAULT_PROVIDER]) {
                 config = pluggable.configure(this._config);  
             } else {
                 config = pluggable.configure(this._config[pluggable.getProviderName()]);
@@ -107,7 +107,7 @@ export default class StorageClass {
         
         this._pluggables.forEach((pluggable) => {
             // for backward compatibility
-            if (pluggable.getProviderName() === this.DEFAULT_PROVIDER && !this._config[this.DEFAULT_PROVIDER]) {
+            if (pluggable.getProviderName() === DEFAULT_PROVIDER && !this._config[DEFAULT_PROVIDER]) {
                 pluggable.configure(this._config);  
             } else {
                 pluggable.configure(this._config[pluggable.getProviderName()]);
@@ -130,7 +130,7 @@ export default class StorageClass {
     */
     public async get(key: string, config?): Promise<String|Object> {
         
-        const { provider = this.DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -148,7 +148,7 @@ export default class StorageClass {
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, config?):Promise<Object> { 
-        const { provider = this.DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -164,7 +164,7 @@ export default class StorageClass {
      * @return - Promise resolves upon successful removal of the object
      */
     public async remove(key: string, config?): Promise<any> {
-        const { provider = this.DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -180,7 +180,7 @@ export default class StorageClass {
      * @return - Promise resolves to list of keys for all objects in path
      */
     public async list(path, config?): Promise<any> {
-        const { provider = this.DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);

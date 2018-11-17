@@ -93,8 +93,9 @@ describe('StorageProvider test', () => {
 
             const config = storage.configure(aws_options);
             expect(config).toEqual({
-                bucket: 'bucket',
-                region: 'region'
+                AWSS3: {
+                    "bucket": "bucket", "region": "region"
+                }
             });
         });
     });
@@ -140,19 +141,18 @@ describe('StorageProvider test', () => {
         test('get object with download successfully', async() => {
             const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
+                    return Promise.resolve(credentials);
                 });
 
             const options_with_download = Object.assign({}, options, {download: true});
-            const storage = new StorageProvider(options_with_download);
+            const storage = new StorageProvider();
+            storage.configure(options);
             const spyon = jest.spyOn(S3.prototype, 'getObject').mockImplementationOnce((params, callback) => {
                 callback(null, { Body: [1,2] });
             });
 
             expect.assertions(2);
-            expect(await storage.get('key', {})).toEqual({Body: [1,2]});
+            expect(await storage.get('key', {download:true})).toEqual({Body: [1,2]});
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
@@ -168,7 +168,8 @@ describe('StorageProvider test', () => {
                 });
 
             const options_with_download = Object.assign({}, options, {download: true});
-            const storage = new StorageProvider(options_with_download);
+            const storage = new StorageProvider();
+            storage.configure(options);
             const spyon = jest.spyOn(S3.prototype, 'getObject')
                 .mockImplementationOnce((params, callback) => {
                     callback('err', null);
@@ -176,7 +177,7 @@ describe('StorageProvider test', () => {
 
             expect.assertions(1);
             try{
-                await storage.get('key', {});
+                await storage.get('key', {download:true});
             } catch (e) {
                 expect(e).toBe('err');
 
@@ -288,8 +289,8 @@ describe('StorageProvider test', () => {
                     });
                 });
 
-            const storage = new StorageProvider(options_no_cred);
-            storage.configure(options);
+            const storage = new StorageProvider();
+            storage.configure(options_no_cred);
             expect.assertions(1);
 
             try {
@@ -302,7 +303,7 @@ describe('StorageProvider test', () => {
         });
 
         test('always ask for the current credentials', async () => {
-            const storage = new StorageProvider(options);
+            const storage = new StorageProvider();
             storage.configure(options);
             const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
@@ -341,7 +342,8 @@ describe('StorageProvider test', () => {
                     });
                 });
 
-            const storage = new StorageProvider(options);
+            const storage = new StorageProvider();
+            storage.configure(options);
             const spyon = jest.spyOn(S3.prototype, 'upload');
 
             expect.assertions(2);

@@ -59,8 +59,10 @@ describe('Storage', () => {
 
             const config = storage.configure(aws_options);
             expect(config).toEqual({
-                bucket: 'bucket',
-                region: 'region'
+                AWSS3:{
+                    bucket: 'bucket',
+                    region: 'region'
+                }
             });
         });
     });
