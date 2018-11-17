@@ -47,7 +47,7 @@ export default class S3Text extends Component {
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
-                this.setState({ text: text });
+                this.setState({ text });
                 this.handleOnLoad(text);
             })
             .catch(err => {

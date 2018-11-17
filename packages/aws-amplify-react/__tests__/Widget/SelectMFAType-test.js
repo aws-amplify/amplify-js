@@ -202,7 +202,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
