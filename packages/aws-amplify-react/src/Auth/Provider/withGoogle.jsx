@@ -110,7 +110,10 @@ export default function withGoogle(Comp) {
 
         componentDidMount() {
             const { google_client_id } = this.props;
-            if (google_client_id && !window.gapi) this.createScript();
+            const ga = window.gapi && window.gapi.auth2 ? 
+                window.gapi.auth2.getAuthInstance() : 
+                null;
+            if (google_client_id && !ga) this.createScript();
         }
 
         createScript() {
