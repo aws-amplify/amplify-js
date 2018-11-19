@@ -21,7 +21,9 @@ describe('S3Album', () => {
     beforeEach(() => {
       wrapper = shallowMount(S3Album, {
         propsData: {
-          path: 'testPath',
+          s3AlbumConfig: {
+            path: 'pics'
+          },
         },
       });
     });
