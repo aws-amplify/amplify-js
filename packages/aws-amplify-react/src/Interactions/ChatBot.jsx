@@ -54,7 +54,6 @@ const MIC_BUTTON_TEXT = {
 }
 
 const defaultVoiceConfig = {
-    conversations: false,
     silenceDetectionConfig: {
         time: 2000,
         amplitude: 0.2
