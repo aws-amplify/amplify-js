@@ -19,7 +19,7 @@ import Storage from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { transparent1X1 } from '../AmplifyUI';
-import { PhotoPicker } from '../Widget';
+import PhotoPicker from '../Widget/PhotoPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Image');
