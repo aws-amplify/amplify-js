@@ -233,7 +233,7 @@ export default {
         }
         return el;
       })
-      if (this.invalids.length > 0) {
+      if (invalids.length > 0) {
         this.setError(`The following fields must be completed: ${invalids.join(', ')}`)
       }
       return invalids.length < 1;
