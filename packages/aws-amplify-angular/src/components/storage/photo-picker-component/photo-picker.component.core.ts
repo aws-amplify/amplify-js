@@ -42,11 +42,10 @@ const template = `
 })
 export class PhotoPickerComponentCore {
   photoUrl: string;
-  path: string;
   hasPhoto: boolean = false;
   uploading: boolean = false;
-  s3ImagePath: string = "";
   s3ImageFile: any = null;
+  s3ImagePath: string = "";
   _imageOptions: any = {
     
   };
@@ -64,9 +63,14 @@ export class PhotoPickerComponentCore {
   }
 
   @Input()
+  set path(path: string){
+    this.s3ImagePath = path;
+  }
+
+  @Input()
   set data(data: any) {
     this.photoUrl = data.url;
-    this.path = data.path;
+    this.s3ImagePath = data.path;
     this._imageOptions = Object.assign(this._imageOptions, data.imageOptions);
     this.hasPhoto = true;
   }
@@ -89,7 +93,7 @@ export class PhotoPickerComponentCore {
     const { name, size, type } = file;
     this.picked.emit(file);
 
-    this.s3ImagePath = `${this.path}/${file.name}`;
+    this.s3ImagePath = `${this.s3ImagePath}/${file.name}`;
     this.s3ImageFile = file;
     const that = this;
     const reader = new FileReader();
