@@ -25,6 +25,8 @@ export default class PushNotification {
     private _config;
     private handlers;
     private _currentState;
+    private _androidInitialized;
+    private _iosInitialized;
     
     constructor(config) {
         if (config) {
@@ -38,6 +40,8 @@ export default class PushNotification {
         this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
         this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
         this._currentState = AppState.currentState;
+        this._androidInitialized = false;
+        this._iosInitialized = false;
         	
         if ( Platform.OS === 'ios' ) {	
             AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);	
@@ -59,8 +63,14 @@ export default class PushNotification {
 
         this._config = Object.assign({}, this._config, conf);
 
-        if (Platform.OS === 'android') this.initializeAndroid();
-        else if (Platform.OS === 'ios') this.initializeIOS();
+        if (Platform.OS === 'android' && !this._androidInitialized){
+            this.initializeAndroid();
+            this._androidInitialized = true;
+        } 
+        else if (Platform.OS === 'ios' && !this._iosInitialized) {
+            this.initializeIOS();
+            this._iosInitialized = true;
+        }
     }
 
     onNotification(handler) {
