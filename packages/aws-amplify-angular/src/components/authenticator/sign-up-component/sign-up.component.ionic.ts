@@ -44,7 +44,7 @@ const template = `
                 *ngIf="field.key === 'phone_number'"
                 name="countryCode" 
                 [value]="country_code"
-                class="amplify-select-phone-country-ionic" 
+                class="amplify-select-phone-country" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 (ionChange)="onCodeChange($event.target.value)">
                   <ion-select-option *ngFor="let country of countries"  
