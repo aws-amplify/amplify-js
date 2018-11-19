@@ -30,7 +30,7 @@ export const FormContainer = (props) => {
 
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
-    const style = props.theme.formContainer || AmplifyTheme.formContainer;
+    const style = theme.formSection;
     return (
         <FormContainer theme={theme}>
             {beforeAfter(
