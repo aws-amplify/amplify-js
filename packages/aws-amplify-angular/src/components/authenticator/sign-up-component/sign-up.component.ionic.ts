@@ -7,7 +7,7 @@ import { countrylist, country }  from '../../../assets/countries';
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">Create a new account</div>
+    <div class="amplify-form-header">{{this.header}}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
         <ion-label class="amplify-input-label" 
@@ -28,40 +28,49 @@ const template = `
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
-        <ion-label class="amplify-input-label push-right" 
-        position="stacked" 
-        *ngIf="field.key === 'phone_number'"
-        >
-          {{field.label}}
-          <span *ngIf="field.required">*</span>
-        </ion-label>
-        <ion-select #countryCode
-        *ngIf="field.key === 'phone_number'"
-        name="countryCode" 
-        [value]="country_code"
-        class="amplify-select-phone-country" 
-        [ngClass]="{'amplify-input-invalid ': field.invalid}"
-        style="margin-top: 1em; height: 33px; font-size: 14px;"
-        (ionChange)="onCodeChange($event.target.value)">
-          <ion-select-option *ngFor="let country of countries"  
-          value={{country.value}}>
-            {{country.label}} 
-          </ion-select-option>
-        </ion-select>
-        <ion-input 
-          #phone_number
-          [ngClass]="{'amplify-input-invalid ': field.invalid}"
-          *ngIf="field.key === 'phone_number'"
-          type="tel"
-          slot="end"
-          class="amplify-form-input"
-          style="margin: 2em 0.5em 0.5em 0.5em"
-          placeholder={{field.label}}
-          (ionChange)="onNumberChange($event.target.value)"
-          name="local_phone_number"
-        ></ion-input>
-      </ion-item>
-    
+       
+        <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
+          <ion-grid class="amplify-ionic-grid-padding-left">
+            <ion-row>
+              <ion-col col-6 class="amplify-ionic-grid-padding-left">
+                <ion-label class="amplify-input-label push-right" 
+                position="stacked" 
+                *ngIf="field.key === 'phone_number'"
+                >
+                  {{field.label}}
+                  <span *ngIf="field.required">*</span>
+                </ion-label>
+                <ion-select #countryCode
+                *ngIf="field.key === 'phone_number'"
+                name="countryCode" 
+                [value]="country_code"
+                class="amplify-select-phone-country" 
+                [ngClass]="{'amplify-input-invalid ': field.invalid}"
+                (ionChange)="onCodeChange($event.target.value)">
+                  <ion-select-option *ngFor="let country of countries"  
+                  value={{country.value}}>
+                    {{country.label}} 
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+
+              <ion-col col-6>
+                <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
+                <ion-input 
+                  #phone_number
+                  [ngClass]="{'amplify-input-invalid ': field.invalid}"
+                  *ngIf="field.key === 'phone_number'"
+                  type={{field.type}}
+                  class="amplify-form-input-phone-ionic"
+                  placeholder={{field.label}}
+                  (ionChange)="onNumberChange($event.target.value)"
+                  name="local_phone_number"
+                ></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-content>
+      </ion-item>    
     </ion-list>
     <div class="amplify-form-actions">
       <div>

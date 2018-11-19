@@ -233,7 +233,9 @@ export default {
         }
         return el;
       })
-      this.setError(`The following fields must be completed: ${invalids.join(', ')}`)
+      if (invalids.length > 0) {
+        this.setError(`The following fields must be completed: ${invalids.join(', ')}`)
+      }
       return invalids.length < 1;
     },
     signIn: function() {
