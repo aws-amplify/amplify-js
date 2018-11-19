@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.7-unstable.1",
+  "version": "0.1.8-unstable.0",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {

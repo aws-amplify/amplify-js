@@ -7,6 +7,7 @@ module.exports = {
   Auth: {
     currentAuthenticatedUser: jest.fn(() => Promise.resolve({})),
     verifyCurrentUserAttribute: jest.fn(() => Promise.resolve({ username: 'myTestUsername' })),
+    completeNewPassword: jest.fn(() => Promise.resolve({})),
     confirmSignIn: jest.fn(() => Promise.resolve({})),
     confirmSignUp: jest.fn(() => Promise.resolve({})),
     forgotPassword: jest.fn(() => Promise.resolve({})),
@@ -17,6 +18,7 @@ module.exports = {
     signIn: jest.fn(() => Promise.resolve({})),
     signOut: jest.fn(() => Promise.resolve({})),
     signUp: jest.fn(() => Promise.resolve({})),
+    verifiedContact: jest.fn(() => Promise.resolve({})),
     verifyTotpToken: jest.fn(() => Promise.resolve({})),
   },
   AuthClass: {},
