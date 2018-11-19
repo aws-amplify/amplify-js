@@ -28,7 +28,7 @@ const template = `
           </svg>
         </button>
       </div>
-      <div class={{amplifyUI.tooltip}} data-text="Enter VR" (click)="enterVR()">
+      <div *ngIf="isVRCapable" class={{amplifyUI.tooltip}} data-text="Enter VR" (click)="enterVR()">
         <button class={{amplifyUI.actionButton}}>
         <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="icons/minis/VRon-Copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
