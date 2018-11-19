@@ -318,14 +318,13 @@ border: 0px solid var(--color-white) !important;
 }
 
 /** Ionic styles for material design */
-.amplify-select-phone-country-ionic {
+.md .amplify-select-phone-country {
   border: none;
-  height: 55px;
   border-bottom: var(--input-border);
   background-color: transparent;
   margin-top: 0em;
   min-width: 100% !important;
-  height: 44px;
+  height: 47px !important;
   padding-left: 0;
 }
 
