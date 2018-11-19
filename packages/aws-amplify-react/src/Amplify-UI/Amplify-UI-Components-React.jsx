@@ -30,7 +30,7 @@ export const FormContainer = (props) => {
 
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
-    const style = props.theme.formContainer || AmplifyTheme.formContainer;
+    const style = propStyle(props, theme.formSection);
     return (
         <FormContainer theme={theme}>
             {beforeAfter(
@@ -50,7 +50,7 @@ export const SectionHeader = (props) => {
         <div {...p} className={AmplifyUI.sectionHeader} style={style}>
             <SectionHeaderContent theme={theme}>
                 {props.children}
-                {props.hint && 
+                {props.hint &&
                     <div className={AmplifyUI.sectionHeaderHint}>
                         {props.hint}
                     </div>
@@ -251,7 +251,7 @@ export const PhotoPickerButton = (props) => {
 
 export const SignInButton = (props) => {
     const theme = props.theme || AmplifyTheme;
-    const styles = Object.assign({}, theme.signInButton, theme[props.variant]);    
+    const styles = Object.assign({}, theme.signInButton, theme[props.variant]);
     const p = JS.objectLessAttributes(props, 'theme');
 
     return beforeAfter(
@@ -380,7 +380,7 @@ export const NavButton = (props) => {
 export const Toast = (props) => {
     const { onClose } = props;
     const theme = props.theme || AmplifyTheme;
-    
+
     return (
         <div theme={theme} className={AmplifyUI.toast} style={theme.toast}>
             <span>{props.children}</span>
