@@ -47,7 +47,9 @@ export class PhotoPickerComponentCore {
   uploading: boolean = false;
   s3ImagePath: string = "";
   s3ImageFile: any = null;
-  s3ImageLevel: string = 'private';
+  _imageOptions: any = {
+    
+  };
   errorMessage: string;
   
   @Input()
@@ -57,15 +59,15 @@ export class PhotoPickerComponentCore {
   }
 
   @Input()
-  set imageLevel(imageLevel: string){
-    this.s3ImageLevel = imageLevel;
+  set imageOptions(imageOptions: any){
+    this._imageOptions = Object.assign(this._imageOptions, imageOptions);
   }
 
   @Input()
   set data(data: any) {
     this.photoUrl = data.url;
     this.path = data.path;
-    this.s3ImageLevel = data.imageLevel || 'private';
+    this._imageOptions = Object.assign(this._imageOptions, data.imageOptions);
     this.hasPhoto = true;
   }
 
@@ -83,7 +85,7 @@ export class PhotoPickerComponentCore {
   pick(evt) {
     const file = evt.target.files[0];
     if (!file) { return; }
-
+    this._imageOptions.contentType = file.type;
     const { name, size, type } = file;
     this.picked.emit(file);
 
@@ -102,14 +104,10 @@ export class PhotoPickerComponentCore {
   }
 
   uploadFile() {
-    const options: any = { 'contentType': this.s3ImageFile.type };
-    if (this.s3ImageLevel) {
-      options.level = this.s3ImageLevel;
-    }
   	this.uploading = true;
   	this.amplify.storage().put( 
   			this.s3ImagePath, 
-  			this.s3ImageFile, options)
+  			this.s3ImageFile, this._imageOptions)
 		.then ( result => {
       this.uploaded.emit(result);
 			this.completeFileUpload();

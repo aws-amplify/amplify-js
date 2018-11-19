@@ -26,7 +26,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() url: string;
   @Input() path: string;
-  @Input() imageLevel: string;
+  @Input() imageOptions: any;
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
   @Output()
@@ -52,12 +52,12 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
     new ComponentMount(PhotoPickerIonicComponent, {
       url: this.url,
       path: this.path,
-      imageLevel: this.imageLevel
+      imageOptions: this.imageOptions
     }) :
     new ComponentMount(PhotoPickerComponentCore, {
       url: this.url,
       path: this.path,
-      imageLevel: this.imageLevel
+      imageOptions: this.imageOptions
     });
 
     const componentFactory = this.componentFactoryResolver
