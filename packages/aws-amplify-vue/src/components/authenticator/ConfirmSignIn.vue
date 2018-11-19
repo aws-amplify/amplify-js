@@ -16,20 +16,16 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Code *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" placeholder="Code" />
-        <div v-bind:class="amplifyUI.hint">
-          Lost your code?
-          <a v-bind:class="amplifyUI.a" v-on:click="send">Resend Code</a>
-        </div>
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code">Submit</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">Back to Sign In</a>      
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
       </span>
     </div>
     <div class="error" v-if="error">
@@ -58,7 +54,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'Confirm Sign In',
+        header: this.$Amplify.I18n.get('Confirm Sign In'),
         user: {},
       }
       return Object.assign(defaults, this.confirmSignInConfig || {})
@@ -71,13 +67,6 @@ export default {
     };
   },
   methods: {
-    send: function() {
-      this.$Amplify.Auth.verifyCurrentUserAttribute(this.verifyAttr)
-        .then(data => {
-          this.logger.info('verifyCurrentUserAttribute successs');
-        })
-        .catch(e => this.setError(e));
-    },
     submit: function() {
       this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
         .then(() => {
@@ -90,7 +79,7 @@ export default {
       AmplifyEventBus.$emit('authState', 'signedOut');
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
   }

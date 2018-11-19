@@ -18,6 +18,8 @@
     <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig"></amplify-confirm-sign-up>
     <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInConfig="options.confirmSignInConfig"></amplify-confirm-sign-in>
     <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig"></amplify-forgot-password>
+    <amplify-require-new-password v-if="displayMap.requireNewPassword" v-bind:requireNewPasswordConfig="options.requireNewPasswordConfig"></amplify-require-new-password>
+    <amplify-set-mfa v-if="displayMap.showMfa" v-bind:mfaConfig="options.mfaConfig"></amplify-set-mfa>
   </div>
 </template>
 
@@ -45,7 +47,9 @@ export default {
         signUpConfig: {},
         confirmSignUpConfig: {},
         confirmSignInConfig: {},
-        forgotPasswordConfig: {}
+        forgotPasswordConfig: {},
+        mfaConfig: {},
+        requireNewPasswordConfig: {}
       };
       return Object.assign(defaults, this.authConfig || {})
     }
@@ -57,6 +61,7 @@ export default {
       this.options.signInConfig.username = this.user.username;
       this.options.confirmSignInConfig.user = this.user;
       this.options.confirmSignUpConfig.username = this.user.username;
+      this.options.requireNewPasswordConfig.user = this.user;
     });
     AmplifyEventBus.$on('authState', data => {
       this.displayMap = this.updateDisplayMap(data)
@@ -79,11 +84,12 @@ export default {
         showConfirmSignIn: state === 'confirmSignIn',
         showForgotPassword: state === 'forgotPassword',
         showSignOut: state === 'signedIn',
-        showMfa: state === 'setMfa'
+        showMfa: state === 'setMfa',
+        requireNewPassword: state === 'requireNewPassword'
       }
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
     }
   }

@@ -66,7 +66,7 @@ describe('ForgotPassword', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Forgot Password');
+      expect(wrapper.vm.options.header).toEqual('i18n Reset your password');
     });
 
     it('...should call Auth.forgotPassword when submit method is called', () => {
@@ -76,7 +76,7 @@ describe('ForgotPassword', () => {
 
     it('...should set the local error variable when setError is called', () => {
       wrapper.vm.setError('I messed up');
-      expect(wrapper.vm.error).toEqual('I messed up');
+      expect(wrapper.vm.error).toEqual('i18n I messed up');
     });
 
     it('...should call Auth.forgotPasswordSubmit when verify method is called', () => {

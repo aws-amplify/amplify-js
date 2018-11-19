@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.9-unstable.1"></a>
+## [0.1.9-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.9-unstable.0...@aws-amplify/xr@0.1.9-unstable.1) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.9-unstable.0"></a>
+## [0.1.9-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.8...@aws-amplify/xr@0.1.9-unstable.0) (2018-11-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.8"></a>
+## [0.1.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.8-unstable.0...@aws-amplify/xr@0.1.8) (2018-11-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.8-unstable.0"></a>
+## [0.1.8-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.7...@aws-amplify/xr@0.1.8-unstable.0) (2018-11-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.7"></a>
+## [0.1.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.7-unstable.0...@aws-amplify/xr@0.1.7) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
 <a name="0.1.7-unstable.0"></a>
 ## [0.1.7-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.6...@aws-amplify/xr@0.1.7-unstable.0) (2018-10-30)
 

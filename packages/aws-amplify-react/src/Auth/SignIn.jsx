@@ -108,7 +108,7 @@ export default class SignIn extends AuthPiece {
                 }
                 else if (err.code === 'PasswordResetRequiredException') {
                     logger.debug('the user requires a new password');
-                    this.changeState('requireNewPassword', { username });
+                    this.changeState('forgotPassword', { username });
                 } else {
                     this.error(err);
                 }

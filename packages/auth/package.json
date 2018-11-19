@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.9-unstable.0",
+  "version": "1.2.11-unstable.6",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -50,10 +50,10 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.17-unstable.0",
-    "@aws-amplify/core": "^1.0.17-unstable.0",
+    "@aws-amplify/cache": "^1.0.19-unstable.1",
+    "@aws-amplify/core": "^1.0.19-unstable.1",
     "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^3.0.3"
+    "amazon-cognito-identity-js": "^3.0.4-unstable.4"
   },
   "jest": {
     "transform": {
