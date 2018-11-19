@@ -53,7 +53,9 @@ export default {
         header: this.$Amplify.I18n.get('File Upload'),
         title: this.$Amplify.I18n.get('Upload'),
         accept: '*/*',
-        s3Options: {}
+        s3Options: {
+          level: 'public'
+        }
       }
       return Object.assign(defaults, this.photoPickerConfig || {})
     },
