@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.1-beta.2"></a>
+## [2.1.1-beta.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-beta.1...aws-amplify-angular@2.1.1-beta.2) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="2.1.1-beta.1"></a>
 ## [2.1.1-beta.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.13-unstable.6...aws-amplify-angular@2.1.1-beta.1) (2018-11-14)
 
