@@ -48,7 +48,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
             //  TODO: Implement for content
             let params = {
                 botAlias: this._config[botname].alias,
-                botName: botname,
+                botName: this._config[botname].name,
                 userId: credentials.identityId
             };
             if (typeof message === 'string') {
