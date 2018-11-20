@@ -78,7 +78,7 @@ describe('PhotoPicker', () => {
     it('...should have a upload method that calls Amplify.Auth.PhotoPicker', () => {
       wrapper.vm.s3ImagePath = 'testPath';
       wrapper.vm.file = { type: 'fakeFile' };
-      wrapper.vm.options.s3Options = { level: 'private', contentType: 'fakeType' };
+      wrapper.vm.options.storageOptions = { level: 'private', contentType: 'fakeType' };
       wrapper.vm.upload();
       expect(wrapper.vm.$Amplify.Storage.put)
       .toHaveBeenCalledWith('testPath', { type: 'fakeFile' }, { level: 'private', contentType: 'fakeType' }, );
