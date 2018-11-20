@@ -16,9 +16,7 @@ const template = `
 export class S3ImageComponentCore implements OnInit {
   url: any;
   _path: string;
-  _options: any = {
-    level: 'public'
-  };
+  _options: any = {};
   amplifyService: AmplifyService;
 
   @Output()

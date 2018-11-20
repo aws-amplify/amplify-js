@@ -46,9 +46,7 @@ export class PhotoPickerComponentCore {
   uploading: boolean = false;
   s3ImageFile: any = null;
   s3ImagePath: string = "";
-  _imageOptions: any = {
-    level: 'public'
-  };
+  _imageOptions: any = {};
   errorMessage: string;
   
   @Input()
