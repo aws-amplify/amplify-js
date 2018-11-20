@@ -53,7 +53,7 @@ export default {
         header: this.$Amplify.I18n.get('File Upload'),
         title: this.$Amplify.I18n.get('Upload'),
         accept: '*/*',
-        s3Options: {}
+        storageOptions: {}
       }
       return Object.assign(defaults, this.photoPickerConfig || {})
     },
@@ -72,7 +72,7 @@ export default {
       this.$Amplify.Storage.put(
         this.s3ImagePath,
         this.file, 
-        this.options.s3Options,
+        this.options.storageOptions,
       )
       .then((result) => {
         this.completeFileUpload(result.key)
@@ -82,7 +82,7 @@ export default {
     pick(evt) {
       this.file = evt.target.files[0];
       if (!this.file) { return ;};
-      this.options.s3Options.contentType = this.file.type;
+      this.options.storageOptions.contentType = this.file.type;
       const name = this.options.defaultName ? this.options.defaultName : this.file.name;
       this.s3ImagePath = `${this.options.path}${name}`;
       const that = this;
