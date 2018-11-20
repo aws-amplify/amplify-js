@@ -129,7 +129,6 @@
 
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 const SCENE_CONTAINER_DOM_ID = "scene-container-dom-id"
