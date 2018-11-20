@@ -47,7 +47,7 @@ export class PhotoPickerComponentCore {
   s3ImageFile: any = null;
   s3ImagePath: string = "";
   _imageOptions: any = {
-    
+    level: 'public'
   };
   errorMessage: string;
   

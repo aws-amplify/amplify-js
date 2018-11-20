@@ -22,7 +22,9 @@ const template = `
 export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
   _path: string;
-  _options: any;
+  _options: any = {
+    level: 'public'
+  };
   amplifyService: AmplifyService;
 
   @Output()
