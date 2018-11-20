@@ -47,9 +47,8 @@ export default {
   },
   computed: {
     options() {
-      const defaults = {
-        level: 'public',
-      }
+      //retain for future use
+      const defaults = {}
       return Object.assign(defaults, this.s3AlbumConfig || {})
     }
   },
