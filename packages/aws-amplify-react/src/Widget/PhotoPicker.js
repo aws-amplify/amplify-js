@@ -60,7 +60,7 @@ export default class PhotoPicker extends Component {
         const { previewSrc } = this.state;
 
         const headerText = this.props.headerText || 'Photos';
-        const headerHint = this.props.headerHint || 'Add you photos by clicking below'
+        const headerHint = this.props.headerHint || 'Add you photos by clicking below';
         const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;

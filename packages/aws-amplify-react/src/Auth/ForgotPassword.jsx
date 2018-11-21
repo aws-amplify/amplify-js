@@ -140,11 +140,13 @@ export default class ForgotPassword extends AuthPiece {
                     <SectionFooterSecondaryContent theme={theme}>
                         { this.state.delivery || authData.username ?
                             <Link theme={theme} onClick={this.send}>{I18n.get('Resend Code')}</Link> :
-                            <Link theme={theme} onClick={() => this.changeState('signIn')}>{I18n.get('Back to Sign In')}</Link>
+                            <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                                {I18n.get('Back to Sign In')}
+                            </Link>
                         }
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

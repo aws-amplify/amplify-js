@@ -186,8 +186,8 @@ export default class Authenticator extends Component {
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    hideLink: hideLink
+                    hide,
+                    hideLink
                 });
         });
        
@@ -200,8 +200,8 @@ export default class Authenticator extends Component {
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    hideLink: hideLink
+                    hide,
+                    hideLink
                 });
             });
 

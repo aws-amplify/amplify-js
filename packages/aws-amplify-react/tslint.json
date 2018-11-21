@@ -28,7 +28,7 @@
             "arguments",
             "parameters"
         ],
-        "no-duplicate-imports": true,
+        "no-duplicate-imports": false,
         "one-variable-per-declaration": [
             false,
             "ignore-for-loop"
