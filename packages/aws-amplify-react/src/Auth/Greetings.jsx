@@ -30,7 +30,7 @@ export default class Greetings extends AuthPiece {
         this.state = {
             authState: props.authState,
             authData: props.authData
-        }
+        };
     }
 
     componentDidMount() {
@@ -64,7 +64,7 @@ export default class Greetings extends AuthPiece {
                 <NavItem theme={theme}>{message}</NavItem>
                 {this.renderSignOutButton(theme)}
             </span>
-        )
+        );
     }
 
     renderSignOutButton() {
@@ -77,6 +77,7 @@ export default class Greetings extends AuthPiece {
         const amazonClientId = amazon_client_id || config.amazonClientId;
         const auth0_config = auth0 || oauth.auth0;
 
+        let SignOut;
         if (googleClientId) SignOut = withGoogle(SignOut);
         if (facebookAppId) SignOut = withFacebook(SignOut);
         if (amazonClientId) SignOut = withAmazon(SignOut);
@@ -116,6 +117,6 @@ export default class Greetings extends AuthPiece {
                     </NavRight>
                 </Nav>
             </NavBar>
-        )
+        );
     }
 }
