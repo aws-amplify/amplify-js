@@ -87,7 +87,9 @@ export class PhotoPickerComponentCore {
   pick(evt) {
     const file = evt.target.files[0];
     if (!file) { return; }
-    this._storageOptions.contentType = file.type;
+    if (!this._storageOptions.contentType) {
+      this._storageOptions.contentType = file.type;
+    }
     const { name, size, type } = file;
     this.picked.emit(file);
 
