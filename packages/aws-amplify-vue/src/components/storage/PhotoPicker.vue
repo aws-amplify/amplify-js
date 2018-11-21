@@ -82,7 +82,9 @@ export default {
     pick(evt) {
       this.file = evt.target.files[0];
       if (!this.file) { return ;};
-      this.options.storageOptions.contentType = this.file.type;
+      if (!this.options.storageOptions.contentType) {
+        this.options.storageOptions.contentType = this.file.type;
+      };
       const name = this.options.defaultName ? this.options.defaultName : this.file.name;
       this.s3ImagePath = `${this.options.path}${name}`;
       const that = this;
