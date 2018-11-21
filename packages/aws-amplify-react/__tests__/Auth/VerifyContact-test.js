@@ -3,7 +3,7 @@ import VerifyContact from '../../src/Auth/VerifyContact';
 import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, RadioRow, MessageRow, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'verifyContact'
@@ -24,7 +24,7 @@ describe.only('VerifyContent test', () => {
     describe('render test', () => {
         test('render with accepted states', () => {
             const wrapper = shallow(<VerifyContact/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme',
