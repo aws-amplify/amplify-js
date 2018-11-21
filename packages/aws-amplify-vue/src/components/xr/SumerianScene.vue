@@ -12,8 +12,8 @@
  */
 
 <template>
-  <div id="sumerian-scene-container" v-bind:class="amplifyUI.sumerianSceneContainer">
-    <div id='sumerian-scene-dom-id' v-bind:class="amplifyUI.sumerianScene">
+  <div v-bind:id="SCENE_CONTAINER_DOM_ID" v-bind:class="amplifyUI.sumerianSceneContainer">
+    <div v-bind:id="SCENE_DOM_ID" v-bind:class="amplifyUI.sumerianScene">
       <div v-if="loading" v-bind:class="amplifyUI.loadingOverlay">
         <div v-bind:class="amplifyUI.loadingContainer">
           <div v-bind:class="amplifyUI.loadingLogo">
@@ -131,8 +131,7 @@
 <script>
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const SCENE_CONTAINER_DOM_ID = "scene-container-dom-id"
-const SCENE_DOM_ID = "scene-dom-id";
+
 
 export default {
   name: 'SumerianScene',
@@ -148,6 +147,10 @@ export default {
       amplifyUI: AmplifyUI
     }
   },
+  created () {
+    this.SCENE_CONTAINER_DOM_ID = "scene-container-dom-id"
+    this.SCENE_DOM_ID = "scene-dom-id";
+  },
   mounted() {
     document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
@@ -155,6 +158,12 @@ export default {
     document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
 
     this.loadAndStartScene();
+  },
+  destroyed() {
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+    document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
+    document.removeEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
+    document.removeEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
   },
   methods: {
     progressCallback: function(progress) {
@@ -166,7 +175,7 @@ export default {
       const sceneOptions = { 
         progressCallback: this.progressCallback
       };
-      await this.$Amplify.XR.loadScene(this.sceneName, SCENE_DOM_ID, sceneOptions);
+      await this.$Amplify.XR.loadScene(this.sceneName, this.SCENE_DOM_ID, sceneOptions);
       this.$Amplify.XR.start(this.sceneName);
 
       this.loading = false;
@@ -193,7 +202,7 @@ export default {
       this.isFullscreen = doc.fullscreenElement !== null;
     },
     async maximize() {
-      const sceneDomElement = document.getElementById(SCENE_CONTAINER_DOM_ID);
+      const sceneDomElement = document.getElementById(this.SCENE_CONTAINER_DOM_ID);
       const requestFullScreen = sceneDomElement.requestFullscreen || sceneDomElement.msRequestFullscreen || sceneDomElement.mozRequestFullScreen || sceneDomElement.webkitRequestFullscreen;
       requestFullScreen.call(sceneDomElement);
     },
