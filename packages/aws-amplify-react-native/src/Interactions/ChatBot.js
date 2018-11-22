@@ -109,7 +109,7 @@ export class ChatBot extends Component {
         });
     };
 
-    async submit(playAudioResponse) {
+    async submit() {
         if (!this.state.inputText) {
             return;
         }
