@@ -149,16 +149,9 @@ export class ChatBot extends Component {
               if (!err) {
                 speech.play(async () => { 
                     speech.release();
-                    if (response.dialogState === 'ReadyForFulfillment' ||
-                        response.dialogState === 'Fulfilled' ||
-                        response.dialogState === 'Failed') {
-                            //back to "initial"
-                    } else {
-                        if (this.state.conversations === true) {
-                            await this.startRecognizing();
-                        }
+                    if (response.dialogState === 'ElicitSlot' && this.state.conversations === true) {
+                        await this.startRecognizing();
                     }
-
                 });
               } else {
                 console.log('Play sound error', err);
