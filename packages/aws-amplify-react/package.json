@@ -66,6 +66,8 @@
   },
   "dependencies": {
     "@aws-amplify/ui": "^1.0.9",
+    "@types/react": "^16.7.6",
+    "@types/react-dom": "^16.0.9",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   },

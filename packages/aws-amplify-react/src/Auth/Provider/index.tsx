@@ -1,0 +1,47 @@
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import * as React from 'react';
+import { Component } from 'react';
+
+import withGoogle, { IWithGoogleProps } from './withGoogle';
+import withFacebook, { IWithFacebookProps } from './withFacebook';
+import withAmazon, { IWithAmazonProps } from './withAmazon';
+import withOAuth, { IWithOAuthProps } from './withOAuth';
+import withAuth0, { IWithAuth0Props } from './withAuth0';
+
+export { default as withGoogle, GoogleButton } from './withGoogle';
+export { default as withFacebook, FacebookButton } from './withFacebook';
+export { default as withAmazon, AmazonButton } from './withAmazon';
+export { default as withOAuth, OAuthButton } from './withOAuth';
+export { default as withAuth0, Auth0Button } from './withAuth0';
+
+export type FederatedProps
+    = IWithAmazonProps | IWithAuth0Props | IWithFacebookProps | IWithGoogleProps | IWithOAuthProps;
+
+export interface IWithFederated {
+    federated: FederatedProps;
+}
+
+export function withFederated(Comp) {
+    const Federated = withAuth0(withOAuth(withAmazon(withGoogle(withFacebook(Comp)))));
+
+    return class extends Component<IWithFederated> {
+        render() {
+            const federated = this.props.federated || {};
+            return (
+                <Federated {...this.props} {...federated} />
+            );
+        }
+    };
+}
