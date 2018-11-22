@@ -83,7 +83,7 @@ export class ChatBot extends Component {
             micText: MIC_BUTTON_TEXT.PASSIVE,
             voice: false,
             conversationOngoing: false,
-            conversations: this.props.conversations || false
+            conversationModeOn: this.props.conversationModeOn || false
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
@@ -149,7 +149,7 @@ export class ChatBot extends Component {
               if (!err) {
                 speech.play(async () => { 
                     speech.release();
-                    if (response.dialogState === 'ElicitSlot' && this.state.conversations === true) {
+                    if (response.dialogState === 'ElicitSlot' && this.state.conversationModeOn === true) {
                         await this.startRecognizing();
                     }
                 });
@@ -242,7 +242,7 @@ export class ChatBot extends Component {
             voice: true,
         });
 
-        if (this.state.conversations === true) {
+        if (this.state.conversationModeOn === true) {
             this.setState({
                 conversationOngoing: true,
             })

@@ -199,7 +199,7 @@ export class ChatBot extends Component {
                     if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
                         this.state.lexResponse.dialogState === 'Fulfilled' ||
                         this.state.lexResponse.dialogState === 'Failed' ||
-                        this.props.conversations === false) {
+                        this.props.conversationModeOn === false) {
                             this.setState({
                                 inputDisabled: false,
                                 micText: MIC_BUTTON_TEXT.PASSIVE,
@@ -229,7 +229,7 @@ export class ChatBot extends Component {
     }
 
     async handleVoiceClick() {
-        if (this.state.continueConversation === true && this.props.conversations === true) {
+        if (this.state.continueConversation === true && this.props.conversationModeOn === true) {
             this.reset();
         } else {
             await this.setState({
