@@ -91,7 +91,6 @@ export default class Client {
         } else {
           return callback(err);
         }
-        
       });
   }
 }
