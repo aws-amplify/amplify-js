@@ -89,7 +89,6 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         const amazonClientId = amazon_client_id || config.amazonClientId;
         const auth0_config = auth0 || oauth.auth0;
 
-        let SignOut;
         if (googleClientId) SignOut = withGoogle(SignOut);
         if (facebookAppId) SignOut = withFacebook(SignOut);
         if (amazonClientId) SignOut = withAmazon(SignOut);
