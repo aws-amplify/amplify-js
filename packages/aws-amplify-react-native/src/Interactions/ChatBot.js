@@ -142,7 +142,7 @@ export class ChatBot extends Component {
                 voice: false
             }) 
 
-            const path = `${RNFS.DocumentDirectoryPath}/test.mp3`;
+            const path = `${RNFS.DocumentDirectoryPath}/responseAudio.mp3`;
             const data = Buffer.from(response.audioStream).toString('base64');
             await RNFS.writeFile(path, data, 'base64');
             const speech = new Sound(path, '', async(err) => {
