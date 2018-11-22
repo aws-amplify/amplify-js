@@ -78,11 +78,18 @@ export default {
       this.$Amplify.Auth.signIn(this.options.username, this.password)
         .then(data => {
           this.logger.info('sign in success');
-          if (data.challengeName) {
+          if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'confirmSignIn')
-          } 
-          return AmplifyEventBus.$emit('authState', 'signedIn')
+          } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'requireNewPassword');
+          } else if (data.challengeName === 'MFA_SETUP') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'setMfa');
+          } else {
+            return AmplifyEventBus.$emit('authState', 'signedIn')
+          }
         })
         .catch(e => this.setError(e));
     },

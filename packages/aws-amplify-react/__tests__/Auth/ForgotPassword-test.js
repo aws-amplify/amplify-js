@@ -145,4 +145,4 @@ describe('forgotPassword', () => {
             }
         });
     });
-})
+});

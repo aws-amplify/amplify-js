@@ -51,7 +51,7 @@ export default function withAmazon(Comp) {
 
                 const payload = {
                     provider: Constants.AMAZON
-                }
+                };
                 try {
                     localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
                 } catch (e) {
@@ -80,7 +80,7 @@ export default function withAmazon(Comp) {
 
                 const user = {
                     name: userInfo.profile.Name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {

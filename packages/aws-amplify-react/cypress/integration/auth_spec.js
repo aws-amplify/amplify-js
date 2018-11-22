@@ -24,7 +24,7 @@ describe('withAuthenticator Sign In', function() {
 
     // Check if successfully signed out
     cy.get('.amplify-section-header').contains('Sign In Account');
-  })
+  });
 
   it('throws validation errors if username or password is incorrect', function() {
     // Check for empty username error

@@ -111,7 +111,7 @@ export default class VerifyContact extends AuthPiece {
                                 /> : null
                 }
             </div>
-        )
+        );
     }
 
     submitView() {
@@ -136,7 +136,9 @@ export default class VerifyContact extends AuthPiece {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Account recovery requires verified contact information')}</SectionHeader>
+                <SectionHeader theme={theme}>
+                    {I18n.get('Account recovery requires verified contact information')}
+                </SectionHeader>
                 <SectionBody theme={theme}>
                     { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
@@ -154,6 +156,6 @@ export default class VerifyContact extends AuthPiece {
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

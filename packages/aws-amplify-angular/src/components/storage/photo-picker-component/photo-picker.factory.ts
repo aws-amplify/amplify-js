@@ -1,5 +1,13 @@
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
-
+import { 
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy,
+  Output,
+  EventEmitter 
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { PhotoPickerClass } from './photo-picker.class';
@@ -18,6 +26,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() url: string;
   @Input() path: string;
+  @Input() storageOptions: any;
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
   @Output()
@@ -39,9 +48,20 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url, path: this.path}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url, path: this.path});
+    const photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(PhotoPickerIonicComponent, {
+      url: this.url,
+      path: this.path,
+      storageOptions: this.storageOptions
+    }) :
+    new ComponentMount(PhotoPickerComponentCore, {
+      url: this.url,
+      path: this.path,
+      storageOptions: this.storageOptions
+    });
 
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(photoPickerComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(photoPickerComponent.component);
 
     const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();

@@ -17,6 +17,7 @@ import { S3ImageComponentCore } from './s3-image.component.core';
 export class S3ImageComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() path: string;
+  @Input() options: any;
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
@@ -31,7 +32,7 @@ export class S3ImageComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let imageComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{path:this.path}) : new ComponentMount(S3ImageComponentCore, {path: this.path});
+    let imageComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{path:this.path, options: this.options}) : new ComponentMount(S3ImageComponentCore, {path: this.path, options: this.options});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(imageComponent.component);
 

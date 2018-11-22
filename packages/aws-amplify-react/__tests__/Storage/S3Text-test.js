@@ -8,7 +8,7 @@ jest.mock('../../src/Storage/Common', () => {
 import Storage from '@aws-amplify/storage';
 import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
-import { TextPicker } from '../../src/Widget'
+import { TextPicker } from '../../src/Widget';
 import * as React from 'react';
 
 describe('S3Text test', () => {
@@ -164,7 +164,8 @@ describe('S3Text test', () => {
             await s3Text.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
+            expect(spyon)
+                .toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
