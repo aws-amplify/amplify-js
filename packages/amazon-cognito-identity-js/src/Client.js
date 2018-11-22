@@ -66,37 +66,32 @@ export default class Client {
         return callback(error);
       })
       .catch(err => {
-        // if cannot split the data
-        // default to return 'UnknownError' with the json data from response
-        let error = { code: 'UnknownError', message: 'Unknown error, the response body from fetch is: ' + responseJsonData};
-
         // first check if we have a service error
         if (response && response.headers && response.headers.get('x-amzn-errortype')) {
           try {
             const code = (response.headers.get('x-amzn-errortype')).split(':')[0];
-            error = {
+            const error = {
               code,
               name: code,
               statusCode: response.status,
               message: (response.status) ? response.status.toString() : null,
             };
+            return callback(error);
           } catch (ex) {
-              // pass through so it doesn't get swallowed if we can't parse it
-              error = {
-                code: 'UnknownError',
-                message: response.headers.get('x-amzn-errortype'),
-              }
-              return callback(error);
+              return callback(err);
           }
         // otherwise check if error is Network error
         } else if (err instanceof Error && err.message === 'Network error') {
-          error = {
+          const error = {
             code: 'NetworkError',
             name: err.name,
             message: err.message,
           };
+          return callback(error);
+        } else {
+          return callback(err);
         }
-        return callback(error);
+        
       });
   }
 }
