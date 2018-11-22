@@ -41,7 +41,7 @@ const template = `
 
 @Component({
   selector: 'amplify-photo-picker-ionic',
-  template: template
+  template
 })
 export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
 
