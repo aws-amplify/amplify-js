@@ -6,6 +6,9 @@ import { Input, Button } from "../AmplifyTheme";
 import { I18n } from '@aws-amplify/core';
 import Interactions from '@aws-amplify/interactions';
 import regeneratorRuntime from 'regenerator-runtime/runtime';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+
+const logger = new Logger('ChatBot');
 
 require('./aws-lex-audio.js')
 
@@ -148,7 +151,7 @@ export class ChatBot extends Component {
     }
 
     onError(error) {
-        console.log(error)
+        logger.error(error)
     }
 
     reset() {

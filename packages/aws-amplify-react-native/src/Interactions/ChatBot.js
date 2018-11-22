@@ -3,12 +3,15 @@ import { View, TextInput, Text, KeyboardAvoidingView, ScrollView } from "react-n
 import Interactions from '@aws-amplify/interactions';
 import { I18n } from "aws-amplify";
 import { AmplifyButton } from "../AmplifyUI";
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import Voice from 'react-native-voice';
 import RNFS from 'react-native-fs';
 import Sound from 'react-native-sound';
 
 var Buffer = require('buffer/').Buffer
+
+const logger = new Logger('ChatBot');
 
 const styles = {
     container: {
@@ -154,7 +157,7 @@ export class ChatBot extends Component {
                     }
                 });
               } else {
-                console.log('Play sound error', err);
+                logger.error(err)
               }
             });
         }
@@ -214,7 +217,7 @@ export class ChatBot extends Component {
     };
 
     onSpeechError(e) {
-        console.log('onSpeechError: ', e);
+        logger.error(e)
         this.setState({
             error: JSON.stringify(e.error),
         });
@@ -251,7 +254,7 @@ export class ChatBot extends Component {
         try {
             await Voice.start('en-US');
         } catch (e) {
-            console.error(e);
+            logger.error(e);
         }
         
     };
