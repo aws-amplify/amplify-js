@@ -111,12 +111,12 @@ export default class SessionTracker {
                 customAttrs
             );
             this._tracker(
-            { 
-                name: '_session_stop',
-                attributes,
-                immediate: true
-            },
-            this._config.provider
+                { 
+                    name: '_session_stop',
+                    attributes,
+                    immediate: true
+                },
+                this._config.provider
             ).catch(e => {
                 logger.debug('record session stop event failed.', e);
             });
