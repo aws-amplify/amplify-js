@@ -171,52 +171,52 @@ export class ChatBot extends Component {
             }
         });
 
-        if (this.state.currentVoiceState === STATES.INITIAL) {
-            audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
-            this.transition(STATES.LISTENING);
-        } else if (this.state.currentVoiceState === STATES.LISTENING) {
-            audioControl.exportWAV((blob) => {
-                this.setState({
-                    audioInput: blob,
-                })
-            this.transition(STATES.SENDING);
-            });
-        } else if (this.state.currentVoiceState === STATES.SENDING) {
-            if (!Interactions || typeof Interactions.send !== 'function') {
-                throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
-            }
-    
-            const response = await Interactions.send(this.props.botName, this.state.audioInput);
-
-            this.setState({
-                lexResponse: response,
-            })
-            this.transition(STATES.SPEAKING)
-            this.onSuccess(response)
-        } else { 
-            if (this.state.lexResponse.contentType === 'audio/mpeg') {
-                audioControl.play(this.state.lexResponse.audioStream, () => {
-                    if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
-                        this.state.lexResponse.dialogState === 'Fulfilled' ||
-                        this.state.lexResponse.dialogState === 'Failed' ||
-                        this.props.conversationModeOn === false) {
-                            this.setState({
-                                inputDisabled: false,
-                                micText: MIC_BUTTON_TEXT.PASSIVE,
-                            })
-                        this.transition(STATES.INITIAL);
-                    } else {
-                        audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
-                        this.transition(STATES.LISTENING);
-                    }
+        switch (this.state.currentVoiceState) {
+            case STATES.INITIAL:
+                audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
+                this.transition(STATES.LISTENING);
+            case STATES.LISTENING:
+                audioControl.exportWAV((blob) => {
+                    this.setState({
+                        audioInput: blob,
+                    })
+                this.transition(STATES.SENDING);
                 });
-            } else {
+            case STATES.SENDING:
+                if (!Interactions || typeof Interactions.send !== 'function') {
+                    throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+                }
+        
+                const response = await Interactions.send(this.props.botName, this.state.audioInput);
+
                 this.setState({
-                    inputDisabled: false
+                    lexResponse: response,
                 })
-                this.transition(STATES.INITIAL);
-            }
-            
+                this.transition(STATES.SPEAKING)
+                this.onSuccess(response)
+            case STATES.SPEAKING:
+                if (this.state.lexResponse.contentType === 'audio/mpeg') {
+                    audioControl.play(this.state.lexResponse.audioStream, () => {
+                        if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                            this.state.lexResponse.dialogState === 'Fulfilled' ||
+                            this.state.lexResponse.dialogState === 'Failed' ||
+                            this.props.conversationModeOn === false) {
+                                this.setState({
+                                    inputDisabled: false,
+                                    micText: MIC_BUTTON_TEXT.PASSIVE,
+                                })
+                            this.transition(STATES.INITIAL);
+                        } else {
+                            audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
+                            this.transition(STATES.LISTENING);
+                        }
+                    });
+                } else {
+                    this.setState({
+                        inputDisabled: false
+                    })
+                    this.transition(STATES.INITIAL);
+                }
         }
     };
 
