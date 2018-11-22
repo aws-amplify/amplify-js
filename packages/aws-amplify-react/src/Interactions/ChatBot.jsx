@@ -99,31 +99,30 @@ export class ChatBot extends Component {
             currentVoiceState: newVoiceState
         })
 
-        if (this.state.currentVoiceState === STATES.INITIAL) {
-            this.setState({
-                micText: MIC_BUTTON_TEXT.PASSIVE,
-                micButtonDisabled: false,
-                continueConversation: false
-            })
-
-        } else if (this.state.currentVoiceState === STATES.LISTENING) {
-            this.setState({
-                micText: MIC_BUTTON_TEXT.RECORDING,
-                micButtonDisabled: false,
-            })
-
-        } else if (this.state.currentVoiceState === STATES.SENDING) {
-            this.advanceConversation();
-            this.setState({
-                micText: MIC_BUTTON_TEXT.LOADING,
-                micButtonDisabled: true,
-            })
-        } else {
-            this.setState({
-                micText: MIC_BUTTON_TEXT.PLAYING,
-                micButtonDisabled: true,
-            })
-            this.advanceConversation();
+        switch (this.state.currentVoiceState) {
+            case STATES.INITIAL:
+                this.setState({
+                    micText: MIC_BUTTON_TEXT.PASSIVE,
+                    micButtonDisabled: false,
+                    continueConversation: false
+                })
+            case STATES.LISTENING:
+                this.setState({
+                    micText: MIC_BUTTON_TEXT.RECORDING,
+                    micButtonDisabled: false,
+                })
+            case STATES.SENDING:
+                this.advanceConversation();
+                this.setState({
+                    micText: MIC_BUTTON_TEXT.LOADING,
+                    micButtonDisabled: true,
+                })
+            case STATES.SPEAKING:
+                this.setState({
+                    micText: MIC_BUTTON_TEXT.PLAYING,
+                    micButtonDisabled: true,
+                })
+                this.advanceConversation();
         }
     }
 
