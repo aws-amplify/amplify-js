@@ -71,7 +71,8 @@
             </svg>
           </div>
           <div v-bind:class="amplifyUI.loadingSceneName">{{sceneName}}</div>
-          <div v-bind:class="amplifyUI.loadingBar">
+          <div v-if="sceneError" v-bind:class="amplifyUI.sceneErrorText">{{sceneError}}</div>
+          <div v-if="!sceneError" v-bind:class="amplifyUI.loadingBar">
             <div v-bind:class="amplifyUI.loadingBarFill" v-bind:style="{ width: loadPercentage + '%'}"></div>
           </div>
         </div>
@@ -136,13 +137,14 @@ export default {
   props: ['sceneName'],
   data () {
     return {
-      loading: true,
+      loading: false,
       loadPercentage: 0,
       isFullscreen: false,
       muted: false,
       showEnableAudio: false,
       isVRCapable: false,
-      amplifyUI: AmplifyUI
+      amplifyUI: AmplifyUI,
+      sceneError: null
     }
   },
   created () {
@@ -173,7 +175,12 @@ export default {
       const sceneOptions = { 
         progressCallback: this.progressCallback
       };
-      await this.$Amplify.XR.loadScene(this.sceneName, this.SCENE_DOM_ID, sceneOptions);
+      try {
+        await this.$Amplify.XR.loadScene(this.sceneName, this.SCENE_DOM_ID, sceneOptions);
+      } catch (e) {
+        this.sceneError = 'Failed to load scene';
+        return;
+      }
       this.$Amplify.XR.start(this.sceneName);
 
       this.loading = false;

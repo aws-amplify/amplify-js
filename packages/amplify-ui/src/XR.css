@@ -65,6 +65,12 @@
   border-radius: 2px;
 }
 
+.sceneErrorText {
+  color: var(--red);
+  font-size: 14px;
+  font-family: 'Amazon Ember';
+}
+
 .sceneBar {
   display: flex;
   align-items: center;

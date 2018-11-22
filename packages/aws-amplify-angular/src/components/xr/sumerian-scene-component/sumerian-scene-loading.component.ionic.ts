@@ -71,7 +71,8 @@ const template = `
       </svg>
     </div>
     <div class={{AmplifyUI.loadingSceneName}}>{{sceneName}}</div>
-    <div class={{AmplifyUI.loadingBar}}>
+    <div *ngIf="sceneError" class={{AmplifyUI.sceneErrorText}}>{{sceneError}}</div>
+    <div *ngIf="!sceneError" class={{AmplifyUI.loadingBar}}>
       <div class={{AmplifyUI.loadingBarFill}} [ngStyle]="{ 'width': loadPercentage + '%' }"></div>
     </div>
   </div>
@@ -80,8 +81,7 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-loading-ionic',
-  template,
-  styleUrls: ['/node_modules/@aws-amplify/ui/src/XR.css']
+  template
 })
 export class SumerianSceneLoadingComponentIonic extends SumerianSceneLoadingComponentCore {
   constructor() {

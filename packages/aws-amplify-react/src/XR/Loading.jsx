@@ -34,9 +34,12 @@ const Loading = (props) => {
         <div className={AmplifyUI.loadingSceneName}>
           {props.sceneName}
         </div>
-        <div className={AmplifyUI.loadingBar}>
-          <div className={AmplifyUI.loadingBarFill} style={{width: `${props.percentage}%`}} />
-        </div>
+        { props.sceneError ? 
+          <div className={AmplifyUI.sceneErrorText}>{props.sceneError.displayText}</div> :
+          <div className={AmplifyUI.loadingBar}>
+            <div className={AmplifyUI.loadingBarFill} style={{width: `${props.percentage}%`}} />
+          </div>
+        }
       </div>
     </div>
   );

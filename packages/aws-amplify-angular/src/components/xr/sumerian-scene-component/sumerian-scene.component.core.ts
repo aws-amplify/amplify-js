@@ -11,18 +11,17 @@
  * and limitations under the License.
  */
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { XR } from 'aws-amplify';
+import { Logger, XR } from 'aws-amplify';
 import { AmplifyService } from '../../../providers';
 
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const SCENE_CONTAINER_DOM_ID = "sumerian-scene-container"
-const SCENE_DOM_ID = "sumerian-scene-dom-id";
+const logger = new Logger('SumerianSceneComponentCore');
 
 const template = `
 <div id="sumerian-scene-container" class={{amplifyUI.sumerianSceneContainer}}>
-  <div id='sumerian-scene-dom-id' class={{amplifyUI.sumerianScene}}>
-    <sumerian-scene-loading-core *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}}></sumerian-scene-loading-core>
+  <div id="sumerian-scene-dom-id" class={{amplifyUI.sumerianScene}}>
+    <sumerian-scene-loading-core *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}} sceneError={{sceneError}}></sumerian-scene-loading-core>
   </div>
   <div *ngIf="!loading" class={{amplifyUI.sceneBar}}>
     <span class={{amplifyUI.sceneActions}}>
@@ -76,8 +75,7 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-core',
-  template,
-  styleUrls: ['/node_modules/@aws-amplify/ui/src/XR.css']
+  template
 })
 export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   @Input() sceneName: string;
@@ -88,6 +86,8 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   showEnableAudio = false;
   isVRCapable = false;
   isFullscreen = false;
+  sceneError = null;
+  
 
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
@@ -128,7 +128,13 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     const sceneOptions = { 
       progressCallback: this.progressCallback
     };
-    await XR.loadScene(this.sceneName, SCENE_DOM_ID, sceneOptions);
+    try {
+      await XR.loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
+    } catch (e) {
+      this.sceneError = 'Failed to load scene';
+      logger.error(this.sceneError, e);
+      return;
+    }
     XR.start(this.sceneName);
 
     this.loading = false;
@@ -159,7 +165,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   }
 
   async maximize() {
-    const sceneDomElement: any = document.getElementById(SCENE_CONTAINER_DOM_ID);
+    const sceneDomElement: any = document.getElementById("sumerian-scene-container");
     const requestFullScreen = sceneDomElement.requestFullscreen || sceneDomElement.msRequestFullscreen || sceneDomElement.mozRequestFullScreen || sceneDomElement.webkitRequestFullscreen;
     requestFullScreen.call(sceneDomElement);
   }

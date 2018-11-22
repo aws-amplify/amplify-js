@@ -17,7 +17,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 const template = `
 <div id="sumerian-scene-container" [ngClass]="amplifyUI.sumerianSceneContainer">
-  <div id='sumerian-scene-dom-id' [class]="amplifyUI.sumerianScene">
+  <div id="sumerian-scene-dom-id" [class]="amplifyUI.sumerianScene">
     <sumerian-scene-loading-ionic *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}}></sumerian-scene-loading-ionic>
   </div>
   <div *ngIf="!loading" class={{amplifyUI.sceneBar}}>
@@ -72,8 +72,7 @@ const template = `
 
 @Component({
   selector: 'sumerian-scene-ionic',
-  template,
-  styleUrls: ['/node_modules/@aws-amplify/ui/src/XR.css']
+  template
 })
 export class SumerianSceneComponentIonic extends SumerianSceneComponentCore {
   amplifyUI: AmplifyUI;

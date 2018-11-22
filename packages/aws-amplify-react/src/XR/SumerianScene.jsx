@@ -12,13 +12,15 @@
  */
 import * as React from 'react';
 import XR from '@aws-amplify/xr';
-
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import IconButton from './IconButton';
 import Loading from './Loading';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 const SCENE_DOM_ID = 'scene-dom-id';
+
+const logger = new Logger('SumerianScene');
 
 class SumerianScene extends React.Component {
   constructor(props) {
@@ -29,7 +31,8 @@ class SumerianScene extends React.Component {
       muted: false,
       loading: true,
       percentage: 0,
-      isFullscreen: false
+      isFullscreen: false,
+      sceneError: null
     };
   }
 
@@ -63,7 +66,18 @@ class SumerianScene extends React.Component {
         this.setState({ percentage });
       }
     };
-    await XR.loadScene(sceneName, sceneDomId, sceneOptions);
+    try {
+      await XR.loadScene(sceneName, sceneDomId, sceneOptions);
+    } catch (e) {
+      const sceneError = {
+        displayText: 'Failed to load scene',
+        error: e
+      }
+      logger.error(sceneError.displayText, sceneError.error);
+      this.setStateAsync({sceneError});
+      return;
+    }
+    
     XR.start(sceneName);
 
     this.setStateAsync({ 
@@ -133,7 +147,7 @@ class SumerianScene extends React.Component {
     return (
       <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer}>
         <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene}>
-          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} />}
+          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError}/>}
         </div>
         <div className={AmplifyUI.sceneBar}>
           <span className={AmplifyUI.sceneActions}>
