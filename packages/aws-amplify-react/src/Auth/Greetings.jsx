@@ -30,7 +30,7 @@ export default class Greetings extends AuthPiece {
         this.state = {
             authState: props.authState,
             authData: props.authData
-        }
+        };
     }
 
     componentDidMount() {
@@ -64,7 +64,7 @@ export default class Greetings extends AuthPiece {
                 <NavItem theme={theme}>{message}</NavItem>
                 {this.renderSignOutButton(theme)}
             </span>
-        )
+        );
     }
 
     renderSignOutButton() {
@@ -116,6 +116,6 @@ export default class Greetings extends AuthPiece {
                     </NavRight>
                 </Nav>
             </NavBar>
-        )
+        );
     }
 }

@@ -124,12 +124,15 @@ export default class Connect extends Component {
         // query
         const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
         const { query: prevQuery, variables: prevQueryVariables } = prevQueryObj || {};
-        const queryChanged = prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
+        const queryChanged =
+            prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
 
         // mutation
         const { query: newMutation, variables: newMutationVariables } = newMutationObj || {};
         const { query: prevMutation, variables: prevMutationVariables } = prevMutationObj || {};
-        const mutationChanged = prevMutation !== newMutation || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
+        const mutationChanged =
+            prevMutation !== newMutation
+            || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
 
         if (!loading && (queryChanged || mutationChanged)) {
             this._fetchData();

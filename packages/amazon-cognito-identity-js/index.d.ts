@@ -101,7 +101,7 @@ declare module "amazon-cognito-identity-js" {
                 onFailure: (err: any) => void
             }): void;
         public verifySoftwareToken(totpCode: string, friendlyDeviceName: string, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): void;
-        public setUserMfaPreference(smsMfaSettings: IMfaSettings, softwareTokenMfaSettings: IMfaSettings, callback: NodeCallback<Error, string>): void;
+        public setUserMfaPreference(smsMfaSettings: IMfaSettings | null, softwareTokenMfaSettings: IMfaSettings | null, callback: NodeCallback<Error, string>): void;
     }
 
     export interface MFAOption {
@@ -177,6 +177,8 @@ declare module "amazon-cognito-identity-js" {
     }
     */
     export class CognitoAccessToken {
+        payload: {[key: string]: any};
+
         constructor({ AccessToken }: { AccessToken: string });
 
         public getJwtToken(): string;
@@ -186,6 +188,8 @@ declare module "amazon-cognito-identity-js" {
     }
 
     export class CognitoIdToken {
+        payload: {[key: string]: any};
+
         constructor({ IdToken }: { IdToken: string });
 
         public getJwtToken(): string;

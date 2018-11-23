@@ -56,6 +56,8 @@ describe('SignOut', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
+
+    });
    
     test('render correctly with other authStates', () => {
         const wrapper = shallow(<SignOut/>);

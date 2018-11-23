@@ -11,7 +11,7 @@ const auth0_config = {
     responseType: 'token id_token', // for now we only support implicit grant flow
     scope: 'openid profile email', // the scope used by your app
     returnTo: 'your sign out url'
-}
+};
 
 describe('withAuth0 test', () => {
     describe('render test', () => {
@@ -20,7 +20,7 @@ describe('withAuth0 test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const Comp = withAuth0(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -59,13 +59,13 @@ describe('withAuth0 test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
                 callback(null, {
                     idToken: 'idToken',
                     expiresIn: 3000,
                     accessToken: 'accessToken'
-                })
+                });
             });
             const mockFn2 = jest.fn().mockImplementationOnce((token, callback) => {
                 callback(null, {
@@ -75,7 +75,7 @@ describe('withAuth0 test', () => {
             });
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => {
                 return Promise.resolve();
-            })
+            });
 
             const Comp = withAuth0(MockComp);
             const wrapper = shallow(<Comp authState={'signIn'} auth0={auth0_config}/>);
@@ -102,7 +102,7 @@ describe('withAuth0 test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
                 callback('err', null);
             });
@@ -114,7 +114,7 @@ describe('withAuth0 test', () => {
             });
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => {
                 return Promise.resolve();
-            })
+            });
 
             const Comp = withAuth0(MockComp);
             const wrapper = shallow(<Comp authState={'signIn'} auth0={auth0_config}/>);
@@ -139,7 +139,7 @@ describe('withAuth0 test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
                 callback('err', null);
             });
@@ -151,7 +151,7 @@ describe('withAuth0 test', () => {
             });
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => {
                 return Promise.resolve();
-            })
+            });
 
             const Comp = withAuth0(MockComp);
             const wrapper = shallow(<Comp authState={'signedIn'} auth0={auth0_config}/>);
@@ -176,7 +176,7 @@ describe('withAuth0 test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
                 callback('err', null);
             });
@@ -188,7 +188,7 @@ describe('withAuth0 test', () => {
             });
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => {
                 return Promise.resolve();
-            })
+            });
 
             const Comp = withAuth0(MockComp);
             const wrapper = shallow(<Comp authState={'signIn'} auth0={undefined}/>);

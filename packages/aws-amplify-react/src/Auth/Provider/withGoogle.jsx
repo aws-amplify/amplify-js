@@ -48,7 +48,7 @@ export default function withGoogle(Comp) {
                     this.federatedSignIn(googleUser);
                     const payload = {
                         provider: Constants.GOOGLE
-                    }
+                    };
 
                     try {
                         localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
@@ -110,7 +110,10 @@ export default function withGoogle(Comp) {
 
         componentDidMount() {
             const { google_client_id } = this.props;
-            if (google_client_id && !window.gapi) this.createScript();
+            const ga = window.gapi && window.gapi.auth2 ? 
+                window.gapi.auth2.getAuthInstance() : 
+                null;
+            if (google_client_id && !ga) this.createScript();
         }
 
         createScript() {
