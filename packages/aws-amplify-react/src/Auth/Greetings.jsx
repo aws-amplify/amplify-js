@@ -26,11 +26,6 @@ const logger = new Logger('Greetings');
 export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
-    
-        this.state = {
-            authState: props.authState,
-            authData: props.authData
-        };
     }
 
     componentDidMount() {
@@ -46,7 +41,7 @@ export default class Greetings extends AuthPiece {
 
 
     userGreetings(theme) {
-        const user = this.state.authData;
+        const user = this.props.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
         const nameFromAttr = user.attributes? 
