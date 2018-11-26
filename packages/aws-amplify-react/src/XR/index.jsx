@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,16 +10,4 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export * from './Anchor.css';
-export * from './Button.css';
-export * from './Form.css';
-export * from './Hint.css';
-export * from './Input.css';
-export * from './Nav.css';
-export * from './PhotoPicker.css';
-export * from './Section.css';
-export * from './SelectInput.css';
-export * from './Strike.css';
-export * from './Toast.css';
-export * from './Totp.css';
-export * from './XR.css';
+export { default as SumerianScene } from './SumerianScene';

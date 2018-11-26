@@ -2,9 +2,7 @@ import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
-
   <div class="amplify-authenticator">
-
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
