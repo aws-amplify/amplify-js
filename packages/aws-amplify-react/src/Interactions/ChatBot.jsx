@@ -109,23 +109,27 @@ export class ChatBot extends Component {
                     micButtonDisabled: false,
                     continueConversation: false
                 })
+                break;
             case STATES.LISTENING:
                 this.setState({
                     micText: MIC_BUTTON_TEXT.RECORDING,
                     micButtonDisabled: false,
                 })
+                break;
             case STATES.SENDING:
                 this.advanceConversation();
                 this.setState({
                     micText: MIC_BUTTON_TEXT.LOADING,
                     micButtonDisabled: true,
                 })
+                break;
             case STATES.SPEAKING:
                 this.setState({
                     micText: MIC_BUTTON_TEXT.PLAYING,
                     micButtonDisabled: true,
                 })
                 this.advanceConversation();
+                break;
         }
     }
 
@@ -177,6 +181,7 @@ export class ChatBot extends Component {
             case STATES.INITIAL:
                 audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
                 this.transition(STATES.LISTENING);
+                break;
             case STATES.LISTENING:
                 audioControl.exportWAV((blob) => {
                     this.setState({
@@ -184,6 +189,7 @@ export class ChatBot extends Component {
                     })
                 this.transition(STATES.SENDING);
                 });
+                break;
             case STATES.SENDING:
                 if (!Interactions || typeof Interactions.send !== 'function') {
                     throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
@@ -196,6 +202,7 @@ export class ChatBot extends Component {
                 })
                 this.transition(STATES.SPEAKING)
                 this.onSuccess(response)
+                break;
             case STATES.SPEAKING:
                 if (this.state.lexResponse.contentType === 'audio/mpeg') {
                     audioControl.play(this.state.lexResponse.audioStream, () => {
@@ -219,6 +226,7 @@ export class ChatBot extends Component {
                     })
                     this.transition(STATES.INITIAL);
                 }
+                break;
         }
     };
 
