@@ -26,9 +26,10 @@ const template = `
 					placeholder="{{currentVoiceState}}"
 					[value]="inputText"
 					(keyup.enter)="onSubmit(inputValue.value)"
-					(change)="onInputChange($event.target.value)">
-				<button ng-style="{float: 'right'}" (click)="handleVoiceClick()">{{micText}}</button>
-				<button ng-style="{float: 'right'}" class="amplify-interactions-button" (click)="onSubmit(inputValue.value)"></button>
+					(change)="onInputChange($event.target.value)"
+					[disabled]="inputDisabled">
+				<button type="button" ng-style="{float: 'right'}" (click)="handleVoiceClick()" [disabled]="micButtonDisabled">{{micText}}</button>
+				<button type="button" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
 
 			</div>
 		</div>
@@ -80,7 +81,7 @@ export class ChatbotComponentCore {
 	micButtonDisabled:boolean = false;
 	audioInput:any;
 	lexResponse:any;
-	conversationModeOn:boolean = false;
+	conversationsEnabled:boolean = false;
 	ref:ChangeDetectorRef;
 
 	@Output()
@@ -98,6 +99,7 @@ export class ChatbotComponentCore {
 		this.clearComplete = data.clearComplete;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
+		this.conversationsEnabled = data.conversationsEnabled;
 	}
 
 
@@ -118,6 +120,10 @@ export class ChatbotComponentCore {
 		this.clearComplete = clearComplete;
 	}
 
+	@Input()
+	set conversationModeOn(conversationsEnabled: boolean) {
+		this.conversationsEnabled = conversationsEnabled;
+	}
 
 	performOnComplete(evt) {
 		this.complete.emit(evt);
@@ -167,16 +173,20 @@ export class ChatbotComponentCore {
 			case STATES.LISTENING:
 				this.micText = MIC_BUTTON_TEXT.RECORDING;
 				this.micButtonDisabled = false;
+				this.inputDisabled = false;
+				this.ref.detectChanges();
 				break;
 			case STATES.SENDING:
 				this.advanceConversation();
 				this.micText = MIC_BUTTON_TEXT.LOADING;
 				this.micButtonDisabled = true;
+				this.ref.detectChanges();
 				break;
 			case STATES.SPEAKING:
 				this.micText = MIC_BUTTON_TEXT.PLAYING;
 				this.micButtonDisabled = true;
 				this.advanceConversation();
+				this.ref.detectChanges();
 				break;
 		}
     }
@@ -197,7 +207,8 @@ export class ChatbotComponentCore {
 		this.micText = MIC_BUTTON_TEXT.PASSIVE;
 		this.continueConversation = false;
 		this.micButtonDisabled = false;
-        audioControl.clear();
+		audioControl.clear();
+		this.ref.detectChanges();
 	}
 	
     onError(error) {
@@ -248,10 +259,11 @@ export class ChatbotComponentCore {
 						if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 							this.lexResponse.dialogState === 'Fulfilled' ||
 							this.lexResponse.dialogState === 'Failed' ||
-							this.conversationModeOn === false) {
+							this.conversationsEnabled === false) {
 								this.inputDisabled = false;
 								this.micText = MIC_BUTTON_TEXT.PASSIVE;
 								this.transition(STATES.INITIAL);
+								this.ref.detectChanges();
 						} else {
 							audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
 							this.transition(STATES.LISTENING);
@@ -260,18 +272,21 @@ export class ChatbotComponentCore {
 				} else {
 					this.inputDisabled = false;
 					this.transition(STATES.INITIAL);
+					this.ref.detectChanges();
 				}
 				break;
 		}
 	};
 	
 	async handleVoiceClick() {
-        if (this.continueConversation === true && this.conversationModeOn === true) {
-            this.reset();
+        if (this.continueConversation === true && this.conversationsEnabled === true) {
+			this.reset();
+			this.ref.detectChanges();
         } else {
 			this.inputDisabled = true;
 			this.continueConversation = true;
-            this.advanceConversation()
+			this.advanceConversation()
+			this.ref.detectChanges();
         }
 	}
 	
