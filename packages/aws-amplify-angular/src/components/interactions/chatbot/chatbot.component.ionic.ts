@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ChatbotComponentCore } from './chatbot.component.core'
 import { AmplifyService } from '../../../providers';
 
@@ -72,8 +72,8 @@ const template = `
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
   
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);    
+  constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
+    super(ref, amplifyService);    
   }
 
 }
