@@ -27,6 +27,11 @@ describe('Greetings', () => {
             for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
+                    authData: {
+                        attributes: {
+                            name: 'username'
+                        }
+                    },
                     theme: 'theme'
                 });
                 expect(wrapper).toMatchSnapshot();
@@ -43,25 +48,6 @@ describe('Greetings', () => {
                 });
                 expect(wrapper).toMatchSnapshot();
             }
-        });
-
-        test('render name from attributes', () => {
-            const wrapper = shallow(<Greetings/>);
-            wrapper.setProps({
-                authState: 'signedIn',
-                theme: 'theme'
-            });
-
-            wrapper.setState({
-                authData: {
-                    attributes: {
-                        name: 'name'
-                    }
-                },
-                authState: 'signedIn'
-            });
-
-            expect(wrapper).toMatchSnapshot();
         });
     });
 

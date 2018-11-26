@@ -1,10 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Greetings normal case render correctly with authState signedIn 1`] = `""`;
-
-exports[`Greetings normal case render correctly with hide 1`] = `""`;
-
-exports[`Greetings normal case render name from attributes 1`] = `
+exports[`Greetings normal case render correctly with authState signedIn 1`] = `
 <Component
   theme="theme"
 >
@@ -18,9 +14,16 @@ exports[`Greetings normal case render name from attributes 1`] = `
         <Component
           theme="theme"
         >
-          Hello name
+          Hello username
         </Component>
         <SignOut
+          authData={
+            Object {
+              "attributes": Object {
+                "name": "username",
+              },
+            }
+          }
           authState="signedIn"
           theme="theme"
         />
@@ -29,6 +32,8 @@ exports[`Greetings normal case render name from attributes 1`] = `
   </Component>
 </Component>
 `;
+
+exports[`Greetings normal case render correctly with hide 1`] = `""`;
 
 exports[`Greetings render corrently with other authStates 1`] = `""`;
 
