@@ -76,12 +76,12 @@ export class ChatbotComponentCore {
 	currentVoiceState:string = STATES.INITIAL;
 	inputDisabled:boolean = false;
 	micText: string = MIC_BUTTON_TEXT.PASSIVE;
-	voiceConfiguration:any = defaultVoiceConfig;
+	voiceConfig:any = defaultVoiceConfig;
 	continueConversation:boolean = false;
 	micButtonDisabled:boolean = false;
 	audioInput:any;
 	lexResponse:any;
-	conversationsEnabled:boolean = false;
+	conversationModeOn:boolean = false;
 	ref:ChangeDetectorRef;
 
 	@Output()
@@ -97,10 +97,10 @@ export class ChatbotComponentCore {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
+		this.conversationModeOn = data.conversationModeOn;
+		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
-		this.conversationsEnabled = data.conversationsEnabled;
-		this.voiceConfiguration = data.voiceConfiguration;
 	}
 
 
@@ -119,16 +119,6 @@ export class ChatbotComponentCore {
 	@Input()
 	set clearOnComplete(clearComplete: boolean) {
 		this.clearComplete = clearComplete;
-	}
-
-	@Input()
-	set conversationModeOn(conversationsEnabled: boolean) {
-		this.conversationsEnabled = conversationsEnabled;
-	}
-
-	@Input()
-	set voiceConfig(voiceConfiguration: boolean) {
-		this.voiceConfiguration = voiceConfiguration;
 	}
 
 	performOnComplete(evt) {
@@ -163,7 +153,7 @@ export class ChatbotComponentCore {
 	}
 
 	transition(newVoiceState) { 
-        if (this.continueConversation !== true) {
+        if (this.continueConversation.toString() !== 'true') {
             return;
 		}
 		
@@ -243,7 +233,7 @@ export class ChatbotComponentCore {
 		
 		switch (this.currentVoiceState) {
 			case STATES.INITIAL:
-				audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfiguration.silenceDetectionConfig);
+				audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
 				this.transition(STATES.LISTENING);
 				break;
 			case STATES.LISTENING:
@@ -265,13 +255,13 @@ export class ChatbotComponentCore {
 						if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 							this.lexResponse.dialogState === 'Fulfilled' ||
 							this.lexResponse.dialogState === 'Failed' ||
-							this.conversationsEnabled === false) {
+							this.conversationModeOn.toString() === 'false') { //
 								this.inputDisabled = false;
 								this.micText = MIC_BUTTON_TEXT.PASSIVE;
 								this.transition(STATES.INITIAL);
 								this.ref.detectChanges();
 						} else {
-							audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfiguration.silenceDetectionConfig);
+							audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
 							this.transition(STATES.LISTENING);
 						}
 					});
@@ -285,7 +275,7 @@ export class ChatbotComponentCore {
 	};
 	
 	async handleVoiceClick() {
-        if (this.continueConversation === true && this.conversationsEnabled === true) {
+        if (this.continueConversation.toString() === 'true' && this.conversationModeOn.toString() === 'true') { // 
 			this.reset();
 			this.ref.detectChanges();
         } else {
