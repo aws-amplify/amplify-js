@@ -94,8 +94,8 @@ export default class VerifyContact extends AuthPiece {
                     selectedValue={this.state.pickAttr}
                     onValueChange={(value, index) => this.setState({pickAttr: value})}
                 >
-                    { email? <Picker.Item label={I18n.get('Email')} value="email"/> : null }
-                    { phone_number? <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/> : null }
+                    { email && <Picker.Item label={I18n.get('Email')} value="email"/> }
+                    { phone_number && <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/> }
                 </Picker>
                 <AmplifyButton
                     text={I18n.get('Verify')}
