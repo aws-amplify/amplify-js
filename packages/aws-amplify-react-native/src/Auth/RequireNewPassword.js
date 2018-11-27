@@ -15,7 +15,8 @@ import React from 'react';
 import {
     View,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    ScrollView
 } from 'react-native';
 import {
     Auth,
@@ -31,7 +32,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
+const logger = new Logger('RequireNewPassword');
 
 export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
@@ -40,7 +41,8 @@ export default class RequireNewPassword extends AuthPiece {
         this._validAuthStates = ['requireNewPassword'];
         this.state = {
             password: null,
-            error: null
+            error: null,
+            requiredAttributes: {}
         }
 
         this.change = this.change.bind(this);
@@ -48,9 +50,9 @@ export default class RequireNewPassword extends AuthPiece {
     
     change() {
         const user = this.props.authData;
-        const { password } = this.state;
+        const { password, requiredAttributes } = this.state;
         logger.debug('Require new password for ' + user.username);
-        Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes)
+        Auth.completeNewPassword(user, password, requiredAttributes)
             .then(user => {
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
@@ -62,9 +64,11 @@ export default class RequireNewPassword extends AuthPiece {
     }
 
     showComponent(theme) {
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
+                <ScrollView style={theme.section}>
                     <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
                     <View style={theme.sectionBody}>
                         <FormField
@@ -75,10 +79,31 @@ export default class RequireNewPassword extends AuthPiece {
                             secureTextEntry={true}
                             required={true}
                         />
+                        {requiredAttributes
+                            .map(attribute => {
+                                logger.debug('attributes', attribute);
+                                return <FormField
+                                    theme={theme}
+                                    onChangeText={(text) => {
+                                            const attributes = this.state.requiredAttributes;
+                                            if (text !== '') attributes[attribute] = text;
+                                            else delete attributes[attribute];
+                                            this.setState({ requiredAttributes: attributes });
+                                        }
+                                    }
+                                    label={I18n.get(convertToPlaceholder(attribute))}
+                                    key={I18n.get(convertToPlaceholder(attribute))}
+                                    placeholder={I18n.get(convertToPlaceholder(attribute))}
+                                    required={true}
+                                    />
+                                }
+                            )}
                         <AmplifyButton
                             text={I18n.get('Change Password')}
                             onPress={this.change}
-                            disabled={!this.state.password}
+                            disabled={!(this.state.password && 
+                                Object.keys(this.state.requiredAttributes).length === 
+                                Object.keys(requiredAttributes).length)}
                         />
                     </View>
                     <View style={theme.sectionFooter}>
@@ -87,8 +112,12 @@ export default class RequireNewPassword extends AuthPiece {
                         </LinkCell>
                     </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-                </View>
+                </ScrollView>
             </TouchableWithoutFeedback>
         );
     }
+}
+
+function convertToPlaceholder(str) {
+    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
 }
