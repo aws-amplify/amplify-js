@@ -90,6 +90,7 @@ export class ChatbotComponentCore {
 	constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
 		this.amplifyService = amplifyService;
 		this.ref = ref;
+		this.continueConversation = false;
 	}
 	
 	@Input()
@@ -97,7 +98,7 @@ export class ChatbotComponentCore {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
-		this.conversationModeOn = data.conversationModeOn;
+		this.conversationModeOn = data.conversationModeOn || false;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
@@ -153,7 +154,7 @@ export class ChatbotComponentCore {
 	}
 
 	transition(newVoiceState) { 
-        if (this.continueConversation.toString() !== 'true') { // workaround 
+        if (this.continueConversation !== true) {
             return;
 		}
 		
@@ -255,7 +256,7 @@ export class ChatbotComponentCore {
 						if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 							this.lexResponse.dialogState === 'Fulfilled' ||
 							this.lexResponse.dialogState === 'Failed' ||
-							this.conversationModeOn.toString() === 'false') { // workaround 
+							this.conversationModeOn === false) {
 								this.inputDisabled = false;
 								this.micText = MIC_BUTTON_TEXT.PASSIVE;
 								this.transition(STATES.INITIAL);
@@ -275,7 +276,7 @@ export class ChatbotComponentCore {
 	};
 	
 	async handleVoiceClick() {
-        if (this.continueConversation.toString() === 'true' && this.conversationModeOn.toString() === 'true') { // workaround
+        if (this.continueConversation === true && this.conversationModeOn === true) { 
 			this.reset();
 			this.ref.detectChanges();
         } else {
