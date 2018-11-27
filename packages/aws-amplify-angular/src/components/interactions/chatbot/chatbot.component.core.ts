@@ -153,7 +153,7 @@ export class ChatbotComponentCore {
 	}
 
 	transition(newVoiceState) { 
-        if (this.continueConversation.toString() !== 'true') {
+        if (this.continueConversation.toString() !== 'true') { // workaround 
             return;
 		}
 		
@@ -255,7 +255,7 @@ export class ChatbotComponentCore {
 						if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 							this.lexResponse.dialogState === 'Fulfilled' ||
 							this.lexResponse.dialogState === 'Failed' ||
-							this.conversationModeOn.toString() === 'false') { //
+							this.conversationModeOn.toString() === 'false') { // workaround 
 								this.inputDisabled = false;
 								this.micText = MIC_BUTTON_TEXT.PASSIVE;
 								this.transition(STATES.INITIAL);
@@ -275,7 +275,7 @@ export class ChatbotComponentCore {
 	};
 	
 	async handleVoiceClick() {
-        if (this.continueConversation.toString() === 'true' && this.conversationModeOn.toString() === 'true') { // 
+        if (this.continueConversation.toString() === 'true' && this.conversationModeOn.toString() === 'true') { // workaround
 			this.reset();
 			this.ref.detectChanges();
         } else {
