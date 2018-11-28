@@ -16,7 +16,8 @@ import {
     Platform, 
     Credentials,
     Signer,
-    JS
+    JS,
+    Hub
 } from '@aws-amplify/core';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
@@ -25,6 +26,10 @@ import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
+
+const dispatchAnalyticsEvent = (event, data) => {
+    Hub.dispatch('analytics', { event, data }, 'Analytics');
+};
 
 const logger = new Logger('AWSPinpointProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -101,8 +106,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event, config } = params;
 
         const { appId, region, resendLimit } = config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
         let success = true;
         switch (event.name) {
@@ -157,6 +160,20 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
 
+        if (this._config['appId']) {
+            if (!this._config['endpointId']) {
+                const cacheKey = this.getProviderName() + '_' + this._config['appId'];
+                this._getEndpointId(cacheKey).then(endpointId => {
+                    logger.debug('setting endpoint id from the cache', endpointId);
+                    this._config['endpointId'] = endpointId;
+                    dispatchAnalyticsEvent('pinpointProvider_configured', null);
+                }).catch(e => {
+                    logger.debug('Failed to generate endpointId', e);
+                });
+            } else {
+                dispatchAnalyticsEvent('pinpointProvider_configured', null);
+            }  
+        }
         this._setupTimer();
         return this._config;
     }
@@ -226,10 +243,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     private async _send(params) {
         const { event, config } = params;
-
-        const { appId, region } = config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
         switch (event.name) {
             case '_session_start':
