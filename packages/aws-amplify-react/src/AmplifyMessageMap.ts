@@ -13,11 +13,11 @@
 
 import { I18n } from '@aws-amplify/core';
 
-export const MapEntries: [string, RegExp, string?][] = [
-    ['User does not exist', /user.*not.*exist/i],
-    ['User already exists', /user.*already.*exist/i],
-    ['Incorrect username or password', /incorrect.*username.*password/i],
-    ['Invalid password format', /validation.*password/i],
+export const MapEntries: [string, RegExp, string | undefined][] = [
+    ['User does not exist', /user.*not.*exist/i, undefined],
+    ['User already exists', /user.*already.*exist/i, undefined],
+    ['Incorrect username or password', /incorrect.*username.*password/i, undefined],
+    ['Invalid password format', /validation.*password/i, undefined],
     [
         'Invalid phone number format',
         /invalid.*phone/i,

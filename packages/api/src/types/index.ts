@@ -70,8 +70,8 @@ export interface GraphQLOptions {
     variables?: object,
 }
 
-export interface GraphQLResult {
-    data?: object,
+export interface GraphQLResult<TData> {
+    data?: TData,
     errors?: [object],
     extensions?: { [key: string]: any },
 }

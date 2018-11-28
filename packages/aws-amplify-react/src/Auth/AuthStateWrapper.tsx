@@ -58,10 +58,10 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
     }
 
     checkUser() {
-        if (!Auth || typeof Auth.currentUser !== 'function') {
+        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        return Auth.currentUser()
+        return Auth.currentAuthenticatedUser()
             .then(user => {
                 const state = user? 'signedIn' : 'signIn';
                 this.handleStateChange(state, user);

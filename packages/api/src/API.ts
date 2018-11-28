@@ -325,7 +325,7 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query, variables = {} }: GraphQLOptions) {
+    graphql<TData>({ query, variables = {} }: GraphQLOptions) {
 
         const doc = parse(query);
 
@@ -335,7 +335,7 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables });
+                return this._graphql<TData>({ query, variables });
             case 'subscription':
                 return this._graphqlSubscribe({ query, variables });
         }
@@ -343,8 +343,8 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
-        : Promise<GraphQLResult> {
+    private async _graphql<TData>({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
+        : Promise<GraphQLResult<TData>> {
         if (!this._api) {
             await this.createInstance();
         }

@@ -46,7 +46,7 @@ export interface ITOTPSetupCompState {
 }
 
 export default class TOTPSetupComp extends Component<ITOTPSetupCompProps, ITOTPSetupCompState> {
-    private inputs: { [pname: string]: boolean | string };
+    private inputs: { [pname: string]: string };
 
     constructor(props) {
         super(props);

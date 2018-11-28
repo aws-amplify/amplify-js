@@ -38,7 +38,7 @@ const logger = new Logger('SignIn');
 
 export interface ISignInProps extends IAuthPieceProps {
     federated?: FederatedProps;
-    hideLink?: any<any, any>[]; 
+    hideLink?: any[]; 
 }
 
 export default class SignIn extends AuthPiece<ISignInProps, {}> {

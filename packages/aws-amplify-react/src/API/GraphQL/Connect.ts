@@ -1,6 +1,8 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
 import { Component, FunctionComponent } from 'react';
-import API from '@aws-amplify/api';
+import API, { GraphQLResult } from '@aws-amplify/api';
+import * as Observable from 'zen-observable';
+
 
 export interface IConnectFuncProps<TData, TVariables> {
     data?: TData;
@@ -24,7 +26,7 @@ interface IConnectState<TData, TVariables> {
     mutation: (variables?: TVariables) => Promise<TData>;
 }
 
-export default class Connect<TData, TVariables>
+export default class Connect<TData, TVariables extends object>
     extends Component<IConnectProps<TData, TVariables>, IConnectState<TData, TVariables>> {
     private subSubscription;
 
@@ -37,23 +39,21 @@ export default class Connect<TData, TVariables>
 
     getInitialState(): IConnectState<TData, TVariables> {
         const { query } = this.props;
+        // @ts-ignore
         return {
             loading: query && !!query.query,
-            // @ts-ignore
             data: {},
             errors: [],
-            // @ts-ignore
             mutation: async () => console.warn('Not implemented'),
         };
     }
 
     getDefaultState(): IConnectState<TData, TVariables> {
+        // @ts-ignore
         return {
             loading: false,
-            // @ts-ignore
             data: {},
             errors: [],
-            // @ts-ignore
             mutation: async () => console.warn('Not implemented'),
         };
     }
@@ -87,7 +87,7 @@ export default class Connect<TData, TVariables>
             try {
                 data = null;
 
-                const response = await API.graphql({ query, variables });
+                const response = (await API.graphql({ query, variables })) as GraphQLResult<TData>;
 
                 data = response.data;
             } catch (err) {
@@ -109,7 +109,8 @@ export default class Connect<TData, TVariables>
             const { query: subsQuery, variables: subsVars } = subscription;
 
             try {
-                const observable = API.graphql({ query: subsQuery, variables: subsVars });
+                const observable
+                    = API.graphql({ query: subsQuery, variables: subsVars }) as Observable<{ value: { data: TData}; }>;
 
                 this.subSubscription = observable.subscribe({
                     next: ({ value: { data } }) => {

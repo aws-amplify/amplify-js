@@ -18,7 +18,7 @@ import { CognitoUser } from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 export interface IAuthPieceProps {
-    authData?: { user: CognitoUser} | CognitoUser;
+    authData?: any;
     authState?;
     hide?: any[];
     onAuthEvent?: (state, event) => void;
@@ -28,7 +28,7 @@ export interface IAuthPieceProps {
 }
 
 export default class AuthPiece<TProps, TState> extends Component<TProps & IAuthPieceProps, TState> {
-    private _isHidden: boolean;
+    public _isHidden: boolean;
     protected _isMounted: boolean;
     protected inputs: { [pname: string]: string };
     protected _validAuthStates: string[];

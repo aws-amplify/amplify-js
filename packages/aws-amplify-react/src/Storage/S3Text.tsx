@@ -71,6 +71,7 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
         Storage.get(key, { download: true, level: level? level : 'public', track })
             .then(data => {
                 logger.debug(data);
+                // @ts-ignore
                 const text = data.Body.toString('utf8');
                 this.setState({ text });
                 this.handleOnLoad(text);

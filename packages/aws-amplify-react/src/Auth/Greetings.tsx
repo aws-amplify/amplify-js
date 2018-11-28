@@ -12,6 +12,7 @@
  */
 
 import * as React from 'react';
+import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece, { IAuthPieceProps } from './AuthPiece';
@@ -89,12 +90,13 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         const amazonClientId = amazon_client_id || config.amazonClientId;
         const auth0_config = auth0 || oauth.auth0;
 
-        if (googleClientId) SignOut = withGoogle(SignOut);
-        if (facebookAppId) SignOut = withFacebook(SignOut);
-        if (amazonClientId) SignOut = withAmazon(SignOut);
-        if (auth0_config) SignOut = withAuth0(SignOut);
+        let Comp: any = SignOut;
+        if (googleClientId) Comp = withGoogle(Comp);
+        if (facebookAppId) Comp = withFacebook(Comp);
+        if (amazonClientId) Comp = withAmazon(Comp);
+        if (auth0_config) Comp = withAuth0(Comp);
 
-        return <SignOut 
+        return <Comp 
             {...this.props} 
             google_client_id={google_client_id} 
             facebook_app_id={facebook_app_id} 

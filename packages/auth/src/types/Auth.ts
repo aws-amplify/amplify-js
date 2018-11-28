@@ -33,17 +33,20 @@ export interface AuthCache {
  * Auth instance options
  */
 export interface AuthOptions {
-    userPoolId: string,
-    userPoolWebClientId: string,
-    identityPoolId?: string,
-    region?: string,
-    mandatorySignIn?: boolean
-    cookieStorage?: ICookieStorageData,
-    oauth?: OAuth,
-    refreshHandlers?: object,
-    storage?: ICognitoStorage,
-    authenticationFlowType?: string,
-    identityPoolRegion?: string
+    userPoolId?: string;
+    userPoolWebClientId?: string;
+    identityPoolId?: string;
+    region?: string;
+    mandatorySignIn?: boolean;
+    cookieStorage?: ICookieStorageData;
+    oauth?: OAuth;
+    refreshHandlers?: object;
+    storage?: ICognitoStorage;
+    authenticationFlowType?: string;
+    identityPoolRegion?: string;
+    googleClientId?: string;
+    facebookClientId?: string;
+    amazonClientId?: string;
 }
 
 /**
