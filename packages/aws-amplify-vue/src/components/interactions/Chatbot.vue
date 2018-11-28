@@ -35,9 +35,10 @@
 					:placeholder="currentVoiceState"
 					v-model="inputText"
 					v-on:keyup="keymonitor"
+					:disabled="inputDisabled"
         />
-				<button @click="handleVoiceClick()">{{this.micText}}</button>
-				<button class="amplify-interactions-button" @click="onSubmit(inputText)"></button>
+				<button @click="handleVoiceClick()" :disabled="micButtonDisabled">{{this.micText}}</button>
+				<button class="amplify-interactions-button" @click="onSubmit(inputText)" :disabled="inputDisabled"></button>
 			</div>
 		</div>
 	</div>
@@ -91,7 +92,6 @@ export default {
 			micText: MIC_BUTTON_TEXT.PASSIVE,
 			continueConversation: false,
 			micButtonDisabled: false,
-			voiceConfig: defaultVoiceConfig
     }
   },
   computed: {
@@ -99,7 +99,8 @@ export default {
       const defaults = {
 				clearComplete: true,
 				botTitle: 'Chatbot',
-				conversationModeOn: false
+				conversationModeOn: false,
+				voiceConfig: defaultVoiceConfig
       }
       return Object.assign(defaults, this.chatbotConfig || {})
     }
@@ -174,7 +175,7 @@ export default {
 
         switch (this.currentVoiceState) {
             case STATES.INITIAL:
-                audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
+                audioControl.startRecording(this.onSilence, this.onAudioData, this.options.voiceConfig.silenceDetectionConfig);
                 this.transition(STATES.LISTENING);
                 break;
             case STATES.LISTENING:
@@ -197,14 +198,14 @@ export default {
                         if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
                             this.lexResponse.dialogState === 'Fulfilled' ||
                             this.lexResponse.dialogState === 'Failed' ||
-                            this.conversationModeOn === false) {
+                            this.options.conversationModeOn === false) {
                                 
 															this.inputDisabled = false;
 															this.micText = MIC_BUTTON_TEXT.PASSIVE;
                                 
                             this.transition(STATES.INITIAL);
                         } else {
-                            audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
+                            audioControl.startRecording(this.onSilence, this.onAudioData, this.options.voiceConfig.silenceDetectionConfig);
                             this.transition(STATES.LISTENING);
                         }
                     });
@@ -217,7 +218,7 @@ export default {
     },
 
     async handleVoiceClick() {
-        if (this.continueConversation === true && this.conversationModeOn === true) {
+        if (this.continueConversation === true && this.options.conversationModeOn === true) {
             this.reset();
         } else {
 						this.inputDisabled = true;
