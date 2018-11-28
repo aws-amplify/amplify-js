@@ -32,11 +32,11 @@
 				<input
 					type='text'
 					class="amplify-form-input"
-					:placeholder="$Amplify.I18n.get('Write a message')"
+					:placeholder="currentVoiceState"
 					v-model="inputText"
 					v-on:keyup="keymonitor"
         />
-
+				<button @click="handleVoiceClick()">{{this.micText}}</button>
 				<button class="amplify-interactions-button" @click="onSubmit(inputText)"></button>
 			</div>
 		</div>
@@ -50,22 +50,56 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 
+require('./aws-lex-audio.js');
+
+const audioControl = new global.LexAudio.audioControl()
+
+const STATES = {
+		INITIAL: 'Type your message or click  🎤',
+		LISTENING: 'Listening... click 🔴 again to cancel',
+		SENDING: 'Please wait...',
+		SPEAKING: 'Speaking...'
+};
+const MIC_BUTTON_TEXT = {
+		PASSIVE: '🎤',
+		RECORDING: '🔴',
+		PLAYING: '🔊',
+		LOADING: '...',
+};
+const defaultVoiceConfig = {
+		silenceDetectionConfig: {
+				time: 2000,
+				amplitude: 0.2
+		}   
+};
+
 export default {
   name: 'Chatbot',
-  props: ['chatbotConfig'],
+	props: ['chatbotConfig'],
+	STATES: STATES,
+	MIC_BUTTON_TEXT: MIC_BUTTON_TEXT,
+	defaultVoiceConfig: defaultVoiceConfig,
+	audioControl: audioControl,
   data () {
     return {
 			inputText: '',
 			error: '',
       messages: [],
 			logger: {},
+			currentVoiceState: STATES.INITIAL,
+			inputDisabled: false,
+			micText: MIC_BUTTON_TEXT.PASSIVE,
+			continueConversation: false,
+			micButtonDisabled: false,
+			voiceConfig: defaultVoiceConfig
     }
   },
   computed: {
     options() {
       const defaults = {
 				clearComplete: true,
-				botTitle: 'Chatbot'
+				botTitle: 'Chatbot',
+				conversationModeOn: false
       }
       return Object.assign(defaults, this.chatbotConfig || {})
     }
@@ -114,7 +148,138 @@ export default {
 		setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
+		},
+
+
+    onError(error) {
+        logger.error(error)
+    },
+
+    reset() {
+				this.inputText = '',
+				this.currentVoiceState = STATES.INITIAL;
+				this.inputDisabled = false;
+				this.micText = MIC_BUTTON_TEXT.PASSIVE;
+				this.continueConversation = false;
+				this.micButtonDisabled = false;
+        audioControl.clear();
+    },
+
+    async advanceConversation() {
+        audioControl.supportsAudio((supported) => {
+            if (!supported) {
+                onError('Audio is not supported.')
+            }
+        });
+
+        switch (this.currentVoiceState) {
+            case STATES.INITIAL:
+                audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
+                this.transition(STATES.LISTENING);
+                break;
+            case STATES.LISTENING:
+                audioControl.exportWAV((blob) => {
+									this.audioInput = blob;
+                	this.transition(STATES.SENDING);
+                });
+                break;
+            case STATES.SENDING:
+                const response = await this.$Amplify.Interactions.send(this.options.bot, this.audioInput)
+
+								this.lexResponse = response;
+                
+                this.transition(STATES.SPEAKING)
+                this.onSuccess(response)
+                break;
+            case STATES.SPEAKING:
+                if (this.lexResponse.contentType === 'audio/mpeg') {
+                    audioControl.play(this.lexResponse.audioStream, () => {
+                        if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                            this.lexResponse.dialogState === 'Fulfilled' ||
+                            this.lexResponse.dialogState === 'Failed' ||
+                            this.conversationModeOn === false) {
+                                
+															this.inputDisabled = false;
+															this.micText = MIC_BUTTON_TEXT.PASSIVE;
+                                
+                            this.transition(STATES.INITIAL);
+                        } else {
+                            audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
+                            this.transition(STATES.LISTENING);
+                        }
+                    });
+                } else {
+										this.inputDisabled = false;
+                    this.transition(STATES.INITIAL);
+                }
+                break;
+        }
+    },
+
+    async handleVoiceClick() {
+        if (this.continueConversation === true && this.conversationModeOn === true) {
+            this.reset();
+        } else {
+						this.inputDisabled = true;
+						this.continueConversation = true;
+            this.advanceConversation()
+        }
+		},
+		
+    transition(newVoiceState) { 
+        if (this.continueConversation !== true) {
+            return;
+        }
+				this.currentVoiceState = newVoiceState;
+
+        switch (this.currentVoiceState) {
+            case STATES.INITIAL:
+								this.micText = MIC_BUTTON_TEXT.PASSIVE;
+								this.micButtonDisabled = false;
+								this.continueConversation = false;
+                break;
+            case STATES.LISTENING:
+								this.micText = MIC_BUTTON_TEXT.RECORDING;
+								this.micButtonDisabled = false;
+                break;
+            case STATES.SENDING:
+                this.advanceConversation();
+								this.micText = MIC_BUTTON_TEXT.LOADING;
+								this.micButtonDisabled = true;
+                break;
+            case STATES.SPEAKING:
+								this.micText = MIC_BUTTON_TEXT.PLAYING;
+								this.micButtonDisabled = true;
+                this.advanceConversation();
+                break;
+        }
+		},
+		
+		async onSuccess(response) {
+			let message = {
+				'me':this.inputText,
+				'meSentTime': new Date().toLocaleTimeString(),
+				'bot': '',
+				'botSentTime': ''
+			};
+			this.inputText = "";
+
+			if (response.message){
+				message.bot = response.message;
+				message.botSentTime = new Date().toLocaleTimeString();
+				this.messages.push(message);
+			}
+    },
+
+    onSilence() {
+        audioControl.stopRecording();
+        this.advanceConversation(); 
+    },
+
+    onAudioData(data) {
+        // TODO: visualize audio data
     }
+
   }
 }
 </script>
