@@ -6,6 +6,9 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "album": Object {},
+      "albumPhoto": Object {},
+      "albumText": Object {},
       "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
@@ -18,7 +21,13 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
+      "photo": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -32,6 +41,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
@@ -41,6 +51,9 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -53,7 +66,13 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -67,6 +86,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -82,6 +102,9 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -94,7 +117,13 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -108,6 +137,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
     title="Select a Photo"
@@ -121,6 +151,9 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "album": Object {},
+      "albumPhoto": Object {},
+      "albumText": Object {},
       "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
@@ -133,7 +166,13 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
+      "photo": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -147,6 +186,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
@@ -156,6 +196,9 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -168,7 +211,13 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -182,6 +231,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -197,6 +247,9 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -209,7 +262,13 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -223,6 +282,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
     title="Select a Photo"

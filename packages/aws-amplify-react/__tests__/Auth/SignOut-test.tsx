@@ -57,19 +57,19 @@ describe('SignOut', () => {
             }
         });
 
-    });
-   
-    test('render correctly with other authStates', () => {
-        const wrapper = shallow(<SignOut/>);
-        
-        for (let i = 0; i < deniedStates.length; i += 1){
-            wrapper.setProps({
-                authState: deniedStates[i],
-                theme: 'theme'
-            });
+        test('render correctly with other authStates', () => {
+            const wrapper = shallow(<SignOut/>);
 
-            expect(wrapper).toMatchSnapshot();
-        }
+            for (let i = 0; i < deniedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: deniedStates[i],
+                    theme: 'theme'
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
     });
 
     describe('signOut test', () => {

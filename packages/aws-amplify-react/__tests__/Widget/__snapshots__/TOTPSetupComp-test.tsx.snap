@@ -6,6 +6,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "album": Object {},
+      "albumPhoto": Object {},
+      "albumText": Object {},
       "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
@@ -18,7 +21,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
+      "photo": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -32,12 +41,11 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
-  <Component
-    onClose={[Function]}
-  >
+  <Component>
     message
   </Component>
   <Component
@@ -45,6 +53,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -57,7 +68,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -71,6 +88,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -81,6 +99,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -93,7 +114,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -107,6 +134,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -135,6 +163,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           Object {
             "a": Object {},
             "actionRow": Object {},
+            "album": Object {},
+            "albumPhoto": Object {},
+            "albumText": Object {},
             "amazonSignInButton": Object {},
             "button": Object {},
             "container": Object {},
@@ -147,7 +178,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
             "hint": Object {},
             "input": Object {},
             "inputLabel": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
             "oAuthSignInButton": Object {},
+            "photo": Object {},
             "photoPickerButton": Object {},
             "photoPlaceholder": Object {},
             "radio": Object {},
@@ -161,6 +198,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
             "signInButtonIcon": Object {},
             "strike": Object {},
             "strikeContent": Object {},
+            "toast": Object {},
           }
         }
       />
@@ -179,6 +217,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         Object {
           "a": Object {},
           "actionRow": Object {},
+          "album": Object {},
+          "albumPhoto": Object {},
+          "albumText": Object {},
           "amazonSignInButton": Object {},
           "button": Object {},
           "container": Object {},
@@ -191,7 +232,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
+          "photo": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
           "radio": Object {},
@@ -205,6 +252,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -220,6 +268,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
     Object {
       "a": Object {},
       "actionRow": Object {},
+      "album": Object {},
+      "albumPhoto": Object {},
+      "albumText": Object {},
       "amazonSignInButton": Object {},
       "button": Object {},
       "container": Object {},
@@ -232,7 +283,13 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
+      "photo": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
       "radio": Object {},
@@ -246,6 +303,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
@@ -254,6 +312,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -266,7 +327,13 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -280,6 +347,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -290,6 +358,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       Object {
         "a": Object {},
         "actionRow": Object {},
+        "album": Object {},
+        "albumPhoto": Object {},
+        "albumText": Object {},
         "amazonSignInButton": Object {},
         "button": Object {},
         "container": Object {},
@@ -302,7 +373,13 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
+        "photo": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
         "radio": Object {},
@@ -316,6 +393,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   />
@@ -331,6 +409,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         Object {
           "a": Object {},
           "actionRow": Object {},
+          "album": Object {},
+          "albumPhoto": Object {},
+          "albumText": Object {},
           "amazonSignInButton": Object {},
           "button": Object {},
           "container": Object {},
@@ -343,7 +424,13 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
+          "photo": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
           "radio": Object {},
@@ -357,6 +444,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
