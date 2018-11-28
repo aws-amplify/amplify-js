@@ -37,8 +37,8 @@
 					v-on:keyup="keymonitor"
 					:disabled="inputDisabled"
         />
-				<button @click="handleVoiceClick()" :disabled="micButtonDisabled">{{this.micText}}</button>
-				<button class="amplify-interactions-button" @click="onSubmit(inputText)" :disabled="inputDisabled"></button>
+				<button :disabled="micButtonDisabled" @click="handleVoiceClick()">{{this.micText}}</button>
+				<button id="interactions-submit-button" class="amplify-interactions-button" @click="onSubmit(inputText)" :disabled="inputDisabled"></button>
 			</div>
 		</div>
 	</div>
