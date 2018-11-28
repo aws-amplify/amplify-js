@@ -19,6 +19,11 @@ exports[`Picker test render test render correcly 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -33,6 +38,7 @@ exports[`Picker test render test render correcly 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
