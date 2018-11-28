@@ -80,6 +80,42 @@ export default class VerifyContact extends AuthPiece {
         this.changeState('signedIn');
     }
 
+    // Have to do it in this way to avoid null or undefined element in React.createElement()
+    createPicker(unverified) {
+        const { email, phone_number } = unverified;
+        if (email && phone_number) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Email')} value="email"/>
+                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                </Picker>
+            );
+        } else if (email) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Email')} value="email"/>
+                </Picker>
+            );
+        } else if (phone_number) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                </Picker>
+            );
+        } else {
+            return null;
+        }
+    }
+
     verifyBody(theme) {
         const { unverified } = this.props.authData;
         if (!unverified) {
@@ -90,13 +126,7 @@ export default class VerifyContact extends AuthPiece {
         const { email, phone_number } = unverified;
         return (
             <View style={theme.sectionBody}>
-                <Picker
-                    selectedValue={this.state.pickAttr}
-                    onValueChange={(value, index) => this.setState({pickAttr: value})}
-                >
-                    { email && <Picker.Item label={I18n.get('Email')} value="email"/> }
-                    { phone_number && <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/> }
-                </Picker>
+                {this.createPicker(unverified)}
                 <AmplifyButton
                     text={I18n.get('Verify')}
                     onPress={this.verify}
