@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.11-unstable.12"></a>
+## [1.1.11-unstable.12](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.11-unstable.11...aws-amplify@1.1.11-unstable.12) (2018-11-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.11-unstable.11"></a>
+## [1.1.11-unstable.11](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.11-unstable.10...aws-amplify@1.1.11-unstable.11) (2018-11-27)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.11-unstable.10"></a>
+## [1.1.11-unstable.10](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.11-unstable.9...aws-amplify@1.1.11-unstable.10) (2018-11-26)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.11-unstable.9"></a>
+## [1.1.11-unstable.9](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.11-unstable.8...aws-amplify@1.1.11-unstable.9) (2018-11-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="1.1.11-unstable.8"></a>
 ## [1.1.11-unstable.8](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.11-unstable.7...aws-amplify@1.1.11-unstable.8) (2018-11-20)
 

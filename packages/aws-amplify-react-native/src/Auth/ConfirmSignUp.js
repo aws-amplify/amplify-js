@@ -31,7 +31,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
+const logger = new Logger('ConfirmSignUp');
 
 export default class ConfirmSignUp extends AuthPiece {
     constructor(props) {

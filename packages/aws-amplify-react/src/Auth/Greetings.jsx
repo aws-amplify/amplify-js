@@ -41,7 +41,7 @@ export default class Greetings extends AuthPiece {
         this._isMounted = false;
     }
 
-    inGreeting(name) { return 'Hello ' + name; }
+    inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
     outGreeting() { return ''; }
 
 
