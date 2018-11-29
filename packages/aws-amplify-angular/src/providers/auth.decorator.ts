@@ -1,54 +1,54 @@
 import { Subject } from 'rxjs/Subject';
-import Amplify, { Logger, Hub } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
+import Core from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
 
-const logger = new Logger('AuthDecorator');
 
 function check(authState: Subject<AuthState>) {
   // check for current authenticated user to init authState
-  Amplify.Auth.currentAuthenticatedUser()
+  Auth.currentAuthenticatedUser()
     .then(user => {
-      logger.debug('has authenticated user', user);
+      // logger.debug('has authenticated user', user);
       authState.next({ state: 'signedIn', user });
     })
     .catch(err => {
-      logger.debug('no authenticated user', err);
+      // logger.debug('no authenticated user', err);
       authState.next({ state: 'signedOut', user: null });
     });
 }
 
 function listen(authState: Subject<AuthState>) {
-  const config = Amplify.configure(null);
+  const config = Core.configure(null);
   if (_.has(config, 'Auth.oauth')) {
-    Hub.listen('auth', {
-      onHubCapsule: capsule => {
-        const { channel, payload } = capsule;
-        if (channel === 'auth') {
-          const { username } = payload.data;
-          logger.debug('authentication oauth event', payload);
-          authState.next({ state: payload.event, user: { username} });
-        }
-      }
-    },         'angularAuthListener');
+    // Hub.listen('auth', {
+    //   onHubCapsule: capsule => {
+    //     const { channel, payload } = capsule;
+    //     if (channel === 'auth') {
+    //       const { username } = payload.data;
+    //       logger.debug('authentication oauth event', payload);
+    //       authState.next({ state: payload.event, user: { username} });
+    //     }
+    //   }
+    // },         'angularAuthListener');
   }
 }
 
 function decorateSignIn(authState: Subject<AuthState>) {
-  const _signIn = Amplify.Auth.signIn;
-  Amplify.Auth.signIn = (
+  const _signIn = Auth.signIn;
+  Auth.signIn = (
     username: string,
     password: string
   ): Promise<any> => {
-    return _signIn.call(Amplify.Auth, username, password)
+    return _signIn.call(Auth, username, password)
       .then(user => {
-        logger.debug('signIn success');
+        // logger.debug('signIn success');
         if (!user.challengeName) {
           authState.next({ state: 'signedIn', user });
           return user;
         }
 
-        logger.debug('signIn challenge: ' + user.challengeName);
+        // logger.debug('signIn challenge: ' + user.challengeName);
         if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
           authState.next({ state: 'requireNewPassword', user });
         } else if (user.challengeName === 'MFA_SETUP') {
@@ -59,68 +59,68 @@ function decorateSignIn(authState: Subject<AuthState>) {
         ) {
           authState.next({ state: 'confirmSignIn', user });
         } else {
-          logger.debug('warning: unhandled challengeName ' + user.challengeName);
+          // logger.debug('warning: unhandled challengeName ' + user.challengeName);
         }
         return user;
       })
       .catch(err => {
-        logger.debug('signIn error', err);
+        // logger.debug('signIn error', err);
         throw err;
       });
   };
 }
 
 function decorateSignOut(authState: Subject<AuthState>) {
-  const _signOut = Amplify.Auth.signOut;
-  Amplify.Auth.signOut = (): Promise<any> => {
-    return _signOut.call(Amplify.Auth)
+  const _signOut = Auth.signOut;
+  Auth.signOut = (): Promise<any> => {
+    return _signOut.call(Auth)
       .then(data => {
-        logger.debug('signOut success');
+        // logger.debug('signOut success');
         authState.next({ state: 'signedOut', user: null });
         return data;
       })
       .catch(err => {
-        logger.debug('signOut error', err);
+        // logger.debug('signOut error', err);
         throw err;
       });
   };
 }
 
 function decorateSignUp(authState: Subject<AuthState>) {
-  const _signUp = Amplify.Auth.signUp;
-  Amplify.Auth.signUp = (
+  const _signUp = Auth.signUp;
+  Auth.signUp = (
     username: string,
     password: string,
     email: string,
     phone_number: string
   ): Promise<any> => {
-    return _signUp.call(Amplify.Auth, username, password, email, phone_number)
+    return _signUp.call(Auth, username, password, email, phone_number)
       .then(data => {
-        logger.debug('signUp success');
+        // logger.debug('signUp success');
         authState.next({ state: 'confirmSignUp', user: { username }});
         return data;
       })
       .catch(err => {
-        logger.debug('signUp error', err);
+        // logger.debug('signUp error', err);
         throw err;
       });
   };
 }
 
 function decorateConfirmSignUp(authState: Subject<AuthState>) {
-  const _confirmSignUp = Amplify.Auth.confirmSignUp;
-  Amplify.Auth.confirmSignUp = (
+  const _confirmSignUp = Auth.confirmSignUp;
+  Auth.confirmSignUp = (
     username: string,
     code: string
   ): Promise<any> => {
-    return _confirmSignUp.call(Amplify.Auth, username, code)
+    return _confirmSignUp.call(Auth, username, code)
       .then(data => {
-        logger.debug('confirmSignUp success');
+        // logger.debug('confirmSignUp success');
         authState.next({ state: 'signIn', user: { username }});
         return data;
       })
       .catch(err => {
-        logger.debug('confirmSignUp error', err);
+        // logger.debug('confirmSignUp error', err);
         throw err;
       });
   };

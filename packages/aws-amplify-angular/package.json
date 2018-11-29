@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "2.0.14-unstable.8",
+  "version": "2.0.27",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -36,7 +36,6 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^1.1.11-unstable.8",
     "babel-core": "^6.26.3",
     "babel-plugin-lodash": "^3.3.4",
     "babel-preset-env": "^1.7.0",
@@ -45,6 +44,8 @@
     "jest": "^23.4.0",
     "jest-preset-angular": "^5.2.3",
     "json-loader": "^0.5.4",
+    "@types/lodash.has": "^4.5.4",
+    "lodash.has": "^4.5.2",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
     "rollup": "^0.63.5",
@@ -67,9 +68,8 @@
     "zone.js": "^0.8.26"
   },
   "peerDependencies": {
-    "aws-amplify": "^1.x"
+    "@aws-amplify/auth": "^1.2.10",
+    "@aws-amplify/core": "^1.0.18"
   },
-  "dependencies": {
-    "@types/lodash": "^4.14.106"
-  }
+  "dependencies": {}
 }
