@@ -63,13 +63,32 @@ export default class RequireNewPassword extends AuthPiece {
             .catch(err => this.error(err));
     }
 
+    generateForm(attribute, theme){
+        return (
+            <FormField
+                theme={theme}
+                onChangeText={(text) => {
+                        const attributes = this.state.requiredAttributes;
+                        if (text !== '') attributes[attribute] = text;
+                        else delete attributes[attribute];
+                        this.setState({ requiredAttributes: attributes });
+                    }
+                }
+                label={I18n.get(convertToPlaceholder(attribute))}
+                key={I18n.get(convertToPlaceholder(attribute))}
+                placeholder={I18n.get(convertToPlaceholder(attribute))}
+                required={true}
+            />
+        );
+    }
+
     showComponent(theme) {
         const user = this.props.authData;
         const { requiredAttributes } = user.challengeParam;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <ScrollView style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
+                    <Header theme={theme}>{I18n.get('Change Password')}</Header>
                     <View style={theme.sectionBody}>
                         <FormField
                             theme={theme}
@@ -82,20 +101,7 @@ export default class RequireNewPassword extends AuthPiece {
                         {requiredAttributes
                             .map(attribute => {
                                 logger.debug('attributes', attribute);
-                                return <FormField
-                                    theme={theme}
-                                    onChangeText={(text) => {
-                                            const attributes = this.state.requiredAttributes;
-                                            if (text !== '') attributes[attribute] = text;
-                                            else delete attributes[attribute];
-                                            this.setState({ requiredAttributes: attributes });
-                                        }
-                                    }
-                                    label={I18n.get(convertToPlaceholder(attribute))}
-                                    key={I18n.get(convertToPlaceholder(attribute))}
-                                    placeholder={I18n.get(convertToPlaceholder(attribute))}
-                                    required={true}
-                                    />
+                                return this.generateForm(attribute, theme);
                                 }
                             )}
                         <AmplifyButton
