@@ -19,6 +19,7 @@ import {
 } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
+import Cache from '@aws-amplify/cache';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -35,6 +36,7 @@ export default class AWSS3Provider implements StorageProvider{
     
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
+    static PART_SIZE = 5;
     
     /**
      * @private
@@ -165,7 +167,7 @@ export default class AWSS3Provider implements StorageProvider{
         logger.debug('put ' + key + ' to ' + final_key);
 
         const params: any = {
-            Bucket: bucket,
+            Bucket: 'testpluggables3',
             Key: final_key,
             Body: object,
             ContentType: type
@@ -176,28 +178,31 @@ export default class AWSS3Provider implements StorageProvider{
         if (metadata) { params.Metadata = metadata; }
 
         try {
-            const upload = s3
-                .upload(params)
-                .on('httpUploadProgress', progress => {
-                    if (progressCallback) {
-                        if (typeof progressCallback === 'function') {
-                            progressCallback(progress);
-                        } else {
-                            logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
-                        }
-                    }
-                });
-            const data = await upload.promise();
+           
+            console.log('starting upload');
+            let createMultipartParams = {
+                Bucket: 'testpluggables3',
+                Key: final_key
+            }
+            let uploadId ;
+             s3.createMultipartUpload(createMultipartParams, (err, data) =>{
+                if(err) {
+                    console.log(err);
+                    logger.debug('Upload error',err);
+                    Promise.reject(err);
+                } else { 
+                    uploadId = data.UploadId;
+                    console.log('initiate upload');
+                    console.log(data);
+                    Cache.setItem(final_key,uploadId );
+                    console.log('the updated uploadID is ', uploadId, data.UploadId);
+                    let display = Cache.getItem(final_key);
+                    console.log('cached',display);
+                    this.uploadMultiPart(uploadId,final_key, 'testpluggables3', s3, object);
+                }    
+
+            });
             
-            logger.debug('upload result', data);
-            dispatchStorageEvent(
-                track,
-                { method: 'put', result: 'success' },
-                null);
-            
-            return {
-                key: data.Key.substr(prefix.length)
-            };
         } catch (e) {
             logger.warn("error uploading", e);
             dispatchStorageEvent(
@@ -209,6 +214,104 @@ export default class AWSS3Provider implements StorageProvider{
         }
     }
 
+    
+
+    private async listparts(bucket, key,etag,uploadId,s3){
+        let listparam = {
+            Bucket:bucket,
+            Key: key,
+            UploadId: uploadId
+        }
+        try{
+            let data = await s3.listParts(listparam).promise();
+            console.log('list info');
+            console.log(data);
+            this.complete(bucket, key,etag,uploadId,s3);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    private async complete(bucket, key,etag,uploadId,s3){
+        console.log('values of each',etag);
+        let Upload = {
+            Bucket: bucket,
+            Key: key,
+            MultipartUpload:{
+                Parts:etag
+            },
+            UploadId:uploadId 
+        };
+        console.log('upload object looks like this', Upload);
+        await s3.completeMultipartUpload(Upload, (err,data)=>{
+            if(err)console.log(err);
+
+            else {
+                console.log('complete info');
+                console.log(data);
+            }
+        })
+    }
+    
+    private uploadMultiPart = async(uploadId,final_key, bucket, s3, object) => {
+        console.log('data being uploaded is', object);
+        let fileSize = object.size;
+        let noOfParts :number;
+        if(fileSize <= 5000000){
+            noOfParts = 1;
+        } else {
+            noOfParts = fileSize/5000000;
+        }
+        noOfParts = Math.ceil(noOfParts);
+        console.log('no of parts is', noOfParts);
+        Cache.setItem(uploadId, '{}')
+        //let i;
+        let etag = [];
+        
+        for(let i=1;i<=noOfParts;i++){
+            
+            console.log('value of i is :', i);
+            let filePart =0;
+            if(i != noOfParts){
+                filePart = object.slice((i-1)* 5242880 +1, (i*5242880)+1, object.contentType);
+                
+            } else {
+                filePart = object.slice((i-1)* 5242880 +1, fileSize,object.contentType);
+                console.log('we are slicing from ',(i-1)* 5242880 +1);
+                console.log('we are slicing upto',fileSize);
+            }
+            
+            let uploadParams = {
+                Body: filePart,
+                Bucket: bucket,
+                Key: final_key,
+                PartNumber: i,
+                UploadId: uploadId
+            }
+            console.log('uploading this part now', uploadParams);
+            try {
+                const data = await s3.uploadPart(uploadParams).promise();
+                
+                console.log(data);
+                let tag = data.ETag;
+                tag = tag.replace(/\"/g, "");
+                // this has to go in the cache each time.
+                
+                etag.push({ETag: tag, PartNumber: i});
+                Cache.setItem(final_key,etag);
+                
+                console.log('Etag array is now :',etag);
+                Cache.getItem(final_key);
+            } catch (error) {
+                if(error.name === 'Network Error')
+                console.error(error);
+                this.pauseUpload(final_key);
+                //i--;
+            }
+        }
+        this.listparts(bucket, final_key,etag,uploadId,s3);  
+
+    }
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
