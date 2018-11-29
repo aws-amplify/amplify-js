@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.0.20-unstable.4",
+  "version": "1.0.20-unstable.5",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
