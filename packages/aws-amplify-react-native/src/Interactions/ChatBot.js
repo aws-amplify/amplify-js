@@ -248,7 +248,7 @@ export class ChatBot extends Component {
             voice: true,
         });
 
-        if (this.state.conversationModeOn === true) {
+        if (this.props.conversationModeOn === true) {
             this.setState({
                 conversationOngoing: true,
             })
