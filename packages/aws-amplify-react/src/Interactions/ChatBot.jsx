@@ -181,7 +181,7 @@ export class ChatBot extends Component {
                     this.setState({
                         audioInput: blob,
                     })
-                this.transition(STATES.SENDING);
+                    this.transition(STATES.SENDING);
                 });
                 break;
             case STATES.SENDING:
