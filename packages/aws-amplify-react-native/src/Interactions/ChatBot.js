@@ -263,7 +263,10 @@ export class ChatBot extends Component {
     };
 
     async handleMicButton() {
-        if (this.state.conversationOngoing === true) {
+        if (this.state.conversationOngoing === true || await Voice.isRecognizing()) {
+            console.log("ongoing " + this.state.conversationOngoing)
+            console.log("recognizing " + await Voice.isRecognizing())
+
             await this.reset();
         } else {
             await this.startRecognizing();
@@ -274,7 +277,6 @@ export class ChatBot extends Component {
         this.setState({
             inputText: '',
             inputEditable: true,
-            silenceDelay: this.props.silenceDelay || 1000,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             voice: false,
             conversationOngoing: false,
