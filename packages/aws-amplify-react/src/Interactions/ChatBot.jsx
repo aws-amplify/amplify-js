@@ -80,8 +80,6 @@ export class ChatBot extends Component {
             micText: MIC_BUTTON_TEXT.PASSIVE,
             continueConversation: false,
             micButtonDisabled: false,
-            voiceConfig: this.props.config || defaultVoiceConfig
-        
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
         this.advanceConversation = this.advanceConversation.bind(this)
@@ -175,7 +173,7 @@ export class ChatBot extends Component {
 
         switch (this.state.currentVoiceState) {
             case STATES.INITIAL:
-                audioControl.startRecording(this.onSilence, null, this.state.voiceConfig.silenceDetectionConfig);
+                audioControl.startRecording(this.onSilence, null, this.props.voiceConfig.silenceDetectionConfig);
                 this.transition(STATES.LISTENING);
                 break;
             case STATES.LISTENING:
@@ -212,7 +210,7 @@ export class ChatBot extends Component {
                                 })
                             this.transition(STATES.INITIAL);
                         } else {
-                            audioControl.startRecording(this.onSilence, null, this.state.voiceConfig.silenceDetectionConfig);
+                            audioControl.startRecording(this.onSilence, null, this.props.voiceConfig.silenceDetectionConfig);
                             this.transition(STATES.LISTENING);
                         }
                     });
@@ -351,6 +349,7 @@ ChatBot.defaultProps = {
     botName: '',
     onComplete: undefined,
     clearOnComplete: false,
+    voiceConfig: defaultVoiceConfig
 };
 
 export default ChatBot;
