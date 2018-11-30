@@ -138,10 +138,6 @@ export class ChatBot extends Component {
         this.advanceConversation(); 
     }
 
-    onAudioData(data) {
-        // TODO: visualize audio data
-    }
-
     async onSuccess(response) {
         await this.setState({
             dialog: [...this.state.dialog, { message: response.inputTranscript, from: 'me' }]
@@ -179,7 +175,7 @@ export class ChatBot extends Component {
 
         switch (this.state.currentVoiceState) {
             case STATES.INITIAL:
-                audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
+                audioControl.startRecording(this.onSilence, null, this.state.voiceConfig.silenceDetectionConfig);
                 this.transition(STATES.LISTENING);
                 break;
             case STATES.LISTENING:
@@ -216,7 +212,7 @@ export class ChatBot extends Component {
                                 })
                             this.transition(STATES.INITIAL);
                         } else {
-                            audioControl.startRecording(this.onSilence, this.onAudioData, this.state.voiceConfig.silenceDetectionConfig);
+                            audioControl.startRecording(this.onSilence, null, this.state.voiceConfig.silenceDetectionConfig);
                             this.transition(STATES.LISTENING);
                         }
                     });
