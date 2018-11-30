@@ -233,8 +233,6 @@ export class ChatBot extends Component {
         timer = setTimeout( async () => {
             await Voice.stop();
         }, this.state.silenceDelay)
-
-        this.setState({timer});
     };
 
     async startRecognizing() {
