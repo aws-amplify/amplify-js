@@ -76,6 +76,9 @@ export class ChatBot extends Component {
                 width: 'calc(100% - 60px - 15px)',
             })
         }
+        if (!this.props.voiceConfig.silenceDetectionConfig) {
+            throw new Error('voiceConfig prop is missing silenceDetectionConfig');
+        }
 
         this.state = {
             dialog: [{
