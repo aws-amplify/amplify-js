@@ -290,39 +290,118 @@ export class ChatBot extends Component {
                     contentContainerStyle={{ flexGrow: 1 }}>
                     {this.listItems()}
                 </ScrollView>
-                <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
-                    <TextInput
-                        style={[styles.textInput, overrideStyles.textInput]}
-                        placeholder={I18n.get("Type your message here")}
-                        onChangeText={inputText => this.setState({ inputText })}
-                        value={this.state.inputText}
-                        returnKeyType="send"
-                        onSubmitEditing={this.submit}
-                        blurOnSubmit={false}
-                        editable={this.state.inputEditable}
-                    >
-                    </TextInput>
-                    <AmplifyButton
-                        onPress={this.handleMicButton}
-                        style={[styles.buttonMic, overrideStyles.buttonMic]}
-                        text={this.state.micText} />
-                    <AmplifyButton
-                        onPress={this.submit}
-                        type="submit"
-                        style={[styles.button, overrideStyles.button]}
-                        text={I18n.get("Send")} />
-                </View>
+                <AmplifyInputs 
+                    micText={this.state.micText} 
+                    voiceEnabled={this.props.voiceEnabled} 
+                    textEnabled={this.props.textEnabled} 
+                    styles={styles} 
+                    overrideStyles={overrideStyles}
+                    onChangeText={inputText => this.setState({ inputText })}
+                    inputText={this.state.inputText}
+                    onSubmitEditing={this.submit}
+                    editable={this.state.inputEditable}
+                    handleMicButton={this.handleMicButton}
+                    micText={this.state.micText}
+                    submit={this.submit}>
+                </AmplifyInputs>
             </KeyboardAvoidingView>
         );
     }
 }
+
+function AmplifyInputs(props) {
+    const voiceEnabled = props.voiceEnabled;
+    const textEnabled = props.textEnabled;
+    const styles = props.styles;
+    const overrideStyles = props.overrideStyles;
+    const onChangeText = props.onChangeText;
+    const inputText = props.inputText;
+    const onSubmitEditing = props.onSubmitEditing;
+    const editable = props.editable;
+    const handleMicButton = props.handleMicButton;
+    const micText = props.micText;
+    const submit = props.submit;
+    if (voiceEnabled && textEnabled) {
+        return (
+            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
+                <TextInput
+                    style={[styles.textInput, overrideStyles.textInput]}
+                    placeholder={I18n.get("Type your message here")}
+                    onChangeText={onChangeText}
+                    value={inputText}
+                    returnKeyType="send"
+                    onSubmitEditing={onSubmitEditing}
+                    blurOnSubmit={false}
+                    editable={editable}
+                    >
+                </TextInput>
+                <AmplifyButton
+                    onPress={handleMicButton}
+                    style={[styles.buttonMic, overrideStyles.buttonMic]}
+                    text={micText} />
+                <AmplifyButton
+                    onPress={submit}
+                    type="submit"
+                    style={[styles.button, overrideStyles.button]}
+                    text={I18n.get("Send")} />
+            </View>);
+    } else if (voiceEnabled && !textEnabled) {
+        return (
+            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
+              <TextInput
+                    style={[styles.textInput, overrideStyles.textInput]}
+                    placeholder={I18n.get("Press the mic button")}
+                    onChangeText={onChangeText}
+                    value={inputText}
+                    returnKeyType="send"
+                    onSubmitEditing={onSubmitEditing}
+                    blurOnSubmit={false}
+                    editable={false}
+                    >
+                </TextInput>
+                <AmplifyButton
+                    onPress={handleMicButton}
+                    style={[styles.buttonMic, overrideStyles.buttonMic]}
+                    text={micText} />
+            </View>
+        );
+    } else if (!voiceEnabled && textEnabled) {
+        return (
+            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
+                <TextInput
+                    style={[styles.textInput, overrideStyles.textInput]}
+                    placeholder={I18n.get("Type your message here")}
+                    onChangeText={onChangeText}
+                    value={inputText}
+                    returnKeyType="send"
+                    onSubmitEditing={onSubmitEditing}
+                    blurOnSubmit={false}
+                    editable={editable}
+                    >
+                </TextInput>
+                <AmplifyButton
+                    onPress={submit}
+                    type="submit"
+                    style={[styles.button, overrideStyles.button]}
+                    text={I18n.get("Send")} />
+            </View>
+            );
+    } else {
+        return (
+            <Text>You must enable at least one type of input. Set voiceEnabled or textEnabled to true in the props.</Text>
+            );
+    }
+}
+
 ChatBot.defaultProps = {
     botName: undefined,
     onComplete: undefined,
     clearOnComplete: false,
     styles: {},
     silenceDelay: 1000,
-    conversationModeOn: false
+    conversationModeOn: false,
+    voiceEnabled: true,
+    textEnabled: true
 };
 
 export default ChatBot;
