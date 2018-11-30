@@ -137,14 +137,12 @@ export class ChatBot extends Component {
     }
 
     async onSuccess(response) {
-        await this.setState({
-            dialog: [...this.state.dialog, { message: response.inputTranscript, from: 'me' }]
-        }) 
-        await this.setState({
-            dialog: [...this.state.dialog, response && { from: 'bot', message: response.message }],
+        this.setState({
+            dialog: [...this.state.dialog, 
+                { message: response.inputTranscript, from: 'me' }, 
+                response && { from: 'bot', message: response.message }],
             inputText: ''
-        });
-
+        }) 
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
     }
 
