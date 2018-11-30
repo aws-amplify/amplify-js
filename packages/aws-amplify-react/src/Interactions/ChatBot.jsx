@@ -43,18 +43,11 @@ const styles = {
 };
 
 const STATES = {
-    INITIAL: 'Type your message or click  🎤',
-    LISTENING: 'Listening... click 🔴 again to cancel',
-    SENDING: 'Please wait...',
-    SPEAKING: 'Speaking...'
+    INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
+    LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴'},
+    SENDING: { MESSAGE: 'Please wait...', ICON: '🔊'},
+    SPEAKING: { MESSAGE: 'Speaking...', ICON: '...'}
 };
-
-const MIC_BUTTON_TEXT = {
-    PASSIVE: '🎤',
-    RECORDING: '🔴',
-    PLAYING: '🔊',
-    LOADING: '...',
-}
 
 const defaultVoiceConfig = {
     silenceDetectionConfig: {
@@ -77,7 +70,7 @@ export class ChatBot extends Component {
             inputText: '',
             currentVoiceState: STATES.INITIAL,
             inputDisabled: false,
-            micText: MIC_BUTTON_TEXT.PASSIVE,
+            micText: STATES.INITIAL.ICON,
             continueConversation: false,
             micButtonDisabled: false,
         }
@@ -103,27 +96,27 @@ export class ChatBot extends Component {
         switch (newVoiceState) {
             case STATES.INITIAL:
                 this.setState({
-                    micText: MIC_BUTTON_TEXT.PASSIVE,
+                    micText: STATES.INITIAL.ICON,
                     micButtonDisabled: false,
                     continueConversation: false
                 })
                 break;
             case STATES.LISTENING:
                 this.setState({
-                    micText: MIC_BUTTON_TEXT.RECORDING,
+                    micText: STATES.LISTENING.ICON,
                     micButtonDisabled: false,
                 })
                 break;
             case STATES.SENDING:
                 this.conversationActionHandler();
                 this.setState({
-                    micText: MIC_BUTTON_TEXT.LOADING,
+                    micText: STATES.SENDING.ICON,
                     micButtonDisabled: true,
                 })
                 break;
             case STATES.SPEAKING:
                 this.setState({
-                    micText: MIC_BUTTON_TEXT.PLAYING,
+                    micText: STATES.SPEAKING.ICON,
                     micButtonDisabled: true,
                 })
                 this.conversationActionHandler();
@@ -155,7 +148,7 @@ export class ChatBot extends Component {
             inputText: '',
             currentVoiceState: STATES.INITIAL,
             inputDisabled: false,
-            micText: MIC_BUTTON_TEXT.PASSIVE,
+            micText: STATES.INITIAL.ICON,
             continueConversation: false,
             micButtonDisabled: false,
         });
@@ -204,7 +197,7 @@ export class ChatBot extends Component {
                             this.props.conversationModeOn === false) {
                                 this.setState({
                                     inputDisabled: false,
-                                    micText: MIC_BUTTON_TEXT.PASSIVE,
+                                    micText: STATES.INITIAL.ICON,
                                 })
                             this.transition(STATES.INITIAL);
                         } else {
@@ -328,7 +321,7 @@ export class ChatBot extends Component {
                         <input
                             style={styles.textInput}
                             type='text'
-                            placeholder={I18n.get(this.state.currentVoiceState)}
+                            placeholder={I18n.get(this.state.currentVoiceState.MESSAGE)}
                             onChange={this.changeInputText}
                             value={this.state.inputText}
                             disabled={this.state.inputDisabled}>
