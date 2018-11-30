@@ -17,6 +17,7 @@
         </div>
       </div>
       <input
+        ref="file_input"  
         type="file"
         accept="options.accept"
         @change="pick"
@@ -52,6 +53,7 @@ export default {
         header: this.$Amplify.I18n.get('File Upload'),
         title: this.$Amplify.I18n.get('Upload'),
         accept: '*/*',
+        storageOptions: {}
       }
       return Object.assign(defaults, this.photoPickerConfig || {})
     },
@@ -59,16 +61,18 @@ export default {
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
     if (!this.options.path) {
-      this.setError('File path not provided.');
+      return this.setError('File path not provided.');
+    }
+    if (this.options.path.substr(this.options.path.length -1) !== '/') {
+      this.options.path = this.options.path + '/'; 
     }
   },
   methods: {
     upload() {
       this.$Amplify.Storage.put(
         this.s3ImagePath,
-        this.file, {
-          'contentType': this.file.type,
-        }
+        this.file, 
+        this.options.storageOptions,
       )
       .then((result) => {
         this.completeFileUpload(result.key)
@@ -78,6 +82,9 @@ export default {
     pick(evt) {
       this.file = evt.target.files[0];
       if (!this.file) { return ;};
+      if (!this.options.storageOptions.contentType) {
+        this.options.storageOptions.contentType = this.file.type;
+      };
       const name = this.options.defaultName ? this.options.defaultName : this.file.name;
       this.s3ImagePath = `${this.options.path}${name}`;
       const that = this;
@@ -92,6 +99,7 @@ export default {
     completeFileUpload(img) {
       this.file = null;
       this.s3ImageFile = null;
+      this.$refs.file_input.value = null;
       AmplifyEventBus.$emit('fileUpload', img);
     },
     setError: function(e) {
