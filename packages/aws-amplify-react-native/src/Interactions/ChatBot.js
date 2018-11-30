@@ -82,11 +82,9 @@ export class ChatBot extends Component {
             }],
             inputText: '',
             inputEditable: true,
-            silenceDelay: this.props.silenceDelay || 1000,
             micText: MIC_BUTTON_TEXT.PASSIVE,
             voice: false,
-            conversationOngoing: false,
-            conversationModeOn: this.props.conversationModeOn || false
+            conversationOngoing: false
         };
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
@@ -152,7 +150,7 @@ export class ChatBot extends Component {
               if (!err) {
                 speech.play(async () => { 
                     speech.release();
-                    if (response.dialogState === 'ElicitSlot' && this.state.conversationModeOn === true) {
+                    if (response.dialogState === 'ElicitSlot' && this.props.conversationModeOn === true) {
                         await this.startRecognizing();
                     }
                 });
@@ -160,6 +158,11 @@ export class ChatBot extends Component {
                 logger.error(err)
               }
             });
+            RNFS.exists(path).then((res) => {
+                if (res) {
+                    RNFS.unlink(path)
+                }
+            }) 
         }
     }
 
@@ -323,6 +326,8 @@ ChatBot.defaultProps = {
     onComplete: undefined,
     clearOnComplete: false,
     styles: {},
+    silenceDelay: 1000,
+    conversationModeOn: false
 };
 
 export default ChatBot;
