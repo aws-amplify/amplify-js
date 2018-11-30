@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.5-unstable.6"></a>
+## [2.1.5-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.5-unstable.5...aws-amplify-react@2.1.5-unstable.6) (2018-11-30)
+
+
+### Features
+
+* **aws-amplify-react:** disable sign in button while loading ([#2216](https://github.com/aws/aws-amplify/issues/2216)) ([b196b7f](https://github.com/aws/aws-amplify/commit/b196b7f))
+
+
+
+
 <a name="2.1.5-unstable.5"></a>
 ## [2.1.5-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.5-unstable.4...aws-amplify-react@2.1.5-unstable.5) (2018-11-26)
 
