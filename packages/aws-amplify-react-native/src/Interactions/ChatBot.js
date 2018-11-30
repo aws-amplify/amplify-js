@@ -208,9 +208,6 @@ export class ChatBot extends Component {
 
     async onSpeechEnd(e) {
         timer = null;
-        this.setState({
-            inputDisabled: true
-        });
 
         this.setState({
             currentConversationState: STATES.SENDING
@@ -303,7 +300,6 @@ export class ChatBot extends Component {
                         onSubmitEditing={this.submit}
                         blurOnSubmit={false}
                         editable={this.state.inputEditable}
-                        selectTextOnFocus={this.state.inputDisabled}
                     >
                     </TextInput>
                     <AmplifyButton
