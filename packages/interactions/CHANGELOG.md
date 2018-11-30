@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.18-unstable.0"></a>
+## [1.0.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.17...@aws-amplify/interactions@1.0.18-unstable.0) (2018-11-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 <a name="1.0.17"></a>
 ## [1.0.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.17-unstable.0...@aws-amplify/interactions@1.0.17) (2018-11-01)
 

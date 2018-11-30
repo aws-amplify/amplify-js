@@ -65,12 +65,12 @@ describe('ConfirmSignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Confirm Sign In');
+      expect(wrapper.vm.options.header).toEqual('i18n Confirm Sign In');
       expect(Object.keys(wrapper.vm.options.user).length).toEqual(0);
     });
 
     it('...should set the error property when a valid user is not received', () => {
-      expect(wrapper.vm.error).toEqual('Valid user not received.');
+      expect(wrapper.vm.error).toEqual('i18n Valid user not received.');
     });
 
     it('...should call Auth.verifyCurrentUserAttribute when send function is called', () => {

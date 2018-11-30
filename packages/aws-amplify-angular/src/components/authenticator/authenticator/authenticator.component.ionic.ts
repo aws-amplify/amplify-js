@@ -14,6 +14,7 @@ const template = `
 <amplify-auth-sign-up-ionic
   *ngIf="!shouldHide('SignUp')"
   [authState]="authState"
+  [signUpConfig]="_signUpConfig"
 ></amplify-auth-sign-up-ionic>
 
 <amplify-auth-confirm-sign-up-ionic
@@ -45,7 +46,7 @@ const template = `
 
 @Component({
   selector: 'amplify-authenticator-ionic',
-  template: template
+  template
 })
 export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
 

@@ -11,8 +11,10 @@
  * and limitations under the License.
  */
 
+
 import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 // tslint:disable:max-line-length
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
@@ -74,6 +76,7 @@ const components = [
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
   ],
   declarations: [
     DynamicComponentDirective,
