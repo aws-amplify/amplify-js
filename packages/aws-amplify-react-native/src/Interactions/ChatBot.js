@@ -248,7 +248,7 @@ export class ChatBot extends Component {
             voice: true,
         });
 
-        if (this.props.conversationModeOn === true) {
+        if (this.state.conversationModeOn === true) {
             this.setState({
                 conversationOngoing: true,
             })
@@ -264,9 +264,6 @@ export class ChatBot extends Component {
 
     async handleMicButton() {
         if (this.state.conversationOngoing === true || await Voice.isRecognizing()) {
-            console.log("ongoing " + this.state.conversationOngoing)
-            console.log("recognizing " + await Voice.isRecognizing())
-
             await this.reset();
         } else {
             await this.startRecognizing();
