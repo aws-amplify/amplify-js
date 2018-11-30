@@ -340,7 +340,8 @@ ChatBot.defaultProps = {
     botName: '',
     onComplete: undefined,
     clearOnComplete: false,
-    voiceConfig: defaultVoiceConfig
+    voiceConfig: defaultVoiceConfig,
+    conversationModeOn: false
 };
 
 export default ChatBot;
