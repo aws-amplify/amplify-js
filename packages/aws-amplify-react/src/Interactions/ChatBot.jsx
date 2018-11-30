@@ -82,7 +82,7 @@ export class ChatBot extends Component {
             micButtonDisabled: false,
         }
         this.handleVoiceClick = this.handleVoiceClick.bind(this)
-        this.advanceConversation = this.advanceConversation.bind(this)
+        this.conversationActionHandler = this.conversationActionHandler.bind(this)
         this.changeInputText = this.changeInputText.bind(this);
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
@@ -115,7 +115,7 @@ export class ChatBot extends Component {
                 })
                 break;
             case STATES.SENDING:
-                this.advanceConversation();
+                this.conversationActionHandler();
                 this.setState({
                     micText: MIC_BUTTON_TEXT.LOADING,
                     micButtonDisabled: true,
@@ -126,14 +126,14 @@ export class ChatBot extends Component {
                     micText: MIC_BUTTON_TEXT.PLAYING,
                     micButtonDisabled: true,
                 })
-                this.advanceConversation();
+                this.conversationActionHandler();
                 break;
         }
     }
 
     onSilence() {
         audioControl.stopRecording();
-        this.advanceConversation(); 
+        this.conversationActionHandler(); 
     }
 
     async onSuccess(response) {
@@ -164,7 +164,7 @@ export class ChatBot extends Component {
         audioControl.clear();
     }
 
-    async advanceConversation() {
+    async conversationActionHandler() {
         audioControl.supportsAudio((supported) => {
             if (!supported) {
                 onError('Audio is not supported.')
@@ -240,7 +240,7 @@ export class ChatBot extends Component {
                 inputDisabled: true,
                 continueConversation: true
             })
-            this.advanceConversation()
+            this.conversationActionHandler()
         }
     }
 
