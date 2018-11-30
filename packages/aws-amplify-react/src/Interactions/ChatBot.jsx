@@ -102,7 +102,7 @@ export class ChatBot extends Component {
             currentVoiceState: newVoiceState
         })
 
-        switch (this.state.currentVoiceState) {
+        switch (newVoiceState) {
             case STATES.INITIAL:
                 this.setState({
                     micText: MIC_BUTTON_TEXT.PASSIVE,
