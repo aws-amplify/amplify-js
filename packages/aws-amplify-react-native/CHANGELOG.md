@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.9-unstable.1"></a>
+## [2.0.9-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.9-unstable.0...aws-amplify-react-native@2.0.9-unstable.1) (2018-11-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** render required attributes when requiring new passwords ([faa502f](https://github.com/aws/aws-amplify/commit/faa502f))
+
+
+
+
 <a name="2.0.9-unstable.0"></a>
 ## [2.0.9-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.8...aws-amplify-react-native@2.0.9-unstable.0) (2018-11-23)
 
