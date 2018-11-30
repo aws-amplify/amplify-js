@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.7-unstable.5"></a>
+## [1.2.7-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.7-unstable.4...@aws-amplify/analytics@1.2.7-unstable.5) (2018-11-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** avoid return statement in the beforeunload function ([2b6e95e](https://github.com/aws/aws-amplify/commit/2b6e95e))
+
+
+
+
 <a name="1.2.7-unstable.4"></a>
 ## [1.2.7-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.7-unstable.3...@aws-amplify/analytics@1.2.7-unstable.4) (2018-11-27)
 
