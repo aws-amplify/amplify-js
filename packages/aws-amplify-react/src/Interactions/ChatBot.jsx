@@ -335,7 +335,7 @@ export class ChatBot extends Component {
                     <div ref={this.listItemsRef} style={styles.list}>{this.listItems()}</div>
                    </SectionBody>
                 <SectionFooter theme={theme}>
-                    <AmplifyInputs
+                    <ChatBotInputs
                         micText={this.state.micText} 
                         voiceEnabled={this.props.voiceEnabled} 
                         textEnabled={this.props.textEnabled} 
@@ -349,14 +349,14 @@ export class ChatBot extends Component {
                         micText={this.state.micText}
                         onSubmit={this.submit}
                         currentVoiceState={this.state.currentVoiceState}>
-                    </AmplifyInputs>
+                    </ChatBotInputs>
                 </SectionFooter>
             </FormSection>
         );
     }
 }
 
-function AmplifyInputs(props) {
+function ChatBotInputs(props) {
     const voiceEnabled = props.voiceEnabled;
     const textEnabled = props.textEnabled;
     const styles = props.styles;

@@ -288,7 +288,7 @@ export class ChatBot extends Component {
                     contentContainerStyle={{ flexGrow: 1 }}>
                     {this.listItems()}
                 </ScrollView>
-                <AmplifyInputs 
+                <ChatBotInputs 
                     micText={this.state.micText} 
                     voiceEnabled={this.props.voiceEnabled} 
                     textEnabled={this.props.textEnabled} 
@@ -301,13 +301,13 @@ export class ChatBot extends Component {
                     handleMicButton={this.handleMicButton}
                     micText={this.state.micText}
                     submit={this.submit}>
-                </AmplifyInputs>
+                </ChatBotInputs>
             </KeyboardAvoidingView>
         );
     }
 }
 
-function AmplifyInputs(props) {
+function ChatBotInputs(props) {
     const voiceEnabled = props.voiceEnabled;
     const textEnabled = props.textEnabled;
     const styles = props.styles;
