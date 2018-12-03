@@ -327,7 +327,7 @@ export default class APIClass {
      */
     graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
 
-        const query = typeof paramQuery === 'string' ? parse(paramQuery) : paramQuery;
+        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
         const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
