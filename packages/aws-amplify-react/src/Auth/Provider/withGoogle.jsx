@@ -48,7 +48,7 @@ export default function withGoogle(Comp) {
                     this.federatedSignIn(googleUser);
                     const payload = {
                         provider: Constants.GOOGLE
-                    }
+                    };
 
                     try {
                         localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));

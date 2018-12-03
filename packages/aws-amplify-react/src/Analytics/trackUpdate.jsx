@@ -35,7 +35,7 @@ export function trackUpdate(Comp, trackerName) {
         }
 
         render() {
-            return <Comp {...this.props} />
+            return <Comp {...this.props} />;
         }
-    }
+    };
 }

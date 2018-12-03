@@ -47,7 +47,7 @@ export default function withFacebook(Comp) {
             fb.getLoginStatus(response => {
                 const payload = {
                     provider: Constants.FACEBOOK
-                }
+                };
                 try {
                     localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
                 } catch (e) {
@@ -57,12 +57,17 @@ export default function withFacebook(Comp) {
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
-                    fb.login(response => {
-                        if (!response || !response.authResponse) {
-                            return;
+                    fb.login(
+                        response => {
+                            if (!response || !response.authResponse) {
+                                return;
+                            }
+                            this.federatedSignIn(response.authResponse);
+                        },
+                        {
+                            scope: 'public_profile,email'
                         }
-                        this.federatedSignIn(response.authResponse);
-                    }, {scope: 'public_profile,email'});
+                    );
                 }
             });
         }
@@ -80,7 +85,7 @@ export default function withFacebook(Comp) {
 
             const fb = window.FB;
             fb.api('/me', { fields: 'name,email' }, response => {
-                let user = {
+                const user = {
                     name: response.name,
                     email: response.email
                 };

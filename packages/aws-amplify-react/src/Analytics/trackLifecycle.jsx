@@ -39,7 +39,7 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
                 if (Analytics && typeof Analytics.record === 'function') {
                     Analytics.record({
                         name: this.trackerName, 
-                        attributes: { event: event }
+                        attributes: { event }
                     });
                 } else {
                     throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');

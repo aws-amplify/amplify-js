@@ -85,7 +85,7 @@ export default function withAuth0(Comp, options) {
                             clientID: config.clientID,
                             federated: config.federated
                         }
-                    }
+                    };
 
                     try {
                         localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));

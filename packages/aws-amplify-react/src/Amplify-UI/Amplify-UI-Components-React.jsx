@@ -230,9 +230,10 @@ export const FormField = (props) => {
 export const Button = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.button);
+    const disabled = props.disabled || false;
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <button {...p} className={AmplifyUI.button} style={style}>
+        <button {...p} className={AmplifyUI.button} style={style} disabled={disabled}>
             {props.children}
         </button>
     );
