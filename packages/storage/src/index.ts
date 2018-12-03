@@ -14,7 +14,7 @@
 import StorageClass from './Storage';
 import { StorageProvider } from './types';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Amplify, { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 
@@ -43,3 +43,21 @@ export default Storage;
 export { StorageClass };
 export { StorageProvider };
 export * from './Providers';
+
+const onNetworkEvent = (payload) => {
+    console.log('PAYLOAD recieved ! ', payload);
+    if(payload.data === 'online'){
+        Storage.resumeUpload('',{});
+    }
+    
+}
+
+Storage.onHubCapsule = (capsule) => {
+    const { channel, payload, source } = capsule;
+    if(channel === 'network'){
+        onNetworkEvent(payload);
+    }
+    
+}
+
+Hub.listen('network',Storage);

@@ -31,6 +31,7 @@ export { default as ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { default as StorageHelper, MemoryStorage } from './StorageHelper';
 export { default as Platform } from './Platform';
+export { default as  detectNetwork}  from './Network';
 
 import Platform from './Platform';
 export const Constants = {

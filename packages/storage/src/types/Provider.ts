@@ -33,4 +33,8 @@ export interface StorageProvider {
     
     // return the name of you provider
     getProviderName(): string;
+
+    resumeUpload(key: string, options?);
+
+    pauseUpload(key: string, options?);
 }

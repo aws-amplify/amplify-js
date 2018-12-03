@@ -47,11 +47,21 @@ export default class StorageClass {
         this.put = this.put.bind(this);
         this.remove = this.remove.bind(this);
         this.list = this.list.bind(this);
+        this.pauseUpload = this.pauseUpload.bind(this);
+        this.resumeUpload = this.resumeUpload.bind(this);
+        //this.onHubCapsule = this.onHubCapsule.bind(this)
     }
 
     public getModuleName() {
         return 'Storage';
     }
+
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsule - The message from hub
+    */
+    public onHubCapsule(capsule: any): void {}
+
 
     /**
      * add plugin into Storage category
@@ -157,6 +167,30 @@ export default class StorageClass {
         return prov.put(key,object,config);  
     }
 
+    //
+    
+    public async pauseUpload (key:string,config?){
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov === undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            Promise.reject('No plugin found in Storage for the provider');
+        }
+        return prov.pauseUpload(key);
+    }
+
+    public async resumeUpload (key:string,config?){
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov === undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            Promise.reject('No plugin found in Storage for the provider');
+        }
+        return prov.resumeUpload(key);
+    }
+
+
+    //
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
