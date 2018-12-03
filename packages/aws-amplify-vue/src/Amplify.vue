@@ -17,6 +17,7 @@ import {
   PhotoPicker,
   S3Album,
   S3Image,
+  SumerianScene,
   RequireNewPassword
 } from './components';
 import { AmplifyPlugin } from './plugins/AmplifyPlugin';
@@ -37,6 +38,7 @@ export default {
     PhotoPicker,
     S3Album,
     S3Image,
+    SumerianScene,
     RequireNewPassword
   },
   AmplifyPlugin,

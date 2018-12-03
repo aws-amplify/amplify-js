@@ -34,4 +34,14 @@ module.exports = {
   I18n: {
     get: jest.fn(key => { return `i18n ${key}` }),
   },
+  XR: {
+    loadScene: jest.fn(() => Promise.resolve({})),
+    start: jest.fn(),
+    isMuted: jest.fn(() => { return false }),
+    isVRCapable: jest.fn(() => { return false }),
+    onSceneEvent: jest.fn(() => Promise.resolve({})),
+    setMuted: jest.fn(),
+    enableAudio: jest.fn(),
+    enterVR: jest.fn(),
+  }
 };

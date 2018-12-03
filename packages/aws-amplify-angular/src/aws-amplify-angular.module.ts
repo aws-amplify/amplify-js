@@ -41,6 +41,9 @@ import { ChatBotComponent } from './components/interactions/chatbot/chatbot.fact
 import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
+import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
+import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
+import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.core';
 // tslint:enable:max-line-length
 
 const components = [
@@ -69,6 +72,9 @@ const components = [
   ChatBotComponent,
   ChatbotComponentCore,
   FormComponent,
+  SumerianSceneComponent,
+  SumerianSceneComponentCore,
+  SumerianSceneLoadingComponentCore
 ];
 
 @NgModule({

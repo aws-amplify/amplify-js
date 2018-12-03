@@ -32,7 +32,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
+const logger = new Logger('ConfirmSignIn');
 
 export default class ConfirmSignIn extends AuthPiece {
     constructor(props) {
