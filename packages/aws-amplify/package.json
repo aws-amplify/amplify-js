@@ -55,6 +55,7 @@
     "@aws-amplify/interactions": "^1.0.19-unstable.4",
     "@aws-amplify/pubsub": "^1.0.19-unstable.4",
     "@aws-amplify/storage": "^1.0.20-unstable.5",
-    "@aws-amplify/xr": "^0.1.9-unstable.4"
+    "@aws-amplify/xr": "^0.1.9-unstable.4",
+    "@aws-amplify/ui": "^1.0.10-unstable.1"
   }
 }
