@@ -101,23 +101,25 @@ export default class SessionTracker {
         }
     }
 
-    private async _trackBeforeUnload() {
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
-
-        this._tracker(
-            { 
-                name: '_session_stop',
-                attributes,
-                immediate: true
-            },
-            this._config.provider
-        ).catch(e => {
-            logger.debug('record session stop event failed.', e);
+    private _trackBeforeUnload() {
+        const getCustomAttrs = typeof this._config.attributes === 'function'? 
+            this._config.attributes() : Promise.resolve(this._config.attributes);
+      
+        getCustomAttrs.then((customAttrs) => {
+            const attributes = Object.assign(
+                {},
+                customAttrs
+            );
+            this._tracker(
+                { 
+                    name: '_session_stop',
+                    attributes,
+                    immediate: true
+                },
+                this._config.provider
+            ).catch(e => {
+                logger.debug('record session stop event failed.', e);
+            });
         });
     }
 

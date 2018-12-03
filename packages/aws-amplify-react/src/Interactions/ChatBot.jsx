@@ -95,14 +95,17 @@ export class ChatBot extends Component {
             const { clearOnComplete } = this.props;
             const message = fn(...args);
 
-            this.setState({
-                dialog: [
-                    ...(!clearOnComplete && this.state.dialog),
-                    message && { from: 'bot', message }
-                ].filter(Boolean),
-            }, () => {
-                this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
-            });
+            this.setState(
+                {
+                    dialog: [
+                        ...(!clearOnComplete && this.state.dialog),
+                        message && { from: 'bot', message }
+                    ].filter(Boolean),
+                },
+                () => {
+                    this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+                }
+            );
         };
     }
 

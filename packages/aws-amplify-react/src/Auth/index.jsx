@@ -35,6 +35,7 @@ export * from './Provider';
 
 import Greetings from './Greetings';
 
+
 export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
     return class extends Component {
         constructor(props) {

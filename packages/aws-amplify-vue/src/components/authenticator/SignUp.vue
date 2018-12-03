@@ -228,7 +228,7 @@ export default {
       let invalids = [];
       this.options.signUpFields.map((el) => {
         if (el.required && !el.value) {
-          invalids.push(el.label)
+          invalids.push(el.label);
           Vue.set(el, 'invalid', true);
         }
         return el;

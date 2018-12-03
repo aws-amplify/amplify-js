@@ -15,6 +15,8 @@ import { PhotoPickerIonicComponent } from './components/storage/photo-picker-com
 import { S3AlbumComponentIonic } from './components/storage/s3-album-component/s3-album.component.ionic';
 import { S3ImageComponentIonic } from './components/storage/s3-image-component/s3-image.component.ionic';
 import { ChatbotComponentIonic } from './components/interactions/chatbot/chatbot.component.ionic';
+import { SumerianSceneComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene.component.ionic';
+import { SumerianSceneLoadingComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.ionic';
 // tslint:enable:max-line-length
 
 const components = [
@@ -29,7 +31,9 @@ const components = [
   PhotoPickerIonicComponent,
   S3AlbumComponentIonic,
   S3ImageComponentIonic,
-  ChatbotComponentIonic
+  ChatbotComponentIonic,
+  SumerianSceneComponentIonic,
+  SumerianSceneLoadingComponentIonic
 ];
 
 @NgModule({
@@ -43,7 +47,7 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [ AmplifyService],
+  providers: [AmplifyService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     ...components

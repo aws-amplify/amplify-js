@@ -12,7 +12,7 @@ const template = `
 
 @Component({
   selector: 'amplify-s3-image-ionic',
-  template: template
+  template
 })
 export class S3ImageComponentIonic extends S3ImageComponentCore {
 

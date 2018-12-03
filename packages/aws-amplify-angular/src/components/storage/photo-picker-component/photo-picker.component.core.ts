@@ -34,19 +34,19 @@ const template = `
   </div>
 </div>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-photo-picker-core',
-  template: template
+  template
 })
 export class PhotoPickerComponentCore {
   photoUrl: string;
-  path: string;
   hasPhoto: boolean = false;
   uploading: boolean = false;
-  s3ImagePath: string = "";
   s3ImageFile: any = null;
+  s3ImagePath: string = "";
+  _storageOptions: any = {};
   errorMessage: string;
   
   @Input()
@@ -56,9 +56,20 @@ export class PhotoPickerComponentCore {
   }
 
   @Input()
+  set storageOptions(storageOptions: any){
+    this._storageOptions = Object.assign(this._storageOptions, storageOptions);
+  }
+
+  @Input()
+  set path(path: string){
+    this.s3ImagePath = path;
+  }
+
+  @Input()
   set data(data: any) {
     this.photoUrl = data.url;
-    this.path = data.path;
+    this.s3ImagePath = data.path;
+    this._storageOptions = Object.assign(this._storageOptions, data.storageOptions);
     this.hasPhoto = true;
   }
 
@@ -76,11 +87,13 @@ export class PhotoPickerComponentCore {
   pick(evt) {
     const file = evt.target.files[0];
     if (!file) { return; }
-
+    if (!this._storageOptions.contentType) {
+      this._storageOptions.contentType = file.type;
+    }
     const { name, size, type } = file;
     this.picked.emit(file);
 
-    this.s3ImagePath = `${this.path}/${file.name}`;
+    this.s3ImagePath = `${this.s3ImagePath}/${file.name}`;
     this.s3ImageFile = file;
     const that = this;
     const reader = new FileReader();
@@ -90,7 +103,7 @@ export class PhotoPickerComponentCore {
       that.photoUrl = url;
       that.hasPhoto = true;
       that.loaded.emit(url);
-    }
+    };
     reader.readAsDataURL(file);
   }
 
@@ -98,9 +111,7 @@ export class PhotoPickerComponentCore {
   	this.uploading = true;
   	this.amplify.storage().put( 
   			this.s3ImagePath, 
-  			this.s3ImageFile, {
-    			'contentType': this.s3ImageFile.type
-		})
+  			this.s3ImageFile, this._storageOptions)
 		.then ( result => {
       this.uploaded.emit(result);
 			this.completeFileUpload();
@@ -114,7 +125,8 @@ export class PhotoPickerComponentCore {
   	if (error) {
   		return this._setError(error);
   	}
-  	this.s3ImagePath = "";
+    this.s3ImagePath = "";
+    this.photoUrl = null;
   	this.s3ImageFile = null;
 	  this.uploading = false;
   }

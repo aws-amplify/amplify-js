@@ -48,10 +48,6 @@ describe('ConfirmSignIn', () => {
       expect(wrapper.vm.logger.name).toEqual(wrapper.vm.$options.name);
     });
 
-    it('...it should have an send method', () => {
-      expect(wrapper.vm.send).toBeTruthy();
-    });
-
     it('...should have a submit method', () => {
       expect(wrapper.vm.submit).toBeTruthy();
     });
@@ -71,11 +67,6 @@ describe('ConfirmSignIn', () => {
 
     it('...should set the error property when a valid user is not received', () => {
       expect(wrapper.vm.error).toEqual('i18n Valid user not received.');
-    });
-
-    it('...should call Auth.verifyCurrentUserAttribute when send function is called', () => {
-      wrapper.vm.send();
-      expect(AmplifyMocks.Auth.verifyCurrentUserAttribute).toHaveBeenCalled();
     });
 
     it('...should call Auth.confirmSignIn when submit function is called', () => {
@@ -98,7 +89,6 @@ describe('ConfirmSignIn', () => {
       header = 'TestHeader';
       wrapper = shallowMount(ConfirmSignIn, {
         methods: {
-          send: mockSend,
           submit: mockSubmit,
           signIn: mockSignIn,
           setError: mockSetError,
@@ -126,12 +116,6 @@ describe('ConfirmSignIn', () => {
     it('...should render the header from props', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionHeader}`).element;
       expect(el.textContent).toEqual(header);
-    });
-
-    it('...should call send when send button is clicked', () => {
-      const el = wrapper.find(`.${AmplifyUI.hint} > .${AmplifyUI.a}`);
-      el.trigger('click');
-      expect(mockSend).toHaveBeenCalled();
     });
 
     it('...should not call submit when submit button is clicked but code is not present', () => {

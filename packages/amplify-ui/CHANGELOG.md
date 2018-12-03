@@ -3,10 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
+<a name="1.0.10-unstable.1"></a>
+## [1.0.10-unstable.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.10-unstable.0...@aws-amplify/ui@1.0.10-unstable.1) (2018-11-30)
+
+
+### Features
+
+* **aws-amplify-react:** disable sign in button while loading ([#2216](https://github.com/aws-amplify/amplify-js/issues/2216)) ([b196b7f](https://github.com/aws-amplify/amplify-js/commit/b196b7f))
+
+
+<a name="1.0.10-unstable.0"></a>
+## [1.0.10-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.9...@aws-amplify/ui@1.0.10-unstable.0) (2018-11-26)
+
+
+
 <a name="1.0.10-beta.2"></a>
 ## [1.0.10-beta.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.10-beta.1...@aws-amplify/ui@1.0.10-beta.2) (2018-11-19)
-
-
 
 
 **Note:** Version bump only for package @aws-amplify/ui

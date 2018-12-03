@@ -228,7 +228,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
             alert(err.message || JSON.stringify(err));
             return;
         }
-        cognitoUser = result.user;
+        var cognitoUser = result.user;
         console.log('user name is ' + cognitoUser.getUsername());
     });
 ```
