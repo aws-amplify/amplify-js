@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.22-unstable.12"></a>
+## [1.0.22-unstable.12](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.11...@aws-amplify/api@1.0.22-unstable.12) (2018-12-03)
+
+
+### Features
+
+* **@aws-amplify/api,graphql:** DocumentNode support for GraphQL Client ([#2227](https://github.com/aws/aws-amplify/issues/2227)) ([f31d649](https://github.com/aws/aws-amplify/commit/f31d649)), closes [#1237](https://github.com/aws/aws-amplify/issues/1237)
+
+
+
+
 <a name="1.0.22-unstable.11"></a>
 ## [1.0.22-unstable.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.10...@aws-amplify/api@1.0.22-unstable.11) (2018-11-27)
 
