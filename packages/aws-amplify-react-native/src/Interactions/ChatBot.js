@@ -150,6 +150,11 @@ export class ChatBot extends Component {
               if (!err) {
                 speech.play(async () => { 
                     speech.release();
+                    RNFS.exists(path).then((res) => {
+                        if (res) {
+                            RNFS.unlink(path)
+                        }
+                    }) 
                     if (response.dialogState === 'ElicitSlot' && this.props.conversationModeOn === true) {
                         await this.startRecognizing();
                     }
@@ -158,11 +163,6 @@ export class ChatBot extends Component {
                 logger.error(err)
               }
             });
-            RNFS.exists(path).then((res) => {
-                if (res) {
-                    RNFS.unlink(path)
-                }
-            }) 
         }
     }
 
