@@ -32,7 +32,6 @@ export default class Parser {
         // Storage
         let storageConfig;
         if (config['aws_user_files_s3_bucket']) {
-            console.log('PArsing as expected!!');
             storageConfig = {
                 AWSS3: {
                     bucket: config['aws_user_files_s3_bucket'],
@@ -42,7 +41,6 @@ export default class Parser {
         } else {
             storageConfig = config ? config.Storage || config : {};
         } 
-        console.log('storage config from parser',storageConfig);
         amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
         amplifyConfig.Storage = Object.assign({}, storageConfig);

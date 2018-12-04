@@ -114,7 +114,11 @@ export default class SignUp extends AuthPiece {
                     <FormField theme={theme}>
                         <InputLabel>{I18n.get('Phone Number')}</InputLabel>
                         <SelectInput theme={theme}>
-                            <select key="dial_code" name="dial_code" defaultValue="+1" onChange={this.handleInputChange}>
+                            <select
+                                key="dial_code"
+                                name="dial_code"
+                                defaultValue="+1"
+                                onChange={this.handleInputChange}>
                                 {countryDialCodes.map(dialCode =>
                                     <option key={dialCode} value={dialCode}>
                                         {dialCode}

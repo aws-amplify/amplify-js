@@ -48,7 +48,7 @@ export default class AWSS3Provider implements StorageProvider {
      * @param {Object} config - Configuration object for storage
      */
     constructor(config?: StorageOptions) {
-        this._config = config ? config : {};
+        this._config = config ? config: {};
         logger.debug('Storage Options', this._config);
     }
 
@@ -87,7 +87,7 @@ export default class AWSS3Provider implements StorageProvider {
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, config?): Promise<String | Object> {
+    public async get(key: string, config?): Promise<String|Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -681,7 +681,7 @@ export default class AWSS3Provider implements StorageProvider {
      * @private
      */
     _ensureCredentials() {
-
+       
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;

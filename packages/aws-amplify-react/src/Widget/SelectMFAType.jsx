@@ -41,7 +41,7 @@ export default class SelectMFAType extends Component {
         this.state = {
             TOTPSetup: false,
             selectMessage: null
-        }
+        };
     }
 
     handleInputChange(evt) {

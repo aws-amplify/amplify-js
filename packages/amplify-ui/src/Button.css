@@ -33,6 +33,12 @@
   opacity: 0.8;
 }
 
+.button:disabled {
+  opacity: 1;
+  cursor: auto;
+  background-color: var(--ion-color-primary-tint);
+}
+
 .signInButton {
   position: relative;
   width: 100%;

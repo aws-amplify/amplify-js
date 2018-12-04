@@ -73,7 +73,7 @@ export class FederatedButtons extends Component {
                 theme={theme}
                 onStateChange={onStateChange}
                 auth0={auth0}
-              />
+              />;
     }
 
     render() {

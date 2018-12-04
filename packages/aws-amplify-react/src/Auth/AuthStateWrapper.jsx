@@ -51,7 +51,7 @@ export default class AuthStateWrapper extends Component {
         return Auth.currentUser()
             .then(user => {
                 const state = user? 'signedIn' : 'signIn';
-                this.handleStateChange(state, user)
+                this.handleStateChange(state, user);
             })
             .catch(err => logger.error(err));
     }
@@ -82,6 +82,6 @@ export default class AuthStateWrapper extends Component {
                     </div>
                 }
             </div>
-        )
+        );
     }
 }
