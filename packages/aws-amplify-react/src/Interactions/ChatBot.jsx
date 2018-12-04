@@ -454,7 +454,6 @@ function ChatBotInputs(props) {
                 textEnabled={textEnabled}
             />
             <ChatBotMicButton
-                onSubmit={onSubmit}
                 styles={styles}
                 micButtonDisabled={micButtonDisabled} 
                 handleMicButton={handleMicButton}  
