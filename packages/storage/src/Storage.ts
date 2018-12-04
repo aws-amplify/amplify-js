@@ -49,7 +49,6 @@ export default class StorageClass {
         this.list = this.list.bind(this);
         this.pauseUpload = this.pauseUpload.bind(this);
         this.resumeUpload = this.resumeUpload.bind(this);
-        //this.onHubCapsule = this.onHubCapsule.bind(this)
     }
 
     public getModuleName() {
@@ -112,6 +111,7 @@ export default class StorageClass {
         logger.debug('configure Storage');
         if (!config) return this._config;
         const amplifyConfig = Parser.parseMobilehubConfig(config);
+        console.log('AMPLIFY CONFIG::', amplifyConfig);
         this._config = Object.assign({}, this._config, amplifyConfig.Storage);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
         
@@ -187,6 +187,16 @@ export default class StorageClass {
             Promise.reject('No plugin found in Storage for the provider');
         }
         return prov.resumeUpload(key);
+    }
+
+    public async cancelUpload (key:string,config?){
+        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        if(prov === undefined) {
+            logger.debug('No plugin found with providerName', provider);
+            Promise.reject('No plugin found in Storage for the provider');
+        }
+        return prov.cancelUpload(key);
     }
 
 

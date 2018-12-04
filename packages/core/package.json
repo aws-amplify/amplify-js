@@ -19,7 +19,8 @@
   "react-native": {
     "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
     "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-    "./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
+    "./lib/StorageHelper": "./lib/StorageHelper/reactnative.js",
+    "./lib/Network": "./lib/Network/sendNetworkUpdate.native.js"
   },
   "repository": {
     "type": "git",
