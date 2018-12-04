@@ -347,13 +347,71 @@ export class ChatBot extends Component {
                         micButtonDisabled={this.state.micButtonDisabled}
                         handleMicButton={this.handleVoiceClick}
                         micText={this.state.micText}
-                        onSubmit={this.submit}
                         currentVoiceState={this.state.currentVoiceState}>
                     </ChatBotInputs>
                 </SectionFooter>
             </FormSection>
         );
     }
+}
+
+function ChatBotTextInput(props) {
+    const styles=props.styles
+    const onChange=props.onChange
+    const inputText=props.inputText
+    const inputDisabled=props.inputDisabled
+    const currentVoiceState=props.currentVoiceState
+
+    return(
+        <input
+            style={styles.textInput}
+            type='text'
+            placeholder={I18n.get(currentVoiceState.MESSAGE)}
+            onChange={onChange}
+            value={inputText}
+            disabled={inputDisabled}>
+        </input>
+    )
+}
+
+function ChatBotMicButton(props) {
+    const voiceEnabled = props.voiceEnabled;
+    const styles = props.styles;
+    const micButtonDisabled = props.micButtonDisabled;
+    const handleMicButton = props.handleMicButton;
+    const micText = props.micText;
+
+    if (!voiceEnabled) {
+        return null
+    }
+
+    return(
+        <button 
+            style={styles.mic} 
+            disabled={micButtonDisabled} 
+            onClick={handleMicButton}>
+            {micText}    
+        </button>
+    )
+}
+
+function ChatBotTextButton(props) {
+    const textEnabled = props.textEnabled;
+    const styles = props.styles;
+    const inputDisabled = props.inputDisabled;
+
+    if (!textEnabled) {
+        return null;
+    }
+
+    return(
+        <button 
+            type="submit" 
+            style={styles.button} 
+            disabled={inputDisabled}>
+            {I18n.get('Send')}
+        </button>
+    )
 }
 
 function ChatBotInputs(props) {
@@ -367,69 +425,43 @@ function ChatBotInputs(props) {
     const onSubmit = props.onSubmit;
     const handleMicButton = props.handleMicButton;
     const micText = props.micText;
-    const onSubmit = props.onSubmit;
     const currentVoiceState = props.currentVoiceState
-    if (voiceEnabled && textEnabled) {
-        return (
-            <form onSubmit={onSubmit}>
-                <input
-                    style={styles.textInput}
-                    type='text'
-                    placeholder={I18n.get(currentVoiceState.MESSAGE)}
-                    onChange={onChange}
-                    value={inputText}
-                    disabled={inputDisabled}>
-                </input>
-                <button 
-                    type="submit" 
-                    style={styles.button} 
-                    disabled={inputDisabled}>{I18n.get('Send')}
-                </button>
-                <button 
-                    style={styles.mic} 
-                    disabled={micButtonDisabled} 
-                    onClick={handleMicButton}>{micText}    
-                </button>
-            </form>);
-    } else if (voiceEnabled && !textEnabled) {
-        return (
-            <form onSubmit={onSubmit}>
-                <input
-                    style={styles.textInput}
-                    type='text'
-                    placeholder={I18n.get(currentVoiceState.MESSAGE)}
-                    onChange={onChange}
-                    value={inputText}
-                    disabled={true}>
-                </input>
-                <button 
-                    style={styles.mic} 
-                    disabled={micButtonDisabled} 
-                    onClick={handleMicButton}>{micText}    
-                </button>
-            </form>);
-    } else if (!voiceEnabled && textEnabled) {
-        return (
-            <form onSubmit={onSubmit}>
-                <input
-                    style={styles.textInput}
-                    type='text'
-                    placeholder={I18n.get(currentVoiceState.MESSAGE)}
-                    onChange={onChange}
-                    value={inputText}
-                    disabled={inputDisabled}>
-                </input>
-                <button 
-                    type="submit" 
-                    style={styles.button} 
-                    disabled={inputDisabled}>{I18n.get('Send')}
-                </button>
-            </form>);
-    } else {
-        return (
-            <div>You must enable at least one type of input. Set voiceEnabled or textEnabled to true in the props.</div>
-            );
+
+    if (voiceEnabled && !textEnabled) {
+        inputDisabled = true;
     }
+
+    if (!voiceEnabled && !textEnabled) {
+        return(<div>No Chatbot inputs enabled. Set at least one of voiceEnabled or textEnabled in the props. </div>)
+    }
+    
+    return (
+        <form onSubmit={onSubmit}>
+            <ChatBotTextInput
+                onSubmit={onSubmit}
+                styles={styles}
+                type='text'
+                currentVoiceState={currentVoiceState}
+                onChange={onChange}
+                inputText={inputText}
+                inputDisabled={inputDisabled}
+            />
+            <ChatBotTextButton
+                onSubmit={onSubmit}
+                type="submit" 
+                styles={styles}
+                inputDisabled={inputDisabled}
+                textEnabled={textEnabled}
+            />
+            <ChatBotMicButton
+                onSubmit={onSubmit}
+                styles={styles}
+                micButtonDisabled={micButtonDisabled} 
+                handleMicButton={handleMicButton}  
+                micText={micText}
+                voiceEnabled={voiceEnabled}
+            />
+        </form>);
 }
 
 ChatBot.defaultProps = {
