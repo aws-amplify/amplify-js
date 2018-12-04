@@ -315,80 +315,121 @@ function ChatBotInputs(props) {
     const onChangeText = props.onChangeText;
     const inputText = props.inputText;
     const onSubmitEditing = props.onSubmitEditing;
-    const editable = props.editable;
+    let editable = props.editable;
     const handleMicButton = props.handleMicButton;
     const micText = props.micText;
     const submit = props.submit;
+
     if (voiceEnabled && textEnabled) {
-        return (
-            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
-                <TextInput
-                    style={[styles.textInput, overrideStyles.textInput]}
-                    placeholder={I18n.get("Type your message here")}
-                    onChangeText={onChangeText}
-                    value={inputText}
-                    returnKeyType="send"
-                    onSubmitEditing={onSubmitEditing}
-                    blurOnSubmit={false}
-                    editable={editable}
-                    >
-                </TextInput>
-                <AmplifyButton
-                    onPress={handleMicButton}
-                    style={[styles.buttonMic, overrideStyles.buttonMic]}
-                    text={micText} />
-                <AmplifyButton
-                    onPress={submit}
-                    type="submit"
-                    style={[styles.button, overrideStyles.button]}
-                    text={I18n.get("Send")} />
-            </View>);
-    } else if (voiceEnabled && !textEnabled) {
-        return (
-            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
-              <TextInput
-                    style={[styles.textInput, overrideStyles.textInput]}
-                    placeholder={I18n.get("Press the mic button")}
-                    onChangeText={onChangeText}
-                    value={inputText}
-                    returnKeyType="send"
-                    onSubmitEditing={onSubmitEditing}
-                    blurOnSubmit={false}
-                    editable={false}
-                    >
-                </TextInput>
-                <AmplifyButton
-                    onPress={handleMicButton}
-                    style={[styles.buttonMic, overrideStyles.buttonMic]}
-                    text={micText} />
-            </View>
-        );
-    } else if (!voiceEnabled && textEnabled) {
-        return (
-            <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
-                <TextInput
-                    style={[styles.textInput, overrideStyles.textInput]}
-                    placeholder={I18n.get("Type your message here")}
-                    onChangeText={onChangeText}
-                    value={inputText}
-                    returnKeyType="send"
-                    onSubmitEditing={onSubmitEditing}
-                    blurOnSubmit={false}
-                    editable={editable}
-                    >
-                </TextInput>
-                <AmplifyButton
-                    onPress={submit}
-                    type="submit"
-                    style={[styles.button, overrideStyles.button]}
-                    text={I18n.get("Send")} />
-            </View>
-            );
-    } else {
-        return (
-            <Text>You must enable at least one type of input. Set voiceEnabled or textEnabled to true in the props.</Text>
-            );
+        placeholder = 'Type your message or tap 🔴'
     }
+
+    if (voiceEnabled && !textEnabled) {
+        placeholder = 'Tap the mic button'
+        editable = false;
+    }
+
+    if (!voiceEnabled && textEnabled) {
+        placeholder = 'Type your message here'
+    }
+
+    if (!voiceEnabled && !textEnabled) {
+        return(
+            <Text>No Chatbot inputs enabled. Set at least one of voiceEnabled or textEnabled in the props. </Text>
+        )
+    }
+
+    return(
+        <View style={[styles.inputContainer, overrideStyles.inputContainer]}>
+            <ChatBotTextInput
+                styles={styles}
+                overrideStyles={overrideStyles}
+                placeholder={I18n.get(placeholder)}
+                onChangeText={onChangeText}
+                inputText={inputText}
+                returnKeyType="send"
+                onSubmitEditing={onSubmitEditing}
+                blurOnSubmit={false}
+                editable={editable}
+            />
+            <ChatBotMicButton
+                handleMicButton={handleMicButton}
+                styles={styles}
+                overrideStyles={overrideStyles}
+                micText={micText} 
+                voiceEnabled={voiceEnabled}
+            />
+            <ChatBotTextButton
+                submit={submit}
+                type="submit"
+                styles={styles}
+                overrideStyles={overrideStyles}
+                text={I18n.get("Send")} 
+                textEnabled={textEnabled}
+            />
+        </View>
+    )
+}
+
+function ChatBotTextInput(props) {
+    const styles = props.styles;
+    const overrideStyles = props.overrideStyles;
+    const onChangeText = props.onChangeText;
+    const inputText = props.inputText;
+    const onSubmitEditing = props.onSubmitEditing;
+    const editable = props.editable;
+    const placeholder = props.placeholder;
+
+    return(
+        <TextInput
+            style={[styles.textInput, overrideStyles.textInput]}
+            placeholder={I18n.get(placeholder)}
+            onChangeText={onChangeText}
+            value={inputText}
+            returnKeyType="send"
+            onSubmitEditing={onSubmitEditing}
+            blurOnSubmit={false}
+            editable={editable}>
+        </TextInput>
+    )
+}
+
+function ChatBotTextButton(props) {
+    const textEnabled = props.textEnabled;
+    const styles = props.styles;
+    const overrideStyles = props.overrideStyles;
+    const submit = props.submit;
+
+    if (!textEnabled) {
+        return null;
+    }
+
+    return(
+        <AmplifyButton
+        onPress={submit}
+        type="submit"
+        style={[styles.button, overrideStyles.button]}
+        text={I18n.get("Send")} />
+    )
+}
+
+function ChatBotMicButton(props) {
+    const voiceEnabled = props.voiceEnabled;
+    const styles = props.styles;
+    const overrideStyles = props.overrideStyles;
+    const handleMicButton = props.handleMicButton;
+    const micText = props.micText;
+
+    if (!voiceEnabled) {
+        return null;
+    }
+
+    return(
+        <AmplifyButton
+        onPress={handleMicButton}
+        style={[styles.buttonMic, overrideStyles.buttonMic]}
+        text={micText} />
+    )
 }
 
 ChatBot.defaultProps = {
