@@ -12,11 +12,11 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button, 
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -25,10 +25,11 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import { 
+import {
     FormField,
-    LinkCell, 
-    Header, 
+    PhoneField,
+    LinkCell,
+    Header,
     ErrorRow,
     AmplifyButton
 } from '../AmplifyUI';
@@ -90,7 +91,7 @@ export default class SignUp extends AuthPiece {
                             keyboardType="email-address"
                             required={true}
                         />
-                        <FormField
+                        <PhoneField
                             theme={theme}
                             onChangeText={(text) => this.setState({ phone_number: text })}
                             label={I18n.get('Phone Number')}

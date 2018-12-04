@@ -19,6 +19,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -33,6 +38,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -53,6 +59,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -67,6 +78,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -89,6 +101,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -103,6 +120,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -128,6 +146,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -142,6 +165,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="SMS"
@@ -167,6 +191,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -181,6 +210,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="TOTP"
@@ -206,6 +236,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -220,6 +255,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="NOMFA"
@@ -245,6 +281,11 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
             "hint": Object {},
             "input": Object {},
             "inputLabel": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
             "oAuthSignInButton": Object {},
             "photoPickerButton": Object {},
             "photoPlaceholder": Object {},
@@ -259,6 +300,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
             "signInButtonIcon": Object {},
             "strike": Object {},
             "strikeContent": Object {},
+            "toast": Object {},
           }
         }
       >
@@ -297,6 +339,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -311,6 +358,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -331,6 +379,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -345,6 +398,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -367,6 +421,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -381,6 +440,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -406,6 +466,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -420,6 +485,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="SMS"
@@ -445,6 +511,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -459,6 +530,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="TOTP"
@@ -484,6 +556,11 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
             "hint": Object {},
             "input": Object {},
             "inputLabel": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
             "oAuthSignInButton": Object {},
             "photoPickerButton": Object {},
             "photoPlaceholder": Object {},
@@ -498,6 +575,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
             "signInButtonIcon": Object {},
             "strike": Object {},
             "strikeContent": Object {},
+            "toast": Object {},
           }
         }
       >
@@ -527,6 +605,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -541,6 +624,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -561,6 +645,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -575,6 +664,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -597,6 +687,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -611,6 +706,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     >
@@ -636,6 +732,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -650,6 +751,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="SMS"
@@ -675,6 +777,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -689,6 +796,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="TOTP"
@@ -714,6 +822,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "hint": Object {},
               "input": Object {},
               "inputLabel": Object {},
+              "nav": Object {},
+              "navBar": Object {},
+              "navButton": Object {},
+              "navItem": Object {},
+              "navRight": Object {},
               "oAuthSignInButton": Object {},
               "photoPickerButton": Object {},
               "photoPlaceholder": Object {},
@@ -728,6 +841,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "signInButtonIcon": Object {},
               "strike": Object {},
               "strikeContent": Object {},
+              "toast": Object {},
             }
           }
           value="NOMFA"
@@ -753,6 +867,11 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
             "hint": Object {},
             "input": Object {},
             "inputLabel": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
             "oAuthSignInButton": Object {},
             "photoPickerButton": Object {},
             "photoPlaceholder": Object {},
@@ -767,6 +886,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
             "signInButtonIcon": Object {},
             "strike": Object {},
             "strikeContent": Object {},
+            "toast": Object {},
           }
         }
       >
