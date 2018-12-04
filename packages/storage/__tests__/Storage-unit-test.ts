@@ -112,6 +112,72 @@ describe('Storage', () => {
         });
     });
 
+    describe('pause test', () => {
+        test('upload object paused succefully', async () => {
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'pauseUpload').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            await storage.pauseUpload('key',{
+                Storage: {
+                    AWSS3: {
+                    bucket: 'bucket', 
+                    region: 'us-east-1', 
+                }
+            }
+            }) ;
+            expect(put_spyon).toBeCalled();
+            put_spyon.mockClear();
+        });
+    });
+
+    describe('resume test', () => {
+        test('resume upload object succefully', async () => {
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'resumeUpload').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            await storage.resumeUpload('key',{
+                Storage: {
+                    AWSS3: {
+                    bucket: 'bucket', 
+                    region: 'us-east-1', 
+                }
+            }
+            }) ;
+            expect(put_spyon).toBeCalled();
+            put_spyon.mockClear();
+        });
+    });
+
+    describe('cancel test', () => {
+        test('cancel upload succefully', async () => {
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'cancelUpload').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            await storage.cancelUpload('key',{
+                Storage: {
+                    AWSS3: {
+                    bucket: 'bucket', 
+                    region: 'us-east-1', 
+                }
+            }
+            }) ;
+            expect(put_spyon).toBeCalled();
+            put_spyon.mockClear();
+        });
+    });
+
     describe('remove test', () => {
         test('remove object successfully', async () => {
             const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {

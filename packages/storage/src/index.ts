@@ -45,9 +45,7 @@ export { StorageProvider };
 export * from './Providers';
 
 const onNetworkEvent = (payload) => {
-    console.log('PAYLOAD recieved ! ', payload);
-    if(payload.data.online === true){
-        console.log(payload.data.online);
+    if(payload.data.online === true) {
         Storage.resumeUpload('',{});
     } 
 };
@@ -56,8 +54,7 @@ Storage.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
     if(channel === 'network'){
         onNetworkEvent(payload);
-    }
-    
+    }   
 };
 
 Hub.listen('network',Storage);

@@ -18,7 +18,6 @@ const handle = (callback, online) => {
   };
 
   export default detectNetwork(online => {
-    console.log('this is payload now!!', online);
     Hub.dispatch('network',{event: 'networkchange', data: online},'Network');
   });
 
