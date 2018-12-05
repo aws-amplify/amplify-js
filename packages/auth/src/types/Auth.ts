@@ -95,3 +95,7 @@ export interface ConfirmSignUpOptions {
 export interface SignOutOpts {
     global?: boolean
 }
+
+export interface CurrentUserOpts {
+    forceUpdate: boolean
+}

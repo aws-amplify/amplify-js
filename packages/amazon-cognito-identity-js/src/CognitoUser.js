@@ -103,6 +103,7 @@ export default class CognitoUser {
    * @returns {void}
    */
   setSignInUserSession(signInUserSession) {
+    this.clearCachedUserData();
     this.clearCachedTokens();
     this.signInUserSession = signInUserSession;
     this.cacheTokens();
@@ -964,6 +965,7 @@ export default class CognitoUser {
       if (err) {
         return callback(err, null);
       }
+      this.clearCachedUserData();
       this.clearCachedTokens();
       return callback(null, 'SUCCESS');
     });
@@ -1056,20 +1058,35 @@ export default class CognitoUser {
    * @param {nodeCallback<UserData>} callback Called on success or error.
    * @returns {void}
    */
-  getUserData(callback) {
+  getUserData(callback, params) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      this.clearCachedUserData();
       return callback(new Error('User is not authenticated'), null);
     }
 
-    this.client.request('GetUser', {
-      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-    }, (err, userData) => {
-      if (err) {
+    const forceUpdate = params? params.forceUpdate : false;
+    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+    const userDataKey = `${keyPrefix}.${this.username}.userData`;
+    let userData = this.storage.getItem(userDataKey);
+    // get the cached attributes
+    if (!userData || forceUpdate) {
+      this.client.request('GetUser', {
+        AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      }, (err, userData) => {
+        if (err) {
+          return callback(err, null);
+        }
+        this.cacheUserData(userData);
+        return callback(null, userData);
+      });
+    } else {
+      try {
+        return callback(null, JSON.parse(userData));
+      } catch (err) {
+        this.clearCachedUserData();
         return callback(err, null);
       }
-
-      return callback(null, userData);
-    });
+    }
     return undefined;
   }
 
@@ -1205,6 +1222,7 @@ export default class CognitoUser {
       if (err) {
         if (err.code === 'NotAuthorizedException') {
           this.clearCachedTokens();
+          this.clearCachedUserData();
         }
         return callback(err, null);
       }
@@ -1238,6 +1256,26 @@ export default class CognitoUser {
     this.storage.setItem(refreshTokenKey, this.signInUserSession.getRefreshToken().getToken());
     this.storage.setItem(clockDriftKey, `${this.signInUserSession.getClockDrift()}`);
     this.storage.setItem(lastUserKey, this.username);
+  }
+
+  /**
+   * This is to cache user data
+   */
+  cacheUserData(userData) {
+    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+    const userDataKey = `${keyPrefix}.${this.username}.userData`;
+
+    this.storage.setItem(userDataKey, JSON.stringify(userData));
+  }
+
+  /**
+   * This is to remove cached user data
+   */
+  clearCachedUserData() {
+    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+    const userDataKey = `${keyPrefix}.${this.username}.userData`;
+
+    this.storage.removeItem(userDataKey);
   }
 
   /**
@@ -1601,6 +1639,7 @@ export default class CognitoUser {
       if (err) {
         return callback.onFailure(err);
       }
+      this.clearCachedUserData();
       this.clearCachedTokens();
       return callback.onSuccess('SUCCESS');
     });
@@ -1613,6 +1652,7 @@ export default class CognitoUser {
    */
   signOut() {
     this.signInUserSession = null;
+    this.clearCachedUserData();
     this.clearCachedTokens();
   }
 

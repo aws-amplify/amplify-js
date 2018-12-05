@@ -17,7 +17,8 @@ import {
     SignUpParams, 
     FederatedUser, 
     ConfirmSignUpOptions, 
-    SignOutOpts 
+    SignOutOpts,
+    CurrentUserOpts
 } from './types';
 
 import {
@@ -862,7 +863,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentUserPoolUser(): Promise<CognitoUser | any> {
+    public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         const that = this;
         return new Promise((res, rej) => {
@@ -883,6 +884,7 @@ export default class AuthClass {
                     }
              
                     // get user data from Cognito
+                    const forceUpdate = params? params.forceUpdate : false;
                     user.getUserData((err, data) => {
                         if (err) {
                             logger.debug('getting user data failed', err);
@@ -910,8 +912,8 @@ export default class AuthClass {
 
                         const attributes = that.attributesToObject(attributeList);
                         Object.assign(user, {attributes, preferredMFA});
-                        res(user);
-                    });
+                        return res(user);
+                    }, { forceUpdate });
                 });
             }).catch(e => {
                 logger.debug('Failed to sync cache info into memory', e);
@@ -924,7 +926,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public async currentAuthenticatedUser(): Promise<CognitoUser|any> {
+    public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
@@ -941,7 +943,7 @@ export default class AuthClass {
             logger.debug('get current authenticated userpool user');
             let user = null;
             try {
-                user = await this.currentUserPoolUser();
+                user = await this.currentUserPoolUser(params);
             } catch (e) {
                 logger.debug('The user is not authenticated by the error', e);
                 throw ('not authenticated');
