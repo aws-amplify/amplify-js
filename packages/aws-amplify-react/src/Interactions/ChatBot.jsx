@@ -126,11 +126,11 @@ export class ChatBot extends Component {
                 })
                 break;
             case STATES.SENDING:
-                this.conversationActionHandler();
                 this.setState({
                     micText: STATES.SENDING.ICON,
                     micButtonDisabled: true,
                 })
+                this.conversationActionHandler();
                 break;
             case STATES.SPEAKING:
                 this.setState({
