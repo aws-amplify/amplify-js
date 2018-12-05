@@ -325,11 +325,11 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
 
-        const doc = parse(query);
+        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-        const [operationDef = {},] = doc.definitions.filter(def => def.kind === 'OperationDefinition');
+        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
@@ -343,7 +343,7 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -357,20 +357,17 @@ export default class APIClass {
             graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
-        const doc = parse(queryStr);
-        const query = print(doc);
-
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
             ...(customGraphqlEndpoint &&
                 (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
             ...additionalHeaders,
-            ... await graphql_headers({ query: doc, variables }),
+            ... await graphql_headers({ query, variables }),
         };
 
         const body = {
-            query,
+            query: print(query),
             variables,
         };
 
