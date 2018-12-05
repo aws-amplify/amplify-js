@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 /*
  * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -13,69 +15,46 @@
 
 import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// tslint:disable:max-line-length
-import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
-// import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
-import { ConfirmSignInComponent } from './components/authenticator/confirm-sign-in-component/confirm-sign-in.factory';
-// import { ConfirmSignInComponentCore } from './components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core';
-import { ConfirmSignUpComponent } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.factory';
-// import { ConfirmSignUpComponentCore } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core';
-import { SignInComponent } from './components/authenticator/sign-in-component/sign-in.component.factory';
-// import { SignInComponentCore } from './components/authenticator/sign-in-component/sign-in.component.core';
-import { SignUpComponent } from './components/authenticator/sign-up-component/sign-up.factory';
-// import { SignUpComponentCore } from './components/authenticator/sign-up-component/sign-up.component.core';
-import { RequireNewPasswordComponent } from './components/authenticator/require-new-password-component/require-new-password.factory';
-// import { RequireNewPasswordComponentCore } from './components/authenticator/require-new-password-component/require-new-password.component.core';
-import { GreetingComponent } from './components/authenticator/greeting-component/greeting.factory';
-// import { GreetingComponentCore } from './components/authenticator/greeting-component/greeting.component.core';
-import { ForgotPasswordComponent } from './components/authenticator/forgot-password-component/forgot-password.factory';
-// import { ForgotPasswordComponentCore } from './components/authenticator/forgot-password-component/forgot-password.component.core';
-import { S3AlbumComponent } from './components/storage/s3-album-component/s3-album.factory';
-import { S3AlbumComponentCore } from './components/storage/s3-album-component/s3-album.component.core';
-import { S3ImageComponent } from './components/storage/s3-image-component/s3-image.factory';
-import { S3ImageComponentCore } from './components/storage/s3-image-component/s3-image.component.core';
-import { PhotoPickerComponent } from './components/storage/photo-picker-component/photo-picker.factory';
-import { PhotoPickerComponentCore } from './components/storage/photo-picker-component/photo-picker.component.core';
-import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
-import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { AmplifyAngularAuthModule } from './aws-amplify-angular-auth.module';
+import { AmplifyAngularStorageModule } from './aws-amplify-angular-storage.module';
+
 // import { FormComponent } from './components/common/form.component';
 // tslint:enable:max-line-length
 
 const components = [
-  AuthenticatorComponent,
+  // AuthenticatorComponent,
   // AuthenticatorComponentCore,
-  ConfirmSignInComponent,
+  // ConfirmSignInComponent,
   // ConfirmSignInComponentCore,
-  ConfirmSignUpComponent,
+  // ConfirmSignUpComponent,
   // ConfirmSignUpComponentCore,
-  SignInComponent,
+  // SignInComponent,
   // SignInComponentCore,
-  SignUpComponent,
+  // SignUpComponent,
   // SignUpComponentCore,
-  RequireNewPasswordComponent,
+  // RequireNewPasswordComponent,
   // RequireNewPasswordComponentCore,
-  GreetingComponent,
+  // GreetingComponent,
   // GreetingComponentCore,
-  ForgotPasswordComponent,
+  // ForgotPasswordComponent,
   // ForgotPasswordComponentCore,
-  S3AlbumComponent,
-  S3AlbumComponentCore,
-  S3ImageComponent,
-  S3ImageComponentCore,
-  PhotoPickerComponent,
-  PhotoPickerComponentCore,
-  ChatBotComponent,
-  ChatbotComponentCore,
+  // S3AlbumComponent,
+  // S3AlbumComponentCore,
+  // S3ImageComponent,
+  // S3ImageComponentCore,
+  // PhotoPickerComponent,
+  // PhotoPickerComponentCore,
+  // ChatBotComponent,
+  // ChatbotComponentCore,
   // FormComponent,
 ];
 
 @NgModule({
   imports: [
     CommonModule,
-    AmplifyAngularAuthModule
+    AmplifyAngularAuthModule,
+    AmplifyAngularStorageModule
   ],
   declarations: [
     DynamicComponentDirective,
@@ -87,7 +66,8 @@ const components = [
   providers: [ ],
   exports: [
     ...components,
-    AmplifyAngularAuthModule
+    AmplifyAngularAuthModule,
+    AmplifyAngularStorageModule
   ]
 })
 export class AmplifyAngularModule { }
