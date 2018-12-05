@@ -850,7 +850,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	     });
   ```
   
-**Use case 31.** Retrieve the user data for an authenticated user. 
+**Use case 31.** Retrieve the user data for an authenticated user.
 
   ```js
 	    cognitoUser.getUserData(function(err, userData) {
@@ -860,6 +860,16 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	        }
 	        console.log('User data for user ' + userData);
 	    });
+
+        // If you want to force to get the user data from backend,
+        // you can set the forceUpdate to true
+        cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err.message || JSON.stringify(err));
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    }, {forceUpdate: true});
   ```
 
 **Use case 32.** Handling expiration of the Id Token. 
