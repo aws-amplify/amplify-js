@@ -885,35 +885,38 @@ export default class AuthClass {
              
                     // get user data from Cognito
                     const forceUpdate = params? params.forceUpdate : false;
-                    user.getUserData((err, data) => {
-                        if (err) {
-                            logger.debug('getting user data failed', err);
-                            // Make sure the user is still valid
-                            if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                                rej(err);
-                            } else {
-                                // the error may also be thrown when lack of permissions to get user info etc
-                                // in that case we just bypass the error
-                                res(user);
+                    user.getUserData(
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('getting user data failed', err);
+                                // Make sure the user is still valid
+                                if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                                    rej(err);
+                                } else {
+                                    // the error may also be thrown when lack of permissions to get user info etc
+                                    // in that case we just bypass the error
+                                    res(user);
+                                }
+                                return;
                             }
-                            return;
-                        }
-                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                        const attributeList = [];
+                            const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                            const attributeList = [];
 
-                        for (let i = 0; i < data.UserAttributes.length; i++) {
-                            const attribute = {
-                                Name: data.UserAttributes[i].Name,
-                                Value: data.UserAttributes[i].Value,
-                            };
-                            const userAttribute = new CognitoUserAttribute(attribute);
-                            attributeList.push(userAttribute);
-                        }
+                            for (let i = 0; i < data.UserAttributes.length; i++) {
+                                const attribute = {
+                                    Name: data.UserAttributes[i].Name,
+                                    Value: data.UserAttributes[i].Value,
+                                };
+                                const userAttribute = new CognitoUserAttribute(attribute);
+                                attributeList.push(userAttribute);
+                            }
 
-                        const attributes = that.attributesToObject(attributeList);
-                        Object.assign(user, {attributes, preferredMFA});
-                        return res(user);
-                    }, { forceUpdate });
+                            const attributes = that.attributesToObject(attributeList);
+                            Object.assign(user, {attributes, preferredMFA});
+                            return res(user);
+                        }, 
+                        { forceUpdate }
+                    );
                 });
             }).catch(e => {
                 logger.debug('Failed to sync cache info into memory', e);
