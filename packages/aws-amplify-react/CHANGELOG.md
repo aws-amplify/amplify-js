@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.6-unstable.1"></a>
+## [2.1.6-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.6-unstable.0...aws-amplify-react@2.1.6-unstable.1) (2018-12-05)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** authData in Greetings ([a1fef5b](https://github.com/aws/aws-amplify/commit/a1fef5b))
+
+
+
+
 <a name="2.1.6-unstable.0"></a>
 ## [2.1.6-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.5...aws-amplify-react@2.1.6-unstable.0) (2018-12-04)
 
