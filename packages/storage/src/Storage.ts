@@ -140,7 +140,7 @@ export default class StorageClass {
     */
     public async get(key: string, config?): Promise<String|Object> {
         
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -158,7 +158,7 @@ export default class StorageClass {
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, config?):Promise<Object> { 
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -167,10 +167,14 @@ export default class StorageClass {
         return prov.put(key,object,config);  
     }
 
-    //
-    
+    /**
+     * Pause an on going upload
+     * @param {String} key - key of the object
+     * @param {Object} [config] - { level : private|protected|public}
+     * @return - promise resolves when all current uploads are stopped
+     */
     public async pauseUpload (key:string,config?){
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -179,18 +183,30 @@ export default class StorageClass {
         return prov.pauseUpload(key);
     }
 
-    public async resumeUpload (key:string,config?){
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+     /**
+     * Resume a paused upload
+     * @param {String} key - key of the object
+     * @param {Object} [config] - { level : private|protected|public}
+     * @return - promise resolves when the upload is resumed.
+     */
+    public async resumeUpload (key:string|Symbol,config?){
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
-        return prov.resumeUpload(key);
+        return prov.resumeUpload(key,config);
     }
 
+    /**
+     * Cancel an upload
+     * @param {String} key - key of the object
+     * @param {Object} [config] - { level : private|protected|public}
+     * @return - promise resolves when the upload is cancelled.
+     */
     public async cancelUpload (key:string,config?){
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -208,7 +224,7 @@ export default class StorageClass {
      * @return - Promise resolves upon successful removal of the object
      */
     public async remove(key: string, config?): Promise<any> {
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -224,7 +240,7 @@ export default class StorageClass {
      * @return - Promise resolves to list of keys for all objects in path
      */
     public async list(path, config?): Promise<any> {
-        const { provider = DEFAULT_PROVIDER } = config.provider || {};
+        const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);

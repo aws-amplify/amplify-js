@@ -44,9 +44,11 @@ export { StorageClass };
 export { StorageProvider };
 export * from './Providers';
 
+export const ALL_UPLOADS = typeof Symbol !== 'undefined' ?  Symbol('ALL_UPLOADS') : '@@ALL_UPLOADS';
+
 const onNetworkEvent = (payload) => {
     if(payload.data.online === true) {
-        Storage.resumeUpload('',{});
+        Storage.resumeUpload(ALL_UPLOADS);
     } 
 };
 

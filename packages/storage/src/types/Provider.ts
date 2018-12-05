@@ -35,11 +35,11 @@ export interface StorageProvider {
     getProviderName(): string;
 
     // resume a paused upload
-    resumeUpload(key: string, options?);
+    resumeUpload(key: string|Symbol, options?): Promise<String>
 
     // pause an upload
-    pauseUpload(key: string, options?);
+    pauseUpload(key: string, options?):Promise<String>
 
     // cancel an upload
-    cancelUpload(key: string, options?);
+    cancelUpload(key: string, options?):Promise<String>
 }

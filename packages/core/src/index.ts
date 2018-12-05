@@ -14,12 +14,14 @@
 import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
 import Amplify from './Amplify';
+import Hub from './Hub';
+import detectNetwork from './Network';
 
 export * from './Facet';
 export { default as ClientDevice } from './ClientDevice';
 export * from './Logger';
 export * from './Errors';
-export { default as Hub } from './Hub';
+export { Hub };
 export { default as I18n } from './I18n';
 export { default as JS } from './JS';
 export { default as Signer } from './Signer';
@@ -31,7 +33,7 @@ export { default as ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { default as StorageHelper, MemoryStorage } from './StorageHelper';
 export { default as Platform } from './Platform';
-export { default as  detectNetwork}  from './Network';
+export { detectNetwork };
 
 import Platform from './Platform';
 export const Constants = {
@@ -40,6 +42,11 @@ export const Constants = {
 
 export default Amplify;
 
+detectNetwork(online => {
+    console.log('TEST', online);
+    Hub.dispatch('network', { event: 'networkchange', data: online }, 'Network');
+});
+
 const logger = new Logger('Core');
 
 if (AWS['util']) {
@@ -47,7 +54,7 @@ if (AWS['util']) {
         return Constants.userAgent;
     };
 } else if (AWS.config) {
-    AWS.config.update({'customUserAgent': Constants.userAgent});
+    AWS.config.update({ 'customUserAgent': Constants.userAgent });
 } else {
     logger.warn('No AWS.config');
 }

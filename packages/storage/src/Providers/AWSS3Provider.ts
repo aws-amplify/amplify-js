@@ -19,7 +19,7 @@ import {
 } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
-
+import { ALL_UPLOADS } from '../index';
 const logger = new Logger('AWSS3Provider');
 
 const dispatchStorageEvent = (track, attrs, metrics) => {
@@ -35,13 +35,17 @@ export default class AWSS3Provider implements StorageProvider {
 
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
-    static PART_SIZE = 5242880;
+    static PART_SIZE = 5242880 //1024*1024*5;
+    static INITIATED = 'initiated';
+    static PAUSED = 'paused';
+    static UPLOADING = 'uploading'
+    static CANCELLED = 'cancelled';
 
     /**
      * @private
      */
     private _config;
-    private uploadFiles = [];
+    private currentUploadingFiles = {};
 
     /**
      * Initialize Storage with AWS configurations
@@ -94,13 +98,13 @@ export default class AWSS3Provider implements StorageProvider {
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
+        const s3Key = prefix + key;
         const s3 = this._createS3(opt);
-        logger.debug('get ' + key + ' from ' + final_key);
+        logger.debug('get ' + key + ' from ' + s3Key);
 
         const params: any = {
             Bucket: bucket,
-            Key: final_key
+            Key: s3Key
         };
 
         if (download === true) {
@@ -163,14 +167,14 @@ export default class AWSS3Provider implements StorageProvider {
         const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
+        const s3Key = prefix + key;
         const s3 = this._createS3(opt);
-        logger.debug('put ' + key + ' to ' + final_key);
+        logger.debug('put ' + key + ' to ' + s3Key);
 
         try {
             const createMultipartParams:any = {
                 Bucket: bucket,
-                Key: final_key
+                Key: s3Key
             };
             if (cacheControl) { createMultipartParams.CacheControl = cacheControl; }
             if (contentDisposition) { createMultipartParams.ContentDisposition = contentDisposition; }
@@ -186,6 +190,9 @@ export default class AWSS3Provider implements StorageProvider {
 
             
             let uploadId;
+            if(this.currentUploadingFiles[s3Key]){
+                Promise.reject('File is already uploading');
+            }
             return new Promise((res, rej) => {
                 s3.createMultipartUpload(createMultipartParams, (err, data) => {
                     if (err) {
@@ -193,23 +200,15 @@ export default class AWSS3Provider implements StorageProvider {
                         Promise.reject(err);
                     } else {
                         uploadId = data.UploadId;
-                        
-                        
-                        
-                        const fileSize = (typeof(object) === 'string')? object.length : object.size;
-                        
-                        
-                        
+                        const fileSize = (typeof(object) === 'string')? encodeURI(object).split(/%..|./).length - 1: object.size;
                         const noOfParts = (fileSize <= AWSS3Provider.PART_SIZE) ? 1
                             : Math.ceil(fileSize / AWSS3Provider.PART_SIZE);
 
-                        
-                        this.uploadFiles.push
-                            ({ Key: final_key, key ,uploadId, noOfParts, file: object,
-                             externalPause: true, res, rej,status:'initiated',eTags:[],progressCallback});
-                        
-                        
-                        this.uploadMultiPart(final_key, progressCallback,config);
+                        console.log('length is ', fileSize);
+                        this.currentUploadingFiles[s3Key] = {'key':key, 'uploadId':uploadId, 'noOfParts':noOfParts, 'file': object,'fileSize':fileSize, 
+                        'externalPause': true, 'resolveCallback':res,'rejectCallback':rej, 'status': 'initiated', 'eTags': [],
+                         'progressCallback': progressCallback};
+                        this.uploadMultiPart(s3Key, config);
                     }
                 });
             });
@@ -233,18 +232,15 @@ export default class AWSS3Provider implements StorageProvider {
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
-        const cancelFileObject = this.uploadFiles.find(uploadFile => {
-            if(uploadFile.Key === final_key){
-                return uploadFile;
-            }
-        });
-        if (cancelFileObject === undefined) {
+        const s3Key = prefix + key;
+        const cancelFileObject = this.currentUploadingFiles[s3Key];
+       
+        if (!cancelFileObject) {
             Promise.reject('Upload not found in cache');
         }
         const cancelParams = {
             Bucket: bucket,
-            Key: final_key,
+            Key: s3Key,
             UploadId: cancelFileObject.uploadId
         };
         
@@ -254,59 +250,58 @@ export default class AWSS3Provider implements StorageProvider {
             const data = await s3.abortMultipartUpload(cancelParams).promise();
         
             // call listparts here to make sure parts is empty.
-            this.uploadFiles.forEach(uploadFile => {
-                if(uploadFile.Key === final_key){
-                    uploadFile.status = 'cancelled';
-                }
-            });
+            cancelFileObject.status = AWSS3Provider.CANCELLED;
             // call listparts to ensure etags are empty
-            etags = await this.listparts(final_key,config);
+            etags = await this.listparts(s3Key,config);
             
             if(etags.length !== 0){
                     Promise.reject('Error cancelling your upload');
             }
             // remove from object
-            this.uploadFiles.forEach(element => {
-                if (element.Key === final_key) {
-                   this.uploadFiles.splice(this.uploadFiles.indexOf(element),1);    
-                }
-            });
+            delete this.currentUploadingFiles[s3Key]; 
             
             Promise.resolve('Upload cancelled');
-            }
-            catch(error){
-                Promise.reject(error);
-            }
+        } catch(error){
+            Promise.reject(error);
+        }
     }
 
-    private async listparts(final_key, config?) {
+    private async listparts(s3Key, config?) {
     
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const s3 = this._createS3(opt);
-    
-        const listFileObject = this.uploadFiles.find(uploadFile => {
-            if(uploadFile.Key === final_key){
-    
-                return uploadFile;
-            }
-        });
+        console.log('listFileObject');
+        const listFileObject = this.currentUploadingFiles[s3Key];
+        if(!listFileObject){
+            Promise.reject('No file found');
+        }
+        console.log(listFileObject);
         const noOfparts = listFileObject.noOfParts;
         const etags = [];
         for (let i = 0; i < Math.ceil(noOfparts / 1000); i++) {
             const listparam = {
                 Bucket: bucket,
-                Key: final_key,
+                Key: s3Key,
                 UploadId: listFileObject.uploadId,
                 MaxParts: 1000,
                 PartNumberMarker: i * 1000
             };
             try {
                 const data = await s3.listParts(listparam).promise();
-                Array.prototype.push.apply(etags,data.Parts); 
+                Array.prototype.push.apply(etags,data.Parts);
+                console.log('looping'); 
             } catch (err) {
+                if (err.toString().includes('Network Failure')) {
+                    this.currentUploadingFiles[s3Key].externalPause = false;
+                    await this.pauseUpload(s3Key,config);
+                    
+                } else {
+                    logger.debug('upload rejected', err);
+                    Promise.reject(err);
+                }
                 Promise.reject(err);
             }
         }
@@ -314,31 +309,26 @@ export default class AWSS3Provider implements StorageProvider {
     }
 
     private async complete(key,config?) {
+        console.log('complete called');
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
 
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
-        
-        const uploadFileObject = this.uploadFiles.find(uploadFile => {
-            if(uploadFile.Key === final_key){
-                return uploadFile;
-            }
-        });
+        const s3Key = prefix + key; 
+        console.log('final key is', s3Key);
+        const uploadFileObject = this.currentUploadingFiles[s3Key];
+        console.log('Object is', uploadFileObject);
         const s3 = this._createS3(opt);
-        const completedEtagList = await this.listparts(final_key, config);
+        const completedEtagList = await this.listparts(s3Key, config);
         if(completedEtagList.length !== uploadFileObject.noOfParts){
             uploadFileObject.rej('file not uploaded');
         }
-        dispatchStorageEvent(
-            track,
-            { method: 'put', result: 'success' },
-            null);
+        
         const Upload = {
             Bucket: bucket,
-            Key: final_key,
+            Key: s3Key,
             MultipartUpload: {
                 Parts: uploadFileObject.eTags
             },
@@ -347,93 +337,86 @@ export default class AWSS3Provider implements StorageProvider {
         
         await s3.completeMultipartUpload(Upload, (err, data) => {
             if (err) {
-                
-                uploadFileObject.rej(err);
+                if (err.toString().includes('Network Failure')) {
+                    uploadFileObject.externalPause = false;
+                    this.pauseUpload(uploadFileObject.key,config);
+                    
+                } else {
+                    logger.debug('upload rejected', err);
+                    uploadFileObject.rejectCallback(err);
+                }
             }
             else { 
-                this.uploadFiles.forEach(element => {
-                    if (element.Key === key) {
-                
-                        
-                        this.uploadFiles.splice(this.uploadFiles.indexOf(element),1);    
-                    }
-                });
-                uploadFileObject.res({key});
+                console.log('complete sucess');
+                dispatchStorageEvent(
+                    track,
+                    { method: 'put', result: 'success' },
+                    null);
+                delete this.currentUploadingFiles[s3Key];
+                uploadFileObject.resolveCallback({key});
             }
         });
     }
 
-    private async uploadMultiPart(final_key, progressCallback, config?) {
-        const credentialsOK = await this._ensureCredentials();
+    private async uploadMultiPart(s3Key, config?) {
+        console.log('uploading now ', s3Key);
+        let credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
         
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const s3 = this._createS3(opt);
-        const uploadDetails = this.uploadFiles.find(uploadFile => {
-            return uploadFile.Key === final_key;
-        });
-        if(uploadDetails === undefined){
+        const uploadFileObject = this.currentUploadingFiles[s3Key];
+        if(!uploadFileObject){
             Promise.reject('upload not found');
         }
-        const uploadId = uploadDetails.uploadId;
-        const file = uploadDetails.file;
-        const fileSize = uploadDetails.file.size;
-        const noOfParts = uploadDetails.noOfParts;
-        const reject = uploadDetails.rej;
-        this.uploadFiles.forEach(uploadFile => {
-            if(uploadFile.Key === final_key){
-                uploadFile.status = 'uploading';
-            }
-        });
-        const etags = uploadDetails.eTags;
-        let partNo;
-        if (etags.length !== 0) {
-            partNo = etags.length + 1;
-        } else {
-            partNo = 1;
-        }
-        
+        const {uploadId,file,noOfParts, rejectCallback,progressCallback,fileSize} = uploadFileObject;
+        uploadFileObject.status = AWSS3Provider.UPLOADING;
+
+        const etags = uploadFileObject.eTags;
+        let partNo = etags.length + 1;
+
         for (let i = partNo; i <= noOfParts; i++) {
             let filePart;
-            const uploadFileObject = this.uploadFiles.find(uploadFile => {
-                return uploadFile.Key === final_key;
-            });
-            
-            if (uploadFileObject === undefined) {
+            if (!uploadFileObject) {
                 return Promise.reject('Upload does not exist');
             }
+            console.log('uploading now ', i);
+            console.log('status from main', this.currentUploadingFiles[s3Key].status);
+            console.log('status from obj', uploadFileObject.status);
+            if (uploadFileObject.status === AWSS3Provider.UPLOADING) {
+                if(fileSize > AWSS3Provider.PART_SIZE) {
+                    if (i !== noOfParts) {
+                        filePart = file.slice(((i - 1) * AWSS3Provider.PART_SIZE ), 
+                                              ( i * AWSS3Provider.PART_SIZE), file.contentType);
     
-            if (uploadFileObject.status === 'uploading') {
-                if (i !== noOfParts) {
-                    filePart = file.slice(((i - 1) * AWSS3Provider.PART_SIZE + 1), 
-                                          ( i * AWSS3Provider.PART_SIZE) + 1, file.contentType);
-
+                    } else {
+                        filePart = file.slice(((i - 1) * AWSS3Provider.PART_SIZE), fileSize, file.contentType);
+                    }
                 } else {
-                    if(fileSize > AWSS3Provider.PART_SIZE)
-                        filePart = file.slice(((i - 1) * AWSS3Provider.PART_SIZE) + 1, fileSize, file.contentType);
-                    else 
-                        filePart = file;
+                    filePart = file;
                 }
-                
-                const uploadParams = {
+                console.log('uploading now 2');
+                const currentUploadParams = {
                     Body: filePart,
                     Bucket: bucket,
-                    Key: final_key,
+                    Key: s3Key,
                     PartNumber: i,
                     UploadId: uploadId
                 };
         
-                try {            
-                    const data = await s3.uploadPart(uploadParams).promise();
-                    
+                try { 
+                    credentialsOK = await this._ensureCredentials();
+                    if (!credentialsOK) { return rejectCallback('No credentials'); }        
+                    let { ETag } = await s3.uploadPart(currentUploadParams).promise();
+                    console.log('got back data');
                     if (progressCallback) {
                         if (typeof progressCallback === 'function') {
                             const progress = {
                                     loaded:i*AWSS3Provider.PART_SIZE,
                                     totale: fileSize,
                                     part:i,
-                                    key:final_key
+                                    key:s3Key
                                 };
                                 progressCallback(progress);
                         } else {
@@ -442,128 +425,97 @@ export default class AWSS3Provider implements StorageProvider {
                     }
                         
                     let eTag;
-                    let tag = data.ETag;
-                    tag = tag.replace(/\"/g, "");
+                    ETag = ETag.replace(/\"/g, "");
                     const etagList = uploadFileObject.eTags;
             
                     if (etagList.length !== 0) {
                         const found = etagList.find((element) => {
                             return (element.PartNumber === i) ;
                         });
-                        if (found === undefined){
-                            etagList.push({ ETag: tag, PartNumber: i });
+                        if (!found){
+                            etagList.push({ ETag: ETag, PartNumber: i });
                         }
-            
-                        this.uploadFiles.forEach(uploadFile => {
-                            if(uploadFile.Key === final_key){
-                                uploadFile.eTags = etagList;
-                            }
-                        });
+                        uploadFileObject.eTags = etagList;
                     } else {
-                        eTag = [{ ETag: tag, PartNumber: i }];
-                        this.uploadFiles.forEach(uploadFile => {
-                            if(uploadFile.Key === final_key){
-                                uploadFile.eTags = eTag;
-                            }
-                        });
+                        eTag = [{ ETag: ETag, PartNumber: i }];
+                        uploadFileObject.eTags = eTag;    
                     }
-                    
+                    console.log('the file object looks like :', uploadFileObject);
                 } catch (error) {
                     if (error.toString().includes('Network Failure')) {
-                        this.uploadFiles.forEach(element => {
-                            if (element.Key === final_key) {
-                                element.externalPause = false;
-                                this.pauseUpload(element.key,config);
-                            }
-                        });
+                        uploadFileObject.externalPause = false;
+                        await this.pauseUpload(uploadFileObject.key,config);
                         
                     } else {
-                        console.error(error);
-                        reject(error);
+                        logger.debug('upload rejected', error);
+                        rejectCallback(error);
                     }
                 }
-            } else if (uploadFileObject.status === 'paused') {
+            } else if (uploadFileObject.status === AWSS3Provider.PAUSED) {
+                console.log('we hit pause now');
                 break;
-            } else if (uploadFileObject.status === 'cancelled') {
-                this.uploadFiles.forEach(element => {
-                    if (element.Key === final_key) {
-                          this.uploadFiles.splice(this.uploadFiles.indexOf(element),1);    
-                    }
-                });
+            } else if (uploadFileObject.status === AWSS3Provider.CANCELLED) {
+                console.log('we hit cancel now');
+                delete(this.currentUploadingFiles[s3Key]);
                 break;
             }
         }
-        const finalEtagList = this.uploadFiles.find(uploadFile => {
-            if (uploadFile.Key === final_key) {
-                  return uploadFile.eTags;
-            }
-        });
+        const finalEtagList = this.currentUploadingFiles[s3Key];
         if (finalEtagList.eTags.length === noOfParts) {
+            console.log('Passing key as ', finalEtagList.key);
             this.complete(finalEtagList.key, config);
         }
     }
 
-    public async pauseUpload(key, config?) {
+    public async pauseUpload(key, config?):Promise<any> {
 
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
-        const pauseFileObject = this.uploadFiles.find(uploadFile => {
-            if(uploadFile.Key === final_key){
-                return uploadFile;
-            }
-        });
-        if(pauseFileObject === undefined){
+        const s3Key = prefix + key;
+        const pauseFileObject = this.currentUploadingFiles[s3Key];
+        
+        if(!pauseFileObject){
             return Promise.reject('Key not found, cannot pause');
         }
-        if (pauseFileObject.status === 'uploading') {
-            this.uploadFiles.forEach(uploadFile => {
-                if(uploadFile.Key === final_key){
-                    uploadFile.status = 'paused';
-                }
-            });
-        } else if (pauseFileObject.status === 'paused') {
+        if (pauseFileObject.status === AWSS3Provider.UPLOADING) {
+            pauseFileObject.status = AWSS3Provider.PAUSED;
+        } else if (pauseFileObject.status === AWSS3Provider.PAUSED) {
             logger.debug('upload already paused');
         } else {
             logger.debug('upload already cancelled');
+            return Promise.reject('Key not found, cannot pause');
         }
+        console.log('pasuing this one', pauseFileObject);
     }
 
-    public async resumeUpload(key, config?) {
-
+    public async resumeUpload(key: string|Symbol, config?) {
+        console.log('resume called');
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
+        
 
-        if (key === '') {
-            this.uploadFiles.forEach(uploadFile => {
-                if (uploadFile.externalPause === false) {
-                    this.uploadMultiPart(uploadFile.Key,uploadFile.progressCallback ,config);
-                }
-            });
+        if (key === ALL_UPLOADS) {
+            for(let Key in this.currentUploadingFiles){
+                console.log('resuming upload for ',Key);
+                this.uploadMultiPart(Key,config);
+            }
         } else {
-            const resumeFileObject = this.uploadFiles.find(uploadFile => {
-                if(uploadFile.Key === final_key){
-                    return uploadFile;
-                }
-            });
-            if(resumeFileObject === undefined){
+            const s3Key = prefix + key;
+            const resumeFileObject = this.currentUploadingFiles[s3Key];
+            if(!resumeFileObject){
                 return Promise.reject('No file found');
             }
-            if(resumeFileObject.status === 'paused'){
-                this.uploadFiles.forEach(uploadFile => {
-                    if(uploadFile.Key === final_key){
-                        uploadFile.status = 'uploading';
-                    }
-                });
+            if(resumeFileObject.status === AWSS3Provider.PAUSED){
+                resumeFileObject.status = AWSS3Provider.UPLOADING;
             } 
-            this.uploadMultiPart(resumeFileObject.Key, resumeFileObject.progressCallback ,config);
+            console.log('resuming this one', resumeFileObject);
+            this.uploadMultiPart(s3Key, config);
         }
     }
 
@@ -583,13 +535,13 @@ export default class AWSS3Provider implements StorageProvider {
         const { bucket, region, credentials, level, track } = opt;
 
         const prefix = this._prefix(opt);
-        const final_key = prefix + key;
+        const s3Key = prefix + key;
         const s3 = this._createS3(opt);
-        logger.debug('remove ' + key + ' from ' + final_key);
+        logger.debug('remove ' + key + ' from ' + s3Key);
 
         const params = {
             Bucket: bucket,
-            Key: final_key
+            Key: s3Key
         };
 
         return new Promise<any>((res, rej) => {
