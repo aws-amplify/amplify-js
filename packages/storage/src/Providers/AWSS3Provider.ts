@@ -35,10 +35,10 @@ export default class AWSS3Provider implements StorageProvider {
 
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
-    static PART_SIZE = 5242880 //1024*1024*5;
+    static PART_SIZE = 5242880; // 1024*1024*5
     static INITIATED = 'initiated';
     static PAUSED = 'paused';
-    static UPLOADING = 'uploading'
+    static UPLOADING = 'uploading';
     static CANCELLED = 'cancelled';
 
     /**
@@ -200,14 +200,16 @@ export default class AWSS3Provider implements StorageProvider {
                         Promise.reject(err);
                     } else {
                         uploadId = data.UploadId;
-                        const fileSize = (typeof(object) === 'string')? encodeURI(object).split(/%..|./).length - 1: object.size;
+                        const fileSize = (typeof(object) === 'string')? 
+                            encodeURI(object).split(/%..|./).length - 1: object.size;
                         const noOfParts = (fileSize <= AWSS3Provider.PART_SIZE) ? 1
                             : Math.ceil(fileSize / AWSS3Provider.PART_SIZE);
 
                         console.log('length is ', fileSize);
-                        this.currentUploadingFiles[s3Key] = {'key':key, 'uploadId':uploadId, 'noOfParts':noOfParts, 'file': object,'fileSize':fileSize, 
-                        'externalPause': true, 'resolveCallback':res,'rejectCallback':rej, 'status': 'initiated', 'eTags': [],
-                         'progressCallback': progressCallback};
+                        this.currentUploadingFiles[s3Key] = 
+                            {'key':key, 'uploadId':uploadId, 'noOfParts':noOfParts, 'file': object,
+                            'fileSize':fileSize, 'externalPause': true, 'resolveCallback':res,'rejectCallback':rej,
+                             'status': 'initiated', 'eTags': [],'progressCallback': progressCallback};
                         this.uploadMultiPart(s3Key, config);
                     }
                 });
@@ -374,7 +376,7 @@ export default class AWSS3Provider implements StorageProvider {
         uploadFileObject.status = AWSS3Provider.UPLOADING;
 
         const etags = uploadFileObject.eTags;
-        let partNo = etags.length + 1;
+        const partNo = etags.length + 1;
 
         for (let i = partNo; i <= noOfParts; i++) {
             let filePart;
@@ -433,11 +435,11 @@ export default class AWSS3Provider implements StorageProvider {
                             return (element.PartNumber === i) ;
                         });
                         if (!found){
-                            etagList.push({ ETag: ETag, PartNumber: i });
+                            etagList.push({ ETag, PartNumber: i });
                         }
                         uploadFileObject.eTags = etagList;
                     } else {
-                        eTag = [{ ETag: ETag, PartNumber: i }];
+                        eTag = [{ ETag, PartNumber: i }];
                         uploadFileObject.eTags = eTag;    
                     }
                     console.log('the file object looks like :', uploadFileObject);
@@ -501,7 +503,7 @@ export default class AWSS3Provider implements StorageProvider {
         
 
         if (key === ALL_UPLOADS) {
-            for(let Key in this.currentUploadingFiles){
+            for(const Key in this.currentUploadingFiles){
                 console.log('resuming upload for ',Key);
                 this.uploadMultiPart(Key,config);
             }
