@@ -20,7 +20,7 @@ import {
   SumerianScene,
   RequireNewPassword
 } from './components';
-import { AmplifyPlugin } from './plugins/AmplifyPlugin';
+import AmplifyPlugin from './plugins/AmplifyPlugin';
 import AmplifyEventBus from './events/AmplifyEventBus';
 
 export default {
