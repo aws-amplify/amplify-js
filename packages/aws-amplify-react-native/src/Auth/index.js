@@ -42,7 +42,14 @@ export {
     Greetings
 };
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = [], signUpConfig = {}) {
+export function withAuthenticator(
+    Comp,
+    includeGreetings = false,
+    authenticatorComponents = [],
+    federated = null,
+    theme = null,
+    signUpConfig = {}
+) {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -91,6 +98,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
+                            theme={theme}
                         />
                         <Comp
                             {...this.props}
@@ -108,6 +116,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents}
+                theme={theme}
             />
         }
     }

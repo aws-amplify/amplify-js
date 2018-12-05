@@ -11,11 +11,12 @@
  * and limitations under the License.
  */
 
-import React from 'react';
-import { View, Text, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, TextInput, TouchableHighlight, TouchableOpacity, Picker } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, { linkUnderlayColor, errorIconColor } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
+import countryDialCodes from './CountryDialCodes';
 
 export const FormField = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -31,6 +32,61 @@ export const FormField = (props) => {
         </View>
     )
 }
+
+export class PhoneField extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dialCode: '+1',
+            phone: '',
+        };
+    }
+
+    onChangeText() {
+        const { dialCode, phone } = this.state;
+        const cleanedPhone = phone.replace(/[^0-9.]/g, '');
+        this.props.onChangeText(`${dialCode}${cleanedPhone}`);
+    }
+
+    render() {
+        const { label, required } = this.props;
+        const theme = this.props.theme || AmplifyTheme;
+
+        return (
+            <View style={theme.formField}>
+                <Text style={theme.inputLabel}>{label} {required ? '*' : ''}</Text>
+                <View style={theme.phoneContainer}>
+                    <Picker
+                        style={theme.picker}
+                        selectedValue={this.state.dialCode}
+                        itemStyle={theme.pickerItem}
+                        onValueChange={(dialCode) => {
+                            this.setState({ dialCode }, () => {
+                                this.onChangeText();
+                            });
+                        }}>
+                        {countryDialCodes.map(dialCode =>
+                            <Picker.Item key={dialCode} value={dialCode} label={dialCode} />
+                        )}
+                    </Picker>
+                    <TextInput
+                        style={theme.phoneInput}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        {...this.props}
+                        onChangeText={(phone) => {
+                            this.setState({ phone }, () => {
+                                this.onChangeText();
+                            });
+                        }}
+                    />
+                </View>
+            </View>
+        )
+    }
+}
+
 export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
@@ -70,7 +126,7 @@ export const ErrorRow = (props) => {
     if (!props.children) return null;
     return (
         <View style={theme.errorRow}>
-            <Icon name="warning" color={errorIconColor} /> 
+            <Icon name="warning" color={errorIconColor} />
             <Text style={theme.errorRowText}>{props.children}</Text>
         </View>
     )
