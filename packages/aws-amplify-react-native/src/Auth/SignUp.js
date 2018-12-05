@@ -218,11 +218,12 @@ export default class SignUp extends AuthPiece {
                             ) : (
                                 <PhoneField
                                     theme={theme}
+                                    key = {field.key}
                                     onChangeText={(text) => this.setState({ phone_number: text })}
-                                    label={I18n.get('Phone Number')}
-                                    placeholder={I18n.get('Enter your phone number')}
+                                    label={I18n.get(field.label)}
+                                    placeholder={I18n.get(field.placeholder)}
                                     keyboardType="phone-pad"
-                                    required={true}
+                                    required={field.required}
                                 />
                             )
                         })
