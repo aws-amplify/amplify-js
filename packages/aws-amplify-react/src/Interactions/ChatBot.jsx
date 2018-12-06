@@ -92,73 +92,108 @@ export class ChatBot extends Component {
             continueConversation: false,
             micButtonDisabled: false,
         }
-        this.handleVoiceClick = this.handleVoiceClick.bind(this)
-        this.conversationActionHandler = this.conversationActionHandler.bind(this)
+        this.micButtonHandler = this.micButtonHandler.bind(this)
         this.changeInputText = this.changeInputText.bind(this);
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
         this.listItemsRef = React.createRef();
-        this.onSilence = this.onSilence.bind(this)
-        this.onError = this.onError.bind(this)
+        this.onSilenceHandler = this.onSilenceHandler.bind(this)
+        this.doneSpeakingHandler = this.doneSpeakingHandler.bind(this)
+        this.lexResponseHandler = this.lexResponseHandler.bind(this)
     }
 
-    transition(newVoiceState) { 
+    async micButtonHandler() {
+        if (this.state.continueConversation === true) {
+            this.reset();
+        } else {
+            await this.setState({
+                inputDisabled: true,
+                continueConversation: true,
+                currentVoiceState: STATES.LISTENING,
+                micText: STATES.LISTENING.ICON,
+                micButtonDisabled: false,
+            })
+            audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
+        }
+    }
+
+
+    onSilenceHandler() {
+        audioControl.stopRecording();
         if (this.state.continueConversation !== true) {
             return;
         }
+        audioControl.exportWAV((blob) => {
+            this.setState({
+                currentVoiceState: STATES.SENDING,
+                audioInput: blob,
+                micText: STATES.SENDING.ICON,
+                micButtonDisabled: true,
+            })
+            this.lexResponseHandler(); 
+        });
+    }
 
-        this.setState({
-            currentVoiceState: newVoiceState
-        })
 
-        switch (newVoiceState) {
-            case STATES.INITIAL:
-                this.setState({
-                    micText: STATES.INITIAL.ICON,
-                    micButtonDisabled: false,
-                    continueConversation: false
-                })
-                break;
-            case STATES.LISTENING:
-                this.setState({
-                    micText: STATES.LISTENING.ICON,
-                    micButtonDisabled: false,
-                })
-                break;
-            case STATES.SENDING:
-                this.setState({
-                    micText: STATES.SENDING.ICON,
-                    micButtonDisabled: true,
-                })
-                this.conversationActionHandler();
-                break;
-            case STATES.SPEAKING:
-                this.setState({
-                    micText: STATES.SPEAKING.ICON,
-                    micButtonDisabled: true,
-                })
-                this.conversationActionHandler();
-                break;
+    async lexResponseHandler() {
+        if (!Interactions || typeof Interactions.send !== 'function') {
+            throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
         }
-    }
-
-    onSilence() {
-        audioControl.stopRecording();
-        this.conversationActionHandler(); 
-    }
-
-    async onSuccess(response) {
+        if (this.state.continueConversation !== true) {
+            return;
+        }
+        const response = await Interactions.send(this.props.botName, this.state.audioInput);
         this.setState({
+            lexResponse: response,
+            currentVoiceState: STATES.SPEAKING,
+            micText: STATES.SPEAKING.ICON,
+            micButtonDisabled: true,
             dialog: [...this.state.dialog, 
                 { message: response.inputTranscript, from: 'me' }, 
                 response && { from: 'bot', message: response.message }],
             inputText: ''
         }) 
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+        this.doneSpeakingHandler()
     }
 
-    onError(error) {
-        logger.error(error)
+    doneSpeakingHandler() {
+        if (this.state.continueConversation !== true) {
+            return;
+        }
+        if (this.state.lexResponse.contentType === 'audio/mpeg') {
+            audioControl.play(this.state.lexResponse.audioStream, () => {
+                if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                    this.state.lexResponse.dialogState === 'Fulfilled' ||
+                    this.state.lexResponse.dialogState === 'Failed' ||
+                    this.props.conversationModeOn === false) {
+                    this.setState({
+                        inputDisabled: false,
+                        currentVoiceState: STATES.INITIAL,
+                        micText: STATES.INITIAL.ICON,
+                        micButtonDisabled: false,
+                        continueConversation: false
+                    })
+
+                } else {
+                    audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
+                    this.setState({
+                        currentVoiceState: STATES.LISTENING,
+                        micText: STATES.LISTENING.ICON,
+                        micButtonDisabled: false,
+                    })
+                }
+            });
+        } else {
+            this.setState({
+                inputDisabled: false,
+                currentVoiceState: STATES.INITIAL,
+                micText: STATES.INITIAL.ICON,
+                micButtonDisabled: false,
+                continueConversation: false
+            })
+        }
+
     }
 
     reset() {
@@ -173,84 +208,12 @@ export class ChatBot extends Component {
         audioControl.clear();
     }
 
-    async conversationActionHandler() {
-        audioControl.supportsAudio((supported) => {
-            if (!supported) {
-                onError('Audio is not supported.')
-            }
-        });
-
-        switch (this.state.currentVoiceState) {
-            case STATES.INITIAL:
-                audioControl.startRecording(this.onSilence, null, this.props.voiceConfig.silenceDetectionConfig);
-                this.transition(STATES.LISTENING);
-                break;
-            case STATES.LISTENING:
-                audioControl.exportWAV((blob) => {
-                    this.setState({
-                        audioInput: blob,
-                    })
-                    this.transition(STATES.SENDING);
-                });
-                break;
-            case STATES.SENDING:
-                if (!Interactions || typeof Interactions.send !== 'function') {
-                    throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
-                }
-        
-                const response = await Interactions.send(this.props.botName, this.state.audioInput);
-
-                this.setState({
-                    lexResponse: response,
-                })
-                this.transition(STATES.SPEAKING)
-                this.onSuccess(response)
-                break;
-            case STATES.SPEAKING:
-                if (this.state.lexResponse.contentType === 'audio/mpeg') {
-                    audioControl.play(this.state.lexResponse.audioStream, () => {
-                        if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
-                            this.state.lexResponse.dialogState === 'Fulfilled' ||
-                            this.state.lexResponse.dialogState === 'Failed' ||
-                            this.props.conversationModeOn === false) {
-                                this.setState({
-                                    inputDisabled: false,
-                                    micText: STATES.INITIAL.ICON,
-                                })
-                            this.transition(STATES.INITIAL);
-                        } else {
-                            audioControl.startRecording(this.onSilence, null, this.props.voiceConfig.silenceDetectionConfig);
-                            this.transition(STATES.LISTENING);
-                        }
-                    });
-                } else {
-                    this.setState({
-                        inputDisabled: false
-                    })
-                    this.transition(STATES.INITIAL);
-                }
-                break;
-        }
-    };
-
     listItems() {
         return this.state.dialog.map((m, i) => {
             if (m.from === 'me') { return <div key={i} style={styles.itemMe}>{m.message}</div>; }
             else if (m.from === 'system') { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
             else { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
         });
-    }
-
-    async handleVoiceClick() {
-        if (this.state.continueConversation === true && this.props.conversationModeOn === true) {
-            this.reset();
-        } else {
-            await this.setState({
-                inputDisabled: true,
-                continueConversation: true
-            })
-            this.conversationActionHandler()
-        }
     }
 
     async submit(e) {
@@ -345,7 +308,7 @@ export class ChatBot extends Component {
                         onSubmit={this.submit}
                         inputDisabled={this.state.inputDisabled}
                         micButtonDisabled={this.state.micButtonDisabled}
-                        handleMicButton={this.handleVoiceClick}
+                        handleMicButton={this.micButtonHandler}
                         micText={this.state.micText}
                         currentVoiceState={this.state.currentVoiceState}>
                     </ChatBotInputs>
