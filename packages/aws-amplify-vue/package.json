@@ -16,7 +16,7 @@
     "vue2-filters": "^0.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/ui": "^1.0.10",
+    "@aws-amplify/ui": "1.0.10-unstable.0",
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
