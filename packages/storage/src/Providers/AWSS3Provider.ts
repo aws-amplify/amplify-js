@@ -20,7 +20,6 @@ import {
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
 import { ALL_UPLOADS } from '../index';
-import { IoT1ClickDevicesService } from '../../../../node_modules/aws-sdk/clients/all';
 const logger = new Logger('AWSS3Provider');
 
 const dispatchStorageEvent = (track, attrs, metrics) => {
