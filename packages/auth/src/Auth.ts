@@ -927,6 +927,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
+     * @param {CurrentUserOpts} - options for getting the current user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser|any> {
