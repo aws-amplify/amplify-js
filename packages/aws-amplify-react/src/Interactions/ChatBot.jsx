@@ -106,14 +106,16 @@ export class ChatBot extends Component {
         if (this.state.continueConversation === true) {
             this.reset();
         } else {
-            await this.setState({
+            this.setState({
                 inputDisabled: true,
                 continueConversation: true,
                 currentVoiceState: STATES.LISTENING,
                 micText: STATES.LISTENING.ICON,
                 micButtonDisabled: false,
+            }, () => {
+                audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
             })
-            audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
+            
         }
     }
 
@@ -129,8 +131,10 @@ export class ChatBot extends Component {
                 audioInput: blob,
                 micText: STATES.SENDING.ICON,
                 micButtonDisabled: true,
+            }, () => {
+                this.lexResponseHandler(); 
             })
-            this.lexResponseHandler(); 
+            
         });
     }
 
@@ -152,9 +156,11 @@ export class ChatBot extends Component {
                 { message: response.inputTranscript, from: 'me' }, 
                 response && { from: 'bot', message: response.message }],
             inputText: ''
+        }, () => { 
+            this.doneSpeakingHandler();
         }) 
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
-        this.doneSpeakingHandler()
+        
     }
 
     doneSpeakingHandler() {
@@ -174,14 +180,15 @@ export class ChatBot extends Component {
                         micButtonDisabled: false,
                         continueConversation: false
                     })
-
                 } else {
-                    audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
                     this.setState({
                         currentVoiceState: STATES.LISTENING,
                         micText: STATES.LISTENING.ICON,
                         micButtonDisabled: false,
+                    }, () => {
+                        audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
                     })
+                    
                 }
             });
         } else {
@@ -204,8 +211,9 @@ export class ChatBot extends Component {
             micText: STATES.INITIAL.ICON,
             continueConversation: false,
             micButtonDisabled: false,
+        }, () => {
+            audioControl.clear();
         });
-        audioControl.clear();
     }
 
     listItems() {
@@ -236,7 +244,7 @@ export class ChatBot extends Component {
 
         const response = await Interactions.send(this.props.botName, this.state.inputText);
 
-        await this.setState({
+        this.setState({
             dialog: [...this.state.dialog, response && { from: 'bot', message: response.message }],
             inputText: ''
         });
