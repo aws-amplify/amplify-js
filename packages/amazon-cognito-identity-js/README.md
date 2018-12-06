@@ -862,14 +862,14 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	    });
 
         // If you want to force to get the user data from backend,
-        // you can set the forceUpdate to true
+        // you can set the bypassCache to true
         cognitoUser.getUserData(function(err, userData) {
 	        if (err) {
 	            alert(err.message || JSON.stringify(err));
 	            return;
 	        }
 	        console.log('User data for user ' + userData);
-	    }, {forceUpdate: true});
+	    }, {bypassCache: true});
   ```
 
 **Use case 32.** Handling expiration of the Id Token. 

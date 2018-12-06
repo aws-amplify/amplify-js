@@ -97,5 +97,5 @@ export interface SignOutOpts {
 }
 
 export interface CurrentUserOpts {
-    forceUpdate: boolean
+    bypassCache: boolean
 }

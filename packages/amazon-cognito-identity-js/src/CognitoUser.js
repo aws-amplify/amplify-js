@@ -95,6 +95,9 @@ export default class CognitoUser {
     this.authenticationFlowType = 'USER_SRP_AUTH';
 
     this.storage = data.Storage || new StorageHelper().getStorage();
+    
+    this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+    this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
   }
 
   /**
@@ -1064,12 +1067,11 @@ export default class CognitoUser {
       return callback(new Error('User is not authenticated'), null);
     }
 
-    const forceUpdate = params? params.forceUpdate : false;
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const userDataKey = `${keyPrefix}.${this.username}.userData`;
-    let userData = this.storage.getItem(userDataKey);
+    const bypassCache = params? params.bypassCache : false;
+    
+    let userData = this.storage.getItem(this.userDataKey);
     // get the cached attributes
-    if (!userData || forceUpdate) {
+    if (!userData || bypassCache) {
       this.client.request('GetUser', {
         AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
       }, (err, userData) => {
@@ -1262,20 +1264,14 @@ export default class CognitoUser {
    * This is to cache user data
    */
   cacheUserData(userData) {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const userDataKey = `${keyPrefix}.${this.username}.userData`;
-
-    this.storage.setItem(userDataKey, JSON.stringify(userData));
+    this.storage.setItem(this.userDataKey, JSON.stringify(userData));
   }
 
   /**
    * This is to remove cached user data
    */
   clearCachedUserData() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const userDataKey = `${keyPrefix}.${this.username}.userData`;
-
-    this.storage.removeItem(userDataKey);
+    this.storage.removeItem(this.userDataKey);
   }
 
   /**

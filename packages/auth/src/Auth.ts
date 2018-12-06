@@ -884,7 +884,7 @@ export default class AuthClass {
                     }
              
                     // get user data from Cognito
-                    const forceUpdate = params? params.forceUpdate : false;
+                    const bypassCache = params? params.bypassCache: false;
                     user.getUserData(
                         (err, data) => {
                             if (err) {
@@ -915,7 +915,7 @@ export default class AuthClass {
                             Object.assign(user, {attributes, preferredMFA});
                             return res(user);
                         }, 
-                        { forceUpdate }
+                        { bypassCache }
                     );
                 });
             }).catch(e => {
