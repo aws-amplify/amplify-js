@@ -13,9 +13,6 @@
 import StorageProvider from '../../src/Providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
-import { AsyncResource } from 'async_hooks';
-import AWSS3Provider from '../../src/Providers/AWSS3Provider';
-
 
 
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
@@ -53,9 +50,9 @@ S3.prototype.uploadPart = jest.fn(() => {
     let data = {ETag: "etag"};
     return {
         promise: () => new Promise((res, rej) => {
-            res(data)
+            res(data);
         }
-    }
+    });
 });
 
 S3.prototype.listParts = jest.fn(() => {
@@ -64,7 +61,7 @@ S3.prototype.listParts = jest.fn(() => {
         promise: () => new Promise((res, rej) => {
             res(data)
         }
-    }
+    });
 });
 
 S3.prototype.completeMultipartUpload = jest.fn((params, callback) => {

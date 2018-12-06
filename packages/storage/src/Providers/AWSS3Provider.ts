@@ -77,9 +77,12 @@ export default class AWSS3Provider implements StorageProvider {
      */
     public configure(config?): object {
         logger.debug('configure Storage', config);
+        console.log('configure started for provider');
         if (!config) return this._config;
+        console.log('sent to parser this', config);
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Storage);
+        console.log('parsed amplifyConfig is', amplifyConfig);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage, config);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
         return this._config;
     }
@@ -197,7 +200,7 @@ export default class AWSS3Provider implements StorageProvider {
                 s3.createMultipartUpload(createMultipartParams, (err, data) => {
                     if (err) {
                         logger.debug('Upload error', err);
-                        Promise.reject(err);
+                        rej(err);
                     } else {
                         uploadId = data.UploadId;
                         const fileSize = (typeof(object) === 'string')? 
@@ -206,9 +209,18 @@ export default class AWSS3Provider implements StorageProvider {
                             : Math.ceil(fileSize / AWSS3Provider.PART_SIZE);
 
                         this.currentUploadingFiles[s3Key] = 
-                            {'key':key, 'uploadId':uploadId, 'noOfParts':noOfParts, 'file': object,
-                            'fileSize':fileSize, 'externalPause': true, 'resolveCallback':res,'rejectCallback':rej,
-                             'status': 'initiated', 'eTags': [],'progressCallback': progressCallback};
+                            {key, 
+                            uploadId, 
+                            noOfParts, 
+                            'file': object,
+                            'fileSize':fileSize, 
+                            'externalPause': true, 
+                            'resolveCallback':res,
+                            'rejectCallback':rej,
+                            'status': AWSS3Provider.INITIATED,
+                            'eTags': [],
+                            progressCallback,
+                            config};
                         this.uploadMultiPart(s3Key, config);
                     }
                 });
@@ -221,7 +233,7 @@ export default class AWSS3Provider implements StorageProvider {
                     { method: 'put', result: 'failed' },
                     null);
 
-                throw e;
+                Promise.reject(e);
             }
         }
 
@@ -292,10 +304,10 @@ export default class AWSS3Provider implements StorageProvider {
                 const data = await s3.listParts(listparam).promise();
                 Array.prototype.push.apply(etags,data.Parts);
             } catch (err) {
-                if (err.toString().includes('Network Failure')) {
+                if (err.toString().includes('Network Failure') &&
+                this.currentUploadingFiles[s3Key].status !== AWSS3Provider.PAUSED) {
                     this.currentUploadingFiles[s3Key].externalPause = false;
                     await this.pauseUpload(s3Key,config);
-                    
                 } else {
                     logger.debug('upload rejected', err);
                     Promise.reject(err);
@@ -332,7 +344,8 @@ export default class AWSS3Provider implements StorageProvider {
         
         await s3.completeMultipartUpload(Upload, (err, data) => {
             if (err) {
-                if (err.toString().includes('Network Failure')) {
+                if (err.toString().includes('Network Failure')&&
+                this.currentUploadingFiles[s3Key].status !== AWSS3Provider.PAUSED) {
                     uploadFileObject.externalPause = false;
                     this.pauseUpload(uploadFileObject.key,config);
                     
@@ -358,19 +371,17 @@ export default class AWSS3Provider implements StorageProvider {
         
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
-        const s3 = this._createS3(opt);
         const uploadFileObject = this.currentUploadingFiles[s3Key];
         if(!uploadFileObject){
             Promise.reject('upload not found');
         }
-        const {uploadId,file,noOfParts, rejectCallback,progressCallback,fileSize} = uploadFileObject;
+        const {uploadId,file,noOfParts, rejectCallback,progressCallback,fileSize ,eTags} = uploadFileObject;
         uploadFileObject.status = AWSS3Provider.UPLOADING;
-        const etags = uploadFileObject.eTags;
-        const partNo = etags.length + 1;
+        const partNo = eTags.length + 1;
         for (let i = partNo; i <= noOfParts; i++) {
             let filePart;
             if (!uploadFileObject) {
-                return Promise.reject('Upload does not exist');
+                return rejectCallback('Upload does not exist');
             }
             if (uploadFileObject.status === AWSS3Provider.UPLOADING) {
                 if(fileSize > AWSS3Provider.PART_SIZE) {
@@ -395,9 +406,8 @@ export default class AWSS3Provider implements StorageProvider {
         
                 try { 
                     credentialsOK = await this._ensureCredentials();
-                    if (!credentialsOK) { return rejectCallback('No credentials'); }  
-                    let request = s3.uploadPart(currentUploadParams);
-
+                    if (!credentialsOK) { rejectCallback('No credentials'); }  
+                    const s3 = this._createS3(opt);
                     let { ETag } = await  s3.uploadPart(currentUploadParams).on('httpUploadProgress', progress =>{
                         if (progressCallback) {
                             if (typeof progressCallback === 'function') {
@@ -408,24 +418,23 @@ export default class AWSS3Provider implements StorageProvider {
                         }
                     }).promise();
                         
-                    let eTag;
                     ETag = ETag.replace(/\"/g, "");
-                    const etagList = uploadFileObject.eTags; 
+                    // const etagList = uploadFileObject.eTags; 
                     
-                    if (etagList.size !== 0) {
-                        const found = etagList.find((element) => {
+                    if (eTags.length !== 0) {
+                        const found = eTags.find((element) => {
                             return (element.PartNumber === i) ;
                         });
                         if (!found){
-                            etagList.push({ ETag, PartNumber: i });
+                            eTags.push({ ETag, PartNumber: i });
                         }
-                        uploadFileObject.eTags = etagList;
+                        uploadFileObject.eTags = eTags;
                     } else {
-                        eTag = [{ ETag, PartNumber: i }];
-                        uploadFileObject.eTags = eTag;    
+                        uploadFileObject.eTags = [{ ETag, PartNumber: i }];    
                     }
                 } catch (error) {
-                    if (error.toString().includes('Network Failure')) {
+                    if (error.toString().includes('Network Failure')&&
+                    this.currentUploadingFiles[s3Key].status !== AWSS3Provider.PAUSED) {
                         uploadFileObject.externalPause = false;
                         await this.pauseUpload(uploadFileObject.key,config);
                         
@@ -441,17 +450,17 @@ export default class AWSS3Provider implements StorageProvider {
                 break;
             }
         }
-        
-        const finalEtagList = this.currentUploadingFiles[s3Key];
-        if (finalEtagList.eTags.length === noOfParts) {
-            this.complete(finalEtagList.key, config);
+        if(this.currentUploadingFiles[s3Key]) {
+            const finalEtagList = this.currentUploadingFiles[s3Key];
+            if (finalEtagList.eTags.length === noOfParts) {
+                this.complete(finalEtagList.key, config);
+            }
         }
+        
     }
 
     public async pauseUpload(key, config?):Promise<any> {
 
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, download, track, expires } = opt;
         const prefix = this._prefix(opt);
@@ -482,7 +491,7 @@ export default class AWSS3Provider implements StorageProvider {
 
         if (key === ALL_UPLOADS) {
             for(const Key in this.currentUploadingFiles){
-                this.uploadMultiPart(Key,config);
+                this.uploadMultiPart(Key,this.currentUploadingFiles[Key].config);
             }
         } else {
             const s3Key = prefix + key;

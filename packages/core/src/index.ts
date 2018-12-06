@@ -43,7 +43,6 @@ export const Constants = {
 export default Amplify;
 
 detectNetwork(online => {
-    console.log('TEST', online);
     Hub.dispatch('network', { event: 'networkchange', data: online }, 'Network');
 });
 

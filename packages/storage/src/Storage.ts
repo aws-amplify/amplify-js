@@ -110,9 +110,11 @@ export default class StorageClass {
      */
     configure(config?) {
         logger.debug('configure Storage');
+        console.log('configure started outside with', config);
         if (!config) return this._config;
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Storage);
+        console.log('parsed amplifyConfig is', amplifyConfig);
+        this._config = Object.assign({}, this._config, amplifyConfig.Storage,config);
         if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
         
         this._pluggables.forEach((pluggable) => {
