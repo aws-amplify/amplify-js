@@ -107,7 +107,6 @@ export default class CognitoUser {
    */
   setSignInUserSession(signInUserSession) {
     this.clearCachedUserData();
-    this.clearCachedTokens();
     this.signInUserSession = signInUserSession;
     this.cacheTokens();
   }
@@ -968,8 +967,7 @@ export default class CognitoUser {
       if (err) {
         return callback(err, null);
       }
-      this.clearCachedUserData();
-      this.clearCachedTokens();
+      this.clearCachedUser();
       return callback(null, 'SUCCESS');
     });
     return undefined;
@@ -1223,8 +1221,7 @@ export default class CognitoUser {
     this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
       if (err) {
         if (err.code === 'NotAuthorizedException') {
-          this.clearCachedTokens();
-          this.clearCachedUserData();
+          this.clearCachedUser();
         }
         return callback(err, null);
       }
@@ -1272,6 +1269,11 @@ export default class CognitoUser {
    */
   clearCachedUserData() {
     this.storage.removeItem(this.userDataKey);
+  }
+
+  clearCachedUser() {
+    this.clearCachedTokens();
+    this.clearCachedUserData();
   }
 
   /**
@@ -1635,8 +1637,7 @@ export default class CognitoUser {
       if (err) {
         return callback.onFailure(err);
       }
-      this.clearCachedUserData();
-      this.clearCachedTokens();
+      this.clearCachedUser();
       return callback.onSuccess('SUCCESS');
     });
     return undefined;
@@ -1648,8 +1649,7 @@ export default class CognitoUser {
    */
   signOut() {
     this.signInUserSession = null;
-    this.clearCachedUserData();
-    this.clearCachedTokens();
+    this.clearCachedUser();
   }
 
   /**
