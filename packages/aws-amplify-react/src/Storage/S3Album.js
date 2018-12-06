@@ -110,7 +110,7 @@ export default class S3Album extends Component {
         if (!select) { return; }
 
         item.selected = !item.selected;
-        this.setState({ items: this.state.items.slice() });
+        this.setState(prevState => ({ items: prevState.items.slice() }));
 
         if (!onSelect) { return; }
 

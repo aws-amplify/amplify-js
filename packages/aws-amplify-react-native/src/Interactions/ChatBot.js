@@ -77,22 +77,22 @@ export class ChatBot extends Component {
             return;
         }
 
-        await new Promise(resolve => this.setState({
+        await new Promise(resolve => this.setState(prevState => ({
             dialog: [
-                ...this.state.dialog,
-                { message: this.state.inputText, from: 'me' },
+                ...prevState.dialog,
+                { message: prevState.inputText, from: 'me' },
             ]
-        }, resolve));
+        }), resolve));
 
         const response = await Interactions.send(this.props.botName, this.state.inputText);
 
-        this.setState({
+        this.setState(prevState => ({
             dialog: [
-                ...this.state.dialog,
+                ...prevState.dialog,
                 response && response.message && { from: 'bot', message: response.message }
             ].filter(Boolean),
             inputText: ''
-        }, () => {
+        }), () => {
             setTimeout(() => {
                 this.listItemsRef.current.scrollToEnd();
             }, 50);
@@ -105,12 +105,12 @@ export class ChatBot extends Component {
             const { clearOnComplete } = this.props;
             const message = fn(...args);
 
-            this.setState({
+            this.setState(prevState => ({
                 dialog: [
-                    ...(!clearOnComplete && this.state.dialog),
+                    ...(!clearOnComplete && prevState.dialog),
                     message && { from: 'bot', message }
                 ].filter(Boolean),
-            }, () => {
+            }), () => {
                 setTimeout(() => {
                     this.listItemsRef.current.scrollToEnd();
                 }, 50);

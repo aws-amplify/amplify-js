@@ -65,12 +65,12 @@ export class ChatBot extends Component {
             return;
         }
 
-        await new Promise(resolve => this.setState({
+        await new Promise(resolve => this.setState(prevState => ({
             dialog: [
-                ...this.state.dialog,
-                { message: this.state.inputText, from: 'me' },
+                ...prevState.dialog,
+                { message: prevState.inputText, from: 'me' },
             ]
-        }, resolve));
+        }), resolve));
 
         if (!Interactions || typeof Interactions.send !== 'function') {
             throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
@@ -78,10 +78,10 @@ export class ChatBot extends Component {
 
         const response = await Interactions.send(this.props.botName, this.state.inputText);
 
-        await this.setState({
-            dialog: [...this.state.dialog, response && { from: 'bot', message: response.message }],
+        await this.setState(prevState => ({
+            dialog: [...prevState.dialog, response && { from: 'bot', message: response.message }],
             inputText: ''
-        });
+        }));
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
 
     }
@@ -95,13 +95,13 @@ export class ChatBot extends Component {
             const { clearOnComplete } = this.props;
             const message = fn(...args);
 
-            this.setState(
-                {
+            this.setState(prevState =>
+                ({
                     dialog: [
-                        ...(!clearOnComplete && this.state.dialog),
+                        ...(!clearOnComplete && prevState.dialog),
                         message && { from: 'bot', message }
                     ].filter(Boolean),
-                },
+                }),
                 () => {
                     this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
                 }
