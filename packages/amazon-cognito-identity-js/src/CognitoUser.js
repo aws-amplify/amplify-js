@@ -1070,7 +1070,7 @@ export default class CognitoUser {
     const bypassCache = params? params.bypassCache : false;
     
     let userData = this.storage.getItem(this.userDataKey);
-    // get the cached attributes
+    // get the cached user data
     if (!userData || bypassCache) {
       this.client.request('GetUser', {
         AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
