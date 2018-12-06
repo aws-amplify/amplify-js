@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import RequireNewPassword from '../src/components/authenticator/RequireNewPassword.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
  Vue.use(AmplifyPlugin, AmplifyMocks);

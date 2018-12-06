@@ -25,4 +25,4 @@ const AmplifyPlugin = {
   },
 };
 
-export { AmplifyPlugin }; //eslint-disable-line
+export default AmplifyPlugin; //eslint-disable-line
