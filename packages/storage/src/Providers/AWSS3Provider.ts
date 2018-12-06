@@ -20,6 +20,7 @@ import {
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
 import { ALL_UPLOADS } from '../index';
+import { IoT1ClickDevicesService } from '../../../../node_modules/aws-sdk/clients/all';
 const logger = new Logger('AWSS3Provider');
 
 const dispatchStorageEvent = (track, attrs, metrics) => {
@@ -202,6 +203,7 @@ export default class AWSS3Provider implements StorageProvider {
                         uploadId = data.UploadId;
                         const fileSize = (typeof(object) === 'string')? 
                             encodeURI(object).split(/%..|./).length - 1: object.size;
+                        console.log()
                         const noOfParts = (fileSize <= AWSS3Provider.PART_SIZE) ? 1
                             : Math.ceil(fileSize / AWSS3Provider.PART_SIZE);
 
@@ -209,7 +211,7 @@ export default class AWSS3Provider implements StorageProvider {
                         this.currentUploadingFiles[s3Key] = 
                             {'key':key, 'uploadId':uploadId, 'noOfParts':noOfParts, 'file': object,
                             'fileSize':fileSize, 'externalPause': true, 'resolveCallback':res,'rejectCallback':rej,
-                             'status': 'initiated', 'eTags': [],'progressCallback': progressCallback};
+                             'status': 'initiated', 'eTags': new Map(),'progressCallback': progressCallback};
                         this.uploadMultiPart(s3Key, config);
                     }
                 });
@@ -327,12 +329,13 @@ export default class AWSS3Provider implements StorageProvider {
         if(completedEtagList.length !== uploadFileObject.noOfParts){
             uploadFileObject.rej('file not uploaded');
         }
-        
+        console.log('phew this is what it looks like ', JSON.parse(uploadFileObject.eTags.Entries));
+
         const Upload = {
             Bucket: bucket,
             Key: s3Key,
             MultipartUpload: {
-                Parts: uploadFileObject.eTags
+                Parts: JSON.parse(uploadFileObject.eTags)
             },
             UploadId: uploadFileObject.uploadId
         };
@@ -409,39 +412,38 @@ export default class AWSS3Provider implements StorageProvider {
         
                 try { 
                     credentialsOK = await this._ensureCredentials();
-                    if (!credentialsOK) { return rejectCallback('No credentials'); }        
-                    let { ETag } = await s3.uploadPart(currentUploadParams).promise();
-                    console.log('got back data');
-                    if (progressCallback) {
-                        if (typeof progressCallback === 'function') {
-                            const progress = {
-                                    loaded:i*AWSS3Provider.PART_SIZE,
-                                    totale: fileSize,
-                                    part:i,
-                                    key:s3Key
-                                };
+                    if (!credentialsOK) { return rejectCallback('No credentials'); }  
+                    let request = s3.uploadPart(currentUploadParams);
+
+                    let { ETag } = await  s3.uploadPart(currentUploadParams).on('httpUploadProgress', progress =>{
+                        if (progressCallback) {
+                            if (typeof progressCallback === 'function') {
                                 progressCallback(progress);
-                        } else {
-                        logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+                            } else {
+                                logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
                             }
-                    }
-                        
-                    let eTag;
-                    ETag = ETag.replace(/\"/g, "");
-                    const etagList = uploadFileObject.eTags;
-            
-                    if (etagList.length !== 0) {
-                        const found = etagList.find((element) => {
-                            return (element.PartNumber === i) ;
-                        });
-                        if (!found){
-                            etagList.push({ ETag, PartNumber: i });
                         }
-                        uploadFileObject.eTags = etagList;
-                    } else {
-                        eTag = [{ ETag, PartNumber: i }];
-                        uploadFileObject.eTags = eTag;    
-                    }
+                    }).promise();
+                        
+                    //let eTag;
+                    ETag = ETag.replace(/\"/g, "");
+                    uploadFileObject.eTags.set(ETag,{ETag, PartNumber: i});
+                    
+                    
+                    console.log('etag string',uploadFileObject.eTags.set);
+                    
+                    // if (etagList.size !== 0) {
+                    //     const found = etagList.find((element) => {
+                    //         return (element.PartNumber === i) ;
+                    //     });
+                    //     if (!found){
+                    //         etagList.push({ ETag, PartNumber: i });
+                    //     }
+                    //     uploadFileObject.eTags = etagList;
+                    // } else {
+                    //     eTag = [{ ETag, PartNumber: i }];
+                    //     uploadFileObject.eTags = eTag;    
+                    // }
                     console.log('the file object looks like :', uploadFileObject);
                 } catch (error) {
                     if (error.toString().includes('Network Failure')) {
@@ -462,7 +464,9 @@ export default class AWSS3Provider implements StorageProvider {
                 break;
             }
         }
+        
         const finalEtagList = this.currentUploadingFiles[s3Key];
+        console.log('finalEtags list and length', finalEtagList.eTags, finalEtagList.eTags.length);
         if (finalEtagList.eTags.length === noOfParts) {
             console.log('Passing key as ', finalEtagList.key);
             this.complete(finalEtagList.key, config);
@@ -478,19 +482,21 @@ export default class AWSS3Provider implements StorageProvider {
         const prefix = this._prefix(opt);
         const s3Key = prefix + key;
         const pauseFileObject = this.currentUploadingFiles[s3Key];
-        
+        console.log('we came into pause');
         if(!pauseFileObject){
             return Promise.reject('Key not found, cannot pause');
         }
-        if (pauseFileObject.status === AWSS3Provider.UPLOADING) {
+        if (pauseFileObject.status === AWSS3Provider.UPLOADING 
+            || pauseFileObject.status === AWSS3Provider.INITIATED) {
+            console.log('updating status to pased');
             pauseFileObject.status = AWSS3Provider.PAUSED;
         } else if (pauseFileObject.status === AWSS3Provider.PAUSED) {
             logger.debug('upload already paused');
-        } else {
+        } else if(pauseFileObject.status === AWSS3Provider.CANCELLED){
             logger.debug('upload already cancelled');
-            return Promise.reject('Key not found, cannot pause');
         }
-        console.log('pasuing this one', pauseFileObject);
+        logger.debug('upload paused for key', key);
+        Promise.resolve('Upload paused');
     }
 
     public async resumeUpload(key: string|Symbol, config?) {
