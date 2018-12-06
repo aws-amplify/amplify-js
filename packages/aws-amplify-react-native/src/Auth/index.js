@@ -47,7 +47,8 @@ export function withAuthenticator(
     includeGreetings = false,
     authenticatorComponents = [],
     federated = null,
-    theme = null
+    theme = null,
+    signUpConfig = {}
 ) {
     class Wrapper extends React.Component {
         constructor(props) {
@@ -56,6 +57,19 @@ export function withAuthenticator(
             this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
             this.state = { authState: props.authState };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    signUpConfig
+                }
+            }
+            console.log('this.authConfig', this.authConfig)
         }
 
         handleAuthStateChange(state, data) {
@@ -67,7 +81,7 @@ export function withAuthenticator(
             const { authState, authData } = this.state;
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
-                if (!includeGreetings) {
+                if (!this.authConfig.includeGreetings) {
                     return (
                         <Comp
                             {...this.props}
@@ -98,9 +112,10 @@ export function withAuthenticator(
 
             return <Authenticator
                 {...this.props}
-                hideDefault={authenticatorComponents.length > 0}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authConfig.authenticatorComponents}
                 theme={theme}
             />
         }

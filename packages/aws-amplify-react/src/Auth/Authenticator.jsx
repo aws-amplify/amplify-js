@@ -139,7 +139,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide = [], federated } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -161,7 +161,7 @@ export default class Authenticator extends Component {
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,

@@ -57,6 +57,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+
 **Note:** Version bump only for package aws-amplify-angular
 
 <a name="2.0.14-unstable.14"></a>
@@ -111,6 +112,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## [2.0.14-unstable.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.14-unstable.7...aws-amplify-angular@2.0.14-unstable.8) (2018-11-20)
 
 
+**Note:** Version bump only for package aws-amplify-angular
+
+
+<a name="2.1.1-beta.2"></a>
+## [2.1.1-beta.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-beta.1...aws-amplify-angular@2.1.1-beta.2) (2018-11-19)
 
 
 **Note:** Version bump only for package aws-amplify-angular
@@ -167,6 +173,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## [2.0.14-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.14-unstable.0...aws-amplify-angular@2.0.14-unstable.1) (2018-11-15)
 
 
+<a name="2.1.1-beta.1"></a>
+## [2.1.1-beta.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.13-unstable.6...aws-amplify-angular@2.1.1-beta.1) (2018-11-14)
 
 
 **Note:** Version bump only for package aws-amplify-angular
@@ -181,8 +189,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <a name="2.0.13"></a>
 ## [2.0.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.13-unstable.6...aws-amplify-angular@2.0.13) (2018-11-12)
-
-
 
 
 **Note:** Version bump only for package aws-amplify-angular

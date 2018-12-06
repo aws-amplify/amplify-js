@@ -323,8 +323,25 @@ border: 0px solid var(--color-white) !important;
   border-bottom: var(--input-border);
   background-color: transparent;
   margin-top: 0em;
-  width: 110px;
-  height: 44px;
+  min-width: 100% !important;
+  height: 47px !important;
+  padding-left: 0;
+}
+
+.amplify-form-input-phone-ionic {
+  height: 36px;
+  min-width: 100%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
+  border: none;
+  border-bottom: var(--input-border);
+  border-radius: 0px;
+}
+
+.amplify-ionic-grid-padding-left {
+  padding-left: 0
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -400,6 +417,7 @@ border: 0px solid var(--color-white) !important;
 
 .amplify-form-actions {
   margin-top:1.8em;
+  padding-bottom: 1.5em;
 }
 
 .amplify-signin-username {
@@ -479,6 +497,10 @@ color: var(--color-primary-highlight);
 
 .amplify-footer {
   clear: both;
+}
+
+.amplify-input-invalid {
+  border-color: red !important;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -568,3 +590,10 @@ z-index: 1;
 visibility: visible;
 }
   
+/************************************
+** Ionic
+************************************/
+
+.amplify-phone-ion-content {
+  height: 100px;
+}
