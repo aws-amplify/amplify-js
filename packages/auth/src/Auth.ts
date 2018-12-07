@@ -18,7 +18,8 @@ import {
     FederatedUser, 
     ConfirmSignUpOptions, 
     SignOutOpts,
-    CurrentUserOpts
+    CurrentUserOpts,
+    SignInOpts
 } from './types';
 
 import {
@@ -304,18 +305,36 @@ export default class AuthClass {
 
     /**
      * Sign in
-     * @param {String} username - The username to be signed in
+     * @param {String | Object} username - The username to be signed in
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(username: string, password?: string): Promise<CognitoUser | any> {
+    public signIn(signInOpts: string | SignInOpts, pw?: string): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-
-        if (password) {
-            return this.signInWithPassword(username, password);
+        let username = null;
+        let password = null;
+        let validationData = {};
+        // for backward compatibility
+        if (typeof signInOpts === 'string') {
+            username = signInOpts;
+            password = pw;
+        } else if (typeof signInOpts === 'object') {
+            username = signInOpts.username;
+            password = signInOpts.password;
+            validationData = signInOpts.validationData;
         } else {
-            return this.signInWithoutPassword(username);
+            return Promise.reject(new Error('sign in parameters should not be undefined'));
+        }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        const authDetails = new AuthenticationDetails({
+            Username: username,
+            Password: password,
+            ValidationData: validationData
+        });
+        if (password) {
+            return this.signInWithPassword(authDetails);
+        } else {
+            return this.signInWithoutPassword(authDetails);
         }
     }
 
@@ -401,12 +420,8 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithPassword(username: string, password: string): Promise<CognitoUser | any> {
-        const user = this.createCognitoUser(username);
-        const authDetails = new AuthenticationDetails({
-            Username: username,
-            Password: password
-        });
+    private signInWithPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {
+        const user = this.createCognitoUser(authDetails.getUsername());
 
         return new Promise((resolve, reject) => {
             user.authenticateUser(authDetails, this.authCallbacks(user, resolve, reject));
@@ -418,12 +433,9 @@ export default class AuthClass {
      * @param {String} username - The username to be signed in
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithoutPassword(username: string): Promise<CognitoUser | any> {
-        const user = this.createCognitoUser(username);
+    private signInWithoutPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {
+        const user = this.createCognitoUser(authDetails.getUsername());
         user.setAuthenticationFlowType('CUSTOM_AUTH');
-        const authDetails = new AuthenticationDetails({
-            Username: username
-        });
 
         return new Promise((resolve, reject) => {
             user.initiateAuth(authDetails, this.authCallbacks(user, resolve, reject));

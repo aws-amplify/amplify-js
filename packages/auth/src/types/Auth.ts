@@ -99,3 +99,9 @@ export interface SignOutOpts {
 export interface CurrentUserOpts {
     bypassCache: boolean
 }
+
+export interface SignInOpts {
+    username?: string,
+    password?: string,
+    validationData?: {[key:string]: any}
+}
