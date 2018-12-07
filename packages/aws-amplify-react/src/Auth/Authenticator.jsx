@@ -169,12 +169,8 @@ export default class Authenticator extends Component {
             <Loading/>
         ];
 
-        const props_children_names  = React.Children.map(props_children, child => child.type.name);
         const props_children_override =  React.Children.map(props_children, child => child.props.override);
-        hide = hide.filter((component) =>!props_children_names.includes(component.name));
-        const hideLink = hide.filter((component) => {
-            return !props_children_override.some(comp => comp === component);
-        });
+        hide = hide.filter((component) => !props_children.find(child => child.type === component));
         
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
@@ -186,7 +182,7 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    hideLink
+                    override: props_children_override
                 });
         });
        
@@ -200,7 +196,7 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    hideLink
+                    override: props_children_override
                 });
             });
 
