@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.10-unstable.2"></a>
+## [0.1.10-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.10-unstable.1...aws-amplify-vue@0.1.10-unstable.2) (2018-12-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.1.10-unstable.1"></a>
+## [0.1.10-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.10-unstable.0...aws-amplify-vue@0.1.10-unstable.1) (2018-12-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.1.10-unstable.0"></a>
+## [0.1.10-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.9...aws-amplify-vue@0.1.10-unstable.0) (2018-12-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.1.9"></a>
 ## [0.1.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.8...aws-amplify-vue@0.1.9) (2018-12-06)
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.7-unstable.1"></a>
+## [2.1.7-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.7-unstable.0...aws-amplify-react@2.1.7-unstable.1) (2018-12-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** correctly hide links under production mode ([8a52918](https://github.com/aws/aws-amplify/commit/8a52918))
+
+
+
+
+<a name="2.1.7-unstable.0"></a>
+## [2.1.7-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.6...aws-amplify-react@2.1.7-unstable.0) (2018-12-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.1.6"></a>
 ## [2.1.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.5...aws-amplify-react@2.1.6) (2018-12-06)
 
