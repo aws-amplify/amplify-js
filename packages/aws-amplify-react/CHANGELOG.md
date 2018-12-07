@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.8-unstable.0"></a>
+## [2.1.8-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.7...aws-amplify-react@2.1.8-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.1.7"></a>
 ## [2.1.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.6...aws-amplify-react@2.1.7) (2018-12-07)
 
