@@ -5,7 +5,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 import S3Image from '../src/components/storage/S3Image.vue';
 import * as components from '../src/components';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 

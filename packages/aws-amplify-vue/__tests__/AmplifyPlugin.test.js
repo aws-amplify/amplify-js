@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import App from '../src/Amplify.vue';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 
 Vue.use(AmplifyPlugin, {});
 

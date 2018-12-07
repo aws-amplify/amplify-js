@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { DocumentNode } from 'graphql/language/ast';
 
 /**
 * RestClient instance options
@@ -66,7 +67,7 @@ export interface apiOptions {
 }
 
 export interface GraphQLOptions {
-    query: string,
+    query: string | DocumentNode,
     variables?: object,
 }
 
