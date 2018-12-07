@@ -115,6 +115,16 @@ export class ChatbotComponentCore {
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
+
+		if (!this.textEnabled && this.voiceEnabled) {
+			this.currentVoiceState = "Click the mic button"
+			STATES.INITIAL.MESSAGE = "Click the mic button"
+		}
+
+		if (!this.voiceEnabled && this.textEnabled) {
+			this.currentVoiceState = "Type a message"
+			STATES.INITIAL.MESSAGE = "Type a message"
+		}
 	}
 
 
