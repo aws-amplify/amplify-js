@@ -21,6 +21,8 @@ export class ChatBotComponent implements OnInit, OnDestroy {
   @Input() clearComplete: boolean;
   @Input() conversationModeOn: boolean;
   @Input() voiceConfig: any;
+  @Input() voiceEnabled: boolean;
+  @Input() textEnabled: boolean;
   @Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
@@ -40,7 +42,9 @@ export class ChatBotComponent implements OnInit, OnDestroy {
       title: this.title,
       clearComplete: this.clearComplete,
       conversationModeOn: this.conversationModeOn,
-      voiceConfig: this.voiceConfig
+      voiceConfig: this.voiceConfig,
+      voiceEnabled: this.voiceEnabled,
+      textEnabled: this.textEnabled
     }
 
     let interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ChatbotComponentIonic, interactionParams) : new ComponentMount(ChatbotComponentCore, interactionParams);

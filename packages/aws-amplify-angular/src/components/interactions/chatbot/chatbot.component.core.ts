@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { isUndefined } from 'util';
 require('./aws-lex-audio.js')
 
 const logger = new Logger('ChatBot');
@@ -28,8 +29,8 @@ const template = `
 					(keyup.enter)="onSubmit(inputValue.value)"
 					(change)="onInputChange($event.target.value)"
 					[disabled]="inputDisabled">
-				<button type="button" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
-				<button type="button" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
+				<button type="button" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
+				<button type="button" *ngIf="textEnabled" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
 
 			</div>
 		</div>
@@ -100,9 +101,9 @@ export class ChatbotComponentCore {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
-		this.conversationModeOn = data.conversationModeOn || false;
-		this.voiceEnabled = data.voiceEnabled || true;
-		this.textEnabled = data.voiceEnabled || true;
+		this.conversationModeOn = data.conversationModeOn === undefined ? false : data.conversationModeOn;
+		this.voiceEnabled = isUndefined(data.voiceEnabled) ? true : data.voiceEnabled;
+		this.textEnabled = isUndefined(data.textEnabled) ? true : data.textEnabled;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
