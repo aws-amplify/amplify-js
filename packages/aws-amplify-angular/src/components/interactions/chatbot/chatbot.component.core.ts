@@ -28,7 +28,15 @@ const template = `
 					[value]="inputText"
 					(keyup.enter)="onSubmit(inputValue.value)"
 					(change)="onInputChange($event.target.value)"
-					[disabled]="inputDisabled">
+					[disabled]="inputDisabled"
+					*ngIf="textEnabled">
+				<input #inputValue
+					type='text'
+					class="amplify-form-input"
+					placeholder="{{currentVoiceState}}"
+					[disabled]="!textEnabled"
+					*ngIf="!textEnabled">
+
 				<button type="button" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
 				<button type="button" *ngIf="textEnabled" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
 
@@ -40,7 +48,7 @@ const template = `
 declare var LexAudio: any;
 const audioControl = new LexAudio.audioControl();
 
-const STATES = {
+let STATES = {
     INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
     LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴'},
     SENDING: { MESSAGE: 'Please wait...', ICON: '🔊'},
