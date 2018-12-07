@@ -28,7 +28,7 @@ const template = `
 					(keyup.enter)="onSubmit(inputValue.value)"
 					(change)="onInputChange($event.target.value)"
 					[disabled]="inputDisabled">
-				<button type="button" ng-style="{float: 'right'}" (click)="handleVoiceClick()" [disabled]="micButtonDisabled">{{micText}}</button>
+				<button type="button" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
 				<button type="button" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
 
 			</div>
@@ -40,10 +40,10 @@ declare var LexAudio: any;
 const audioControl = new LexAudio.audioControl();
 
 const STATES = {
-    INITIAL: 'Type your message or click  🎤',
-    LISTENING: 'Listening... click 🔴 again to cancel',
-    SENDING: 'Please wait...',
-    SPEAKING: 'Speaking...'
+    INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
+    LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴'},
+    SENDING: { MESSAGE: 'Please wait...', ICON: '🔊'},
+    SPEAKING: { MESSAGE: 'Speaking...', ICON: '...'}
 };
 
 const MIC_BUTTON_TEXT = {
@@ -73,7 +73,7 @@ export class ChatbotComponentCore {
 	clearComplete:boolean = false;
 	messages:any = [];
 	completions:any = {};
-	currentVoiceState:string = STATES.INITIAL;
+	currentVoiceState:string = STATES.INITIAL.MESSAGE;
 	inputDisabled:boolean = false;
 	micText: string = MIC_BUTTON_TEXT.PASSIVE;
 	voiceConfig:any = defaultVoiceConfig;
@@ -83,6 +83,8 @@ export class ChatbotComponentCore {
 	lexResponse:any;
 	conversationModeOn:boolean = false;
 	ref:ChangeDetectorRef;
+	voiceEnabled:boolean = true;
+	textEnabled:boolean = true;
 
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
@@ -99,6 +101,8 @@ export class ChatbotComponentCore {
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
 		this.conversationModeOn = data.conversationModeOn || false;
+		this.voiceEnabled = data.voiceEnabled || true;
+		this.textEnabled = data.voiceEnabled || true;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
@@ -153,138 +157,108 @@ export class ChatbotComponentCore {
 			.catch((error) => logger.error(error));
 	}
 
-	transition(newVoiceState) { 
+	onSilenceHandler = () => {
         if (this.continueConversation !== true) {
             return;
-		}
-		
-		this.currentVoiceState = newVoiceState
-
-		switch (this.currentVoiceState) {
-			case STATES.INITIAL:
-				this.micText = MIC_BUTTON_TEXT.PASSIVE;
-				this.micButtonDisabled = false;
-				this.continueConversation = false;
-				this.ref.detectChanges();
-				break;
-			case STATES.LISTENING:
-				this.micText = MIC_BUTTON_TEXT.RECORDING;
-				this.micButtonDisabled = false;
-				this.inputDisabled = false;
-				this.ref.detectChanges();
-				break;
-			case STATES.SENDING:
-				this.advanceConversation();
-				this.micText = MIC_BUTTON_TEXT.LOADING;
-				this.micButtonDisabled = true;
-				this.ref.detectChanges();
-				break;
-			case STATES.SPEAKING:
-				this.micText = MIC_BUTTON_TEXT.PLAYING;
-				this.micButtonDisabled = true;
-				this.advanceConversation();
-				this.ref.detectChanges();
-				break;
-		}
-    }
-
-    onSilence = () => {
-        audioControl.stopRecording();
-        this.advanceConversation(); 
-    }
-
-    onAudioData(data) {
-        // TODO: visualize audio data
+        }
+        audioControl.exportWAV((blob) => {
+			this.currentVoiceState = STATES.SENDING.MESSAGE;
+			this.audioInput = blob;
+			this.micText = STATES.SENDING.ICON;
+			this.micButtonDisabled = true;
+			this.lexResponseHandler(); 
+		});
+		this.ref.detectChanges();
 	}
 	
 	reset() {
-		this.inputText = '';
-		this.currentVoiceState = STATES.INITIAL;
-		this.inputDisabled = false;
-		this.micText = MIC_BUTTON_TEXT.PASSIVE;
-		this.continueConversation = false;
-		this.micButtonDisabled = false;
 		audioControl.clear();
+        this.inputText = '';
+        this.currentVoiceState = STATES.INITIAL.MESSAGE;
+        this.inputDisabled = false;
+        this.micText = STATES.INITIAL.ICON;
+        this.continueConversation = false;
+        this.micButtonDisabled = false;
 		this.ref.detectChanges();
 	}
 	
     onError(error) {
         logger.error(error)
 	}
-	
-	async onSuccess(response) {
+
+	async lexResponseHandler() {
+        if (this.continueConversation !== true) {
+            return;
+        }
+		const response = await this.amplifyService.interactions().send(this.botName, this.audioInput);
+
+		this.lexResponse = response;
+		this.currentVoiceState = STATES.SPEAKING.MESSAGE;
+		this.micText = STATES.SPEAKING.ICON;
+		this.micButtonDisabled = true;
+
 		let message = {
-			'me':response.inputTranscript,
+			'me': this.lexResponse.inputTranscript,
 			'meSentTime': new Date().toLocaleTimeString(),
 			'bot': '',
 			'botSentTime': ''
 		};
+		
 		this.inputText = "";
-		message.bot = response.message;
+		message.bot = this.lexResponse.message;
 		message.botSentTime = new Date().toLocaleTimeString();
 		this.messages.push(message);
+		this.doneSpeakingHandler();
+		this.ref.detectChanges();
+	}
+
+	doneSpeakingHandler() {
+		if (this.continueConversation !== true) {
+            return;
+        }
+        if (this.lexResponse.contentType === 'audio/mpeg') {
+            audioControl.play(this.lexResponse.audioStream, () => {
+                if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                    this.lexResponse.dialogState === 'Fulfilled' ||
+                    this.lexResponse.dialogState === 'Failed' ||
+                    this.conversationModeOn === false) {
+					this.inputDisabled = false;
+					this.currentVoiceState = STATES.INITIAL.MESSAGE;
+					this.micText = STATES.INITIAL.ICON;
+					this.micButtonDisabled = false;
+					this.continueConversation = false;
+					this.ref.detectChanges();
+                } else {
+					this.currentVoiceState = STATES.LISTENING.MESSAGE;
+					this.micText = STATES.LISTENING.ICON;
+					this.micButtonDisabled = false;
+					audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
+					this.ref.detectChanges();
+                }
+            });
+        } else {
+			this.inputDisabled = false;
+			this.currentVoiceState = STATES.INITIAL.MESSAGE;
+			this.micText = STATES.INITIAL.ICON;
+			this.micButtonDisabled = false;
+			this.continueConversation = false;
+			this.ref.detectChanges();
+        }
     }
 
-    async advanceConversation() {
-        audioControl.supportsAudio((supported) => {
-            if (!supported) {
-                this.onError('Audio is not supported.')
-            }
-		});
-		
-		switch (this.currentVoiceState) {
-			case STATES.INITIAL:
-				audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
-				this.transition(STATES.LISTENING);
-				break;
-			case STATES.LISTENING:
-				audioControl.exportWAV((blob) => {
-					this.audioInput = blob;
-				this.transition(STATES.SENDING);
-				});
-				break;
-			case STATES.SENDING:
-				const response = await this.amplifyService.interactions().send(this.botName, this.audioInput);
-
-				this.lexResponse = response,
-				this.transition(STATES.SPEAKING)
-				this.onSuccess(response)
-				break;
-			case STATES.SPEAKING:
-				if (this.lexResponse.contentType === 'audio/mpeg') {
-					audioControl.play(this.lexResponse.audioStream, () => {
-						if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
-							this.lexResponse.dialogState === 'Fulfilled' ||
-							this.lexResponse.dialogState === 'Failed' ||
-							this.conversationModeOn === false) {
-								this.inputDisabled = false;
-								this.micText = MIC_BUTTON_TEXT.PASSIVE;
-								this.transition(STATES.INITIAL);
-								this.ref.detectChanges();
-						} else {
-							audioControl.startRecording(this.onSilence, this.onAudioData, this.voiceConfig.silenceDetectionConfig);
-							this.transition(STATES.LISTENING);
-						}
-					});
-				} else {
-					this.inputDisabled = false;
-					this.transition(STATES.INITIAL);
-					this.ref.detectChanges();
-				}
-				break;
-		}
-	};
-	
-	async handleVoiceClick() {
-        if (this.continueConversation === true && this.conversationModeOn === true) { 
+	async micButtonHandler() {
+        if (this.continueConversation === true) {
 			this.reset();
 			this.ref.detectChanges();
         } else {
 			this.inputDisabled = true;
 			this.continueConversation = true;
-			this.advanceConversation()
+			this.currentVoiceState = STATES.LISTENING.MESSAGE;
+			this.micText = STATES.LISTENING.ICON;
+			this.micButtonDisabled = false;
+			audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
 			this.ref.detectChanges();
         }
-	}
+    }
 	
 }
