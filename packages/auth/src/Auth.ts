@@ -19,7 +19,8 @@ import {
     ConfirmSignUpOptions, 
     SignOutOpts,
     CurrentUserOpts,
-    SignInOpts
+    SignInOpts,
+    isSignInOpts
 } from './types';
 
 import {
@@ -305,7 +306,7 @@ export default class AuthClass {
 
     /**
      * Sign in
-     * @param {String | Object} username - The username to be signed in
+     * @param {String | SignInOpts} username - The username to be signed in
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
@@ -318,7 +319,8 @@ export default class AuthClass {
         if (typeof signInOpts === 'string') {
             username = signInOpts;
             password = pw;
-        } else if (typeof signInOpts === 'object') {
+        } else if (isSignInOpts(signInOpts)) {
+            if (typeof pw !== 'undefined') logger.warn('The password should be defined under the first parameter object!');
             username = signInOpts.username;
             password = signInOpts.password;
             validationData = signInOpts.validationData;
@@ -416,8 +418,8 @@ export default class AuthClass {
 
     /**
      * Sign in with a password
-     * @param {String} username - The username to be signed in
-     * @param {String} password - The password of the username
+     * @private
+     * @param {AuthenticationDetails} authDetails - the user sign in data
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
     private signInWithPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {
@@ -430,7 +432,8 @@ export default class AuthClass {
 
     /**
      * Sign in without a password
-     * @param {String} username - The username to be signed in
+     * @private
+     * @param {AuthenticationDetails} authDetails - the user sign in data
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
     private signInWithoutPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {

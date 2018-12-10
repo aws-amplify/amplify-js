@@ -105,3 +105,7 @@ export interface SignInOpts {
     password?: string,
     validationData?: {[key:string]: any}
 }
+
+export function isSignInOpts(obj: any): obj is SignInOpts {
+    return !!(obj as SignInOpts).username;
+}
