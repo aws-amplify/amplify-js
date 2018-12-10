@@ -320,7 +320,9 @@ export default class AuthClass {
             username = signInOpts;
             password = pw;
         } else if (isSignInOpts(signInOpts)) {
-            if (typeof pw !== 'undefined') logger.warn('The password should be defined under the first parameter object!');
+            if (typeof pw !== 'undefined') {
+                logger.warn('The password should be defined under the first parameter object!');
+            }
             username = signInOpts.username;
             password = signInOpts.password;
             validationData = signInOpts.validationData;
