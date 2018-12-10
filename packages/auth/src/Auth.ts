@@ -17,7 +17,8 @@ import {
     SignUpParams, 
     FederatedUser, 
     ConfirmSignUpOptions, 
-    SignOutOpts 
+    SignOutOpts,
+    CurrentUserOpts
 } from './types';
 
 import {
@@ -862,7 +863,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentUserPoolUser(): Promise<CognitoUser | any> {
+    public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         const that = this;
         return new Promise((res, rej) => {
@@ -883,35 +884,39 @@ export default class AuthClass {
                     }
              
                     // get user data from Cognito
-                    user.getUserData((err, data) => {
-                        if (err) {
-                            logger.debug('getting user data failed', err);
-                            // Make sure the user is still valid
-                            if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                                rej(err);
-                            } else {
-                                // the error may also be thrown when lack of permissions to get user info etc
-                                // in that case we just bypass the error
-                                res(user);
+                    const bypassCache = params? params.bypassCache: false;
+                    user.getUserData(
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('getting user data failed', err);
+                                // Make sure the user is still valid
+                                if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                                    rej(err);
+                                } else {
+                                    // the error may also be thrown when lack of permissions to get user info etc
+                                    // in that case we just bypass the error
+                                    res(user);
+                                }
+                                return;
                             }
-                            return;
-                        }
-                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                        const attributeList = [];
+                            const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                            const attributeList = [];
 
-                        for (let i = 0; i < data.UserAttributes.length; i++) {
-                            const attribute = {
-                                Name: data.UserAttributes[i].Name,
-                                Value: data.UserAttributes[i].Value,
-                            };
-                            const userAttribute = new CognitoUserAttribute(attribute);
-                            attributeList.push(userAttribute);
-                        }
+                            for (let i = 0; i < data.UserAttributes.length; i++) {
+                                const attribute = {
+                                    Name: data.UserAttributes[i].Name,
+                                    Value: data.UserAttributes[i].Value,
+                                };
+                                const userAttribute = new CognitoUserAttribute(attribute);
+                                attributeList.push(userAttribute);
+                            }
 
-                        const attributes = that.attributesToObject(attributeList);
-                        Object.assign(user, {attributes, preferredMFA});
-                        res(user);
-                    });
+                            const attributes = that.attributesToObject(attributeList);
+                            Object.assign(user, {attributes, preferredMFA});
+                            return res(user);
+                        }, 
+                        { bypassCache }
+                    );
                 });
             }).catch(e => {
                 logger.debug('Failed to sync cache info into memory', e);
@@ -922,9 +927,10 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
+     * @param {CurrentUserOpts} - options for getting the current user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public async currentAuthenticatedUser(): Promise<CognitoUser|any> {
+    public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
@@ -941,7 +947,7 @@ export default class AuthClass {
             logger.debug('get current authenticated userpool user');
             let user = null;
             try {
-                user = await this.currentUserPoolUser();
+                user = await this.currentUserPoolUser(params);
             } catch (e) {
                 logger.debug('The user is not authenticated by the error', e);
                 throw ('not authenticated');

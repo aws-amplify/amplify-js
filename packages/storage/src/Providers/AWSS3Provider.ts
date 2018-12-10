@@ -157,6 +157,7 @@ export default class AWSS3Provider implements StorageProvider{
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, track, progressCallback } = opt;
         const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
+        const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -174,6 +175,13 @@ export default class AWSS3Provider implements StorageProvider{
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
+        if (serverSideEncryption) { 
+            params.ServerSideEncryption = serverSideEncryption;
+            if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }
+            if (SSECustomerKey) { params.SSECustomerKey = SSECustomerKey; }
+            if (SSECustomerKeyMD5) { params.SSECustomerKeyMD5 = SSECustomerKeyMD5; }
+            if (SSEKMSKeyId) { params.SSEKMSKeyId = SSEKMSKeyId; }
+        }
 
         try {
             const upload = s3

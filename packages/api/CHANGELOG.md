@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.24-unstable.1"></a>
+## [1.0.24-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.24-unstable.0...@aws-amplify/api@1.0.24-unstable.1) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.24-unstable.0"></a>
+## [1.0.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.23...@aws-amplify/api@1.0.24-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.23"></a>
+## [1.0.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22...@aws-amplify/api@1.0.23) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.23-unstable.0"></a>
+## [1.0.23-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22...@aws-amplify/api@1.0.23-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.22"></a>
+## [1.0.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.12...@aws-amplify/api@1.0.22) (2018-12-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.22-unstable.12"></a>
+## [1.0.22-unstable.12](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.11...@aws-amplify/api@1.0.22-unstable.12) (2018-12-03)
+
+
+### Features
+
+* **@aws-amplify/api,graphql:** DocumentNode support for GraphQL Client ([#2227](https://github.com/aws/aws-amplify/issues/2227)) ([f31d649](https://github.com/aws/aws-amplify/commit/f31d649)), closes [#1237](https://github.com/aws/aws-amplify/issues/1237)
+
+
+
+
+<a name="1.0.22-unstable.11"></a>
+## [1.0.22-unstable.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.10...@aws-amplify/api@1.0.22-unstable.11) (2018-11-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.22-unstable.10"></a>
+## [1.0.22-unstable.10](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.9...@aws-amplify/api@1.0.22-unstable.10) (2018-11-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
 <a name="1.0.22-unstable.9"></a>
 ## [1.0.22-unstable.9](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.22-unstable.8...@aws-amplify/api@1.0.22-unstable.9) (2018-11-23)
 
