@@ -1,5 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AmplifyService } from './providers/amplify.service';
 // tslint:disable:max-line-length
 import { AuthenticatorIonicComponent } from './components/authenticator/authenticator/authenticator.component.ionic';
@@ -37,7 +38,8 @@ const components = [
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   declarations: [
     ...components,
