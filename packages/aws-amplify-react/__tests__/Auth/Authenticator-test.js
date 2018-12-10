@@ -8,7 +8,20 @@ import { Button, InputRow } from '../../src/Amplify-UI/Amplify-UI-Components-Rea
 const waitForResolve = Promise.resolve();
 
 describe('Authenticator', () => {
+    beforeAll(() => {
+        const localStorageMock = {
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+            removeItem: jest.fn(),
+            clear: jest.fn()
+          };
+          global.localStorage = localStorageMock;
+    })
+    afterAll(() => {
+        jest.resetAllMocks();
+    })
     describe('normal case', () => {
+
         test('render if no error', () => {
             const wrapper = shallow(<Authenticator/>);
             wrapper.setProps({
