@@ -49,24 +49,24 @@ declare var LexAudio: any;
 const audioControl = new LexAudio.audioControl();
 
 let STATES = {
-    INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
-    LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴'},
-    SENDING: { MESSAGE: 'Please wait...', ICON: '🔊'},
-    SPEAKING: { MESSAGE: 'Speaking...', ICON: '...'}
+	INITIAL: { MESSAGE: 'Type your message or click  🎤', ICON: '🎤' },
+	LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴' },
+	SENDING: { MESSAGE: 'Please wait...', ICON: '🔊' },
+	SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' }
 };
 
 const MIC_BUTTON_TEXT = {
-    PASSIVE: '🎤',
-    RECORDING: '🔴',
-    PLAYING: '🔊',
-    LOADING: '...',
+	PASSIVE: '🎤',
+	RECORDING: '🔴',
+	PLAYING: '🔊',
+	LOADING: '...',
 }
 
 const defaultVoiceConfig = {
-    silenceDetectionConfig: {
-        time: 2000,
-        amplitude: 0.2
-    }   
+	silenceDetectionConfig: {
+		time: 2000,
+		amplitude: 0.2
+	}
 }
 
 @Component({
@@ -76,24 +76,24 @@ const defaultVoiceConfig = {
 export class ChatbotComponentCore {
 	errorMessage: string;
 	amplifyService: AmplifyService;
-	inputText:string = "";
-	botName:string;
-	chatTitle:string;
-	clearComplete:boolean = false;
-	messages:any = [];
-	completions:any = {};
-	currentVoiceState:string = STATES.INITIAL.MESSAGE;
-	inputDisabled:boolean = false;
+	inputText: string = "";
+	botName: string;
+	chatTitle: string;
+	clearComplete: boolean = false;
+	messages: any = [];
+	completions: any = {};
+	currentVoiceState: string = STATES.INITIAL.MESSAGE;
+	inputDisabled: boolean = false;
 	micText: string = MIC_BUTTON_TEXT.PASSIVE;
-	voiceConfig:any = defaultVoiceConfig;
-	continueConversation:boolean = false;
-	micButtonDisabled:boolean = false;
-	audioInput:any;
-	lexResponse:any;
-	conversationModeOn:boolean = false;
-	ref:ChangeDetectorRef;
-	voiceEnabled:boolean = true;
-	textEnabled:boolean = true;
+	voiceConfig: any = defaultVoiceConfig;
+	continueConversation: boolean = false;
+	micButtonDisabled: boolean = false;
+	audioInput: any;
+	lexResponse: any;
+	conversationModeOn: boolean = false;
+	ref: ChangeDetectorRef;
+	voiceEnabled: boolean = true;
+	textEnabled: boolean = true;
 
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
@@ -103,9 +103,9 @@ export class ChatbotComponentCore {
 		this.ref = ref;
 		this.continueConversation = false;
 	}
-	
+
 	@Input()
-	set data(data: any){
+	set data(data: any) {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
@@ -114,7 +114,7 @@ export class ChatbotComponentCore {
 		this.textEnabled = isUndefined(data.textEnabled) ? true : data.textEnabled;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
-		this.amplifyService.interactions().onComplete(this.botName,this.performOnComplete);
+		this.amplifyService.interactions().onComplete(this.botName, this.performOnComplete);
 
 		if (!this.textEnabled && this.voiceEnabled) {
 			this.currentVoiceState = "Click the mic button"
@@ -132,7 +132,7 @@ export class ChatbotComponentCore {
 	set bot(botName: string) {
 		this.botName = botName;
 		this.performOnComplete = this.performOnComplete.bind(this);
-		this.amplifyService.interactions().onComplete(botName,this.performOnComplete);
+		this.amplifyService.interactions().onComplete(botName, this.performOnComplete);
 	}
 
 	@Input()
@@ -152,22 +152,22 @@ export class ChatbotComponentCore {
 		}
 	}
 
-	onInputChange(value:string) {
+	onInputChange(value: string) {
 		this.inputText = value;
 	}
-	  
+
 	onSubmit(e) {
 		if (!this.inputText) {
 			return;
 		}
 		let message = {
-			'me':this.inputText,
+			'me': this.inputText,
 			'meSentTime': new Date().toLocaleTimeString(),
 			'bot': '',
 			'botSentTime': ''
 		};
 		this.amplifyService.interactions().send(this.botName, this.inputText)
-			.then((response:any) => {
+			.then((response: any) => {
 				this.inputText = "";
 				message.bot = response.message;
 				message.botSentTime = new Date().toLocaleTimeString();
@@ -177,38 +177,38 @@ export class ChatbotComponentCore {
 	}
 
 	onSilenceHandler = () => {
-        if (this.continueConversation !== true) {
-            return;
-        }
-        audioControl.exportWAV((blob) => {
+		if (this.continueConversation !== true) {
+			return;
+		}
+		audioControl.exportWAV((blob) => {
 			this.currentVoiceState = STATES.SENDING.MESSAGE;
 			this.audioInput = blob;
 			this.micText = STATES.SENDING.ICON;
 			this.micButtonDisabled = true;
-			this.lexResponseHandler(); 
+			this.lexResponseHandler();
 		});
 		this.ref.detectChanges();
 	}
-	
+
 	reset() {
 		audioControl.clear();
-        this.inputText = '';
-        this.currentVoiceState = STATES.INITIAL.MESSAGE;
-        this.inputDisabled = false;
-        this.micText = STATES.INITIAL.ICON;
-        this.continueConversation = false;
-        this.micButtonDisabled = false;
+		this.inputText = '';
+		this.currentVoiceState = STATES.INITIAL.MESSAGE;
+		this.inputDisabled = false;
+		this.micText = STATES.INITIAL.ICON;
+		this.continueConversation = false;
+		this.micButtonDisabled = false;
 		this.ref.detectChanges();
 	}
-	
-    onError(error) {
-        logger.error(error)
+
+	onError(error) {
+		logger.error(error)
 	}
 
 	async lexResponseHandler() {
-        if (this.continueConversation !== true) {
-            return;
-        }
+		if (this.continueConversation !== true) {
+			return;
+		}
 		const response = await this.amplifyService.interactions().send(this.botName, this.audioInput);
 
 		this.lexResponse = response;
@@ -222,7 +222,7 @@ export class ChatbotComponentCore {
 			'bot': '',
 			'botSentTime': ''
 		};
-		
+
 		this.inputText = "";
 		message.bot = this.lexResponse.message;
 		message.botSentTime = new Date().toLocaleTimeString();
@@ -233,43 +233,43 @@ export class ChatbotComponentCore {
 
 	doneSpeakingHandler() {
 		if (this.continueConversation !== true) {
-            return;
-        }
-        if (this.lexResponse.contentType === 'audio/mpeg') {
-            audioControl.play(this.lexResponse.audioStream, () => {
-                if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
-                    this.lexResponse.dialogState === 'Fulfilled' ||
-                    this.lexResponse.dialogState === 'Failed' ||
-                    this.conversationModeOn === false) {
+			return;
+		}
+		if (this.lexResponse.contentType === 'audio/mpeg') {
+			audioControl.play(this.lexResponse.audioStream, () => {
+				if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
+					this.lexResponse.dialogState === 'Fulfilled' ||
+					this.lexResponse.dialogState === 'Failed' ||
+					this.conversationModeOn === false) {
 					this.inputDisabled = false;
 					this.currentVoiceState = STATES.INITIAL.MESSAGE;
 					this.micText = STATES.INITIAL.ICON;
 					this.micButtonDisabled = false;
 					this.continueConversation = false;
 					this.ref.detectChanges();
-                } else {
+				} else {
 					this.currentVoiceState = STATES.LISTENING.MESSAGE;
 					this.micText = STATES.LISTENING.ICON;
 					this.micButtonDisabled = false;
 					audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
 					this.ref.detectChanges();
-                }
-            });
-        } else {
+				}
+			});
+		} else {
 			this.inputDisabled = false;
 			this.currentVoiceState = STATES.INITIAL.MESSAGE;
 			this.micText = STATES.INITIAL.ICON;
 			this.micButtonDisabled = false;
 			this.continueConversation = false;
 			this.ref.detectChanges();
-        }
-    }
+		}
+	}
 
 	async micButtonHandler() {
-        if (this.continueConversation === true) {
+		if (this.continueConversation === true) {
 			this.reset();
 			this.ref.detectChanges();
-        } else {
+		} else {
 			this.inputDisabled = true;
 			this.continueConversation = true;
 			this.currentVoiceState = STATES.LISTENING.MESSAGE;
@@ -277,7 +277,7 @@ export class ChatbotComponentCore {
 			this.micButtonDisabled = false;
 			audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
 			this.ref.detectChanges();
-        }
-    }
-	
+		}
+	}
+
 }
