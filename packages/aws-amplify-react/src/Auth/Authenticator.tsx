@@ -48,8 +48,8 @@ export interface IAuthenticatorProps {
 }
 
 export interface IAuthenticatorState {
-    auth;
     authData?;
+    authState;
     error?;
     showToast?: boolean;
 }
@@ -66,7 +66,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
         this._initialAuthState = this.props.authState || 'signIn';
-        this.state = { auth: 'loading' };
+        this.state = { authState: 'loading' };
         Hub.listen('auth', this);
     }
 
@@ -135,7 +135,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
 
     handleStateChange(state, data?) {
         logger.debug('authenticator state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         const newState = state === 'signedOut' ? 'signIn' : state;
         try {
@@ -143,8 +143,8 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         } catch (e) {
             logger.debug('Failed to set the auth state into local storage', e);
         }
-        this.setState({ auth: newState, authData: data, error: null, showToast: false });
-        if (this.props.onStateChange) { this.props.onStateChange(newState, data); }
+        this.setState({ authState: newState, authData: data, error: null, showToast: false });
+        if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
     handleAuthEvent(state, event, showToast = true) {
@@ -157,7 +157,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
     }
 
     render() {
-        const { auth, authData } = this.state;
+        const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
@@ -191,22 +191,11 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
             <TOTPSetup/>,
             <Loading/>
         ];
-        const props_children_names = React.Children.map(props_children, child => {
-            if ((typeof child === 'string') || (typeof child === 'number') || (typeof child.type === 'string')) {
-                return '';
-            }
-            return child.type.name;
-        });
-        const props_children_override =  React.Children.map(props_children, child => {
-            if ((typeof child === 'string') || (typeof child === 'number')) {
-                return '';
-            }
-            return child.props.override;
-        });
-        hide = hide.filter((component) =>!props_children_names.includes(component.name));
-        const hideLink = hide.filter((component) => {
-            return !props_children_override.some(comp => comp === component);
-        });
+
+        // @ts-ignore
+        const props_children_override =  React.Children.map(props_children, child => child.props.override);
+        // @ts-ignore
+        hide = hide.filter((component) => !props_children.find(child => child.type === component));
         
         const render_props_children = React.Children.map(props_children, (child, index) => {
             if (typeof child === 'string' || typeof child === 'number') {
@@ -216,12 +205,12 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
                     key: 'aws-amplify-authenticator-props-children-' + index,
                     theme,
                     messageMap,
-                    authState: auth,
+                    authState,
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    hideLink
+                    override: props_children_override
                 });
         });
        
@@ -230,12 +219,12 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
                     key: 'aws-amplify-authenticator-default-children-' + index,
                     theme,
                     messageMap,
-                    authState: auth,
+                    authState,
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    hideLink
+                    override: props_children_override
                 });
             });
 

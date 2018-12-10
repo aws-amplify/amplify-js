@@ -98,3 +98,7 @@ export interface ConfirmSignUpOptions {
 export interface SignOutOpts {
     global?: boolean
 }
+
+export interface CurrentUserOpts {
+    bypassCache: boolean
+}

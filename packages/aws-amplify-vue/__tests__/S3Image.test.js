@@ -5,7 +5,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 import S3Image from '../src/components/storage/S3Image.vue';
 import * as components from '../src/components';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -51,12 +51,7 @@ describe('S3Image', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
 
-    it('...should not call $Amplify.Storage.get when getImages is called witout imagePath', () => {
-      wrapper.vm.getImage();
-      expect(wrapper.vm.$Amplify.Storage.get).not.toHaveBeenCalled();
-    });
-
-    it('...should not call $Amplify.Storage.get when getImages is called witout imagePath', () => {
+    it('...should call $Amplify.Storage.get when getImages is called with imagePath', () => {
       wrapper.vm.imagePath = 'testPath';
       wrapper.vm.getImage();
       expect(wrapper.vm.$Amplify.Storage.get).toHaveBeenCalled();

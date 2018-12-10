@@ -32,7 +32,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
+const logger = new Logger('ConfirmSignIn');
 
 export default class ConfirmSignIn extends AuthPiece {
     constructor(props) {
@@ -71,6 +71,7 @@ export default class ConfirmSignIn extends AuthPiece {
                             required={true}
                         />
                         <AmplifyButton
+                            theme={theme}
                             text={I18n.get('Confirm')}
                             onPress={this.confirm}
                             disabled={!this.state.code}

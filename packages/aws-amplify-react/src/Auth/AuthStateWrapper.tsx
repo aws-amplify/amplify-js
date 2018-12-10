@@ -14,8 +14,8 @@ export interface IAuthStateWrapperProps {
 }
 
 interface IAuthStateWrapperState {
-    auth;
     authData?;
+    authState;
     error?;
 }
 
@@ -27,7 +27,7 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
         this.checkUser = this.checkUser.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this.state = { authState: props.authState || 'signIn' };
     }
 
     componentWillMount() {
@@ -43,11 +43,11 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
 
     handleStateChange(state, data) {
         logger.debug('authStateWrapper state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         let newState = state;
         if (state === 'signedOut') { newState = 'signIn'; }
-        this.setState({ auth: newState, authData: data, error: null });
+        this.setState({ authState: newState, authData: data, error: null });
         if (this.props.onStateChange) { this.props.onStateChange(newState, data); }
     }
 
@@ -70,7 +70,7 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
     }
 
     render() {
-        const { auth, authData } = this.state;
+        const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const render_children = React.Children.map(this.props.children, (child) => {
                 if (!child) { return null; }
@@ -78,8 +78,8 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
                     return child;
                 }
                 return React.cloneElement(child, {
-                    authState: auth,
                     authData,
+                    authState,
                     theme,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent
