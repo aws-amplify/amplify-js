@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.13-unstable.1"></a>
+## [1.2.13-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.13-unstable.0...@aws-amplify/auth@1.2.13-unstable.1) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.13-unstable.0"></a>
+## [1.2.13-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.12...@aws-amplify/auth@1.2.13-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.12"></a>
+## [1.2.12](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.11...@aws-amplify/auth@1.2.12) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.12-unstable.0"></a>
+## [1.2.12-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.11...@aws-amplify/auth@1.2.12-unstable.0) (2018-12-07)
+
+
+### Features
+
+* **amazon-cognito-identity-js:** cache the user data ([f4dd225](https://github.com/aws/aws-amplify/commit/f4dd225))
+
+
+
+
 <a name="1.2.11"></a>
 ## [1.2.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.11-unstable.10...@aws-amplify/auth@1.2.11) (2018-12-03)
 
