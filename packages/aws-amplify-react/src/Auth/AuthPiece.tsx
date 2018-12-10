@@ -23,6 +23,7 @@ export interface IAuthPieceProps {
     hide?: any[];
     onAuthEvent?: (state, event) => void;
     onStateChange?: (state, data) => void;
+    override?: any[];
     theme?;
     track?: () => void;
 }

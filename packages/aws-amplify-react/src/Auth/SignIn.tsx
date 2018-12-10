@@ -43,7 +43,11 @@ export interface ISignInProps extends IAuthPieceProps {
     hideLink?: any[]; 
 }
 
-export default class SignIn extends AuthPiece<ISignInProps, {}> {
+interface ISignInState {
+    loading?: boolean;
+}
+
+export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
     constructor(props) {
         super(props);
 
@@ -119,7 +123,7 @@ export default class SignIn extends AuthPiece<ISignInProps, {}> {
                 this.error(err);
             }
         } finally {
-            this.setState({loading: false})
+            this.setState({loading: false});
         }
     }
 
@@ -127,7 +131,8 @@ export default class SignIn extends AuthPiece<ISignInProps, {}> {
         const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[] } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
         const hideSignUp = !override.includes('SignUp') && hide.some(component => component === SignUp);
-        const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
+        const hideForgotPassword =
+            !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
