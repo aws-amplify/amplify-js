@@ -4,7 +4,9 @@ exports[`AuthenticatorWrapper test render test render correctly 1`] = `
 <div>
   <Authenticator
     onStateChange={[Function]}
-  />
+  >
+    <Component />
+  </Authenticator>
 </div>
 `;
 

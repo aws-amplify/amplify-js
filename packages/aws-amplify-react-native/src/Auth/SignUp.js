@@ -172,7 +172,7 @@ export default class SignUp extends AuthPiece {
 
         inputKeys.forEach((key, index) => {
             if (!['username', 'password', 'checkedValue'].includes(key)) {
-                if (key !== 'phone_line_number' && key !== 'dial_code') {
+                if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                   const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                   signup_info.attributes[newKey] = inputVals[index];
                 } else if (inputVals[index]) {
