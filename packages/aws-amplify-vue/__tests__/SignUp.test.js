@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignUp from '../src/components/authenticator/SignUp.vue';
 import countries from '../src/assets/countries';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -76,31 +76,31 @@ describe('SignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Sign Up');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign Up Account');
       expect(wrapper.vm.options.signUpFields).toEqual([
         {
-          label: 'Username',
+          label: 'i18n Username',
           key: 'username',
           required: true,
           type: 'string',
           displayOrder: 1,
         },
         {
-          label: 'Password',
+          label: 'i18n Password',
           key: 'password',
           required: true,
           type: 'password',
           displayOrder: 2,
         },
         {
-          label: 'Email',
+          label: 'i18n Email',
           key: 'email',
           required: true,
           type: 'string',
           displayOrder: 3,
         },
         {
-          label: 'Phone Number',
+          label: 'i18n Phone Number',
           key: 'phone_number',
           required: true,
           displayOrder: 4,
@@ -164,11 +164,6 @@ describe('SignUp', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterPrimaryContent} > button`);
       el.trigger('click');
       expect(mockSignUp).toHaveBeenCalled();
-    });
-
-    it('...should keep default signUpFields if passed fields are empty array', () => {
-      signUpFields = [];
-      expect(wrapper.vm.options.signUpFields.length).toEqual(4);
     });
   });
 

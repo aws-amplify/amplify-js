@@ -30,7 +30,7 @@ import {
 
 import { totpQrcode } from '@aws-amplify/ui';
 
-import QRCode from 'qrcode.react';
+const QRCode = require('qrcode.react');
 
 const logger = new Logger('TOTPSetupComp');
 

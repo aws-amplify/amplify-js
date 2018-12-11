@@ -7,6 +7,7 @@ module.exports = {
   Auth: {
     currentAuthenticatedUser: jest.fn(() => Promise.resolve({})),
     verifyCurrentUserAttribute: jest.fn(() => Promise.resolve({ username: 'myTestUsername' })),
+    completeNewPassword: jest.fn(() => Promise.resolve({})),
     confirmSignIn: jest.fn(() => Promise.resolve({})),
     confirmSignUp: jest.fn(() => Promise.resolve({})),
     forgotPassword: jest.fn(() => Promise.resolve({})),
@@ -17,6 +18,7 @@ module.exports = {
     signIn: jest.fn(() => Promise.resolve({})),
     signOut: jest.fn(() => Promise.resolve({})),
     signUp: jest.fn(() => Promise.resolve({})),
+    verifiedContact: jest.fn(() => Promise.resolve({})),
     verifyTotpToken: jest.fn(() => Promise.resolve({})),
   },
   AuthClass: {},
@@ -29,4 +31,17 @@ module.exports = {
     put: jest.fn(() => Promise.resolve({ key: 'testKey' })),
     list: jest.fn(() => Promise.resolve({})),
   },
+  I18n: {
+    get: jest.fn(key => { return `i18n ${key}` }),
+  },
+  XR: {
+    loadScene: jest.fn(() => Promise.resolve({})),
+    start: jest.fn(),
+    isMuted: jest.fn(() => { return false }),
+    isVRCapable: jest.fn(() => { return false }),
+    onSceneEvent: jest.fn(() => Promise.resolve({})),
+    setMuted: jest.fn(),
+    enableAudio: jest.fn(),
+    enterVR: jest.fn(),
+  }
 };

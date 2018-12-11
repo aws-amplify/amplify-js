@@ -17,7 +17,8 @@ import {
     SignUpParams, 
     FederatedUser, 
     ConfirmSignUpOptions, 
-    SignOutOpts 
+    SignOutOpts,
+    CurrentUserOpts
 } from './types';
 
 import {
@@ -140,23 +141,23 @@ export default class AuthClass {
         });
 
         // initiailize cognitoauth client if hosted ui options provided
-        if (oauth) {
+        // to keep backward compatibility:
+        const cognitoHostedUIConfig = oauth? (oauth['domain']? oauth : oauth.awsCognito) : undefined;
+        if (cognitoHostedUIConfig) {
             const that = this;
-
             const cognitoAuthParams = Object.assign(
                 {
                     ClientId: userPoolWebClientId,
                     UserPoolId: userPoolId,
-                    AppWebDomain: oauth.domain,
-                    TokenScopesArray: oauth.scope,
-                    RedirectUriSignIn: oauth.redirectSignIn,
-                    RedirectUriSignOut: oauth.redirectSignOut,
-                    ResponseType: oauth.responseType,
+                    AppWebDomain: cognitoHostedUIConfig['domain'],
+                    TokenScopesArray: cognitoHostedUIConfig['scope'],
+                    RedirectUriSignIn: cognitoHostedUIConfig['redirectSignIn'],
+                    RedirectUriSignOut: cognitoHostedUIConfig['redirectSignOut'],
+                    ResponseType: cognitoHostedUIConfig['responseType'],
                     Storage: this._storage
                 },
-                oauth.options
+                cognitoHostedUIConfig['options']
             );
-
             logger.debug('cognito auth params', cognitoAuthParams);
             this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
@@ -180,6 +181,7 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug("Error in cognito hosted auth response", err);
                     dispatchAuthEvent('signIn_failure', err);
+                    dispatchAuthEvent('cognitoHostedUI_failure', err);
                 }
             };
             // if not logged in, try to parse the url.
@@ -192,7 +194,12 @@ export default class AuthClass {
                     return;
                 }
                 const curUrl = window.location.href;
-                this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+                try {
+                    this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+                } catch (err) {
+                    logger.debug('something wrong when parsing the url', err);
+                    dispatchAuthEvent('parsingUrl_failure', null);
+                }
             });
         }
 
@@ -856,7 +863,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentUserPoolUser(): Promise<CognitoUser | any> {
+    public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         const that = this;
         return new Promise((res, rej) => {
@@ -877,35 +884,39 @@ export default class AuthClass {
                     }
              
                     // get user data from Cognito
-                    user.getUserData((err, data) => {
-                        if (err) {
-                            logger.debug('getting user data failed', err);
-                            // Make sure the user is still valid
-                            if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                                rej(err);
-                            } else {
-                                // the error may also be thrown when lack of permissions to get user info etc
-                                // in that case we just bypass the error
-                                res(user);
+                    const bypassCache = params? params.bypassCache: false;
+                    user.getUserData(
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('getting user data failed', err);
+                                // Make sure the user is still valid
+                                if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                                    rej(err);
+                                } else {
+                                    // the error may also be thrown when lack of permissions to get user info etc
+                                    // in that case we just bypass the error
+                                    res(user);
+                                }
+                                return;
                             }
-                            return;
-                        }
-                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                        const attributeList = [];
+                            const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                            const attributeList = [];
 
-                        for (let i = 0; i < data.UserAttributes.length; i++) {
-                            const attribute = {
-                                Name: data.UserAttributes[i].Name,
-                                Value: data.UserAttributes[i].Value,
-                            };
-                            const userAttribute = new CognitoUserAttribute(attribute);
-                            attributeList.push(userAttribute);
-                        }
+                            for (let i = 0; i < data.UserAttributes.length; i++) {
+                                const attribute = {
+                                    Name: data.UserAttributes[i].Name,
+                                    Value: data.UserAttributes[i].Value,
+                                };
+                                const userAttribute = new CognitoUserAttribute(attribute);
+                                attributeList.push(userAttribute);
+                            }
 
-                        const attributes = that.attributesToObject(attributeList);
-                        Object.assign(user, {attributes, preferredMFA});
-                        res(user);
-                    });
+                            const attributes = that.attributesToObject(attributeList);
+                            Object.assign(user, {attributes, preferredMFA});
+                            return res(user);
+                        }, 
+                        { bypassCache }
+                    );
                 });
             }).catch(e => {
                 logger.debug('Failed to sync cache info into memory', e);
@@ -916,9 +927,10 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
+     * @param {CurrentUserOpts} - options for getting the current user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public async currentAuthenticatedUser(): Promise<CognitoUser|any> {
+    public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
@@ -935,7 +947,7 @@ export default class AuthClass {
             logger.debug('get current authenticated userpool user');
             let user = null;
             try {
-                user = await this.currentUserPoolUser();
+                user = await this.currentUserPoolUser(params);
             } catch (e) {
                 logger.debug('The user is not authenticated by the error', e);
                 throw ('not authenticated');
@@ -1151,16 +1163,8 @@ export default class AuthClass {
             logger.debug('no Congito User pool');
         }
         
-
-        try {
-            await Credentials.set(null, 'guest');
-        } catch (e) {
-            logger.debug('cannot load guest credentials for unauthenticated user', e);
-        } finally {
-            dispatchAuthEvent('signOut', this.user);
-            this.user = null;
-            return;
-        }
+        dispatchAuthEvent('signOut', this.user);
+        this.user = null;
     }
 
     private async cleanCachedItems() {

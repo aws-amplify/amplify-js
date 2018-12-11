@@ -97,4 +97,152 @@ describe('JS test', () => {
             expect(JS.isTextFile('text/*')).toEqual(true);
         });
     });
+
+    describe('transferKeyToLowerCase test', () => {
+        test('happy case', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj)).toEqual({
+                "a": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+
+        test('whiteList iteself', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj, ['A'])).toEqual({
+                "A": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+
+        test('whiteList children', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj, [], ['A'])).toEqual({
+                "a": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+    });
+
+    describe('transferKeyToUpperCase test', () => {
+        test('happy case', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj)).toEqual({
+                "A": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        });
+
+        test('whiteList iteself', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj, ['a'])).toEqual({
+                "a": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        });
+
+        test('whiteList children', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj, [], ['a'])).toEqual({
+                "A": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        })
+    });
 });

@@ -33,6 +33,12 @@
   opacity: 0.8;
 }
 
+.button:disabled {
+  opacity: 1;
+  cursor: auto;
+  background-color: var(--ion-color-primary-tint);
+}
+
 .signInButton {
   position: relative;
   width: 100%;
@@ -58,6 +64,21 @@
   height: 28px;
   width: 28px;
   padding: 12px;
+}
+
+#auth0SignInButton {
+  background-color: #eb5424;
+  font-family: Roboto;
+  border: 1px solid #e14615;
+  color: #fff;
+}
+
+#auth0SignInButton > .signInButtonIcon {
+  border-radius: 4px 0 0 4px;
+  height: 28px;
+  width: 28px;
+  padding: 12px;
+  fill: #fff;
 }
 
 #facebookSignInButton {

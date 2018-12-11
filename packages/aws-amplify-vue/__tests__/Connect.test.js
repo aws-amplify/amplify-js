@@ -2,7 +2,7 @@
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import Connect from '../src/components/api/graphql/Connect.vue';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 

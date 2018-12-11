@@ -9,7 +9,7 @@ jest.mock('../../src/Storage/Common', () => {
 import Storage from '@aws-amplify/storage';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
-import { PhotoPicker } from '../../src/Widget'
+import { PhotoPicker } from '../../src/Widget';
 import * as React from 'react';
 
 describe('S3Image', () => {
@@ -170,7 +170,8 @@ describe('S3Image', () => {
             await s3Image.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('imgKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
+            expect(spyon)
+                .toBeCalledWith('imgKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();

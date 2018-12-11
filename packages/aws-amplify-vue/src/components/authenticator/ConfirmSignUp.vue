@@ -16,25 +16,25 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Username *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" placeholder="Username" autofocus />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus />
       </div>
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Code *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" name="code" placeholder="Code" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" name="code" :placeholder="$Amplify.I18n.get('Confirmation Code')" />
         <div v-bind:class="amplifyUI.hint">
-          Lost your code?
-          <a v-bind:class="amplifyUI.a" v-on:click="resend">Resend Code</a>
+          {{$Amplify.I18n.get('Lost your code? ')}}
+          <a v-bind:class="amplifyUI.a" v-on:click="resend">{{$Amplify.I18n.get('Resend Code')}}</a>
         </div>
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="confirm">Confirm</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="confirm">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        Have an Account?
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">Sign In</a>
+        {{$Amplify.I18n.get('Have an account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -62,7 +62,7 @@ export default {
     options() {
       const defaults = {
         username: '',
-        header: 'Confirm Sign Up',
+        header: this.$Amplify.I18n.get('Confirm Sign Up'),
       }
       return Object.assign(defaults, this.confirmSignUpConfig || {})
     }
@@ -93,7 +93,7 @@ export default {
         AmplifyEventBus.$emit('authState', 'signedOut')
     },
     setError(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
   }

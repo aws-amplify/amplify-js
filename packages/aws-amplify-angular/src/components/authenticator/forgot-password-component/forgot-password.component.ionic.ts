@@ -55,7 +55,7 @@ const template = `
     </div>
     <div class="amplify-form-row">
       <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign In</a></div>
-      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onResend()">Resend</a></div>
+      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onSend()">Resend</a></div>
     </div>
   </div>
 

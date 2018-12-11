@@ -145,14 +145,15 @@ describe('withFacebook test', () => {
                 }
             };
             const fbResponse = {
-                name: 'username'
+                name: 'username',
+                email: 'user@example.com'
             };
 
             window.FB = {
-                    api(path, callback) {
+                    api(path, {}, callback) {
                         callback(fbResponse);
                     }
-                }
+                };
             
 
             const Comp = withFacebook(MockComp);
@@ -175,7 +176,10 @@ describe('withFacebook test', () => {
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
+            expect(spyon).toBeCalledWith(
+                'facebook',
+                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -189,11 +193,12 @@ describe('withFacebook test', () => {
                 }
             };
             const fbResponse = {
-                name: 'username'
+                name: 'username',
+                email: 'user@example.com'
             };
 
             window.FB = {
-                api(path, callback) {
+                api(path, {}, callback) {
                     callback(fbResponse);
                 }
             };
@@ -224,7 +229,10 @@ describe('withFacebook test', () => {
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
+            expect(spyon).toBeCalledWith(
+                'facebook',
+                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -282,7 +290,7 @@ describe('withFacebook test', () => {
             };
             
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
-                callback('response')
+                callback('response');
             });
             const mockFn2 = jest.fn();
             window.FB = {

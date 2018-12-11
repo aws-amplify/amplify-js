@@ -47,7 +47,8 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     send() {
-        const { username } = this.inputs;
+        const { authData={} } = this.props;
+        const username = this.inputs.username || authData.username;
         if (!Auth || typeof Auth.forgotPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -60,7 +61,10 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     submit() {
-        const { username, code, password } = this.inputs;
+        const { authData={} } = this.props;
+        const { code, password } = this.inputs;
+        const username = this.inputs.username || authData.username;
+        
         if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -117,30 +121,32 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide } = this.props;
+        const { authState, hide, authData={} } = this.props;
         if (hide && hide.includes(ForgotPassword)) { return null; }
 
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Reset your password')}</SectionHeader>
                 <SectionBody>
-                    { this.state.delivery? this.submitView() : this.sendView() }
+                    { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        { this.state.delivery ? 
+                        { this.state.delivery || authData.username ? 
                             <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
                             <Button theme={theme} onClick={this.send}>{I18n.get('Send Code')}</Button>
                         }
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        { this.state.delivery ?
+                        { this.state.delivery || authData.username ?
                             <Link theme={theme} onClick={this.send}>{I18n.get('Resend Code')}</Link> :
-                            <Link theme={theme} onClick={() => this.changeState('signIn')}>{I18n.get('Back to Sign In')}</Link>
+                            <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                                {I18n.get('Back to Sign In')}
+                            </Link>
                         }
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

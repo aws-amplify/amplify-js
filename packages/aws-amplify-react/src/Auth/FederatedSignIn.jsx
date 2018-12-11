@@ -15,7 +15,8 @@ import {
     GoogleButton,
     FacebookButton,
     AmazonButton,
-    OAuthButton
+    OAuthButton,
+    Auth0Button
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -64,6 +65,17 @@ export class FederatedButtons extends Component {
               />;
     }
 
+    auth0(auth0) {
+        if (!auth0) { return null;}
+        const { theme, onStateChange } = this.props;
+        return <Auth0Button
+                label={auth0? auth0.label : undefined}
+                theme={theme}
+                onStateChange={onStateChange}
+                auth0={auth0}
+              />;
+    }
+
     render() {
         const { authState } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
@@ -73,14 +85,21 @@ export class FederatedButtons extends Component {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        const config = Auth.configure();
-        if (config.oauth) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+        const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        }
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0 } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -97,7 +116,10 @@ export class FederatedButtons extends Component {
                 <div>
                 {this.OAuth(oauth_config)}
                 </div>
-                <Strike>{I18n.get('or')}</Strike>
+                <div>
+                {this.auth0(auth0)}
+                </div>
+                <Strike theme={theme}>{I18n.get('or')}</Strike>
             </div>
         );
     }
@@ -111,9 +133,16 @@ export default class FederatedSignIn extends Component {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         
-        const config = Auth.configure();
-        if (config.oauth) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+         const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        }
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (!federated) {

@@ -30,6 +30,7 @@ export default class SessionTracker {
     private _tracker;
     private _hasEnabled;
     private _config: SessionTrackOpts;
+    private _currentState;
 
     constructor(tracker, opts) {
         this._config = Object.assign({}, defaultOpts, opts);
@@ -37,6 +38,7 @@ export default class SessionTracker {
         
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
+        this._currentState = AppState.currentState;
         this.configure(this._config);
     }
 
@@ -49,7 +51,6 @@ export default class SessionTracker {
     }
 
     private async _trackFunc(nextAppState) {
-        const currentState = AppState.currentState;
         const customAttrs = typeof this._config.attributes === 'function'? 
             await this._config.attributes() : this._config.attributes;
         const attributes = Object.assign(
@@ -57,7 +58,7 @@ export default class SessionTracker {
             customAttrs
         );
 
-        if (currentState.match(/inactive|background/) && nextAppState === 'active') {
+        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
             logger.debug('App has come to the foreground, recording start session');
             this._tracker(
                 {
@@ -69,18 +70,21 @@ export default class SessionTracker {
                 logger.debug('record session start event failed.', e);
             });
         }
-        if (currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
+        if (this._currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
             logger.debug('App has come to inactive/background, recording stop session');
             this._tracker(
                 { 
                     name: '_session_stop',
-                    attributes
+                    attributes,
+                    immediate: true
                 },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session stop event failed.', e);
             });
         }
+
+        this._currentState = nextAppState;
     }
 
     // to keep configure a synchronized function

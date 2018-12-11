@@ -1,12 +1,14 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.5-unstable.0",
+  "version": "0.2.1-unstable.0",
   "license": "Apache-2.0",
   "private": false,
+  "author": "Amazon Web Services",
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build --target lib --name aws-amplify-vue ./src/Amplify.vue",
+    "build-stats": "vue-cli-service build --report --target lib --name aws-amplify-vue ./src/Amplify.vue",
     "test": "./node_modules/.bin/vue-cli-service test:unit",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i"
   },
@@ -16,7 +18,7 @@
     "vue2-filters": "^0.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/ui": "^1.0.7",
+    "@aws-amplify/ui": "1.0.10-unstable.0",
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",

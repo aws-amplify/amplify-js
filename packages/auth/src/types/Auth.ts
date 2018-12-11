@@ -74,13 +74,18 @@ export interface FederatedUser {
     email?: string
 }
 
-export interface OAuth {
-    domain : string,
-	scope : Array<string>,
-	redirectSignIn : string,
-	redirectSignOut : string,
+export interface awsCognitoOAuthOpts {
+    domain: string,
+	scope: Array<string>,
+	redirectSignIn: string,
+	redirectSignOut: string,
     responseType: string,
     options?: object
+}
+
+export interface OAuth {
+    awsCognito?: awsCognitoOAuthOpts,
+    auth0?: any
 }
 
 export interface ConfirmSignUpOptions {
@@ -89,4 +94,8 @@ export interface ConfirmSignUpOptions {
 
 export interface SignOutOpts {
     global?: boolean
+}
+
+export interface CurrentUserOpts {
+    bypassCache: boolean
 }

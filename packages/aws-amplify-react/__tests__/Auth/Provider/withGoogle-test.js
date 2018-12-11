@@ -305,8 +305,8 @@ describe('withGoogle test', () => {
                             },
                             getBasicProfile() {
                                 return {
-                                    getEmail() { return 'email' },
-                                    getName() { return 'name' }
+                                    getEmail() { return 'email'; },
+                                    getName() { return 'name'; }
                                 };
                             }
                         };
@@ -329,7 +329,8 @@ describe('withGoogle test', () => {
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { return Promise.resolve() });
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { return Promise.resolve(); });
 
             await comp.refreshGoogleToken();
 
@@ -434,7 +435,7 @@ describe('withGoogle test', () => {
                     getAuthInstance() {
                         return Promise.resolve({
                             signOut: mockFn
-                        })
+                        });
                     }
                 }
             };

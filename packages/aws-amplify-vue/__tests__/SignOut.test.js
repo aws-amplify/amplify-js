@@ -3,7 +3,7 @@ import Vue from 'vue';
 import { shallowMount, mount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignOut from '../src/components/authenticator/SignOut.vue';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -55,7 +55,7 @@ describe('SignOut', () => {
 
     it('...have default options', () => {
       expect(wrapper.vm.options.msg).toEqual(null);
-      expect(wrapper.vm.options.signOutButton).toEqual('Sign Out');
+      expect(wrapper.vm.options.signOutButton).toEqual('i18n Sign Out');
     });
   });
 

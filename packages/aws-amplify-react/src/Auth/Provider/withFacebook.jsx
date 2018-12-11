@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -34,7 +47,7 @@ export default function withFacebook(Comp) {
             fb.getLoginStatus(response => {
                 const payload = {
                     provider: Constants.FACEBOOK
-                }
+                };
                 try {
                     localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
                 } catch (e) {
@@ -44,12 +57,17 @@ export default function withFacebook(Comp) {
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
-                    fb.login(response => {
-                        if (!response || !response.authResponse) {
-                            return;
+                    fb.login(
+                        response => {
+                            if (!response || !response.authResponse) {
+                                return;
+                            }
+                            this.federatedSignIn(response.authResponse);
+                        },
+                        {
+                            scope: 'public_profile,email'
                         }
-                        this.federatedSignIn(response.authResponse);
-                    }, {scope: 'public_profile,email'});
+                    );
                 }
             });
         }
@@ -66,9 +84,10 @@ export default function withFacebook(Comp) {
             }
 
             const fb = window.FB;
-            fb.api('/me', response => {
-                let user = {
-                    name: response.name
+            fb.api('/me', { fields: 'name,email' }, response => {
+                const user = {
+                    name: response.name,
+                    email: response.email
                 };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 

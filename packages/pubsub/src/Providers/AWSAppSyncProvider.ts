@@ -48,13 +48,15 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                 .map(([t,]) => t);
 
             topicsForClient.forEach(topic => {
-                this._topicObservers.get(topic).forEach(obs => {
-                    if (!obs.closed) {
-                        obs.error(args);
-                    }
-                });
+                if (this._topicObservers.has(topic)) {
+                    this._topicObservers.get(topic).forEach(obs => {
+                        if (!obs.closed) {
+                            obs.error(args);
+                        }
+                    });
 
-                this._topicObservers.delete(topic);
+                    this._topicObservers.delete(topic);
+                }
             });
 
             this._cleanUp(clientId);

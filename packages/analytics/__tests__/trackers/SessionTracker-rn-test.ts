@@ -81,11 +81,8 @@ describe('SessionTracker test', () => {
             });
             tracker.mockClear();
 
-            Object.defineProperty(AppState, 'currentState', {
-                writable: true,
-                value: 'inactive'
-            });
-
+            // mock to be inactive
+            sessionTracker._currentState = 'inactive';
             sessionTracker._trackFunc('active');
 
             expect(tracker).toBeCalledWith({
@@ -100,17 +97,9 @@ describe('SessionTracker test', () => {
             });
             tracker.mockClear();
 
-           Object.defineProperty(AppState, 'currentState', {
-                writable: true,
-                value: 'active'
-            });
-
             sessionTracker._trackFunc('inactive');
 
-            expect(tracker).toBeCalledWith({
-                name: '_session_stop',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith({"attributes": {}, "immediate": true, "name": "_session_stop"}, 'AWSPinpoint');
         });
     });
 });

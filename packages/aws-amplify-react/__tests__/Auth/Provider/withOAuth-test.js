@@ -26,6 +26,8 @@ describe('withOAuth test', () => {
 
     describe('signIn test', () => {
         test('happy case with connected response', () => {
+            const mockFn = jest.fn();
+            window.location.assign = mockFn;
             const MockComp = class extends Component {
                 render() {
                     return <div />;
@@ -35,10 +37,12 @@ describe('withOAuth test', () => {
             const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
                 return {
                     oauth: {
-                        domain: 'domain',
-                        redirectSignIn: 'redirectUriSignIn',
-                        redirectSignOut: 'redirectUriSignOut',
-                        responseType: 'responseType'
+                        awsCognito: {
+                            domain: 'domain',
+                            redirectSignIn: 'redirectUriSignIn',
+                            redirectSignOut: 'redirectUriSignOut',
+                            responseType: 'responseType'
+                        }
                     },
                     userPoolWebClientId: 'userPoolWebClientId'
                 };
@@ -48,7 +52,9 @@ describe('withOAuth test', () => {
             const comp = wrapper.instance();
 
             comp.signIn();
-
+            expect(mockFn).toBeCalledWith(
+                "https://domain/login?redirect_uri=redirectUriSignIn&response_type=responseType&client_id=userPoolWebClientId"
+            );
             spyon.mockClear();
         });
     });

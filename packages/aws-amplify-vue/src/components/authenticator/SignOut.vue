@@ -43,7 +43,7 @@ export default {
     options() {
       const defaults = {
         msg: null,
-        signOutButton: 'Sign Out'
+        signOutButton: this.$Amplify.I18n.get('Sign Out')
       }
       return Object.assign(defaults, this.signOutConfig || {})
     }
@@ -61,7 +61,7 @@ export default {
             .catch(e => this.setError(e));
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
     }
   }

@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -35,8 +48,9 @@ export default function withGoogle(Comp) {
                     this.federatedSignIn(googleUser);
                     const payload = {
                         provider: Constants.GOOGLE
-                    }
-                     try {
+                    };
+
+                    try {
                         localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
                     } catch (e) {
                         logger.debug('Failed to cache auth source into localStorage', e);
@@ -96,7 +110,10 @@ export default function withGoogle(Comp) {
 
         componentDidMount() {
             const { google_client_id } = this.props;
-            if (google_client_id && !window.gapi) this.createScript();
+            const ga = window.gapi && window.gapi.auth2 ? 
+                window.gapi.auth2.getAuthInstance() : 
+                null;
+            if (google_client_id && !ga) this.createScript();
         }
 
         createScript() {
