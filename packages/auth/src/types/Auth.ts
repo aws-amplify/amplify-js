@@ -104,7 +104,7 @@ export type UsernamePasswordOpts = {
     username: string,
     password: string,
     validationData?: {[key:string]: any}
-}
+};
 
 // We can extend this in the future if needed
 export type SignInOpts = UsernamePasswordOpts;
