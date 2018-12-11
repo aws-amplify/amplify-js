@@ -32,7 +32,7 @@
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
         <button v-bind:class="amplifyUI.button" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
+      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent" v-if="options.isSignUpDisplayed">
         {{$Amplify.I18n.get('No account? ')}}
         <a v-bind:class="amplifyUI.a" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</a>
       </span>
@@ -64,7 +64,8 @@ export default {
     options() {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign In Account'),
-        username: ''
+        username: '',
+        isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})
     }
@@ -78,11 +79,18 @@ export default {
       this.$Amplify.Auth.signIn(this.options.username, this.password)
         .then(data => {
           this.logger.info('sign in success');
-          if (data.challengeName) {
+          if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'confirmSignIn')
-          } 
-          return AmplifyEventBus.$emit('authState', 'signedIn')
+          } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'requireNewPassword');
+          } else if (data.challengeName === 'MFA_SETUP') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'setMfa');
+          } else {
+            return AmplifyEventBus.$emit('authState', 'signedIn')
+          }
         })
         .catch(e => this.setError(e));
     },

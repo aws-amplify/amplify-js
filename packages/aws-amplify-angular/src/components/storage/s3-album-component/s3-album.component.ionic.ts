@@ -19,7 +19,7 @@ const template =  `
 
 @Component({
   selector: 'amplify-s3-album-ionic',
-  template: template
+  template
 })
 export class S3AlbumComponentIonic extends S3AlbumComponentCore {
 

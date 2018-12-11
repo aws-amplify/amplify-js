@@ -18,7 +18,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { TextPicker } from '../Widget';
+import TextPicker from '../Widget/TextPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Text');
@@ -47,7 +47,7 @@ export default class S3Text extends Component {
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
-                this.setState({ text: text });
+                this.setState({ text });
                 this.handleOnLoad(text);
             })
             .catch(err => {

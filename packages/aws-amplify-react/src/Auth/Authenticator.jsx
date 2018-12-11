@@ -44,7 +44,7 @@ export default class Authenticator extends Component {
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
         this._initialAuthState = this.props.authState || 'signIn';
-        this.state = { auth: 'loading' };
+        this.state = { authState: 'loading' };
         Hub.listen('auth', this);
     }
 
@@ -68,7 +68,6 @@ export default class Authenticator extends Component {
         this._isMounted = false;
     }
     checkUser() {
-        const { auth } = this.state;
         if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -114,7 +113,7 @@ export default class Authenticator extends Component {
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
         try {
@@ -122,7 +121,7 @@ export default class Authenticator extends Component {
         } catch (e) {
             logger.debug('Failed to set the auth state into local storage', e);
         }
-        this.setState({ auth: state, authData: data, error: null, showToast: false });
+        this.setState({ authState: state, authData: data, error: null, showToast: false });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
@@ -136,11 +135,11 @@ export default class Authenticator extends Component {
     }
 
     render() {
-        const { auth, authData } = this.state;
+        const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide = [], federated } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -162,7 +161,7 @@ export default class Authenticator extends Component {
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
@@ -170,24 +169,20 @@ export default class Authenticator extends Component {
             <Loading/>
         ];
 
-        const props_children_names  = React.Children.map(props_children, child => child.type.name);
         const props_children_override =  React.Children.map(props_children, child => child.props.override);
-        hide = hide.filter((component) =>!props_children_names.includes(component.name));
-        const hideLink = hide.filter((component) => {
-            return !props_children_override.some(comp => comp === component);
-        });
+        hide = hide.filter((component) => !props_children.find(child => child.type === component));
         
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
                     theme,
                     messageMap,
-                    authState: auth,
+                    authState,
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    hideLink: hideLink
+                    hide,
+                    override: props_children_override
                 });
         });
        
@@ -196,12 +191,12 @@ export default class Authenticator extends Component {
                     key: 'aws-amplify-authenticator-default-children-' + index,
                     theme,
                     messageMap,
-                    authState: auth,
+                    authState,
                     authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    hideLink: hideLink
+                    hide,
+                    override: props_children_override
                 });
             });
 

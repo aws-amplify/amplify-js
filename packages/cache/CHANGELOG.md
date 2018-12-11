@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.20-unstable.0"></a>
+## [1.0.20-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19...@aws-amplify/cache@1.0.20-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.19"></a>
+## [1.0.19](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19-unstable.4...@aws-amplify/cache@1.0.19) (2018-12-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.19-unstable.4"></a>
+## [1.0.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19-unstable.3...@aws-amplify/cache@1.0.19-unstable.4) (2018-11-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.19-unstable.3"></a>
+## [1.0.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19-unstable.2...@aws-amplify/cache@1.0.19-unstable.3) (2018-11-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.19-unstable.2"></a>
+## [1.0.19-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19-unstable.1...@aws-amplify/cache@1.0.19-unstable.2) (2018-11-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.19-unstable.1"></a>
+## [1.0.19-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.19-unstable.0...@aws-amplify/cache@1.0.19-unstable.1) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
 <a name="1.0.19-unstable.0"></a>
 ## [1.0.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.18...@aws-amplify/cache@1.0.19-unstable.0) (2018-11-15)
 

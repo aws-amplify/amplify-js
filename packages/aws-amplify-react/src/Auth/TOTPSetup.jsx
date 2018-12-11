@@ -15,7 +15,7 @@ import * as React from 'react';
 import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
-import { TOTPSetupComp } from '../Widget';
+import TOTPSetupComp from '../Widget/TOTPSetupComp';
 
 const logger = new Logger('TOTPSetup');
 

@@ -27,5 +27,6 @@ test('AmplifyMessageMap no match', () => {
 });
 
 test('AmplifyMessageMap return message instead of i18n token if message exists', () => {
-    expect(AmplifyMessageMap('invalid phone')).toBe('Invalid phone number format. Please use a phone number format of +12345678900');
+    expect(AmplifyMessageMap('invalid phone'))
+        .toBe('Invalid phone number format. Please use a phone number format of +12345678900');
 });

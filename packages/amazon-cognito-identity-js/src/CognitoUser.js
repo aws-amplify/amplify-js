@@ -16,7 +16,10 @@
  */
 
 import { Buffer } from 'buffer/';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js/core';
+import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
+import Base64 from 'crypto-js/enc-base64';
+import HmacSHA256 from 'crypto-js/hmac-sha256';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -92,6 +95,9 @@ export default class CognitoUser {
     this.authenticationFlowType = 'USER_SRP_AUTH';
 
     this.storage = data.Storage || new StorageHelper().getStorage();
+    
+    this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+    this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
   }
 
   /**
@@ -100,7 +106,7 @@ export default class CognitoUser {
    * @returns {void}
    */
   setSignInUserSession(signInUserSession) {
-    this.clearCachedTokens();
+    this.clearCachedUserData();
     this.signInUserSession = signInUserSession;
     this.cacheTokens();
   }
@@ -288,7 +294,7 @@ export default class CognitoUser {
               ])
             );
             const key = CryptoJS.lib.WordArray.create(hkdf);
-            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
+            const signatureString = Base64.stringify(HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -629,7 +635,7 @@ export default class CognitoUser {
               ])
             );
             const key = CryptoJS.lib.WordArray.create(hkdf);
-            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
+            const signatureString = Base64.stringify(HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -961,7 +967,7 @@ export default class CognitoUser {
       if (err) {
         return callback(err, null);
       }
-      this.clearCachedTokens();
+      this.clearCachedUser();
       return callback(null, 'SUCCESS');
     });
     return undefined;
@@ -1053,20 +1059,34 @@ export default class CognitoUser {
    * @param {nodeCallback<UserData>} callback Called on success or error.
    * @returns {void}
    */
-  getUserData(callback) {
+  getUserData(callback, params) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      this.clearCachedUserData();
       return callback(new Error('User is not authenticated'), null);
     }
 
-    this.client.request('GetUser', {
-      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-    }, (err, userData) => {
-      if (err) {
+    const bypassCache = params? params.bypassCache : false;
+    
+    let userData = this.storage.getItem(this.userDataKey);
+    // get the cached user data
+    if (!userData || bypassCache) {
+      this.client.request('GetUser', {
+        AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      }, (err, userData) => {
+        if (err) {
+          return callback(err, null);
+        }
+        this.cacheUserData(userData);
+        return callback(null, userData);
+      });
+    } else {
+      try {
+        return callback(null, JSON.parse(userData));
+      } catch (err) {
+        this.clearCachedUserData();
         return callback(err, null);
       }
-
-      return callback(null, userData);
-    });
+    }
     return undefined;
   }
 
@@ -1201,7 +1221,7 @@ export default class CognitoUser {
     this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
       if (err) {
         if (err.code === 'NotAuthorizedException') {
-          this.clearCachedTokens();
+          this.clearCachedUser();
         }
         return callback(err, null);
       }
@@ -1235,6 +1255,25 @@ export default class CognitoUser {
     this.storage.setItem(refreshTokenKey, this.signInUserSession.getRefreshToken().getToken());
     this.storage.setItem(clockDriftKey, `${this.signInUserSession.getClockDrift()}`);
     this.storage.setItem(lastUserKey, this.username);
+  }
+
+  /**
+   * This is to cache user data
+   */
+  cacheUserData(userData) {
+    this.storage.setItem(this.userDataKey, JSON.stringify(userData));
+  }
+
+  /**
+   * This is to remove cached user data
+   */
+  clearCachedUserData() {
+    this.storage.removeItem(this.userDataKey);
+  }
+
+  clearCachedUser() {
+    this.clearCachedTokens();
+    this.clearCachedUserData();
   }
 
   /**
@@ -1598,7 +1637,7 @@ export default class CognitoUser {
       if (err) {
         return callback.onFailure(err);
       }
-      this.clearCachedTokens();
+      this.clearCachedUser();
       return callback.onSuccess('SUCCESS');
     });
     return undefined;
@@ -1610,7 +1649,7 @@ export default class CognitoUser {
    */
   signOut() {
     this.signInUserSession = null;
-    this.clearCachedTokens();
+    this.clearCachedUser();
   }
 
   /**
