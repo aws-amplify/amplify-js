@@ -165,21 +165,17 @@ export default {
 			}
 		},
 		onSilenceHandler() {
-			console.log("onsilence1")
 			audioControl.stopRecording();
 			if (this.continueConversation !== true) {
 				return;
 			} 
 			
-			console.log("onsilence2")
 			audioControl.exportWAV((blob) => {
-				console.log("onsilence3")
 				this.currentVoiceState = STATES.SENDING.MESSAGE;
 				this.audioInput = blob;
 				this.micText = STATES.SENDING.ICON;
 				this.micButtonDisabled = true;
 				this.lexResponseHandler(); 
-				console.log("onsilence4")
 			});
 		},
 		async lexResponseHandler() {
