@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
                     The Amazon Cognito Identity SDK for JavaScript allows JavaScript enabled applications to sign-up users, authenticate users, view, delete, and update user attributes within the Amazon Cognito Identity service.
                   DESC
 
-  s.source = { :git => "https://github.com/aws/aws-amplify.git"`, :tag => "amazon-cognito-identity-js@#{s.version.to_s}" }
+  s.source = { :git => "https://github.com/aws/aws-amplify.git", :tag => "amazon-cognito-identity-js@#{s.version.to_s}" }
   s.source_files     = 'ios/RNAWSCognito.{h,m}'
   s.dependency 'React'
   s.dependency 'JKBigInteger2', '0.0.5'
