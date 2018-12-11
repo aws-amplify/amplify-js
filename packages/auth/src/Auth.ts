@@ -20,7 +20,7 @@ import {
     SignOutOpts,
     CurrentUserOpts,
     SignInOpts,
-    isSignInOpts
+    isUsernamePasswordOpts
 } from './types';
 
 import {
@@ -306,28 +306,28 @@ export default class AuthClass {
 
     /**
      * Sign in
-     * @param {String | SignInOpts} username - The username to be signed in
+     * @param {String | SignInOpts} usernameOrSignInOpts - The username to be signed in or the sign in options
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(signInOpts: string | SignInOpts, pw?: string): Promise<CognitoUser | any> {
+    public signIn(usernameOrSignInOpts: string | SignInOpts, pw?: string): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         let username = null;
         let password = null;
         let validationData = {};
         // for backward compatibility
-        if (typeof signInOpts === 'string') {
-            username = signInOpts;
+        if (typeof usernameOrSignInOpts === 'string') {
+            username = usernameOrSignInOpts;
             password = pw;
-        } else if (isSignInOpts(signInOpts)) {
+        } else if (isUsernamePasswordOpts(usernameOrSignInOpts)) {
             if (typeof pw !== 'undefined') {
                 logger.warn('The password should be defined under the first parameter object!');
             }
-            username = signInOpts.username;
-            password = signInOpts.password;
-            validationData = signInOpts.validationData;
+            username = usernameOrSignInOpts.username;
+            password = usernameOrSignInOpts.password;
+            validationData = usernameOrSignInOpts.validationData;
         } else {
-            return Promise.reject(new Error('sign in parameters should not be undefined'));
+            return Promise.reject(new Error('The username should either be a string or one of the sign in types'));
         }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         const authDetails = new AuthenticationDetails({

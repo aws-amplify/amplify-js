@@ -100,12 +100,15 @@ export interface CurrentUserOpts {
     bypassCache: boolean
 }
 
-export interface SignInOpts {
-    username?: string,
-    password?: string,
+export type UsernamePasswordOpts = {
+    username: string,
+    password: string,
     validationData?: {[key:string]: any}
 }
 
-export function isSignInOpts(obj: any): obj is SignInOpts {
-    return !!(obj as SignInOpts).username;
+// We can extend this in the future if needed
+export type SignInOpts = UsernamePasswordOpts;
+
+export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
+    return !!(obj as UsernamePasswordOpts).username;
 }
