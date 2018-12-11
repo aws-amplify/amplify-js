@@ -2,27 +2,27 @@
 
 exports[`AmplifyUi test render Container correctly 1`] = `
 <div
-  className="Section__container___BDYar"
+  className="Section__container___1Gue_"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render FormContainer correctly 1`] = `
 <div
-  className="Form__formContainer___Ht990"
+  className="Form__formContainer___cu04J"
 />
 `;
 
 exports[`AmplifyUi test render FormRow correctly 1`] = `
 <div
-  className="Form__formRow___1uK0u"
+  className="Form__formRow___23vw6"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render Input correctly 1`] = `
 <input
-  className="Input__input___1xOOi"
+  className="Input__input___2Sh1s"
   style={Object {}}
 />
 `;
@@ -32,7 +32,7 @@ exports[`AmplifyUi test render InputRow correctly 1`] = `
   theme="theme"
 >
   <input
-    className="Input__input___1xOOi"
+    className="Input__input___2Sh1s"
     style={Object {}}
   />
 </Component>
@@ -40,7 +40,7 @@ exports[`AmplifyUi test render InputRow correctly 1`] = `
 
 exports[`AmplifyUi test render Radio correctly 1`] = `
 <input
-  className="Input__radio___IHkLQ"
+  className="Input__radio___1oPWf"
   style={Object {}}
   type="radio"
 />
@@ -63,35 +63,35 @@ exports[`AmplifyUi test render RadioRow correctly 1`] = `
 
 exports[`AmplifyUi test render SectionBody correctly 1`] = `
 <div
-  className="Section__sectionBody___1n8qJ"
+  className="Section__sectionBody___3DCrX"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render SectionFooter correctly 1`] = `
 <div
-  className="Section__sectionFooter___3-RgO"
+  className="Section__sectionFooter___1QlDn"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render SectionFooterPrimaryContent correctly 1`] = `
 <span
-  className="Section__sectionFooterPrimaryContent___3cJix"
+  className="Section__sectionFooterPrimaryContent___36Gb1"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render SectionFooterSecondaryContent correctly 1`] = `
 <span
-  className="Section__sectionFooterPrimaryContent___3cJix"
+  className="Section__sectionFooterPrimaryContent___36Gb1"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render SectionHeader correctly 1`] = `
 <div
-  className="Section__sectionHeader___2fwDQ"
+  className="Section__sectionHeader___13iO4"
   style={Object {}}
 >
   <Component
@@ -108,14 +108,14 @@ exports[`AmplifyUi test render SectionHeaderContent correctly 1`] = `
 
 exports[`AmplifyUi test render SelectInput correctly 1`] = `
 <div
-  className="SelectInput__selectInput___ki_co"
+  className="SelectInput__selectInput___1I_W8"
   style={Object {}}
 />
 `;
 
 exports[`AmplifyUi test render Strike correctly 1`] = `
 <div
-  className="Strike__strike___A-fvN"
+  className="Strike__strike___28OW3"
   style={Object {}}
 >
   <Component
@@ -126,6 +126,6 @@ exports[`AmplifyUi test render Strike correctly 1`] = `
 
 exports[`AmplifyUi test render StrikeContent correctly 1`] = `
 <span
-  className="Strike__strikeContent___2MQ-l"
+  className="Strike__strikeContent___1hd4F"
 />
 `;

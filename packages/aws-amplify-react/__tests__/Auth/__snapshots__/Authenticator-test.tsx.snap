@@ -91,7 +91,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-        "fontWeight": "400",
+        "fontWeight": 400,
         "lineHeight": "1.5",
         "paddingLeft": "15px",
         "paddingRight": "15px",
@@ -248,11 +248,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <Greetings
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -342,7 +342,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -499,11 +499,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <SignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -593,7 +593,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -750,11 +750,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <ConfirmSignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -844,7 +844,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -1001,11 +1001,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <RequireNewPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1095,7 +1095,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -1252,11 +1252,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <SignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1346,7 +1346,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -1503,11 +1503,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <ConfirmSignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1597,7 +1597,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -1754,11 +1754,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <VerifyContact
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1848,7 +1848,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -2005,11 +2005,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <ForgotPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2099,7 +2099,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -2256,11 +2256,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <TOTPSetup
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2350,7 +2350,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -2507,11 +2507,11 @@ exports[`Authenticator normal case render if no error 1`] = `
   <Loading
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-9/.9"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2601,7 +2601,7 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -2849,7 +2849,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-        "fontWeight": "400",
+        "fontWeight": 400,
         "lineHeight": "1.5",
         "paddingLeft": "15px",
         "paddingRight": "15px",
@@ -3006,11 +3006,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <Greetings
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3100,7 +3100,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -3257,11 +3257,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <SignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3351,7 +3351,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -3508,11 +3508,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <ConfirmSignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3602,7 +3602,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -3759,11 +3759,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <RequireNewPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3853,7 +3853,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -4010,11 +4010,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <SignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4104,7 +4104,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -4261,11 +4261,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <ConfirmSignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4355,7 +4355,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -4512,11 +4512,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <VerifyContact
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4606,7 +4606,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -4763,11 +4763,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <ForgotPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4857,7 +4857,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -5014,11 +5014,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <TOTPSetup
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5108,7 +5108,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -5265,11 +5265,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <Loading
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-9/.9"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5359,7 +5359,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -5516,11 +5516,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   <div
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-props-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5610,7 +5610,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -5858,7 +5858,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-        "fontWeight": "400",
+        "fontWeight": 400,
         "lineHeight": "1.5",
         "paddingLeft": "15px",
         "paddingRight": "15px",
@@ -6015,11 +6015,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <Greetings
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6109,7 +6109,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -6266,11 +6266,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <SignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6360,7 +6360,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -6517,11 +6517,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <ConfirmSignIn
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6611,7 +6611,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -6768,11 +6768,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <RequireNewPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6862,7 +6862,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -7019,11 +7019,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <SignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7113,7 +7113,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -7270,11 +7270,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <ConfirmSignUp
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7364,7 +7364,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -7521,11 +7521,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <VerifyContact
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7615,7 +7615,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -7772,11 +7772,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <ForgotPassword
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7866,7 +7866,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -8023,11 +8023,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <TOTPSetup
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -8117,7 +8117,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",
@@ -8274,11 +8274,11 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   <Loading
     authState="loading"
     hide={Array []}
-    hideLink={Array []}
     key="aws-amplify-authenticator-default-children-9/.9"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -8368,7 +8368,7 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "fontWeight": "400",
+          "fontWeight": 400,
           "lineHeight": "1.5",
           "paddingLeft": "15px",
           "paddingRight": "15px",

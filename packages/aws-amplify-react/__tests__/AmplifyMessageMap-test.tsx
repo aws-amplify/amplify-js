@@ -2,10 +2,10 @@ import { MapEntries, default as AmplifyMessageMap} from '../src/AmplifyMessageMa
 
 test('MapEntries', () => {
     expect(MapEntries).toEqual([
-        ["User does not exist", /user.*not.*exist/i], 
-        ["User already exists", /user.*already.*exist/i], 
-        ["Incorrect username or password", /incorrect.*username.*password/i], 
-        ["Invalid password format", /validation.*password/i], 
+        ["User does not exist", /user.*not.*exist/i, undefined], 
+        ["User already exists", /user.*already.*exist/i, undefined], 
+        ["Incorrect username or password", /incorrect.*username.*password/i, undefined], 
+        ["Invalid password format", /validation.*password/i, undefined], 
         [
             "Invalid phone number format",
             /invalid.*phone/i,

@@ -32,7 +32,7 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
-import countryDialCodes from './common/country-dial-codes.js';
+import countryDialCodes from './common/country-dial-codes';
 import defaultSignUpFields from './common/default-sign-in-fields';
 import { valid } from 'semver';
 
@@ -40,7 +40,7 @@ const logger = new Logger('SignUp');
 
 interface ISignUpInfo {
     attributes: {
-        email: string;
+        email?: string;
         phone_number?: string;
     };
     password: string;
@@ -48,6 +48,10 @@ interface ISignUpInfo {
 }
 
 export default class SignUp extends AuthPiece<IAuthPieceProps, {}> {
+    private defaultSignUpFields;
+    private header;
+    private signUpFields;
+
     constructor(props) {
         super(props);
 
@@ -156,15 +160,15 @@ export default class SignUp extends AuthPiece<IAuthPieceProps, {}> {
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
-        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
+        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== -1 ?
         `+${this.props.signUpConfig.defaultCountryCode}` :
-        "+1"
+        "+1";
     }
 
     checkCustomSignUpFields() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.signUpFields &&
-        this.props.signUpConfig.signUpFields.length > 0
+        this.props.signUpConfig.signUpFields.length > 0;
     }
 
     signUp() {
@@ -187,7 +191,6 @@ export default class SignUp extends AuthPiece<IAuthPieceProps, {}> {
             }
         };
 
-        const phone_number = phone_line_number? `${dial_code}${phone_line_number.replace(/[-()]/g, '')}`: null;
         const inputKeys = Object.keys(this.inputs);
         const inputVals = Object.values(this.inputs);
 
@@ -204,7 +207,8 @@ export default class SignUp extends AuthPiece<IAuthPieceProps, {}> {
         });
 
         Auth.signUp(signup_info).then((data) => {
-            this.changeState('confirmSignUp', data.user.username)
+            // @ts-ignore
+            this.changeState('confirmSignUp', data.user.username);
         })
         .catch(err => this.error(err));
     }
@@ -232,7 +236,7 @@ export default class SignUp extends AuthPiece<IAuthPieceProps, {}> {
                                     <Input
                                         autoFocus={
                                             this.signUpFields.findIndex((f) => {
-                                                return f.key === field.key
+                                                return f.key === field.key;
                                             }) === 0 ? true : false
                                         }
                                         placeholder={I18n.get(field.placeholder)}

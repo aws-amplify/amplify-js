@@ -71,6 +71,6 @@
     "regenerator-runtime": "^0.11.1"
   },
   "peerDependencies": {
-    "aws-amplify": "^1.x"
+    "aws-amplify": "file:../aws-amplify"
   }
 }

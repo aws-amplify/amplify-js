@@ -49,6 +49,8 @@ export function withAuthenticator(
     theme = null,
     signUpConfig = {}) {
     return class extends Component<IAuthenticatorProps, IWithAuthenticatorState> {
+        private authConfig;
+
         constructor(props) {
             super(props);
 
@@ -109,7 +111,8 @@ export function withAuthenticator(
                 {...this.props}
                 theme={this.authConfig.theme}
                 federated={this.authConfig.federated || this.props.federated}
-                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                hideDefault={this.authConfig.authenticatorComponents
+                    && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents || []}

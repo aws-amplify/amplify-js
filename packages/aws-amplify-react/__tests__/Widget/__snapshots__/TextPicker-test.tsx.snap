@@ -34,7 +34,9 @@ exports[`TextPicker test render test render with previewSrc 1`] = `
           "wordWrap": "break-word",
         }
       }
-    />
+    >
+      <Component />
+    </pre>
   </div>
   <Picker
     accept="text/*"
