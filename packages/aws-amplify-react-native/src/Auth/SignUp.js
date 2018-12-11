@@ -175,8 +175,6 @@ export default class SignUp extends AuthPiece {
                 if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                   const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                   signup_info.attributes[newKey] = inputVals[index];
-                } else if (inputVals[index]) {
-                    signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
                 }
               }
         });
