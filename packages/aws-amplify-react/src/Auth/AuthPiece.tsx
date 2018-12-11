@@ -20,10 +20,12 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 export interface IAuthPieceProps {
     authData?: any;
     authState?;
+    defaultSignUpFields?: any;
     hide?: any[];
     onAuthEvent?: (state, event) => void;
     onStateChange?: (state, data) => void;
     override?: any[];
+    signUpConfig?: any;
     theme?;
     track?: () => void;
 }

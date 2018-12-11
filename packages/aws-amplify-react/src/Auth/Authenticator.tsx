@@ -45,6 +45,7 @@ export interface IAuthenticatorProps {
     hideDefault?;
     onStateChange?: (state, data) => void;
     theme?;
+    signUpConfig?;
 }
 
 export interface IAuthenticatorState {
@@ -161,7 +162,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, federated } = this.props;
+        const { hideDefault, federated, signUpConfig } = this.props;
         let { hide = [] } = this.props;
         if (hideDefault) {
             hide = hide.concat([
@@ -184,7 +185,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
