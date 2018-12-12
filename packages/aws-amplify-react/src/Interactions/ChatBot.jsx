@@ -146,7 +146,15 @@ export class ChatBot extends Component {
         if (this.state.continueConversation !== true) {
             return;
         }
-        const response = await Interactions.send(this.props.botName, this.state.audioInput);
+
+        const interactionsMessage = {
+            content: this.state.audioInput,
+            options: {
+                responseType: 'voice'
+            }
+        };
+
+        const response = await Interactions.send(this.props.botName, interactionsMessage);
         this.setState({
             lexResponse: response,
             currentVoiceState: STATES.SPEAKING,
@@ -441,7 +449,7 @@ ChatBot.defaultProps = {
     clearOnComplete: false,
     voiceConfig: defaultVoiceConfig,
     conversationModeOn: false,
-    voiceEnabled: true,
+    voiceEnabled: false,
     textEnabled: true
 };
 
