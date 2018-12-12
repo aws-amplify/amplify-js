@@ -1305,24 +1305,24 @@ export default class AuthClass {
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    public federatedSignIn(
+    public async federatedSignIn(
         provider: 'google'|'facebook'|'amazon'|'developer'|string, 
         response: FederatedResponse, 
         user: FederatedUser
     ): Promise<ICredentials>{
+        // To check if the user is already logged in
+        try {
+            const loggedInUser = await this.currentAuthenticatedUser();
+            logger.warn(`There is already a signed in user: ${loggedInUser} in your app. 
+                You should not call Auth.federatedSignIn method again as it may cause some unexpected behavior.`);
+        } catch (e) {}
+
         const { token, identity_id, expires_at } = response;
-        const that = this;
-        return new Promise((res, rej) => {
-            Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation').then((cred) => {
-                dispatchAuthEvent('signIn', that.user);
-                logger.debug('federated sign in credentials', cred);
-                res(cred);
-                return;
-            }).catch(e => {
-                rej(e);
-                return;
-            });
-        });    
+        const credentials = await Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation');
+        const currentUser = await this.currentAuthenticatedUser();
+        dispatchAuthEvent('signIn', currentUser);
+        logger.debug('federated sign in credentials', credentials);
+        return credentials; 
     }
 
     /**
