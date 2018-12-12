@@ -102,7 +102,7 @@ export default {
 				botTitle: 'Chatbot',
 				conversationModeOn: false,
 				voiceConfig: defaultVoiceConfig,
-				voiceEnabled: true,
+				voiceEnabled: false,
 				textEnabled: true
 			}
 			return Object.assign(defaults, this.chatbotConfig || {})
@@ -182,7 +182,16 @@ export default {
 			if (this.continueConversation !== true) {
 				return;
 			}
-			const response = await this.$Amplify.Interactions.send(this.options.bot, this.audioInput);
+
+			const interactionsMessage = {
+				content: this.audioInput,
+				options: {
+					responseType: 'voice'
+				}
+			};
+		
+			const response = await this.$Amplify.Interactions.send(this.options.bot, interactionsMessage);
+			
 			this.lexResponse = response;
 			this.currentVoiceState = STATES.SPEAKING.MESSAGE;
 			this.micText = STATES.SPEAKING.ICON;
