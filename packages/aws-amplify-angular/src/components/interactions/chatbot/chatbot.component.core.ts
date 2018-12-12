@@ -55,13 +55,6 @@ let STATES = {
 	SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' }
 };
 
-const MIC_BUTTON_TEXT = {
-	PASSIVE: '🎤',
-	RECORDING: '🔴',
-	PLAYING: '🔊',
-	LOADING: '...',
-}
-
 const defaultVoiceConfig = {
 	silenceDetectionConfig: {
 		time: 2000,
@@ -84,7 +77,7 @@ export class ChatbotComponentCore {
 	completions: any = {};
 	currentVoiceState: string = STATES.INITIAL.MESSAGE;
 	inputDisabled: boolean = false;
-	micText: string = MIC_BUTTON_TEXT.PASSIVE;
+	micText: string = STATES.INITIAL.ICON;
 	voiceConfig: any = defaultVoiceConfig;
 	continueConversation: boolean = false;
 	micButtonDisabled: boolean = false;
