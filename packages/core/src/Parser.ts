@@ -3,7 +3,7 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Parser');
 
-export default class Parser {
+export class Parser {
     static parseMobilehubConfig(config): AmplifyConfig {
         const amplifyConfig: AmplifyConfig = {};
         // Analytics
@@ -48,3 +48,8 @@ export default class Parser {
         return amplifyConfig;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Parser;

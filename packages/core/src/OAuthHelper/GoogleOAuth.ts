@@ -13,7 +13,7 @@
 import {
     ConsoleLogger as Logger,
 } from '../Logger';
-import JS from '../JS';
+import { JS } from '../JS';
 
 const logger = new Logger('CognitoCredentials');
 
@@ -37,7 +37,7 @@ const waitForInit = new Promise((res, rej) => {
     
 });
 
-export default class GoogleOAuth {
+export class GoogleOAuth {
     public initialized = false;
 
     constructor() {
@@ -96,3 +96,8 @@ export default class GoogleOAuth {
         });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default GoogleOAuth;

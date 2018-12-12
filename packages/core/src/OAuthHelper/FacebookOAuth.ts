@@ -13,7 +13,7 @@
 import {
     ConsoleLogger as Logger,
 } from '../Logger';
-import JS from '../JS';
+import { JS } from '../JS';
 
 const logger = new Logger('CognitoCredentials');
 
@@ -36,7 +36,7 @@ const waitForInit = new Promise((res, rej) => {
     }
 });
 
-export default class FacebookOAuth {
+export class FacebookOAuth {
     public initialized = false;
 
     constructor() {
@@ -86,3 +86,8 @@ export default class FacebookOAuth {
         });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default FacebookOAuth;

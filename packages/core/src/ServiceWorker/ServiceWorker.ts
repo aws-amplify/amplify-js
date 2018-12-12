@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
-import Amplify from '../Amplify';
+import { JS } from '../JS';
+import { Amplify } from '../Amplify';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -25,7 +25,7 @@ import Amplify from '../Amplify';
  * and attempt to dispatch messages on state change and record analytics
  * events based on the service worker lifecycle.
  */
-class ServiceWorkerClass {
+export class ServiceWorkerClass {
 
     // The active service worker will be set once it is registered
     private _serviceWorker: ServiceWorker;
@@ -193,5 +193,7 @@ class ServiceWorkerClass {
     }
 }
 
+/**
+ * @deprecated use named import
+ */
 export default ServiceWorkerClass;
-

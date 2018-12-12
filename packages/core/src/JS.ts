@@ -49,7 +49,7 @@ const MIME_MAP = [
     { type: 'message/rfc822', ext: 'eml' }
 ];
 
-export default class JS {
+export class JS {
     static isEmpty(obj) {
         return Object.keys(obj).length === 0;
     }
@@ -221,3 +221,8 @@ export default class JS {
         return ret;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default JS;

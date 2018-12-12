@@ -13,10 +13,10 @@
 
 import { ConsoleLogger as Logger } from './Logger';
 import { AWS } from './Facet';
+import * as url from 'url';
 
-const logger = new Logger('Signer'),
-    url = require('url'),
-    crypto = AWS['util'].crypto;
+const logger = new Logger('Signer');
+const crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
@@ -285,7 +285,7 @@ const sign = function(request, access_info, service_info = null) {
     return request;
 };
 
-const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, expiration?: Number) {
+const signUrl = function(urlToSign: string, accessInfo: any, serviceInfo?: any, expiration?: Number) {
     const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
     const today = now.substr(0, 8);
     // Intentionally discarding search
@@ -361,10 +361,13 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
 /**
 * AWS request signer.
 * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
-*
-* @class Signer
 */
-export default class Signer {
+export class Signer {
     static sign = sign;
     static signUrl = signUrl;
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Signer;

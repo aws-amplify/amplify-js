@@ -1,4 +1,4 @@
-import { Credentials } from '../src/Credentials';
+import { CredentialsClass as Credentials } from '../src/Credentials';
 import Amplify from '../src/Amplify';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 

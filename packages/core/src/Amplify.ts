@@ -2,7 +2,7 @@ import { ConsoleLogger as LoggerClass } from './Logger';
 
 const logger = new LoggerClass('Amplify');
 
-export default class Amplify {
+export class Amplify {
     private static _components = [];
     private static _config = {};
 
@@ -55,3 +55,8 @@ export default class Amplify {
         }
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Amplify;

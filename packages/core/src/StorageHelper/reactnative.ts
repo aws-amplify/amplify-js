@@ -83,8 +83,7 @@ class MemoryStorage {
     }
 }
 
-/** @class */
-export default class StorageHelper {
+export class StorageHelper {
     private storageWindow;
     /**
      * This is used to get a storage object
@@ -102,3 +101,9 @@ export default class StorageHelper {
         return this.storageWindow;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default StorageHelper;
+

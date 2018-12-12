@@ -1,20 +1,17 @@
 //WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
     "compilerOptions": {
-        "outDir": "./lib/",
-        "target": "es5",
         "noImplicitAny": false,
         "lib": [
-            "es5",
-            "es2015",
             "dom",
-            "esnext.asynciterable",
-            "es2017.object",
-            "es2017"
+            "es2017",
+            "esnext.asynciterable"
         ],
         "sourceMap": true,
-        "module": "commonjs",
+        "target": "es5",
+        "module": "es2015",
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "allowJs": false,
         "declaration": true,
         "typeRoots": [
@@ -22,8 +19,9 @@
             "../../node_modules/@types"
         ],
         // temporary fix
-        "types": ["node", "lodash"]
+        "types": ["node"]
     },
+    "files": ["./typings.d.ts", "./package.json"],
     "include": [
         "src/**/*"
     ]

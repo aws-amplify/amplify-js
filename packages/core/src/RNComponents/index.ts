@@ -11,17 +11,15 @@
  * and limitations under the License.
  */
 
-import JS from '../JS';
-import MemoryStorage from '../StorageHelper';
+import { JS } from '../JS';
+import { StorageHelper } from '../StorageHelper';
 
-const Linking = {};
-const AppState = {
+export const Linking = {};
+export const AppState = {
     addEventListener(action, handler) {
         return;
     }
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = JS.browserOrNode().isBrowser ? new MemoryStorage().getStorage() : undefined;
-
-export { Linking, AppState, AsyncStorage };
+export const AsyncStorage = JS.browserOrNode().isBrowser ? new StorageHelper().getStorage() : undefined;

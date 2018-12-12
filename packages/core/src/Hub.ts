@@ -75,5 +75,8 @@ export class HubClass {
     }
 }
 
-const Hub = new HubClass('__default__');
+export const Hub = new HubClass('__default__');
+/**
+ * @deprecated use named import
+ */
 export default Hub;
