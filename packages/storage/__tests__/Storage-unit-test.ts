@@ -1,6 +1,6 @@
 
-import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import { default as Storage } from "../src/Storage";
+import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { default as Storage } from '../src/Storage';
 
 const credentials = {
         accessKeyId: 'accessKeyId',
@@ -9,7 +9,7 @@ const credentials = {
         identityId: 'identityId',
         authenticated: true
 };
-    
+
 const options = {
             bucket: 'bucket',
             region: 'region',
@@ -51,7 +51,7 @@ describe('Storage', () => {
     describe('configure test', () => {
         test('happy case', () => {
             const storage = new Storage();
-            
+
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
                 aws_user_files_s3_bucket_region: 'region'
@@ -68,7 +68,7 @@ describe('Storage', () => {
     });
 
     describe('get test', async () => {
-        test('get object without download', async () => { 
+        test('get object without download', async () => {
             const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
                 return ;
             });
@@ -79,8 +79,8 @@ describe('Storage', () => {
             await storage.get('key', {
                 Storage: {
                     AWSS3: {
-                    bucket: 'bucket', 
-                    region: 'us-east-1', 
+                    bucket: 'bucket',
+                    region: 'us-east-1',
                 }
             }
             }) ;
@@ -88,7 +88,7 @@ describe('Storage', () => {
             get_spyon.mockClear();
         });
     });
-    
+
 
     describe('put test', () => {
         test('put object succefully', async () => {
@@ -102,8 +102,8 @@ describe('Storage', () => {
             await storage.put('key','object',{
                 Storage: {
                     AWSS3: {
-                    bucket: 'bucket', 
-                    region: 'us-east-1', 
+                    bucket: 'bucket',
+                    region: 'us-east-1',
                 }
             }
             }) ;
@@ -124,8 +124,8 @@ describe('Storage', () => {
             await storage.remove('key', {
                 Storage: {
                     AWSS3: {
-                    bucket: 'bucket', 
-                    region: 'us-east-1', 
+                    bucket: 'bucket',
+                    region: 'us-east-1',
                 }
             }
             }) ;
@@ -146,8 +146,8 @@ describe('Storage', () => {
             await storage.list('path', {
                 Storage: {
                     AWSS3: {
-                    bucket: 'bucket', 
-                    region: 'us-east-1', 
+                    bucket: 'bucket',
+                    region: 'us-east-1',
                 }
             }
             }) ;

@@ -31,8 +31,7 @@ const dispatchStorageEvent = (track, attrs, metrics) => {
 /**
  * Provide storage methods to use AWS S3
  */
-export default class AWSS3Provider implements StorageProvider{
-
+export class AWSS3Provider implements StorageProvider {
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
 
@@ -370,3 +369,8 @@ export default class AWSS3Provider implements StorageProvider{
         });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSS3Provider;

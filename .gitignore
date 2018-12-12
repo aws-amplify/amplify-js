@@ -5,6 +5,7 @@ lerna-debug.log
 node_modules/**
 packages/*/node_modules/**
 packages/**/lib/
+packages/**/tsc-out/
 packages/**/dist/
 packages/**/es/
 .DS_Store

@@ -10,12 +10,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import  StorageProvider  from '../../src/Providers/AWSS3Provider';
+import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
 
- 
+
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
     return 'url';
 });

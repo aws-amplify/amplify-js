@@ -1,0 +1,8 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./tsc-out/cjs",
+        "target": "es5",
+        "module": "es2015"
+    }
+}

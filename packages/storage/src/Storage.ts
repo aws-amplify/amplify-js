@@ -12,7 +12,7 @@
  */
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
-import AWSS3Provider from './Providers/AWSS3Provider';
+import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
@@ -21,7 +21,7 @@ const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
-export default class StorageClass {
+export class Storage {
     /**
      * @private
      */
@@ -32,7 +32,7 @@ export default class StorageClass {
     /**
      * @public
      */
-    public vault: StorageClass;
+    public vault: Storage;
 
     /**
      * Initialize Storage
@@ -189,3 +189,8 @@ export default class StorageClass {
         return prov.list(path,config);
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Storage;

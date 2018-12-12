@@ -11,8 +11,7 @@
  * and limitations under the License.
  */
 
-import StorageClass from './Storage';
-import { StorageProvider } from './types';
+import { Storage as StorageClass} from './Storage';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -40,6 +39,6 @@ const Storage = _instance;
 Amplify.register(Storage);
 
 export default Storage;
-export { StorageClass };
-export { StorageProvider };
-export * from './Providers';
+export { Storage, StorageClass };
+export * from './providers';
+export * from './types';
