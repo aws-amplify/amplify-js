@@ -198,7 +198,7 @@ export default {
 			this.micButtonDisabled = true;
 			
 			let message = {
-				'me':this.inputText,
+				'me':this.lexResponse.inputTranscript,
 				'meSentTime': new Date().toLocaleTimeString(),
 				'bot': '',
 				'botSentTime': ''
