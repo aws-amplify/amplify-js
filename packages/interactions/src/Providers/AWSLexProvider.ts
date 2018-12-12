@@ -12,7 +12,7 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsResponse } from '../types';
+import { InteractionsOptions, InteractionsMessage, InteractionsResponse } from '../types';
 import * as LexRuntime from 'aws-sdk/clients/lexruntime';
 import { ConsoleLogger as Logger, AWS, Credentials } from '@aws-amplify/core';
 import { registerHelper } from 'handlebars';
@@ -32,8 +32,40 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
     }
 
     getProviderName() { return 'AWSLexProvider'; }
-    
-    sendMessage(botname: string, message: string | Object): Promise<object> {
+
+    responseCallback(err, data, res, rej, botname) {
+        if (err) {
+            rej(err);
+            return;
+
+        } else {
+            // Check if state is fulfilled to resolve onFullfilment promise
+            logger.debug('postContent state', data.dialogState);
+            if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
+                if (typeof this._botsCompleteCallback[botname] === 'function') {
+                    setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
+                }
+
+                if (this._config && typeof this._config[botname].onComplete === 'function') {
+                    setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
+                }
+            }
+
+            res(data);
+            if (data.dialogState === 'Failed') {
+                if (typeof this._botsCompleteCallback[botname] === 'function') {
+                    setTimeout(
+                        () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
+                }
+
+                if (this._config && typeof this._config[botname].onComplete === 'function') {
+                    setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
+                }
+            }
+        }
+    }
+
+    sendMessage(botname: string, message: string | InteractionsMessage): Promise<object> {
         return new Promise(async (res, rej) => {
             if (!this._config[botname]) {
                 return rej('Bot ' + botname + ' does not exist');
@@ -51,56 +83,42 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                 params = {
                     'botAlias': this._config[botname].alias,
                     'botName': botname,
-                    'contentType': 'text/plain; charset=utf-8',
-                    'inputStream': message,
+                    'inputText': message,
                     'userId': credentials.identityId,
-                    'accept': 'audio/mpeg',
                 };
+
+                logger.debug('postText to lex', message);
+
+                this.aws_lex.postText(params, (err, data) => {
+                    this.responseCallback(err, data, res, rej, botname);
+                });
             } else {
-                params = {
-                    'botAlias': this._config[botname].alias,
-                    'botName': botname, 
-                    'contentType': 'audio/x-l16; sample-rate=16000',
-                    'inputStream': message,
-                    'userId': credentials.identityId,
-                    'accept': 'audio/mpeg',
-                };
-            }
-
-            logger.debug('postContent to lex', message);
-
-            this.aws_lex.postContent(params, (err, data) => {
-                if (err) {
-                    rej(err);
-                    return;
-
+                if (message.options['responseType'] === 'voice') {
+                    params = {
+                        'botAlias': this._config[botname].alias,
+                        'botName': botname,
+                        'contentType': 'audio/x-l16; sample-rate=16000',
+                        'inputStream': message.content,
+                        'userId': credentials.identityId,
+                        'accept': 'audio/mpeg',
+                    };
                 } else {
-                    // Check if state is fulfilled to resolve onFullfilment promise
-                    logger.debug('postContent state', data.dialogState);
-                    if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
-                        if (typeof this._botsCompleteCallback[botname] === 'function') {
-                            setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
-                        }
-                        
-                        if (this._config && typeof this._config[botname].onComplete === 'function') {
-                            setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
-                        }
-                    }
-                    
-                    res(data);
-                    if (data.dialogState === 'Failed') {
-
-                        if (typeof this._botsCompleteCallback[botname] === 'function') {
-                            setTimeout(
-                                () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
-                        }
-
-                        if (this._config && typeof this._config[botname].onComplete === 'function') {
-                            setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
-                        }
-                    }
+                    params = {
+                        'botAlias': this._config[botname].alias,
+                        'botName': botname,
+                        'contentType': 'text/plain; charset=utf-8',
+                        'inputStream': message.content,
+                        'userId': credentials.identityId,
+                        'accept': 'audio/mpeg',
+                    };
                 }
-            });
+
+                logger.debug('postContent to lex', message);
+
+                this.aws_lex.postContent(params, (err, data) => {
+                    this.responseCallback(err, data, res, rej, botname);
+                });
+            }
         });
     }
 
