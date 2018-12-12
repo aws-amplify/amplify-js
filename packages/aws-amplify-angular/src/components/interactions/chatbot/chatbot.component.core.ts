@@ -213,7 +213,7 @@ export class ChatbotComponentCore {
         const interactionsMessage = {
             content: this.audioInput,
             options: {
-                responseType: 'voice'
+                messageType: 'voice'
             }
 		};
 		

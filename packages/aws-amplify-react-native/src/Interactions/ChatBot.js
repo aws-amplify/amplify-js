@@ -127,7 +127,7 @@ export class ChatBot extends Component {
             const interactionsMessage = {
                 content: this.state.inputText,
                 options: {
-                    responseType: 'voice'
+                    messageType: 'voice'
                 }
             };
             response = await Interactions.send(this.props.botName, interactionsMessage);

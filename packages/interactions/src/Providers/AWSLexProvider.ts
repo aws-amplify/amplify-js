@@ -93,7 +93,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                     this.responseCallback(err, data, res, rej, botname);
                 });
             } else {
-                if (message.options['responseType'] === 'voice') {
+                if (message.options['messageType'] === 'voice') {
                     params = {
                         'botAlias': this._config[botname].alias,
                         'botName': botname,

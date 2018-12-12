@@ -150,7 +150,7 @@ export class ChatBot extends Component {
         const interactionsMessage = {
             content: this.state.audioInput,
             options: {
-                responseType: 'voice'
+                messageType: 'voice'
             }
         };
 
