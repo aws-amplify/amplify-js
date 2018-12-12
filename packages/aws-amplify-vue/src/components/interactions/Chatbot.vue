@@ -45,7 +45,7 @@
 					:disabled="!options.textEnabled"
 					v-if="!options.textEnabled"
         		/>
-				<button :disabled="micButtonDisabled" v-if="options.voiceEnabled" @click="micButtonHandler()">{{this.micText}}</button>
+				<button :disabled="micButtonDisabled" v-if="options.voiceEnabled" class="amplify-mic-button" @click="micButtonHandler()">{{this.micText}}</button>
 				<button id="interactions-submit-button" v-if="options.textEnabled" class="amplify-interactions-button" @click="onSubmit(inputText)" :disabled="inputDisabled"></button>
 			</div>
 		</div>
@@ -279,6 +279,16 @@ export default {
 		border:none;
 		cursor: pointer;
 		width: 32px;
+	}
+
+	.amplify-mic-button {
+		border:none;
+		cursor: pointer;
+		width: 32px;
+	}
+
+	.amplify-form-input	{
+		width: 100%;
 	}
 
 	.amplify-interactions-actions {
