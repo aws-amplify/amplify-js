@@ -170,7 +170,7 @@ export default class Authenticator extends Component {
         ];
 
         const props_children_override =  React.Children.map(props_children, child => child.props.override);
-        hide = hide.filter((component) => !props_children.find(child => child.type === component));
+        hide = hide.filter((component) => !props_children_override.find(child => child.type === component));
         
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
