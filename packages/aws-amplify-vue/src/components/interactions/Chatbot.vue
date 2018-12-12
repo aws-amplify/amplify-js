@@ -318,34 +318,6 @@ export default {
 		padding: 1em;
 		margin: 1em;
 		width: 75%;
-		border-radius: 20px 20px 20px 0;
-		background-color: #DBDBDB;
-		box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
-		font-size: 13px;
-		line-height: 16px;
-		color: #4A4A4A;
-	}
-
-	.amplify-interactions-input-timestamp {
-		color: #828282;
-		font-size: 10px;
-		letter-spacing: 0.5px;
-		line-height: 16px;
-		margin-left: 1.5em;
-	}
-
-	.amplify-interactions-response-timestamp {
-		color: #828282;
-		font-size: 10px;
-		letter-spacing: 0.5px;
-		line-height: 16px;
-		text-align:right;
-	}
-
-	.amplify-interactions-response {
-		padding: 1em;
-		margin: 1em;
-		width: 75%;
 		margin-left: 5em;
 		border-radius: 20px 20px 0 20px;
 		background-color: #009ECF;
@@ -353,6 +325,35 @@ export default {
 		color: var(--color-white);
 		font-size: 13px;
 		line-height: 16px;
+	}
+
+	.amplify-interactions-input-timestamp {
+		color: #828282;
+		font-size: 10px;
+		letter-spacing: 0.5px;
+		line-height: 16px;
+		text-align:right;
+
+	}
+
+	.amplify-interactions-response-timestamp {
+		color: #828282;
+		font-size: 10px;
+		letter-spacing: 0.5px;
+		line-height: 16px;
+		margin-left: 1.5em;
+	}
+
+	.amplify-interactions-response {
+		padding: 1em;
+		margin: 1em;
+		width: 75%;
+		border-radius: 20px 20px 20px 0;
+		background-color: #DBDBDB;
+		box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+		font-size: 13px;
+		line-height: 16px;
+		color: #4A4A4A;
 	}
 
 	@media (min-width: 320px) and (max-width: 480px) {
