@@ -92,7 +92,7 @@ export class ChatbotComponentCore {
 	lexResponse: any;
 	conversationModeOn: boolean = false;
 	ref: ChangeDetectorRef;
-	voiceEnabled: boolean = true;
+	voiceEnabled: boolean = false;
 	textEnabled: boolean = true;
 
 	@Output()
@@ -109,8 +109,8 @@ export class ChatbotComponentCore {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
-		this.conversationModeOn = data.conversationModeOn === undefined ? false : data.conversationModeOn;
-		this.voiceEnabled = isUndefined(data.voiceEnabled) ? true : data.voiceEnabled;
+		this.conversationModeOn = isUndefined(data.conversationModeOn) ? false : data.conversationModeOn;
+		this.voiceEnabled = isUndefined(data.voiceEnabled) ? false : data.voiceEnabled;
 		this.textEnabled = isUndefined(data.textEnabled) ? true : data.textEnabled;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
@@ -209,7 +209,15 @@ export class ChatbotComponentCore {
 		if (this.continueConversation !== true) {
 			return;
 		}
-		const response = await this.amplifyService.interactions().send(this.botName, this.audioInput);
+
+        const interactionsMessage = {
+            content: this.audioInput,
+            options: {
+                responseType: 'voice'
+            }
+		};
+		
+		const response = await this.amplifyService.interactions().send(this.botName, interactionsMessage);
 
 		this.lexResponse = response;
 		this.currentVoiceState = STATES.SPEAKING.MESSAGE;
