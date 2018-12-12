@@ -110,7 +110,7 @@ export class ChatBot extends Component {
         });
     };
 
-    async submit() {
+    async submit(voiceResponse) {
         if (!this.state.inputText) {
             return;
         }
@@ -122,7 +122,18 @@ export class ChatBot extends Component {
             ]
         }, resolve));
 
-        const response = await Interactions.send(this.props.botName, this.state.inputText);
+        let response;
+        if (voiceResponse) {
+            const interactionsMessage = {
+                content: this.state.inputText,
+                options: {
+                    responseType: 'voice'
+                }
+            };
+            response = await Interactions.send(this.props.botName, interactionsMessage);
+        } else {
+            response = await Interactions.send(this.props.botName, this.state.inputText);
+        }
 
         this.setState({
             dialog: [
@@ -439,7 +450,7 @@ ChatBot.defaultProps = {
     styles: {},
     silenceDelay: 1000,
     conversationModeOn: false,
-    voiceEnabled: true,
+    voiceEnabled: false,
     textEnabled: true
 };
 
