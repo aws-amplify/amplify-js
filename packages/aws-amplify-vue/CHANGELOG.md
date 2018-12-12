@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-unstable.1"></a>
+## [0.2.1-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.1-unstable.0...aws-amplify-vue@0.2.1-unstable.1) (2018-12-11)
+
+
+### Features
+
+* **@aws-amplify/auth:** Add signInConfig.isSignUpDisplayed - fix tests ([aaa3b40](https://github.com/aws-amplify/amplify-js/commit/aaa3b40))
+* **@aws-amplify/auth:** Add signInConfig.isSignUpDisplayed attribut ([aa271ea](https://github.com/aws-amplify/amplify-js/commit/aa271ea))
+
+
+
+
 <a name="0.2.1-unstable.0"></a>
 ## [0.2.1-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.11-unstable.0...aws-amplify-vue@0.2.1-unstable.0) (2018-12-10)
 
