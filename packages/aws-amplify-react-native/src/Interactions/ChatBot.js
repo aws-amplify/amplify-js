@@ -123,7 +123,7 @@ export class ChatBot extends Component {
         }, resolve));
 
         let response;
-        if (voiceResponse) {
+        if (voiceResponse === true) {
             const interactionsMessage = {
                 content: this.state.inputText,
                 options: {
