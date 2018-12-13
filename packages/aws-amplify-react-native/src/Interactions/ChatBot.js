@@ -332,7 +332,7 @@ function ChatBotInputs(props) {
     const submit = props.submit;
 
     if (voiceEnabled && textEnabled) {
-        placeholder = 'Type your message or tap 🔴'
+        placeholder = 'Type your message or tap 🎤'
     }
 
     if (voiceEnabled && !textEnabled) {
