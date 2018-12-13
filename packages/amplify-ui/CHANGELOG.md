@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.12-unstable.0"></a>
+## [1.0.12-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.11...@aws-amplify/ui@1.0.12-unstable.0) (2018-12-13)
+
+
+### Features
+
+* **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
+
+
+
+
 <a name="1.0.11"></a>
 ## [1.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.11-unstable.0...@aws-amplify/ui@1.0.11) (2018-12-13)
 
