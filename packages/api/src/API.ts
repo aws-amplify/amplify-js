@@ -15,7 +15,7 @@ import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
-import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { v4 as uuid } from 'uuid';
@@ -27,7 +27,7 @@ export const graphqlOperation = (query, variables = {}) => ({ query, variables }
 /**
  * Export Cloud Logic APIs
  */
-export default class APIClass {
+export class APIClass {
     /**
      * @private
      */
@@ -492,3 +492,8 @@ export default class APIClass {
             });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default APIClass;
