@@ -76,13 +76,13 @@ export default class PhotoPicker extends Component {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
-                <SectionBody>
+                <SectionBody theme={theme}>
                     { previewSrc ? 
                         (previewHidden ? 
                             'The image has been selected':
                             <img src={previewSrc} style={previewStyle} />
                         ):
-                        <PhotoPlaceholder />
+                        <PhotoPlaceholder theme={theme}/>
                     }
                 </SectionBody>
                 <Picker

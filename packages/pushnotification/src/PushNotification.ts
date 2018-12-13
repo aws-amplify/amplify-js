@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { NativeModules, DeviceEventEmitter, AsyncStorage, PushNotificationIOS, Platform } from 'react-native';
+import { NativeModules, DeviceEventEmitter, AsyncStorage, PushNotificationIOS, Platform, AppState } from 'react-native';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
@@ -19,11 +19,15 @@ const logger = new Logger('Notification');
 const RNPushNotification = NativeModules.RNPushNotification;
 const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
+const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 
 export default class PushNotification {
     private _config;
     private handlers;
-
+    private _currentState;
+    private _androidInitialized;
+    private _iosInitialized;
+    
     constructor(config) {
         if (config) {
             this.configure(config);
@@ -33,6 +37,15 @@ export default class PushNotification {
         this.handlers = [];
         this.updateEndpoint = this.updateEndpoint.bind(this);
         this.handleCampaignPush = this.handleCampaignPush.bind(this);
+        this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
+        this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
+        this._currentState = AppState.currentState;
+        this._androidInitialized = false;
+        this._iosInitialized = false;
+        	
+        if ( Platform.OS === 'ios' ) {	
+            AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);	
+        }
     }
 
     getModuleName() {
@@ -50,8 +63,14 @@ export default class PushNotification {
 
         this._config = Object.assign({}, this._config, conf);
 
-        if (Platform.OS === 'android') this.initializeAndroid();
-        else if (Platform.OS === 'ios') this.initializeIOS();
+        if (Platform.OS === 'android' && !this._androidInitialized){
+            this.initializeAndroid();
+            this._androidInitialized = true;
+        } 
+        else if (Platform.OS === 'ios' && !this._iosInitialized) {
+            this.initializeIOS();
+            this._iosInitialized = true;
+        }
     }
 
     onNotification(handler) {
@@ -61,6 +80,15 @@ export default class PushNotification {
                 this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, handler);
             } else {
                 this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, handler);   
+            }
+        }
+    }
+
+    onNotificationOpened(handler) {
+        if (typeof handler === 'function') {
+            // check platform
+            if ( Platform.OS === 'android' ) {
+                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);   
             }
         }
     }
@@ -78,6 +106,7 @@ export default class PushNotification {
 
     initializeAndroid() {
         this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
+        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this.handleCampaignOpened);
         this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
         RNPushNotification.initialize();
     }
@@ -92,12 +121,34 @@ export default class PushNotification {
         this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
     }
 
+    _checkIfOpenedByCampaign(nextAppState) {	                  
+        // the app is turned from background to foreground	            
+        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {	     
+            PushNotificationIOS.getInitialNotification().then(data => {	   
+                if (data) {	          
+                    this.handleCampaignOpened(data);	  
+                }	
+            }).catch(e => {	
+                logger.debug('Failed to get the initial notification.', e);	
+            });	
+        };
+        this._currentState = nextAppState;	
+    }
+
     handleCampaignPush(rawMessage) {
         let message = rawMessage;
+        let campaign = null;
         if (Platform.OS === 'ios') {
             message = this.parseMessageFromIOS(rawMessage);
+            campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign: null;
+        } else if (Platform.OS === 'android') {
+            const { data } = rawMessage; 
+            campaign = {
+                campaign_id: data['pinpoint.campaign.campaign_id'],
+                campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
+                treatment_id: data['pinpoint.campaign.treatment_id']
+            }
         }
-        const campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign: null;
 
         if (!campaign) {
             logger.debug('no message received for campaign push');
@@ -116,7 +167,47 @@ export default class PushNotification {
         if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
             Amplify.Analytics.record({
                 name: eventType, 
-                attributes
+                attributes,
+                immediate: true
+            });
+        } else {
+            logger.debug('Analytics module is not registered into Amplify');
+        }
+    }
+
+    handleCampaignOpened(rawMessage) {
+        logger.debug('handleCampaignOpened, raw data', rawMessage);
+        let campaign = null;
+        if (Platform.OS === 'ios') {
+            const message = this.parseMessageFromIOS(rawMessage);
+            campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign: null;
+        } else if (Platform.OS === 'android') {
+            const data = rawMessage;
+            campaign = {
+                campaign_id: data['pinpoint.campaign.campaign_id'],
+                campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
+                treatment_id: data['pinpoint.campaign.treatment_id']
+            }
+        }
+
+        if (!campaign) {
+            logger.debug('no message received for campaign opened');
+            return;
+        }
+
+        const attributes = {
+            campaign_activity_id: campaign['campaign_activity_id'],
+            treatment_id: campaign['treatment_id'],
+            campaign_id: campaign['campaign_id']
+        };
+
+        const eventType = '_campaign.opened_notification';
+
+        if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+            Amplify.Analytics.record({
+                name: eventType, 
+                attributes,
+                immediate: true
             });
         } else {
             logger.debug('Analytics module is not registered into Amplify');
@@ -170,6 +261,10 @@ export default class PushNotification {
                 handler(dataObj.refreshToken);
                 return;
             }
+            if (event === REMOTE_NOTIFICATION_OPENED) {
+                handler(that.parseMessagefromAndroid(data, 'opened'));
+                return;
+            }
         });
     }
 
@@ -185,10 +280,21 @@ export default class PushNotification {
         }
     }
 
-    parseMessagefromAndroid(message) {
-        const dataObj = message.dataJSON? JSON.parse(message.dataJSON) : null;
+    parseMessagefromAndroid(message, from?) {
+        let dataObj = null;
+        try {
+            dataObj = message.dataJSON? JSON.parse(message.dataJSON) : null;
+        } catch (e) {
+            logger.debug('Failed to parse the data object', e);
+            return;
+        }
+
         if (!dataObj) {
             logger.debug('no notification payload received');
+            return dataObj;
+        }
+
+        if (from === 'opened') {
             return dataObj;
         }
 
@@ -224,4 +330,6 @@ export default class PushNotification {
         };
         return ret;
     }
+
+
 }

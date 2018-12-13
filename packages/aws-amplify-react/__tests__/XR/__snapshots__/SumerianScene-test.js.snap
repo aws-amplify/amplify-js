@@ -5,25 +5,26 @@ exports[`SumerianScene renders successfully 1`] = `
   sceneName="TestSceneName"
 >
   <div
-    className="XR__sumerianSceneContainer___2ukXX"
+    className="XR__sumerianSceneContainer___11I4t"
     id="scene-container-dom-id"
   >
     <div
-      className="XR__sumerianScene___3qNuD"
+      className="XR__sumerianScene___3n6Vz"
       id="scene-dom-id"
     >
       <Loading
         percentage={0}
+        sceneError={null}
         sceneName="TestSceneName"
       >
         <div
-          className="XR__loadingOverlay___3OtRQ"
+          className="XR__loadingOverlay___1c9lj"
         >
           <div
-            className="XR__loadingContainer___21d50"
+            className="XR__loadingContainer___3C0lC"
           >
             <div
-              className="XR__loadingLogo___13gil"
+              className="XR__loadingLogo___3mETr"
             >
               <svg
                 viewBox="0 0 800 481"
@@ -55,15 +56,15 @@ exports[`SumerianScene renders successfully 1`] = `
               </svg>
             </div>
             <div
-              className="XR__loadingSceneName___1J_ME"
+              className="XR__loadingSceneName___3JbEs"
             >
               TestSceneName
             </div>
             <div
-              className="XR__loadingBar___2qlnN"
+              className="XR__loadingBar___QeOtl"
             >
               <div
-                className="XR__loadingBarFill___1RQoE"
+                className="XR__loadingBarFill___2Ej9-"
                 style={
                   Object {
                     "width": "0%",
@@ -76,10 +77,10 @@ exports[`SumerianScene renders successfully 1`] = `
       </Loading>
     </div>
     <div
-      className="XR__sceneBar___2QWhk"
+      className="XR__sceneBar___2jB64"
     >
       <span
-        className="XR__sceneActions___3kFRg"
+        className="XR__sceneActions___2a04n"
       />
     </div>
   </div>
