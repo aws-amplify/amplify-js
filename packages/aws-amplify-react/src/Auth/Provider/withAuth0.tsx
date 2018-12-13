@@ -37,7 +37,7 @@ declare global {
 
 export default function withAuth0(Comp, options?) {
     return class extends Component<any, any> {
-        private _auth0;
+        public _auth0;
 
         constructor(props) {
             super(props);

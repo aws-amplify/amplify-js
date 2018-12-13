@@ -38,7 +38,7 @@ import Greetings from './Greetings';
 
 export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
     return class extends Component<any, any> {
-        private authConfig;
+        public authConfig;
 
         constructor(props) {
             super(props);
