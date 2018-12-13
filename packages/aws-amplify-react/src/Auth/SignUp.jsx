@@ -216,8 +216,8 @@ export default class SignUp extends AuthPiece {
                                 <FormField theme={theme} key={field.key}>
                                 {
                                     field.required ? 
-                                    <InputLabel>{I18n.get(field.label)} *</InputLabel> :
-                                    <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                    <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                    <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                 }
                                     <Input
                                         autoFocus={
@@ -237,8 +237,8 @@ export default class SignUp extends AuthPiece {
                                 <FormField theme={theme} key="phone_number">
                                     {
                                         field.required ? 
-                                        <InputLabel>{I18n.get(field.label)} *</InputLabel> :
-                                        <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                        <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                        <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                     }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
