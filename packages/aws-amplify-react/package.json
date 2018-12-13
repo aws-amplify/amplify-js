@@ -2,7 +2,8 @@
   "name": "aws-amplify-react",
   "version": "2.2.1-unstable.1",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
-  "main": "dist/index.js",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage --updateSnapshot --maxWorkers 2",
     "build": "npm run clean && tsc -p .",
