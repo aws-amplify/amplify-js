@@ -130,7 +130,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
   >
     <div>
       <div
-        className="Totp__totpQrcode___3J1qo"
+        className="Totp__totpQrcode___3OH-m"
       >
         <QRCode
           bgColor="#FFFFFF"

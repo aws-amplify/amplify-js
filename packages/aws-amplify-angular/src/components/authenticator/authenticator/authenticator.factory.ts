@@ -17,6 +17,7 @@ import { AuthenticatorComponentCore } from './authenticator.component.core';
 export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() hide: string[] = [];
+  @Input() signUpConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -29,7 +30,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide, signUpConfig: this.signUpConfig}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide, signUpConfig: this.signUpConfig});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

@@ -4,10 +4,10 @@ exports[`IconButton renders successfully with no variant 1`] = `
 <IconButton>
   <Tooltip>
     <div
-      className="XR__tooltip___15YSw"
+      className="XR__tooltip___3wuzm"
     >
       <button
-        className="XR__actionButton___1qGSB"
+        className="XR__actionButton___7icN8"
       />
     </div>
   </Tooltip>
@@ -20,10 +20,10 @@ exports[`IconButton renders successfully with variant 1`] = `
 >
   <Tooltip>
     <div
-      className="XR__tooltip___15YSw"
+      className="XR__tooltip___3wuzm"
     >
       <button
-        className="XR__actionButton___1qGSB"
+        className="XR__actionButton___7icN8"
       >
         <svg
           height="19"
