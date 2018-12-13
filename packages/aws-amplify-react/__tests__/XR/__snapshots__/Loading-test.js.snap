@@ -3,13 +3,13 @@
 exports[`Loading renders successfully with no props 1`] = `
 <Loading>
   <div
-    className="XR__loadingOverlay___3OtRQ"
+    className="XR__loadingOverlay___1c9lj"
   >
     <div
-      className="XR__loadingContainer___21d50"
+      className="XR__loadingContainer___3C0lC"
     >
       <div
-        className="XR__loadingLogo___13gil"
+        className="XR__loadingLogo___3mETr"
       >
         <svg
           viewBox="0 0 800 481"
@@ -41,13 +41,13 @@ exports[`Loading renders successfully with no props 1`] = `
         </svg>
       </div>
       <div
-        className="XR__loadingSceneName___1J_ME"
+        className="XR__loadingSceneName___3JbEs"
       />
       <div
-        className="XR__loadingBar___2qlnN"
+        className="XR__loadingBar___QeOtl"
       >
         <div
-          className="XR__loadingBarFill___1RQoE"
+          className="XR__loadingBarFill___2Ej9-"
           style={
             Object {
               "width": "undefined%",
@@ -65,13 +65,13 @@ exports[`Loading renders successfully with percentage 1`] = `
   percentage="0"
 >
   <div
-    className="XR__loadingOverlay___3OtRQ"
+    className="XR__loadingOverlay___1c9lj"
   >
     <div
-      className="XR__loadingContainer___21d50"
+      className="XR__loadingContainer___3C0lC"
     >
       <div
-        className="XR__loadingLogo___13gil"
+        className="XR__loadingLogo___3mETr"
       >
         <svg
           viewBox="0 0 800 481"
@@ -103,13 +103,13 @@ exports[`Loading renders successfully with percentage 1`] = `
         </svg>
       </div>
       <div
-        className="XR__loadingSceneName___1J_ME"
+        className="XR__loadingSceneName___3JbEs"
       />
       <div
-        className="XR__loadingBar___2qlnN"
+        className="XR__loadingBar___QeOtl"
       >
         <div
-          className="XR__loadingBarFill___1RQoE"
+          className="XR__loadingBarFill___2Ej9-"
           style={
             Object {
               "width": "0%",
