@@ -121,7 +121,7 @@ export default class SelectMFAType extends Component<any, any> {
         return (
             <FormSection theme={theme}>
                 {this.state.showToast && this.state.selectMessage &&
-                    <Toast onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(this.state.selectMessage) }
                     </Toast>
                 }
@@ -158,7 +158,7 @@ export default class SelectMFAType extends Component<any, any> {
 
                     </div>
                 </SectionBody>
-                <SectionFooter>
+                <SectionFooter theme={theme}>
                     <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
                 </SectionFooter>
             </FormSection>

@@ -115,7 +115,7 @@ export default class TOTPSetupComp extends Component<any, any> {
                 <div className={totpQrcode}>
                     <QRCode value={code} />
                 </div>
-                <InputLabel>{I18n.get('Enter Security Code:')}</InputLabel>
+                <InputLabel theme={theme}>{I18n.get('Enter Security Code:')}</InputLabel>
                 <Input
                     autoFocus
                     theme={theme}
@@ -146,7 +146,7 @@ export default class TOTPSetupComp extends Component<any, any> {
                     }
                 </SectionBody>
 
-                <SectionFooter>
+                <SectionFooter theme={theme}>
                     <Button theme={theme} onClick={this.verifyTotpToken} style={{width: '100%'}}>
                         {I18n.get('Verify Security Token')}
                     </Button>

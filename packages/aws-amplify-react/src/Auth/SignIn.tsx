@@ -134,7 +134,7 @@ export default class SignIn extends AuthPiece {
                         onAuthEvent={onAuthEvent}
                     />
                     <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Username')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                         <Input
                             autoFocus
                             placeholder={I18n.get('Enter your username')}
@@ -145,7 +145,7 @@ export default class SignIn extends AuthPiece {
                         />
                     </FormField>
                     <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Password')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get('Password')} *</InputLabel>
                         <Input
                             placeholder={I18n.get('Enter your password')}
                             theme={theme}
