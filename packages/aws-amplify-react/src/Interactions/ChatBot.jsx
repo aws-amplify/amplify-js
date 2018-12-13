@@ -103,7 +103,7 @@ export class ChatBot extends Component {
     }
 
     async micButtonHandler() {
-        if (this.state.continueConversation === true) {
+        if (this.state.continueConversation) {
             this.reset();
         } else {
             this.setState({
@@ -122,7 +122,7 @@ export class ChatBot extends Component {
 
     onSilenceHandler() {
         audioControl.stopRecording();
-        if (this.state.continueConversation !== true) {
+        if (!this.state.continueConversation) {
             return;
         }
         audioControl.exportWAV((blob) => {
@@ -143,7 +143,7 @@ export class ChatBot extends Component {
         if (!Interactions || typeof Interactions.send !== 'function') {
             throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
         }
-        if (this.state.continueConversation !== true) {
+        if (!this.state.continueConversation) {
             return;
         }
 
@@ -172,7 +172,7 @@ export class ChatBot extends Component {
     }
 
     doneSpeakingHandler() {
-        if (this.state.continueConversation !== true) {
+        if (!this.state.continueConversation) {
             return;
         }
         if (this.state.lexResponse.contentType === 'audio/mpeg') {
@@ -180,7 +180,7 @@ export class ChatBot extends Component {
                 if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
                     this.state.lexResponse.dialogState === 'Fulfilled' ||
                     this.state.lexResponse.dialogState === 'Failed' ||
-                    this.props.conversationModeOn === false) {
+                    !this.props.conversationModeOn) {
                     this.setState({
                         inputDisabled: false,
                         currentVoiceState: STATES.INITIAL,

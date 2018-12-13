@@ -153,7 +153,7 @@ export default {
 			this.logger.error(this.error);
 		},
 		async micButtonHandler() {
-			if (this.continueConversation === true) {
+			if (this.continueConversation) {
 				this.reset();
 			} else {
 				this.inputDisabled = true;
@@ -166,7 +166,7 @@ export default {
 		},
 		onSilenceHandler() {
 			audioControl.stopRecording();
-			if (this.continueConversation !== true) {
+			if (!this.continueConversation) {
 				return;
 			} 
 			
@@ -179,7 +179,7 @@ export default {
 			});
 		},
 		async lexResponseHandler() {
-			if (this.continueConversation !== true) {
+			if (!this.continueConversation) {
 				return;
 			}
 
@@ -216,7 +216,7 @@ export default {
 			this.doneSpeakingHandler();
 		},
 		doneSpeakingHandler() {
-			if (this.continueConversation !== true) {
+			if (!this.continueConversation) {
 				return;
 			}
 			if (this.lexResponse.contentType === 'audio/mpeg') {
@@ -224,7 +224,7 @@ export default {
 					if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 						this.lexResponse.dialogState === 'Fulfilled' ||
 						this.lexResponse.dialogState === 'Failed' ||
-						this.options.conversationModeOn === false) {
+						!this.options.conversationModeOn) {
 						this.inputDisabled = false;
 						this.currentVoiceState = STATES.INITIAL.MESSAGE;
 						this.micText = STATES.INITIAL.ICON;

@@ -123,7 +123,7 @@ export class ChatBot extends Component {
         }, resolve));
 
         let response;
-        if (voiceResponse === true) {
+        if (voiceResponse) {
             const interactionsMessage = {
                 content: this.state.inputText,
                 options: {
@@ -149,7 +149,7 @@ export class ChatBot extends Component {
             }, 50);
         });        
 
-        if (this.state.voice === true) {
+        if (this.state.voice) {
             this.setState({
                 voice: false
             }) 
@@ -166,7 +166,7 @@ export class ChatBot extends Component {
                             RNFS.unlink(path)
                         }
                     }) 
-                    if (response.dialogState === 'ElicitSlot' && this.props.conversationModeOn === true) {
+                    if (response.dialogState === 'ElicitSlot' && this.props.conversationModeOn) {
                         await this.startRecognizing();
                     }
                 });
@@ -254,7 +254,7 @@ export class ChatBot extends Component {
             voice: true,
         });
 
-        if (this.props.conversationModeOn === true) {
+        if (this.props.conversationModeOn) {
             this.setState({
                 conversationOngoing: true,
             })
@@ -269,7 +269,7 @@ export class ChatBot extends Component {
     };
 
     async handleMicButton() {
-        if (this.state.conversationOngoing === true || await Voice.isRecognizing()) {
+        if (this.state.conversationOngoing || await Voice.isRecognizing()) {
             await this.reset();
         } else {
             await this.startRecognizing();

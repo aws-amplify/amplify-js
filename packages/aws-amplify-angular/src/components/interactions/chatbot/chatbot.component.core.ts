@@ -38,7 +38,7 @@ const template = `
 					*ngIf="!textEnabled">
 
 				<button type="button" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
-				<button type="button" *ngIf="textEnabled" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="inputDisabled === false || onSubmit(inputValue.value)"></button>
+				<button type="button" *ngIf="textEnabled" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="!inputDisabled || onSubmit(inputValue.value)"></button>
 
 			</div>
 		</div>
@@ -170,7 +170,7 @@ export class ChatbotComponentCore {
 	}
 
 	onSilenceHandler = () => {
-		if (this.continueConversation !== true) {
+		if (!this.continueConversation) {
 			return;
 		}
 		audioControl.exportWAV((blob) => {
@@ -199,7 +199,7 @@ export class ChatbotComponentCore {
 	}
 
 	async lexResponseHandler() {
-		if (this.continueConversation !== true) {
+		if (!this.continueConversation) {
 			return;
 		}
 
@@ -233,7 +233,7 @@ export class ChatbotComponentCore {
 	}
 
 	doneSpeakingHandler() {
-		if (this.continueConversation !== true) {
+		if (!this.continueConversation) {
 			return;
 		}
 		if (this.lexResponse.contentType === 'audio/mpeg') {
@@ -241,7 +241,7 @@ export class ChatbotComponentCore {
 				if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 					this.lexResponse.dialogState === 'Fulfilled' ||
 					this.lexResponse.dialogState === 'Failed' ||
-					this.conversationModeOn === false) {
+					!this.conversationModeOn) {
 					this.inputDisabled = false;
 					this.currentVoiceState = STATES.INITIAL.MESSAGE;
 					this.micText = STATES.INITIAL.ICON;
@@ -267,7 +267,7 @@ export class ChatbotComponentCore {
 	}
 
 	async micButtonHandler() {
-		if (this.continueConversation === true) {
+		if (this.continueConversation) {
 			this.reset();
 			this.ref.detectChanges();
 		} else {
