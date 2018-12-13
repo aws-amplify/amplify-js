@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.6"></a>
+## [3.0.6](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.6-unstable.2...amazon-cognito-identity-js@3.0.6) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.6-unstable.2"></a>
+## [3.0.6-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.6-unstable.1...amazon-cognito-identity-js@3.0.6-unstable.2) (2018-12-13)
+
+
+### Features
+
+* **@aws-amplify/auth:** add the option to pass validation data when signing in ([13093e9](https://github.com/aws/aws-amplify/commit/13093e9))
+
+
+
+
+<a name="3.0.6-unstable.1"></a>
+## [3.0.6-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.6-unstable.0...amazon-cognito-identity-js@3.0.6-unstable.1) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
 <a name="3.0.6-unstable.0"></a>
 ## [3.0.6-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.5...amazon-cognito-identity-js@3.0.6-unstable.0) (2018-12-07)
 
