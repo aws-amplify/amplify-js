@@ -2,17 +2,17 @@
   "name": "@aws-amplify/cache",
   "version": "1.0.20",
   "description": "Cache category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
+  "typings": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
-    "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build": "npm run clean && tsc && webpack",
-    "clean": "rimraf lib lib-esm dist",
+    "build-with-test": "npm test && npm run build",
+    "build": "npm run clean && tsc -p tsconfig.es5.json && tsc -p tsconfig.es2015.json && rollup -c",
+    "clean": "rimraf tsc-out dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
@@ -30,27 +30,6 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "devDependencies": {
-    "@types/jest": "^20.0.8",
-    "@types/node": "^8.10.15",
-    "awesome-typescript-loader": "^3.2.2",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "compression-webpack-plugin": "^1.1.3",
-    "find": "^0.2.7",
-    "jest": "^22.4.3",
-    "json-loader": "^0.5.7",
-    "prepend-file": "^1.3.1",
-    "prettier": "^1.7.4",
-    "rimraf": "^2.6.2",
-    "source-map-loader": "^0.2.1",
-    "ts-jest": "^22.0.0",
-    "tslint": "^5.7.0",
-    "tslint-config-airbnb": "^5.8.0",
-    "typescript-formatter": "^6.0.0",
-    "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
   },
   "dependencies": {
     "@aws-amplify/core": "^1.0.20"

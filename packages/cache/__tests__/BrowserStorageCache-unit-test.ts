@@ -1,6 +1,6 @@
-import { CacheConfig, CacheItem, CacheItemOptions, ICache } from "../src/types/Cache";
-import { defaultConfig, getByteLength } from "../src/Utils/CacheUtils"
-import { default as cache, BrowserStorageCache } from "../src/BrowserStorageCache"
+import { CacheConfig, CacheItem } from "../src/types/Cache";
+import { defaultConfig, getByteLength } from "../src/Utils/CacheUtils";
+import { BrowserStorageCache as cache, BrowserStorageCacheClass } from "../src/BrowserStorageCache";
 
 const config : CacheConfig = {
     capacityInBytes : 3000,
@@ -433,7 +433,7 @@ describe('BrowserStorageCache', () => {
 
     describe('createInstance', () => {
         test('happy case, return new instance', () => {
-            expect(cache.createInstance({keyPrefix: 'abc'})).toBeInstanceOf(BrowserStorageCache);
+            expect(cache.createInstance({keyPrefix: 'abc'})).toBeInstanceOf(BrowserStorageCacheClass);
         });
     });
 });
