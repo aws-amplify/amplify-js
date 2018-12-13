@@ -116,7 +116,7 @@ const analyticsEvent = (payload) => {
     if (!event) return;
 
      switch(event) {
-         case 'configured':
+         case 'pinpointProvider_configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured) {
                 const config = Analytics.configure();

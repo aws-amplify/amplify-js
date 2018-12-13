@@ -120,6 +120,12 @@ export default {
         this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
       };
 
+      if (this.signUpConfig && this.signUpConfig.hiddenDefaults && this.signUpConfig.hiddenDefaults.length > 0){
+        defaults.signUpFields = defaults.signUpFields.filter((d) => {
+          return !this.signUpConfig.hiddenDefaults.includes(d.key);
+        });
+      }
+
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
         // if hideDefaults is not present on props...
@@ -154,18 +160,19 @@ export default {
               }
             }
           } else if (!a.displayOrder && b.displayOrder) {
-            return 1;
-          } else if (a.displayOrder && !b.displayOrder) {
             return -1;
+          } else if (a.displayOrder && !b.displayOrder) {
+            return 1;
           } else if (!a.displayOrder && !b.displayOrder) {
             if (a.key < b.key) {
-              return -1;
-            } else {
               return 1;
+            } else {
+              return -1;
             }
           }
         });
-      } 
+      }
+      
       return Object.assign(defaults, this.signUpConfig || {})
     }
   },
@@ -226,6 +233,9 @@ export default {
         }
         return el;
       })
+      if (invalids.length > 0) {
+        this.setError(`The following fields must be completed: ${invalids.join(', ')}`)
+      }
       return invalids.length < 1;
     },
     signIn: function() {
