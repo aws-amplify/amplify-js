@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.2.1-unstable.2"></a>
+## [2.2.1-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1-unstable.1...aws-amplify-react@2.2.1-unstable.2) (2018-12-13)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** fix instances of missing theme prop ([77904be](https://github.com/aws/aws-amplify/commit/77904be))
+
+
+
+
 <a name="2.2.1-unstable.1"></a>
 ## [2.2.1-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1-unstable.0...aws-amplify-react@2.2.1-unstable.1) (2018-12-11)
 
