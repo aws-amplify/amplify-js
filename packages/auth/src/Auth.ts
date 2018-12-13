@@ -34,8 +34,7 @@ import {
     StorageHelper,
     ICredentials
 } from '@aws-amplify/core';
-import Cache from '@aws-amplify/cache';
-import { 
+import {
     CookieStorage,
     CognitoUserPool,
     AuthenticationDetails,
@@ -59,7 +58,7 @@ const dispatchAuthEvent = (event, data) => {
 /**
 * Provide authentication steps
 */
-export default class AuthClass {
+export class AuthClass {
     private _config: AuthOptions;
     private _userPoolStorageSync: Promise<any>;
     private userPool = null;
@@ -1389,3 +1388,8 @@ export default class AuthClass {
         return user;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AuthClass;
