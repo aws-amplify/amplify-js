@@ -1336,7 +1336,7 @@ export default class AuthClass {
      * Set device status as remembered for the current cognito user
      * @return - A promise resolve if success
      */
-    public async setDeviceStatusRemembered() {
+    public async setDeviceStatusRemembered(): Promise<string> {
       const user = await this.currentUserPoolUser();
 
       return new Promise((resolve, reject) => {
@@ -1351,7 +1351,7 @@ export default class AuthClass {
      * Set device status as not remembered for the current cognito user
      * @return - A promise resolve if success
      */
-    public async setDeviceStatusNotRemembered() {
+    public async setDeviceStatusNotRemembered(): Promise<string> {
       const user = await this.currentUserPoolUser();
 
       return new Promise((resolve, reject) => {
@@ -1366,7 +1366,7 @@ export default class AuthClass {
      * Set device status as not forgotten for the current cognito user
      * @return - A promise resolve if success
      */
-    public async forgetDevice() {
+    public async forgetDevice(): Promise<string> {
       const user = await this.currentUserPoolUser();
 
       return new Promise((resolve, reject) => {
