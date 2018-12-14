@@ -52,10 +52,8 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(private amplifyService: AmplifyService) {
     this.subscribe();
   }
 
