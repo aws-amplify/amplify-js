@@ -194,7 +194,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-
         // temporary solution, will refactor in the future
         if (params.event.immediate) {
             return this._send(params);

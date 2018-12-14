@@ -102,8 +102,21 @@ export interface CurrentUserOpts {
 
 export interface AttributeVerificationCodeResponse {
     CodeDeliveryDetails: {
-      AttributeName: string; // phone_number | email
-      DeliveryMedium: string;
-      Destination: string;
+        AttributeName: string; // phone_number | email
+        DeliveryMedium: string;
+        Destination: string;
     }
+}
+
+export type UsernamePasswordOpts = {
+    username: string,
+    password: string,
+    validationData?: {[key:string]: any}
+};
+
+// We can extend this in the future if needed
+export type SignInOpts = UsernamePasswordOpts;
+
+export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
+    return !!(obj as UsernamePasswordOpts).username;
 }

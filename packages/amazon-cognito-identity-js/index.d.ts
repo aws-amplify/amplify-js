@@ -24,6 +24,7 @@ declare module "amazon-cognito-identity-js" {
     export interface IAuthenticationDetailsData {
         Username: string;
         Password?: string;
+        ValidationData?: {[key: string]: any}
     }
 
     export class AuthenticationDetails {

@@ -130,7 +130,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
   >
     <div>
       <div
-        className="Totp__totpQrcode___3J1qo"
+        className="Totp__totpQrcode___3OH-m"
       >
         <QRCode
           bgColor="#FFFFFF"
@@ -141,7 +141,46 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           value="code"
         />
       </div>
-      <Component>
+      <Component
+        theme={
+          Object {
+            "a": Object {},
+            "actionRow": Object {},
+            "amazonSignInButton": Object {},
+            "button": Object {},
+            "container": Object {},
+            "facebookSignInButton": Object {},
+            "formContainer": Object {},
+            "formField": Object {},
+            "formRow": Object {},
+            "formSection": Object {},
+            "googleSignInButton": Object {},
+            "hint": Object {},
+            "input": Object {},
+            "inputLabel": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
+            "oAuthSignInButton": Object {},
+            "photoPickerButton": Object {},
+            "photoPlaceholder": Object {},
+            "radio": Object {},
+            "sectionBody": Object {},
+            "sectionFooter": Object {},
+            "sectionFooterPrimaryContent": Object {},
+            "sectionFooterSecondaryContent": Object {},
+            "sectionHeader": Object {},
+            "signInButton": Object {},
+            "signInButtonContent": Object {},
+            "signInButtonIcon": Object {},
+            "strike": Object {},
+            "strikeContent": Object {},
+            "toast": Object {},
+          }
+        }
+      >
         Enter Security Code:
       </Component>
       <Component
@@ -191,7 +230,46 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     </div>
     message
   </Component>
-  <Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
     <Component
       onClick={[Function]}
       style={
@@ -367,7 +445,46 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       }
     }
   />
-  <Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
     <Component
       onClick={[Function]}
       style={
