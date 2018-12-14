@@ -3,8 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
 <a name="2.1.2-unstable.2"></a>
 ## [2.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.2-unstable.1...aws-amplify-react-native@2.1.2-unstable.2) (2018-12-14)
+
+
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.2-unstable.1...aws-amplify-react-native@2.1.2) (2018-12-14)
+
 
 
 
