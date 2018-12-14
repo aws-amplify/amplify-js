@@ -174,7 +174,7 @@ describe('Chatbot', () => {
     });
 
     it('...should call onSubmit with inputText when submit button is clicked', () => {
-      const el = wrapper.find('button');
+      const el = wrapper.find('#interactions-submit-button');
       wrapper.vm.inputText = 'talk to me, robot';
       el.trigger('click');
       expect(mockOnSubmit).toHaveBeenCalledWith('talk to me, robot');

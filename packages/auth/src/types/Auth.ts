@@ -99,3 +99,16 @@ export interface SignOutOpts {
 export interface CurrentUserOpts {
     bypassCache: boolean
 }
+
+export type UsernamePasswordOpts = {
+    username: string,
+    password: string,
+    validationData?: {[key:string]: any}
+};
+
+// We can extend this in the future if needed
+export type SignInOpts = UsernamePasswordOpts;
+
+export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
+    return !!(obj as UsernamePasswordOpts).username;
+}
