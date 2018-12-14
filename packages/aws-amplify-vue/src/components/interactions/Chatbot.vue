@@ -59,9 +59,7 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 
-require('./aws-lex-audio.js');
-
-const audioControl = new global.LexAudio.audioControl()
+let audioControl;
 
 const STATES = {
     INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
@@ -110,9 +108,23 @@ export default {
 	},
 	mounted() {
 		this.logger = new this.$Amplify.Logger(this.$options.name);
+		console.log(this.options)
 		if (!this.options.bot){
 			this.setError('Bot not provided.');
 		}
+		if (this.options.voiceEnabled) {
+            require('./aws-lex-audio.js');
+            audioControl = new global.LexAudio.audioControl();
+		}
+		if (!this.options.textEnabled && this.options.voiceEnabled) {
+			STATES.INITIAL.MESSAGE = 'Click the mic button';
+			this.currentVoiceState = STATES.INITIAL.MESSAGE;
+        }
+        if (this.options.textEnabled && !this.options.voiceEnabled) {
+			STATES.INITIAL.MESSAGE = 'Type a message';
+			this.currentVoiceState = STATES.INITIAL.MESSAGE;
+        }
+
 		this.$Amplify.Interactions.onComplete(this.options.bot,this.performOnComplete);
 	},
 	methods: {
