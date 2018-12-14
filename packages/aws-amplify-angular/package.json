@@ -12,7 +12,8 @@
     "transpile": "ngc",
     "package": "rollup -c rollup.config.js",
     "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
-    "build": "npm run transpile && npm run package && npm run minify"
+    "build": "npm run transpile && npm run package && npm run minify && npm run declarations",
+    "declarations": "ngc --p ./declarations/"
   },
   "jest": {
     "transformIgnorePatterns": [
