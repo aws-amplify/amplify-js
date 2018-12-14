@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "allowJs": true,
+    "baseUrl": "../",
+    "emitDeclarationOnly": true,
+    "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
     "strictNullChecks": false,
@@ -12,8 +13,8 @@
       "@angular/core": ["node_modules/@angular/core"],
       "rxjs/*": ["node_modules/rxjs/*"]
     },
-    "rootDir": ".",
-    "outDir": "dist",
+    "rootDir": "../",
+    "outDir": "../dist",
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",
@@ -24,8 +25,7 @@
     ]
   },
   "files": [
-    "index.ts",
-    "src/components/interactions/chatbot/aws-lex-audio.js"
+    "../index.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true
