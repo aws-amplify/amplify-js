@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/interactions",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Interactions category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
