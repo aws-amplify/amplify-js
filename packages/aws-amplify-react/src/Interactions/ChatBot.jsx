@@ -10,8 +10,6 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('ChatBot');
 
-require('./aws-lex-audio.js')
-
 const styles = {
     itemMe: {
         padding: 10,
@@ -56,12 +54,16 @@ const defaultVoiceConfig = {
     }   
 }
 
-const audioControl = new global.LexAudio.audioControl()
+let audioControl;
 
 export class ChatBot extends Component {
     constructor(props) {
         super(props);
 
+        if (this.props.voiceEnabled) {
+            require('./aws-lex-audio.js');
+            audioControl = new global.LexAudio.audioControl();
+        }
         if (!this.props.textEnabled && this.props.voiceEnabled) {
             STATES.INITIAL.MESSAGE = 'Click the mic button';
             styles.textInput = Object.assign({}, Input, {
