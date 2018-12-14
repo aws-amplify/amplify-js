@@ -52,9 +52,9 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = this.props &&
+        this.header = (this.props &&
             this.props.signUpConfig && 
-            this.props.signUpConfig.header ? this.props.signUpConfig.header : 'Create a new account';
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
     validate() {
