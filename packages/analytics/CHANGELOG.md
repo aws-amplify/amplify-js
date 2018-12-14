@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.8"></a>
+## [1.2.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.8-unstable.3...@aws-amplify/analytics@1.2.8) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.8-unstable.3"></a>
+## [1.2.8-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.8-unstable.2...@aws-amplify/analytics@1.2.8-unstable.3) (2018-12-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** fix the type definition ([34daec2](https://github.com/aws/aws-amplify/commit/34daec2))
+
+
+
+
 <a name="1.2.8-unstable.2"></a>
 ## [1.2.8-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.8-unstable.1...@aws-amplify/analytics@1.2.8-unstable.2) (2018-12-12)
 

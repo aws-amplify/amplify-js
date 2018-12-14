@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.2-unstable.0"></a>
+## [2.1.2-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1...aws-amplify-angular@2.1.2-unstable.0) (2018-12-13)
+
+
+### Features
+
+* **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
+
+
+
+
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-unstable.7...aws-amplify-angular@2.1.1) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.1.1-unstable.7"></a>
+## [2.1.1-unstable.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-unstable.6...aws-amplify-angular@2.1.1-unstable.7) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.1.1-unstable.6"></a>
+## [2.1.1-unstable.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-unstable.5...aws-amplify-angular@2.1.1-unstable.6) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.1.1-unstable.5"></a>
+## [2.1.1-unstable.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-unstable.4...aws-amplify-angular@2.1.1-unstable.5) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="2.1.1-unstable.4"></a>
 ## [2.1.1-unstable.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.1-unstable.3...aws-amplify-angular@2.1.1-unstable.4) (2018-12-13)
 
