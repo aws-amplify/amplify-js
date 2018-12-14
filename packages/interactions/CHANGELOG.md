@@ -6,6 +6,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 <a name="1.0.22"></a>
 ## [1.0.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.21...@aws-amplify/interactions@1.0.22) (2018-12-14)
 
+<a name="1.0.22-unstable.0"></a>
+## [1.0.22-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.21...@aws-amplify/interactions@1.0.22-unstable.0) (2018-12-14)
+
+
 
 
 
