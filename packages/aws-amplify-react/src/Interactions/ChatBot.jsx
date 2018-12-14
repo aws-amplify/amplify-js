@@ -54,7 +54,7 @@ const defaultVoiceConfig = {
     }   
 }
 
-const audioControl;
+let audioControl;
 
 export class ChatBot extends Component {
     constructor(props) {
