@@ -50,7 +50,9 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = this.props && this.props.signUpConfig && this.props.signUpConfig.header || 'Create a new account';
+        this.header = (this.props &&
+            this.props.signUpConfig && 
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
     validate() {
@@ -216,8 +218,8 @@ export default class SignUp extends AuthPiece {
                                 <FormField theme={theme} key={field.key}>
                                 {
                                     field.required ? 
-                                    <InputLabel>{I18n.get(field.label)} *</InputLabel> :
-                                    <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                    <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                    <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                 }
                                     <Input
                                         autoFocus={
@@ -237,8 +239,8 @@ export default class SignUp extends AuthPiece {
                                 <FormField theme={theme} key="phone_number">
                                     {
                                         field.required ? 
-                                        <InputLabel>{I18n.get(field.label)} *</InputLabel> :
-                                        <InputLabel>{I18n.get(field.label)}</InputLabel>
+                                        <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                        <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                     }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
