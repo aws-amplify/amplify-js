@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { Observable } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import Amplify, {
   Logger,
   AuthClass,
   AnalyticsClass,
   StorageClass,
   APIClass,
-  InteractionsClass
+  InteractionsClass,
+  XRClass
 } from 'aws-amplify';
 
 import { AuthState } from './auth.state';
@@ -24,7 +24,8 @@ export class AmplifyService {
   private _cache: any;
   private _pubsub: any;
   private _interactions: InteractionsClass;
-
+  private _logger: any; 
+  private _xr: XRClass;
   private _authState = new Subject<AuthState>();
   authStateChange$ = this._authState.asObservable();
 
@@ -38,7 +39,8 @@ export class AmplifyService {
     this._cache = Amplify.Cache;
     this._pubsub = Amplify.PubSub;
     this._interactions = Amplify.Interactions;
-
+    this._logger =  Amplify.Logger;
+    this._xr = Amplify.XR;
   }
 
   auth(): AuthClass { return this._auth; }
@@ -48,6 +50,8 @@ export class AmplifyService {
   interactions(): InteractionsClass { return this._interactions; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }
+  logger(name, level): Logger { return new this._logger(name, level); }
+  xr(): any { return this._xr; }
 
   authState() { return this._authState; }
   setAuthState(state: AuthState) { this._authState.next(state); }

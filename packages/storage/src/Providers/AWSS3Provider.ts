@@ -32,15 +32,15 @@ const dispatchStorageEvent = (track, attrs, metrics) => {
  * Provide storage methods to use AWS S3
  */
 export default class AWSS3Provider implements StorageProvider{
-    
+
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
-    
+
     /**
      * @private
      */
     private _config;
-    
+
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} config - Configuration object for storage
@@ -144,7 +144,7 @@ export default class AWSS3Provider implements StorageProvider{
 
     /**
      * Put a file in S3 bucket specified to configure method
-     * @param {Stirng} key - key of the object
+     * @param {String} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
@@ -157,6 +157,7 @@ export default class AWSS3Provider implements StorageProvider{
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, track, progressCallback } = opt;
         const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
+        const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -174,6 +175,13 @@ export default class AWSS3Provider implements StorageProvider{
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
+        if (serverSideEncryption) {
+            params.ServerSideEncryption = serverSideEncryption;
+            if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }
+            if (SSECustomerKey) { params.SSECustomerKey = SSECustomerKey; }
+            if (SSECustomerKeyMD5) { params.SSECustomerKeyMD5 = SSECustomerKeyMD5; }
+            if (SSEKMSKeyId) { params.SSEKMSKeyId = SSEKMSKeyId; }
+        }
 
         try {
             const upload = s3
@@ -188,13 +196,13 @@ export default class AWSS3Provider implements StorageProvider{
                     }
                 });
             const data = await upload.promise();
-            
+
             logger.debug('upload result', data);
             dispatchStorageEvent(
                 track,
                 { method: 'put', result: 'success' },
                 null);
-            
+
             return {
                 key: data.Key.substr(prefix.length)
             };
@@ -204,7 +212,7 @@ export default class AWSS3Provider implements StorageProvider{
                 track,
                 { method: 'put', result: 'failed' },
                 null);
-            
+
             throw e;
         }
     }
@@ -307,7 +315,7 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     _ensureCredentials() {
-       
+
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;

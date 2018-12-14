@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils'; // eslint-disable-line
 import QrcodeVue from 'qrcode.vue'; // eslint-disable-line
 import * as AmplifyUI from '@aws-amplify/ui'; // eslint-disable-line
 import SetMFA from '../src/components/authenticator/SetMFA.vue';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 
 Vue.use(AmplifyPlugin, AmplifyMocks);

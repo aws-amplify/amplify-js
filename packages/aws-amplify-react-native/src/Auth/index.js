@@ -42,7 +42,14 @@ export {
     Greetings
 };
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+export function withAuthenticator(
+    Comp,
+    includeGreetings = false,
+    authenticatorComponents = [],
+    federated = null,
+    theme = null,
+    signUpConfig = {}
+) {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -50,6 +57,19 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
             this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
             this.state = { authState: props.authState };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    signUpConfig
+                }
+            }
+            console.log('this.authConfig', this.authConfig)
         }
 
         handleAuthStateChange(state, data) {
@@ -61,7 +81,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
             const { authState, authData } = this.state;
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
-                if (!includeGreetings) {
+                if (!this.authConfig.includeGreetings) {
                     return (
                         <Comp
                             {...this.props}
@@ -78,6 +98,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
+                            theme={theme}
                         />
                         <Comp
                             {...this.props}
@@ -91,9 +112,11 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
 
             return <Authenticator
                 {...this.props}
-                hideDefault={authenticatorComponents.length > 0}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authConfig.authenticatorComponents}
+                theme={theme}
             />
         }
     }
