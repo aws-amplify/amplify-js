@@ -99,3 +99,11 @@ export interface SignOutOpts {
 export interface CurrentUserOpts {
     bypassCache: boolean
 }
+
+export interface AttributeVerificationCodeResponse {
+    CodeDeliveryDetails: {
+      AttributeName: string; // phone_number | email
+      DeliveryMedium: string;
+      Destination: string;
+    }
+}
