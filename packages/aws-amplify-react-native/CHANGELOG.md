@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.6-unstable.0"></a>
+## [2.1.6-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.5...aws-amplify-react-native@2.1.6-unstable.0) (2018-12-15)
+
+
+### Features
+
+* **@aws-amplify/react-native:** React Native chatbot voice interactions ([#2355](https://github.com/aws/aws-amplify/issues/2355)) ([2a4f4bc](https://github.com/aws/aws-amplify/commit/2a4f4bc))
+
+
+
+
 <a name="2.1.5"></a>
 ## [2.1.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.2-unstable.3...aws-amplify-react-native@2.1.5) (2018-12-15)
 
