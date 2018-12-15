@@ -1,3 +1,18 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
 import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
@@ -46,7 +61,6 @@ const template = `
 </div>
 `;
 declare var LexAudio: any;
-const audioControl = new LexAudio.audioControl();
 
 let STATES = {
 	INITIAL: { MESSAGE: 'Type your message or click  🎤', ICON: '🎤' },
@@ -87,6 +101,7 @@ export class ChatbotComponentCore {
 	ref: ChangeDetectorRef;
 	voiceEnabled: boolean = false;
 	textEnabled: boolean = true;
+	audioControl: any;
 
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
@@ -118,6 +133,12 @@ export class ChatbotComponentCore {
 			this.currentVoiceState = "Type a message"
 			STATES.INITIAL.MESSAGE = "Type a message"
 		}
+
+		if (this.voiceEnabled) {
+			this.audioControl = new LexAudio.audioControl();
+		}
+
+
 	}
 
 
@@ -173,7 +194,7 @@ export class ChatbotComponentCore {
 		if (!this.continueConversation) {
 			return;
 		}
-		audioControl.exportWAV((blob) => {
+		this.audioControl.exportWAV((blob) => {
 			this.currentVoiceState = STATES.SENDING.MESSAGE;
 			this.audioInput = blob;
 			this.micText = STATES.SENDING.ICON;
@@ -184,7 +205,7 @@ export class ChatbotComponentCore {
 	}
 
 	reset() {
-		audioControl.clear();
+		this.audioControl.clear();
 		this.inputText = '';
 		this.currentVoiceState = STATES.INITIAL.MESSAGE;
 		this.inputDisabled = false;
@@ -237,7 +258,7 @@ export class ChatbotComponentCore {
 			return;
 		}
 		if (this.lexResponse.contentType === 'audio/mpeg') {
-			audioControl.play(this.lexResponse.audioStream, () => {
+			this.audioControl.play(this.lexResponse.audioStream, () => {
 				if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 					this.lexResponse.dialogState === 'Fulfilled' ||
 					this.lexResponse.dialogState === 'Failed' ||
@@ -252,7 +273,7 @@ export class ChatbotComponentCore {
 					this.currentVoiceState = STATES.LISTENING.MESSAGE;
 					this.micText = STATES.LISTENING.ICON;
 					this.micButtonDisabled = false;
-					audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
+					this.audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
 					this.ref.detectChanges();
 				}
 			});
@@ -276,7 +297,7 @@ export class ChatbotComponentCore {
 			this.currentVoiceState = STATES.LISTENING.MESSAGE;
 			this.micText = STATES.LISTENING.ICON;
 			this.micButtonDisabled = false;
-			audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
+			this.audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
 			this.ref.detectChanges();
 		}
 	}
