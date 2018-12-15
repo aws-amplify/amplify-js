@@ -95,9 +95,12 @@ export class ChatBot extends Component {
         this.handleMicButton = this.handleMicButton.bind(this);
 
         if (this.props.voiceEnabled) {
-            Voice = this.props.voiceEnabled.Voice;
-            Sound = this.props.voiceEnabled.Sound;
-            RNFS = this.props.voiceEnabled.RNFS;
+            if (!this.props.voiceLibs) {
+                throw new Error('Missing voiceLibs for voice interactions')
+            }
+            Voice = this.props.voiceLibs.Voice;
+            Sound = this.props.voiceLibs.Sound;
+            RNFS = this.props.voiceLibs.RNFS;
 
             if (!Voice || typeof Voice.start !== 'function' || 
                 typeof Voice.stop !== 'function' || 
