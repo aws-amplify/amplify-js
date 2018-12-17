@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "2.1.4",
+  "version": "2.1.5-unstable.0",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
