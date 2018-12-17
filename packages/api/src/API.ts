@@ -10,13 +10,13 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode, GraphQLError } from 'graphql';
+import { OperationDefinitionNode, GraphQLError, DocumentNode, OperationTypeNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLOptions, GraphQLResult, isDocumentNode } from './types';
 import Cache from '@aws-amplify/cache';
 import { v4 as uuid } from 'uuid';
 
@@ -312,9 +312,12 @@ export default class APIClass {
      * to get the operation type
      * @param operation 
      */
-    getGraphqlOperationType(operation) {
-        const doc = parse(operation);
-        const { definitions: [{ operation: operationType },] } = doc;
+    getGraphqlOperationType(operation: string | DocumentNode): OperationTypeNode {
+        const doc = isDocumentNode(operation) ? operation : parse(operation);
+        const { definitions } = doc;
+        const [{ operation: operationType = undefined } = {},] = definitions
+            .filter(d => d.kind === 'OperationDefinition')
+            .map(d => d as OperationDefinitionNode);
 
         return operationType;
     }
@@ -329,8 +332,7 @@ export default class APIClass {
 
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
-        const { operation: operationType } = operationDef as OperationDefinitionNode;
+        const operationType = this.getGraphqlOperationType(query);
 
         switch (operationType) {
             case 'query':

@@ -71,6 +71,10 @@ export interface GraphQLOptions {
     variables?: object,
 }
 
+export const isDocumentNode = (obj: any): obj is DocumentNode => {
+    return obj && !!(obj as DocumentNode).kind;
+};
+
 export interface GraphQLResult {
     data?: object,
     errors?: [object],
