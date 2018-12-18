@@ -146,8 +146,18 @@ export default class AWSS3Provider implements StorageProvider{
      * Put a file in S3 bucket specified to configure method
      * @param {String} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
-     * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
-     *  progressCallback: function }
+     * @param {Object} [config] - { 
+     *       level : private|protected|public, 
+     *       contentType: MIME Types,
+     *       progressCallback: function, 
+     *       ACL: private |
+     *            public-read |
+     *            public-read-write |
+     *            aws-exec-read |
+     *            authenticated-read |
+     *            bucket-owner-read |
+     *            bucket-owner-full-control 
+     *  }
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, config?): Promise<Object> {
@@ -155,7 +165,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._config, config);
-        const { bucket, region, credentials, level, track, progressCallback } = opt;
+        const { bucket, region, credentials, level, track, progressCallback, ACL } = opt;
         const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
         const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
@@ -171,6 +181,8 @@ export default class AWSS3Provider implements StorageProvider{
             Body: object,
             ContentType: type
         };
+        
+        if (ACL) { params.ACL = ACL; }
         if (cacheControl) { params.CacheControl = cacheControl; }
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
