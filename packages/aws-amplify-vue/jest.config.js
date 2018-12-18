@@ -22,4 +22,5 @@ module.exports = {
   testURL: 'http://localhost/',
   collectCoverage: true,
   coverageReporters: ['lcov'],
+  setupTestFrameworkScriptFile: "<rootDir>/test_setup/setup-jest.ts",
 };

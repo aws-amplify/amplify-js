@@ -91,7 +91,7 @@ export default class RequireNewPassword extends AuthPiece {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
-                <SectionBody>
+                <SectionBody theme={theme}>
                     <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
