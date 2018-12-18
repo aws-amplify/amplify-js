@@ -1314,10 +1314,12 @@ export default class AuthClass {
         try {
             const loggedInUser = await this.currentAuthenticatedUser();
             logger.warn(`There is already a signed in user: ${loggedInUser} in your app. 
-                You should not call Auth.federatedSignIn method again as it may cause some unexpected behavior.`);
+                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
         } catch (e) {}
 
         const { token, identity_id, expires_at } = response;
+        // Because Credentials.set would update the user info with identity id
+        // So we need to retrieve the user again.
         const credentials = await Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation');
         const currentUser = await this.currentAuthenticatedUser();
         dispatchAuthEvent('signIn', currentUser);
