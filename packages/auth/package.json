@@ -2,16 +2,19 @@
   "name": "@aws-amplify/auth",
   "version": "1.2.13",
   "description": "Auth category of aws-amplify",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.esm.js",
-  "typings": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "typings": "./dist/esm/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm test && npm run build",
-    "build": "npm run clean && tsc -p tsconfig.es5.json && tsc -p tsconfig.es2015.json && rollup -c",
+    "build:cjs": "tsc -p tsconfig.es5.json && rollup -c",
+    "build:esm": "tsc -p tsconfig.es2015.json",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "clean": "rimraf tsc-out dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"

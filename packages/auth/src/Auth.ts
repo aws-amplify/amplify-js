@@ -28,11 +28,11 @@ import {
     ConsoleLogger as Logger,
     Constants,
     Hub,
-    JS,
-    Parser,
     Credentials,
     StorageHelper,
-    ICredentials
+    ICredentials,
+    parseMobileHubConfig,
+    browserOrNode
 } from '@aws-amplify/core';
 import {
     CookieStorage,
@@ -92,7 +92,7 @@ export class AuthClass {
     configure(config) {
         if (!config) return this._config || {};
         logger.debug('configure Auth');
-        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
+        const conf = Object.assign({}, this._config, parseMobileHubConfig(config).Auth, config);
         this._config = conf;
         const { 
             userPoolId, 
@@ -108,7 +108,7 @@ export class AuthClass {
         } = this._config;
 
         if (!this._config.storage) {
-            // backward compatbility
+            // backward compatibility
             if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
             else {
                 this._storage = new StorageHelper().getStorage();
@@ -190,7 +190,7 @@ export class AuthClass {
                 logger.debug('user already logged in');
             }).catch(e => {
                 logger.debug('not logged in, try to parse the url');
-                if (!JS.browserOrNode().isBrowser || !window.location) {
+                if (!browserOrNode().isBrowser || !window.location) {
                     logger.debug('not in the browser');
                     return;
                 }
