@@ -12,7 +12,7 @@
  */
 
 import * as React from 'react';
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
@@ -28,11 +28,52 @@ export default class SignOut extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
+        Hub.listen('auth', this)
 
-        this.state = {
-            authState: props.authState,
-            authData: props.authData
-        };
+        this.state = {};
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        this.findState();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    findState(){
+        if (!this.props.authState && !this.props.authData) {
+            Auth.currentAuthenticatedUser()
+            .then(user => {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: user,
+                    stateFromStorage: true
+                })
+            })
+            .catch(err => console.log(err));
+        }
+    }
+
+    onHubCapsule(capsule) {
+        if (this._isMounted) {
+            const { channel, payload, source } = capsule;
+            if (channel === 'auth' && payload.event === 'signIn') {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: payload.data
+                })
+            } else if (channel === 'auth' && payload.event === 'customSignOut' && (!this.props.authState)) {
+                this.setState({
+                    authState: 'signIn'
+                })
+            }
+    
+            if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
+                this.setState({stateFromStorage: true})
+            }
+        }
     }
 
     signOut() {
@@ -70,7 +111,20 @@ export default class SignOut extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         Auth.signOut()
-            .then(() => this.changeState('signedOut'))
+            .then(() => {
+                /* 
+                    if the signOut component received it's state from storage
+                    (either internally or via Greetings), then it must dispatch a 
+                    customSignOut event.  This is because storage is used to get state
+                    when Greetings or SignOut are being used outside of the Authenticator 
+                    component or withAuthenticator HOC. 
+                */
+                if (this.state.stateFromStorage) {
+                    Hub.dispatch('auth', {event: 'customSignOut'})
+                } else {
+                    this.changeState('signedOut');
+                }
+            })
             .catch(err => { logger.error(err); this.error(err); });
     }
 
@@ -78,7 +132,7 @@ export default class SignOut extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(SignOut)) { return null; }
 
-        const { authState } = this.state;
+        const authState = this.props.authState || this.state.authState;
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;

@@ -12,7 +12,7 @@
  */
 
 import * as React from 'react';
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
@@ -26,14 +26,52 @@ const logger = new Logger('Greetings');
 export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
+        this.state = {};
+        Hub.listen('auth', this)
     }
 
     componentDidMount() {
         this._isMounted = true;
+        this.findState();
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+    }
+
+    
+    findState(){
+        if (!this.props.authState && !this.props.authData) {
+            Auth.currentAuthenticatedUser()
+            .then(user => {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: user,
+                    stateFromStorage: true
+                })
+            })
+            .catch(err => console.log(err));
+        }
+    }
+
+    onHubCapsule(capsule) {
+        if (this._isMounted) {
+            const { channel, payload, source } = capsule;
+            if (channel === 'auth' && payload.event === 'signIn') {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: payload.data
+                })
+            } else if (channel === 'auth' && payload.event === 'customSignOut' && (!this.props.authState)) {
+                this.setState({
+                    authState: 'signIn'
+                })
+            }
+    
+            if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
+                this.setState({stateFromStorage: true})
+            }
+        }
     }
 
     inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
@@ -41,7 +79,7 @@ export default class Greetings extends AuthPiece {
 
 
     userGreetings(theme) {
-        const user = this.props.authData;
+        const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
         const nameFromAttr = user.attributes? 
@@ -77,8 +115,10 @@ export default class Greetings extends AuthPiece {
         if (amazonClientId) SignOut = withAmazon(SignOut);
         if (auth0_config) SignOut = withAuth0(SignOut);
 
+        const stateAndProps = Object.assign({}, this.props, this.state);
+
         return <SignOut 
-            {...this.props} 
+            {...stateAndProps} 
             google_client_id={google_client_id} 
             facebook_app_id={facebook_app_id} 
             amazon_client_id={amazon_client_id}
@@ -96,7 +136,7 @@ export default class Greetings extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(Greetings)) { return null; }
 
-        const { authState } = this.props;
+        const authState  = this.props.authState || this.state.authState;
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;

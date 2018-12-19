@@ -105,6 +105,9 @@ export default class Authenticator extends Component {
                 case 'parsingUrl_failure':
                     this.handleStateChange('signIn', null);
                     break;
+                case 'customSignOut':
+                    this.handleStateChange('signIn', null);
+                    break;
                 default:
                     break;
             }
@@ -121,7 +124,10 @@ export default class Authenticator extends Component {
         } catch (e) {
             logger.debug('Failed to set the auth state into local storage', e);
         }
-        this.setState({ authState: state, authData: data, error: null, showToast: false });
+
+        if (this._isMounted) {
+            this.setState({ authState: state, authData: data, error: null, showToast: false });            
+        }
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
