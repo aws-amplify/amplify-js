@@ -53,7 +53,6 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript": "^1.0.0",
-    "rollup-plugin-copy-glob": "^0.2.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
     "tslint": "^5.7.0",
