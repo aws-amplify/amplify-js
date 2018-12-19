@@ -878,7 +878,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -945,7 +945,7 @@ export default class AuthClass {
     /**
      * Get current authenticated user
      * @param {CurrentUserOpts} - options for getting the current user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
