@@ -13,7 +13,7 @@
 
 import { Hub } from '../Hub';
 import { ConsoleLogger as Logger } from '../Logger';
-import { JS } from '../JS';
+import { browserOrNode } from '../JS';
 
 const logger = new Logger('ClientDevice_Browser');
 
@@ -89,7 +89,7 @@ function browserType(userAgent) {
     return { type: '', version: '' };
 }
 
-if (JS.browserOrNode().isBrowser && typeof window.addEventListener === 'function') {
+if (browserOrNode().isBrowser && typeof window.addEventListener === 'function') {
     window.addEventListener('resize', function() {
         Hub.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
     });

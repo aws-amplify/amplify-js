@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import { JS } from '../JS';
+import { browserOrNode } from '../JS';
 import { Amplify } from '../Amplify';
 /**
  * Provides a means to registering a service worker in the browser
@@ -108,7 +108,7 @@ export class ServiceWorkerClass {
         if (!this._registration) throw new Error('Service Worker not registered');
         this._publicKey = publicKey;
         return new Promise((resolve, reject) => {
-            if (JS.browserOrNode().isBrowser) {
+            if (browserOrNode().isBrowser) {
                 this._registration.pushManager.getSubscription()
                     .then((subscription) => {
                         if (subscription) {
