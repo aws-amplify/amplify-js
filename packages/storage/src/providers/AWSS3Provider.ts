@@ -80,11 +80,11 @@ export class AWSS3Provider implements StorageProvider {
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
-    * @param {String} key - key of the object
+    * @param {string} key - key of the object
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, config?): Promise<String|Object> {
+    public async get(key: string, config?): Promise<string|Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -143,7 +143,7 @@ export class AWSS3Provider implements StorageProvider {
 
     /**
      * Put a file in S3 bucket specified to configure method
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
@@ -218,7 +218,7 @@ export class AWSS3Provider implements StorageProvider {
 
     /**
      * Remove the object for specified key
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
@@ -260,7 +260,7 @@ export class AWSS3Provider implements StorageProvider {
 
     /**
      * List bucket objects relative to the level and prefix specified
-     * @param {String} path - the path that contains objects
+     * @param {string} path - the path that contains objects
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */

@@ -28,7 +28,6 @@ export class Storage {
     private _config;
     private _pluggables: StorageProvider[];
 
-
     /**
      * @public
      */
@@ -124,12 +123,11 @@ export class Storage {
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
-    * @param {String} key - key of the object
+    * @param {string} key - key of the object
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to either a presigned url or the object
     */
-    public async get(key: string, config?): Promise<String|Object> {
-
+    public async get(key: string, config?): Promise<string|Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
@@ -141,7 +139,7 @@ export class Storage {
 
     /**
      * Put a file in storage bucket specified to configure method
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} object - File to be put in bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
@@ -159,7 +157,7 @@ export class Storage {
 
     /**
      * Remove the object for specified key
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
@@ -175,7 +173,7 @@ export class Storage {
 
     /**
      * List bucket objects relative to the level and prefix specified
-     * @param {String} path - the path that contains objects
+     * @param {string} path - the path that contains objects
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
