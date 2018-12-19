@@ -6,6 +6,7 @@
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage --updateSnapshot --maxWorkers 2",
     "build": "npm run clean && tsc -p .",
+    "build:watch": "npm run clean && tsc -p . --watch",
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
