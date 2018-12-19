@@ -1,3 +1,17 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
 class country{
   countryCode: string;
   value: string;
@@ -51,6 +65,7 @@ const countrylist = [
   { countryCode: 'CR', value: '506', label: 'Costa Rica (+506)' },
   { countryCode: 'HR', value: '385', label: 'Croatia (+385)' },
   { countryCode: 'CU', value: '53', label: 'Cuba (+53)' },
+  { countryCode: 'CW', value: '599', label: 'Curacao (+599)' },
   { countryCode: 'CY', value: '90392', label: 'Cyprus North (+90392)' },
   { countryCode: 'CY', value: '357', label: 'Cyprus South (+357)' },
   { countryCode: 'CZ', value: '42', label: 'Czech Republic (+42)' },
@@ -174,6 +189,7 @@ const countrylist = [
   { countryCode: 'CS', value: '381', label: 'Serbia (+381)' },
   { countryCode: 'SC', value: '248', label: 'Seychelles (+248)' },
   { countryCode: 'SL', value: '232', label: 'Sierra Leone (+232)' },
+  { countryCode: 'SX', value: '1', label: 'Sint Maarten (+1)' },
   { countryCode: 'SG', value: '65', label: 'Singapore (+65)' },
   { countryCode: 'SK', value: '421', label: 'Slovak Republic (+421)' },
   { countryCode: 'SI', value: '386', label: 'Slovenia (+386)' },
