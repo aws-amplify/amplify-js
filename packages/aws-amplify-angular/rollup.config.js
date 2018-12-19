@@ -28,7 +28,7 @@ export default {
       'rxjs/add/observable/of': 'Rx.Observable'
     },
   },
-  external: ['aws-sdk' ,'@angular/core', '@angular/common',  'aws-amplify', '@ionic/angular'],
+  external: ['aws-sdk' ,'@angular/core', '@angular/common',  'aws-amplify', '@ionic/angular', '@aws-amplify/core'],
   plugins: [
     nodeResolve({ preferBuiltins: false, modulesOnly: true }), 
     commonjs({include: 'node_modules/**'}),
