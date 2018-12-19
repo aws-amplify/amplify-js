@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import {
     FormSection,
     SectionHeader,
@@ -32,14 +32,12 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
-import countryDialCodes from './common/country-dial-codes.js';
-import defaultSignUpFields from './common/default-sign-in-fields'
-import { valid } from 'semver';
+import { countryDialCodes } from './common/country-dial-codes.js';
+import { defaultSignUpFields } from './common/default-sign-up-fields';
 
 const logger = new Logger('SignUp');
 
-
-export default class SignUp extends AuthPiece {
+export class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -51,7 +49,7 @@ export default class SignUp extends AuthPiece {
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
         this.header = (this.props &&
-            this.props.signUpConfig && 
+            this.props.signUpConfig &&
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
@@ -150,7 +148,7 @@ export default class SignUp extends AuthPiece {
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
-        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
+        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== -1 ?
         `+${this.props.signUpConfig.defaultCountryCode}` :
         "+1"
     }
@@ -217,16 +215,12 @@ export default class SignUp extends AuthPiece {
                             return field.key !== 'phone_number' ? (
                                 <FormField theme={theme} key={field.key}>
                                 {
-                                    field.required ? 
+                                    field.required ?
                                     <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
                                     <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                 }
                                     <Input
-                                        autoFocus={
-                                            this.signUpFields.findIndex((f) => {
-                                                return f.key === field.key
-                                            }) === 0 ? true : false
-                                        }
+                                        autoFocus={this.signUpFields.findIndex(f => f.key === field.key) === 0}
                                         placeholder={I18n.get(field.placeholder)}
                                         theme={theme}
                                         type={field.type}
@@ -238,12 +232,12 @@ export default class SignUp extends AuthPiece {
                             ) : (
                                 <FormField theme={theme} key="phone_number">
                                     {
-                                        field.required ? 
+                                        field.required ?
                                         <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
                                         <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                     }
                                     <SelectInput theme={theme}>
-                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
+                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()}
                                         onChange={this.handleInputChange}>
                                             {countryDialCodes.map(dialCode =>
                                                 <option key={dialCode} value={dialCode}>

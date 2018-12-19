@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import Tooltip from './Tooltip';
-import * as AmplifyUI from '@aws-amplify/ui';
+import {Tooltip} from './Tooltip';
+import {actionButton} from '@aws-amplify/ui';
 
-const IconButton = (props) => {
+export const IconButton = (props) => {
   let buttonIcon;
   switch(props.variant) {
     case "sound-mute":
@@ -76,11 +76,9 @@ const IconButton = (props) => {
   
   return (
     <Tooltip text={props.tooltip} autoShowTooltip={props.autoShowTooltip}>
-      <button className={AmplifyUI.actionButton} onClick={props.onClick}>
+      <button className={actionButton} onClick={props.onClick}>
         {buttonIcon}
       </button>
     </Tooltip>
   )
-}
-
-export default IconButton;
+};

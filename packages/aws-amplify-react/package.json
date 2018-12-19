@@ -2,15 +2,20 @@
   "name": "aws-amplify-react",
   "version": "2.2.5-unstable.0",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
-  "main": "dist/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "typings": "./dist/esm/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage --updateSnapshot --maxWorkers 2",
-    "build": "npm run clean && tsc -p .",
+    "build-with-test": "npm test && npm run build",
+    "build:cjs": "tsc -p tsconfig.es5.json && rollup -c",
+    "build:esm": "tsc -p tsconfig.es2015.json",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "clean": "rimraf tsc-out dist",
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "build-with-test": "npm run clean && npm test && npm run build",
-    "clean": "rimraf dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
@@ -21,7 +26,9 @@
     "jest": "^22.x",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-test-renderer": "^16.0.0"
+    "react-test-renderer": "^16.0.0",
+    "@types/enzyme": "^3.1.0",
+    "@types/enzyme-adapter-react-16": "^1.0.3"
   },
   "repository": {
     "type": "git",
@@ -69,6 +76,13 @@
     "regenerator-runtime": "^0.11.1"
   },
   "peerDependencies": {
-    "aws-amplify": "^1.x"
+    "@aws-amplify/auth": "^1.0.20-unstable.0",
+    "@aws-amplify/analytics": "^1.0.20-unstable.0",
+    "@aws-amplify/api": "^1.0.20-unstable.0",
+    "@aws-amplify/core": "^1.0.20-unstable.0",
+    "@aws-amplify/interactions": "^1.0.20-unstable.0",
+    "@aws-amplify/storage": "^1.0.20-unstable.0",
+    "@aws-amplify/ui": "^1.0.20-unstable.0",
+    "@aws-amplify/xr": "^1.0.20-unstable.0"
   }
 }

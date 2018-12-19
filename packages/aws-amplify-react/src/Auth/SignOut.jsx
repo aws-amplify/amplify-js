@@ -13,17 +13,16 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
-import Constants from './common/constants';
+import { Constants } from './common/constants';
 
 const logger = new Logger('SignOut');
 
-export default class SignOut extends AuthPiece {
+export class SignOut extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -81,7 +80,7 @@ export default class SignOut extends AuthPiece {
         const { authState } = this.state;
         const signedIn = (authState === 'signedIn');
 
-        const theme = this.props.theme || AmplifyTheme;
+        const theme = this.props.theme;
         if (!signedIn) { return null; }
 
         return (

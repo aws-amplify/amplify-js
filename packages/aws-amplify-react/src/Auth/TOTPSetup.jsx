@@ -12,14 +12,14 @@
  */
 
 import * as React from 'react';
-import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AuthPiece from './AuthPiece';
-import TOTPSetupComp from '../Widget/TOTPSetupComp';
+import { isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import { AuthPiece } from './AuthPiece';
+import { TOTPSetupComp } from '../Widget/TOTPSetupComp';
 
 const logger = new Logger('TOTPSetup');
 
-export default class TOTPSetup extends AuthPiece {
+export class TOTPSetup extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -34,7 +34,7 @@ export default class TOTPSetup extends AuthPiece {
         }
         Auth.verifiedContact(user)
             .then(data => {
-                if (!JS.isEmpty(data.verified)) {
+                if (!isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     const newUser = Object.assign(user, data);
