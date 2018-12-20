@@ -366,6 +366,7 @@ export default class AWSS3Provider implements StorageProvider{
         return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
+            signatureVersion: 'v4',
             region
         });
     }
