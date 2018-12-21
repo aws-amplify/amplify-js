@@ -53,6 +53,10 @@ export default class SignOut extends AuthPiece {
                 })
             })
             .catch(err => console.log(err));
+        } else if (this.props.stateFromStorage) {
+            this.setState({
+                stateFromStorage: true
+            })
         }
     }
 

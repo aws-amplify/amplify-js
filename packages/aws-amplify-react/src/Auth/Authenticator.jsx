@@ -108,6 +108,9 @@ export default class Authenticator extends Component {
                 case 'customSignOut':
                     this.handleStateChange('signIn', null);
                     break;
+                case 'customGreetingSignOut':
+                    this.handleStateChange('signIn', null);
+                    break;
                 default:
                     break;
             }

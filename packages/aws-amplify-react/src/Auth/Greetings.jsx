@@ -66,11 +66,16 @@ export default class Greetings extends AuthPiece {
                 this.setState({
                     authState: 'signIn'
                 })
-            }
-    
+            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
+                this.setState({
+                    authState: 'signIn'
+                });
+                Hub.dispatch('auth', {event: 'customGreetingSignOut'})
+            } 
+            
             if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
                 this.setState({stateFromStorage: true})
-            }
+            }   
         }
     }
 
