@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.14-unstable.1"></a>
+## [1.2.14-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14-unstable.0...@aws-amplify/auth@1.2.14-unstable.1) (2018-12-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** typo ([2f411ad](https://github.com/aws/aws-amplify/commit/2f411ad))
+
+
+
+
+<a name="1.2.14-unstable.0"></a>
+## [1.2.14-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.13...@aws-amplify/auth@1.2.14-unstable.0) (2018-12-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** put warning message in the federatedSignIn method ([9fff76a](https://github.com/aws/aws-amplify/commit/9fff76a))
+
+
+
+
 <a name="1.2.13"></a>
 ## [1.2.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.13-unstable.3...@aws-amplify/auth@1.2.13) (2018-12-13)
 
