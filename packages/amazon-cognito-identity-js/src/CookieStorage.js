@@ -1,5 +1,5 @@
 
-import * as Cookies from 'js-cookie';
+import * as hardtack from 'hardtack';
 
 /** @class */
 export default class CookieStorage {
@@ -20,9 +20,11 @@ export default class CookieStorage {
       this.path = '/';
     }
     if (Object.prototype.hasOwnProperty.call(data, 'expires')) {
-      this.expires = data.expires;
+      this.expires = new Date(
+        (new Date() * 1) + (data.expires * 864e5)
+      ).toUTCString();
     } else {
-      this.expires = 365;
+      this.expires = new Date((new Date() * 1) + (365 * 864e5)).toUTCString();
     }
     if (Object.prototype.hasOwnProperty.call(data, 'secure')) {
       this.secure = data.secure;
@@ -38,14 +40,14 @@ export default class CookieStorage {
    * @returns {string} value that was set
    */
   setItem(key, value) {
-    Cookies.set(key, value, {
+    hardtack.set(key, value, {
       path: this.path,
       expires: this.expires,
       domain: this.domain,
       secure: this.secure,
     }
     );
-    return Cookies.get(key);
+    return hardtack.get(key);
   }
 
   /**
@@ -55,7 +57,7 @@ export default class CookieStorage {
    * @returns {string} the data item
    */
   getItem(key) {
-    return Cookies.get(key);
+    return hardtack.get(key);
   }
 
   /**
@@ -64,7 +66,7 @@ export default class CookieStorage {
    * @returns {string} value - value that was deleted
    */
   removeItem(key) {
-    return Cookies.remove(key, {
+    return hardtack.remove(key, {
       path: this.path,
       domain: this.domain,
       secure: this.secure,
@@ -77,10 +79,10 @@ export default class CookieStorage {
    * @returns {string} nothing
    */
   clear() {
-    const cookies = Cookies.get();
+    const cookies = hardtack.get();
     let index;
     for (index = 0; index < cookies.length; ++index) {
-      Cookies.remove(cookies[index]);
+      hardtack.remove(cookies[index]);
     }
     return {};
   }

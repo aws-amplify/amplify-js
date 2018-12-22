@@ -58,6 +58,11 @@ var config = {
          }
       }
     ]
+  },
+  resolve: {
+    alias: {
+      hardtack: '../../../node_modules/hardtack/dist/hardtack.min.js'
+    }
   }
 };
 
