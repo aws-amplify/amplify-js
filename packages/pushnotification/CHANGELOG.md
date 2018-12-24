@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.21-unstable.1"></a>
+## [1.0.21-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.21-unstable.0...@aws-amplify/pushnotification@1.0.21-unstable.1) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.21-unstable.0"></a>
+## [1.0.21-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.20...@aws-amplify/pushnotification@1.0.21-unstable.0) (2018-12-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** open app on device with Android 8.0 ([a5a7ce9](https://github.com/aws/aws-amplify/commit/a5a7ce9))
+
+
+
+
 <a name="1.0.20"></a>
 ## [1.0.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.20-unstable.1...@aws-amplify/pushnotification@1.0.20) (2018-12-13)
 

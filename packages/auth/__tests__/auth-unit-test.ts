@@ -1827,15 +1827,22 @@ describe('auth unit test', () => {
     describe('federatedSignIn test', () => {
         test('happy case', async () => {
             const auth = new Auth(authOptions);
-
+            let user = null;
             const spyon = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                user = { name: 'username', email: 'xxx@email.com'};
                 return Promise.resolve('cred');
             });
+            const spyon2 = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementation(() => {
+                if (!user) return Promise.reject('error');
+                else return Promise.resolve(user);
+            });
 
-            auth.federatedSignIn('google', { token: 'token', expires_at: 1234 }, { user: 'user' });
+
+            await auth.federatedSignIn('google', { token: 'token', expires_at: 1234 }, { name: 'username' });
 
             expect(spyon).toBeCalled();
             spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
