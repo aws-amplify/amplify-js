@@ -63,9 +63,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
         this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
         this._clientInfo = ClientDevice.clientInfo();
-
-        // flush event buffer
-        this._setupTimer();
     }
 
     private _setupTimer() {
@@ -160,7 +157,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
 
-        if (this._config['appId']) {
+        if (this._config['appId'] && !this._config['disabled']) {
             if (!this._config['endpointId']) {
                 const cacheKey = this.getProviderName() + '_' + this._config['appId'];
                 this._getEndpointId(cacheKey).then(endpointId => {
@@ -173,8 +170,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             } else {
                 dispatchAnalyticsEvent('pinpointProvider_configured', null);
             }  
+            this._setupTimer();
+        } else {
+            if (this._timer) { clearInterval(this._timer); }
         }
-        this._setupTimer();
         return this._config;
     }
 

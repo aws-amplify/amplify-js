@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 import {
-    AWS,
     ConsoleLogger as Logger,
     Hub,
     Credentials,
@@ -359,15 +358,13 @@ export default class AWSS3Provider implements StorageProvider{
      */
     private _createS3(config) {
         const { bucket, region, credentials } = config;
-        AWS.config.update({
-            region,
-            credentials
-        });
+        
         return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             signatureVersion: 'v4',
-            region
+            region,
+            credentials
         });
     }
 }
