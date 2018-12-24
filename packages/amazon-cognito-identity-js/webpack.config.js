@@ -37,7 +37,6 @@ var config = {
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.BannerPlugin({ banner, raw: true }),
     new UglifyJsPlugin({
-        minimize: true,
         sourceMap: true,
         include: /\.min\.js$/,
     }),
@@ -58,11 +57,6 @@ var config = {
          }
       }
     ]
-  },
-  resolve: {
-    alias: {
-      hardtack: '../../../node_modules/hardtack/dist/hardtack.min.js'
-    }
   }
 };
 
