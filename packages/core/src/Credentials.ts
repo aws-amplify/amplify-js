@@ -172,32 +172,34 @@ export class Credentials {
 
         const that = this;
         this._loadCredentials(credentials, 'guest', false, null)
-         .then((res) => {
-             return res;
+        .then((res) => {
+            return res;
          })
-         .catch(async (e) => {
-             // make test more narrow
-             if (e.code === 'ResourceNotFoundException' &&
-                 e.message === `Identity '${identityId}' not found.`
-                 && !attempted) {
-                 attempted = true;
-                 logger.debug('Failed to load guest credentials');
-                 this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
-                 credentials.clearCachedId();
-                 this._storage.removeItem('aws.cognito.identity-id.' + identityPoolId);
- 
-                  const newCredentials = new AWS.CognitoIdentityCredentials(
-                     {
-                     IdentityPoolId: identityPoolId,
-                     IdentityId: undefined
-                 },  {
-                     region
-                 });
-                 return this._loadCredentials(newCredentials, 'guest', false, null);
-             } else {
-                 return e;
-             }
-         });
+        .catch(async (e) => {
+            // If identity id is deleted in the console, we make one attempt to recreate it
+            // and remove existing id from cache. 
+            if (e.code === 'ResourceNotFoundException' &&
+                e.message === `Identity '${identityId}' not found.`
+                && !attempted) {
+                attempted = true;
+                logger.debug('Failed to load guest credentials');
+                this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+                credentials.clearCachedId();
+                this._storage.removeItem('aws.cognito.identity-id.' + identityPoolId);
+                const newCredentials = new AWS.CognitoIdentityCredentials(
+                    {
+                        IdentityPoolId: identityPoolId,
+                        IdentityId: undefined
+                    },  
+                    {
+                        region
+                    }
+                );
+                return this._loadCredentials(newCredentials, 'guest', false, null);
+            } else {
+                return e;
+            }
+        });
     }
 
     private _setCredentialsFromAWS() {
