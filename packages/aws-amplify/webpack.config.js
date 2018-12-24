@@ -21,7 +21,6 @@ module.exports = {
     },
     plugins: [
         new UglifyJsPlugin({
-            minimize: true,
             sourceMap: true,
             include: /\.min\.js$/,
         }),
@@ -32,8 +31,8 @@ module.exports = {
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { 
-                test: /\.tsx?$/, 
+            {
+                test: /\.tsx?$/,
                 loader: 'awesome-typescript-loader',
                 exclude: /node_modules/,
                 query: {
