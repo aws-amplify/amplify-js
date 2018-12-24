@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.9-unstable.2"></a>
+## [1.2.9-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.9-unstable.1...@aws-amplify/analytics@1.2.9-unstable.2) (2018-12-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** unlink user id from endpoint when limit exceeds ([b2de140](https://github.com/aws/aws-amplify/commit/b2de140))
+
+
+
+
 <a name="1.2.9-unstable.1"></a>
 ## [1.2.9-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.9-unstable.0...@aws-amplify/analytics@1.2.9-unstable.1) (2018-12-24)
 
