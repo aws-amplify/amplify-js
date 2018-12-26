@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.21"></a>
+## [1.0.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.21-unstable.0...@aws-amplify/core@1.0.21) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.21-unstable.0"></a>
+## [1.0.21-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.20...@aws-amplify/core@1.0.21-unstable.0) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.20"></a>
+## [1.0.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.20-unstable.0...@aws-amplify/core@1.0.20) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.20-unstable.0"></a>
+## [1.0.20-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.19...@aws-amplify/core@1.0.20-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
+<a name="1.0.19"></a>
+## [1.0.19](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.19-unstable.4...@aws-amplify/core@1.0.19) (2018-12-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
 <a name="1.0.19-unstable.4"></a>
 ## [1.0.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.19-unstable.3...@aws-amplify/core@1.0.19-unstable.4) (2018-11-27)
 

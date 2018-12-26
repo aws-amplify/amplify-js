@@ -82,7 +82,7 @@ export default class ForgotPassword extends AuthPiece {
         return (
             <div>
                 <FormField theme={theme}>
-                    <InputLabel>{I18n.get('Username')} *</InputLabel>
+                    <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                     <Input
                         autoFocus
                         placeholder={I18n.get('Enter your username')}
@@ -127,7 +127,7 @@ export default class ForgotPassword extends AuthPiece {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Reset your password')}</SectionHeader>
-                <SectionBody>
+                <SectionBody theme={theme}>
                     { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
