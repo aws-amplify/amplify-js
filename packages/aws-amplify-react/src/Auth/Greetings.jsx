@@ -63,15 +63,14 @@ export default class Greetings extends AuthPiece {
                     authState: 'signedIn',
                     authData: payload.data
                 })
+                if  (!this.props.authState) {
+                    this.setState({stateFromStorage: true})
+                }
             } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
                 this.setState({
                     authState: 'signIn'
                 });
             } 
-            
-            if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
-                this.setState({stateFromStorage: true})
-            }   
         }
     }
 
