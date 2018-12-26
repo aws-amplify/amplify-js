@@ -29,7 +29,7 @@ export default class SignOut extends AuthPiece {
 
         this.signOut = this.signOut.bind(this);
         Hub.listen('auth', this)
-
+        this.onHubCapsule = this.onHubCapsule.bind(this)
         this.state = {};
     }
 
@@ -52,7 +52,7 @@ export default class SignOut extends AuthPiece {
                     stateFromStorage: true
                 })
             })
-            .catch(err => console.log(err));
+            .catch(err => logger.error(err));
         } else if (this.props.stateFromStorage) {
             this.setState({
                 stateFromStorage: true
@@ -68,7 +68,7 @@ export default class SignOut extends AuthPiece {
                     authState: 'signedIn',
                     authData: payload.data
                 })
-            } else if (channel === 'auth' && payload.event === 'customSignOut' && (!this.props.authState)) {
+            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
                 this.setState({
                     authState: 'signIn'
                 })
@@ -116,20 +116,11 @@ export default class SignOut extends AuthPiece {
         }
         Auth.signOut()
             .then(() => {
-                /* 
-                    if the signOut component received it's state from storage
-                    (either internally or via Greetings), then it must dispatch a 
-                    customSignOut event.  This is because storage is used to get state
-                    when Greetings or SignOut are being used outside of the Authenticator 
-                    component or withAuthenticator HOC. 
-                */
-                if (this.state.stateFromStorage) {
-                    Hub.dispatch('auth', {event: 'customSignOut'})
-                } else {
+                if (!this.state.stateFromStorage) {
                     this.changeState('signedOut');
                 }
             })
-            .catch(err => { logger.error(err); this.error(err); });
+            .catch(err => { logger.debug(err); this.error(err); });
     }
 
     render() {

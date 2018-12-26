@@ -105,7 +105,7 @@ export default class Authenticator extends Component {
                 case 'parsingUrl_failure':
                     this.handleStateChange('signIn', null);
                     break;
-                case 'customSignOut':
+                case 'signOut':
                     this.handleStateChange('signIn', null);
                     break;
                 case 'customGreetingSignOut':

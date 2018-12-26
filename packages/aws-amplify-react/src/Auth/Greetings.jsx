@@ -27,7 +27,8 @@ export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
         this.state = {};
-        Hub.listen('auth', this)
+        Hub.listen('auth', this);
+        this.onHubCapsule = this.onHubCapsule.bind(this)
     }
 
     componentDidMount() {
@@ -50,7 +51,7 @@ export default class Greetings extends AuthPiece {
                     stateFromStorage: true
                 })
             })
-            .catch(err => console.log(err));
+            .catch(err => logger.debug(err));
         }
     }
 
@@ -62,15 +63,10 @@ export default class Greetings extends AuthPiece {
                     authState: 'signedIn',
                     authData: payload.data
                 })
-            } else if (channel === 'auth' && payload.event === 'customSignOut' && (!this.props.authState)) {
-                this.setState({
-                    authState: 'signIn'
-                })
             } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
                 this.setState({
                     authState: 'signIn'
                 });
-                Hub.dispatch('auth', {event: 'customGreetingSignOut'})
             } 
             
             if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
