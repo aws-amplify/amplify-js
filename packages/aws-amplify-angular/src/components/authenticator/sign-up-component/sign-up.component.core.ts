@@ -199,8 +199,13 @@ export class SignUpComponentCore implements OnInit {
     // create user attribute property
     this.user.attributes = {};
 
-    // format phone number
-    this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+    // format phone number if it is a signUpField
+    const phoneNumberRequested = this.signUpFields.find((el) => {
+      return el.key === 'phone_number';
+    });
+    if (phoneNumberRequested) {
+      this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+    }
 
     // create user key and value arrays
     const userKeys = Object.keys(this.user);
