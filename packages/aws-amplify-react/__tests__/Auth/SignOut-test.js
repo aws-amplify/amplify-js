@@ -99,16 +99,10 @@ describe('SignOut', () => {
                 return Promise.resolve();
             });
 
-            const spyon2 = jest.spyOn(Hub, 'dispatch').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
-
             await signOut.signOut();
 
             expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalledWith('auth', {event: 'customSignOut'});
             spyon.mockClear();
-            spyon2.mockClear();
         });
 
         test('error case', async () => {
@@ -132,8 +126,8 @@ describe('SignOut', () => {
             expect(signOut.onHubCapsule).toBeTruthy();
         })
         test('onHubCapsule is called on a Hub event', () => {
-            const spy = jest.spyOn(SignOut.prototype, 'onHubCapsule');
             const signOut = mount(<SignOut  />).instance();
+            const spy = jest.spyOn(signOut, 'onHubCapsule');
             Hub.dispatch('auth', {event: 'test'});
             expect(spy).toHaveBeenCalled();
             spy.mockClear();
@@ -151,7 +145,7 @@ describe('SignOut', () => {
         test('onHubCapsule should setState with authState = "signIn" when "customSignOut" auth event fires', () => {
             const spy = jest.spyOn(SignOut.prototype, 'setState');
             const signOut = mount(<SignOut  />).instance();
-            Hub.dispatch('auth', {event: 'customSignOut'});
+            Hub.dispatch('auth', {event: 'signOut'});
             expect(spy).toHaveBeenCalledWith({
                 authState: 'signIn'
             });

@@ -162,7 +162,7 @@ describe('Greetings', () => {
         test('onHubCapsule should setState with authState = "signIn" when "customSignOut" auth event fires', () => {
             const spy = jest.spyOn(Greetings.prototype, 'setState');
             const greetings = mount(<Greetings  />).instance();
-            Hub.dispatch('auth', {event: 'customSignOut'});
+            Hub.dispatch('auth', {event: 'signOut'});
             expect(spy).toHaveBeenCalledWith({
                 authState: 'signIn'
             });
