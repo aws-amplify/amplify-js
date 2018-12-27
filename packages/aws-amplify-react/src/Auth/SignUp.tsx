@@ -54,7 +54,9 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = this.props && this.props.signUpConfig && this.props.signUpConfig.header || 'Create a new account';
+        this.header = (this.props &&
+            this.props.signUpConfig && 
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
     validate() {
@@ -187,7 +189,7 @@ export default class SignUp extends AuthPiece {
         const inputVals = Object.values(this.inputs);
 
         inputKeys.forEach((key, index) => {
-            if (!['username', 'password', 'checkedValue'].includes(key)) {
+            if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
               if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                 const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                 signup_info.attributes[newKey] = inputVals[index];

@@ -4371,6 +4371,12 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
             +356
           </option>
           <option
+            key="+357"
+            value="+357"
+          >
+            +357
+          </option>
+          <option
             key="+358"
             value="+358"
           >
