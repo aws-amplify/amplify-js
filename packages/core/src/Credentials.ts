@@ -185,7 +185,6 @@ export class Credentials {
                 logger.debug('Failed to load guest credentials');
                 this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
                 credentials.clearCachedId();
-                this._storage.removeItem('aws.cognito.identity-id.' + identityPoolId);
                 const newCredentials = new AWS.CognitoIdentityCredentials(
                     {
                         IdentityPoolId: identityPoolId,
