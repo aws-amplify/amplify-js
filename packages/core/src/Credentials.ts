@@ -171,7 +171,7 @@ export class Credentials {
         });
 
         const that = this;
-        this._loadCredentials(credentials, 'guest', false, null)
+        return this._loadCredentials(credentials, 'guest', false, null)
         .then((res) => {
             return res;
          })
