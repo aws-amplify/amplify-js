@@ -265,7 +265,7 @@ let myAppConfig = {
   'aws_appsync_apiKey': 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
   // ...
 };
-
+   
 Amplify.configure(myAppConfig);
 ```
 
@@ -351,4 +351,4 @@ Storage.put(key, fileObj, {
 .catch(err => console.log(err));
 ```
 
-See our [Storage Developer Guide](https://aws.github.io/aws-amplify/media/storage_guide) for detailed information. 
+See our [Storage Developer Guide](https://aws.github.io/aws-amplify/media/storage_guide) for detailed information.   

@@ -1,9 +1,30 @@
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
 
+import { 
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy 
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { SignUpClass } from './sign-up.class';
-import { SignUpComponentIonic } from './sign-up.component.ionic'
+import { SignUpComponentIonic } from './sign-up.component.ionic';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { AuthState } from '../../../providers';
 
@@ -18,6 +39,7 @@ import { AuthState } from '../../../providers';
 export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() signUpConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -30,14 +52,23 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SignUpComponentIonic,{authState: this.authState}) : new ComponentMount(SignUpComponentCore, {authState: this.authState});
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(SignUpComponentIonic, {
+      authState: this.authState,
+      signUpConfig: this.signUpConfig
+    }) :
+    new ComponentMount(SignUpComponentCore, {
+      authState: this.authState,
+      signUpConfig: this.signUpConfig
+    });
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<SignUpClass>componentRef.instance).data = authComponent.data;
   }
 }
