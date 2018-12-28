@@ -154,7 +154,15 @@ export default class Authenticator extends Component {
                 Loading
             ]);
         }
-        const props_children = this.props.children || [];
+
+        let props_children = [];
+        if (typeof this.props.children === 'object') {
+            if (Array.isArray(this.props.children)){
+                props_children = this.props.children;
+            } else {
+                props_children.push(this.props.children);
+            }
+        } 
 
         const default_children = [
             <Greetings federated={federated}/>,
