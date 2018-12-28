@@ -129,6 +129,7 @@ workflows:
           filters:
             branches:
               only:
+                - circle-cypress-no-cli
                 - release
                 - master
           requires:
