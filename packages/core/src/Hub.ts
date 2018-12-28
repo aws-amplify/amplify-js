@@ -58,6 +58,18 @@ export class HubClass {
         });
     }
 
+    remove(channel, listener, listenerName='noname') {
+        logger.debug(listenerName + ' removing listener ' + channel);
+
+        let holder = this.listeners[channel];
+        if (holder) {
+            holder = holder.filter(_listener =>
+              !(listener === _listener.listener && listenerName === _listener.name)
+            );
+          this.listeners[channel] = holder;
+        }
+    }
+
     toListeners(capsule) {
         const { channel, payload, source } = capsule;
         const holder = this.listeners[channel];

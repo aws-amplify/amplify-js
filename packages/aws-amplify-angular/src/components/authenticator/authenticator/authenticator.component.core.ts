@@ -82,6 +82,9 @@ export class AuthenticatorComponentCore {
     if (data.signUpConfig) {
       this._signUpConfig = data.signUpConfig;
     }
+    if (data.hide) {
+      this.hide = data.hide;
+    }
   }
 
   @Input()
