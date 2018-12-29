@@ -1,6 +1,6 @@
 
 {
-    "defaultSeverity": "error",
+    "defaultSeverity": "none",
     "plugins": [
         "prettier"
     ],
