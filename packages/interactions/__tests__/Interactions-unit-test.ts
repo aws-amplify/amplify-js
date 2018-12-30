@@ -2,48 +2,70 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
     const LexRuntime = () => { };
     LexRuntime.prototype.postText = (params, callback) => {
         if (params.inputText === 'done') {
-            callback(null, {
-                message: 'echo:' + params.inputText,
-                dialogState: 'ReadyForFulfillment',
-                slots: {
-                    m1: 'hi',
-                    m2: 'done',
-                }
-            });
-        } else {
-            callback(null, { message: 'echo:' + params.inputText, dialogState: 'ElicitSlot' });
-        }
-    }
-
-    LexRuntime.prototype.postContent = (params, callback) => {
-        if (params.contentType === 'audio/x-l16; sample-rate=16000') {
-            if (params.inputStream === 'voice:done') {
-                callback(null, {
-                    message: 'voice:echo:' + params.inputStream,
-                    dialogState: 'ReadyForFulfillment',
-                    slots: {
-                        m1: 'voice:hi',
-                        m2: 'voice:done',
-                    }
-                });
-            } else {
-                callback(null, { message: 'voice:echo:' + params.inputStream, dialogState: 'ElicitSlot' });
-            }
-        } else {
-            if (params.inputStream === 'done') {
-                callback(null, {
-                    message: 'echo:' + params.inputStream,
+            callback(null, mergeAttributes(
+                {
+                    message: 'echo:' + params.inputText,
                     dialogState: 'ReadyForFulfillment',
                     slots: {
                         m1: 'hi',
                         m2: 'done',
                     }
-                });
+                },
+                params)
+            );
+        } else {
+            callback(null, mergeAttributes({ message: 'echo:' + params.inputText, dialogState: 'ElicitSlot' }, params));
+        }
+    };
+    
+    // add session & request attributes to the response
+    function mergeAttributes(response, params) {
+        return Object.assign(
+            response,
+            params.sessionAttributes ? { sessionAttributes: params.sessionAttributes } : {},
+            params.requestAttributes ? { requestAttributes: params.requestAttributes } : {},
+        );
+    }
+
+    LexRuntime.prototype.postContent = (params, callback) => {
+        if (params.contentType === 'audio/x-l16; sample-rate=16000') {
+            if (params.inputStream === 'voice:done') {
+                callback(null, mergeAttributes(
+                    {
+                        message: 'voice:echo:' + params.inputStream,
+                        dialogState: 'ReadyForFulfillment',
+                        slots: {
+                            m1: 'voice:hi',
+                            m2: 'voice:done',
+                        },
+                    },
+                    params)
+                );
             } else {
-                callback(null, { message: 'echo:' + params.inputStream, dialogState: 'ElicitSlot' });
+                callback(null, mergeAttributes(
+                    { message: 'voice:echo:' + params.inputStream, dialogState: 'ElicitSlot' }, params)
+                );
+            }
+        } else {
+            if (params.inputStream === 'done') {
+                callback(null, mergeAttributes(
+                    {
+                        message: 'echo:' + params.inputStream,
+                        dialogState: 'ReadyForFulfillment',
+                        slots: {
+                            m1: 'hi',
+                            m2: 'done',
+                        }
+                    },
+                    params)
+                );
+            } else {
+                callback(null, mergeAttributes(
+                    { message: 'echo:' + params.inputStream, dialogState: 'ElicitSlot' }, params)
+                );
             }
         }        
-    }
+    };
 
     return LexRuntime;
 });
@@ -415,7 +437,41 @@ describe('Interactions', () => {
 
             });
 
+            test('Session and request Lex attributes', async () => {
+                const curCredSpyOn = jest.spyOn(Credentials, 'get')
+                .mockImplementationOnce(() => Promise.resolve({ identityId: '1234' }));
 
+                const awsmobile = {
+                    'aws_bots': 'enable',
+                    'aws_bots_config': [{ "name": "BookTripMOBILEHUB", "alias": "$LATEST", "description": "Bot to make reservations for a visit to a city.", "bot-template": "bot-trips", "commands-help": ["Book a car", "Reserve a car", "Make a car reservation", "Book a hotel", "Reserve a room", "I want to make a hotel reservation"], "region": "us-east-1" }],
+                    'aws_project_name': 'bots',
+                    'aws_project_region': 'us-east-1',
+                };
+                const interactions = new Interactions({});
+
+                interactions.configure(awsmobile);
+                const requestAttributes = {
+                    requestKey1: 'requestValue1',
+                };
+                const sessionAttributes = {
+                    sessionKey1: 'sessionValue1',
+                };
+
+                const response = await interactions.send('BookTripMOBILEHUB', {
+                    content: 'hi',
+                    options: {
+                        requestAttributes,
+                        sessionAttributes,
+                    },
+                });
+
+                expect(response).toEqual({
+                    dialogState: "ElicitSlot",
+                    message: 'echo:hi',
+                    requestAttributes,
+                    sessionAttributes,
+                });
+            });
         });
 
         describe('Adding pluggins', () => {

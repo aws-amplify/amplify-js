@@ -19,6 +19,20 @@ import { registerHelper } from 'handlebars';
 
 const logger = new Logger('AWSLexProvider');
 
+interface PostMessageParams {
+    message: InteractionsMessage | string;
+    botname: string;
+    params: LexBotParams;
+    res: (any) => any;
+    rej: (any) => any;
+}
+
+interface LexBotParams {
+    botAlias: string;
+    botName: string;
+    userId: string;
+}
+
 export class AWSLexProvider extends AbstractInteractionsProvider {
 
     private aws_lex: LexRuntime;
@@ -65,6 +79,44 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
         }
     }
 
+    private postText({ message, params, res, rej, botname }: PostMessageParams) {
+        const textParams: LexRuntime.PostTextRequest = {
+            ...params,
+            inputText: message as string,
+        };
+        
+        logger.debug('postText to lex', message);
+        
+        this.aws_lex.postText(textParams, (err, data) => {
+            this.responseCallback(err, data, res, rej, botname);
+        });
+    }
+
+    private postContent({ message, params, res, rej, botname }: PostMessageParams) {
+        const { options = {}, content } = (message as InteractionsMessage);
+        const contentType = options['messageType'] === 'voice'
+            ? 'audio/x-l16; sample-rate=16000'
+            : 'text/plain; charset=utf-8';
+        const contentParams: LexRuntime.PostContentRequest = {
+            ...params,
+            contentType,
+            inputStream: content,
+            accept: 'audio/mpeg',
+        };
+        if (options.requestAttributes) {
+            contentParams.requestAttributes = options.requestAttributes;
+        }
+        if (options.sessionAttributes) {
+            contentParams.sessionAttributes = options.sessionAttributes;
+        }
+
+        logger.debug('postContent to lex', message);
+
+        this.aws_lex.postContent(contentParams, (err, data) => {
+            this.responseCallback(err, data, res, rej, botname);
+        });
+    }
+
     sendMessage(botname: string, message: string | InteractionsMessage): Promise<object> {
         return new Promise(async (res, rej) => {
             if (!this._config[botname]) {
@@ -78,46 +130,15 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
             this.aws_lex = new LexRuntime({ region: this._config[botname].region, credentials });
 
-            let params;
+            const params: LexBotParams = {
+                botAlias: this._config[botname].alias,
+                botName: botname,
+                userId: credentials.identityId,
+            };
             if (typeof message === 'string') {
-                params = {
-                    'botAlias': this._config[botname].alias,
-                    'botName': botname,
-                    'inputText': message,
-                    'userId': credentials.identityId,
-                };
-
-                logger.debug('postText to lex', message);
-
-                this.aws_lex.postText(params, (err, data) => {
-                    this.responseCallback(err, data, res, rej, botname);
-                });
+                this.postText({ message, botname, params, res, rej });
             } else {
-                if (message.options['messageType'] === 'voice') {
-                    params = {
-                        'botAlias': this._config[botname].alias,
-                        'botName': botname,
-                        'contentType': 'audio/x-l16; sample-rate=16000',
-                        'inputStream': message.content,
-                        'userId': credentials.identityId,
-                        'accept': 'audio/mpeg',
-                    };
-                } else {
-                    params = {
-                        'botAlias': this._config[botname].alias,
-                        'botName': botname,
-                        'contentType': 'text/plain; charset=utf-8',
-                        'inputStream': message.content,
-                        'userId': credentials.identityId,
-                        'accept': 'audio/mpeg',
-                    };
-                }
-
-                logger.debug('postContent to lex', message);
-
-                this.aws_lex.postContent(params, (err, data) => {
-                    this.responseCallback(err, data, res, rej, botname);
-                });
+                this.postContent({ message, botname, params, res, rej });
             }
         });
     }
