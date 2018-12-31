@@ -660,7 +660,7 @@ describe('API test', () => {
             try {
                 await api.get('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -751,7 +751,7 @@ describe('API test', () => {
             try {
                 await api.post('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -833,7 +833,7 @@ describe('API test', () => {
             try {
                 await api.put('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -916,7 +916,7 @@ describe('API test', () => {
             try {
                 await api.patch('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -999,7 +999,7 @@ describe('API test', () => {
             try {
                 await api.del('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -1081,7 +1081,7 @@ describe('API test', () => {
             try {
                 await api.head('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
