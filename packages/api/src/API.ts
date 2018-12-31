@@ -273,7 +273,7 @@ export default class APIClass {
             case 'API_KEY':
                 headers = {
                     Authorization: null,
-                    'X-API-Key': apiKey
+                    'X-Api-Key': apiKey
                 };
                 break;
             case 'AWS_IAM':
