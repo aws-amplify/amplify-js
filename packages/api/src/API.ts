@@ -104,7 +104,7 @@ export default class APIClass {
             this._api = new RestClass(this._options);
             return true;
         } else {
-            return Promise.reject('API no configured');
+            return Promise.reject('API not configured');
         }
     }
 
@@ -126,7 +126,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.get(endpoint + path, init);
     }
@@ -149,7 +149,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
     }
@@ -172,7 +172,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
     }
@@ -195,7 +195,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.patch(endpoint + path, init);
     }
@@ -218,7 +218,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.del(endpoint + path, init);
     }
@@ -241,7 +241,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.head(endpoint + path, init);
     }
@@ -273,7 +273,7 @@ export default class APIClass {
             case 'API_KEY':
                 headers = {
                     Authorization: null,
-                    'X-Api-Key': apiKey
+                    'X-API-Key': apiKey
                 };
                 break;
             case 'AWS_IAM':
