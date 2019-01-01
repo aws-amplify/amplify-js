@@ -7,7 +7,19 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const logger = new Logger('AuthStateWrapper');
 
-export default class AuthStateWrapper extends Component<any, any> {
+export interface IAuthStateWrapperProps {
+    amplifyConfig?;
+    onStateChange?;
+    theme?;
+}
+
+export interface IAuthStateWrapperState {
+    authData?;
+    authState: string;
+    error?;
+}
+
+export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, IAuthStateWrapperState> {
     constructor(props) {
         super(props);
 

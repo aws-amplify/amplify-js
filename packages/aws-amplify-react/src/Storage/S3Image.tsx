@@ -24,7 +24,31 @@ import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Image');
 
-export default class S3Image extends Component<any, any> {
+export interface IS3ImageProps {
+    body?;
+    contentType?;
+    fileToKey?;
+    hidden?;
+    imgKey?;
+    level?;
+    onClick?;
+    onError?;
+    onLoad?;
+    path?;
+    picker?;
+    selected?;
+    src?;
+    style?;
+    theme?;
+    track?;
+    translate?;
+}
+
+export interface IS3ImageState {
+    src
+}
+
+export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
     constructor(props) {
         super(props);
 

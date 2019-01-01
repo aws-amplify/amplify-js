@@ -14,7 +14,7 @@
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
@@ -23,7 +23,19 @@ import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Pr
 
 const logger = new Logger('Greetings');
 
-export default class Greetings extends AuthPiece {
+export interface IGreetingsProps extends IAuthPieceProps {
+    federated?;
+    inGreeting?: string;
+    outGreeting?: string;
+}
+
+export interface IGreetingsState extends IAuthPieceState {
+    authData?;
+    authState?: string;
+    stateFromStorage?: boolean;
+}
+
+export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
     public _isMounted: boolean;
 
     constructor(props) {

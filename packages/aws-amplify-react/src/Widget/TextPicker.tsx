@@ -27,7 +27,20 @@ const PickerPreview = {
 
 const logger = new Logger('TextPicker');
 
-export default class TextPicker extends Component<any, any> {
+export interface ITextPickerProps {
+    onLoad?;
+    onPick?;
+    preview?;
+    previewText?: string;
+    theme?;
+    title?: string;
+}
+
+export interface ITextPickerState {
+    previewText: string;
+}
+
+export default class TextPicker extends Component<ITextPickerProps, ITextPickerState> {
     constructor(props) {
         super(props);
 

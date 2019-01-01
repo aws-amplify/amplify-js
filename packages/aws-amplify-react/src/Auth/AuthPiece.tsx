@@ -15,8 +15,22 @@ import { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
-export default class AuthPiece extends Component<any, any> {
+export interface IAuthPieceProps {
+    authData?;
+    authState?: string;
+    hide?;
+    onAuthEvent?;
+    onStateChange?: (state: string, data?) => void;
+    track?: () => void;
+    theme?;
+}
+
+export interface IAuthPieceState {
+}
+
+export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends Component<Props, State> {
     public _validAuthStates: string[];
     public _isHidden: boolean;
     public inputs; 
@@ -82,7 +96,6 @@ export default class AuthPiece extends Component<any, any> {
         this.inputs['checkedValue'] = check_type? value: null;
     }
 
-    // @ts-ignore
     render() {
         if (!this._validAuthStates.includes(this.props.authState)) {
             this._isHidden = true;
@@ -101,6 +114,7 @@ export default class AuthPiece extends Component<any, any> {
     }
 
     showComponent(theme) {
-        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+        console.error('You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.');
+        return null;
     }
 }

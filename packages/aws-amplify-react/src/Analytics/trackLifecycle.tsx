@@ -24,7 +24,7 @@ const Default_Track_Events = [
 ];
 
 export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
-    return class WithTrackLifecycle extends Component {
+    return class WithTrackLifecycle extends Component<any, {}> {
         public trackerName;
         public trackEvents;
 

@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
     FormSection,
     SectionHeader,
@@ -33,16 +33,27 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import countryDialCodes from './common/country-dial-codes';
-import defaultSignUpFields from './common/default-sign-in-fields'
+import defaultSignUpFields, { ISignUpField } from './common/default-sign-in-fields'
 import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
 
+export interface ISignUpConfig {
+    defaultCountryCode?: number;
+    header?: string;
+    hideAllDefaults?: boolean;
+    hiddenDefaults?: string[];
+    signUpFields?: ISignUpField[];
+}
 
-export default class SignUp extends AuthPiece {
-    public defaultSignUpFields;
-    public header;
-    public signUpFields;
+export interface ISignUpProps extends IAuthPieceProps{
+    signUpConfig?: ISignUpConfig;
+}
+
+export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
+    public defaultSignUpFields: ISignUpField[];
+    public header: string;
+    public signUpFields: ISignUpField[];
 
     constructor(props) {
         super(props);

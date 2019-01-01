@@ -14,12 +14,12 @@
 import * as React from 'react';
 import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TOTPSetupComp from '../Widget/TOTPSetupComp';
 
 const logger = new Logger('TOTPSetup');
 
-export default class TOTPSetup extends AuthPiece {
+export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
     constructor(props) {
         super(props);
 
@@ -53,12 +53,12 @@ export default class TOTPSetup extends AuthPiece {
         }
     }
 
-    showComponent(theme) {
-        const { hide } = this.props;
+    showComponent() {
+        const { authData, hide, theme } = this.props;
         if (hide && hide.includes(TOTPSetup)) { return null; }
 
         return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
+            <TOTPSetupComp authData={authData} theme={theme} onTOTPEvent={this.onTOTPEvent} />
         );
     }
 }

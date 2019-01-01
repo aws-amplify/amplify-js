@@ -2,9 +2,21 @@ import regeneratorRuntime from 'regenerator-runtime/runtime';
 import { Component } from 'react';
 import API from '@aws-amplify/api';
 
+export interface IConnectProps {
+  mutation?;
+  onSubscriptionMsg?;
+  query?;
+  subscription?;
+}
 
+export interface IConnectState {
+  loading;
+  data;
+  errors;
+  mutation;
+}
 
-export default class Connect extends Component<any, any> {
+export default class Connect extends Component<IConnectProps, IConnectState> {
     public subSubscription;
 
     constructor(props) {

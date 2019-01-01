@@ -31,7 +31,25 @@ import TOTPSetupComp from './TOTPSetupComp';
 
 const logger = new Logger('SelectMFAType');
 
-export default class SelectMFAType extends Component<any, any> {
+export interface IMFATypes {
+    SMS: boolean;
+    TOTP: boolean;
+    Optional: boolean;
+}
+
+export interface ISelectMFATypeProps {
+    authData;
+    MFATypes: IMFATypes;
+    theme?;
+}
+
+export interface ISelectMFATypeState {
+    selectMessage;
+    showToast?;
+    TOTPSetup: boolean;
+}
+
+export default class SelectMFAType extends Component<ISelectMFATypeProps, ISelectMFATypeState> {
     public inputs;
 
     constructor(props) {

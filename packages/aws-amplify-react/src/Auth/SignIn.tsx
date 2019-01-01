@@ -15,7 +15,7 @@ import * as React from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
 import SignUp from './SignUp';
 import ForgotPassword from './ForgotPassword';
@@ -37,7 +37,16 @@ import {
 
 const logger = new Logger('SignIn');
 
-export default class SignIn extends AuthPiece {
+export interface ISignInProps extends IAuthPieceProps {
+    federated?;
+    override?;
+}
+
+export interface ISignInState extends IAuthPieceState {
+    loading?;
+}
+
+export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
     constructor(props) {
         super(props);
 

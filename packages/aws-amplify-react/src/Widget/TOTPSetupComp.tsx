@@ -34,7 +34,18 @@ const QRCode = require('qrcode.react');
 
 const logger = new Logger('TOTPSetupComp');
 
-export default class TOTPSetupComp extends Component<any, any> {
+export interface ITOTPSetupCompProps {
+    authData;
+    onTOTPEvent?;
+    theme?;
+}
+
+export interface ITOTPSetupCompState {
+    code;
+    setupMessage;
+}
+
+export default class TOTPSetupComp extends Component<ITOTPSetupCompProps, ITOTPSetupCompState> {
     public inputs;
     
     constructor(props) {

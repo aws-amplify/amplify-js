@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
     FormSection,
     FormField,
@@ -33,7 +33,11 @@ import {
 
 const logger = new Logger('ConfirmSignIn');
 
-export default class ConfirmSignIn extends AuthPiece {
+export interface IConfirmSignInState {
+    mfaType: string;
+}
+
+export default class ConfirmSignIn extends AuthPiece<IAuthPieceProps, IConfirmSignInState> {
     constructor(props) {
         super(props);
 

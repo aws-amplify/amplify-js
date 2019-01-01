@@ -56,7 +56,37 @@ const defaultVoiceConfig = {
 
 let audioControl;
 
-export class ChatBot extends Component<any, any> {
+export interface IChatBotProps {
+    botName?: string;
+    clearOnComplete?: boolean;
+    conversationModeOn?: boolean;
+    onComplete;
+    textEnabled?: boolean;
+    theme?;
+    title?: string;
+    voiceConfig?;
+    voiceEnabled?: boolean;
+    welcomeMessage?: string;
+}
+
+export interface IChatBotDialog {
+    message: string;
+    from: string;
+}
+
+export interface IChatBotState {
+    audioInput?;
+    continueConversation: boolean;
+    currentVoiceState;
+    dialog: IChatBotDialog[];
+    inputDisabled: boolean;
+    inputText: string;
+    lexResponse?;
+    micButtonDisabled: boolean;
+    micText: string;
+}
+
+export class ChatBot extends Component<IChatBotProps, IChatBotState> {
     public listItemsRef;
 
     constructor(props) {

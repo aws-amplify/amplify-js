@@ -14,8 +14,9 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-import Authenticator from './Authenticator';
-
+import Authenticator, { IAuthenticatorProps } from './Authenticator';
+import AuthPiece from './AuthPiece';
+import { ISignUpConfig } from './SignUp';
 export { default as Authenticator } from './Authenticator';
 export { default as AuthPiece } from './AuthPiece';
 export { default as SignIn } from './SignIn';
@@ -36,8 +37,17 @@ export * from './Provider';
 import Greetings from './Greetings';
 
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
-    return class extends Component<any, any> {
+export interface IWithAuthenticatorProps extends IAuthenticatorProps {
+    federated;
+}
+
+export interface IWithAuthenticatorState {
+    authData;
+    authState;
+}
+
+export function withAuthenticator(Comp, includeGreetings: boolean = false, authenticatorComponents: AuthPiece<any, any>[] = [], federated = null, theme = null, signUpConfig: ISignUpConfig = {}) {
+    return class extends Component<IWithAuthenticatorProps, IWithAuthenticatorState> {
         public authConfig;
 
         constructor(props) {
@@ -109,7 +119,16 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
     };
 }
 
-export class AuthenticatorWrapper extends Component {
+export interface IAuthenticatorWrapperProps extends IAuthenticatorProps {
+
+}
+
+export interface IAuthenticatorWrapperState {
+    auth: string;
+    authData?;
+}
+
+export class AuthenticatorWrapper extends Component<IAuthenticatorWrapperProps, IAuthenticatorWrapperState> {
     constructor(props) {
         super(props);
 

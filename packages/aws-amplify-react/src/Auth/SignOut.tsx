@@ -15,7 +15,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
@@ -23,7 +23,27 @@ import Constants from './common/constants';
 
 const logger = new Logger('SignOut');
 
-export default class SignOut extends AuthPiece {
+export interface ISignOutProps extends IAuthPieceProps {
+    googleSignOut?;
+    facebookSignOut?;
+    amazonSignOut?;
+    auth0SignOut?;
+    stateFromStorage?;
+
+    // These are used by <Greetings /> but not here??
+    google_client_id?: string;
+    facebook_app_id?: string;
+    amazon_client_id?: string;
+    auth0;
+}
+
+export interface ISignOutState extends IAuthPieceState {
+    authData?;
+    authState?;
+    stateFromStorage?;
+}
+
+export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
     public _isMounted: boolean;
 
     constructor(props) {

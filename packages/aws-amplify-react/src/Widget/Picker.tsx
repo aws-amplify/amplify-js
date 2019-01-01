@@ -42,7 +42,14 @@ const PickerInput = {
 
 const logger = new Logger('Picker');
 
-export default class Picker extends Component<any, any> {
+export interface IPickerProps {
+    accept?: string;
+    onPick?;
+    title? : string;
+    theme?;
+}
+
+export default class Picker extends Component<IPickerProps, {}> {
     handleInput(e) {
         const that = this;
 

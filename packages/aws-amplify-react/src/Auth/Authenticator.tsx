@@ -31,11 +31,32 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
-export default class Authenticator extends Component<any, any> {
+export interface IAuthenticatorProps {
+    amplifyConfig?;
+    authData?: CognitoUser | string;
+    authState?: string;
+    errorMessage?: (message: string) => string;
+    federated?;
+    hide?: any[];
+    hideDefault?: boolean;
+    onStateChange?: (authState: string, data?) => void;
+    signUpConfig?;
+    theme?;
+}
+
+export interface IAuthenticatorState {
+    authData?: CognitoUser | string;
+    authState: string;
+    error?: string;
+    showToast?: boolean;
+}
+
+export default class Authenticator extends Component<IAuthenticatorProps, IAuthenticatorState> {
     public _initialAuthState: string;
     public _isMounted: boolean;
 
@@ -178,23 +199,14 @@ export default class Authenticator extends Component<any, any> {
 
         const default_children = [
             <Greetings federated={federated}/>,
-            // @ts-ignore
             <SignIn federated={federated}/>,
-            // @ts-ignore
             <ConfirmSignIn/>,
-            // @ts-ignore
             <RequireNewPassword/>,
-            // @ts-ignore
             <SignUp signUpConfig={signUpConfig}/>,
-            // @ts-ignore
             <ConfirmSignUp/>,
-            // @ts-ignore
             <VerifyContact/>,
-            // @ts-ignore
             <ForgotPassword/>,
-            // @ts-ignore
             <TOTPSetup/>,
-            // @ts-ignore
             <Loading/>
         ];
 

@@ -26,7 +26,21 @@ const PickerPreview = {
 
 const logger = new Logger('PhotoPicker');
 
-export default class PhotoPicker extends Component<any, any> {
+export interface IPhotoPickerProps {
+    headerHint?: string;
+    headerText?: string;
+    onLoad?;
+    onPick?;
+    preview?: 'hidden';
+    title?: string;
+    theme?;
+}
+
+export interface IPhotoPickerState {
+    previewSrc;
+}
+
+export default class PhotoPicker extends Component<IPhotoPickerProps, IPhotoPickerState> {
     constructor(props) {
         super(props);
 

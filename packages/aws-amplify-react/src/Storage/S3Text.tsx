@@ -23,7 +23,31 @@ import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Text');
 
-export default class S3Text extends Component<any, any> {
+export interface IS3TextProps {
+    body?;
+    contentType?;
+    fileToKey?;
+    hidden?;
+    level?;
+    onClick?;
+    onError?;
+    onLoad?;
+    path?;
+    picker?;
+    selected?;
+    style?;
+    theme?;
+    textKey?;
+    track?;
+    translate?;
+}
+
+export interface IS3TextState {
+    text: string;
+    textKey: string;
+}
+
+export default class S3Text extends Component<IS3TextProps, IS3TextState> {
     constructor(props) {
         super(props);
 

@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -32,7 +32,7 @@ import {
 
 const logger = new Logger('RequireNewPassword');
 
-export default class RequireNewPassword extends AuthPiece {
+export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuthPieceProps> {
     constructor(props) {
         super(props);
 

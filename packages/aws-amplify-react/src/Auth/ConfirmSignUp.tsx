@@ -15,7 +15,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
     FormSection,
     SectionHeader,
@@ -33,7 +33,7 @@ import {
 
 const logger = new Logger('ConfirmSignUp');
 
-export default class ConfirmSignUp extends AuthPiece {
+export default class ConfirmSignUp extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
     constructor(props) {
         super(props);
 

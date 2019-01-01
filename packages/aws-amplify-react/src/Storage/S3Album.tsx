@@ -25,7 +25,34 @@ import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Album');
 
-export default class S3Album extends Component<any, any> {
+export interface IS3AlbumProps {
+    contentType?;
+    fileToKey?;
+    filter?;
+    level?;
+    onClickItem?;
+    onError?;
+    onLoad?;
+    onPick?;
+    onSelect?;
+    track?;
+    path;
+    picker;
+    pickerTitle?: string;
+    select?;
+    sort?;
+    theme?;
+    translateItem?;
+    ts?;
+}
+
+export interface IS3AlbumState {
+    items;
+    theme;
+    ts;
+}
+
+export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
     constructor(props) {
         super(props);
 

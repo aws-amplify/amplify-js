@@ -21,7 +21,15 @@ import {
 
 const logger = new Logger('FederatedSignIn');
 
-export class FederatedButtons extends Component<any, any> {
+export interface IFederatedButtonsProps {
+    authState;
+    federated;
+    onAuthEvent?;
+    onStateChange;
+    theme;
+}
+
+export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
     google(google_client_id) {
         if (!google_client_id) { return null; }
 
@@ -78,7 +86,6 @@ export class FederatedButtons extends Component<any, any> {
 
     render() {
         const { authState } = this.props;
-        // @ts-ignore
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
 
         const federated = this.props.federated || {};
