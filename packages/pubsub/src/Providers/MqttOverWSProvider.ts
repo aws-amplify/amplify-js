@@ -37,6 +37,8 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
+    aws_pubsub_region?: string,
+    aws_pubsub_endpoint?: string,
 }
 
 class ClientsQueue {
