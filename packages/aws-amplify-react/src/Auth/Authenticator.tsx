@@ -31,14 +31,13 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export interface IAuthenticatorProps {
     amplifyConfig?;
-    authData?: CognitoUser | string;
+    authData?;
     authState?: string;
     errorMessage?: (message: string) => string;
     federated?;
