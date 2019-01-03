@@ -49,7 +49,7 @@ export interface IAuthenticatorProps {
 }
 
 export interface IAuthenticatorState {
-    authData?: CognitoUser | string;
+    authData?;
     authState: string;
     error?: string;
     showToast?: boolean;
