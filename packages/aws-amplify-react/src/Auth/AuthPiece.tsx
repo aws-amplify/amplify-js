@@ -15,7 +15,6 @@ import { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 
 export interface IAuthPieceProps {
     authData?;

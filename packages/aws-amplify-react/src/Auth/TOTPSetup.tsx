@@ -53,12 +53,12 @@ export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceStat
         }
     }
 
-    showComponent() {
-        const { authData, hide, theme } = this.props;
+    showComponent(theme) {
+        const { authData, hide, theme: propsTheme } = this.props;
         if (hide && hide.includes(TOTPSetup)) { return null; }
 
         return (
-            <TOTPSetupComp authData={authData} theme={theme} onTOTPEvent={this.onTOTPEvent} />
+            <TOTPSetupComp authData={authData} theme={propsTheme} onTOTPEvent={this.onTOTPEvent} />
         );
     }
 }

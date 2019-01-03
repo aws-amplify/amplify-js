@@ -36,7 +36,7 @@ export interface IGreetingsState extends IAuthPieceState {
 }
 
 export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
-    public _isMounted: boolean;
+    private _isMounted: boolean;
 
     constructor(props) {
         super(props);
