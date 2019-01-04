@@ -20,7 +20,7 @@ describe('SessionTracker test', () => {
             });
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start',
+                name: '_session.start',
                 attributes: {}
             }, 'AWSPinpoint');
             expect(spyon).toBeCalled();
@@ -101,7 +101,7 @@ describe('SessionTracker test', () => {
             await sessionTracker._trackFunc();
 
             expect(tracker).toBeCalledWith({
-                name: '_session_stop',
+                name: '_session.stop',
                 attributes: {}
             }, 'AWSPinpoint');
         });
@@ -120,7 +120,7 @@ describe('SessionTracker test', () => {
             await sessionTracker._trackFunc();
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start',
+                name: '_session.start',
                 attributes: {}
             }, 'AWSPinpoint');
         });

@@ -180,7 +180,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession(provider?: string) {
-        const params = { event: { name: '_session_start' },  provider };
+        const params = { event: { name: '_session.start' },  provider };
         return this._sendEvent(params);
     }
 
@@ -189,7 +189,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async stopSession(provider?: string) {
-        const params = { event: { name: '_session_stop' }, provider };
+        const params = { event: { name: '_session.stop' }, provider };
         return this._sendEvent(params);
     }
 
