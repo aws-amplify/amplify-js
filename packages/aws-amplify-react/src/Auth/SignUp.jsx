@@ -33,7 +33,7 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import countryDialCodes from './common/country-dial-codes.js';
-import defaultSignUpFields from './common/default-sign-in-fields'
+import signUpWithUsernameFields, { signUpWithEmailFields, signUpWithPhoneNumberFields } from './common/default-sign-up-fields'
 import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
@@ -48,8 +48,17 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-        this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
+
+        const { signUpConfig={} } = this.props || {};
+        if (signUpConfig.emailAsUsername) {
+            this.defaultSignUpFields = signUpWithEmailFields;
+        } else if (signUpConfig.phoneNumberAsUsername) {
+            this.defaultSignUpFields = signUpWithPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
+        }
+        
         this.header = (this.props &&
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
@@ -173,7 +182,7 @@ export default class SignUp extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let signup_info = {
+        const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
             attributes: {
@@ -194,7 +203,14 @@ export default class SignUp extends AuthPiece {
               }
             }
         });
-
+  
+        const { emailAsUsername, phoneNumberAsUsername } = this.props.signUpConfig || {};
+        if (emailAsUsername) {
+            signup_info.username = signup_info.attributes['email'];
+        } else if (phoneNumberAsUsername) {
+            signup_info.username = signup_info.attributes['phone_number'];
+        }
+        
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
         })
