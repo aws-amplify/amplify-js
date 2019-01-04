@@ -69,7 +69,7 @@ export default function withGoogle(Comp) {
             let user = {
                 email: profile.getEmail(),
                 name: profile.getName(),
-                image: profile.getImageUrl(),
+                picture: profile.getImageUrl(),
             };
 
             const { onStateChange } = this.props;
