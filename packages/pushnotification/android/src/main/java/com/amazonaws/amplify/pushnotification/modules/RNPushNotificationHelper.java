@@ -257,11 +257,10 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(context, intentClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            bundle.putBoolean("userInteraction", true);
+            Intent intent = new Intent(NOTIFICATION_OPENED);
             intent.putExtra("notification", bundle);
-            intent.setAction(NOTIFICATION_OPENED);
+
+            Log.i(LOG_TAG, "sendNotification: " + intent);
 
             Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
@@ -317,11 +316,10 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            // broadcast event
-            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
-            //         PendingIntent.FLAG_ONE_SHOT);
+            // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(pendingIntent);
 
@@ -364,6 +362,10 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+
+        
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will

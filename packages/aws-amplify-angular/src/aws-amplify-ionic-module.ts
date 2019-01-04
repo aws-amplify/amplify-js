@@ -1,5 +1,21 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AmplifyService } from './providers/amplify.service';
 // tslint:disable:max-line-length
 import { AuthenticatorIonicComponent } from './components/authenticator/authenticator/authenticator.component.ionic';
@@ -14,6 +30,8 @@ import { PhotoPickerIonicComponent } from './components/storage/photo-picker-com
 import { S3AlbumComponentIonic } from './components/storage/s3-album-component/s3-album.component.ionic';
 import { S3ImageComponentIonic } from './components/storage/s3-image-component/s3-image.component.ionic';
 import { ChatbotComponentIonic } from './components/interactions/chatbot/chatbot.component.ionic';
+import { SumerianSceneComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene.component.ionic';
+import { SumerianSceneLoadingComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.ionic';
 // tslint:enable:max-line-length
 
 const components = [
@@ -28,12 +46,15 @@ const components = [
   PhotoPickerIonicComponent,
   S3AlbumComponentIonic,
   S3ImageComponentIonic,
-  ChatbotComponentIonic
+  ChatbotComponentIonic,
+  SumerianSceneComponentIonic,
+  SumerianSceneLoadingComponentIonic
 ];
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   declarations: [
     ...components,
@@ -41,7 +62,7 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [ AmplifyService],
+  providers: [AmplifyService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     ...components

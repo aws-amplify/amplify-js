@@ -4,7 +4,7 @@ import { shallowMount, mount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import Chatbot from '../src/components/interactions/Chatbot.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -174,7 +174,7 @@ describe('Chatbot', () => {
     });
 
     it('...should call onSubmit with inputText when submit button is clicked', () => {
-      const el = wrapper.find('button');
+      const el = wrapper.find('#interactions-submit-button');
       wrapper.vm.inputText = 'talk to me, robot';
       el.trigger('click');
       expect(mockOnSubmit).toHaveBeenCalledWith('talk to me, robot');

@@ -19,7 +19,46 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
   <div />
   <div />
   <div />
-  <Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
     or
   </Component>
 </div>
@@ -36,7 +75,46 @@ exports[`FederatedButtons test render test render with correct authState and onl
   <div />
   <div />
   <div />
-  <Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
     or
   </Component>
 </div>
@@ -53,7 +131,46 @@ exports[`FederatedButtons test render test render with correct authState and onl
   <div />
   <div />
   <div />
-  <Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
     or
   </Component>
 </div>
@@ -79,6 +196,11 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
@@ -93,6 +215,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
@@ -113,6 +236,11 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -127,6 +255,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -150,6 +279,11 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -164,6 +298,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     />
@@ -189,6 +324,11 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
       "oAuthSignInButton": Object {},
       "photoPickerButton": Object {},
       "photoPlaceholder": Object {},
@@ -203,6 +343,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
       "signInButtonIcon": Object {},
       "strike": Object {},
       "strikeContent": Object {},
+      "toast": Object {},
     }
   }
 >
@@ -223,6 +364,11 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
         "oAuthSignInButton": Object {},
         "photoPickerButton": Object {},
         "photoPlaceholder": Object {},
@@ -237,6 +383,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         "signInButtonIcon": Object {},
         "strike": Object {},
         "strikeContent": Object {},
+        "toast": Object {},
       }
     }
   >
@@ -260,6 +407,11 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
           "oAuthSignInButton": Object {},
           "photoPickerButton": Object {},
           "photoPlaceholder": Object {},
@@ -274,6 +426,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
           "signInButtonIcon": Object {},
           "strike": Object {},
           "strikeContent": Object {},
+          "toast": Object {},
         }
       }
     />

@@ -81,7 +81,7 @@ export default class SessionTracker {
         if (document[this._hidden]) {
             this._tracker(
                 { 
-                    name: '_session_stop',
+                    name: '_session.stop',
                     attributes
                 },
                 this._config.provider
@@ -91,7 +91,7 @@ export default class SessionTracker {
         } else {
             this._tracker(
                 { 
-                    name: '_session_start',
+                    name: '_session.start',
                     attributes
                 },
                 this._config.provider
@@ -101,23 +101,25 @@ export default class SessionTracker {
         }
     }
 
-    private async _trackBeforeUnload() {
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
-
-        this._tracker(
-            { 
-                name: '_session_stop',
-                attributes,
-                immediate: true
-            },
-            this._config.provider
-        ).catch(e => {
-            logger.debug('record session stop event failed.', e);
+    private _trackBeforeUnload() {
+        const getCustomAttrs = typeof this._config.attributes === 'function'? 
+            this._config.attributes() : Promise.resolve(this._config.attributes);
+      
+        getCustomAttrs.then((customAttrs) => {
+            const attributes = Object.assign(
+                {},
+                customAttrs
+            );
+            this._tracker(
+                { 
+                    name: '_session.stop',
+                    attributes,
+                    immediate: true
+                },
+                this._config.provider
+            ).catch(e => {
+                logger.debug('record session stop event failed.', e);
+            });
         });
     }
 
@@ -139,7 +141,7 @@ export default class SessionTracker {
 
         this._tracker(
             { 
-                name: '_session_start',
+                name: '_session.start',
                 attributes
             },
             this._config.provider
