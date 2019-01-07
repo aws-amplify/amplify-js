@@ -81,7 +81,7 @@ export default class SessionTracker {
         if (document[this._hidden]) {
             this._tracker(
                 { 
-                    name: '_session_stop',
+                    name: '_session.stop',
                     attributes
                 },
                 this._config.provider
@@ -91,7 +91,7 @@ export default class SessionTracker {
         } else {
             this._tracker(
                 { 
-                    name: '_session_start',
+                    name: '_session.start',
                     attributes
                 },
                 this._config.provider
@@ -112,7 +112,7 @@ export default class SessionTracker {
             );
             this._tracker(
                 { 
-                    name: '_session_stop',
+                    name: '_session.stop',
                     attributes,
                     immediate: true
                 },
@@ -141,7 +141,7 @@ export default class SessionTracker {
 
         this._tracker(
             { 
-                name: '_session_start',
+                name: '_session.start',
                 attributes
             },
             this._config.provider
