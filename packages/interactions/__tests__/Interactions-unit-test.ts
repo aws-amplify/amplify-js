@@ -1,6 +1,5 @@
 jest.mock('aws-sdk/clients/lexruntime', () => {
     const LexRuntime = () => { };
-
     LexRuntime.prototype.postText = (params, callback) => {
         if (params.inputText === 'done') {
             callback(null, {
@@ -14,6 +13,36 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
         } else {
             callback(null, { message: 'echo:' + params.inputText, dialogState: 'ElicitSlot' });
         }
+    }
+
+    LexRuntime.prototype.postContent = (params, callback) => {
+        if (params.contentType === 'audio/x-l16; sample-rate=16000') {
+            if (params.inputStream === 'voice:done') {
+                callback(null, {
+                    message: 'voice:echo:' + params.inputStream,
+                    dialogState: 'ReadyForFulfillment',
+                    slots: {
+                        m1: 'voice:hi',
+                        m2: 'voice:done',
+                    }
+                });
+            } else {
+                callback(null, { message: 'voice:echo:' + params.inputStream, dialogState: 'ElicitSlot' });
+            }
+        } else {
+            if (params.inputStream === 'done') {
+                callback(null, {
+                    message: 'echo:' + params.inputStream,
+                    dialogState: 'ReadyForFulfillment',
+                    slots: {
+                        m1: 'hi',
+                        m2: 'done',
+                    }
+                });
+            } else {
+                callback(null, { message: 'echo:' + params.inputStream, dialogState: 'ElicitSlot' });
+            }
+        }        
     }
 
     return LexRuntime;
@@ -118,6 +147,25 @@ describe('Interactions', () => {
 
             expect(response2).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi2' });
 
+            const interactionsMessageVoice = {
+                content: 'voice:hi',
+                options: {
+                    messageType: 'voice'
+                }
+            }
+
+            const interactionsMessageText = {
+                content: 'hi',
+                options: {
+                    messageType: 'text'
+                }
+            }
+
+            const responseVoice = await interactions.send('BookTripMOBILEHUB', interactionsMessageVoice);
+            expect(responseVoice).toEqual({ dialogState: "ElicitSlot", message: 'voice:echo:voice:hi' });
+
+            const responseText = await interactions.send('BookTripMOBILEHUB', interactionsMessageText);
+            expect(responseText).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi' });
         });
 
         test('Interactions configuration with two bots and send message to existing bot and fullfil', async () => {
@@ -153,6 +201,25 @@ describe('Interactions', () => {
 
             expect(response2).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi2' });
 
+            const interactionsMessageVoice = {
+                content: 'voice:hi',
+                options: {
+                    messageType: 'voice'
+                }
+            }
+
+            const interactionsMessageText = {
+                content: 'hi',
+                options: {
+                    messageType: 'text'
+                }
+            }
+
+            const responseVoice = await interactions.send('BookTripMOBILEHUB', interactionsMessageVoice);
+            expect(responseVoice).toEqual({ dialogState: "ElicitSlot", message: 'voice:echo:voice:hi' });
+
+            const responseText = await interactions.send('BookTripMOBILEHUB', interactionsMessageText);
+            expect(responseText).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi' });
         });
 
         describe('Sending messages to bot', () => {
@@ -196,6 +263,39 @@ describe('Interactions', () => {
                     }
                 });
 
+                const interactionsMessageVoice = {
+                    content: 'voice:done',
+                    options: {
+                        messageType: 'voice'
+                    }
+                }
+    
+                const interactionsMessageText = {
+                    content: 'done',
+                    options: {
+                        messageType: 'text'
+                    }
+                }
+    
+                const voiceResponse = await interactions.send('BookTripMOBILEHUB', interactionsMessageVoice);
+                expect(voiceResponse).toEqual({
+                    dialogState: 'ReadyForFulfillment',
+                    message: 'voice:echo:voice:done',
+                    slots: {
+                        m1: 'voice:hi',
+                        m2: 'voice:done',
+                    }
+                });
+    
+                const textResponse = await interactions.send('BookTripMOBILEHUB', interactionsMessageText);
+                expect(textResponse).toEqual({
+                    dialogState: 'ReadyForFulfillment',
+                    message: 'echo:done',
+                    slots: {
+                        m1: 'hi',
+                        m2: 'done',
+                    }
+                });
             });
             test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
                 const curCredSpyOn = jest.spyOn(Credentials, 'get')
@@ -238,6 +338,39 @@ describe('Interactions', () => {
                     }
                 });
 
+                const interactionsMessageVoice = {
+                    content: 'voice:done',
+                    options: {
+                        messageType: 'voice'
+                    }
+                }
+    
+                const interactionsMessageText = {
+                    content: 'done',
+                    options: {
+                        messageType: 'text'
+                    }
+                }
+    
+                const voiceResponse = await interactions.send('BookTripMOBILEHUB', interactionsMessageVoice);
+                expect(voiceResponse).toEqual({
+                    dialogState: 'ReadyForFulfillment',
+                    message: 'voice:echo:voice:done',
+                    slots: {
+                        m1: 'voice:hi',
+                        m2: 'voice:done',
+                    }
+                });
+    
+                const textResponse = await interactions.send('BookTripMOBILEHUB', interactionsMessageText);
+                expect(textResponse).toEqual({
+                    dialogState: 'ReadyForFulfillment',
+                    message: 'echo:done',
+                    slots: {
+                        m1: 'hi',
+                        m2: 'done',
+                    }
+                });
             });
 
             test('aws-exports configuration and send message to not existing bot', async () => {
@@ -340,6 +473,25 @@ describe('Interactions', () => {
 
                 expect(response).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi' });
 
+                const interactionsMessageVoice = {
+                    content: 'voice:hi',
+                    options: {
+                        messageType: 'voice'
+                    }
+                }
+    
+                const interactionsMessageText = {
+                    content: 'hi',
+                    options: {
+                        messageType: 'text'
+                    }
+                }
+    
+                const responseVoice = await interactions.send('BookTripMOBILEHUB', interactionsMessageVoice);
+                expect(responseVoice).toEqual({ dialogState: "ElicitSlot", message: 'voice:echo:voice:hi' });
+    
+                const responseText = await interactions.send('BookTripMOBILEHUB', interactionsMessageText);
+                expect(responseText).toEqual({ dialogState: "ElicitSlot", message: 'echo:hi' });
             });
         });
     });

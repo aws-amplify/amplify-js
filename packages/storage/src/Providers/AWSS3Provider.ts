@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 import {
-    AWS,
     ConsoleLogger as Logger,
     Hub,
     Credentials,
@@ -32,15 +31,15 @@ const dispatchStorageEvent = (track, attrs, metrics) => {
  * Provide storage methods to use AWS S3
  */
 export default class AWSS3Provider implements StorageProvider{
-    
+
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
-    
+
     /**
      * @private
      */
     private _config;
-    
+
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} config - Configuration object for storage
@@ -144,7 +143,7 @@ export default class AWSS3Provider implements StorageProvider{
 
     /**
      * Put a file in S3 bucket specified to configure method
-     * @param {Stirng} key - key of the object
+     * @param {String} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
@@ -175,7 +174,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
-        if (serverSideEncryption) { 
+        if (serverSideEncryption) {
             params.ServerSideEncryption = serverSideEncryption;
             if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }
             if (SSECustomerKey) { params.SSECustomerKey = SSECustomerKey; }
@@ -196,13 +195,13 @@ export default class AWSS3Provider implements StorageProvider{
                     }
                 });
             const data = await upload.promise();
-            
+
             logger.debug('upload result', data);
             dispatchStorageEvent(
                 track,
                 { method: 'put', result: 'success' },
                 null);
-            
+
             return {
                 key: data.Key.substr(prefix.length)
             };
@@ -212,7 +211,7 @@ export default class AWSS3Provider implements StorageProvider{
                 track,
                 { method: 'put', result: 'failed' },
                 null);
-            
+
             throw e;
         }
     }
@@ -315,7 +314,7 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     _ensureCredentials() {
-       
+
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;
@@ -359,14 +358,13 @@ export default class AWSS3Provider implements StorageProvider{
      */
     private _createS3(config) {
         const { bucket, region, credentials } = config;
-        AWS.config.update({
-            region,
-            credentials
-        });
+        
         return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
-            region
+            signatureVersion: 'v4',
+            region,
+            credentials
         });
     }
 }
