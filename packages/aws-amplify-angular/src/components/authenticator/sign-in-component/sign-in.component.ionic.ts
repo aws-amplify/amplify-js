@@ -45,25 +45,21 @@ const template = `
         ></ion-input>
       </ion-item>
     </ion-list>
-    <div class={{amplifyUI.hint}}>
-      Forget your password?
-      <a class={{amplifyUI.a}} (click)="onForgotPassword()">
-        Reset your password
-      </a>
-    </div>
   </div>
+  <ion-button expand="block" color="primary" (click)="onSignIn()">
+    Sign In
+  </ion-button>
   <div class={{amplifyUI.sectionFooter}}>
-    <span class="amplifyUI.sectionFooterPrimaryContent">
-      <ion-button expand="block" color="primary"
-        (click)="onSignIn()"
-      >
-          Sign In
-      </ion-button>
-    </span>
     <span class={{amplifyUI.sectionFooterSecondaryContent}}>
       No account?  
       <a class={{amplifyUI.a}} (click)="onSignUp()">Create account</a>
     </span>
+  </div>
+  <div class={{amplifyUI.sectionFooter}}>
+    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+      Reset Password  
+      <a  class={{amplifyUI.a}} (click)="onForgotPassword()">Reset Password</a>
+     </span>
   </div>
 
   <div class="amplify-alert" *ngIf="errorMessage">
