@@ -1,55 +1,60 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const CompressionPlugin = require("compression-webpack-plugin")
+const path = require('path');
+const pkg = require('./package.json');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
+    mode: 'production',
     entry: {
         'aws-amplify': './src/index.ts',
         'aws-amplify.min': './src/index.ts'
     },
     output: {
         filename: '[name].js',
-        path: __dirname + '/dist',
-        library: 'aws-amplify',
-        libraryTarget: 'umd',
+        path: path.resolve(__dirname, 'dist'),
+        library: pkg.name,
+        libraryTarget: 'commonjs2',
         umdNamedDefine: true
     },
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: 'source-map',
-    resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: ['.ts', '.tsx', '.js', '.json']
-    },
-    plugins: [
-        new UglifyJsPlugin({
-            minimize: true,
-            sourceMap: true,
-            include: /\.min\.js$/,
-        }),
-        new CompressionPlugin({
-            include: /\.min\.js$/,
-        })
-    ],
     module: {
         rules: [
-            // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { 
-                test: /\.tsx?$/, 
-                loader: 'awesome-typescript-loader',
-                exclude: /node_modules/,
-                query: {
-                    declaration: false
+            {
+                test: /\.tsx?$/,
+                include: path.resolve(__dirname, 'src'),
+                exclude: /(node_modules|bower_components|dist)/,
+                use: {
+                    loader: 'awesome-typescript-loader'
                 }
-             },
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            //{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
+            },
             {
                 test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                presets: ['react', 'es2015', 'stage-2'],
+                include: path.resolve(__dirname, 'src'),
+                exclude: /(node_modules|bower_components|dist)/,
+                use: {
+                    loader: 'babel-loader'
+                    // options: {
+                    //   presets: ['@babel/preset-env']
+                    // }
                 }
             }
         ]
-    }
+    },
+    optimization: {
+        minimizer: [new TerserPlugin({
+            sourceMap: true
+        })]
+    },
+    plugins: [
+        new webpack.SourceMapDevToolPlugin({
+            filename: '[name].js.map',
+            exclude: ['./node_modules']
+        }),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'server',
+            analyzerPort: 3333,
+            defaultSizes: 'gzip',
+            openAnalyzer: true
+        })
+    ]
 };
