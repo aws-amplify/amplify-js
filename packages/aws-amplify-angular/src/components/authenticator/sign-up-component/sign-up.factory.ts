@@ -27,6 +27,7 @@ import { SignUpClass } from './sign-up.class';
 import { SignUpComponentIonic } from './sign-up.component.ionic';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { AuthState } from '../../../providers';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 
 @Component({
   selector: 'amplify-auth-sign-up',
@@ -40,6 +41,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
+  @Input() customCSS: AmplifyUIInterface;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -52,15 +54,15 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+    const data = {
+      authState: this.authState,
+      signUpConfig: this.signUpConfig,
+      customCSS: this.customCSS
+    };
+
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(SignUpComponentIonic, {
-      authState: this.authState,
-      signUpConfig: this.signUpConfig
-    }) :
-    new ComponentMount(SignUpComponentCore, {
-      authState: this.authState,
-      signUpConfig: this.signUpConfig
-    });
+    new ComponentMount(SignUpComponentIonic, data) :
+    new ComponentMount(SignUpComponentCore, data);
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

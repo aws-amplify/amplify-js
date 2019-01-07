@@ -15,33 +15,44 @@
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+
 
 const template = `
-  <div class="amplify-authenticator">
+  <div>
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [signInConfig]="_signInConfig"
+      [customCSS]="_customCSS"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
+      [customCSS]="_customCSS"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
+      [confirmSignUpConfig]="_confirmSignUpConfig"
+      [customCSS]="_customCSS"
     ></amplify-auth-confirm-sign-up-core>
 
     <amplify-auth-confirm-sign-in-core
-    *ngIf="!shouldHide('ConfirmSignIn')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignIn')"
+      [authState]="authState"
+      [confirmSignInConfig]="_confirmSignInConfig"
+      [customCSS]="_customCSS"
     ></amplify-auth-confirm-sign-in-core>
 
     <amplify-auth-forgot-password-core
     *ngIf="!shouldHide('ForgotPassword')"
     [authState]="authState"
+    [forgotPasswordConfig]="_forgotPasswordConfig"
+    [customCSS]="_customCSS"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
@@ -52,6 +63,8 @@ const template = `
      <amplify-auth-require-new-password-core
     *ngIf="!shouldHide('RequireNewPassword')"
     [authState]="authState"
+    [requireNewPasswordConfig]="_requireNewPasswordConfig"
+    [customCSS]="_customCSS"
     ></amplify-auth-require-new-password-core>
   </div>
 `;
@@ -67,6 +80,12 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
+  _signInConfig: any = {};
+  _confirmSignUpConfig: any = {};
+  _confirmSignInConfig: any = {};
+  _requireNewPasswordConfig: any = {};
+  _forgotPasswordConfig: any = {};
+  _customCSS: AmplifyUIInterface;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -79,12 +98,26 @@ export class AuthenticatorComponentCore {
 
   @Input()
   set data(data: any) {
-    if (data.signUpConfig) {
-      this._signUpConfig = data.signUpConfig;
-    }
     if (data.hide) {
       this.hide = data.hide;
     }
+    if (data.signUpConfig) {
+      this._signUpConfig = data.signUpConfig;
+    }
+    if (data.signInConfig) { 
+      this._signInConfig = data.signInConfig;
+    }
+    if (data.confirmSignInConfig) {
+      this._confirmSignInConfig = data.confirmSignInConfig;
+    }
+    if (data.customCSS) {
+      this._customCSS = data.customCSS;
+    }
+  }
+
+  @Input()
+  set signInConfig(signInConfig: any) {
+    this._signInConfig = signInConfig;
   }
 
   @Input()
@@ -92,16 +125,28 @@ export class AuthenticatorComponentCore {
     this._signUpConfig = signUpConfig;
   }
 
+  @Input()
+  set confirmSignInConfig(confirmSignInConfig: any) {
+    this._confirmSignInConfig = confirmSignInConfig;
+  }
+
+  @Input()
+  set customCSS(customCSS: AmplifyUIInterface) {
+    this._customCSS = customCSS;
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
-        this.authState = state;
-      }, () => {
-        this.authState = {
-          'state': 'signIn',
-          'user': null
-        }
-      });
+      .subscribe(
+        state => {
+          this.authState = state;
+        }, 
+        () => {
+          this.authState = {
+            'state': 'signIn',
+            'user': null
+          };
+        });
   }
 
   shouldHide(comp) {

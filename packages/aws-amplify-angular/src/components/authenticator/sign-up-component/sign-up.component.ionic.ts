@@ -20,12 +20,12 @@ import { countrylist, country }  from '../../../assets/countries';
 
 
 const template = `
-<div class="amplify-authenticator" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">{{this.header}}</div>
+<div class="{{amplifyUI.formSection}}" *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>{{this.header}}</div>
+  <div class={{amplifyUI.sectionBody}}>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
-        <ion-label class="amplify-input-label" 
+        <ion-label class={{amplifyUI.inputLabel}} 
         position="stacked" 
         *ngIf="field.key !== 'phone_number'"
         >
@@ -37,7 +37,7 @@ const template = `
           *ngIf="field.key !== 'phone_number'"
           #{{field.key}}
           type="text"
-          class="amplify-form-input"
+          class={{amplifyUI.input}}
           type={{field.type}}
           placeholder={{field.label}}
           (keyup)="setProp($event.target)"
@@ -87,7 +87,7 @@ const template = `
         </ion-content>
       </ion-item>    
     </ion-list>
-    <div class="amplify-form-actions">
+    <div class={{amplifyUI.sectionFooter}}>
       <div>
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"

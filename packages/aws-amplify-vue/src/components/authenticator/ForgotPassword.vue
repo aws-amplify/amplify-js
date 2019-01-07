@@ -29,7 +29,7 @@
       </div>
     </div>
 
-  <div v-bind:class="amplifyUI.sectionFooter">
+    <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
         <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!username">{{$Amplify.I18n.get('Send Code')}}</button>
         <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!username">{{$Amplify.I18n.get('Submit')}}</button>
