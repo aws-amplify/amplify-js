@@ -364,7 +364,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         
         const request = this._endpointRequest(
             config, 
-            JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes'])
+            JS.transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
         );
         const update_params = {
             ApplicationId: appId,
