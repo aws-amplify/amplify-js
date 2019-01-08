@@ -81,7 +81,7 @@ export default class ForgotPassword extends AuthPiece {
                 />
                 <AmplifyButton
                     text={I18n.get('Send').toUpperCase()}
-                    style={theme.button}
+                    theme={theme}
                     onPress={this.send}
                     disabled={!this.state.username}
                 />
@@ -109,7 +109,7 @@ export default class ForgotPassword extends AuthPiece {
                 />
                 <AmplifyButton
                     text={I18n.get('Submit')}
-                    style={theme.button}
+                    theme={theme}
                     onPress={this.submit}
                     disabled={!this.state.username}
                 />
