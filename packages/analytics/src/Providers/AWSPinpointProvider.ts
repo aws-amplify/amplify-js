@@ -106,10 +106,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         let success = true;
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 success = await this._startSession(params);
                 break;
-            case '_session_stop':
+            case '_session.stop':
                 success = await this._stopSession(params);
                 break;
             case '_update_endpoint':
@@ -206,7 +206,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event } = params;
 
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 // refresh the session id and session start time
                 this._sessionStartTimestamp = new Date().getTime();
                 this._sessionId = uuid();
@@ -215,7 +215,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     StartTimestamp: new Date(this._sessionStartTimestamp).toISOString()
                 };
                 break;
-            case '_session_stop':
+            case '_session.stop':
                 const stopTimestamp = new Date().getTime();
                 this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
                 this._sessionId = this._sessionId || uuid();
@@ -364,7 +364,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         
         const request = this._endpointRequest(
             config, 
-            JS.transferKeyToLowerCase(event, [], ['Attributes', 'UserAttributes'])
+            JS.transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
         );
         const update_params = {
             ApplicationId: appId,
