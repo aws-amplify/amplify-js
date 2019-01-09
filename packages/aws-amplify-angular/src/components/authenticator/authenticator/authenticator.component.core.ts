@@ -19,7 +19,7 @@ import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class'
 
 
 const template = `
-  <div>
+  <div class="amplify-authenticator">
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
@@ -72,7 +72,23 @@ const template = `
 
 @Component({
   selector: 'amplify-authenticator-core',
-  template
+  template,
+  styles: [
+    `.amplify-authenticator {
+      width: var(--component-width-desktop);
+      margin: 0 auto;
+      border-radius: 6px;
+      background-color: var(--color-white);
+    }`,
+    `.amplify-alert {
+      min-height: 52px;
+      width: 460px;
+      margin-top: 5em;
+      border-radius: 6px;
+      background-color: #FFFFFF;
+      box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
+      }`
+  ]
 })
 export class AuthenticatorComponentCore {
   authState: AuthState = {

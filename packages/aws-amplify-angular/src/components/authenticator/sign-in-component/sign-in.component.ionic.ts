@@ -18,28 +18,30 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
-<div class="{{amplifyUI.formSection}}" *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Sign In</div>
-  <div class={{amplifyUI.sectionBody}}>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Sign In</div>
+  <div class="{{applyClasses('sectionBody')}}">
     <ion-list lines="none">
       <ion-item lines="none">
-        <ion-label class={{amplifyUI.inputLabel}} for="username" position="stacked">
+        <ion-label class="{{applyClasses('inputLabel')}}"
+        for="username" position="stacked">
           Username *
         </ion-label>
         <ion-input type="text" 
           #username
-          class={{amplifyUI.input}}
+         class="{{applyClasses('input')}}"
           (keyup)="setUsername($event.target.value)">
         </ion-input>
       </ion-item>
       <ion-item lines="none">
-        <ion-label class={{amplifyUI.inputLabel}} for="password" position="stacked">
+        <ion-label class="{{applyClasses('inputLabel')}}" 
+        for="password" position="stacked">
           Password *
         </ion-label>
         <ion-input 
           #password
           type="password" 
-          class={{amplifyUI.input}}
+         class="{{applyClasses('input')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
         ></ion-input>
@@ -49,24 +51,21 @@ const template = `
   <ion-button expand="block" color="primary" (click)="onSignIn()">
     Sign In
   </ion-button>
-  <div class={{amplifyUI.sectionFooter}}>
-    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
       No account?  
-      <a class={{amplifyUI.a}} (click)="onSignUp()">Create account</a>
+      <a class="{{applyClasses('a')}}" (click)="onSignUp()">Create account</a>
     </span>
-  </div>
-  <div class={{amplifyUI.sectionFooter}}>
-    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
       Reset Password  
-      <a  class={{amplifyUI.a}} (click)="onForgotPassword()">Reset Password</a>
+      <a class="{{applyClasses('a')}}" (click)="onForgotPassword()">Reset Password</a>
      </span>
   </div>
-
-  <div class="amplify-alert" *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -74,13 +73,25 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template
+  template,
+  styles: [
+    `.amplify-input-label {
+      font-size: 14px;
+      margin: 0.5em 0.5em 0.5em 0;
+      letter-spacing: 0.4px;
+      line-height: 18px;
+    }`,
+    `.amplify-form-input {
+      border: none
+    }`
+  ]
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
   constructor(amplifyService: AmplifyService) {
-    super(amplifyService);    
+    super(amplifyService);  
   }
+
 
   _setError(err) {
     if (!err) {
@@ -89,6 +100,5 @@ export class SignInComponentIonic extends SignInComponentCore {
     }
 
     alert(err.message || err);
-  }
-  
+  }  
 }

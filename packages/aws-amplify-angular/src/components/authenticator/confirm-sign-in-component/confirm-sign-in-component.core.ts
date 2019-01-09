@@ -13,44 +13,44 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { classArray } from '../../../assets/helpers';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
-<div class={{amplifyUI.formSection}} *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Confirm Sign in</div>
-  <div class={{amplifyUI.sectionBody}}>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}> Confirmation Code *</div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Confirm Sign in</div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}" > Confirmation Code *</div>
       <input #code
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
-        class={{amplifyUI.input}}
+       class="{{applyClasses('input')}}"
         type="text"
         placeholder="Enter your Code"
       />
     </div>
 
-    <div class={{amplifyUI.sectionFooter}}>
-      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
-        <a class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
+    <div class="{{applyClasses('sectionFooter')}}">
+      <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+        <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
       </span>
-      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
-        <button class={{amplifyUI.button}} (click)="onConfirm()">
+      <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+        <button class="{{applyClasses('button')}}" (click)="onConfirm()">
           Confirm
         </button>
       </span>
     </div>
   </div>
-  <div class="amplify-alert"  *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -60,15 +60,15 @@ const template = `
   selector: 'amplify-auth-confirm-sign-in-core',
   template
 })
-export class ConfirmSignInComponentCore implements OnInit {
+export class ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
-  private _confirmSignInConfig: any;
-  private _customCSS: any;
+  _confirmSignInConfig: any;
+  _customCSS: any;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
@@ -105,16 +105,11 @@ export class ConfirmSignInComponentCore implements OnInit {
     this._customCSS = customCSS;
   }
 
-  ngOnInit() {
-    if ((this._confirmSignInConfig && this._confirmSignInConfig.customCSS) || this._customCSS) {
-      const allClasses = {
-        ...this._customCSS,
-        confirmSignInConfig: this._confirmSignInConfig && this._confirmSignInConfig.customCSS ? 
-        this._confirmSignInConfig.customCSS : {}
-      };
-      this._customCSS = joinKeys(allClasses, 'confirmSignInConfig') as AmplifyUIInterface;
-      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
-    }
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._customCSS, component: this._confirmSignInConfig.customCSS}
+    );
   }
 
   setCode(code: string) {

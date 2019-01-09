@@ -18,54 +18,72 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">Confirm your sign up code</div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">
+    Confirm your sign up code
+  </div>
+  <div class="{{applyClasses('sectionBody')}}">
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username *</ion-label>
+        <ion-label class="{{applyClasses('inputLabel')}}"  position="stacked">
+          Username *
+        </ion-label>
         <ion-input type="text" 
-          class="amplify-form-input"
+         class="{{applyClasses('input')}}"
           (keyup)="setUsername($event.target.value)"
           [value]="username"
         ></ion-input>
       </ion-item>
-    
       <ion-item lines="none">
-        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">Code *</ion-label>
+        <ion-label class="{{applyClasses('inputLabel')}}"  position="stacked">
+          Code *
+        </ion-label>
         <ion-input 
           #code
           type="text"
-          class="amplify-form-input"
+         class="{{applyClasses('input')}}"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
         ></ion-input>
       </ion-item>
     </ion-list>
-      
-    <div class="amplify-form-actions">
-      <div>
-        <ion-button expand="block" color="primary"
-          (click)="onConfirm()"
-        >Confirm Code</ion-button>
-      </div>
-    <div class="amplify-form-cell-left">
-      <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign In</a></div>
-    </div>
-    <div class="amplify-form-cell-left">
-      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onResend()">Resend</a></div>
+  </div>
+  <ion-button 
+  class="{{applyClasses('button')}}" 
+  expand="block" color="primary" (click)="onConfirm()">Confirm Code</ion-button>
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
+    </span>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      Lost your code?
+      <a class="{{applyClasses('a')}}" (click)="onResend()">Resend</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
-  </div>
-  
 </div>
 `;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-ionic',
-  template
+  template,
+  styles: [
+    `.amplify-input-label {
+      font-size: 14px;
+      margin: 0.5em 0.5em 0.5em 0;
+      letter-spacing: 0.4px;
+      line-height: 18px;
+    }`,
+    `.amplify-form-input {
+      border: none
+    }`
+  ]
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
 

@@ -13,38 +13,47 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
+import { Component, Input, ViewEncapsulation, Injector, ElementRef, OnInit } from '@angular/core';
 
 import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 const template = `
-<div>
+<div class="amplify-authenticator">
 
   <amplify-auth-sign-in-ionic
     *ngIf="!shouldHide('SignIn')"
     [authState]="authState"
+    [signInConfig]="_signInConfig"
+    [customCSS]="_customCSS"
   ></amplify-auth-sign-in-ionic>
 
   <amplify-auth-sign-up-ionic
     *ngIf="!shouldHide('SignUp')"
     [authState]="authState"
     [signUpConfig]="_signUpConfig"
+    [customCSS]="_customCSS"
   ></amplify-auth-sign-up-ionic>
 
   <amplify-auth-confirm-sign-up-ionic
     *ngIf="!shouldHide('ConfirmSignUp')"
     [authState]="authState"
+    [confirmSignUpConfig]="_confirmSignUpConfig"
+    [customCSS]="_customCSS"
   ></amplify-auth-confirm-sign-up-ionic>
 
   <amplify-auth-confirm-sign-in-ionic
   *ngIf="!shouldHide('ConfirmSignIn')"
   [authState]="authState"
+  [confirmSignInConfig]="_confirmSignInConfig"
+  [customCSS]="_customCSS"
   ></amplify-auth-confirm-sign-in-ionic>
 
   <amplify-auth-forgot-password-ionic
   *ngIf="!shouldHide('ForgotPassword')"
   [authState]="authState"
+  [forgotPasswordConfig]="_forgotPasswordConfig"
+  [customCSS]="_customCSS"
   ></amplify-auth-forgot-password-ionic>
 
   <amplify-auth-greetings-ionic
@@ -55,20 +64,37 @@ const template = `
   <amplify-auth-require-new-password-ionic
   *ngIf="!shouldHide('RequireNewPassword')"
   [authState]="authState"
+  [requireNewPasswordConfig]="_requireNewPasswordConfig"
+  [customCSS]="_customCSS"
   ></amplify-auth-require-new-password-ionic>
 </div>
 `;
 
 @Component({
   selector: 'amplify-authenticator-ionic',
-  template
+  template,
+  styles: [
+    `.amplify-authenticator {
+      width: var(--component-width-desktop);
+      margin: 0 auto;
+      border-radius: 6px;
+      background-color: var(--color-white);
+    }`
+  ]
 })
-export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
+export class AuthenticatorIonicComponent extends AuthenticatorComponentCore implements OnInit {
 
   amplifyService: AmplifyService;
+  ionicCSS = {
+    inputLabel: ['amplify-input-label'],
+    input: ['amplify-form-input']
+  };
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
+  }
+
+  ngOnInit() {
+    this._customCSS = Object.assign(this.ionicCSS, this._customCSS);
   }
 }

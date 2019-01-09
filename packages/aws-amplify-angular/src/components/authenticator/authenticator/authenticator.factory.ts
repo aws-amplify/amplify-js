@@ -34,7 +34,14 @@ import { AuthenticatorComponentCore } from './authenticator.component.core';
               <div class="amplify-component">
                 <ng-template component-host></ng-template>
               </div>
-            `
+            `,
+  styles: [
+    `.amplify-component {
+      display: block;
+      font-family: var(--font-family);
+    }`
+  ]
+  
 })
 export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() framework: string;

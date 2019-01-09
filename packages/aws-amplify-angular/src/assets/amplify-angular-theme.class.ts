@@ -31,6 +31,10 @@ interface AmplifyUIInterface {
   alertIcon?: string[];
   alertMessage?: string[];
   alertClose?: string[];
+  selectPhoneCode?: string[];
+  ionicContentPhone?: string[];
+  ionicGridPhone?: string[];
+  ionicSelectPhone?: string[];
 }
 
 class AmplifyUIClass { 
@@ -51,6 +55,10 @@ class AmplifyUIClass {
   alertIcon?: string[];
   alertMessage?: string[];
   alertClose?: string[];
+  selectPhoneCode?: string[];
+  ionicContentPhone?: string[];
+  ionicGridPhone?: string[];
+  ionicSelectPhone?: string[];
 
   constructor(props) {
     this.formSection = props.formSection || [];
@@ -70,6 +78,10 @@ class AmplifyUIClass {
     this.alertIcon = props.alertIcon || [];
     this.alertMessage = props.alertMessage || [];
     this.alertClose = props.alertClose || [];
+    this.selectPhoneCode = props.selectPhoneCode || [];
+    this.ionicContentPhone = props.ionicContentPhone || [];
+    this.ionicGridPhone = props.ionicGridPhone || [];
+    this.ionicSelectPhone = props.ionicSelectPhone || [];
   }
 }
 

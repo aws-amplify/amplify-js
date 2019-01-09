@@ -13,66 +13,74 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { classArray } from '../../../assets/helpers';
 import { AmplifyService, AuthState } from '../../../providers';
 
 
 const template = `
-<div class={{amplifyUI.formSection}} *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Reset your password
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Reset your password
     <br />
-    <div *ngIf="!code_sent" class={{amplifyUI.hint}}>You will receive a verification code</div>
-    <div *ngIf="code_sent">Enter the code you received and set a new password</div>
+    <div *ngIf="!code_sent" class="{{applyClasses('hint')}}">
+      You will receive a verification code
+    </div>
+    <div *ngIf="code_sent" class="{{applyClasses('hint')}}">
+      Enter the code you received and set a new password
+    </div>
   </div>
-  <div class={{amplifyUI.sectionBody}}>
-    <div class={{amplifyUI.formField}}  *ngIf="!code_sent">
-      <div class={{amplifyUI.inputLabel}}>Username * </div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}"  *ngIf="!code_sent">
+      <div class="{{applyClasses('inputLabel')}}">Username * </div>
       <input
         (keyup)="setUsername($event.target.value)"
-        class={{amplifyUI.input}}
+       class="{{applyClasses('input')}}"
         type="text"
         placeholder="Username"
         [value]="username"
       />
     </div>
-    <div class={{amplifyUI.formField}} *ngIf="code_sent">
-      <label class={{amplifyUI.inputLabel}}>Code * </label>
+    <div class="{{applyClasses('formField')}}" *ngIf="code_sent">
+      <div class="{{applyClasses('inputLabel')}}">Code * </div>
       <input #code
         (keyup)="setCode(code.value)"
-        class="amplify-form-input"
+        class="{{applyClasses('input')}}"
         type="text"
         placeholder="Enter code"
       />
     </div>
-    <div class={{amplifyUI.formField}} *ngIf="code_sent">
-      <label class={{amplifyUI.inputLabel}}>Password * </label>
+    <div class="{{applyClasses('formField')}}" *ngIf="code_sent">
+      <div class="{{applyClasses('inputLabel')}}">Password * </div>
       <input #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
+        class="{{applyClasses('input')}}"
         type="password"
         placeholder="Password"
       />
     </div>
-    <div class={{amplifyUI.sectionFooter}}>
-      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
-        <button *ngIf="!code_sent" class={{amplifyUI.button}} (click)="onSend()">Submit</button>
-        <button *ngIf="code_sent" class={{amplifyUI.button}} (click)="onSubmit()">Verify</button>
+    <div class="{{applyClasses('sectionFooter')}}">
+      <span class="{{applyClasses('sectionFooterPrimaryContent')}} ">
+        <button *ngIf="!code_sent" class="{{applyClasses('button')}}"
+        (click)="onSend()">Submit</button>
+        <button *ngIf="code_sent" class="{{applyClasses('button')}}"
+        (click)="onSubmit()">Verify</button>
       </span>
-      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
-        <a *ngIf="code_sent" class={{amplifyUI.a}} (click)="onSend()">Resend Code</a>
-        <a *ngIf="!code_sent" class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
+      <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+        <a *ngIf="code_sent" class="{{applyClasses('a')}}" 
+        (click)="onSend()">Resend Code</a>
+        <a *ngIf="!code_sent" class="{{applyClasses('a')}}" 
+        (click)="onSignIn()">Back to Sign in</a>
       </span>
     </div>
-    <div class="amplify-alert" *ngIf="errorMessage">
-      <div class="amplify-alert-body">
-        <span class="amplify-alert-icon">&#9888;</span>
-        <div class="amplify-alert-message">{{ errorMessage }}</div>
-        <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
-      </div>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -82,7 +90,7 @@ const template = `
   selector: 'amplify-auth-forgot-password-core',
   template
 })
-export class ForgotPasswordComponentCore implements OnInit {
+export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
   username: string;
@@ -133,16 +141,11 @@ export class ForgotPasswordComponentCore implements OnInit {
     this._customCSS = customCSS;
   }
 
-  ngOnInit() {
-    if ((this._forgotPasswordConfig && this._forgotPasswordConfig.customCSS) || this._customCSS) {
-      const allClasses = {
-        ...this._customCSS,
-        forgotPasswordConfig: this._forgotPasswordConfig && this._forgotPasswordConfig.customCSS ? 
-        this._forgotPasswordConfig.customCSS : {}
-      };
-      this._customCSS = joinKeys(allClasses, 'forgotPasswordConfig') as AmplifyUIInterface;
-      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
-    }
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._customCSS, component: this._forgotPasswordConfig.customCSS}
+    );
   }
 
   setUsername(username: string) {

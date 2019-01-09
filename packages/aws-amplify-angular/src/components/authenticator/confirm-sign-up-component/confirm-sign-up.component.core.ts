@@ -16,60 +16,61 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { classArray } from '../../../assets/helpers';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
 
 const template = `
-<div class={{amplifyUI.formSection}} *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Confirm Sign Up</div>
-  <div class={{amplifyUI.sectionBody}}>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}> Username * </div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Confirm Sign Up</div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}"> Username * </div>
       <input
         #amplifyUsername
-        class={{amplifyUI.input}}
+       class="{{applyClasses('input')}}"
         type="text"
         disabled
         placeholder="Username"
         [value]="username"
       />
     </div>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}> Confirmation Code * </div>
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}"> Confirmation Code * </div>
       <input
         #code
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
-        class={{amplifyUI.input}}
+       class="{{applyClasses('input')}}"
         type="text"
         placeholder="Enter your Code"
       />
-      <div class={{amplifyUI.hint}}>
+      <div class="{{applyClasses('hint')}}">
         Lost your code?
-        <a class={{amplifyUI.a}} (click)="onResend()">
+        <a class="{{applyClasses('a')}}" (click)="onResend()">
           Resend Code
         </a>
       </div>
     </div>
-    <div class={{amplifyUI.sectionFooter}}>
-      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
-        <a class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
+    <div class="{{applyClasses('sectionFooter')}}">
+      <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+        <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
       </span>
-      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
-        <button class={{amplifyUI.button}} (click)="onConfirm()">
+      <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+        <button class="{{applyClasses('button')}}" (click)="onConfirm()">
           Confirm
         </button>
       </span>
     </div>
   </div>
-  <div class="amplify-alert"  *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="{{applyClasses('amplifyAlert')}}" 
+  *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -80,7 +81,7 @@ const template = `
   template
 })
 
-export class ConfirmSignUpComponentCore implements OnInit {
+export class ConfirmSignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
   username: string;
@@ -128,16 +129,11 @@ export class ConfirmSignUpComponentCore implements OnInit {
     this._customCSS = customCSS;
   }
 
-  ngOnInit() {
-    if ((this._confirmSignUpConfig && this._confirmSignUpConfig.customCSS) || this._customCSS) {
-      const allClasses = {
-        ...this._customCSS,
-        confirmSignUpConfig: this._confirmSignUpConfig && this._confirmSignUpConfig.customCSS ? 
-        this._confirmSignUpConfig.customCSS : {}
-      };
-      this._customCSS = joinKeys(allClasses, 'confirmSignUpConfig') as AmplifyUIInterface;
-      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
-    }
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._customCSS, component: this._confirmSignUpConfig.customCSS}
+    );
   }
 
   setUsername(username: string) {

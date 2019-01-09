@@ -20,15 +20,14 @@ import { countrylist, country }  from '../../../assets/countries';
 
 
 const template = `
-<div class="{{amplifyUI.formSection}}" *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>{{this.header}}</div>
-  <div class={{amplifyUI.sectionBody}}>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
+  <div class="{{applyClasses('sectionBody')}}">
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
-        <ion-label class={{amplifyUI.inputLabel}} 
+        <ion-label class="{{applyClasses('inputLabel')}}" 
         position="stacked" 
-        *ngIf="field.key !== 'phone_number'"
-        >
+        *ngIf="field.key !== 'phone_number'">
           {{field.label}} 
           <span *ngIf="field.required">*</span>
         </ion-label>
@@ -37,17 +36,17 @@ const template = `
           *ngIf="field.key !== 'phone_number'"
           #{{field.key}}
           type="text"
-          class={{amplifyUI.input}}
+         class="{{applyClasses('input')}}"
           type={{field.type}}
           placeholder={{field.label}}
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
-       
-        <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
-          <ion-grid class="amplify-ionic-grid-padding-left">
-            <ion-row>
-              <ion-col col-6 class="amplify-ionic-grid-padding-left">
+        <ion-content *ngIf="field.key === 'phone_number'" 
+        class="amplify-phone-ion-content {{_customCSS.ionicContentPhone}}">
+          <ion-grid class="amplify-ionic-grid-padding-left {{_customCSS.ionicGridPhone}}">
+            <ion-row align-items-end>
+              <ion-col size="5" class="amplify-ionic-grid-padding-left">
                 <ion-label class="amplify-input-label push-right" 
                 position="stacked" 
                 *ngIf="field.key === 'phone_number'"
@@ -59,7 +58,7 @@ const template = `
                 *ngIf="field.key === 'phone_number'"
                 name="countryCode" 
                 [value]="country_code"
-                class="amplify-select-phone-country" 
+                class="amplify-select-phone-country {{_customCSS.ionicSelectPhone}}" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 (ionChange)="onCodeChange($event.target.value)">
                   <ion-select-option *ngFor="let country of countries"  
@@ -69,7 +68,7 @@ const template = `
                 </ion-select>
               </ion-col>
 
-              <ion-col col-6>
+              <ion-col size="6">
                 <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
                 <ion-input 
                   #phone_number
@@ -87,42 +86,74 @@ const template = `
         </ion-content>
       </ion-item>    
     </ion-list>
-    <div class={{amplifyUI.sectionFooter}}>
-      <div>
-        <ion-button expand="block" color="primary"
-          (click)="onSignUp()"
-        >Sign Up</ion-button>
-      </div>
-      <div class="amplify-form-cell-left">
-        <div class="amplify-form-signup">
-          Have an account? 
-          <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
-        </div>
-      </div>
-      <div class="amplify-form-cell-left">
-        <div class="amplify-form-signup">
-          Have an code?
-          <a class="amplify-form-link" (click)="onConfirmSignUp()">Confirm</a>
-        </div>
-      </div>
-    </div>
-
   </div>
-
-  <div class="amplify-alert" *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <ion-button expand="block" color="primary" (click)="onSignUp()">Sign Up</ion-button>
+  <div class={{amplifyUI.sectionFooter}}>
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      Have an account? <a class="{{applyClasses('a')}}" (click)="onSignIn()">Sign in</a>
+    </span>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+        Have an code?
+        <a class="{{applyClasses('a')}}" (click)="onConfirmSignUp()">Confirm</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
 @Component({
   selector: 'amplify-auth-sign-up-ionic',
   template,
+  styles: [
+    `.amplify-input-label {
+      font-size: 14px;
+      margin: 0.5em 0.5em 0.5em 0;
+      letter-spacing: 0.4px;
+      line-height: 18px;
+    }`,
+    `.amplify-form-input {
+      border: none
+    }`,
+    `.amplify-select-phone-country {
+      height: 55px;
+      min-width: 100%;
+      border: var(--input-border);
+      border-radius: 3px 0 0 3px;
+      background-color: transparent;
+    }`,
+    `.md .amplify-select-phone-country {
+      border: none;
+      border-bottom: var(--input-border);
+      background-color: transparent;
+      margin-top: 0em;
+      min-width: 100% !important;
+      height: 47px !important;
+      padding-left: 0;
+    }`,
+    `.amplify-form-input-phone-ionic {
+      height: 36px;
+      min-width: 100%;
+      color: var(--color-accent-brown);
+      font-size: 14px;
+      letter-spacing: 0.4px;
+      line-height: 20px;
+      border: none;
+      border-bottom: var(--input-border);
+      border-radius: 0px;
+    }`,
+    `.amplify-ionic-grid-padding-left {
+      padding-left: 0
+    }`,
+    `.amplify-phone-ion-content {
+      height: 100px;
+    }`
+  ]
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
 

@@ -18,36 +18,39 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">
+    You are required to update your password
+  </div>
+  <div class="{{applyClasses('sectionBody')}}">
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
+        <ion-label class="{{applyClasses('formField')}}" position="stacked">
+          Password
+        </ion-label>
         <ion-input 
           #password
           type="password"
-          class="amplify-form-input"
+         class="{{applyClasses('input')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
         ></ion-input>
       </ion-item>
-
     </ion-list>
-
-    <div class="amplify-form-row">
-    <ion-button
-      expand="block"
-      (click)="onSignIn()"
-    >Back to Sign In</ion-button>
-    <ion-button
-      expand="block"
-      (click)="onSubmit()"
-    >Submit</ion-button>
-    </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <ion-button expand="block"(click)="onSubmit()" color="primary">Submit</ion-button> 
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      Have an account?  
+      <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to SignIn</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
 </div>
 
@@ -55,7 +58,18 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-require-new-password-ionic',
-  template: template
+  template,
+  styles: [
+    `.amplify-input-label {
+      font-size: 14px;
+      margin: 0.5em;
+      letter-spacing: 0.4px;
+      line-height: 18px;
+    }`,
+    `.amplify-form-input {
+      border: none
+    }`
+  ]
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
 

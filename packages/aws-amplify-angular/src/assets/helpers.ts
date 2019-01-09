@@ -14,38 +14,21 @@
 // tslint:enable
 
 import { AmplifyUIClass, AmplifyUIInterface } from './amplify-angular-theme.class';
+import * as AmplifyUI from '@aws-amplify/ui';
 
-/*
-  Traverses customCSSClass object and
-  1. Moves values from component specific level to top level
-  2. Joins string array to string for insertion into class variable
-*/
-const joinKeys = (customCSS: any, configType: string) => {
-  const validFields =  new AmplifyUIClass({});
-  const configKeys = Object.keys(customCSS[configType])
-    .filter((i) => {
-      return validFields.hasOwnProperty(i);
-    });
-  configKeys.forEach((i) => {
-    customCSS[i] = customCSS[configType][i];
-  });
-  const globalKeys = Object.keys((customCSS))
-    .filter((i) => {
-      return validFields.hasOwnProperty(i);
-    });
-  globalKeys.forEach((g) => {
-    customCSS[g] = customCSS[g].join(' ');
-  });
-  delete customCSS[configType];
-  return customCSS;
+const classArray = (commonClass: string, classOverrides) => {
+  const standardClass = AmplifyUI[commonClass] ?
+    AmplifyUI[commonClass] :
+    commonClass;
+  const globalCustom = classOverrides.global && classOverrides.global[commonClass] ?
+    classOverrides.global[commonClass] : [];
+  const componentCustom = classOverrides.component && classOverrides.component[commonClass] ?
+    classOverrides.component[commonClass] : [];
+  return [
+    standardClass,
+    ...globalCustom, 
+    ...componentCustom
+  ].join(' ');
 };
 
-const appendCustomClasses = (amplifyUI, customCSS) => {
-  const amplifyUIKeys = Object.keys(amplifyUI);
-  amplifyUIKeys.forEach((e) => {
-    amplifyUI[e] = `${amplifyUI[e]} ${customCSS[e] || ''}`;
-  });
-  return amplifyUI;
-};
-
-export { joinKeys, appendCustomClasses };
+export { classArray };

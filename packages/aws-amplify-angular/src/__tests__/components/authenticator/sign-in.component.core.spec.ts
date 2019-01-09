@@ -1,18 +1,24 @@
-import { Component } from '@angular/core';
+import { Component , DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { SignInComponentCore } from '../../../components/authenticator/sign-in-component/sign-in.component.core'
+import { 
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { By } from "@angular/platform-browser";
+import { FormsModule } from '@angular/forms';
+import { AmplifyService } from '../../../providers/amplify.service';
+import {
+   SignInComponentCore
+} from '../../../components/authenticator/sign-in-component/sign-in.component.core';
 import Amplify from 'aws-amplify';
 
 
-describe('ConfirmSignUpComponentCore: ', () => {
+describe('SignInComponentCore: ', () => {
 
   let component: SignInComponentCore;
   let service: AmplifyService;
   let setAuthStateSpy;
   let signInSpy;
-
 
   beforeEach(() => { 
     service = new AmplifyService();
@@ -38,7 +44,7 @@ describe('ConfirmSignUpComponentCore: ', () => {
   });
 
   it('...should call setAuthState within the onForgotPassword method', () => {
-    component.username = 'test-username2'
+    component.username = 'test-username2';
     const callingAuthState = component.onForgotPassword();
     expect(component.amplifyService.setAuthState).toBeCalled();
   });
@@ -59,7 +65,7 @@ describe('ConfirmSignUpComponentCore: ', () => {
   });
 
   it('...should call setAuthState within the onSignUp method', () => {
-    component.username = 'test-username2'
+    component.username = 'test-username2';
     const callingAuthState = component.onSignUp();
     expect(component.amplifyService.setAuthState).toBeCalled();
   });
@@ -71,7 +77,7 @@ describe('ConfirmSignUpComponentCore: ', () => {
   it('...should set this.password with the setPassword method', () => {
     component.setPassword('my-test-password');
     expect(component.password).toEqual('my-test-password');
-  })
+  });
 
   it('...should have a setUsername method', () => {
     expect(component.setUsername).toBeTruthy();
@@ -80,6 +86,31 @@ describe('ConfirmSignUpComponentCore: ', () => {
   it('...should set this.username with the setUsername method', () => {
     component.setUsername('my-test-name');
     expect(component.username).toEqual('my-test-name');
-  })
+  });
+});
+
+describe('SignInComponentCore (methods and UI): ', () => {
+
+  let comp: SignInComponentCore;
+  let fixture: ComponentFixture<SignInComponentCore>; 
+  let amplifyService: AmplifyService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SignInComponentCore],
+      providers: [AmplifyService],
+      imports: [FormsModule]
+    });
+
+    fixture = TestBed.createComponent(SignInComponentCore); 
+    comp = fixture.componentInstance; 
+    amplifyService = TestBed.get(AmplifyService); 
+  });
+
+
+  it('...comp should be defined', () => {
+    expect(comp).toBeDefined();
+  });
+
 
 });

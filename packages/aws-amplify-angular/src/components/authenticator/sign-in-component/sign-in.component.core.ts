@@ -13,67 +13,66 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyService, AuthState } from '../../../providers';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { classArray } from '../../../assets/helpers';
 import { includes } from '../common';
 
 const template = `
-<div class="{{amplifyUI.formSection}}" *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Sign In</div>
-  <div class={{amplifyUI.sectionBody}}>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}>Username * </div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Sign In</div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}">Username * </div>
       <input
         #amplifyUsername
         (keyup)="setUsername($event.target.value)"
-        class={{amplifyUI.input}}
+        class="{{applyClasses('input')}}"
         type="text"
         required
         placeholder="Username"
         [value]="username"
       />
     </div>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}>Password * </div>
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}">Password * </div>
       <input
         #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSignIn()"
-        class={{amplifyUI.input}}
+        class="{{applyClasses('input')}}"
         type="password"
         required
         placeholder="Enter your password"
       />
-      <div class={{amplifyUI.hint}}>
+      <div class="{{applyClasses('hint')}}">
         Forget your password?
-        <a class={{amplifyUI.a}} (click)="onForgotPassword()">
+        <a class="{{applyClasses('a')}}" (click)="onForgotPassword()">
           Reset your password
         </a>
       </div>
     </div>
   </div>
-  <div class={{amplifyUI.sectionFooter}}>
-    <span class="amplifyUI.sectionFooterPrimaryContent">
-      <button 
-        class={{amplifyUI.button}}
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      <button class="{{applyClasses('button')}}"
         (click)="onSignIn()">
           Sign In
       </button>
     </span>
-    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
         No account?  
-        <a class={{amplifyUI.a}} (click)="onSignUp()">Create account</a>
+        <a class="{{applyClasses('a')}}" (click)="onSignUp()">Create account</a>
     </span>
   </div>
-  <div class="amplify-alert"  *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+  <div class="{{applyClasses('amplifyAlert')}}"  *ngIf="errorMessage">
+    <div class="{{applyClasses('alertBody')}}">
+      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
       <a 
-        class="amplify-alert-close"
+        class="{{applyClasses('alertClose')}}"
         (click)="onAlertClose()">
           &times;
       </a>
@@ -86,7 +85,7 @@ const template = `
   selector: 'amplify-auth-sign-in-core',
   template
 })
-export class SignInComponentCore implements OnInit {
+export class SignInComponentCore {
   _authState: AuthState;
   _show: boolean;
   username: string;
@@ -94,10 +93,11 @@ export class SignInComponentCore implements OnInit {
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
-  private _signInConfig: any;
-  private _customCSS: any;
+  _signInConfig: any;
+  _customCSS: any;
+  classOverrides: any;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
     this._customCSS = {};
@@ -131,16 +131,8 @@ export class SignInComponentCore implements OnInit {
     this._customCSS = customCSS;
   }
 
-  ngOnInit() {
-    if ((this._signInConfig && this._signInConfig.customCSS) || this._customCSS) {
-      const allClasses = {
-        ...this._customCSS,
-        signInConfig: this._signInConfig && this._signInConfig.customCSS ? 
-        this._signInConfig.customCSS : {}
-      };
-      this._customCSS = joinKeys(allClasses, 'signInConfig') as AmplifyUIInterface;
-      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
-    }
+  applyClasses(element) {
+    return classArray(element, { global: this._customCSS, component: this._signInConfig.customCSS});
   }
 
   setUsername(username: string) {
@@ -163,7 +155,14 @@ export class SignInComponentCore implements OnInit {
         }
       })
       .catch((err) => {
-        this._setError(err);
+        if (err.code === 'PasswordResetRequiredException') {
+          this.amplifyService.setAuthState({
+            state: 'forgotPassword', 
+            user: {username: this.username}
+          });
+        } else {
+          this._setError(err);
+        }
       });
   }
 
