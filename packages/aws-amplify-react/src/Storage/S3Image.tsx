@@ -29,6 +29,7 @@ export interface IS3ImageProps {
     contentType?;
     fileToKey?;
     hidden?;
+    identityId?;
     imgKey?;
     level?;
     onClick?;

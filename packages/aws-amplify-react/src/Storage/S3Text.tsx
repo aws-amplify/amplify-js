@@ -28,6 +28,7 @@ export interface IS3TextProps {
     contentType?;
     fileToKey?;
     hidden?;
+    identityId?;
     level?;
     onClick?;
     onError?;

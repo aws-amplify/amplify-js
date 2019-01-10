@@ -29,6 +29,7 @@ export interface IS3AlbumProps {
     contentType?;
     fileToKey?;
     filter?;
+    identityId;
     level?;
     onClickItem?;
     onError?;
