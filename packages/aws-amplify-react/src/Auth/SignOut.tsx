@@ -29,12 +29,6 @@ export interface ISignOutProps extends IAuthPieceProps {
     amazonSignOut?;
     auth0SignOut?;
     stateFromStorage?;
-
-    // These are used by <Greetings /> but not here??
-    google_client_id?: string;
-    facebook_app_id?: string;
-    amazon_client_id?: string;
-    auth0;
 }
 
 export interface ISignOutState extends IAuthPieceState {
