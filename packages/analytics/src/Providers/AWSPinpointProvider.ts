@@ -299,8 +299,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 if (err) {
                     logger.debug('record event failed. ', err);
                     logger.error(
-                        'Please ensure you have updated you Pinpoint IAM Policy' +
-                        'with the Action: \"mobiletargeting:PutEvents\" in order to' +
+                        'Please ensure you have updated your Pinpoint IAM Policy' +
+                        'with the Action: \"mobiletargeting:PutEvents\" in order to ' +
                         'continue using AWS Pinpoint Service'
                     );
                     res(false);
