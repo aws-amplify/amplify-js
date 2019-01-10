@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.15"></a>
+## [1.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.14...@aws-amplify/ui@1.0.15) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
 <a name="1.0.14"></a>
 ## [1.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.13-unstable.0...@aws-amplify/ui@1.0.14) (2018-12-15)
 

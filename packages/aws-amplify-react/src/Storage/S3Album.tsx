@@ -173,12 +173,12 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
     }
 
     list() {
-        const { path, level, track } = this.props;
+        const { path, level, track, identityId } = this.props;
         logger.debug('Album path: ' + path);
         if (!Storage || typeof Storage.list !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
-        return Storage.list(path, { level: level? level : 'public', track })
+        return Storage.list(path, { level: level? level : 'public', track, identityId })
             .then(data => {
                 logger.debug('album list', data);
                 this.marshal(data);
@@ -237,7 +237,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
     }
 
     render() {
-        const { picker, translateItem, level } = this.props;
+        const { picker, translateItem, level, identityId } = this.props;
         const { items, ts } = this.state;
 
         const pickerTitle = this.props.pickerTitle || 'Pick';
@@ -254,6 +254,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
                              selected={item.selected}
                              translate={translateItem}
                              level={level}
+                             identityId={identityId}
                              onClick={() => this.handleClick(item)}
                            />
                          : <S3Image
@@ -264,6 +265,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
                              selected={item.selected}
                              translate={translateItem}
                              level={level}
+                             identityId={identityId}
                              onClick={() => this.handleClick(item)}
                            />;
         });

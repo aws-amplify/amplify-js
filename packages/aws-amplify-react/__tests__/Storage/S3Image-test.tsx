@@ -313,8 +313,8 @@ describe('S3Image', () => {
                 });
             });
 
-            s3Image.getImageSource('key', 'level', false);
-            expect(spyon).toBeCalledWith('key', {level: 'level', track: false});
+            s3Image.getImageSource('key', 'level', false, 'identityId');
+            expect(spyon).toBeCalledWith('key', {level: 'level', track: false, identityId: 'identityId'});
             spyon.mockClear();
         });
 
