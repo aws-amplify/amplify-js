@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.7"></a>
+## [3.0.7](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.6...amazon-cognito-identity-js@3.0.7) (2019-01-10)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** return error instead of undefined ([19c3c4e](https://github.com/aws/aws-amplify/commit/19c3c4e))
+* **amazon-cognito-identity-js:** Update Android Gradle Config ([a08f100](https://github.com/aws/aws-amplify/commit/a08f100))
+
+
+
+
 <a name="3.0.6"></a>
 ## [3.0.6](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.6-unstable.2...amazon-cognito-identity-js@3.0.6) (2018-12-13)
 

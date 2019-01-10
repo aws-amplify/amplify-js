@@ -38,11 +38,11 @@ export default class S3Image extends Component {
         this.state = { src: initSrc };
     }
 
-    getImageSource(key, level, track) {
+    getImageSource(key, level, track, identityId) {
         if (!Storage || typeof Storage.get !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
-        Storage.get(key, { level: level? level : 'public', track })
+        Storage.get(key, { level: level? level : 'public', track, identityId })
             .then(url => {
                 this.setState({
                     src: url
@@ -52,7 +52,7 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { imgKey, path, body, contentType, level, track } = this.props;
+        const { imgKey, path, body, contentType, level, track, identityId } = this.props;
         if (!imgKey && !path) {
             logger.debug('empty imgKey and path');
             return ;
@@ -73,11 +73,11 @@ export default class S3Image extends Component {
             });
             ret.then(data => {
                 logger.debug(data);
-                that.getImageSource(key, level, track);
+                that.getImageSource(key, level, track, identityId);
             })
             .catch(err => logger.debug(err));
         } else {
-            that.getImageSource(key, level, track);
+            that.getImageSource(key, level, track, identityId);
         }
     }
 
@@ -95,7 +95,7 @@ export default class S3Image extends Component {
         const that = this;
 
         const path = this.props.path || '';
-        const { imgKey, level, fileToKey, track } = this.props;
+        const { imgKey, level, fileToKey, track, identityId } = this.props;
         const { file, name, size, type } = data;
         const key = imgKey || (path + calcKey(data, fileToKey));
         if (!Storage || typeof Storage.put !== 'function') {
@@ -108,7 +108,7 @@ export default class S3Image extends Component {
         })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.getImageSource(key, level, track);
+                that.getImageSource(key, level, track, identityId);
             })
             .catch(err => logger.debug('handle pick error', err));
     }
