@@ -973,6 +973,10 @@ export default class AuthClass {
             try {
                 user = await this.currentUserPoolUser(params);
             } catch (e) {
+                if (e === 'No userPool') {
+                    logger.error('Cannot get the current user because the user pool is missing. ' +
+                        'Please make sure the Auth module is configured with a valid Cognito User Pool ID');
+                }
                 logger.debug('The user is not authenticated by the error', e);
                 throw ('not authenticated');
             }
