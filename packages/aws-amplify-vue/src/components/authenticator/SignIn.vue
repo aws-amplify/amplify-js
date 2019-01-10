@@ -68,8 +68,7 @@
         })
       },
       classOverrides: {
-        type: Object,
-        default: () => {}
+        type: Object
       }
     },
     data () {
@@ -86,7 +85,6 @@
           header: this.$Amplify.I18n.get('Sign In Account'),
           username: '',
           isSignUpDisplayed: true,
-          classOverrides: {}
         }
         return Object.assign(defaults, this.signInConfig || {})
       }

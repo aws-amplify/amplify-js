@@ -32,10 +32,10 @@ export default {
   name: 'Authenticator',
   props: {
     authConfig: {
-      type: Object,
-      default: () => ({
-        classOverrides: {} 
-      })
+      type: Object
+    },
+    classOverrides: {
+      type: Object
     }
   },
   data () {
@@ -58,7 +58,6 @@ export default {
         forgotPasswordConfig: {},
         mfaConfig: {},
         requireNewPasswordConfig: {},
-        classOverrides: {},
       };
       return Object.assign(defaults, this.authConfig || {})
     }

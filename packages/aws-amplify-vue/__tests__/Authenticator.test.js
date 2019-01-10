@@ -64,10 +64,8 @@ describe('Authenticator', () => {
     beforeEach(() => {
       wrapper = shallowMount(Authenticator, {
         propsData: {
-          authConfig: {
-            classOverrides: {
-              formSection: ['test-class-1', 'test-class-2']
-            }
+          classOverrides: {
+            formSection: ['test-class-1', 'test-class-2']
           }
         },
       });
@@ -133,7 +131,7 @@ describe('Authenticator', () => {
 
     it('...it should have classOverrides defined', () => {
       console.log(wrapper.props());
-      const classOverrides = wrapper.props().authConfig.classOverrides;
+      const classOverrides = wrapper.props().classOverrides;
       expect(classOverrides).toBeDefined();
       expect(classOverrides['formSection']).toContain('test-class-1');
       expect(classOverrides['formSection']).toContain('test-class-2');
