@@ -12,29 +12,40 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" />
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Username')}} *</div>
+        <input 
+          v-bind:class="applyClasses('input')"  
+          v-model="options.username"
+          :placeholder="$Amplify.I18n.get('Enter your username')"
+          autofocus v-on:keyup.enter="signIn" 
+        />
       </div>
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
-        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" />
-        <div v-bind:class="amplifyUI.hint">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Password')}} *</div>
+        <input
+          v-bind:class="applyClasses('input')"
+          v-model="password"
+          type="password"
+          :placeholder="$Amplify.I18n.get('Enter your password')"
+          v-on:keyup.enter="signIn" 
+        />
+        <div v-bind:class="applyClasses('hint')">
           {{$Amplify.I18n.get('Forget your password? ')}}
-          <a v-bind:class="amplifyUI.a" v-on:click="forgot">{{$Amplify.I18n.get('Reset password')}}</a>
+          <a v-bind:class="applyClasses('a')" v-on:click="forgot">{{$Amplify.I18n.get('Reset password')}}</a>
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</button>
+    <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-bind:class="applyClasses('button')" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent" v-if="options.isSignUpDisplayed">
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')" v-if="options.isSignUpDisplayed">
         {{$Amplify.I18n.get('No account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</a>
+        <a v-bind:class="applyClasses('a')" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -44,20 +55,18 @@
 </template>
 
 <script>
-// import Auth from '@aws-amplify/auth';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-
 export default {
   name: 'SignIn',
-  props: ['signInConfig'],
+  props: ['signInConfig', 'classOverrides'],
   data () {
     return {
         password: '',
         error: '',
         amplifyUI: AmplifyUI,
-        logger: {},
+        logger: {}
     }
   },
   computed: {
@@ -103,6 +112,14 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
+    },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.signInConfig.classOverrides && this.signInConfig.classOverrides[element] ? this.signInConfig.classOverrides[element] : [])
+      ];
+      return classes;
     }
   }
 }

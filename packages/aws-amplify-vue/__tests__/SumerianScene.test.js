@@ -17,6 +17,7 @@ describe('SumerianScene', () => {
       wrapper = shallowMount(SumerianScene, {
         propsData: {
           sceneName: 'testSceneName',
+          classOverrides: {}
         },
       });
     });

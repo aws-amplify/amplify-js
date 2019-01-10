@@ -12,20 +12,20 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Code')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code">{{$Amplify.I18n.get('Confirm')}}</button>
+    <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-bind:class="applyClasses('button')" v-on:click="submit" :disabled="!code">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')">
+        <a v-bind:class="applyClasses('a')" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
       </span>
     </div>
     <div class="error" v-if="error">
@@ -41,7 +41,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'ConfirmSignIn',
-  props: ['confirmSignInConfig'],
+  props: ['confirmSignInConfig', 'classOverrides'],
   data () {
     return {
       verifyAttr: '',
@@ -81,6 +81,14 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
+    },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.confirmSignInConfig.classOverrides && this.confirmSignInConfig.classOverrides[element] ? this.confirmSignInConfig.classOverrides[element] : [])
+      ];
+      return classes;
     }
   }
 }

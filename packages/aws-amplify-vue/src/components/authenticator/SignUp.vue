@@ -12,29 +12,29 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField" 
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{this.options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')" 
           v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')" 
           :signUpField="signUpField" 
           v-bind:key="signUpField.key"
         >
-        <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
+        <div v-bind:class="applyClasses('inputLabel')">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
         <input 
             v-if="signUpField.key !== 'phone_number'" 
             :type = "signUpField.type" 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
+            v-bind:class="[applyClasses('input'), signUpField.invalid ? 'invalid': '']" 
             v-model="signUpField.value" 
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)" 
           />
-        <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
+        <div v-if="signUpField.key === 'phone_number'" v-bind:class="applyClasses('selectInput')">
           <select v-model="country">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
           <input 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
+            v-bind:class="[applyClasses('input'), signUpField.invalid ? 'invalid': '']" 
             v-model="signUpField.value"
             type="number"
             :placeholder="signUpField.label"
@@ -43,13 +43,13 @@
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
+    <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-bind:class="applyClasses('button')" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
+        <a v-bind:class="applyClasses('a')" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -69,7 +69,7 @@ Vue.use(Vue2Filters)
 
 export default {
   name: 'SignUp',
-  props: ['signUpConfig'],
+  props: ['signUpConfig', 'classOverrides'],
   data () {
     return {
       country: 'USA (+1)',
@@ -261,6 +261,14 @@ export default {
       }
       return null;
     },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.signUpConfig.classOverrides && this.signUpConfig.classOverrides[element] ? this.signUpConfig.classOverrides[element] : [])
+      ];
+      return classes;
+    }
   }
 }
 </script>

@@ -12,11 +12,11 @@
  */
 
 <template>
-  <div v-bind:id="SCENE_CONTAINER_DOM_ID" v-bind:class="amplifyUI.sumerianSceneContainer">
-    <div v-bind:id="SCENE_DOM_ID" v-bind:class="amplifyUI.sumerianScene">
-      <div v-if="loading" v-bind:class="amplifyUI.loadingOverlay">
-        <div v-bind:class="amplifyUI.loadingContainer">
-          <div v-bind:class="amplifyUI.loadingLogo">
+  <div v-bind:id="SCENE_CONTAINER_DOM_ID" v-bind:class="applyClasses('sumerianSceneContainer')">
+    <div v-bind:id="SCENE_DOM_ID" v-bind:class="applyClasses('sumerianScene')">
+      <div v-if="loading" v-bind:class="applyClasses('loadingOverlay')">
+        <div v-bind:class="applyClasses('loadingContainer')">
+          <div v-bind:class="applyClasses('loadingLogo')">
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 2000 1195" style="enable-background:new 0 0 2000 1195;" xml:space="preserve">
               <g>
@@ -70,18 +70,18 @@
               </g>
             </svg>
           </div>
-          <div v-bind:class="amplifyUI.loadingSceneName">{{sceneName}}</div>
-          <div v-if="sceneError" v-bind:class="amplifyUI.sceneErrorText">{{sceneError}}</div>
-          <div v-if="!sceneError" v-bind:class="amplifyUI.loadingBar">
-            <div v-bind:class="amplifyUI.loadingBarFill" v-bind:style="{ width: loadPercentage + '%'}"></div>
+          <div v-bind:class="applyClasses('loadingSceneName')">{{sceneName}}</div>
+          <div v-if="sceneError" v-bind:class="applyClasses('sceneErrorText')">{{sceneError}}</div>
+          <div v-if="!sceneError" v-bind:class="applyClasses('loadingBar')">
+            <div v-bind:class="applyClasses('loadingBarFill')" v-bind:style="{ width: loadPercentage + '%'}"></div>
           </div>
         </div>
       </div>
     </div>
-    <div v-if="!loading" v-bind:class="amplifyUI.sceneBar">
-      <span v-bind:class="amplifyUI.sceneActions">
-        <div v-bind:class="[amplifyUI.tooltip, showEnableAudio ? amplifyUI.autoShowTooltip : '']" :data-text="showEnableAudio ? 'The scene is muted. Click to unmute.' : (muted ? 'Unmute' : 'Mute')" v-on:click="muted ? setMuted(false) : setMuted(true)">
-          <button v-bind:class="amplifyUI.actionButton">
+    <div v-if="!loading" v-bind:class="applyClasses('sceneBar')">
+      <span v-bind:class="applyClasses('sceneActions')">
+        <div v-bind:class="[applyClasses('tooltip'), showEnableAudio ? applyClasses('autoShowTooltip') : '']" :data-text="showEnableAudio ? 'The scene is muted. Click to unmute.' : (muted ? 'Unmute' : 'Mute')" v-on:click="muted ? setMuted(false) : setMuted(true)">
+          <button v-bind:class="applyClasses('actionButton')">
             <svg v-if="muted" width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="icons/minis/volumeOff" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <path d="M3.48026899,12.9630494 C3.63825091,12.9630494 3.79237961,13.0108921 3.92264322,13.1003479 L8.77467683,16.8113609 C9.29423971,17.1679383 10,16.7950396 10,16.1637406 L10,3.78619489 C10,3.15489596 9.29423971,2.78199725 8.77467683,3.13857463 L3.92264322,6.84545211 C3.79237961,6.93490793 3.63825091,6.9827506 3.48026899,6.9827506 L1.78294894,6.9827506 C1.3505185,6.9827506 1,7.33409518 1,7.76754476 L1,12.1781306 C1,12.6117048 1.3505185,12.9630494 1.78294894,12.9630494 L3.48026899,12.9630494 Z M17.2118156,7 L15.0918385,9.11997713 L12.9718614,7 L12,7.97174685 L14.1200917,10.091724 L12,12.2118156 L12.9718614,13.1835625 L15.0918385,11.0635854 L17.2118156,13.1835625 L18.1835625,12.2118156 L16.0635854,10.091724 L18.1835625,7.97174685 L17.2118156,7 Z" id="Fill-2" fill="#FFFFFF"></path>
@@ -94,8 +94,8 @@
             </svg>
           </button>
         </div>
-        <div v-if="isVRCapable" v-bind:class="amplifyUI.tooltip" data-text="Enter VR" v-on:click="enterVR()">
-          <button v-bind:class="amplifyUI.actionButton">
+        <div v-if="isVRCapable" v-bind:class="applyClasses('tooltip')" data-text="Enter VR" v-on:click="enterVR()">
+          <button v-bind:class="applyClasses('actionButton')">
             <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="icons/minis/VRon-Copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g id="Group-7-Copy" transform="translate(1.000000, 3.000000)" fill="#FFFFFF">
@@ -105,8 +105,8 @@
             </svg>
           </button>
         </div>
-        <div v-if="!isFullscreen" v-bind:class="amplifyUI.tooltip" data-text="Fullscreen">
-          <button v-bind:class="amplifyUI.actionButton" v-on:click="maximize()">
+        <div v-if="!isFullscreen" v-bind:class="applyClasses('tooltip')" data-text="Fullscreen">
+          <button v-bind:class="applyClasses('actionButton')" v-on:click="maximize()">
             <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="icons/minis/screenfull" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <path d="M2.04162598,3 L2.04162598,16 L17.0147705,16 L17.0147705,3 L2.04162598,3 Z M1,2 L18,2 L18,17 L1,17 L1,2 Z M3,4 L16,4 L16,15 L3,15 L3,4 Z" id="Rectangle-Copy" fill="#FFFFFF" fill-rule="nonzero"></path>
@@ -114,8 +114,8 @@
             </svg>
           </button>
         </div>
-        <div v-if="isFullscreen" v-bind:class="amplifyUI.tooltip" data-text="Exit Fullscreen">
-          <button v-bind:class="amplifyUI.actionButton" v-on:click="minimize()">
+        <div v-if="isFullscreen" v-bind:class="applyClasses('tooltip')" data-text="Exit Fullscreen">
+          <button v-bind:class="applyClasses('actionButton')" v-on:click="minimize()">
             <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="icons/minis/screensmall" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <path d="M11,16 L17.0147705,16 L17.0147705,3 L2.04162598,3 L2.04162598,10 L11,10 L11,16 Z M1,2 L18,2 L18,17 L1,17 L1,2 Z" id="Rectangle" fill="#FFFFFF" fill-rule="nonzero"></path>
@@ -134,7 +134,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'SumerianScene',
-  props: ['sceneName'],
+  props: ['sceneName', 'sumerianSceneConfig', 'classOverrides'],
   data () {
     return {
       loading: false,
@@ -220,6 +220,14 @@ export default {
       } else if(doc.webkitExitFullscreen) {
         doc.webkitExitFullscreen();
       }
+    },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.sumerianSceneConfig.classOverrides && this.sumerianSceneConfig.classOverrides[element] ? this.sumerianSceneConfig.classOverrides[element] : [])
+      ];
+      return classes;
     }
   }
 }

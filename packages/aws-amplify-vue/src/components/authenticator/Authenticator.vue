@@ -13,23 +13,24 @@
 
 <template>
   <div>
-    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInConfig="options.signInConfig"></amplify-sign-in>
-    <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpConfig="options.signUpConfig"></amplify-sign-up>
-    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig"></amplify-confirm-sign-up>
-    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInConfig="options.confirmSignInConfig"></amplify-confirm-sign-in>
-    <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig"></amplify-forgot-password>
-    <amplify-require-new-password v-if="displayMap.requireNewPassword" v-bind:requireNewPasswordConfig="options.requireNewPasswordConfig"></amplify-require-new-password>
-    <amplify-set-mfa v-if="displayMap.showMfa" v-bind:mfaConfig="options.mfaConfig"></amplify-set-mfa>
+    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInConfig="options.signInConfig" v-bind:classOverrides="this.classOverrides"></amplify-sign-in>
+    <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpConfig="options.signUpConfig" v-bind:classOverrides="this.classOverrides"></amplify-sign-up>
+    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig" v-bind:classOverrides="this.classOverrides"></amplify-confirm-sign-up>
+    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInConfig="options.confirmSignInConfig" v-bind:classOverrides="this.classOverrides"></amplify-confirm-sign-in>
+    <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig" v-bind:classOverrides="this.classOverrides"></amplify-forgot-password>
+    <amplify-require-new-password v-if="displayMap.requireNewPassword" v-bind:requireNewPasswordConfig="options.requireNewPasswordConfig" v-bind:classOverrides="this.classOverrides"></amplify-require-new-password>
+    <amplify-set-mfa v-if="displayMap.showMfa" v-bind:mfaConfig="options.mfaConfig" v-bind:classOverrides="this.classOverrides"></amplify-set-mfa>
   </div>
 </template>
 
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import GetUser from '../../services/getUser';
+import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'Authenticator',
-  props: ['authConfig'],
+  props: ['authConfig', 'classOverrides'],
   data () {
     return {
         user: {
@@ -49,7 +50,8 @@ export default {
         confirmSignInConfig: {},
         forgotPasswordConfig: {},
         mfaConfig: {},
-        requireNewPasswordConfig: {}
+        requireNewPasswordConfig: {},
+        // classOverrides: Object.keys(AmplifyUI).reduce(function(prev,curr){prev[curr]=[];return prev;},{})
       };
       return Object.assign(defaults, this.authConfig || {})
     }
