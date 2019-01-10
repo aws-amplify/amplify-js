@@ -74,7 +74,18 @@ import QrcodeVue from 'qrcode.vue';
 
 export default {
   name: 'SetMfa',
-  props: ['mfaConfig', 'classOverrides'],
+  props: {
+    mfaConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
         user: null,

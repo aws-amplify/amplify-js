@@ -36,60 +36,71 @@
 
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'ConfirmSignIn',
-  props: ['confirmSignInConfig', 'classOverrides'],
-  data () {
-    return {
-      verifyAttr: '',
-      code: '',
-      error: '',
-      logger: {},
-      amplifyUI: AmplifyUI
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        header: this.$Amplify.I18n.get('Confirm Sign In'),
-        user: {},
-      }
-      return Object.assign(defaults, this.confirmSignInConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
-    if (Object.keys(this.options.user).length === 0) {
-      this.setError('Valid user not received.');
-    };
-  },
-  methods: {
-    submit: function() {
-      this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
-        .then(() => {
-          this.logger.info('confirmSignIn successs');
-          AmplifyEventBus.$emit('authState', 'signedIn');
+  export default {
+    name: 'ConfirmSignIn',
+    props: {
+      confirmSignInConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {} 
         })
-        .catch(e => this.setError(e));
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
+      }
     },
-    signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+    data () {
+      return {
+        verifyAttr: '',
+        code: '',
+        error: '',
+        logger: {},
+        amplifyUI: AmplifyUI
+      }
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+    computed: {
+      options() {
+        const defaults = {
+          header: this.$Amplify.I18n.get('Confirm Sign In'),
+          user: {},
+        }
+        return Object.assign(defaults, this.confirmSignInConfig || {})
+      }
     },
-    applyClasses: function(element) {
-      const classes = [
-        AmplifyUI[element],
-        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
-        ...(this.confirmSignInConfig.classOverrides && this.confirmSignInConfig.classOverrides[element] ? this.confirmSignInConfig.classOverrides[element] : [])
-      ];
-      return classes;
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name);
+      if (Object.keys(this.options.user).length === 0) {
+        this.setError('Valid user not received.');
+      };
+    },
+    methods: {
+      submit: function() {
+        this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
+          .then(() => {
+            this.logger.info('confirmSignIn successs');
+            AmplifyEventBus.$emit('authState', 'signedIn');
+          })
+          .catch(e => this.setError(e));
+      },
+      signIn: function() {
+        AmplifyEventBus.$emit('authState', 'signedOut');
+      },
+      setError: function(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.confirmSignInConfig.classOverrides && this.confirmSignInConfig.classOverrides[element] ? this.confirmSignInConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

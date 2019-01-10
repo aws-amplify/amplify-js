@@ -46,66 +46,77 @@
 </template>
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'ForgotPassword',
-  props: ['forgotPasswordConfig', 'classOverrides'],
-  data () {
-    return {
-        username: '',
-        code: '',
-        password: '',
-        error: '',
-        sent: false,
-        logger: {},
-        amplifyUI: AmplifyUI
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        header: this.$Amplify.I18n.get('Reset your password'),
+  export default {
+    name: 'ForgotPassword',
+    props: {
+      forgotPasswordConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {} 
+        })
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
       }
-      return Object.assign(defaults, this.forgotPasswordConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-  },
-  methods: {
-    submit: function() {
-      this.$Amplify.Auth.forgotPassword(this.username)
-        .then(() => {
-          this.sent = true;
-          this.logger.info('forgotPassword success');
-        })
-        .catch(e => this.setError(e));
     },
-    verify: function() {
-      this.$Amplify.Auth.forgotPasswordSubmit(this.username, this.code, this.password)
-        .then(() => {
-          this.logger.info('forgotPasswordSubmit success');
-          AmplifyEventBus.$emit('authState', 'signedOut');
-        })
-        .catch(e => this.setError(e));
+    data () {
+      return {
+          username: '',
+          code: '',
+          password: '',
+          error: '',
+          sent: false,
+          logger: {},
+          amplifyUI: AmplifyUI
+      }
     },
-    signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+    computed: {
+      options() {
+        const defaults = {
+          header: this.$Amplify.I18n.get('Reset your password'),
+        }
+        return Object.assign(defaults, this.forgotPasswordConfig || {})
+      }
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name)
     },
-    applyClasses: function(element) {
-      const classes = [
-        AmplifyUI[element],
-        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
-        ...(this.forgotPasswordConfig.classOverrides && this.forgotPasswordConfig.classOverrides[element] ? this.forgotPasswordConfig.classOverrides[element] : [])
-      ];
-      return classes;
+    methods: {
+      submit: function() {
+        this.$Amplify.Auth.forgotPassword(this.username)
+          .then(() => {
+            this.sent = true;
+            this.logger.info('forgotPassword success');
+          })
+          .catch(e => this.setError(e));
+      },
+      verify: function() {
+        this.$Amplify.Auth.forgotPasswordSubmit(this.username, this.code, this.password)
+          .then(() => {
+            this.logger.info('forgotPasswordSubmit success');
+            AmplifyEventBus.$emit('authState', 'signedOut');
+          })
+          .catch(e => this.setError(e));
+      },
+      signIn: function() {
+        AmplifyEventBus.$emit('authState', 'signedOut');
+      },
+      setError: function(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.forgotPasswordConfig.classOverrides && this.forgotPasswordConfig.classOverrides[element] ? this.forgotPasswordConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

@@ -44,66 +44,77 @@
 </template>
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'ConfirmSignUp',
-  props: ['confirmSignUpConfig', 'classOverrides'],
-  data () {
-    return {
-        code: '',
-        error: '',
-        logger: {},
-        amplifyUI: AmplifyUI
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        username: '',
-        header: this.$Amplify.I18n.get('Confirm Sign Up'),
+  export default {
+    name: 'ConfirmSignUp',
+    props: {
+      confirmSignUpConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {} 
+        })
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
       }
-      return Object.assign(defaults, this.confirmSignUpConfig || {})
-    }
-  },
-  mounted: function() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-    if (!this.options.username) {
-      return this.setError('Valid username not received.');
-    };
-  },
-  methods: {
-    confirm() {
-        this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
-          .then(() => {
-            this.logger.info('confirmSignUp success')
-            AmplifyEventBus.$emit('authState', 'signedOut')
-          })
-          .catch(e => this.setError(e));
     },
-    resend() {
-        this.$Amplify.Auth.resendSignUp(this.options.username)
+    data () {
+      return {
+          code: '',
+          error: '',
+          logger: {},
+          amplifyUI: AmplifyUI
+      }
+    },
+    computed: {
+      options() {
+        const defaults = {
+          username: '',
+          header: this.$Amplify.I18n.get('Confirm Sign Up'),
+        }
+        return Object.assign(defaults, this.confirmSignUpConfig || {})
+      }
+    },
+    mounted: function() {
+      this.logger = new this.$Amplify.Logger(this.$options.name)
+      if (!this.options.username) {
+        return this.setError('Valid username not received.');
+      };
+    },
+    methods: {
+      confirm() {
+          this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
             .then(() => {
-              this.logger.info('resendSignUp success')
+              this.logger.info('confirmSignUp success')
+              AmplifyEventBus.$emit('authState', 'signedOut')
             })
             .catch(e => this.setError(e));
-    },
-    signIn() {
-        AmplifyEventBus.$emit('authState', 'signedOut')
-    },
-    setError(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
-    },
-    applyClasses: function(element) {
-      const classes = [
-        AmplifyUI[element],
-        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
-        ...(this.confirmSignUpConfig.classOverrides && this.confirmSignUpConfig.classOverrides[element] ? this.confirmSignUpConfig.classOverrides[element] : [])
-      ];
-      return classes;
+      },
+      resend() {
+          this.$Amplify.Auth.resendSignUp(this.options.username)
+              .then(() => {
+                this.logger.info('resendSignUp success')
+              })
+              .catch(e => this.setError(e));
+      },
+      signIn() {
+          AmplifyEventBus.$emit('authState', 'signedOut')
+      },
+      setError(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.confirmSignUpConfig.classOverrides && this.confirmSignUpConfig.classOverrides[element] ? this.confirmSignUpConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

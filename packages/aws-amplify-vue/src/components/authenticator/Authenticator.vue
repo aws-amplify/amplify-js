@@ -30,7 +30,14 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'Authenticator',
-  props: ['authConfig', 'classOverrides'],
+  props: {
+    authConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {} 
+      })
+    }
+  },
   data () {
     return {
         user: {
@@ -51,7 +58,7 @@ export default {
         forgotPasswordConfig: {},
         mfaConfig: {},
         requireNewPasswordConfig: {},
-        // classOverrides: Object.keys(AmplifyUI).reduce(function(prev,curr){prev[curr]=[];return prev;},{})
+        classOverrides: {},
       };
       return Object.assign(defaults, this.authConfig || {})
     }

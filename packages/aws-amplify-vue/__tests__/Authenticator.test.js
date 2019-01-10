@@ -63,9 +63,13 @@ describe('Authenticator', () => {
     let mockDisplayMap = {};
     beforeEach(() => {
       wrapper = shallowMount(Authenticator, {
-        // methods: {
-        //   updateDisplayMap: mockUpdateDisplayMap,
-        // }
+        propsData: {
+          authConfig: {
+            classOverrides: {
+              formSection: ['test-class-1', 'test-class-2']
+            }
+          }
+        },
       });
       wrapper.vm.updateDisplayMap = jest.fn(() => mockDisplayMap);
       dependency.mockImplementation(() => Promise.reject(new Error()));
@@ -125,6 +129,14 @@ describe('Authenticator', () => {
       const testUser = { username: 'IAMEMITTED' };
       AmplifyEventBus.$emit('localUser', testUser);
       expect(wrapper.vm.user.username).toEqual(testUser.username);
+    });
+
+    it('...it should have classOverrides defined', () => {
+      console.log(wrapper.props());
+      const classOverrides = wrapper.props().authConfig.classOverrides;
+      expect(classOverrides).toBeDefined();
+      expect(classOverrides['formSection']).toContain('test-class-1');
+      expect(classOverrides['formSection']).toContain('test-class-2');
     });
   });
 });

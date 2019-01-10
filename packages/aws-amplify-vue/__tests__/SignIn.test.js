@@ -93,6 +93,13 @@ describe('SignIn', () => {
       wrapper.vm.signUp();
       expect(testState).toEqual(2);
     });
+    
+    it('...should have a dom element without class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).not.toContain('test-class-1');
+      expect(el.classes()).not.toContain('test-class-2');
+    });
   });
 
   describe('...when it is mounted with props...', () => {
@@ -109,7 +116,13 @@ describe('SignIn', () => {
           signInConfig: {
             username: 'TestPerson',
             header,
+            classOverrides: {
+              formSection: ['test-class-1']
+            }
           },
+          classOverrides: {
+            formSection: ['test-class-2', 'test-class-3']
+          }
         },
       });
     });
@@ -150,6 +163,22 @@ describe('SignIn', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterSecondaryContent} > a`);
       el.trigger('click');
       expect(mockSignUp).toHaveBeenCalled();
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('formSection');
+      expect(classes).toContain(AmplifyUI['formSection']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });

@@ -69,7 +69,18 @@ Vue.use(Vue2Filters)
 
 export default {
   name: 'SignUp',
-  props: ['signUpConfig', 'classOverrides'],
+  props: {
+    signUpConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       country: 'USA (+1)',

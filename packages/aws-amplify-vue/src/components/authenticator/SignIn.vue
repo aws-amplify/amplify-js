@@ -55,72 +55,84 @@
 </template>
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'SignIn',
-  props: ['signInConfig', 'classOverrides'],
-  data () {
-    return {
-        password: '',
-        error: '',
-        amplifyUI: AmplifyUI,
-        logger: {}
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        header: this.$Amplify.I18n.get('Sign In Account'),
-        username: '',
-        isSignUpDisplayed: true
-      }
-      return Object.assign(defaults, this.signInConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
-  },
-  methods: {
-    signIn: function(event) {
-      const that = this
-      this.$Amplify.Auth.signIn(this.options.username, this.password)
-        .then(data => {
-          this.logger.info('sign in success');
-          if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
-            AmplifyEventBus.$emit('localUser', data);
-            return AmplifyEventBus.$emit('authState', 'confirmSignIn')
-          } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
-            AmplifyEventBus.$emit('localUser', data);
-            return AmplifyEventBus.$emit('authState', 'requireNewPassword');
-          } else if (data.challengeName === 'MFA_SETUP') {
-            AmplifyEventBus.$emit('localUser', data);
-            return AmplifyEventBus.$emit('authState', 'setMfa');
-          } else {
-            return AmplifyEventBus.$emit('authState', 'signedIn')
-          }
+  export default {
+    name: 'SignIn',
+    props: {
+      signInConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {}
         })
-        .catch(e => this.setError(e));
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
+      }
     },
-    forgot: function() {
-      AmplifyEventBus.$emit('authState', 'forgotPassword')
+    data () {
+      return {
+          password: '',
+          error: '',
+          amplifyUI: AmplifyUI,
+          logger: {}
+      }
     },
-    signUp: function() {
-      AmplifyEventBus.$emit('authState', 'signUp')
+    computed: {
+      options() {
+        const defaults = {
+          header: this.$Amplify.I18n.get('Sign In Account'),
+          username: '',
+          isSignUpDisplayed: true,
+          classOverrides: {}
+        }
+        return Object.assign(defaults, this.signInConfig || {})
+      }
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error)
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name);
     },
-    applyClasses: function(element) {
-      const classes = [
-        AmplifyUI[element],
-        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
-        ...(this.signInConfig.classOverrides && this.signInConfig.classOverrides[element] ? this.signInConfig.classOverrides[element] : [])
-      ];
-      return classes;
+    methods: {
+      signIn: function(event) {
+        const that = this
+        this.$Amplify.Auth.signIn(this.options.username, this.password)
+          .then(data => {
+            this.logger.info('sign in success');
+            if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
+              AmplifyEventBus.$emit('localUser', data);
+              return AmplifyEventBus.$emit('authState', 'confirmSignIn')
+            } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
+              AmplifyEventBus.$emit('localUser', data);
+              return AmplifyEventBus.$emit('authState', 'requireNewPassword');
+            } else if (data.challengeName === 'MFA_SETUP') {
+              AmplifyEventBus.$emit('localUser', data);
+              return AmplifyEventBus.$emit('authState', 'setMfa');
+            } else {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            }
+          })
+          .catch(e => this.setError(e));
+      },
+      forgot: function() {
+        AmplifyEventBus.$emit('authState', 'forgotPassword')
+      },
+      signUp: function() {
+        AmplifyEventBus.$emit('authState', 'signUp')
+      },
+      setError: function(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error)
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.signInConfig.classOverrides && this.signInConfig.classOverrides[element] ? this.signInConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

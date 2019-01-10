@@ -96,6 +96,13 @@ describe('ForgotPassword', () => {
       wrapper.vm.signIn();
       expect(testState).toEqual(1);
     });
+
+    it('...should have a dom element without class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).not.toContain('test-class-1');
+      expect(el.classes()).not.toContain('test-class-2');
+    });
   });
 
   describe('...when it is mounted with props...', () => {
@@ -111,7 +118,13 @@ describe('ForgotPassword', () => {
         propsData: {
           forgotPasswordConfig: {
             header,
+            classOverrides: {
+              formSection: ['test-class-1']
+            }
           },
+          classOverrides: {
+            formSection: ['test-class-2', 'test-class-3']
+          }
         },
       });
     });
@@ -136,6 +149,22 @@ describe('ForgotPassword', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterSecondaryContent} > .${AmplifyUI.a}`);
       el.trigger('click');
       expect(mockSignIn).toHaveBeenCalled();
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('formSection');
+      expect(classes).toContain(AmplifyUI['formSection']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });

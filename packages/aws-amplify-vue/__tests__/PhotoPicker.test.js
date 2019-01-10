@@ -71,6 +71,13 @@ describe('PhotoPicker', () => {
       expect(wrapper.vm.options.title).toEqual('i18n Upload');
       expect(wrapper.vm.options.accept).toEqual('*/*');
     });
+
+    it('...should have a dom element without class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).not.toContain('test-class-1');
+      expect(el.classes()).not.toContain('test-class-2');
+    });
   });
 
   describe('...when the methods are not mocked...', () => {
@@ -103,7 +110,13 @@ describe('PhotoPicker', () => {
             title,
             accept,
             path: 'url',
+            classOverrides: {
+              formSection: ['test-class-1']
+            }
           },
+          classOverrides: {
+            formSection: ['test-class-2', 'test-class-3']
+          }
         },
       });
     });
@@ -150,6 +163,22 @@ describe('PhotoPicker', () => {
       const el = wrapper.find('input');
       el.trigger('change');
       expect(mockPick).toBeCalled();
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('formSection');
+      expect(classes).toContain(AmplifyUI['formSection']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });

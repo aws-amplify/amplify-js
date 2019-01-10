@@ -30,7 +30,18 @@ import { existsSync } from 'fs';
 
 export default {
   name: 'SignOut',
-  props: ['signOutConfig', 'classOverrides'],
+  props: {
+    signOutConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
         error: '',
@@ -43,7 +54,8 @@ export default {
     options() {
       const defaults = {
         msg: null,
-        signOutButton: this.$Amplify.I18n.get('Sign Out')
+        signOutButton: this.$Amplify.I18n.get('Sign Out'),
+        classOverrides: {}
       }
       return Object.assign(defaults, this.signOutConfig || {})
     }

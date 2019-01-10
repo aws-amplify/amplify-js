@@ -36,7 +36,18 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 
 export default {
   name: 'PhotoPicker',
-  props: ['photoPickerConfig', 'classOverrides'],
+  props: {
+    photoPickerConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       logger: {},

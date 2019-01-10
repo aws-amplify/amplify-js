@@ -134,7 +134,22 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'SumerianScene',
-  props: ['sceneName', 'sumerianSceneConfig', 'classOverrides'],
+  props: {
+    sceneName: {
+      type: String,
+      default: null
+    },
+    sumerianSceneConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       loading: false,
