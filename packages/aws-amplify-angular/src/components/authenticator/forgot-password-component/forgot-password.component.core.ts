@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
@@ -100,13 +100,13 @@ export class ForgotPasswordComponentCore {
   code_sent = false;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
-  private _forgotPasswordConfig: any;
-  private _customCSS: any;
+  _forgotPasswordConfig: any;
+  _classOverrides: any;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
-    this._customCSS = {};
+    this._classOverrides = {};
     this._forgotPasswordConfig = {};
   }
 
@@ -118,8 +118,8 @@ export class ForgotPasswordComponentCore {
     if (data.forgotPasswordConfig) {
       this._forgotPasswordConfig = data.forgotPasswordConfig;
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -137,14 +137,14 @@ export class ForgotPasswordComponentCore {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
   applyClasses(element) {
     return classArray(
       element, 
-      { global: this._customCSS, component: this._forgotPasswordConfig.customCSS}
+      { global: this._classOverrides, component: this._forgotPasswordConfig.classOverrides}
     );
   }
 

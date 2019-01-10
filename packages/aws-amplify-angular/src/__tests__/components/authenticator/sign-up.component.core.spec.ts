@@ -1,3 +1,17 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +21,7 @@ import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@ang
 import { AmplifyService } from '../../../providers/amplify.service'
 import { SignUpComponentCore, SignUpField } from '../../../components/authenticator/sign-up-component/sign-up.component.core'
 import Amplify from 'aws-amplify';
+import * as AmplifyUI from '@aws-amplify/ui';
 // tslint:enable
 
 describe('SignUpComponentCore (basics): ', () => {
@@ -170,5 +185,206 @@ describe('SignUpComponentCore (methods and UI): ', () => {
       expect(component.signUpFields[4].key).toBe('testkey2');  
     });
   });
+});
+
+describe('SignUpComponentCore (classOverides unused): ', () => {
+
+  let comp: SignUpComponentCore;
+  let fixture: ComponentFixture<SignUpComponentCore>; 
+  let amplifyService: AmplifyService;
+  let ui: any;
+  let signUpDe: DebugElement;
+  let signUpEl: HTMLDivElement;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SignUpComponentCore],
+      providers: [AmplifyService],
+      imports: [FormsModule]
+    });
+
+    fixture = TestBed.createComponent(SignUpComponentCore); 
+    comp = fixture.componentInstance; 
+    comp.authState = { state: 'signUp', user: {} };
+    amplifyService = TestBed.get(AmplifyService); 
+    ui = AmplifyUI;
+    signUpDe = fixture.debugElement;
+    signUpEl = signUpDe.nativeElement;
+    fixture.detectChanges();
+  });
+
+  it('...it should have a formSection with an AmplifyUI class', () => {
+    const formSection = signUpEl.querySelector(`.${ui.formSection}`);
+    expect(formSection).toBeTruthy();
+  });
+
+  it('...it should have a sectionHeader with an AmplifyUI class', () => {
+    const sectionHeader = signUpEl.querySelector(`.${ui.sectionHeader}`);
+    expect(sectionHeader).toBeTruthy();
+  });
+
+  it('...it should have a sectionBody with an AmplifyUI class', () => {
+    const sectionBody = signUpEl.querySelector(`.${ui.sectionBody}`);
+    expect(sectionBody).toBeTruthy();
+  });
+
+  it('...it should have two formFields with an AmplifyUI class', () => {
+    const formField = signUpEl.querySelectorAll(`.${ui.formField}`);
+    expect(formField.length).toEqual(4);
+  });
+
+  it('...it should have two inputs with an AmplifyUI class', () => {
+    const input = signUpEl.querySelectorAll(`.${ui.input}`);
+    expect(input.length).toEqual(4);
+  });
+
+  it('...it should have a sectionFooter with an AmplifyUI class', () => {
+    const sectionFooter = signUpEl.querySelector(`.${ui.sectionFooter}`);
+    expect(sectionFooter).toBeTruthy();
+  });
+});
+  
+describe('SignUpComponentCore (classOverides global only): ', () => {
+
+  let comp: SignUpComponentCore;
+  let fixture: ComponentFixture<SignUpComponentCore>; 
+  let amplifyService: AmplifyService;
+  let ui: any;
+  let signUpDe: DebugElement;
+  let signUpEl: HTMLDivElement;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SignUpComponentCore],
+      providers: [AmplifyService],
+      imports: [FormsModule]
+    });
+
+    fixture = TestBed.createComponent(SignUpComponentCore); 
+    comp = fixture.componentInstance; 
+    comp.authState = { state: 'signUp', user: {} };
+    comp._classOverrides = {
+      formSection: ['formSectionClass'],
+      sectionHeader: ['sectionHeaderClass'],
+      sectionBody: ['sectionBodyClass'],
+      formField: ['formFieldClass'],
+      input: ['inputClass'],
+      sectionFooter: ['sectionFooterClass']
+    },
+    amplifyService = TestBed.get(AmplifyService); 
+    ui = AmplifyUI;
+    signUpDe = fixture.debugElement;
+    signUpEl = signUpDe.nativeElement;
+    fixture.detectChanges();
+  });
+
+  it('...it should have a formSection with an AmplifyUI class and a _classOverrides class', () => {
+    const formSection = signUpEl.querySelector(`.${ui.formSection}.formSectionClass`);
+    expect(formSection).toBeTruthy();
+  });
+
+  it('...it should have a sectionHeader with an AmplifyUI class and _classOverrides class', () => {
+    const sectionHeader = signUpEl.querySelector(`.${ui.sectionHeader}.sectionHeaderClass`);
+    expect(sectionHeader).toBeTruthy();
+  });
+
+  it('...it should have a sectionBody with an AmplifyUI class and a _classOverrides class', () => {
+    const sectionBody = signUpEl.querySelector(`.${ui.sectionBody}.sectionBodyClass`);
+    expect(sectionBody).toBeTruthy();
+  });
+
+  it('...it should have 2 formFields with an AmplifyUI class and _classOverrides class', () => {
+    const formField = signUpEl.querySelectorAll(`.${ui.formField}.formFieldClass`);
+    expect(formField.length).toEqual(4);
+  });
+
+  it('...it should have 2 inputs with an AmplifyUI class and a _classOverrides class', () => {
+    const input = signUpEl.querySelectorAll(`.${ui.input}.inputClass`);
+    expect(input.length).toEqual(4);
+  });
+
+  it('...it should have a sectionFooter with an AmplifyUI class and _classOverrides class', () => {
+    const sectionFooter = signUpEl.querySelector(`.${ui.sectionFooter}.sectionFooterClass`);
+    expect(sectionFooter).toBeTruthy();
+  });
+});
+
+describe('SignUpComponentCore (classOverides global and component): ', () => {
+
+  let comp: SignUpComponentCore;
+  let fixture: ComponentFixture<SignUpComponentCore>; 
+  let amplifyService: AmplifyService;
+  let ui: any;
+  let signUpDe: DebugElement;
+  let signUpEl: HTMLDivElement;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [SignUpComponentCore],
+      providers: [AmplifyService],
+      imports: [FormsModule]
+    });
+
+    fixture = TestBed.createComponent(SignUpComponentCore); 
+    comp = fixture.componentInstance; 
+    comp.authState = { state: 'signUp', user: {} };
+    comp._classOverrides = {
+      formSection: ['formSectionClassG'],
+      sectionHeader: ['sectionHeaderClassG'],
+      sectionBody: ['sectionBodyClassG'],
+      formField: ['formFieldClassG'],
+      input: ['inputClassG'],
+      sectionFooter: ['sectionFooterClassG']
+    },
+    comp._signUpConfig = {
+      classOverrides: {
+        formSection: ['formSectionClassC'],
+        sectionHeader: ['sectionHeaderClassC'],
+        sectionBody: ['sectionBodyClassC'],
+        formField: ['formFieldClassC'],
+        input: ['inputClassC'],
+        sectionFooter: ['sectionFooterClassC']
+      }
+    };
+    amplifyService = TestBed.get(AmplifyService); 
+    ui = AmplifyUI;
+    signUpDe = fixture.debugElement;
+    signUpEl = signUpDe.nativeElement;
+    fixture.detectChanges();
+  });
+
+  // tslint:disable:max-line-length
+
+  it('...it should have all three types of formSection classes', () => {
+    const formSection = signUpEl.querySelector(`.${ui.formSection}.formSectionClassG.formSectionClassC`);
+    expect(formSection).toBeTruthy();
+  });
+
+  it('...it should have all three types of sectionHeader classes', () => {
+    const sectionHeader = signUpEl.querySelector(`.${ui.sectionHeader}.sectionHeaderClassG.sectionHeaderClassC`);
+    expect(sectionHeader).toBeTruthy();
+  });
+
+  it('...it should have all three types of sectionBody classes', () => {
+    const sectionBody = signUpEl.querySelector(`.${ui.sectionBody}.sectionBodyClassG.sectionBodyClassC`);
+    expect(sectionBody).toBeTruthy();
+  });
+
+  it('...it should have all three types of formField classes', () => {
+    const formField = signUpEl.querySelectorAll(`.${ui.formField}.formFieldClassG.formFieldClassC`);
+    expect(formField.length).toEqual(4);
+  });
+
+  it('...it should have all three types of input classes', () => {
+    const input = signUpEl.querySelectorAll(`.${ui.input}.inputClassG.inputClassC`);
+    expect(input.length).toEqual(4);
+  });
+
+  it('...it should have all three types of sectionFooter classes', () => {
+    const sectionFooter = signUpEl.querySelector(`.${ui.sectionFooter}.sectionFooterClassG.sectionFooterClassC`);
+    expect(sectionFooter).toBeTruthy();
+  });
+  // tslint:enable:max-line-length
+
 });
 

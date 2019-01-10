@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { countrylist, country }  from '../../../assets/countries';
@@ -36,15 +36,15 @@ const template = `
           *ngIf="field.key !== 'phone_number'"
           #{{field.key}}
           type="text"
-         class="{{applyClasses('input')}}"
+          class="{{applyClasses('input')}}"
           type={{field.type}}
           placeholder={{field.label}}
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
         <ion-content *ngIf="field.key === 'phone_number'" 
-        class="amplify-phone-ion-content {{_customCSS.ionicContentPhone}}">
-          <ion-grid class="amplify-ionic-grid-padding-left {{_customCSS.ionicGridPhone}}">
+        class="amplify-phone-ion-content {{_classOverrides.ionicContentPhone}}">
+          <ion-grid class="amplify-ionic-grid-padding-left {{_classOverrides.ionicGridPhone}}">
             <ion-row align-items-end>
               <ion-col size="5" class="amplify-ionic-grid-padding-left">
                 <ion-label class="amplify-input-label push-right" 
@@ -58,7 +58,7 @@ const template = `
                 *ngIf="field.key === 'phone_number'"
                 name="countryCode" 
                 [value]="country_code"
-                class="amplify-select-phone-country {{_customCSS.ionicSelectPhone}}" 
+                class="amplify-select-phone-country {{_classOverrides.ionicSelectPhone}}" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 (ionChange)="onCodeChange($event.target.value)">
                   <ion-select-option *ngFor="let country of countries"  
@@ -88,7 +88,7 @@ const template = `
     </ion-list>
   </div>
   <ion-button expand="block" color="primary" (click)="onSignUp()">Sign Up</ion-button>
-  <div class={{amplifyUI.sectionFooter}}>
+  <div class="{{applyClasses('sectionFooter')}}">
     <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
       Have an account? <a class="{{applyClasses('a')}}" (click)="onSignIn()">Sign in</a>
     </span>
@@ -157,7 +157,7 @@ const template = `
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     super(amplifyService);
   }
 

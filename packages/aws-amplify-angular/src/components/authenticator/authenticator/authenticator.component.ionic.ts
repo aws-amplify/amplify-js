@@ -25,35 +25,35 @@ const template = `
     *ngIf="!shouldHide('SignIn')"
     [authState]="authState"
     [signInConfig]="_signInConfig"
-    [customCSS]="_customCSS"
+    [classOverrides]="_classOverrides"
   ></amplify-auth-sign-in-ionic>
 
   <amplify-auth-sign-up-ionic
     *ngIf="!shouldHide('SignUp')"
     [authState]="authState"
     [signUpConfig]="_signUpConfig"
-    [customCSS]="_customCSS"
+    [classOverrides]="_classOverrides"
   ></amplify-auth-sign-up-ionic>
 
   <amplify-auth-confirm-sign-up-ionic
     *ngIf="!shouldHide('ConfirmSignUp')"
     [authState]="authState"
     [confirmSignUpConfig]="_confirmSignUpConfig"
-    [customCSS]="_customCSS"
+    [classOverrides]="_classOverrides"
   ></amplify-auth-confirm-sign-up-ionic>
 
   <amplify-auth-confirm-sign-in-ionic
   *ngIf="!shouldHide('ConfirmSignIn')"
   [authState]="authState"
   [confirmSignInConfig]="_confirmSignInConfig"
-  [customCSS]="_customCSS"
+  [classOverrides]="_classOverrides"
   ></amplify-auth-confirm-sign-in-ionic>
 
   <amplify-auth-forgot-password-ionic
   *ngIf="!shouldHide('ForgotPassword')"
   [authState]="authState"
   [forgotPasswordConfig]="_forgotPasswordConfig"
-  [customCSS]="_customCSS"
+  [classOverrides]="_classOverrides"
   ></amplify-auth-forgot-password-ionic>
 
   <amplify-auth-greetings-ionic
@@ -65,7 +65,7 @@ const template = `
   *ngIf="!shouldHide('RequireNewPassword')"
   [authState]="authState"
   [requireNewPasswordConfig]="_requireNewPasswordConfig"
-  [customCSS]="_customCSS"
+  [classOverrides]="_classOverrides"
   ></amplify-auth-require-new-password-ionic>
 </div>
 `;
@@ -95,6 +95,6 @@ export class AuthenticatorIonicComponent extends AuthenticatorComponentCore impl
   }
 
   ngOnInit() {
-    this._customCSS = Object.assign(this.ionicCSS, this._customCSS);
+    this._classOverrides = Object.assign(this.ionicCSS, this._classOverrides);
   }
 }

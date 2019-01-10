@@ -41,7 +41,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
-  @Input() customCSS: AmplifyUIInterface;
+  @Input() classOverrides: AmplifyUIInterface;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -57,7 +57,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     const data = {
       authState: this.authState,
       signUpConfig: this.signUpConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?

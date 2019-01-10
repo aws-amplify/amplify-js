@@ -22,13 +22,15 @@ const classArray = (commonClass: string, classOverrides) => {
     commonClass;
   const globalCustom = classOverrides.global && classOverrides.global[commonClass] ?
     classOverrides.global[commonClass] : [];
+
   const componentCustom = classOverrides.component && classOverrides.component[commonClass] ?
     classOverrides.component[commonClass] : [];
-  return [
+  const res = [
     standardClass,
     ...globalCustom, 
     ...componentCustom
   ].join(' ');
+  return res;
 };
 
 export { classArray };

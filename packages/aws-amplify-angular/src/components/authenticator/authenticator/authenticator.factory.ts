@@ -48,7 +48,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() hide: string[] = [];
   @Input() signUpConfig: any;
   @Input() signInConfig: any;
-  @Input() customCSS: AmplifyUIInterface;
+  @Input() classOverrides: AmplifyUIInterface;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -65,7 +65,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
       hide: this.hide,
       signUpConfig: this.signUpConfig,
       signInConfig: this.signInConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?

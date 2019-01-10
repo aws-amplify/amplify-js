@@ -40,7 +40,7 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() requireNewPasswordConfig: any;
-  @Input() customCSS: any;
+  @Input() classOverrides: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -56,7 +56,7 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
     const data = {
       authState: this.authState,
       requireNewPasswordConfig: this.requireNewPasswordConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic'

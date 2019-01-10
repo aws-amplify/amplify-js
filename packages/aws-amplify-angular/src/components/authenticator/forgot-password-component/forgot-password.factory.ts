@@ -40,7 +40,7 @@ import { AuthState } from '../../../providers';
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() customCSS: AmplifyUIInterface;
+  @Input() classOverrides: AmplifyUIInterface;
   @Input() forgotPasswordConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
@@ -57,7 +57,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     const data = {
       authState: this.authState,
       forgotPasswordConfig: this.forgotPasswordConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?

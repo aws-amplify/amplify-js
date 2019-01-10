@@ -46,7 +46,7 @@ const template = `
           <select #countryCode
             name="countryCode" 
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
-            class="amplify-select-phone-country {{_customCSS.selectPhoneCode}}" 
+            class="amplify-select-phone-country {{_classOverrides.selectPhoneCode}}" 
             [(ngModel)]="country_code">
             <option *ngFor="let country of countries"  
               value={{country.value}}>{{country.label}} 
@@ -104,8 +104,8 @@ export class SignUpField{
 export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  private _signUpConfig: any;
-  private  _customCSS: any;
+  _signUpConfig: any;
+  _classOverrides: any;
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
@@ -118,12 +118,12 @@ export class SignUpComponentCore implements OnInit {
   hiddenFields: any = [];
   amplifyUI: AmplifyUI;
 
-  map: any;
-
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._classOverrides = {};
+    this._signUpConfig = {};
   }
 
   @Input()
@@ -145,8 +145,8 @@ export class SignUpComponentCore implements OnInit {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -176,8 +176,8 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
   ngOnInit() {
@@ -188,7 +188,7 @@ export class SignUpComponentCore implements OnInit {
   applyClasses(element) {
     return classArray(
       element, 
-      { global: this._customCSS, component: this._signUpConfig.customCSS}
+      { global: this._classOverrides, component: this._signUpConfig.classOverrides}
     );
   }
 

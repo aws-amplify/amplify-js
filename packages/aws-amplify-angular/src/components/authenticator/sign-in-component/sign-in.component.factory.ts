@@ -41,7 +41,7 @@ import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class'
 export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() customCSS: AmplifyUIInterface;
+  @Input() classOverrides: AmplifyUIInterface;
   @Input() signInConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
@@ -58,7 +58,7 @@ export class SignInComponent implements OnInit, OnDestroy {
     const data = {
       authState: this.authState,
       signInConfig: this.signInConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const authComponent = this.framework && this.framework === 'ionic' ?

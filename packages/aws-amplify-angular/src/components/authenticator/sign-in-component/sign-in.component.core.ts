@@ -94,13 +94,13 @@ export class SignInComponentCore {
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
   _signInConfig: any;
-  _customCSS: any;
-  classOverrides: any;
+  _classOverrides: any;
 
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
-    this._customCSS = {};
+    this._classOverrides = {};
+    this._signInConfig = {};
   }
 
   @Input()
@@ -116,8 +116,8 @@ export class SignInComponentCore {
     if (data.signInConfig) {
       this._signInConfig = data.signInConfig;
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -127,12 +127,12 @@ export class SignInComponentCore {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
   applyClasses(element) {
-    return classArray(element, { global: this._customCSS, component: this._signInConfig.customCSS});
+    return classArray(element, { global: this._classOverrides, component: this._signInConfig.classOverrides});
   }
 
   setUsername(username: string) {

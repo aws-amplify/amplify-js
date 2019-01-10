@@ -24,35 +24,35 @@ const template = `
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
       [signInConfig]="_signInConfig"
-      [customCSS]="_customCSS"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
-      [customCSS]="_customCSS"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
       [confirmSignUpConfig]="_confirmSignUpConfig"
-      [customCSS]="_customCSS"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-confirm-sign-up-core>
 
     <amplify-auth-confirm-sign-in-core
       *ngIf="!shouldHide('ConfirmSignIn')"
       [authState]="authState"
       [confirmSignInConfig]="_confirmSignInConfig"
-      [customCSS]="_customCSS"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-confirm-sign-in-core>
 
     <amplify-auth-forgot-password-core
     *ngIf="!shouldHide('ForgotPassword')"
     [authState]="authState"
     [forgotPasswordConfig]="_forgotPasswordConfig"
-    [customCSS]="_customCSS"
+    [classOverrides]="_classOverrides"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
@@ -64,7 +64,7 @@ const template = `
     *ngIf="!shouldHide('RequireNewPassword')"
     [authState]="authState"
     [requireNewPasswordConfig]="_requireNewPasswordConfig"
-    [customCSS]="_customCSS"
+    [classOverrides]="_classOverrides"
     ></amplify-auth-require-new-password-core>
   </div>
 `;
@@ -101,7 +101,7 @@ export class AuthenticatorComponentCore {
   _confirmSignInConfig: any = {};
   _requireNewPasswordConfig: any = {};
   _forgotPasswordConfig: any = {};
-  _customCSS: AmplifyUIInterface;
+  _classOverrides: AmplifyUIInterface;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -126,8 +126,8 @@ export class AuthenticatorComponentCore {
     if (data.confirmSignInConfig) {
       this._confirmSignInConfig = data.confirmSignInConfig;
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -147,8 +147,8 @@ export class AuthenticatorComponentCore {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
   subscribe() {

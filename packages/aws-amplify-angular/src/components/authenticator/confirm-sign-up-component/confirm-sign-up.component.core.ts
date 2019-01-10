@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
@@ -68,7 +68,7 @@ const template = `
   <div class="{{applyClasses('amplifyAlert')}}" 
   *ngIf="errorMessage">
     <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
       <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
       <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
@@ -89,13 +89,13 @@ export class ConfirmSignUpComponentCore {
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
-  private _confirmSignUpConfig: any;
-  private _customCSS: any;
+  _confirmSignUpConfig: any;
+  _classOverrides: any;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
-    this._customCSS = {};
+    this._classOverrides = {};
     this._confirmSignUpConfig = {};
   }
 
@@ -107,8 +107,8 @@ export class ConfirmSignUpComponentCore {
     if (data.confirmSignUpConfig) {
       this._confirmSignUpConfig = data.confirmSignUpConfig;
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -125,14 +125,14 @@ export class ConfirmSignUpComponentCore {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
   applyClasses(element) {
     return classArray(
       element, 
-      { global: this._customCSS, component: this._confirmSignUpConfig.customCSS}
+      { global: this._classOverrides, component: this._confirmSignUpConfig.classOverrides}
     );
   }
 

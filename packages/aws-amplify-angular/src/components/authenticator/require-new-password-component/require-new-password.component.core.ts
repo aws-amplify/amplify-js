@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
@@ -63,16 +63,18 @@ const template = `
 export class RequireNewPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-  private _requireNewPasswordConfig: any;
-  private _customCSS: any;
+  _requireNewPasswordConfig: any;
+  _classOverrides: any;
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._classOverrides = {};
+    this._requireNewPasswordConfig = {};
   }
 
   @Input()
@@ -82,8 +84,8 @@ export class RequireNewPasswordComponentCore {
     if (data.requireNewPasswordConfig) {
       this._requireNewPasswordConfig = data.requireNewPasswordConfig;
     }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -99,8 +101,8 @@ export class RequireNewPasswordComponentCore {
   }
 
   @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
+  set classOverrides(classOverrides: AmplifyUIInterface) {
+    this._classOverrides = classOverrides;
   }
 
 
@@ -111,7 +113,7 @@ export class RequireNewPasswordComponentCore {
   applyClasses(element) {
     return classArray(
       element, 
-      { global: this._customCSS, component: this._requireNewPasswordConfig.customCSS}
+      { global: this._classOverrides, component: this._requireNewPasswordConfig.classOverrides}
     );
   }
 

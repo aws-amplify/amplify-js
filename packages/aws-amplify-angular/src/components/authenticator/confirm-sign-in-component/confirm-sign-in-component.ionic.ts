@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
@@ -53,7 +53,7 @@ const template = `
     </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
     <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
       <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
       <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
@@ -84,7 +84,7 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   amplifyService: AmplifyService;
   
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

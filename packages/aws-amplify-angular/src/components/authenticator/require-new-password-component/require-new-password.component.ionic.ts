@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 
@@ -31,7 +31,7 @@ const template = `
         <ion-input 
           #password
           type="password"
-         class="{{applyClasses('input')}}"
+          class="{{applyClasses('input')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
         ></ion-input>
@@ -47,7 +47,7 @@ const template = `
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
     <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_customCSS.alertBody}}">&#9888;</span>
+      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
       <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
       <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
     </div>
@@ -66,18 +66,13 @@ const template = `
       letter-spacing: 0.4px;
       line-height: 18px;
     }`,
-    `.amplify-form-input {
-      border: none
-    }`
   ]
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
 
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     super(amplifyService);
     
   }
-
-
 }

@@ -40,7 +40,7 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() customCSS: AmplifyUIInterface;
+  @Input() classOverrides: AmplifyUIInterface;
   @Input() confirmSignUpConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
@@ -57,7 +57,7 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
     const data = {
       authState: this.authState,
       confirmSignUpConfig: this.confirmSignUpConfig,
-      customCSS: this.customCSS
+      classOverrides: this.classOverrides
     };
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
