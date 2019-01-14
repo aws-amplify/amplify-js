@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.16-unstable.1"></a>
+## [1.2.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.0...@aws-amplify/auth@1.2.16-unstable.1) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.0"></a>
+## [1.2.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.15...@aws-amplify/auth@1.2.16-unstable.0) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.15"></a>
+## [1.2.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.15-unstable.0...@aws-amplify/auth@1.2.15) (2019-01-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** wait for cached data loaded into memory before calling getItem ([5fc6d77](https://github.com/aws/aws-amplify/commit/5fc6d77))
+
+
+
+
 <a name="1.2.15-unstable.0"></a>
 ## [1.2.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14...@aws-amplify/auth@1.2.15-unstable.0) (2018-12-26)
 

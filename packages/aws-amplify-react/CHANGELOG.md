@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.6-unstable.1...aws-amplify-react@2.3.0) (2019-01-10)
+
+
+### Features
+
+* **aws-amplify-react:** add identityId prop to S3Album, S3Image, S3Text ([#2459](https://github.com/aws/aws-amplify/issues/2459)) ([26e1345](https://github.com/aws/aws-amplify/commit/26e1345)), closes [#2424](https://github.com/aws/aws-amplify/issues/2424)
+
+
+
+
 <a name="2.2.6-unstable.1"></a>
 ## [2.2.6-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.6-unstable.0...aws-amplify-react@2.2.6-unstable.1) (2018-12-28)
 
