@@ -26,7 +26,6 @@ import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
 import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { AuthState } from '../../../providers';
 
 @Component({
@@ -40,7 +39,7 @@ import { AuthState } from '../../../providers';
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() classOverrides: AmplifyUIInterface;
+  @Input() classOverrides: any;
   @Input() forgotPasswordConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 

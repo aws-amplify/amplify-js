@@ -28,7 +28,6 @@ import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
 import { AuthState } from '../../../providers';
 import { authDecorator } from '../../../providers/auth.decorator';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 
 @Component({
   selector: 'amplify-auth-sign-in',
@@ -41,7 +40,7 @@ import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class'
 export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() classOverrides: AmplifyUIInterface;
+  @Input() classOverrides: any;
   @Input() signInConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 

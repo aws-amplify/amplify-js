@@ -15,7 +15,6 @@
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
@@ -132,7 +131,7 @@ export class ConfirmSignUpComponentCore {
   }
 
   @Input()
-  set classOverrides(classOverrides: AmplifyUIInterface) {
+  set classOverrides(classOverrides) {
     this._classOverrides = classOverrides;
   }
 

@@ -24,7 +24,6 @@ import {
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { AuthClass } from './authenticator.class';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { AuthenticatorIonicComponent } from './authenticator.component.ionic';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
@@ -48,7 +47,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() hide: string[] = [];
   @Input() signUpConfig: any;
   @Input() signInConfig: any;
-  @Input() classOverrides: AmplifyUIInterface;
+  @Input() classOverrides: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }

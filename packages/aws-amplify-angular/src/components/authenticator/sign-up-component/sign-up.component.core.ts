@@ -17,7 +17,6 @@ import { Component, Input, OnInit, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
@@ -174,7 +173,7 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set classOverrides(classOverrides: AmplifyUIInterface) {
+  set classOverrides(classOverrides) {
     this._classOverrides = classOverrides;
   }
 

@@ -15,7 +15,6 @@
 
 import { Component, Input, Inject } from '@angular/core';
 import * as AmplifyUI from '@aws-amplify/ui';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { classArray } from '../../../assets/helpers';
 import { AmplifyService, AuthState } from '../../../providers';
 
@@ -145,7 +144,7 @@ export class ForgotPasswordComponentCore {
   }
 
   @Input()
-  set classOverrides(classOverrides: AmplifyUIInterface) {
+  set classOverrides(classOverrides) {
     this._classOverrides = classOverrides;
   }
 

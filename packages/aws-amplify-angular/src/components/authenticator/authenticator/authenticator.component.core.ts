@@ -15,8 +15,6 @@
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-
 
 const template = `
   <div class="amplify-authenticator">
@@ -93,7 +91,7 @@ export class AuthenticatorComponentCore {
   _confirmSignInConfig: any = {};
   _requireNewPasswordConfig: any = {};
   _forgotPasswordConfig: any = {};
-  _classOverrides: AmplifyUIInterface;
+  _classOverrides: any;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -139,7 +137,7 @@ export class AuthenticatorComponentCore {
   }
 
   @Input()
-  set classOverrides(classOverrides: AmplifyUIInterface) {
+  set classOverrides(classOverrides) {
     this._classOverrides = classOverrides;
   }
 
