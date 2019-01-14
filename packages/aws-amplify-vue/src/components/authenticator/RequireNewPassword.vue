@@ -47,6 +47,7 @@
  <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import { JS } from '@aws-amplify/core';
  export default {
   name: 'RequireNewPassword',
   props: ['requireNewPasswordConfig'],
