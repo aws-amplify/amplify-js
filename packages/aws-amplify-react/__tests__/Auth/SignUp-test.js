@@ -716,4 +716,48 @@ describe('signUp with signUpConfig', () => {
         expect(spyon).toBeCalled();
 
     });
+
+    test('signUp should complete even if phone field is hidden', async () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            signUpConfig: {
+                hiddenDefaults: ["phone_number"]
+            }
+        });
+
+        const spyon = jest.spyOn(Auth, 'signUp')
+        .mockImplementationOnce((user, password) => {
+            return new Promise((res, rej) => {
+                res(mockResult);
+            });
+        });
+
+        const event_username = {
+            target: {
+                name: 'username',
+                value: 'user1'
+            }
+        }
+
+        const event_password = {
+            target: {
+                name: 'password',
+                value: 'abc'
+            }
+        }
+
+        const event_email = {
+            target: {
+                name: 'email',
+                value: 'email@amazon.com'
+            }
+        }
+
+        wrapper.find(Input).at(0).simulate('change', event_username);
+        wrapper.find(Input).at(1).simulate('change', event_password);
+        wrapper.find(Input).at(2).simulate('change', event_email);
+        await wrapper.find(Button).simulate('click');
+
+        expect(spyon).toBeCalled();
+    });
 });

@@ -1,4 +1,19 @@
-import { Component, ViewChild } from '@angular/core';
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
+import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ChatbotComponentCore } from './chatbot.component.core'
 import { AmplifyService } from '../../../providers';
 
@@ -54,13 +69,24 @@ const template = `
 
 		<div class="amplify-form-row">
 		    <ion-input #inputValue
-					type='text'
+				type='text'
 		        class="amplify-form-input amplify-form-input-interactions-ionic"
-		        placeholder="Message"
+		        placeholder="{{currentVoiceState}}"
 		        [value]="inputText"
 		        (keyup.enter)="onSubmit(inputValue.value)"
-		        (ionChange)="onInputChange($event.target.value)"></ion-input>
-		    <ion-button expand="block" (click)="onSubmit(inputValue.value)">Send</ion-button>
+				(ionChange)="onInputChange($event.target.value)"
+				[disabled]="inputDisabled"
+				*ngIf="textEnabled"></ion-input>
+
+			<ion-input #inputValue
+				type='text'
+				class="amplify-form-input amplify-form-input-interactions-ionic"
+				placeholder="{{currentVoiceState}}"
+				[disabled]="!textEnabled"
+				*ngIf="!textEnabled"></ion-input>
+
+			<ion-button expand="block" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</ion-button>
+			<ion-button expand="block" *ngIf="textEnabled" ng-style="{float: 'right'}" (click)="inputDisabled === false || onSubmit(inputValue.value)">Send</ion-button>
 		</div>
 	</div>
 </div>
@@ -72,8 +98,8 @@ const template = `
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
   
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);    
+  constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
+    super(ref, amplifyService);    
   }
 
 }

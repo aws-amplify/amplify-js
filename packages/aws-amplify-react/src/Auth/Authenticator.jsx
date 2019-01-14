@@ -105,6 +105,12 @@ export default class Authenticator extends Component {
                 case 'parsingUrl_failure':
                     this.handleStateChange('signIn', null);
                     break;
+                case 'signOut':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'customGreetingSignOut':
+                    this.handleStateChange('signIn', null);
+                    break;
                 default:
                     break;
             }
@@ -121,7 +127,10 @@ export default class Authenticator extends Component {
         } catch (e) {
             logger.debug('Failed to set the auth state into local storage', e);
         }
-        this.setState({ authState: state, authData: data, error: null, showToast: false });
+
+        if (this._isMounted) {
+            this.setState({ authState: state, authData: data, error: null, showToast: false });            
+        }
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
@@ -154,7 +163,15 @@ export default class Authenticator extends Component {
                 Loading
             ]);
         }
-        const props_children = this.props.children || [];
+
+        let props_children = [];
+        if (typeof this.props.children === 'object') {
+            if (Array.isArray(this.props.children)){
+                props_children = this.props.children;
+            } else {
+                props_children.push(this.props.children);
+            }
+        } 
 
         const default_children = [
             <Greetings federated={federated}/>,

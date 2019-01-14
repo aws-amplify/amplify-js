@@ -38,5 +38,6 @@
     padding: 35px 25px;
     box-shadow: none;
     border-radius: 0;
+    min-width: auto;
   }
 }

@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.26-unstable.0"></a>
+## [1.0.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.25...@aws-amplify/interactions@1.0.26-unstable.0) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.25"></a>
+## [1.0.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.25-unstable.0...@aws-amplify/interactions@1.0.25) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.25-unstable.0"></a>
+## [1.0.25-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.24...@aws-amplify/interactions@1.0.25-unstable.0) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.24"></a>
+## [1.0.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.24-unstable.0...@aws-amplify/interactions@1.0.24) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.24-unstable.0"></a>
+## [1.0.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.23...@aws-amplify/interactions@1.0.24-unstable.0) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.23"></a>
+## [1.0.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.22-unstable.0...@aws-amplify/interactions@1.0.23) (2018-12-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.22"></a>
+## [1.0.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.21...@aws-amplify/interactions@1.0.22) (2018-12-14)
+
+<a name="1.0.22-unstable.0"></a>
+## [1.0.22-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.21...@aws-amplify/interactions@1.0.22-unstable.0) (2018-12-14)
+
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.21"></a>
+## [1.0.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.21-unstable.0...@aws-amplify/interactions@1.0.21) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.21-unstable.0"></a>
+## [1.0.21-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.20...@aws-amplify/interactions@1.0.21-unstable.0) (2018-12-13)
+
+
+### Features
+
+* **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws/aws-amplify/issues/2121)) ([938d2a5](https://github.com/aws/aws-amplify/commit/938d2a5))
+
+
+
+
+<a name="1.0.20"></a>
+## [1.0.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.20-unstable.0...@aws-amplify/interactions@1.0.20) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 <a name="1.0.20-unstable.0"></a>
 ## [1.0.20-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.19...@aws-amplify/interactions@1.0.20-unstable.0) (2018-12-07)
 

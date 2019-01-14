@@ -3,6 +3,149 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.6-unstable.1...aws-amplify-react@2.3.0) (2019-01-10)
+
+
+### Features
+
+* **aws-amplify-react:** add identityId prop to S3Album, S3Image, S3Text ([#2459](https://github.com/aws/aws-amplify/issues/2459)) ([26e1345](https://github.com/aws/aws-amplify/commit/26e1345)), closes [#2424](https://github.com/aws/aws-amplify/issues/2424)
+
+
+
+
+<a name="2.2.6-unstable.1"></a>
+## [2.2.6-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.6-unstable.0...aws-amplify-react@2.2.6-unstable.1) (2018-12-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.6-unstable.0"></a>
+## [2.2.6-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.5...aws-amplify-react@2.2.6-unstable.0) (2018-12-28)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** transfer the children object to array ([b734d99](https://github.com/aws/aws-amplify/commit/b734d99))
+
+
+
+
+<a name="2.2.5"></a>
+## [2.2.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.5-unstable.1...aws-amplify-react@2.2.5) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.5-unstable.1"></a>
+## [2.2.5-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.5-unstable.0...aws-amplify-react@2.2.5-unstable.1) (2018-12-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.5-unstable.0"></a>
+## [2.2.5-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.4...aws-amplify-react@2.2.5-unstable.0) (2018-12-19)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.4"></a>
+## [2.2.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.3-unstable.2...aws-amplify-react@2.2.4) (2018-12-15)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.3"></a>
+## [2.2.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.2...aws-amplify-react@2.2.3) (2018-12-14)
+
+<a name="2.2.3-unstable.2"></a>
+## [2.2.3-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.3-unstable.1...aws-amplify-react@2.2.3-unstable.2) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.3-unstable.1"></a>
+## [2.2.3-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.3-unstable.0...aws-amplify-react@2.2.3-unstable.1) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.3-unstable.0"></a>
+## [2.2.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.2...aws-amplify-react@2.2.3-unstable.0) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.2"></a>
+## [2.2.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.2-unstable.1...aws-amplify-react@2.2.2) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.2-unstable.1"></a>
+## [2.2.2-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.2-unstable.0...aws-amplify-react@2.2.2-unstable.1) (2018-12-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.2-unstable.0"></a>
+## [2.2.2-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1...aws-amplify-react@2.2.2-unstable.0) (2018-12-13)
+
+
+### Features
+
+* **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws/aws-amplify/issues/2121)) ([938d2a5](https://github.com/aws/aws-amplify/commit/938d2a5))
+
+
+
+
+<a name="2.2.1"></a>
+## [2.2.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1-unstable.2...aws-amplify-react@2.2.1) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.2.1-unstable.2"></a>
+## [2.2.1-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1-unstable.1...aws-amplify-react@2.2.1-unstable.2) (2018-12-13)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** fix instances of missing theme prop ([77904be](https://github.com/aws/aws-amplify/commit/77904be))
+
+
+
+
+<a name="2.2.1-unstable.1"></a>
+## [2.2.1-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.2.1-unstable.0...aws-amplify-react@2.2.1-unstable.1) (2018-12-11)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.2.1-unstable.0"></a>
 ## [2.2.1-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.1.8-unstable.0...aws-amplify-react@2.2.1-unstable.0) (2018-12-10)
 
