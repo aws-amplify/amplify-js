@@ -26,7 +26,6 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { AuthState } from '../../../providers';
 
 @Component({
@@ -40,7 +39,7 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() classOverrides: AmplifyUIInterface;
+  @Input() classOverrides: any;
   @Input() confirmSignUpConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
