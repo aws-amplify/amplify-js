@@ -318,7 +318,7 @@ describe('SignUpComponentCore (classOverides global and component): ', () => {
   let signUpDe: DebugElement;
   let signUpEl: HTMLDivElement;
 
-  beforeEach(() => {
+  beforeEach(async() => {
     TestBed.configureTestingModule({
       declarations: [SignUpComponentCore],
       providers: [AmplifyService],
@@ -337,6 +337,7 @@ describe('SignUpComponentCore (classOverides global and component): ', () => {
       sectionFooter: ['sectionFooterClassG']
     },
     comp._signUpConfig = {
+      header: 'testHeader',
       classOverrides: {
         formSection: ['formSectionClassC'],
         sectionHeader: ['sectionHeaderClassC'],
@@ -351,6 +352,8 @@ describe('SignUpComponentCore (classOverides global and component): ', () => {
     signUpDe = fixture.debugElement;
     signUpEl = signUpDe.nativeElement;
     fixture.detectChanges();
+    await fixture.whenStable();
+
   });
 
   // tslint:disable:max-line-length

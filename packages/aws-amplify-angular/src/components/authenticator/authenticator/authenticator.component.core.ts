@@ -79,15 +79,7 @@ const template = `
       margin: 0 auto;
       border-radius: 6px;
       background-color: var(--color-white);
-    }`,
-    `.amplify-alert {
-      min-height: 52px;
-      width: 460px;
-      margin-top: 5em;
-      border-radius: 6px;
-      background-color: #FFFFFF;
-      box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
-      }`
+    }`
   ]
 })
 export class AuthenticatorComponentCore {

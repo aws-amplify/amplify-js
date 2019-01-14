@@ -23,7 +23,7 @@ import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Confirm Sign Up</div>
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
   <div class="{{applyClasses('sectionBody')}}">
     <div class="{{applyClasses('formField')}}">
       <div class="{{applyClasses('inputLabel')}}"> Username * </div>
@@ -67,10 +67,10 @@ const template = `
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" 
   *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -89,6 +89,7 @@ export class ConfirmSignUpComponentCore {
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
+  header: string = 'Confirm Sign Up';
   _confirmSignUpConfig: any;
   _classOverrides: any;
 
@@ -106,6 +107,9 @@ export class ConfirmSignUpComponentCore {
     this.username = data.authState.user? data.authState.user.username || '' : '';
     if (data.confirmSignUpConfig) {
       this._confirmSignUpConfig = data.confirmSignUpConfig;
+      if (this._confirmSignUpConfig.header) {
+        this.header = this._confirmSignUpConfig.header;
+      }
     }
     if (data.classOverrides) {
       this._classOverrides = data.classOverrides;
@@ -122,6 +126,9 @@ export class ConfirmSignUpComponentCore {
   @Input()
   set confirmSignUpConfig(confirmSignUpConfig: any) {
     this._confirmSignUpConfig = confirmSignUpConfig;
+    if (this._confirmSignUpConfig.header) {
+      this.header = this._confirmSignUpConfig.header;
+    }
   }
 
   @Input()
@@ -164,7 +171,7 @@ export class ConfirmSignUpComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

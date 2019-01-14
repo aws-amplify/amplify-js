@@ -35,7 +35,7 @@ const template = `
           Username *
         </ion-label>
         <ion-input type="text" 
-       class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setUsername($event.target.value)"
           [value]="username"
         ></ion-input>
@@ -48,7 +48,7 @@ const template = `
         <ion-input 
           #code
           type="text"
-         class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setCode(code.value)"
         ></ion-input>
       </ion-item>
@@ -59,7 +59,7 @@ const template = `
         <ion-input 
           #password
           type="password"
-         class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
         ></ion-input>
@@ -67,10 +67,8 @@ const template = `
     </ion-list>
   </div>
   <ion-button *ngIf="!code_sent"
-  class="{{applyClasses('button')}}" 
   expand="block" color="primary" (click)="onSend()">Submit</ion-button>
   <ion-button *ngIf="code_sent"
-  class="{{applyClasses('button')}}" 
   expand="block" color="primary" (click)="onSubmit()">Verify</ion-button>
   <div class="{{applyClasses('sectionFooter')}}">
     <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
@@ -83,10 +81,10 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>

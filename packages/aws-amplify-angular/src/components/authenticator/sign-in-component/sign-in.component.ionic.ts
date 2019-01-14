@@ -19,7 +19,7 @@ import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Sign In</div>
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
   <div class="{{applyClasses('sectionBody')}}">
     <ion-list lines="none">
       <ion-item lines="none">
@@ -29,7 +29,7 @@ const template = `
         </ion-label>
         <ion-input type="text" 
           #username
-          class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setUsername($event.target.value)">
         </ion-input>
       </ion-item>
@@ -41,7 +41,7 @@ const template = `
         <ion-input 
           #password
           type="password" 
-          class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
         ></ion-input>
@@ -52,20 +52,22 @@ const template = `
     Sign In
   </ion-button>
   <div class="{{applyClasses('sectionFooter')}}">
-    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
       No account?  
       <a class="{{applyClasses('a')}}" (click)="onSignUp()">Create account</a>
     </span>
+  </div>
+  <br />
+  <div class="{{applyClasses('sectionFooter')}}">
     <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
-      Reset Password  
       <a class="{{applyClasses('a')}}" (click)="onForgotPassword()">Reset Password</a>
-     </span>
+    </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -73,18 +75,7 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template,
-  styles: [
-    `.amplify-input-label {
-      font-size: 14px;
-      margin: 0.5em 0.5em 0.5em 0;
-      letter-spacing: 0.4px;
-      line-height: 18px;
-    }`,
-    `.amplify-form-input {
-      border: none
-    }`
-  ]
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 

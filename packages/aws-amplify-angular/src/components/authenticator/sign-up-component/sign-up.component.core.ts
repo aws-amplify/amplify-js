@@ -52,7 +52,6 @@ const template = `
               value={{country.value}}>{{country.label}} 
             </option>
           </select>
-
           <input 
            class="{{applyClasses('input')}}"
             placeholder={{field.label}}
@@ -61,7 +60,6 @@ const template = `
             name="local_phone_number"
             type={{field.type}}
           />
-
         </div>
       </div>
     </div>
@@ -76,10 +74,10 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -98,7 +96,7 @@ export class SignUpField{
 
 @Component({
   selector: 'amplify-auth-sign-up-core',
-  template,
+  template
 })
 
 export class SignUpComponentCore implements OnInit {
@@ -318,7 +316,7 @@ export class SignUpComponentCore implements OnInit {
 
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

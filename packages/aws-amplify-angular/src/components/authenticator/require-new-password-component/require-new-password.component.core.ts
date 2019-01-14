@@ -22,7 +22,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 const template = `
 <div class="{{applyClasses('formSection')}}"  *ngIf="_show">
   <div class="{{applyClasses('sectionHeader')}}">
-    You are required to update your password
+    {{this.header}}
   </div>
   <div class="{{applyClasses('sectionBody')}}">
     <div class="{{applyClasses('formField')}}">
@@ -47,10 +47,10 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -65,6 +65,7 @@ export class RequireNewPasswordComponentCore {
   _show: boolean;
   _requireNewPasswordConfig: any;
   _classOverrides: any;
+  header: string = 'You are required to update your password';
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -84,6 +85,9 @@ export class RequireNewPasswordComponentCore {
     if (data.requireNewPasswordConfig) {
       this._requireNewPasswordConfig = data.requireNewPasswordConfig;
     }
+    if (this._requireNewPasswordConfig.header) {
+      this.header = this._requireNewPasswordConfig.header;
+    }
     if (data.classOverrides) {
       this._classOverrides = data.classOverrides;
     }
@@ -98,6 +102,9 @@ export class RequireNewPasswordComponentCore {
   @Input()
   set requireNewPasswordConfig(requireNewPasswordConfig: any) {
     this._requireNewPasswordConfig = requireNewPasswordConfig;
+    if (this._requireNewPasswordConfig.header) {
+      this.header = this._requireNewPasswordConfig.header;
+    }
   }
 
   @Input()
@@ -136,7 +143,7 @@ export class RequireNewPasswordComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

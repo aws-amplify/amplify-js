@@ -22,7 +22,7 @@ import { includes } from '../common';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Sign In</div>
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
   <div class="{{applyClasses('sectionBody')}}">
     <div class="{{applyClasses('formField')}}">
       <div class="{{applyClasses('inputLabel')}}">Username * </div>
@@ -68,12 +68,11 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}"  *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a 
-        class="{{applyClasses('alertClose')}}"
-        (click)="onAlertClose()">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}"
+        (click)="onamplifyAlertClose()">
           &times;
       </a>
     </div>
@@ -90,6 +89,7 @@ export class SignInComponentCore {
   _show: boolean;
   username: string;
   password: string;
+  header: string = 'Sign In';
   errorMessage: string;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
@@ -115,6 +115,9 @@ export class SignInComponentCore {
     this._authState = data.authState;
     if (data.signInConfig) {
       this._signInConfig = data.signInConfig;
+      if (data.signInConfig.header) {
+        this.header = data.signInConfig.header;
+      }
     }
     if (data.classOverrides) {
       this._classOverrides = data.classOverrides;
@@ -124,6 +127,9 @@ export class SignInComponentCore {
   @Input()
   set signInConfig(signInConfig: any) {
     this._signInConfig = signInConfig;
+    if (signInConfig.header) {
+      this.header = signInConfig.header;
+    }
   }
 
   @Input()
@@ -132,7 +138,10 @@ export class SignInComponentCore {
   }
 
   applyClasses(element) {
-    return classArray(element, { global: this._classOverrides, component: this._signInConfig.classOverrides});
+    return classArray(
+      element, 
+      { global: this._classOverrides, component: this._signInConfig.classOverrides}
+    );
   }
 
   setUsername(username: string) {
@@ -166,7 +175,7 @@ export class SignInComponentCore {
       });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

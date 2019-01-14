@@ -1,0 +1,41 @@
+@import './Theme.css';
+
+.amplifyIonicInput {
+  border-bottom: var(--input-border);
+  border-radius: 0px;
+  height: 42px;
+  margin: 0.5em;
+}
+
+.amplifyIonicSelect {
+  height: 45px;
+  min-width: 100%;
+  margin-top: 20px;
+  border: var(--input-border);
+  border-radius: 3px 0 0 3px;
+  background-color: transparen
+}
+.md .amplifyIonicSelect {
+  border: none;
+  border-bottom: var(--input-border);
+  background-color: transparent;
+  min-width: 100% !important;
+  padding-left: 0;
+}
+.amplifyIonicInputPhone {
+  height: 36px;
+  min-width: 100%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
+  border: none;
+  border-bottom: var(--input-border);
+  border-radius: 0px;
+}
+.amplifyIonicGrid {
+  padding-left: 0
+}
+.amplifyIonicPhoneContent {
+  height: 100px;
+}

@@ -1,0 +1,49 @@
+@import './Theme.css';
+
+.amplifyAlertClose {
+    float:right;
+    cursor: pointer;
+    color: var(--color-gray);
+    font-size: 24px;
+    line-height: 24px;
+  }
+  
+  .amplifyAlertClose:hover {
+    color: var(--color-primary-accent);
+  }
+  
+  .amplifyAlertIcon {
+    float:left;
+    font-size: 24px;
+    line-height: 24px;
+    color: var(--color-danger);
+  }
+  
+  .amplifyAlert {
+    min-height: 52px;
+    width: 460px;
+    margin-top: 5em;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
+  }
+  
+  .amplifyAlertBody {
+    padding:1em;
+  }
+  
+  .amplifyAlertMessage {
+    max-width: 85%;
+    display: inline-flex;
+    color: var(--color-primary-accent);
+    font-size: 15px;
+    line-height: 24px;
+    margin-left: 0.5em;
+  }
+  
+  @media (min-width: 320px) and (max-width: 480px) {
+    .amplifyAlert {
+        width: 92%;
+        margin-top: 1em;
+    }
+  }

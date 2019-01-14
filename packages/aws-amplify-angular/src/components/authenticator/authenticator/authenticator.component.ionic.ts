@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation, Injector, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
 
 import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
@@ -78,23 +78,15 @@ const template = `
       width: var(--component-width-desktop);
       margin: 0 auto;
       border-radius: 6px;
-      background-color: var(--color-white);
+      background-color: var(--ion-font-family,inherit);
     }`
   ]
 })
-export class AuthenticatorIonicComponent extends AuthenticatorComponentCore implements OnInit {
+export class AuthenticatorIonicComponent extends AuthenticatorComponentCore{
 
   amplifyService: AmplifyService;
-  ionicCSS = {
-    inputLabel: ['amplify-input-label'],
-    input: ['amplify-form-input']
-  };
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-  }
-
-  ngOnInit() {
-    this._classOverrides = Object.assign(this.ionicCSS, this._classOverrides);
   }
 }

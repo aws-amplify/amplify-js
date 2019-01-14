@@ -101,7 +101,7 @@ describe('SignUpComponentIonic (classOverides unused): ', () => {
   });
 
   it('...it should have two inputs with an AmplifyUI class', () => {
-    const input = signInEl.querySelectorAll(`.${ui.input}`);
+    const input = signInEl.querySelectorAll(`.${ui.amplifyIonicInput}`);
     expect(input.length).toEqual(3);
   });
 
@@ -136,7 +136,7 @@ describe('SignUpComponentIonic (classOverides global only): ', () => {
       sectionHeader: ['sectionHeaderClass'],
       sectionBody: ['sectionBodyClass'],
       formField: ['formFieldClass'],
-      input: ['inputClass'],
+      amplifyIonicInput: ['inputClass'],
       sectionFooter: ['sectionFooterClass']
     },
     amplifyService = TestBed.get(AmplifyService); 
@@ -162,7 +162,7 @@ describe('SignUpComponentIonic (classOverides global only): ', () => {
   });
 
   it('...it should have 3 inputs with an AmplifyUI class and a _classOverrides class', () => {
-    const input = signInEl.querySelectorAll(`.${ui.input}.inputClass`);
+    const input = signInEl.querySelectorAll(`.${ui.amplifyIonicInput}.inputClass`);
     expect(input.length).toEqual(3);
   });
 
@@ -181,7 +181,7 @@ describe('SignUpComponentIonic (classOverides global and component): ', () => {
   let signInDe: DebugElement;
   let signInEl: HTMLDivElement;
 
-  beforeEach(() => {
+  beforeEach(async() => {
     TestBed.configureTestingModule({
       declarations: [SignUpComponentIonic],
       providers: [AmplifyService],
@@ -197,7 +197,7 @@ describe('SignUpComponentIonic (classOverides global and component): ', () => {
       sectionHeader: ['sectionHeaderClassG'],
       sectionBody: ['sectionBodyClassG'],
       formField: ['formFieldClassG'],
-      input: ['inputClassG'],
+      amplifyIonicInput: ['inputClassG'],
       sectionFooter: ['sectionFooterClassG']
     },
     comp._signUpConfig = {
@@ -206,7 +206,7 @@ describe('SignUpComponentIonic (classOverides global and component): ', () => {
         sectionHeader: ['sectionHeaderClassC'],
         sectionBody: ['sectionBodyClassC'],
         formField: ['formFieldClassC'],
-        input: ['inputClassC'],
+        amplifyIonicInput: ['inputClassC'],
         sectionFooter: ['sectionFooterClassC']
       }
     };
@@ -235,7 +235,7 @@ describe('SignUpComponentIonic (classOverides global and component): ', () => {
   });
 
   it('...it should have all three types of input classes', () => {
-    const input = signInEl.querySelectorAll(`.${ui.input}.inputClassG.inputClassC`);
+    const input = signInEl.querySelectorAll(`.${ui.amplifyIonicInput}.inputClassG.inputClassC`);
     expect(input.length).toEqual(3);
   });
 

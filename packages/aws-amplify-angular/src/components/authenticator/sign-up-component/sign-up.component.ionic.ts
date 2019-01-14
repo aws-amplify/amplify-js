@@ -36,18 +36,18 @@ const template = `
           *ngIf="field.key !== 'phone_number'"
           #{{field.key}}
           type="text"
-          class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           type={{field.type}}
           placeholder={{field.label}}
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
-        <ion-content *ngIf="field.key === 'phone_number'" 
-        class="amplify-phone-ion-content {{_classOverrides.ionicContentPhone}}">
-          <ion-grid class="amplify-ionic-grid-padding-left {{_classOverrides.ionicGridPhone}}">
+        <ion-content class="{{applyClasses('amplifyIonicPhoneContent')}}" 
+        *ngIf="field.key === 'phone_number'" padding-none>
+          <ion-grid class="{{applyClasses('amplifyIonicGrid')}}">
             <ion-row align-items-end>
-              <ion-col size="5" class="amplify-ionic-grid-padding-left">
-                <ion-label class="amplify-input-label push-right" 
+              <ion-col size="5" class="{{applyClasses('amplifyIonicGrid')}}">
+                <ion-label class="{{applyClasses('inputLabel')}} push-right" 
                 position="stacked" 
                 *ngIf="field.key === 'phone_number'"
                 >
@@ -58,7 +58,7 @@ const template = `
                 *ngIf="field.key === 'phone_number'"
                 name="countryCode" 
                 [value]="country_code"
-                class="amplify-select-phone-country {{_classOverrides.ionicSelectPhone}}" 
+                class="{{applyClasses('amplifyIonicSelect')}}" 
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 (ionChange)="onCodeChange($event.target.value)">
                   <ion-select-option *ngFor="let country of countries"  
@@ -69,13 +69,13 @@ const template = `
               </ion-col>
 
               <ion-col size="6">
-                <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
+                <ion-label class="{{applyClasses('inputLabel')}} push-right">&nbsp;</ion-label>
                 <ion-input 
                   #phone_number
                   [ngClass]="{'amplify-input-invalid ': field.invalid}"
                   *ngIf="field.key === 'phone_number'"
                   type={{field.type}}
-                  class="amplify-form-input-phone-ionic"
+                  class="{{applyClasses('amplifyIonicInputPhone')}}"
                   placeholder={{field.label}}
                   (ionChange)="onNumberChange($event.target.value)"
                   name="local_phone_number"
@@ -98,10 +98,10 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>

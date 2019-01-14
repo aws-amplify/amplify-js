@@ -31,7 +31,7 @@ const template = `
         <ion-input 
           #password
           type="password"
-          class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
         ></ion-input>
@@ -46,10 +46,10 @@ const template = `
     </span>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>

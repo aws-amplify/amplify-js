@@ -22,7 +22,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Reset your password
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}
     <br />
     <div *ngIf="!code_sent" class="{{applyClasses('hint')}}">
       You will receive a verification code
@@ -77,10 +77,10 @@ const template = `
     </div>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -97,6 +97,7 @@ export class ForgotPasswordComponentCore {
   code: string;
   password: string;
   errorMessage: string;
+  header: string = 'Reset your password';
   code_sent = false;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
@@ -118,9 +119,13 @@ export class ForgotPasswordComponentCore {
     if (data.forgotPasswordConfig) {
       this._forgotPasswordConfig = data.forgotPasswordConfig;
     }
+    if (this._forgotPasswordConfig.header) {
+      this.header = this._forgotPasswordConfig.header;
+    }
     if (data.classOverrides) {
       this._classOverrides = data.classOverrides;
     }
+    
   }
 
   @Input()
@@ -134,6 +139,9 @@ export class ForgotPasswordComponentCore {
   @Input()
   set forgotPasswordConfig(forgotPasswordConfig: any) {
     this._forgotPasswordConfig = forgotPasswordConfig;
+    if (this._forgotPasswordConfig.header) {
+      this.header = this._forgotPasswordConfig.header;
+    }
   }
 
   @Input()
@@ -193,7 +201,7 @@ export class ForgotPasswordComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

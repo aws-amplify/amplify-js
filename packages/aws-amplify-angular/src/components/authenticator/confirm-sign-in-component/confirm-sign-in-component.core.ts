@@ -21,7 +21,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Confirm Sign in</div>
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
   <div class="{{applyClasses('sectionBody')}}">
     <div class="{{applyClasses('formField')}}">
       <div class="{{applyClasses('inputLabel')}}" > Confirmation Code *</div>
@@ -47,10 +47,10 @@ const template = `
     </div>
   </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="{{applyClasses('alertIcon')}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -65,6 +65,7 @@ export class ConfirmSignInComponentCore {
   _show: boolean;
   code: string;
   errorMessage: string;
+  header: string = 'Confirm Sign In';
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
   _confirmSignInConfig: any;
@@ -83,6 +84,9 @@ export class ConfirmSignInComponentCore {
     this._show = data.authState.state === 'confirmSignIn';
     if (data.confirmSignInConfig) {
       this._confirmSignInConfig = data.confirmSignInConfig;
+      if (this._confirmSignInConfig.header) {
+        this.header = this._confirmSignInConfig.header;
+      }
     }
     if (data.classOverrides) {
       this._classOverrides = data.classOverrides;
@@ -98,6 +102,9 @@ export class ConfirmSignInComponentCore {
   @Input()
   set confirmSignInConfig(confirmSignInConfig: any) {
     this._confirmSignInConfig = confirmSignInConfig;
+    if (this._confirmSignInConfig.header) {
+      this.header = this._confirmSignInConfig.header;
+    }
   }
 
   @Input()
@@ -136,7 +143,7 @@ export class ConfirmSignInComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

@@ -19,7 +19,7 @@ import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
 <div class="{{applyClasses('formSection')}}" *ngIf="_show">
-  <div class="{{applyClasses('sectionHeader')}}">Confirm Sign in</div>
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
   <div class="{{applyClasses('sectionBody')}}">
     <ion-list>
       <ion-item lines="none">
@@ -29,7 +29,7 @@ const template = `
         <ion-input 
           #code
           type="text"
-         class="{{applyClasses('input')}}"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
         ></ion-input>
@@ -37,25 +37,19 @@ const template = `
     </ion-list>
   </div>
   <ion-button
-    class="{{applyClasses('button')}}" 
     expand="block" color="primary" (click)="onConfirm()">
     Confirm Code
   </ion-button>
   <div class="{{applyClasses('sectionFooter')}}">
-      <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
-        <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
-      </span>
-      <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
-        <button class="{{applyClasses('button')}}" (click)="onConfirm()">
-          Confirm
-        </button>
-      </span>
-    </div>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
+    </span>
+  </div>
   <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
-    <div class="{{applyClasses('alertBody')}}">
-      <span class="amplify-alert-icon {{_classOverrides.alertBody}}">&#9888;</span>
-      <div class="{{applyClasses('alertMessage')}}">{{ errorMessage }}</div>
-      <a class="{{applyClasses('alertClose')}}" (click)="onAlertClose()">&times;</a>
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
 </div>
@@ -63,18 +57,7 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-confirm-sign-in-ionic',
-  template,
-  styles: [
-    `.amplify-input-label {
-      font-size: 14px;
-      margin: 0.5em;
-      letter-spacing: 0.4px;
-      line-height: 18px;
-    }`,
-    `.amplify-form-input {
-      border: none
-    }`
-  ]
+  template
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _authState: AuthState;
