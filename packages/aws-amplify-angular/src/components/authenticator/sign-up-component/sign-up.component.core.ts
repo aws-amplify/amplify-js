@@ -45,7 +45,7 @@ const template = `
           <select #countryCode
             name="countryCode" 
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
-            class="amplify-select-phone-country {{_classOverrides.selectPhoneCode}}" 
+            class="amplify-select-phone-country" 
             [(ngModel)]="country_code">
             <option *ngFor="let country of countries"  
               value={{country.value}}>{{country.label}} 
@@ -95,7 +95,16 @@ export class SignUpField{
 
 @Component({
   selector: 'amplify-auth-sign-up-core',
-  template
+  template,
+  styles: [
+    `.amplify-select-phone-country {
+      height: 55px;
+      width: 68px;
+      border: var(--input-border);
+      border-radius: 3px 0 0 3px;
+      background-color: transparent;
+    }`
+  ]
 })
 
 export class SignUpComponentCore implements OnInit {
