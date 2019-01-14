@@ -62,7 +62,7 @@ export default class SessionTracker {
             logger.debug('App has come to the foreground, recording start session');
             this._tracker(
                 {
-                    name: '_session_start',
+                    name: '_session.start',
                     attributes
                 },
                 this._config.provider
@@ -74,7 +74,7 @@ export default class SessionTracker {
             logger.debug('App has come to inactive/background, recording stop session');
             this._tracker(
                 { 
-                    name: '_session_stop',
+                    name: '_session.stop',
                     attributes,
                     immediate: true
                 },
@@ -105,7 +105,7 @@ export default class SessionTracker {
 
         this._tracker(
             { 
-                name: '_session_start',
+                name: '_session.start',
                 attributes
             },
             this._config.provider
