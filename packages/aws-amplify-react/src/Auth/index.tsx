@@ -17,18 +17,18 @@ import { Component } from 'react';
 import Authenticator, { IAuthenticatorProps } from './Authenticator';
 import AuthPiece from './AuthPiece';
 import { ISignUpConfig } from './SignUp';
-export { default as Authenticator } from './Authenticator';
-export { default as AuthPiece } from './AuthPiece';
-export { default as SignIn } from './SignIn';
+export { default as Authenticator, IAuthenticatorProps } from './Authenticator';
+export { default as AuthPiece, IAuthPieceProps } from './AuthPiece';
+export { default as SignIn, ISignInProps } from './SignIn';
 export { default as ConfirmSignIn } from './ConfirmSignIn';
-export { default as SignOut } from './SignOut';
+export { default as SignOut, ISignOutProps } from './SignOut';
 export { default as RequireNewPassword } from './RequireNewPassword';
-export { default as SignUp } from './SignUp';
+export { default as SignUp, ISignUpProps } from './SignUp';
 export { default as ConfirmSignUp } from './ConfirmSignUp';
 export { default as VerifyContact } from './VerifyContact';
 export { default as ForgotPassword } from './ForgotPassword';
-export { default as Greetings } from './Greetings';
-export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
+export { default as Greetings, IGreetingsProps } from './Greetings';
+export { default as FederatedSignIn, FederatedButtons, IFederatedButtonsProps } from './FederatedSignIn';
 export { default as TOTPSetup } from './TOTPSetup';
 export { default as Loading } from './Loading';
 
@@ -38,7 +38,7 @@ import Greetings from './Greetings';
 
 
 export interface IWithAuthenticatorProps extends IAuthenticatorProps {
-    federated;
+    federated?;
 }
 
 export interface IWithAuthenticatorState {
