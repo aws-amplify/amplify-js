@@ -128,6 +128,7 @@ export default class VerifyContact extends AuthPiece {
             <View style={theme.sectionBody}>
                 {this.createPicker(unverified)}
                 <AmplifyButton
+                    theme={theme}
                     text={I18n.get('Verify')}
                     onPress={this.verify}
                     disabled={!this.state.pickAttr}
@@ -147,6 +148,7 @@ export default class VerifyContact extends AuthPiece {
                     required={true}
                 />
                 <AmplifyButton
+                    theme={theme}
                     text={I18n.get('Submit')}
                     onPress={this.submit}
                     disabled={!this.state.code}
