@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
  <template>
-  <div v-bind:class="amplifyUI.formSection">
+  <div v-if="show" v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-if="!codeSent" v-bind:class="amplifyUI.hint">
@@ -58,6 +58,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
         error: '',
         codeSent: false,
         logger: {},
+        show: false,
         attribute: 'email',
         amplifyUI: AmplifyUI
     }
@@ -84,6 +85,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
     if (this.options.skipVerification) {
       return AmplifyEventBus.$emit('authState', 'signedIn')
     }
+    this.show = true;
   },
   methods: {
     verify: function() {

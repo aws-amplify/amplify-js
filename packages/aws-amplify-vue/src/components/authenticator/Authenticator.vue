@@ -56,7 +56,7 @@ export default {
       return Object.assign(defaults, this.authConfig || {})
     }
   },
-  async mounted() {
+  mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
     AmplifyEventBus.$on('localUser', user => {
       this.user = user;
@@ -67,7 +67,16 @@ export default {
       this.options.verifyContactConfig.user = this.user;
     });
     AmplifyEventBus.$on('authState', data => {
-      this.displayMap = this.updateDisplayMap(data, this.options)
+      this.displayMap = this.updateDisplayMap(data)
+      // if (data !== 'verifyContact') {
+      //   this.displayMap = this.updateDisplayMap(data)
+      // } else {
+      //   if (this.options.verifyContactConfig.skipVerification) {
+      //     AmplifyEventBus.$emit('authState', 'signedIn');
+      //   } else {
+      //     this.displayMap = this.updateDisplayMap(data);
+      //   }
+
     });
     GetUser(this.$Amplify).then((val) => {
       if (val instanceof Error) {
@@ -79,7 +88,7 @@ export default {
     .catch(e => this.setError(e))
   },
   methods: {
-    updateDisplayMap: (state, options) => {
+    updateDisplayMap: (state) => {
       return {
         showSignIn: state === 'signedOut',
         showSignUp: state === 'signUp',
@@ -89,7 +98,7 @@ export default {
         showSignOut: state === 'signedIn',
         showMfa: state === 'setMfa',
         requireNewPassword: state === 'requireNewPassword',
-        verifyContact: state === 'verifyContact' && !options.verifyContactConfig.skipVerification,
+        verifyContact: state === 'verifyContact',
       }
     },
     setError: function(e) {
