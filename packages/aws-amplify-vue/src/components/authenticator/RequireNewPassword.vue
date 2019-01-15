@@ -85,20 +85,14 @@ import * as AmplifyUI from '@aws-amplify/ui';
     checkContact(user) {
       this.$Amplify.Auth.verifiedContact(user)
         .then(data => {
-          if (!this.$Amplify.JS.isEmpty(data.verified)) {
-            AmplifyEventBus.$emit('localUser', user)
-            AmplifyEventBus.$emit('authState', 'signedIn');
-          } else {
-            if (user.challengeName === 'SMS_MFA') {
-                AmplifyEventBus.$emit('localUser', user)
-                AmplifyEventBus.$emit('authState', 'confirmSignIn')
-            } else if (user.challengeName === 'MFA_SETUP') {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
               AmplifyEventBus.$emit('localUser', user)
-              AmplifyEventBus.$emit('authState', 'setMfa')
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
             }
-          }
-        })
-        .catch((e) => this.setError(e))
+        });
     },
     change() {
       this.$Amplify.Auth.completeNewPassword(this.options.user, this.password, this.requiredAttributes)
