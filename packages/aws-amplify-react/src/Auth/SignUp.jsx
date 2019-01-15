@@ -51,9 +51,9 @@ export default class SignUp extends AuthPiece {
         this.needPrefix = this.needPrefix.bind(this);
 
         const { signUpConfig={} } = this.props || {};
-        if (signUpConfig.emailAsUsername) {
+        if (signUpConfig.signUpWith === 'Email') {
             this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpConfig.phoneNumberAsUsername) {
+        } else if (signUpConfig.signUpWith === 'Phone Number') {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
         } else {
             this.defaultSignUpFields = signUpWithUsernameFields;
