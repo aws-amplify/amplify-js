@@ -90,9 +90,6 @@ import * as AmplifyUI from '@aws-amplify/ui';
   methods: {
     verify: function() {
       this.error = null;
-      if (!this.options.user) {
-        return this.setError('No user for email verification.');
-      }
       this.$Amplify.Auth.verifyCurrentUserAttribute(this.attribute)
         .then(() => {
             return this.codeSent = true;
