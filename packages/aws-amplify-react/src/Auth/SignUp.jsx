@@ -204,10 +204,10 @@ export default class SignUp extends AuthPiece {
             }
         });
   
-        const { emailAsUsername, phoneNumberAsUsername } = this.props.signUpConfig || {};
-        if (emailAsUsername) {
+        const { signUpWith } = this.props.signUpConfig;
+        if (signUpWith === 'Email') {
             signup_info.username = signup_info.attributes['email'];
-        } else if (phoneNumberAsUsername) {
+        } else if (signUpWith === 'Phone Number') {
             signup_info.username = signup_info.attributes['phone_number'];
         }
         

@@ -36,7 +36,7 @@ import {
     AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
-import defaultSignUpFields from './common/default-sign-in-fields'
+import signUpWithUsernameFields, { signUpWithEmailFields, signUpWithPhoneNumberFields } from './common/default-sign-up-fields'
 
 
 const logger = new Logger('SignUp');
@@ -50,7 +50,16 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-        this.defaultSignUpFields = defaultSignUpFields;
+
+        const { signUpConfig={} } = this.props || {};
+        if (signUpConfig.signUpWith === 'Email') {
+            this.defaultSignUpFields = signUpWithEmailFields;
+        } else if (signUpConfig.signUpWith === 'Phone Number') {
+            this.defaultSignUpFields = signUpWithPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
+        }
+
         this.needPrefix = this.needPrefix.bind(this);
         this.header = (this.props &&
             this.props.signUpConfig && 
@@ -161,7 +170,7 @@ export default class SignUp extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let signup_info = {
+        const signup_info = {
             username: this.state.username,
             password: this.state.password,
             attributes: {
@@ -180,6 +189,13 @@ export default class SignUp extends AuthPiece {
                 }
               }
         });
+
+        const { signUpWith } = this.props.signUpConfig;
+        if (signUpWith === 'Email') {
+            signup_info.username = signup_info.attributes['email'];
+        } else if (signUpWith === 'Phone Number') {
+            signup_info.username = signup_info.attributes['phone_number'];
+        }
 
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
