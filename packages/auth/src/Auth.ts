@@ -951,6 +951,13 @@ export default class AuthClass {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
+            await this._storageSync;
+        } catch (e) {
+            logger.debug('Failed to sync cache info into memory', e);
+            throw e;
+        }
+
+        try {
             federatedUser = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo')).user;
         } catch (e) {
             logger.debug('cannot load federated user from auth storage');
@@ -966,6 +973,10 @@ export default class AuthClass {
             try {
                 user = await this.currentUserPoolUser(params);
             } catch (e) {
+                if (e === 'No userPool') {
+                    logger.error('Cannot get the current user because the user pool is missing. ' +
+                        'Please make sure the Auth module is configured with a valid Cognito User Pool ID');
+                }
                 logger.debug('The user is not authenticated by the error', e);
                 throw ('not authenticated');
             }
@@ -1031,10 +1042,17 @@ export default class AuthClass {
      * Get  authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public currentUserCredentials(): Promise<ICredentials> {
+    public async currentUserCredentials(): Promise<ICredentials> {
         const that = this;
         logger.debug('Getting current user credentials');
         
+        try {
+            await this._storageSync;
+        } catch (e) {
+            logger.debug('Failed to sync cache info into memory', e);
+            throw e;
+        }
+
         // first to check whether there is federation info in the auth storage
         let federatedInfo = null;
         try {
