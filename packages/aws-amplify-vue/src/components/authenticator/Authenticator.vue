@@ -68,15 +68,6 @@ export default {
     });
     AmplifyEventBus.$on('authState', data => {
       this.displayMap = this.updateDisplayMap(data)
-      // if (data !== 'verifyContact') {
-      //   this.displayMap = this.updateDisplayMap(data)
-      // } else {
-      //   if (this.options.verifyContactConfig.skipVerification) {
-      //     AmplifyEventBus.$emit('authState', 'signedIn');
-      //   } else {
-      //     this.displayMap = this.updateDisplayMap(data);
-      //   }
-
     });
     GetUser(this.$Amplify).then((val) => {
       if (val instanceof Error) {
