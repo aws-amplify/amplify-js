@@ -72,13 +72,22 @@ describe('SetMFA', () => {
     it('...have default options', () => {
       expect(wrapper.vm.options.header).toEqual('Multifactor Authentication Preference');
     });
+
     it('...should call Auth.setPreferredMFA when setMFA function is called', () => {
       wrapper.vm.setMFA();
       expect(wrapper.vm.$Amplify.Auth.setPreferredMFA).toHaveBeenCalledTimes(1);
     });
+
     it('...should call Auth.verifyTotpToken when verifyTotpToken function is called', () => {
       wrapper.vm.verifyTotpToken();
       expect(wrapper.vm.$Amplify.Auth.verifyTotpToken).toHaveBeenCalledTimes(1);
+    });
+
+    it('...should have a dom element without class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).not.toContain('test-class-1');
+      expect(el.classes()).not.toContain('test-class-2');
     });
   });
 
@@ -126,7 +135,13 @@ describe('SetMFA', () => {
             totpDescription: testText,
             noMfaDescription: testText,
             mfaTypes: [],
+            classOverrides: {
+              formSection: ['test-class-1']
+            }
           },
+          classOverrides: {
+            formSection: ['test-class-2', 'test-class-3']
+          }
         },
       });
     });
@@ -216,6 +231,22 @@ describe('SetMFA', () => {
       wrapper.vm.displayTotpSetup = true;
       const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
       expect(qr).toBeTruthy();
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('formSection');
+      expect(classes).toContain(AmplifyUI['formSection']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });

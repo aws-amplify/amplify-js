@@ -13,9 +13,9 @@
 
 <template>
   <div> 
-   <div v-bind:class="amplifyUI.formField">
-      <div v-bind:class="amplifyUI.inputLabel">{{options.msg}}</div>
-      <button v-bind:class="amplifyUI.button" v-on:click="signOut">{{options.signOutButton}}</button>
+   <div v-bind:class="applyClasses('formField')">
+      <div v-bind:class="applyClasses('inputLabel')">{{options.msg}}</div>
+      <button v-bind:class="applyClasses('button')" v-on:click="signOut">{{options.signOutButton}}</button>
     </div>      
     <div class="error" v-if="error">
       {{ error }}
@@ -30,7 +30,18 @@ import { existsSync } from 'fs';
 
 export default {
   name: 'SignOut',
-  props: ['signOutConfig'],
+  props: {
+    signOutConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
         error: '',
@@ -43,7 +54,8 @@ export default {
     options() {
       const defaults = {
         msg: null,
-        signOutButton: this.$Amplify.I18n.get('Sign Out')
+        signOutButton: this.$Amplify.I18n.get('Sign Out'),
+        classOverrides: {}
       }
       return Object.assign(defaults, this.signOutConfig || {})
     }
@@ -63,6 +75,14 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
+    },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.signOutConfig.classOverrides && this.signOutConfig.classOverrides[element] ? this.signOutConfig.classOverrides[element] : [])
+      ];
+      return classes;
     }
   }
 }
