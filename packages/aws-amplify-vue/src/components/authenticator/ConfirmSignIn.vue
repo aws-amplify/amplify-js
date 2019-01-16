@@ -17,7 +17,7 @@
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
+        <input autofocus v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
@@ -67,11 +67,22 @@ export default {
     };
   },
   methods: {
+    checkContact: function(user) {
+      this.$Amplify.Auth.verifiedContact(user)
+        .then(data => {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
+        });
+    },
     submit: function() {
       this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
-        .then(() => {
-          this.logger.info('confirmSignIn successs');
-          AmplifyEventBus.$emit('authState', 'signedIn');
+        .then((data) => {
+          this.checkContact(data)
         })
         .catch(e => this.setError(e));
     },

@@ -74,6 +74,18 @@ export default {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
   methods: {
+    checkContact: function(user) {
+      this.$Amplify.Auth.verifiedContact(user)
+        .then(data => {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
+        });
+    },
     signIn: function(event) {
       const that = this
       this.$Amplify.Auth.signIn(this.options.username, this.password)
@@ -89,7 +101,7 @@ export default {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'setMfa');
           } else {
-            return AmplifyEventBus.$emit('authState', 'signedIn')
+            this.checkContact(data);
           }
         })
         .catch(e => this.setError(e));

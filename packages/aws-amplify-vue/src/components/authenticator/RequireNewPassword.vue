@@ -47,6 +47,7 @@
  <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+
  export default {
   name: 'RequireNewPassword',
   props: ['requireNewPasswordConfig'],
@@ -84,12 +85,13 @@ import * as AmplifyUI from '@aws-amplify/ui';
     checkContact(user) {
       this.$Amplify.Auth.verifiedContact(user)
         .then(data => {
-          if (!JS.isEmpty(data.verified)) {
-            this.changeState('signedIn', user);
-          } else {
-            user = Object.assign(user, data);
-            this.changeState('verifyContact', user);
-          }
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
         })
         .catch((e) => this.setError(e))
     },

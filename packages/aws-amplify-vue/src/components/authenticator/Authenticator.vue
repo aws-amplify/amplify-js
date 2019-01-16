@@ -20,6 +20,7 @@
     <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig"></amplify-forgot-password>
     <amplify-require-new-password v-if="displayMap.requireNewPassword" v-bind:requireNewPasswordConfig="options.requireNewPasswordConfig"></amplify-require-new-password>
     <amplify-set-mfa v-if="displayMap.showMfa" v-bind:mfaConfig="options.mfaConfig"></amplify-set-mfa>
+    <amplify-verify-contact v-if="displayMap.verifyContact" v-bind:verifyContactConfig="options.verifyContactConfig"></amplify-verify-contact>
   </div>
 </template>
 
@@ -49,12 +50,13 @@ export default {
         confirmSignInConfig: {},
         forgotPasswordConfig: {},
         mfaConfig: {},
-        requireNewPasswordConfig: {}
+        requireNewPasswordConfig: {},
+        verifyContactConfig: {},
       };
       return Object.assign(defaults, this.authConfig || {})
     }
   },
-  async mounted() {
+  mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
     AmplifyEventBus.$on('localUser', user => {
       this.user = user;
@@ -62,6 +64,7 @@ export default {
       this.options.confirmSignInConfig.user = this.user;
       this.options.confirmSignUpConfig.username = this.user.username;
       this.options.requireNewPasswordConfig.user = this.user;
+      this.options.verifyContactConfig.user = this.user;
     });
     AmplifyEventBus.$on('authState', data => {
       this.displayMap = this.updateDisplayMap(data)
@@ -76,7 +79,7 @@ export default {
     .catch(e => this.setError(e))
   },
   methods: {
-    updateDisplayMap: state => {
+    updateDisplayMap: (state) => {
       return {
         showSignIn: state === 'signedOut',
         showSignUp: state === 'signUp',
@@ -85,7 +88,8 @@ export default {
         showForgotPassword: state === 'forgotPassword',
         showSignOut: state === 'signedIn',
         showMfa: state === 'setMfa',
-        requireNewPassword: state === 'requireNewPassword'
+        requireNewPassword: state === 'requireNewPassword',
+        verifyContact: state === 'verifyContact',
       }
     },
     setError: function(e) {
