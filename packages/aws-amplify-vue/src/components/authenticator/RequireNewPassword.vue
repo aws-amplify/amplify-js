@@ -92,7 +92,8 @@ import * as AmplifyUI from '@aws-amplify/ui';
               AmplifyEventBus.$emit('localUser', user)
               return AmplifyEventBus.$emit('authState', 'verifyContact')
             }
-        });
+        })
+        .catch((e) => this.setError(e))
     },
     change() {
       this.$Amplify.Auth.completeNewPassword(this.options.user, this.password, this.requiredAttributes)
