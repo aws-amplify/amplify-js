@@ -16,7 +16,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
-import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
+import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../../assets/default-sign-up-fields';
 
 
 
@@ -156,6 +156,12 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
+      // shall I add it here?
+      if (this._signUpConfig.signUpWith === 'Email') {
+          this.signUpFields = signUpWithEmailFields;
+      } else if (this._signUpConfig.signUpWith === 'Phone Number') {
+          this.signUpFields = signUpWithPhoneNumberFields;
+      }
     }
   }
 
@@ -181,6 +187,8 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
+
+      // or here?
     }
   }
 
@@ -220,6 +228,14 @@ export class SignUpComponentCore implements OnInit {
         this.user.attributes[newKey] = userValues[index];
       }
     });
+
+    const signUpWith = this._signUpConfig? this._signUpConfig.signUpWith : undefined;
+    if (signUpWith === 'Email') {
+      this.user.username = this.user.attributes['email'];
+    } else if (signUpWith === 'Phone Number') {
+      this.user.username = this.user.attributes['phone_number'];
+    }
+
     this.amplifyService.auth()
       .signUp(this.user)
       .then((user) => {

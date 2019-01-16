@@ -64,6 +64,7 @@ import Vue2Filters from 'vue2-filters'
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
 
 Vue.use(Vue2Filters)
 
@@ -82,6 +83,52 @@ export default {
   },
   computed: {
     options() {
+      const signUpWithEmailFields = [
+        {
+            label: this.$Amplify.I18n.get('Email'),
+            key: 'email',
+            required: true,
+            type: 'string',
+            displayOrder: 1
+        },
+        {
+            label: this.$Amplify.I18n.get('Password'),
+            key: 'password',
+            required: true,
+            type: 'password',
+            displayOrder: 2,
+        },
+        {
+            label: this.$Amplify.I18n.get('Phone Number'),
+            key: 'phone_number',
+            required: true,
+            displayOrder: 3
+        }
+      ];
+
+      const signUpWithPhoneNumberFields = [
+        {
+            label: this.$Amplify.I18n.get('Phone Number'),
+            key: 'phone_number',
+            required: true,
+            displayOrder: 1
+        },
+        {
+            label: this.$Amplify.I18n.get('Password'),
+            key: 'password',
+            required: true,
+            type: 'password',
+            displayOrder: 2,
+        },
+        {
+            label: this.$Amplify.I18n.get('Email'),
+            key: 'email',
+            required: true,
+            type: 'string',
+            displayOrder: 3
+        },
+      ];
+
       const defaults = {
         header: this.$Amplify.I18n.get('Sign Up Account'),
         signUpFields: [
@@ -113,6 +160,15 @@ export default {
             displayOrder: 4
           }
         ]
+      }
+
+      if (this.signUpConfig && this.signUpConfig.signUpWith) {
+        const signUpWith = this.signUpConfig.signUpWith;
+        if (signUpWith === 'Email') {
+          defaults.signUpFields = signUpWithEmailFields;
+        } else if (signUpWith = 'Phone Number') {
+          defaults.signUpFields = signUpWithPhoneNumberFields;
+        }
       }
 
       // sets value in country code dropdown if defaultCountryCode value is present in props 
@@ -211,6 +267,13 @@ export default {
           user.attributes[newKey] = e.value;
         };
       })
+
+      const signUpWith = this.signUpConfig? this.signUpConfig.signUpWith : undefined;
+      if (signUpWith === 'Email') {
+        user.username = this.user.attributes['email'];
+      } else if (signUpWith === 'Phone Number') {
+        user.username = this.user.attributes['phone_number'];
+      }
 
        this.$Amplify.Auth.signUp(user)
             .then(data => {

@@ -41,3 +41,49 @@ export default [
     displayOrder: 4
   }
 ];
+
+export const signUpWithEmailFields = [
+  {
+      label: 'Email',
+      key: 'email',
+      required: true,
+      type: 'email',
+      displayOrder: 1
+  },
+  {
+      label: 'Password',
+      key: 'password',
+      required: true,
+      type: 'password',
+      displayOrder: 2,
+  },
+  {
+      label: 'Phone Number',
+      key: 'phone_number',
+      required: true,
+      displayOrder: 3
+  }
+];
+
+  export const signUpWithPhoneNumberFields = [
+  {
+      label: 'Phone Number',
+      key: 'phone_number',
+      required: true,
+      displayOrder: 1
+  },
+  {
+      label: 'Password',
+      key: 'password',
+      required: true,
+      type: 'password',
+      displayOrder: 2,
+  },
+  {
+      label: 'Email',
+      key: 'email',
+      required: true,
+      type: 'email',
+      displayOrder: 3
+  },
+];
