@@ -77,7 +77,7 @@ export default class ConfirmSignUp extends AuthPiece {
                 </SectionHeader>
                 <SectionBody theme={theme}>
                     <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Username')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                         <Input
                             placeholder={I18n.get('Username')}
                             theme={theme}
@@ -90,7 +90,7 @@ export default class ConfirmSignUp extends AuthPiece {
                     </FormField>
 
                     <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Confirmation Code')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get('Confirmation Code')} *</InputLabel>
                         <Input
                             autoFocus
                             placeholder={I18n.get('Enter your code')}

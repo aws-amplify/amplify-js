@@ -35,6 +35,7 @@ export * from './Provider';
 
 import Greetings from './Greetings';
 
+
 export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
     return class extends Component {
         constructor(props) {
@@ -71,7 +72,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
                 return (
-                    <div>
+                    <React.Fragment>
                         {
                             this.authConfig.includeGreetings?
                             <Greetings
@@ -89,7 +90,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                    </div>
+                    </React.Fragment>
                 );
             }
 

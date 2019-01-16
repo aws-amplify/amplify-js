@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignUp from '../src/components/authenticator/SignUp.vue';
 import countries from '../src/assets/countries';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 

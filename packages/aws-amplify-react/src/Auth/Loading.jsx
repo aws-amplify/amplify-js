@@ -40,6 +40,6 @@ export default class Loading extends AuthPiece {
                 <SectionBody theme={theme}>{I18n.get('Loading...')}
                 </SectionBody>
             </FormSection>
-        )
+        );
     }
 }

@@ -80,8 +80,9 @@ describe('SignIn', () => {
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
-            await wrapper.find(Button).simulate('click');
+            wrapper.find(Button).simulate('click');
 
+            await Promise.resolve(); // await for all other promises to resolve
 
             expect(spyon.mock.calls.length).toBe(1);
             expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);

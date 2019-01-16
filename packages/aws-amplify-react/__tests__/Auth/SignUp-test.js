@@ -10,8 +10,8 @@ const acceptedStates = [
 ];
 
 const deniedStates = [
-    'signIn',  
-    'signedUp', 
+    'signIn',
+    'signedUp',
     'signedOut',
     'forgotPassword',
     'signedIn',
@@ -28,10 +28,10 @@ const mockResult = {
 
 describe('signUp without signUpConfig prop', () => {
     describe('normal case', () => {
-        const wrapper = shallow(<SignUp/>);
+        const wrapper = shallow(<SignUp />);
 
         test('render correctly with authState signUp', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -41,7 +41,7 @@ describe('signUp without signUpConfig prop', () => {
         });
 
         test('render correctly with hide', () => {
-            for (let i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme,
@@ -52,8 +52,7 @@ describe('signUp without signUpConfig prop', () => {
         });
 
         test('when clicking signUp', async () => {
-            const wrapper = shallow(<SignUp/>);
-
+            const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
                 theme: AmplifyTheme
@@ -117,7 +116,7 @@ describe('signUp without signUpConfig prop', () => {
         });
 
         test('when clicking signUp with another format of phone number', async () => {
-            const wrapper = shallow(<SignUp/>);
+            const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
                 theme: AmplifyTheme
@@ -172,7 +171,12 @@ describe('signUp without signUpConfig prop', () => {
             await wrapper.find(Button).simulate('click');
 
 
-            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678901"}, "password": "abc", "username": "user1"});
+            expect(spyon)
+                .toBeCalledWith({
+                    "attributes": { "email": "email@amazon.com", "phone_number": "+12345678901" },
+                    "password": "abc",
+                    "username": "user1"
+                });
 
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
@@ -182,7 +186,7 @@ describe('signUp without signUpConfig prop', () => {
         });
 
         test('when clicking signUp without phone_number', async () => {
-            const wrapper = shallow(<SignUp/>);
+            const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
                 theme: AmplifyTheme
@@ -251,9 +255,9 @@ describe('signUp without signUpConfig prop', () => {
 
     describe('null case with other authState', () => {
         test('render corrently', () => {
-            const wrapper = shallow(<SignUp/>);
-            
-            for (let i = 0; i < deniedStates.length; i += 1){
+            const wrapper = shallow(<SignUp />);
+
+            for (let i = 0; i < deniedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -263,7 +267,7 @@ describe('signUp without signUpConfig prop', () => {
             }
         });
     });
-})
+});
 
 describe('signUp with signUpConfig', () => {
     let wrapper;
@@ -712,4 +716,48 @@ describe('signUp with signUpConfig', () => {
         expect(spyon).toBeCalled();
 
     });
-})
+
+    test('signUp should complete even if phone field is hidden', async () => {
+        wrapper.setProps({
+            authState: 'signUp',
+            signUpConfig: {
+                hiddenDefaults: ["phone_number"]
+            }
+        });
+
+        const spyon = jest.spyOn(Auth, 'signUp')
+        .mockImplementationOnce((user, password) => {
+            return new Promise((res, rej) => {
+                res(mockResult);
+            });
+        });
+
+        const event_username = {
+            target: {
+                name: 'username',
+                value: 'user1'
+            }
+        }
+
+        const event_password = {
+            target: {
+                name: 'password',
+                value: 'abc'
+            }
+        }
+
+        const event_email = {
+            target: {
+                name: 'email',
+                value: 'email@amazon.com'
+            }
+        }
+
+        wrapper.find(Input).at(0).simulate('change', event_username);
+        wrapper.find(Input).at(1).simulate('change', event_password);
+        wrapper.find(Input).at(2).simulate('change', event_email);
+        await wrapper.find(Button).simulate('click');
+
+        expect(spyon).toBeCalled();
+    });
+});

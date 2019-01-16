@@ -12,11 +12,11 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button, 
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
     TouchableWithoutFeedback,
     Keyboard,
     Picker,
@@ -27,10 +27,11 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import { 
+import {
     FormField,
-    LinkCell, 
-    Header, 
+    PhoneField,
+    LinkCell,
+    Header,
     ErrorRow,
     AmplifyButton
 } from '../AmplifyUI';
@@ -51,7 +52,9 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = this.props.signUpConfig.header || 'Create a new account';
+        this.header = (this.props &&
+            this.props.signUpConfig && 
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
     validate() {
@@ -171,11 +174,9 @@ export default class SignUp extends AuthPiece {
 
         inputKeys.forEach((key, index) => {
             if (!['username', 'password', 'checkedValue'].includes(key)) {
-                if (key !== 'phone_line_number' && key !== 'dial_code') {
+                if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                   const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                   signup_info.attributes[newKey] = inputVals[index];
-                } else if (inputVals[index]) {
-                    signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
                 }
               }
         });
@@ -198,7 +199,7 @@ export default class SignUp extends AuthPiece {
                     <View style={theme.sectionBody}>
                     {
                         this.signUpFields.map((field) => {
-                            return  (
+                            return field.key !== 'phone_number' ?  (
                                 <FormField
                                     key = {field.key}
                                     theme={theme}
@@ -212,6 +213,16 @@ export default class SignUp extends AuthPiece {
                                     }
                                     label={I18n.get(field.label)}
                                     placeholder={I18n.get(field.placeholder)}
+                                    required={field.required}
+                                />
+                            ) : (
+                                <PhoneField
+                                    theme={theme}
+                                    key = {field.key}
+                                    onChangeText={(text) => this.setState({ phone_number: text })}
+                                    label={I18n.get(field.label)}
+                                    placeholder={I18n.get(field.placeholder)}
+                                    keyboardType="phone-pad"
                                     required={field.required}
                                 />
                             )

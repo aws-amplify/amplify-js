@@ -18,7 +18,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { TextPicker } from '../Widget';
+import TextPicker from '../Widget/TextPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Text');
@@ -39,15 +39,15 @@ export default class S3Text extends Component {
         };
     }
 
-    getText(key, level, track) {
+    getText(key, level, track, identityId) {
         if (!Storage || typeof Storage.get !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
-        Storage.get(key, { download: true, level: level? level : 'public', track })
+        Storage.get(key, { download: true, level: level? level : 'public', track, identityId })
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
-                this.setState({ text: text });
+                this.setState({ text });
                 this.handleOnLoad(text);
             })
             .catch(err => {
@@ -57,7 +57,7 @@ export default class S3Text extends Component {
     }
 
     load() {
-        const { path, textKey, body, contentType, level, track } = this.props;
+        const { path, textKey, body, contentType, level, track, identityId } = this.props;
         if (!textKey && !path) {
             logger.debug('empty textKey and path');
             return ;
@@ -78,11 +78,11 @@ export default class S3Text extends Component {
             });
             ret.then(data => {
                 logger.debug(data);
-                that.getText(key, level, track);
+                that.getText(key, level, track, identityId);
             })
             .catch(err => logger.debug(err));
         } else {
-            that.getText(key, level, track);
+            that.getText(key, level, track, identityId);
         }
     }
 
@@ -100,7 +100,7 @@ export default class S3Text extends Component {
         const that = this;
 
         const path = this.props.path || '';
-        const { textKey, level, fileToKey, track } = this.props;
+        const { textKey, level, fileToKey, track, identityId } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
         if (!Storage || typeof Storage.put !== 'function') {
@@ -113,7 +113,7 @@ export default class S3Text extends Component {
         })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.getText(key, level, track);
+                that.getText(key, level, track, identityId);
             })
             .catch(err => logger.debug('handle pick error', err));
     }

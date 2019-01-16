@@ -18,10 +18,6 @@
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
         <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
-        <div v-bind:class="amplifyUI.hint">
-          {{$Amplify.I18n.get('Lost your code? ')}}
-          <a v-bind:class="amplifyUI.a" v-on:click="send">{{$Amplify.I18n.get('Resend Code')}}</a>
-        </div>
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
@@ -71,13 +67,6 @@ export default {
     };
   },
   methods: {
-    send: function() {
-      this.$Amplify.Auth.verifyCurrentUserAttribute(this.verifyAttr)
-        .then(data => {
-          this.logger.info('verifyCurrentUserAttribute successs');
-        })
-        .catch(e => this.setError(e));
-    },
     submit: function() {
       this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
         .then(() => {

@@ -314,7 +314,7 @@ describe("AnalyticsProvider test", () => {
 
             await analytics.record({
                 event: {
-                    name: '_session_start'
+                    name: '_session.start'
                 },
                 config: {
                     endpointId: 'endpointId'
@@ -334,7 +334,7 @@ describe("AnalyticsProvider test", () => {
 
             await analytics.record({
                 event: {
-                    name: '_session_stop'
+                    name: '_session.stop'
                 },
                 config: {
                     endpointId: 'endpointId'
@@ -386,7 +386,7 @@ describe("AnalyticsProvider test", () => {
                 return Promise.resolve(credentials);
             });
 
-            const params = {event: { name: '_session_start', immediate: true}};
+            const params = {event: { name: '_session.start', immediate: true}};
             await analytics.record(params);
 
             expect(spyon).toBeCalledWith({
@@ -399,7 +399,7 @@ describe("AnalyticsProvider test", () => {
                             "Events": {
                                 "sessionId": {
                                     "Attributes": undefined, 
-                                    "EventType": "_session_start", 
+                                    "EventType": "_session.start", 
                                     "Metrics": undefined, 
                                     "Session": {
                                         "Id": "sessionId", 
@@ -437,7 +437,7 @@ describe("AnalyticsProvider test", () => {
             });
 
         
-           const params = {event: { name: '_session_start', immediate: true}};
+           const params = {event: { name: '_session.start', immediate: true}};
         
             expect(await analytics.record(params)).toBe(false);
     
@@ -466,7 +466,7 @@ describe("AnalyticsProvider test", () => {
                 return Promise.resolve(credentials);
             });
 
-            const params = {event: { name: '_session_stop', immediate: true}};
+            const params = {event: { name: '_session.stop', immediate: true}};
             await analytics.record(params);
 
             expect(spyon).toBeCalledWith({
@@ -479,7 +479,7 @@ describe("AnalyticsProvider test", () => {
                             "Events": {
                                 "sessionId": {
                                     "Attributes": undefined, 
-                                    "EventType": "_session_stop", 
+                                    "EventType": "_session.stop", 
                                     "Metrics": undefined, 
                                     "Session": {
                                         "Duration": 0, 
@@ -519,7 +519,7 @@ describe("AnalyticsProvider test", () => {
             });
 
         
-           const params = {event: { name: '_session_stop', immediate: true}};
+           const params = {event: { name: '_session.stop', immediate: true}};
         
            expect(await analytics.record(params)).toBe(false);
             spyon.mockClear();

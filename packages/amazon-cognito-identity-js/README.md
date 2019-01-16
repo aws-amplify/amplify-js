@@ -228,7 +228,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
             alert(err.message || JSON.stringify(err));
             return;
         }
-        cognitoUser = result.user;
+        var cognitoUser = result.user;
         console.log('user name is ' + cognitoUser.getUsername());
     });
 ```
@@ -850,7 +850,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	     });
   ```
   
-**Use case 31.** Retrieve the user data for an authenticated user. 
+**Use case 31.** Retrieve the user data for an authenticated user.
 
   ```js
 	    cognitoUser.getUserData(function(err, userData) {
@@ -860,6 +860,16 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	        }
 	        console.log('User data for user ' + userData);
 	    });
+
+        // If you want to force to get the user data from backend,
+        // you can set the bypassCache to true
+        cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err.message || JSON.stringify(err));
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    }, {bypassCache: true});
   ```
 
 **Use case 32.** Handling expiration of the Id Token. 

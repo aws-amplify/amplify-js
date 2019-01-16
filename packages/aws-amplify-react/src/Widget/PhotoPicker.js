@@ -60,7 +60,7 @@ export default class PhotoPicker extends Component {
         const { previewSrc } = this.state;
 
         const headerText = this.props.headerText || 'Photos';
-        const headerHint = this.props.headerHint || 'Add you photos by clicking below'
+        const headerHint = this.props.headerHint || 'Add your photos by clicking below';
         const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;
@@ -76,13 +76,13 @@ export default class PhotoPicker extends Component {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
-                <SectionBody>
+                <SectionBody theme={theme}>
                     { previewSrc ? 
                         (previewHidden ? 
                             'The image has been selected':
                             <img src={previewSrc} style={previewStyle} />
                         ):
-                        <PhotoPlaceholder />
+                        <PhotoPlaceholder theme={theme}/>
                     }
                 </SectionBody>
                 <Picker

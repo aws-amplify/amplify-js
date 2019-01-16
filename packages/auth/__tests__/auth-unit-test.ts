@@ -1924,11 +1924,16 @@ describe('auth unit test', () => {
                     credentials: 'credentials'
                 });
             });
+            const spyon2 = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementation(() => {
+                if (!user) return Promise.reject('error');
+                else return Promise.resolve(user);
+            });
 
             auth.federatedSignIn('google', { token: 'token', expires_at: 1234 }, { name: 'userName' });
 
             expect(spyon).toBeCalled();
             spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 

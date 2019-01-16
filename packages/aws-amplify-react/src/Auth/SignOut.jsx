@@ -12,7 +12,7 @@
  */
 
 import * as React from 'react';
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
@@ -28,11 +28,56 @@ export default class SignOut extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
+        Hub.listen('auth', this)
+        this.onHubCapsule = this.onHubCapsule.bind(this)
+        this.state = {};
+    }
 
-        this.state = {
-            authState: props.authState,
-            authData: props.authData
-        };
+    componentDidMount() {
+        this._isMounted = true;
+        this.findState();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    findState(){
+        if (!this.props.authState && !this.props.authData) {
+            Auth.currentAuthenticatedUser()
+            .then(user => {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: user,
+                    stateFromStorage: true
+                })
+            })
+            .catch(err => logger.error(err));
+        } else if (this.props.stateFromStorage) {
+            this.setState({
+                stateFromStorage: true
+            })
+        }
+    }
+
+    onHubCapsule(capsule) {
+        if (this._isMounted) {
+            const { channel, payload, source } = capsule;
+            if (channel === 'auth' && payload.event === 'signIn') {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: payload.data
+                })
+            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
+                this.setState({
+                    authState: 'signIn'
+                })
+            }
+    
+            if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
+                this.setState({stateFromStorage: true})
+            }
+        }
     }
 
     signOut() {
@@ -70,15 +115,19 @@ export default class SignOut extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         Auth.signOut()
-            .then(() => this.changeState('signedOut'))
-            .catch(err => { logger.error(err); this.error(err); });
+            .then(() => {
+                if (!this.state.stateFromStorage) {
+                    this.changeState('signedOut');
+                }
+            })
+            .catch(err => { logger.debug(err); this.error(err); });
     }
 
     render() {
         const { hide } = this.props;
         if (hide && hide.includes(SignOut)) { return null; }
 
-        const { authState } = this.state;
+        const authState = this.props.authState || this.state.authState;
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;
