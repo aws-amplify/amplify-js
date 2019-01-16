@@ -28,11 +28,30 @@ const template = `
         (click)="onSignOut()"
       >Sign Out</ion-button>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-greetings-ionic',
-  template: template
+  template,
+  styles: [
+    `.amplify-greeting {
+      display: flex;
+      padding: 1em;
+      margin: 0 auto;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .amplify-greeting-flex-spacer {
+      width: 30%;
+    }
+    .amplify-form-link {
+      cursor: pointer;
+      color: var(--color-primary);
+    }
+    .amplify-greeting-sign-out {
+      flex: auto;
+    }`
+  ]
 })
 export class GreetingComponentIonic extends GreetingComponentCore {
 

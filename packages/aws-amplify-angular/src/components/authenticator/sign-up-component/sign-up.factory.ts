@@ -40,6 +40,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
+  @Input() classOverrides: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -52,15 +53,15 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+    const data = {
+      authState: this.authState,
+      signUpConfig: this.signUpConfig,
+      classOverrides: this.classOverrides
+    };
+
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(SignUpComponentIonic, {
-      authState: this.authState,
-      signUpConfig: this.signUpConfig
-    }) :
-    new ComponentMount(SignUpComponentCore, {
-      authState: this.authState,
-      signUpConfig: this.signUpConfig
-    });
+    new ComponentMount(SignUpComponentIonic, data) :
+    new ComponentMount(SignUpComponentCore, data);
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

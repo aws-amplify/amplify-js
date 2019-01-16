@@ -13,85 +13,102 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
-import { includes } from '../common';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
-  <div class="amplify-form-body">
-  <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
-  <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code to reset your password</div>
-
-  <ion-list>
-
-    <ion-item lines="none" *ngIf="!code_sent">
-      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username *</ion-label>
-      <ion-input type="text" 
-        class="amplify-form-input"
-        (keyup)="setUsername($event.target.value)"
-        [value]="username"
-      ></ion-input>
-    </ion-item>
-  
-    <ion-item lines="none" *ngIf="code_sent">
-      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code *</ion-label>
-      <ion-input 
-        #code
-        type="text"
-        class="amplify-form-input"
-        (keyup)="setCode(code.value)"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item lines="none" *ngIf="code_sent">
-      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password *</ion-label>
-      <ion-input 
-        #password
-        type="password"
-        class="amplify-form-input"
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-      ></ion-input>
-    </ion-item>
-  
-  </ion-list>
-  <div class="amplify-form-actions">
-    <div>
-      <ion-button expand="block" color="primary"
-        (click)="onSend()"
-        *ngIf="!code_sent"
-      >Submit</ion-button>
-      <ion-button expand="block" color="primary"
-      *ngIf="code_sent"
-      (click)="onSubmit()"
-      >Verify</ion-button>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">Reset your password
+    <br />
+    <div *ngIf="!code_sent" class="{{applyClasses('hint')}}">
+      You will receive a verification code
     </div>
-    <div class="amplify-form-row">
-      <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign In</a></div>
-      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onSend()">Resend</a></div>
+    <div *ngIf="code_sent" class="{{applyClasses('hint')}}">
+      Enter the code you received and set a new password
     </div>
   </div>
-
-<div class="amplify-alert" *ngIf="errorMessage">
-  <div class="amplify-alert-body">
-    <span class="amplify-alert-icon">&#9888;</span>
-    <div class="amplify-alert-message">{{ errorMessage }}</div>
-    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="{{applyClasses('sectionBody')}}">
+    <ion-list>
+      <ion-item lines="none" *ngIf="!code_sent">
+        <ion-label class="{{applyClasses('inputLabel')}}" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input type="text" 
+          class="{{applyClasses('amplifyIonicInput')}}"
+          (keyup)="setUsername($event.target.value)"
+          [value]="username"
+        ></ion-input>
+      </ion-item>
+    
+      <ion-item lines="none" *ngIf="code_sent">
+        <ion-label class="{{applyClasses('inputLabel')}}" position="stacked">
+          Code *
+        </ion-label>
+        <ion-input 
+          #code
+          type="text"
+          class="{{applyClasses('amplifyIonicInput')}}"
+          (keyup)="setCode(code.value)"
+        ></ion-input>
+      </ion-item>
+      <ion-item lines="none" *ngIf="code_sent">
+        <ion-label class="{{applyClasses('inputLabel')}}" position="stacked">
+          Password *
+        </ion-label>
+        <ion-input 
+          #password
+          type="password"
+          class="{{applyClasses('amplifyIonicInput')}}"
+          (keyup)="setPassword(password.value)"
+          (keyup.enter)="onSubmit()"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
   </div>
-</div>
+  <ion-button *ngIf="!code_sent"
+  expand="block" color="primary" (click)="onSend()">Submit</ion-button>
+  <ion-button *ngIf="code_sent"
+  expand="block" color="primary" (click)="onSubmit()">Verify</ion-button>
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      Have an account?  
+      <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to SignIn</a>
+    </span>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      Lost your code?  
+      <a class="{{applyClasses('a')}}" (click)="onSend()">Resend</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
+    </div>
+  </div>
 </div>
 `;
 
 @Component({
   selector: 'amplify-auth-forgot-password-ionic',
-  template
+  template,
+  styles: [
+    `.amplify-input-label {
+      font-size: 14px;
+      margin: 0.5em;
+      letter-spacing: 0.4px;
+      line-height: 18px;
+    }`,
+    `.amplify-form-input {
+      border: none
+    }`
+  ]
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     super(amplifyService);
     
   }

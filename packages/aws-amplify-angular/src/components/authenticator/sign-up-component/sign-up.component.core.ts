@@ -14,90 +14,71 @@
 // tslint:enable
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
+import { classArray } from '../../../assets/helpers';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
 
 
 const template = `
-<div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-      <div class="amplify-form-header">{{this.header}}</div>
-
-      <div class="amplify-form-row" *ngFor="let field of signUpFields">
-        <div *ngIf="field.key !== 'phone_number'">
-          <label class="amplify-input-label">
-            {{field.label}} 
-            <span *ngIf="field.required">*</span>
-          </label>
-          <input #{{field.key}}
-            class="amplify-form-input"
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}" 
+    *ngFor="let field of signUpFields">
+      <div *ngIf="field.key !== 'phone_number'">
+        <div class="{{applyClasses('inputLabel')}}">
+          {{field.label}} 
+          <span *ngIf="field.required">*</span>
+        </div>
+        <input #{{field.key}}
+         class="{{applyClasses('input')}}"
+          [ngClass]="{'amplify-input-invalid ': field.invalid}"
+          type={{field.type}}
+          placeholder={{field.label}}
+          [(ngModel)]="user[field.key]" name="field.key" />
+      </div>
+      <div *ngIf="field.key === 'phone_number'">
+        <div class="{{applyClasses('selectInput')}}">
+          <select #countryCode
+            name="countryCode" 
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
-            type={{field.type}}
+            class="amplify-select-phone-country" 
+            [(ngModel)]="country_code">
+            <option *ngFor="let country of countries"  
+              value={{country.value}}>{{country.label}} 
+            </option>
+          </select>
+          <input 
+           class="{{applyClasses('input')}}"
             placeholder={{field.label}}
-            [(ngModel)]="user[field.key]" name="field.key" />
-        </div>
-        <div *ngIf="field.key === 'phone_number'">
-          <label class="amplify-input-label">
-            {{field.label}} 
-            <span *ngIf="field.required">*</span>
-          </label>
-          
-          <div class="amplify-input-group">
-            <div class="amplify-input-group-item">
-              <select #countryCode
-                name="countryCode" 
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country" 
-                [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"  
-                  value={{country.value}}>{{country.label}} 
-                </option>
-              </select>
-            </div>
-            <div class="amplify-input-group-item">
-              <input 
-                class="amplify-form-input"
-                placeholder={{field.label}}
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                [(ngModel)]="local_phone_number"
-                name="local_phone_number"
-                type={{field.type}}
-              />
-            </div>
-          </div>
+            [ngClass]="{'amplify-input-invalid ': field.invalid}"
+            [(ngModel)]="local_phone_number"
+            name="local_phone_number"
+            type={{field.type}}
+          />
         </div>
       </div>
-      <div class="amplify-form-actions">
-        
-        <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">
-            Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
-          </div>
-        </div>
-
-        <div class="amplify-form-cell-right">
-          <button class="amplify-form-button"
-          (click)="onSignUp()"
-          >Sign Up</button>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="amplify-alert" *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      <button class="{{applyClasses('button')}}" 
+      (click)="onSignUp()">Sign Up</button>
+    </span>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+    Have an account? <a class="{{applyClasses('a')}}" (click)="onSignIn()">Sign in</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
+    </div>
+  </div>
 </div>
 `;
 
@@ -115,12 +96,22 @@ export class SignUpField{
 @Component({
   selector: 'amplify-auth-sign-up-core',
   template,
+  styles: [
+    `.amplify-select-phone-country {
+      height: 55px;
+      width: 68px;
+      border: var(--input-border);
+      border-radius: 3px 0 0 3px;
+      background-color: transparent;
+    }`
+  ]
 })
 
 export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
+  _classOverrides: any;
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
@@ -131,11 +122,14 @@ export class SignUpComponentCore implements OnInit {
   errorMessage: string;
   amplifyService: AmplifyService;
   hiddenFields: any = [];
-
+  amplifyUI: AmplifyUI;
 
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._classOverrides = {};
+    this._signUpConfig = {};
   }
 
   @Input()
@@ -156,6 +150,9 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
+    }
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
     }
   }
 
@@ -184,9 +181,23 @@ export class SignUpComponentCore implements OnInit {
     }
   }
 
+  @Input()
+  set classOverrides(classOverrides) {
+    this._classOverrides = classOverrides;
+  }
+
   ngOnInit() {
     this.sortFields();
   }
+
+
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._classOverrides, component: this._signUpConfig.classOverrides}
+    );
+  }
+
 
   onSignUp() {
 
@@ -313,7 +324,7 @@ export class SignUpComponentCore implements OnInit {
 
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

@@ -28,7 +28,6 @@
         <input v-bind:class="applyClasses('input')" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
       </div>
     </div>
-
   <div v-bind:class="applyClasses('sectionFooter')">
       <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
         <button v-if="!sent" v-bind:class="applyClasses('button')" v-on:click="submit" :disabled="!username">{{$Amplify.I18n.get('Send Code')}}</button>
