@@ -17,6 +17,7 @@ describe('VerifyContact', () => {
 
   let wrapper;
   let verificationMessage;
+  let skipVerification;
   let user;
   const mockVerify = jest.fn();
   const mockSubmit = jest.fn();
@@ -65,7 +66,8 @@ describe('VerifyContact', () => {
           phone_number: '123',
           email: 'test@test.test'
         }
-      }
+      },
+      skipVerification = false,
       wrapper = shallowMount(VerifyContact, {
         methods: {
           verify: mockVerify,
@@ -74,7 +76,8 @@ describe('VerifyContact', () => {
         propsData: {
           verifyContactConfig: {
             verificationMessage,
-            user
+            user,
+            skipVerification
           },
         },
       });
@@ -87,11 +90,6 @@ describe('VerifyContact', () => {
     it('...should not set the error property', () => {
       expect(wrapper.vm.error).toEqual('');
       expect(mockSetError).not.toHaveBeenCalled();
-    });
-
-    it('...should render the verificationMessage from props', () => {
-      const el = wrapper.find(`.${AmplifyUI.hint}`).element;
-      expect(el.textContent.trim()).toEqual(verificationMessage);
     });
 
     it('...should call verify when verify button is clicked', () => {

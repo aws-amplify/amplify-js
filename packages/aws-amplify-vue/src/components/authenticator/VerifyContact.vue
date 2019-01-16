@@ -71,7 +71,8 @@ import * as AmplifyUI from '@aws-amplify/ui';
         A message will be sent to the contact option that you select.`,
         user: {
           unverified: {}
-        }
+        },
+        skipVerification: true,
       }
       return Object.assign(defaults, this.verifyContactConfig || {})
     }

@@ -6,10 +6,10 @@ import * as components from '../src/components';
 import * as AmplifyEntry from '../src/Amplify.vue'; //eslint-disable-line
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
-import dependency from '../src/services/getUser';
+// import dependency from '../src/services/getUser';
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
-jest.mock('../src/services/getUser');
+// jest.mock('../src/services/getUser');
 
 describe('Authenticator', () => {
   it('has a mounted hook', () => {
@@ -30,7 +30,7 @@ describe('Authenticator', () => {
 
     beforeEach(() => {
       wrapper = shallowMount(Authenticator);
-      dependency.mockImplementation(() => Promise.resolve({}));
+      // dependency.mockImplementation(() => Promise.resolve({}));
     });
 
     it('...it should use the amplify plugin with passed modules', () => {
@@ -53,9 +53,9 @@ describe('Authenticator', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
 
-    it('...it should call GetUser', () => {
-      expect(dependency).toBeCalledWith(AmplifyMocks);
-    });
+    // it('...it should call GetUser', () => {
+    //   expect(dependency).toBeCalledWith(AmplifyMocks);
+    // });
   });
 
   describe('...when it is mounted and displaying components...', () => {
@@ -68,7 +68,7 @@ describe('Authenticator', () => {
         // }
       });
       wrapper.vm.updateDisplayMap = jest.fn(() => mockDisplayMap);
-      dependency.mockImplementation(() => Promise.reject(new Error()));
+      // dependency.mockImplementation(() => Promise.reject(new Error()));
       mockDisplayMap = {
         showSignIn: false,
         showSignUp: false,
@@ -128,3 +128,4 @@ describe('Authenticator', () => {
     });
   });
 });
+
