@@ -83,3 +83,21 @@ export const signUpWithPhoneNumberFields = [
       displayOrder: 3
   },
 ];
+
+export const signUpWithEmailOrPhoneNumberFields = [
+  {
+      label: 'Email/Phone Number',
+      key: 'username',
+      placeholder: 'Email/Phone Number',
+      required: true,
+      displayOrder: 1
+  },
+  {
+      label: 'Password',
+      key: 'password',
+      required: true,
+      placeholder: 'Password',
+      type: 'password',
+      displayOrder: 2,
+  }
+];

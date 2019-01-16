@@ -33,7 +33,11 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import countryDialCodes from './common/country-dial-codes.js';
-import signUpWithUsernameFields, { signUpWithEmailFields, signUpWithPhoneNumberFields } from './common/default-sign-up-fields'
+import signUpWithUsernameFields, { 
+    signUpWithEmailFields, 
+    signUpWithPhoneNumberFields,
+    signUpWithEmailOrPhoneNumberFields
+ } from './common/default-sign-up-fields'
 import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
@@ -50,16 +54,16 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
 
-        const { signUpConfig={} } = this.props || {};
+        const { signUpConfig={} } = this.props;
         if (signUpConfig.signUpWith === 'Email') {
             this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpConfig.signUpWith === 'Phone Number') {
+        } else if (signUpConfig.signUpWith === 'PhoneNumber') {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
-        } else {
-            this.defaultSignUpFields = signUpWithUsernameFields;
+        } else if (signUpConfig.signUpWith === 'EmailOrPhoneNumber') {
+            this.defaultSignUpFields = signUpWithEmailOrPhoneNumberFields;
         }
         
-        this.header = (this.props &&
+        this.header = (this.props && 
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
@@ -204,11 +208,17 @@ export default class SignUp extends AuthPiece {
             }
         });
   
-        const { signUpWith } = this.props.signUpConfig;
+        const { signUpWith } = this.props.signUpConfig || {};
         if (signUpWith === 'Email') {
             signup_info.username = signup_info.attributes['email'];
-        } else if (signUpWith === 'Phone Number') {
+        } else if (signUpWith === 'PhoneNumber') {
             signup_info.username = signup_info.attributes['phone_number'];
+        } else if (signUpWith === 'EmailOrPhoneNumber') {
+            if (signup_info.username.includes('@')) {
+                signup_info.attributes['email'] = signup_info.username;
+            } else {
+                signup_info.attributes['phone_number'] = signup_info.username;
+            }
         }
         
         Auth.signUp(signup_info).then((data) => {
