@@ -30,7 +30,6 @@ describe('Authenticator', () => {
 
     beforeEach(() => {
       wrapper = shallowMount(Authenticator);
-      // dependency.mockImplementation(() => Promise.resolve({}));
     });
 
     it('...it should use the amplify plugin with passed modules', () => {
@@ -52,10 +51,6 @@ describe('Authenticator', () => {
     it('...it should have a setError method', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
-
-    // it('...it should call GetUser', () => {
-    //   expect(dependency).toBeCalledWith(AmplifyMocks);
-    // });
   });
 
   describe('...when it is mounted and displaying components...', () => {
@@ -68,7 +63,6 @@ describe('Authenticator', () => {
         // }
       });
       wrapper.vm.updateDisplayMap = jest.fn(() => mockDisplayMap);
-      // dependency.mockImplementation(() => Promise.reject(new Error()));
       mockDisplayMap = {
         showSignIn: false,
         showSignUp: false,
