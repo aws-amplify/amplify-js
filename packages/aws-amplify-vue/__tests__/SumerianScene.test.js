@@ -2,6 +2,7 @@
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import SumerianScene from '../src/components/xr/SumerianScene.vue';
+import * as AmplifyUI from '@aws-amplify/ui';
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
@@ -17,7 +18,15 @@ describe('SumerianScene', () => {
       wrapper = shallowMount(SumerianScene, {
         propsData: {
           sceneName: 'testSceneName',
-        },
+          sumerianSceneConfig: {
+            classOverrides: {
+              sumerianSceneContainer: ['test-class-1']
+            }
+          },
+          classOverrides: {
+            sumerianSceneContainer: ['test-class-2', 'test-class-3']
+          }
+        }
       });
     });
 
@@ -59,6 +68,22 @@ describe('SumerianScene', () => {
 
     it('...should have sceneName prop', () => {
       expect(wrapper.vm.sceneName).toEqual('testSceneName');
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('sumerianSceneContainer');
+      expect(classes).toContain(AmplifyUI['sumerianSceneContainer']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.sumerianSceneContainer}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });

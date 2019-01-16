@@ -1,14 +1,14 @@
 <template>
-  <div v-bind:class="amplifyUI.formSection" style="width: 380px">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="applyClasses('formSection')" style="width: 380px">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
       <img 
         v-if="file" 
         :src="photoUrl" 
         style="max-width: 100%"
       />
-      <div v-bind:class="amplifyUI.photoPlaceholder"  v-if="!file">
-        <div v-bind:class="amplifyUI.photoPlaceholderIcon" v-if="!file">
+      <div v-bind:class="applyClasses('photoPlaceholder')"  v-if="!file">
+        <div v-bind:class="applyClasses('photoPlaceholderIcon')" v-if="!file">
           <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 24 24'>
             <circle cx='12' cy='12' r='3.2' />
             <path d='M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'/>
@@ -23,7 +23,7 @@
         @change="pick"
       />
     </div>
-    <button v-if="file" v-bind:class="[amplifyUI.photoPickerButton, amplifyUI.button]" v-on:click="upload" :disabled="!file">{{options.title}}</button>
+    <button v-if="file" v-bind:class="[applyClasses('photoPickerButton'), applyClasses('button')]" v-on:click="upload" :disabled="!file">{{options.title}}</button>
     <div class="error" v-if="error">
       {{ error }}
     </div>
@@ -36,7 +36,18 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 
 export default {
   name: 'PhotoPicker',
-  props: ['photoPickerConfig'],
+  props: {
+    photoPickerConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       logger: {},
@@ -105,6 +116,14 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
+    },
+    applyClasses: function(element) {
+      const classes = [
+        AmplifyUI[element],
+        ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+        ...(this.photoPickerConfig.classOverrides && this.photoPickerConfig.classOverrides[element] ? this.photoPickerConfig.classOverrides[element] : [])
+      ];
+      return classes;
     }
   }
 }

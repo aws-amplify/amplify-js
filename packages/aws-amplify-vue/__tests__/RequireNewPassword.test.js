@@ -25,50 +25,69 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
   const mockVerify = jest.fn();
   const mockSignIn = jest.fn();
   const mockSetError = jest.fn();
-   describe('...when it is mounted without props...', () => {
+  describe('...when it is mounted without props...', () => {
     beforeEach(() => {
       wrapper = shallowMount(RequireNewPassword);
       testState = null;
     });
-     it('...it should use the amplify plugin with passed modules', () => {
+
+    it('...it should use the amplify plugin with passed modules', () => {
       console.log('wrapper', wrapper)
-       expect(wrapper.vm.$Amplify).toBeTruthy();
+      expect(wrapper.vm.$Amplify).toBeTruthy();
     });
-     it('...it should be named RequireNewPassword', () => {
+
+    it('...it should be named RequireNewPassword', () => {
       expect(wrapper.vm.$options.name).toEqual('RequireNewPassword');
     });
-     it('...it should instantiate a logger with the name of the component', () => {
+
+    it('...it should instantiate a logger with the name of the component', () => {
       expect(wrapper.vm.logger.name).toEqual(wrapper.vm.$options.name);
     });
-     it('...it should have a change method', () => {
+
+    it('...it should have a change method', () => {
       expect(wrapper.vm.change).toBeTruthy();
     });
-     it('...should have a checkContact method', () => {
+
+    it('...should have a checkContact method', () => {
       expect(wrapper.vm.checkContact).toBeTruthy();
     });
-     it('...should have a signIn method', () => {
+
+    it('...should have a signIn method', () => {
       expect(wrapper.vm.signIn).toBeTruthy();
     });
-     it('...it should have a setError method', () => {
+
+    it('...it should have a setError method', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
-     it('...have default options', () => {
+
+    it('...have default options', () => {
       expect(wrapper.vm.options.header).toEqual('i18n Enter new password');
     });
-     it('...should call Auth.completeNewPassword when change method is called', () => {
+
+    it('...should call Auth.completeNewPassword when change method is called', () => {
       wrapper.vm.change();
       expect(wrapper.vm.$Amplify.Auth.completeNewPassword).toBeCalled();
     });
-     it('...should set the local error variable when setError is called', () => {
+
+    it('...should set the local error variable when setError is called', () => {
       wrapper.vm.setError('I messed up');
       expect(wrapper.vm.error).toEqual('i18n I messed up');
     });
-     it('...should call Auth.forgotPasswordSubmit when checkContact method is called', () => {
+
+    it('...should call Auth.forgotPasswordSubmit when checkContact method is called', () => {
       wrapper.vm.checkContact();
       expect(wrapper.vm.$Amplify.Auth.verifiedContact).toBeCalled();
     });
+
+    it('...should have a dom element without class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).not.toContain('test-class-1');
+      expect(el.classes()).not.toContain('test-class-2');
+    });
   });
-   describe('...when it is mounted with props...', () => {
+  
+  describe('...when it is mounted with props...', () => {
     beforeEach(() => {
       header = 'TestHeader';
       wrapper = shallowMount(RequireNewPassword, {
@@ -83,29 +102,54 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
             header,
             user: {
               challengeParam: {}
+            },
+            classOverrides: {
+              formSection: ['test-class-1']
             }
           },
+          classOverrides: {
+            formSection: ['test-class-2', 'test-class-3']
+          }
         },
       });
     });
-     afterEach(() => {
+    afterEach(() => {
       mockVerify.mockReset();
       mockSubmit.mockReset();
       mockSignIn.mockReset();
       mockSetError.mockReset();
     });
+
     it('...should not set the error property', () => {
       expect(wrapper.vm.error).toEqual('');
       expect(mockSetError).not.toHaveBeenCalled();
     });
-     it('...should render the header from props', () => {
+
+    it('...should render the header from props', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionHeader}`).element;
       expect(el.textContent).toEqual(header);
     });
-     it('...should call signIn when signIn button is clicked', () => {
+
+    it('...should call signIn when signIn button is clicked', () => {
       const el = wrapper.find(`.${AmplifyUI.sectionFooterSecondaryContent} > .${AmplifyUI.a}`);
       el.trigger('click');
       expect(mockSignIn).toHaveBeenCalled();
+    });
+
+    it('...should return an array of classes when applyClasses is called', () => {
+      const classes = wrapper.vm.applyClasses('formSection');
+      expect(classes).toContain(AmplifyUI['formSection']);
+      expect(classes).toContain('test-class-1');
+      expect(classes).toContain('test-class-2');
+      expect(classes).toContain('test-class-3');
+    });
+
+    it('...should have a dom element with class overrides', () => {
+      const el = wrapper.find(`.${AmplifyUI.formSection}`);
+      expect(el.is('div')).toBe(true);
+      expect(el.classes()).toContain('test-class-1');
+      expect(el.classes()).toContain('test-class-2');
+      expect(el.classes()).toContain('test-class-3');
     });
   });
 });
