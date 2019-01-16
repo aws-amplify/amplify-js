@@ -6,10 +6,8 @@ import * as components from '../src/components';
 import * as AmplifyEntry from '../src/Amplify.vue'; //eslint-disable-line
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
-// import dependency from '../src/services/getUser';
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
-// jest.mock('../src/services/getUser');
 
 describe('Authenticator', () => {
   it('has a mounted hook', () => {
