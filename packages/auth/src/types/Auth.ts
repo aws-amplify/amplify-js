@@ -151,7 +151,7 @@ export interface AuthProvider {
 
 export enum SessionType {
     FederatedProviderSession = 'FederatedProviderSession'
-};
+}
 
 export interface CurrentUserOpts {
     bypassCache: boolean

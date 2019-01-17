@@ -35,13 +35,15 @@ const session = {
         idToken: 'idToken',
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-        expires_at: 123456
     },
+    expires_at: 123456,
     provider: 'Base',
-    identityId: 'identityId',
-    refreshHandler,
-    errorHandler,
-    credentialsDomain: 'credentialsDomain'
+    federatedWithIDP: {
+        identityId: 'identityId',
+        errorHandler,
+        domain: 'credentialsDomain'
+    },
+    refreshHandler
 };
 
 const currentTime = 20;
@@ -81,15 +83,19 @@ describe('AWSCognitoProvier test', () => {
                     "identityId": '123456'
                 },
                 "session":{
-                    "accessToken":"accessToken",
-                    "credentialsDomain":"credentialsDomain",
-                    "credentialsToken":"idToken",
+                    "tokens": {
+                        "accessToken":"accessToken",
+                        "idToken":"idToken",
+                        "refreshToken":"refreshToken"
+                    },
                     "expires_at":123456,
-                    "idToken":"idToken",
-                    "identityId":"identityId",
                     "provider":"Base",
-                    "refreshToken":"refreshToken",
-                    "type":"FederatedProviderSession"
+                    "type":"FederatedProviderSession",
+                    "federatedWithIDP": {
+                        "domain":"credentialsDomain",
+                        "token":"id_token",
+                        "identityId": "identityId"
+                    }
                 },
                 "user":{
                     "attributes":{
@@ -133,7 +139,7 @@ describe('AWSCognitoProvier test', () => {
             const spyon = jest.spyOn(storage, 'getItem').mockImplementationOnce(() => {
                 return JSON.stringify({
                     expires_at: currentTime * 2, 
-                    idToken: 'idToken'
+                    tokens: {idToken: 'idToken'}
                 });
             });
 
@@ -141,7 +147,7 @@ describe('AWSCognitoProvier test', () => {
 
             expect(await provider.getSession()).toEqual({
                 expires_at: currentTime * 2,
-                idToken: 'idToken'
+                tokens: {idToken: 'idToken'}
             });
             spyon.mockClear();
         });
@@ -167,7 +173,7 @@ describe('AWSCognitoProvier test', () => {
             const spyon = jest.spyOn(storage, 'getItem').mockImplementationOnce(() => {
                 return JSON.stringify({
                     expires_at: currentTime / 2, 
-                    idToken: 'idToken'
+                    tokens: {idToken: 'idToken'}
                 });
             });
 
@@ -182,8 +188,9 @@ describe('AWSCognitoProvier test', () => {
 
             expect(await provider.getSession()).toEqual({
                 expires_at: currentTime * 2,
-                idToken: 'new_token',
-                credentialsToken: 'new_token'
+                tokens: {
+                    idToken: 'new_token'
+                }
             });
 
             expect(refreshHandler).toBeCalled();
@@ -195,7 +202,7 @@ describe('AWSCognitoProvier test', () => {
             const spyon = jest.spyOn(storage, 'getItem').mockImplementationOnce(() => {
                 return JSON.stringify({
                     expires_at: currentTime / 2, 
-                    idToken: 'idToken'
+                    tokens: {idToken: 'idToken'}
                 });
             });
 

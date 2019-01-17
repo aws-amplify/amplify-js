@@ -24,13 +24,15 @@ const session = {
         idToken: 'idToken',
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-        expires_at: 123456
     },
-    provider: AWSCognitoProvider.NAME,
-    identityId: 'identityId',
-    refreshHandler,
-    errorHandler,
-    credentialsDomian: 'credentialsDomain'
+    expires_at: 123456,
+    provider: 'Base',
+    federatedWithIDP: {
+        identityId: 'identityId',
+        errorHandler,
+        domain: 'credentialsDomain'
+    },
+    refreshHandler
 };
 
 describe('AWSCognitoProvier test', () => {

@@ -27,7 +27,7 @@ export default class BaseProvider implements AuthProvider {
     constructor(options?) {
         this._config = {};
         if (options) this.configure(options);
-        this._credentialsTokenSource = BaseProvider.ACCESS_TOKEN;
+        this._credentialsTokenSource = BaseProvider.ID_TOKEN;
     }
 
     public configure(options) {
@@ -64,12 +64,14 @@ export default class BaseProvider implements AuthProvider {
         federatedWithIDP.domain = federatedWithIDP.domain || this._credentialsDomain;
         federatedWithIDP.token = federatedWithIDP.token || this._credentialsTokenSource || BaseProvider.ID_TOKEN;
 
+        const { errorHandler, ...otherProps} = federatedWithIDP;
+
         const session: FederatedProviderSession = {
             tokens,
             expires_at,
             type: SessionType.FederatedProviderSession,
             provider: this.getProviderName(),
-            federatedWithIDP
+            federatedWithIDP: otherProps
         };
 
         const user: FederatedUser = {
@@ -104,8 +106,8 @@ export default class BaseProvider implements AuthProvider {
             );
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
-            if (federatedWithIDP.errorHandler) {
-                federatedWithIDP.errorHandler(e);
+            if (errorHandler) {
+                errorHandler(e);
             }
         }
         
@@ -132,7 +134,7 @@ export default class BaseProvider implements AuthProvider {
                 return this._refreshHandler().then((data) => {
                     logger.debug('refresh federated token sucessfully', data);
                     let newSession : FederatedProviderSession = null;
-                    const { expires_at, tokens, federatedWithIDP, ...otherSessionInfo } = session;
+                    const { expires_at, tokens, ...otherSessionInfo } = session;
                     if (this._credentialsTokenSource === BaseProvider.ACCESS_TOKEN) {
                         tokens.accessToken = data.token;
                     } else {
@@ -141,7 +143,6 @@ export default class BaseProvider implements AuthProvider {
                     newSession = {
                         tokens,
                         expires_at: data.expires_at,
-                        federatedWithIDP,
                         ...otherSessionInfo
                     };
                     // restore the new session
