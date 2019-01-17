@@ -273,6 +273,9 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
 
 ```javascript
+
+    import * as AWS from "aws-sdk";
+    
     var authenticationData = {
         Username : 'username',
         Password : 'password',
