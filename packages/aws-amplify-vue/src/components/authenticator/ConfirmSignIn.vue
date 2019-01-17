@@ -17,7 +17,7 @@
     <div v-bind:class="applyClasses('sectionBody')">
       <div v-bind:class="applyClasses('formField')">
         <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="applyClasses('input')" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
+        <input autofocus v-bind:class="applyClasses('input')" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
       </div>
     </div>
     <div v-bind:class="applyClasses('sectionFooter')">
@@ -63,24 +63,37 @@
       }
     },
     computed: {
-      options() {
-        const defaults = {
-          header: this.$Amplify.I18n.get('Confirm Sign In'),
-          user: {},
-        }
-        return Object.assign(defaults, this.confirmSignInConfig || {})
+    options() {
+      const defaults = {
+        header: this.$Amplify.I18n.get('Confirm Sign In'),
+        user: {},
       }
+      return Object.assign(defaults, this.confirmSignInConfig || {})
+    }
+  },
+  mounted() {
+    this.logger = new this.$Amplify.Logger(this.$options.name);
+    if (Object.keys(this.options.user).length === 0) {
+      this.setError('Valid user not received.');
+    };
+  },
+  methods: {
+    checkContact: function(user) {
+      this.$Amplify.Auth.verifiedContact(user)
+        .then(data => {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
+        });
     },
-    mounted() {
-      this.logger = new this.$Amplify.Logger(this.$options.name);
-      if (Object.keys(this.options.user).length === 0) {
-        this.setError('Valid user not received.');
-      };
-    },
-    methods: {
-      submit: function() {
-        this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
-          .then(() => {
+    submit: function() {
+      this.$Amplify.Auth.confirmSignIn(this.options.user, this.code, this.options.user.challengeName)
+        .then((data) => {
+          this.checkContact(data)
             this.logger.info('confirmSignIn successs');
             AmplifyEventBus.$emit('authState', 'signedIn');
           })

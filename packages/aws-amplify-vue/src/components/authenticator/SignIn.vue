@@ -58,13 +58,71 @@
   import AmplifyEventBus from '../../events/AmplifyEventBus';
   import * as AmplifyUI from '@aws-amplify/ui';
 
-  export default {
-    name: 'SignIn',
-    props: {
-      signInConfig: {
-        type: Object,
-        default: () => ({
-          classOverrides: {}
+export default {
+  name: 'SignIn',
+  props: {
+    signInConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  data () {
+    return {
+        password: '',
+        error: '',
+        amplifyUI: AmplifyUI,
+        logger: {},
+    }
+  },
+  computed: {
+    options() {
+      const defaults = {
+        header: this.$Amplify.I18n.get('Sign In Account'),
+        username: '',
+        isSignUpDisplayed: true
+      }
+      return Object.assign(defaults, this.signInConfig || {})
+    }
+  },
+  mounted() {
+    this.logger = new this.$Amplify.Logger(this.$options.name);
+  },
+  methods: {
+    checkContact: function(user) {
+      this.$Amplify.Auth.verifiedContact(user)
+        .then(data => {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
+        });
+    },
+    signIn: function(event) {
+      const that = this
+      this.$Amplify.Auth.signIn(this.options.username, this.password)
+        .then(data => {
+          this.logger.info('sign in success');
+          if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'confirmSignIn')
+          } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'requireNewPassword');
+          } else if (data.challengeName === 'MFA_SETUP') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'setMfa');
+          } else {
+            this.checkContact(data);
+          }
         })
       },
       classOverrides: {

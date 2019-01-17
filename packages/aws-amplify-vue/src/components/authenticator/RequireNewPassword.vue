@@ -44,49 +44,58 @@
     </div>
   </div>
 </template>
+ <script>
+import AmplifyEventBus from '../../events/AmplifyEventBus';
+import * as AmplifyUI from '@aws-amplify/ui';
 
-<script>
-  import AmplifyEventBus from '../../events/AmplifyEventBus';
-  import * as AmplifyUI from '@aws-amplify/ui';
-  export default {
-    name: 'RequireNewPassword',
-    props: {
-      requireNewPasswordConfig: {
-        type: Object,
-        default: () => ({
-          classOverrides: {}
-        })
-      },
-      classOverrides: {
-        type: Object,
-        default: () => {}
-      }
+ export default {
+  name: 'RequireNewPassword',
+  props: {
+    requireNewPasswordConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
     },
-    data () {
-      return {
-          user: '',
-          error: '',
-          password: '',
-          logger: {},
-          requiredAttributes: {},
-          amplifyUI: AmplifyUI
-      }
-    },
-    computed: {
-      options() {
-        const defaults = {
-          header: this.$Amplify.I18n.get('Enter new password'),
-          user: {
-            challengeParam: {
-              requiredAttributes: []
-            }
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  data () {
+    return {
+        user: '',
+        error: '',
+        password: '',
+        logger: {},
+        requiredAttributes: {},
+        amplifyUI: AmplifyUI
+    }
+  },
+  computed: {
+    options() {
+      const defaults = {
+        header: this.$Amplify.I18n.get('Enter new password'),
+        user: {
+          challengeParam: {
+            requiredAttributes: []
           }
         }
         return Object.assign(defaults, this.requireNewPasswordConfig || {})
       }
     },
-    mounted() {
-      this.logger = new this.$Amplify.Logger(this.$options.name)
+    checkContact(user) {
+      this.$Amplify.Auth.verifiedContact(user)
+        .then(data => {
+            if (!this.$Amplify.JS.isEmpty(data.verified)) {
+              return AmplifyEventBus.$emit('authState', 'signedIn')
+            } else {
+              user.unverified = data.unverified;
+              AmplifyEventBus.$emit('localUser', user)
+              return AmplifyEventBus.$emit('authState', 'verifyContact')
+            }
+        })
+        .catch((e) => this.setError(e))
     },
     methods: {
       setError: function(e) {
