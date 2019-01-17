@@ -182,14 +182,17 @@ export class Credentials {
         }
     }
 
-    private _setCredentialsFromFederation(params) {
-        const { credentialsDomain, credentialsToken, identityId } = params;
-        if (!credentialsDomain) {
+    private async _setCredentialsFromFederation(params) {
+        const { tokens, federatedWithIDP={}, provider } = params;
+        const { domain, token, identityId} = federatedWithIDP;
+
+        const credentialsToken = token === 'id_token' ? tokens.idToken : tokens.accessToken;
+        if (!domain) {
             return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
-        logins[credentialsDomain] = credentialsToken;
+        logins[domain] = credentialsToken;
 
         const { identityPoolId, region } = this._config;
         if (!identityPoolId) {
@@ -205,7 +208,9 @@ export class Credentials {
             region
         });
 
-        return this._loadCredentials(credentials, true);
+        
+        const cred = await this._loadCredentials(credentials, true);
+        return cred;
     }
 
     private _setCredentialsFromSession(session): Promise<ICredentials> {

@@ -108,18 +108,22 @@ export interface AuthTokens {
     idToken?: string,
     accessToken?: string,
     refreshToken?: string,
-    expires_at: number
 }
 
 export interface ExternalSession {
     username: string,
     attributes?: Object,
     tokens: AuthTokens,
+    expires_at?: number,
     provider: string,
+    federatedWithIDP?: FederatedWithIDP
+}
+
+export interface FederatedWithIDP {
+    token?: string,
+    domain?: string,
     identityId?: string,
     errorHandler?: Function,
-    credentialsDomain?: string,
-    credentialsToken?: string
 }
 
 export interface SetSessionResult {
@@ -129,15 +133,11 @@ export interface SetSessionResult {
 }
 
 export interface FederatedProviderSession {
-    idToken?: string,
-    accessToken?: string,
-    refreshToken?: string,
+    tokens: AuthTokens,
     expires_at: number,
     type: string,
     provider: string,
-    identityId?: string,
-    credentialsDomain?: string,
-    credentialsToken?: string
+    federatedWithIDP?: FederatedWithIDP
 }
 
 export interface AuthProvider {
@@ -149,9 +149,10 @@ export interface AuthProvider {
     getUser(): Promise<any>;
 }
 
-export const SessionType = {
-    Federated_Provider_Session: 'FederatedProviderSession'
+export enum SessionType {
+    FederatedProviderSession = 'FederatedProviderSession'
 };
+
 export interface CurrentUserOpts {
     bypassCache: boolean
 }

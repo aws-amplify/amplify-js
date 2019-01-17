@@ -52,7 +52,7 @@ export default class AWSCognitoProvider implements AuthProvider {
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { authenticationFlowType, _keyPrefix } = this._config;
-        const { username, tokens, provider, errorHandler } = params;
+        const { username, tokens, provider, federatedWithIDP={} } = params;
 
         const user = new CognitoUser({
             Username: username,
@@ -74,8 +74,8 @@ export default class AWSCognitoProvider implements AuthProvider {
             credentials = await Credentials.set(userSession, 'session');
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
-            if (errorHandler) {
-                errorHandler(e);
+            if (federatedWithIDP.errorHandler) {
+                federatedWithIDP.errorHandler(e);
             }
         }
         

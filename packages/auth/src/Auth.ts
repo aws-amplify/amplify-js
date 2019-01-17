@@ -1420,29 +1420,29 @@ export default class AuthClass {
 
         const { token, identity_id, expires_at } = response;
         let authProvider = null;
-        let credentialsDomain = null;
+        let domain = null;
 
         // for backward compatiblity
         switch(provider) {
             case 'google' || GoogleProvider.NAME:
                 authProvider = GoogleProvider.NAME;
-                credentialsDomain = GoogleProvider.DEFAULT_DOMAIN;
+                domain = GoogleProvider.DEFAULT_DOMAIN;
                 break;
             case 'facebook' || FacebookProvider.NAME: 
                 authProvider = FacebookProvider.NAME;
-                credentialsDomain = FacebookProvider.DEFAULT_DOMAIN;
+                domain = FacebookProvider.DEFAULT_DOMAIN;
                 break;
             case 'amazon' || AmazonProvider.NAME:
                 authProvider = AmazonProvider.NAME;
-                credentialsDomain = AmazonProvider.DEFAULT_DOMAIN;
+                domain = AmazonProvider.DEFAULT_DOMAIN;
                 break;
             case 'developer' || DeveloperProvider.NAME:
                 authProvider = DeveloperProvider.NAME;
-                credentialsDomain = DeveloperProvider.DEFAULT_DOMAIN;
+                domain = DeveloperProvider.DEFAULT_DOMAIN;
                 break;
             default:
                 authProvider = GenericProvider.NAME;
-                credentialsDomain = provider;
+                domain = provider;
                 break;
         }
 
@@ -1457,17 +1457,21 @@ export default class AuthClass {
 
         const { credentials } = await this.setSession({
             username: user.name,
+            attributes: user.attributes,
             tokens: {
                 idToken,
-                accessToken,
-                expires_at
+                accessToken
             },
-            identityId: identity_id,
+            expires_at,
             provider: authProvider,
-            errorHandler: (e) => {
-                throw e;
-            },
-            credentialsDomain
+            federatedWithIDP: {
+                token: idToken? 'id_token': 'access_token',
+                domain,
+                identityId: identity_id,
+                errorHandler: (e) => {
+                    throw e;
+                }
+            }
         });
 
         dispatchAuthEvent('signIn', this.user);
@@ -1551,6 +1555,14 @@ export default class AuthClass {
      * @return {Promise<SetSessionResult>} - returns the user, session and credentials
      */
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
+
+
+        // put some warning
+
+
+
+
+
         const { provider } = params;
         if (!provider) {
             throw new Error('The provider property must be specified');

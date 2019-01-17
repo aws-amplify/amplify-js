@@ -7,6 +7,7 @@ import {
     SessionType 
 } from '../types';
 import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Cache from '@aws-amplify/cache';
 
 const logger = new Logger('BaseProvider');
 
@@ -26,6 +27,7 @@ export default class BaseProvider implements AuthProvider {
     constructor(options?) {
         this._config = {};
         if (options) this.configure(options);
+        this._credentialsTokenSource = BaseProvider.ACCESS_TOKEN;
     }
 
     public configure(options) {
@@ -54,26 +56,20 @@ export default class BaseProvider implements AuthProvider {
             username, 
             attributes, 
             tokens, 
-            errorHandler, 
-            identityId, 
-            credentialsDomain, 
-            credentialsToken 
+            expires_at,
+            provider,
+            federatedWithIDP={}
         } = params;
-        this._credentialsDomain = credentialsDomain || this._credentialsDomain;
+
+        federatedWithIDP.domain = federatedWithIDP.domain || this._credentialsDomain;
+        federatedWithIDP.token = federatedWithIDP.token || this._credentialsTokenSource || BaseProvider.ID_TOKEN;
 
         const session: FederatedProviderSession = {
-            idToken: tokens.idToken,
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            expires_at: tokens.expires_at,
-            type: SessionType.Federated_Provider_Session,
+            tokens,
+            expires_at,
+            type: SessionType.FederatedProviderSession,
             provider: this.getProviderName(),
-            identityId,
-            credentialsDomain: this._credentialsDomain,
-            credentialsToken: 
-                credentialsToken || 
-                (this._credentialsTokenSource === BaseProvider.ACCESS_TOKEN ? 
-                    tokens.accessToken : tokens.idToken)
+            federatedWithIDP
         };
 
         const user: FederatedUser = {
@@ -94,10 +90,22 @@ export default class BaseProvider implements AuthProvider {
             credentials = await Credentials.set(session, 'federation');
             user.id = credentials.identityId;
             this._storage.setItem(userKey, JSON.stringify(user));
+             // backward compatibility
+            Cache.setItem(
+                'federatedInfo', 
+                { 
+                    provider, 
+                    token: federatedWithIDP.token === 'id_token'? tokens.idToken: tokens.accessToken,
+                    user, 
+                    expires_at, 
+                    identity_id: federatedWithIDP.identityId 
+                }, 
+                { priority: 1 }
+            );
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
-            if (errorHandler) {
-                errorHandler(e);
+            if (federatedWithIDP.errorHandler) {
+                federatedWithIDP.errorHandler(e);
             }
         }
         
@@ -113,7 +121,7 @@ export default class BaseProvider implements AuthProvider {
         await this._storageSync;
 
         const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
-        if (!session) throw new Error('session is not cached.');
+        if (!session) throw new Error('Session is not cached.');
         if (session.expires_at > new Date().getTime()) {
             logger.debug('token not expired');
             return session;
@@ -124,23 +132,18 @@ export default class BaseProvider implements AuthProvider {
                 return this._refreshHandler().then((data) => {
                     logger.debug('refresh federated token sucessfully', data);
                     let newSession : FederatedProviderSession = null;
+                    const { expires_at, tokens, federatedWithIDP, ...otherSessionInfo } = session;
                     if (this._credentialsTokenSource === BaseProvider.ACCESS_TOKEN) {
-                        const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
-                        newSession = {
-                            accessToken: data.token,
-                            expires_at: data.expires_at,
-                            credentialsToken: data.token,
-                            ...otherSessionInfo
-                        };
+                        tokens.accessToken = data.token;
                     } else {
-                        const { expires_at, idToken, credentialsToken, ...otherSessionInfo } = session;
-                        newSession = {
-                            idToken: data.token,
-                            expires_at: data.expires_at,
-                            credentialsToken: data.token,
-                            ...otherSessionInfo
-                        };
+                        tokens.idToken = data.token;
                     }
+                    newSession = {
+                        tokens,
+                        expires_at: data.expires_at,
+                        federatedWithIDP,
+                        ...otherSessionInfo
+                    };
                     // restore the new session
                     this._storage.setItem(`${_keyPrefix}_session`, JSON.stringify(newSession));
                     return newSession;
@@ -162,6 +165,7 @@ export default class BaseProvider implements AuthProvider {
 
         this._storage.removeItem(sessionKey);
         this._storage.removeItem(userKey);
+        Cache.removeItem('federatedInfo');
     }
 
     public async getUser(): Promise<any> {
