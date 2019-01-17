@@ -81,21 +81,9 @@ import * as AmplifyUI from '@aws-amplify/ui';
             requiredAttributes: []
           }
         }
-        return Object.assign(defaults, this.requireNewPasswordConfig || {})
       }
-    },
-    checkContact(user) {
-      this.$Amplify.Auth.verifiedContact(user)
-        .then(data => {
-            if (!this.$Amplify.JS.isEmpty(data.verified)) {
-              return AmplifyEventBus.$emit('authState', 'signedIn')
-            } else {
-              user.unverified = data.unverified;
-              AmplifyEventBus.$emit('localUser', user)
-              return AmplifyEventBus.$emit('authState', 'verifyContact')
-            }
-        })
-        .catch((e) => this.setError(e))
+      return Object.assign(defaults, this.requireNewPasswordConfig || {})
+      }
     },
     methods: {
       setError: function(e) {
@@ -105,12 +93,13 @@ import * as AmplifyUI from '@aws-amplify/ui';
       checkContact(user) {
         this.$Amplify.Auth.verifiedContact(user)
           .then(data => {
-            if (!JS.isEmpty(data.verified)) {
-              this.changeState('signedIn', user);
-            } else {
-              user = Object.assign(user, data);
-              this.changeState('verifyContact', user);
-            }
+              if (!this.$Amplify.JS.isEmpty(data.verified)) {
+                return AmplifyEventBus.$emit('authState', 'signedIn')
+              } else {
+                user.unverified = data.unverified;
+                AmplifyEventBus.$emit('localUser', user)
+                return AmplifyEventBus.$emit('authState', 'verifyContact')
+              }
           })
           .catch((e) => this.setError(e))
       },
