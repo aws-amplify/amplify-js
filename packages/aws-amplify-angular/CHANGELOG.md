@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.7-unstable.3"></a>
+## [2.1.7-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.7-unstable.2...aws-amplify-angular@2.1.7-unstable.3) (2019-01-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/aws-amplify-angular:** added labels for inputs in the forgot password component. ([38d44be](https://github.com/aws-amplify/amplify-js/commit/38d44be))
+
+
+
+
 <a name="2.1.7-unstable.2"></a>
 ## [2.1.7-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.7-unstable.1...aws-amplify-angular@2.1.7-unstable.2) (2019-01-10)
 
