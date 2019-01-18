@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    Button 
+import {
+    View,
+    Text,
+    Button
 } from 'react-native';
 import {
     Auth,

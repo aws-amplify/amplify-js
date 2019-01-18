@@ -94,12 +94,12 @@ export function withAuthenticator(
 
                 return (
                     <View style={{flex: 1}}>
-                        <Greetings
+                        {(this.authConfig.includeGreetings) ? <Greetings
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                             theme={theme}
-                        />
+                        /> : null}
                         <Comp
                             {...this.props}
                             authState={authState}
@@ -116,6 +116,7 @@ export function withAuthenticator(
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents}
+                includeGreetings={this.authConfig.includeGreetings}
                 theme={theme}
             />
         }

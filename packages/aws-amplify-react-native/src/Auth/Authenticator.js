@@ -13,8 +13,8 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { 
-    Auth, 
+import {
+    Auth,
     Analytics,
     Logger,
     Hub,
@@ -131,7 +131,7 @@ export default class Authenticator extends React.Component {
                 } else {
                     if (statesJumpToSignIn.includes(authState)) {
                         this.handleStateChange(this._initialAuthState, null);
-                    } 
+                    }
                 }
             })
             .catch(err => {
@@ -142,7 +142,7 @@ export default class Authenticator extends React.Component {
                         .then(() => {
                             this.handleStateChange(this._initialAuthState, null);
                         })
-                        .catch(err => this.error(err));       
+                        .catch(err => this.error(err));
                 }
             });
     }
@@ -152,7 +152,7 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, signUpConfig } = this.props;
+        const { hideDefault, signUpConfig, includeGreetings } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
@@ -163,8 +163,10 @@ export default class Authenticator extends React.Component {
             <ConfirmSignUp/>,
             <ForgotPassword/>,
             <RequireNewPassword />,
-            <Greetings/>
         ];
+
+        if (includeGreetings) default_children.push(<Greetings/>);
+
         const children = (hideDefault? [] : default_children)
             .concat(props_children)
             .map((child, index) => {
@@ -179,7 +181,7 @@ export default class Authenticator extends React.Component {
                 });
             });
         return (
-            
+
                 <View style={theme.container}>
                     {children}
                 </View>
