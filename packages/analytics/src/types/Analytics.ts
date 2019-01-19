@@ -23,7 +23,7 @@ export interface AnalyticsOptions {
 }
 
 export interface EventAttributes {
-    [key: string]: any;
+    [key: string]: string;
 }
 
 export interface EventMetrics {
