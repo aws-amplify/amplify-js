@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
- // the session tracker for web
+// the session tracker for web
 
 import { ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
@@ -36,7 +36,7 @@ export default class SessionTracker {
     constructor(tracker, opts) {
         this._config = Object.assign({}, defaultOpts, opts);
         this._tracker = tracker;
-        
+
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
         this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
@@ -71,7 +71,7 @@ export default class SessionTracker {
     }
 
     private async _trackFunc() {
-        const customAttrs = typeof this._config.attributes === 'function'? 
+        const customAttrs = typeof this._config.attributes === 'function' ?
             await this._config.attributes() : this._config.attributes;
         const attributes = Object.assign(
             {},
@@ -80,7 +80,7 @@ export default class SessionTracker {
 
         if (document[this._hidden]) {
             this._tracker(
-                { 
+                {
                     name: '_session.stop',
                     attributes
                 },
@@ -90,7 +90,7 @@ export default class SessionTracker {
             });
         } else {
             this._tracker(
-                { 
+                {
                     name: '_session.start',
                     attributes
                 },
@@ -101,26 +101,25 @@ export default class SessionTracker {
         }
     }
 
-    private _trackBeforeUnload() {
-        const getCustomAttrs = typeof this._config.attributes === 'function'? 
-            this._config.attributes() : Promise.resolve(this._config.attributes);
-      
-        getCustomAttrs.then((customAttrs) => {
-            const attributes = Object.assign(
-                {},
-                customAttrs
-            );
-            this._tracker(
-                { 
-                    name: '_session.stop',
-                    attributes,
-                    immediate: true
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session stop event failed.', e);
-            });
+    private async _trackBeforeUnload() {
+        const customAttrs = typeof this._config.attributes === 'function' ?
+            await this._config.attributes() : this._config.attributes;
+        const attributes = Object.assign(
+            {},
+            customAttrs
+        );
+        
+        this._tracker(
+            {
+                name: '_session.stop',
+                attributes,
+                immediate: true
+            },
+            this._config.provider
+        ).catch(e => {
+            logger.debug('record session stop event failed.', e);
         });
+
     }
 
     // to keep configure a synchronized function
@@ -131,8 +130,8 @@ export default class SessionTracker {
         } else {
             initialEventSent = true;
         }
-        
-        const customAttrs = typeof this._config.attributes === 'function'? 
+
+        const customAttrs = typeof this._config.attributes === 'function' ?
             await this._config.attributes() : this._config.attributes;
         const attributes = Object.assign(
             {},
@@ -140,7 +139,7 @@ export default class SessionTracker {
         );
 
         this._tracker(
-            { 
+            {
                 name: '_session.start',
                 attributes
             },
