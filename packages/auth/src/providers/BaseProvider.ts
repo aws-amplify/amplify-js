@@ -58,7 +58,7 @@ export default class BaseProvider implements AuthProvider {
             tokens, 
             expires_at,
             provider,
-            federatedWithIDP={}
+            federatedWithIDP
         } = params;
 
         federatedWithIDP.domain = federatedWithIDP.domain || this._credentialsDomain;

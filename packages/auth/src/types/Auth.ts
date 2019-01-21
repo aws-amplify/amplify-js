@@ -153,6 +153,18 @@ export enum SessionType {
     FederatedProviderSession = 'FederatedProviderSession'
 }
 
+export enum MFAType {
+    SMS_MFA = 'SMS_MFA',
+    SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA'
+}
+
+export enum FederatedProvider {
+    Google = 'Google',
+    Facebook = 'Facebook',
+    Amazon = 'Amazon',
+    Developer = 'Developer'
+}
+
 export interface CurrentUserOpts {
     bypassCache: boolean
 }

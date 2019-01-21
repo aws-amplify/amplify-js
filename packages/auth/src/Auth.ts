@@ -23,7 +23,9 @@ import {
     SetSessionResult,
     CurrentUserOpts,
     SignInOpts,
-    isUsernamePasswordOpts
+    isUsernamePasswordOpts,
+    MFAType,
+    FederatedProvider
 } from './types';
 
 import {
@@ -505,7 +507,7 @@ export default class AuthClass {
     public confirmSignIn(
         user: CognitoUser | any, 
         code: string, 
-        mfaType?: 'SMS_MFA'|'SOFTWARE_TOKEN_MFA'|null
+        mfaType?: MFAType
     ): Promise<CognitoUser | any> {
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
@@ -514,7 +516,7 @@ export default class AuthClass {
             user.sendMFACode(
                 code, {
                     onSuccess: async (session) => {
-                        logger.debug(session);
+                        logger.debug('sendMFACode Success', session);
                         this._addSessionSource(AWSCognitoProvider.NAME);
                         try {
                             await Credentials.clear();
@@ -1407,7 +1409,7 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     public async federatedSignIn(
-        provider: 'Google'|'Facebook'|'Amazon'|'Developer'|string, 
+        provider: FederatedProvider | string, 
         response: FederatedResponse, 
         user: FederatedUser
     ): Promise<ICredentials>{
@@ -1565,10 +1567,12 @@ export default class AuthClass {
         }
 
         try {
+            logger.debug('Setting session with the following params', params);
             const result = await providerClass.setSession(params);
             this._addSessionSource(provider);
             return result;
         } catch (e) {
+            logger.debug('Failed to set the session', e);
             throw e;
         }
     }
