@@ -133,7 +133,7 @@ export default {
           .catch((error) => {
             this.logger.warn(error);
             this.errors = error.errors;
-            this.$emit('error', error);
+            return this.$emit('error', error);
           })
         };
       }
