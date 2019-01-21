@@ -70,9 +70,10 @@ export default class SessionTracker {
         return true;
     }
 
-    private async _trackFunc() {
+    private _trackFunc() {
         const customAttrs = typeof this._config.attributes === 'function' ?
-            await this._config.attributes() : this._config.attributes;
+            this._config.attributes() : this._config.attributes;
+            
         const attributes = Object.assign(
             {},
             customAttrs
@@ -101,16 +102,17 @@ export default class SessionTracker {
         }
     }
 
-    private async _trackBeforeUnload() {
+    private _trackBeforeUnload() {
         const customAttrs = typeof this._config.attributes === 'function' ?
-            await this._config.attributes() : this._config.attributes;
+            this._config.attributes() : this._config.attributes;
+
         const attributes = Object.assign(
             {},
             customAttrs
         );
-        
+
         this._tracker(
-            {
+            { 
                 name: '_session.stop',
                 attributes,
                 immediate: true
