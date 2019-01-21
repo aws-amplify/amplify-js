@@ -26,7 +26,8 @@ const template = `
     <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
 
       <div class="amplify-form-row" *ngIf="!code_sent">
-        <input
+      <label class="amplify-input-label" for="username"> Username *</label>
+        <input #username
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
@@ -35,6 +36,7 @@ const template = `
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="code"> Confirmation Code *</label>
         <input #code
           (keyup)="setCode(code.value)"
           class="amplify-form-input"
@@ -43,6 +45,7 @@ const template = `
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="password"> New Password *</label>
         <input #password
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"

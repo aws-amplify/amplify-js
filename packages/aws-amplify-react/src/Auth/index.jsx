@@ -72,7 +72,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
                 return (
-                    <div>
+                    <React.Fragment>
                         {
                             this.authConfig.includeGreetings?
                             <Greetings
@@ -90,7 +90,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                    </div>
+                    </React.Fragment>
                 );
             }
 

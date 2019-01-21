@@ -27,7 +27,12 @@ depending on your project setup and experience with modern JavaScript build tool
 
 * Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill.
+**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
+
+```javascript
+global.fetch = require('node-fetch');
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+```
 
 Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
@@ -273,6 +278,9 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
 
 ```javascript
+
+    import * as AWS from 'aws-sdk/global';
+    
     var authenticationData = {
         Username : 'username',
         Password : 'password',
