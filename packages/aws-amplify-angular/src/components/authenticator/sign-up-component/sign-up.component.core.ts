@@ -38,7 +38,9 @@ const template = `
             type={{field.type}}
             placeholder={{field.label}}
             [(ngModel)]="user[field.key]" name="field.key" />
+            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
         </div>
+            
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
             {{field.label}} 
@@ -131,7 +133,7 @@ export class SignUpComponentCore implements OnInit {
   errorMessage: string;
   amplifyService: AmplifyService;
   hiddenFields: any = [];
-
+  passwordPolicy: string;
 
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
@@ -155,6 +157,9 @@ export class SignUpComponentCore implements OnInit {
       }
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
     }
   }
@@ -180,6 +185,9 @@ export class SignUpComponentCore implements OnInit {
       }
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
     }
   }
