@@ -70,10 +70,10 @@ export default class SessionTracker {
         return true;
     }
 
-    private _trackFunc() {
+    private async _trackFunc() {
         const customAttrs = typeof this._config.attributes === 'function' ?
-            this._config.attributes() : this._config.attributes;
-            
+            await this._config.attributes() : this._config.attributes;
+
         const attributes = Object.assign(
             {},
             customAttrs
@@ -103,23 +103,26 @@ export default class SessionTracker {
     }
 
     private _trackBeforeUnload() {
+        // before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
         const customAttrs = typeof this._config.attributes === 'function' ?
-            this._config.attributes() : this._config.attributes;
+            Promise.resolve(this._config.attributes()) : Promise.resolve(this._config.attributes);
 
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+        customAttrs.then(custom => {
+            const attributes = Object.assign(
+                {},
+                custom
+            );
 
-        this._tracker(
-            { 
-                name: '_session.stop',
-                attributes,
-                immediate: true
-            },
-            this._config.provider
-        ).catch(e => {
-            logger.debug('record session stop event failed.', e);
+            this._tracker(
+                {
+                    name: '_session.stop',
+                    attributes,
+                    immediate: true
+                },
+                this._config.provider
+            ).catch(e => {
+                logger.debug('record session stop event failed.', e);
+            });
         });
 
     }
