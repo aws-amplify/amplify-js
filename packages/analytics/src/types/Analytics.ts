@@ -23,7 +23,7 @@ export interface AnalyticsOptions {
 }
 
 export interface EventAttributes {
-    [key: string]: any;
+    [key: string]: string;
 }
 
 export interface EventMetrics {
@@ -35,7 +35,7 @@ export interface pageViewTrackOpts {
     type?: string
     eventName?: string,
     provider?: string,
-    attributes?: EventAttributes | (()=> EventAttributes),
+    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>),
     getUrl?: (() => string)
 }
 
@@ -44,11 +44,11 @@ export interface EventTrackOpts {
     events?: Array<string>,
     selectorPrefix?: string,
     provider?: string,
-    attributes?: EventAttributes | (()=> EventAttributes)
+    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>)
 }
 
 export interface SessionTrackOpts {
     enable: boolean,
-    attributes?: EventAttributes | (()=> EventAttributes),
+    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>),
     provider?: string,
 }
