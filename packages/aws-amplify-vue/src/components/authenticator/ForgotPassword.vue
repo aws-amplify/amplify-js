@@ -12,31 +12,30 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus />
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Username')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus />
       </div>
-      <div v-bind:class="amplifyUI.formField" v-if="sent">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" autofocus />
+      <div v-bind:class="applyClasses('formField')" v-if="sent">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Code')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="code" :placeholder="$Amplify.I18n.get('Code')" autofocus />
       </div>
-      <div v-bind:class="amplifyUI.formField" v-if="sent">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
+      <div v-bind:class="applyClasses('formField')" v-if="sent">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('New Password')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
       </div>
     </div>
-
-  <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!username">{{$Amplify.I18n.get('Send Code')}}</button>
-        <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!username">{{$Amplify.I18n.get('Submit')}}</button>
+  <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-if="!sent" v-bind:class="applyClasses('button')" v-on:click="submit" :disabled="!username">{{$Amplify.I18n.get('Send Code')}}</button>
+        <button v-if="sent" v-bind:class="applyClasses('button')" v-on:click="verify" :disabled="!username">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
-        <a v-if="sent" v-bind:class="amplifyUI.a" v-on:click="submit">{{$Amplify.I18n.get('Resend Code')}}</a>
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')">
+        <a v-if="!sent" v-bind:class="applyClasses('a')" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-if="sent" v-bind:class="applyClasses('a')" v-on:click="submit">{{$Amplify.I18n.get('Resend Code')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -46,58 +45,77 @@
 </template>
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'ForgotPassword',
-  props: ['forgotPasswordConfig'],
-  data () {
-    return {
-        username: '',
-        code: '',
-        password: '',
-        error: '',
-        sent: false,
-        logger: {},
-        amplifyUI: AmplifyUI
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        header: this.$Amplify.I18n.get('Reset your password'),
+  export default {
+    name: 'ForgotPassword',
+    props: {
+      forgotPasswordConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {} 
+        })
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
       }
-      return Object.assign(defaults, this.forgotPasswordConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-  },
-  methods: {
-    submit: function() {
-      this.$Amplify.Auth.forgotPassword(this.username)
-        .then(() => {
-          this.sent = true;
-          this.logger.info('forgotPassword success');
-        })
-        .catch(e => this.setError(e));
     },
-    verify: function() {
-      this.$Amplify.Auth.forgotPasswordSubmit(this.username, this.code, this.password)
-        .then(() => {
-          this.logger.info('forgotPasswordSubmit success');
-          AmplifyEventBus.$emit('authState', 'signedOut');
-        })
-        .catch(e => this.setError(e));
+    data () {
+      return {
+          username: '',
+          code: '',
+          password: '',
+          error: '',
+          sent: false,
+          logger: {},
+          amplifyUI: AmplifyUI
+      }
     },
-    signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+    computed: {
+      options() {
+        const defaults = {
+          header: this.$Amplify.I18n.get('Reset your password'),
+        }
+        return Object.assign(defaults, this.forgotPasswordConfig || {})
+      }
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name)
+    },
+    methods: {
+      submit: function() {
+        this.$Amplify.Auth.forgotPassword(this.username)
+          .then(() => {
+            this.sent = true;
+            this.logger.info('forgotPassword success');
+          })
+          .catch(e => this.setError(e));
+      },
+      verify: function() {
+        this.$Amplify.Auth.forgotPasswordSubmit(this.username, this.code, this.password)
+          .then(() => {
+            this.logger.info('forgotPasswordSubmit success');
+            AmplifyEventBus.$emit('authState', 'signedOut');
+          })
+          .catch(e => this.setError(e));
+      },
+      signIn: function() {
+        AmplifyEventBus.$emit('authState', 'signedOut');
+      },
+      setError: function(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.forgotPasswordConfig.classOverrides && this.forgotPasswordConfig.classOverrides[element] ? this.forgotPasswordConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

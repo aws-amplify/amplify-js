@@ -13,74 +13,71 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
+import { classArray } from '../../../assets/helpers';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
-const template = `
-<div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">Confirm Sign up</div>
 
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="amplifyUsername"> Username *</label>
+const template = `
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}"> Username * </div>
       <input
         #amplifyUsername
-        class="amplify-form-input"
+       class="{{applyClasses('input')}}"
         type="text"
         disabled
         placeholder="Username"
         [value]="username"
       />
     </div>
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="code"> Confirmation Code *</label>
-      <input #code
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}"> Confirmation Code * </div>
+      <input
+        #code
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
-        class="amplify-form-input"
+       class="{{applyClasses('input')}}"
         type="text"
         placeholder="Enter your Code"
       />
-      <span class="amplify-form-action">Lost your code?
-        <a class="amplify-form-link"
-            (click)="onResend()"
-          >Resend Code</a></span>    
-    </div>
-    
-    <div class="amplify-form-actions">
-      <div class="amplify-form-cell-left">
-        <div class="amplify-form-actions-left">
-          <a class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
-        </div>
-      </div>
-
-      <div class="amplify-form-cell-right">
-        <button class="amplify-form-button"
-          (click)="onConfirm()">Confirm</button>
+      <div class="{{applyClasses('hint')}}">
+        Lost your code?
+        <a class="{{applyClasses('a')}}" (click)="onResend()">
+          Resend Code
+        </a>
       </div>
     </div>
-
+    <div class="{{applyClasses('sectionFooter')}}">
+      <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+        <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign in</a>
+      </span>
+      <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+        <button class="{{applyClasses('button')}}" (click)="onConfirm()">
+          Confirm
+        </button>
+      </span>
+    </div>
   </div>
-
-</div>
-
-<div class="amplify-alert" *ngIf="errorMessage">
-  <div class="amplify-alert-body">
-    <span class="amplify-alert-icon">&#9888;</span>
-    <div class="amplify-alert-message">{{ errorMessage }}</div>
-    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="{{applyClasses('amplifyAlert')}}" 
+  *ngIf="errorMessage">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
+    </div>
   </div>
 </div>
-
-</div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-core',
-  template: template
+  template
 })
 
 export class ConfirmSignUpComponentCore {
@@ -90,25 +87,59 @@ export class ConfirmSignUpComponentCore {
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  amplifyUI: AmplifyUI;
+  header: string = 'Confirm Sign Up';
+  _confirmSignUpConfig: any;
+  _classOverrides: any;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._classOverrides = {};
+    this._confirmSignUpConfig = {};
   }
 
   @Input()
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignUp';
-
     this.username = data.authState.user? data.authState.user.username || '' : '';
+    if (data.confirmSignUpConfig) {
+      this._confirmSignUpConfig = data.confirmSignUpConfig;
+      if (this._confirmSignUpConfig.header) {
+        this.header = this._confirmSignUpConfig.header;
+      }
+    }
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
+    }
   }
 
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'confirmSignUp';
-
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  @Input()
+  set confirmSignUpConfig(confirmSignUpConfig: any) {
+    this._confirmSignUpConfig = confirmSignUpConfig;
+    if (this._confirmSignUpConfig.header) {
+      this.header = this._confirmSignUpConfig.header;
+    }
+  }
+
+  @Input()
+  set classOverrides(classOverrides) {
+    this._classOverrides = classOverrides;
+  }
+
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._classOverrides, component: this._confirmSignUpConfig.classOverrides}
+    );
   }
 
   setUsername(username: string) {
@@ -139,7 +170,7 @@ export class ConfirmSignUpComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

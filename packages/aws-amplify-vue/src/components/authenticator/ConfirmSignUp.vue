@@ -12,29 +12,29 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus />
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Username')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus />
       </div>
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" name="code" :placeholder="$Amplify.I18n.get('Confirmation Code')" />
-        <div v-bind:class="amplifyUI.hint">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="code" name="code" :placeholder="$Amplify.I18n.get('Confirmation Code')" />
+        <div v-bind:class="applyClasses('hint')">
           {{$Amplify.I18n.get('Lost your code? ')}}
-          <a v-bind:class="amplifyUI.a" v-on:click="resend">{{$Amplify.I18n.get('Resend Code')}}</a>
+          <a v-bind:class="applyClasses('a')" v-on:click="resend">{{$Amplify.I18n.get('Resend Code')}}</a>
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="confirm">{{$Amplify.I18n.get('Confirm')}}</button>
+    <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-bind:class="applyClasses('button')" v-on:click="confirm">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-bind:class="applyClasses('a')" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -44,58 +44,77 @@
 </template>
 
 <script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
-import * as AmplifyUI from '@aws-amplify/ui';
+  import AmplifyEventBus from '../../events/AmplifyEventBus';
+  import * as AmplifyUI from '@aws-amplify/ui';
 
-export default {
-  name: 'ConfirmSignUp',
-  props: ['confirmSignUpConfig'],
-  data () {
-    return {
-        code: '',
-        error: '',
-        logger: {},
-        amplifyUI: AmplifyUI
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        username: '',
-        header: this.$Amplify.I18n.get('Confirm Sign Up'),
+  export default {
+    name: 'ConfirmSignUp',
+    props: {
+      confirmSignUpConfig: {
+        type: Object,
+        default: () => ({
+          classOverrides: {} 
+        })
+      },
+      classOverrides: {
+        type: Object,
+        default: () => {}
       }
-      return Object.assign(defaults, this.confirmSignUpConfig || {})
-    }
-  },
-  mounted: function() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-    if (!this.options.username) {
-      return this.setError('Valid username not received.');
-    };
-  },
-  methods: {
-    confirm() {
-        this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
-          .then(() => {
-            this.logger.info('confirmSignUp success')
-            AmplifyEventBus.$emit('authState', 'signedOut')
-          })
-          .catch(e => this.setError(e));
     },
-    resend() {
-        this.$Amplify.Auth.resendSignUp(this.options.username)
+    data () {
+      return {
+          code: '',
+          error: '',
+          logger: {},
+          amplifyUI: AmplifyUI
+      }
+    },
+    computed: {
+      options() {
+        const defaults = {
+          username: '',
+          header: this.$Amplify.I18n.get('Confirm Sign Up'),
+        }
+        return Object.assign(defaults, this.confirmSignUpConfig || {})
+      }
+    },
+    mounted: function() {
+      this.logger = new this.$Amplify.Logger(this.$options.name)
+      if (!this.options.username) {
+        return this.setError('Valid username not received.');
+      };
+    },
+    methods: {
+      confirm() {
+          this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
             .then(() => {
-              this.logger.info('resendSignUp success')
+              this.logger.info('confirmSignUp success')
+              AmplifyEventBus.$emit('authState', 'signedOut')
             })
             .catch(e => this.setError(e));
-    },
-    signIn() {
-        AmplifyEventBus.$emit('authState', 'signedOut')
-    },
-    setError(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+      },
+      resend() {
+          this.$Amplify.Auth.resendSignUp(this.options.username)
+              .then(() => {
+                this.logger.info('resendSignUp success')
+              })
+              .catch(e => this.setError(e));
+      },
+      signIn() {
+          AmplifyEventBus.$emit('authState', 'signedOut')
+      },
+      setError(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.confirmSignUpConfig.classOverrides && this.confirmSignUpConfig.classOverrides[element] ? this.confirmSignUpConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
     }
   }
-}
 </script>

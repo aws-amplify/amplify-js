@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 /*
  * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -15,8 +16,6 @@
 import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-// tslint:disable:max-line-length
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
 import { ConfirmSignInComponent } from './components/authenticator/confirm-sign-in-component/confirm-sign-in.factory';

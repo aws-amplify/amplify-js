@@ -13,62 +13,83 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
+import { classArray } from '../../../assets/helpers';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
-<div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container">
-  <div class="amplify-form-body">
-  <div class="amplify-form-header">You are required to update your password</div>
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="password"> Password *</label>
+<div class="{{applyClasses('formSection')}}"  *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">
+    {{this.header}}
+  </div>
+  <div class="{{applyClasses('sectionBody')}}">
+    <div class="{{applyClasses('formField')}}">
+      <div class="{{applyClasses('inputLabel')}}"> Password * </div>
       <input #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
+       class="{{applyClasses('input')}}"
         type="password"
         placeholder="Password"
       />
     </div>
-    <div class="amplify-form-actions">
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Back to Sign In</a>
-      </div>
-      <div class="amplify-form-cell-right">
-        <button class="amplify-form-button"
-          (click)="onSubmit()"
-        >Submit</button>
-      </div>
+  </div>
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterPrimaryContent')}}">
+      <a class="{{applyClasses('a')}}" (click)="onSignIn()">Back to Sign In</a>
+    </span>
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      <button class="{{applyClasses('button')}}" (click)="onSubmit()">
+        Submit
+      </button>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="{{applyClasses('amplifyAlertIcon')}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
-  
 </div>
-<div class="amplify-alert" *ngIf="errorMessage">
-<div class="amplify-alert-body">
-  <span class="amplify-alert-icon">&#9888;</span>
-  <div class="amplify-alert-message">{{ errorMessage }}</div>
-  <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
-</div>
-</div>
-</div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-require-new-password-core',
-  template: template
+  template
 })
 export class RequireNewPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
+  _requireNewPasswordConfig: any;
+  _classOverrides: any;
+  header: string = 'You are required to update your password';
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  amplifyUI: AmplifyUI;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._classOverrides = {};
+    this._requireNewPasswordConfig = {};
+  }
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'requireNewPassword';
+    if (data.requireNewPasswordConfig) {
+      this._requireNewPasswordConfig = data.requireNewPasswordConfig;
+    }
+    if (this._requireNewPasswordConfig.header) {
+      this.header = this._requireNewPasswordConfig.header;
+    }
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
+    }
   }
 
   @Input()
@@ -77,8 +98,29 @@ export class RequireNewPasswordComponentCore {
     this._show = authState.state === 'requireNewPassword';
   }
 
+  @Input()
+  set requireNewPasswordConfig(requireNewPasswordConfig: any) {
+    this._requireNewPasswordConfig = requireNewPasswordConfig;
+    if (this._requireNewPasswordConfig.header) {
+      this.header = this._requireNewPasswordConfig.header;
+    }
+  }
+
+  @Input()
+  set classOverrides(classOverrides) {
+    this._classOverrides = classOverrides;
+  }
+
+
   setPassword(password: string) {
     this.password = password;
+  }
+
+  applyClasses(element) {
+    return classArray(
+      element, 
+      { global: this._classOverrides, component: this._requireNewPasswordConfig.classOverrides}
+    );
   }
 
   onSubmit() {
@@ -91,7 +133,7 @@ export class RequireNewPasswordComponentCore {
         requiredAttributes
       )
       .then(() => {
-        this.amplifyService.setAuthState({ state: 'signIn', user: user });
+        this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
   }
@@ -100,7 +142,7 @@ export class RequireNewPasswordComponentCore {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
-  onAlertClose() {
+  onamplifyAlertClose() {
     this._setError(null);
   }
 

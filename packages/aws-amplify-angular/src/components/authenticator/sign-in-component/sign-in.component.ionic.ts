@@ -13,72 +13,76 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
-<div class="amplify-authenticator" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">Sign in to your account</div>
+<div class="{{applyClasses('formSection')}}" *ngIf="_show">
+  <div class="{{applyClasses('sectionHeader')}}">{{this.header}}</div>
+  <div class="{{applyClasses('sectionBody')}}">
     <ion-list lines="none">
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">Username *</ion-label>
-          <ion-input type="text" 
+        <ion-label class="{{applyClasses('inputLabel')}}"
+        for="username" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input type="text" 
           #username
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-        ></ion-input>
+          class="{{applyClasses('amplifyIonicInput')}}"
+          (keyup)="setUsername($event.target.value)">
+        </ion-input>
       </ion-item>
-
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="password" position="stacked">Password *</ion-label>
+        <ion-label class="{{applyClasses('inputLabel')}}" 
+        for="password" position="stacked">
+          Password *
+        </ion-label>
         <ion-input 
           #password
           type="password" 
-          class="amplify-form-input"
+          class="{{applyClasses('amplifyIonicInput')}}"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
         ></ion-input>
       </ion-item>
     </ion-list>
-    <div class="amplify-form-actions">
-      
-      <div class="amplify-form-row">
-        <ion-button expand="block" color="primary"
-          (click)="onSignIn()"
-          >Sign In</ion-button>
-      </div>
-      
-      <div class="amplify-form-row">
-        <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
-        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">Reset Password</a></div>
-      </div>
-
+  </div>
+  <ion-button expand="block" color="primary" (click)="onSignIn()">
+    Sign In
+  </ion-button>
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      No account?  
+      <a class="{{applyClasses('a')}}" (click)="onSignUp()">Create account</a>
+    </span>
+  </div>
+  <br />
+  <div class="{{applyClasses('sectionFooter')}}">
+    <span class="{{applyClasses('sectionFooterSecondaryContent')}}">
+      <a class="{{applyClasses('a')}}" (click)="onForgotPassword()">Reset Password</a>
+    </span>
+  </div>
+  <div class="{{applyClasses('amplifyAlert')}}" *ngIf="errorMessage">
+    <div class="{{applyClasses('amplifyAlertBody')}}">
+      <span class="amplify-alert-icon {{_classOverrides.amplifyAlertBody}}">&#9888;</span>
+      <div class="{{applyClasses('amplifyAlertMessage')}}">{{ errorMessage }}</div>
+      <a class="{{applyClasses('amplifyAlertClose')}}" (click)="onamplifyAlertClose()">&times;</a>
     </div>
   </div>
-
-  <div class="amplify-alert" *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
-    </div>
-  </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template: template
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);    
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
+    super(amplifyService);  
   }
+
 
   _setError(err) {
     if (!err) {
@@ -87,6 +91,5 @@ export class SignInComponentIonic extends SignInComponentCore {
     }
 
     alert(err.message || err);
-  }
-  
+  }  
 }

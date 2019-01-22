@@ -13,12 +13,18 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy 
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { AuthClass } from './authenticator.class';
-import { AuthenticatorIonicComponent } from './authenticator.component.ionic'
+import { AuthenticatorIonicComponent } from './authenticator.component.ionic';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 @Component({
@@ -27,12 +33,21 @@ import { AuthenticatorComponentCore } from './authenticator.component.core';
               <div class="amplify-component">
                 <ng-template component-host></ng-template>
               </div>
-            `
+            `,
+  styles: [
+    `.amplify-component {
+      display: block;
+      font-family: var(--font-family);
+    }`
+  ]
+  
 })
 export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() hide: string[] = [];
   @Input() signUpConfig: any;
+  @Input() signInConfig: any;
+  @Input() classOverrides: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -45,14 +60,24 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide, signUpConfig: this.signUpConfig}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide, signUpConfig: this.signUpConfig});
+    const data = {
+      hide: this.hide,
+      signUpConfig: this.signUpConfig,
+      signInConfig: this.signInConfig,
+      classOverrides: this.classOverrides
+    };
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+      new ComponentMount(AuthenticatorIonicComponent, data) :
+      new ComponentMount(AuthenticatorComponentCore, data);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
+
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<AuthClass>componentRef.instance).data = authComponent.data;
   }
 }

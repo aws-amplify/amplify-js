@@ -11,32 +11,32 @@
  * and limitations under the License.
  */
  <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
+  <div v-bind:class="applyClasses('formSection')">
+    <div v-bind:class="applyClasses('sectionHeader')">{{options.header}}</div>
+    <div v-bind:class="applyClasses('sectionBody')">
+      <div v-bind:class="applyClasses('formField')">
+        <div v-bind:class="applyClasses('inputLabel')">{{$Amplify.I18n.get('New Password')}} *</div>
+        <input v-bind:class="applyClasses('input')" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
       </div>
     </div>
-    <div v-bind:class="amplifyUI.formField" 
+    <div v-bind:class="applyClasses('formField')" 
         v-for="attribute in options.user.challengeParam.requiredAttributes" 
         :attribute="attribute" 
         v-bind:key="attribute"
       >
-      <div v-bind:class="amplifyUI.inputLabel">{{attribute.charAt(0).toUpperCase() + attribute.slice(1)}}</div>
+      <div v-bind:class="applyClasses('inputLabel')">{{attribute.charAt(0).toUpperCase() + attribute.slice(1)}}</div>
       <input
-        v-bind:class="amplifyUI.input" 
+        v-bind:class="applyClasses('input')" 
         v-model="requiredAttributes[attribute]" 
         :placeholder="attribute.charAt(0).toUpperCase() + attribute.slice(1)"
       />
     </div>
-  <div v-bind:class="amplifyUI.sectionFooter">
-      <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password">{{$Amplify.I18n.get('Submit')}}</button>
+  <div v-bind:class="applyClasses('sectionFooter')">
+      <span v-bind:class="applyClasses('sectionFooterPrimaryContent')">
+        <button v-if="!sent" v-bind:class="applyClasses('button')" v-on:click="change" :disabled="!password">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+      <span v-bind:class="applyClasses('sectionFooterSecondaryContent')">
+        <a v-if="!sent" v-bind:class="applyClasses('a')" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -50,7 +50,18 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
  export default {
   name: 'RequireNewPassword',
-  props: ['requireNewPasswordConfig'],
+  props: {
+    requireNewPasswordConfig: {
+      type: Object,
+      default: () => ({
+        classOverrides: {}
+      })
+    },
+    classOverrides: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
         user: '',
@@ -72,47 +83,55 @@ import * as AmplifyUI from '@aws-amplify/ui';
         }
       }
       return Object.assign(defaults, this.requireNewPasswordConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-  },
-  methods: {
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+      }
     },
-    checkContact(user) {
-      this.$Amplify.Auth.verifiedContact(user)
-        .then(data => {
-            if (!this.$Amplify.JS.isEmpty(data.verified)) {
-              return AmplifyEventBus.$emit('authState', 'signedIn')
-            } else {
-              user.unverified = data.unverified;
-              AmplifyEventBus.$emit('localUser', user)
-              return AmplifyEventBus.$emit('authState', 'verifyContact')
-            }
-        })
-        .catch((e) => this.setError(e))
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name);
     },
-    change() {
-      this.$Amplify.Auth.completeNewPassword(this.options.user, this.password, this.requiredAttributes)
-        .then(user => {
-            if (this.options.user.challengeName === 'SMS_MFA') {
+    methods: {
+      setError: function(e) {
+        this.error = this.$Amplify.I18n.get(e.message || e);
+        this.logger.error(this.error);
+      },
+      checkContact(user) {
+        this.$Amplify.Auth.verifiedContact(user)
+          .then(data => {
+              if (!this.$Amplify.JS.isEmpty(data.verified)) {
+                return AmplifyEventBus.$emit('authState', 'signedIn')
+              } else {
+                user.unverified = data.unverified;
+                AmplifyEventBus.$emit('localUser', user)
+                return AmplifyEventBus.$emit('authState', 'verifyContact')
+              }
+          })
+          .catch((e) => this.setError(e))
+      },
+      change() {
+        this.$Amplify.Auth.completeNewPassword(this.options.user, this.password, this.requiredAttributes)
+          .then(user => {
+              if (this.options.user.challengeName === 'SMS_MFA') {
+                  AmplifyEventBus.$emit('localUser', this.options.user)
+                  AmplifyEventBus.$emit('authState', 'confirmSignIn')
+              } else if (this.options.user.challengeName === 'MFA_SETUP') {
                 AmplifyEventBus.$emit('localUser', this.options.user)
-                AmplifyEventBus.$emit('authState', 'confirmSignIn')
-            } else if (this.options.user.challengeName === 'MFA_SETUP') {
-              AmplifyEventBus.$emit('localUser', this.options.user)
-              AmplifyEventBus.$emit('authState', 'setMfa')
-            } else {
-              this.checkContact(this.options.user);
-            }
-        })
-        .catch(err => this.setError(err));
-    },
-    signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
-    },
+                AmplifyEventBus.$emit('authState', 'setMfa')
+              } else {
+                this.checkContact(this.options.user);
+              }
+          })
+          .catch(err => this.setError(err));
+      },
+      signIn: function() {
+        AmplifyEventBus.$emit('authState', 'signedOut')
+      },
+      applyClasses: function(element) {
+        const classes = [
+          AmplifyUI[element],
+          ...(this.classOverrides && this.classOverrides[element] ? this.classOverrides[element] : []),
+          ...(this.requireNewPasswordConfig.classOverrides && this.requireNewPasswordConfig.classOverrides[element] ? this.requireNewPasswordConfig.classOverrides[element] : [])
+        ];
+        return classes;
+      }
+    }
   }
-}
 </script>

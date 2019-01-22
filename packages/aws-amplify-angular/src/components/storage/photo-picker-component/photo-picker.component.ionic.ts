@@ -48,7 +48,7 @@ const template = `
   <div class="amplify-alert-body">
     <span class="amplify-alert-icon">&#9888;</span>
     <div class="amplify-alert-message">{{ errorMessage }}</div>
-    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    <a class="amplify-alert-close" (click)="onamplifyAlertClose()">&times;</a>
   </div>
 </div>
 </div>

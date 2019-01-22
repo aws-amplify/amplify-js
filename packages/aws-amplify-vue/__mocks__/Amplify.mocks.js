@@ -45,5 +45,6 @@ module.exports = {
     setMuted: jest.fn(),
     enableAudio: jest.fn(),
     enterVR: jest.fn(),
+    applyClasses: jest.fn(),
   }
 };

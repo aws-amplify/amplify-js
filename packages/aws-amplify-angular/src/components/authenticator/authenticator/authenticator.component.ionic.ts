@@ -19,56 +19,74 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic ">
+<div class="amplify-authenticator">
 
-<amplify-auth-sign-in-ionic
-  *ngIf="!shouldHide('SignIn')"
+  <amplify-auth-sign-in-ionic
+    *ngIf="!shouldHide('SignIn')"
+    [authState]="authState"
+    [signInConfig]="_signInConfig"
+    [classOverrides]="_classOverrides"
+  ></amplify-auth-sign-in-ionic>
+
+  <amplify-auth-sign-up-ionic
+    *ngIf="!shouldHide('SignUp')"
+    [authState]="authState"
+    [signUpConfig]="_signUpConfig"
+    [classOverrides]="_classOverrides"
+  ></amplify-auth-sign-up-ionic>
+
+  <amplify-auth-confirm-sign-up-ionic
+    *ngIf="!shouldHide('ConfirmSignUp')"
+    [authState]="authState"
+    [confirmSignUpConfig]="_confirmSignUpConfig"
+    [classOverrides]="_classOverrides"
+  ></amplify-auth-confirm-sign-up-ionic>
+
+  <amplify-auth-confirm-sign-in-ionic
+  *ngIf="!shouldHide('ConfirmSignIn')"
   [authState]="authState"
-></amplify-auth-sign-in-ionic>
+  [confirmSignInConfig]="_confirmSignInConfig"
+  [classOverrides]="_classOverrides"
+  ></amplify-auth-confirm-sign-in-ionic>
 
-<amplify-auth-sign-up-ionic
-  *ngIf="!shouldHide('SignUp')"
+  <amplify-auth-forgot-password-ionic
+  *ngIf="!shouldHide('ForgotPassword')"
   [authState]="authState"
-  [signUpConfig]="_signUpConfig"
-></amplify-auth-sign-up-ionic>
+  [forgotPasswordConfig]="_forgotPasswordConfig"
+  [classOverrides]="_classOverrides"
+  ></amplify-auth-forgot-password-ionic>
 
-<amplify-auth-confirm-sign-up-ionic
-  *ngIf="!shouldHide('ConfirmSignUp')"
+  <amplify-auth-greetings-ionic
+  *ngIf="!shouldHide('Greetings')"
   [authState]="authState"
-></amplify-auth-confirm-sign-up-ionic>
+  ></amplify-auth-greetings-ionic>
 
-<amplify-auth-confirm-sign-in-ionic
-*ngIf="!shouldHide('ConfirmSignIn')"
-[authState]="authState"
-></amplify-auth-confirm-sign-in-ionic>
-
-<amplify-auth-forgot-password-ionic
-*ngIf="!shouldHide('ForgotPassword')"
-[authState]="authState"
-></amplify-auth-forgot-password-ionic>
-
-<amplify-auth-greetings-ionic
-*ngIf="!shouldHide('Greetings')"
-[authState]="authState"
-></amplify-auth-greetings-ionic>
-
- <amplify-auth-require-new-password-ionic
-*ngIf="!shouldHide('RequireNewPassword')"
-[authState]="authState"
-></amplify-auth-require-new-password-ionic>
+  <amplify-auth-require-new-password-ionic
+  *ngIf="!shouldHide('RequireNewPassword')"
+  [authState]="authState"
+  [requireNewPasswordConfig]="_requireNewPasswordConfig"
+  [classOverrides]="_classOverrides"
+  ></amplify-auth-require-new-password-ionic>
 </div>
 `;
 
 @Component({
   selector: 'amplify-authenticator-ionic',
-  template
+  template,
+  styles: [
+    `.amplify-authenticator {
+      width: var(--component-width-desktop);
+      margin: 0 auto;
+      border-radius: 6px;
+      background-color: var(--ion-font-family,inherit);
+    }`
+  ]
 })
-export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
+export class AuthenticatorIonicComponent extends AuthenticatorComponentCore{
 
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
   }
 }

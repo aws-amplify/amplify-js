@@ -21,27 +21,36 @@ const template = `
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [signInConfig]="_signInConfig"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
+      [confirmSignUpConfig]="_confirmSignUpConfig"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-confirm-sign-up-core>
 
     <amplify-auth-confirm-sign-in-core
-    *ngIf="!shouldHide('ConfirmSignIn')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignIn')"
+      [authState]="authState"
+      [confirmSignInConfig]="_confirmSignInConfig"
+      [classOverrides]="_classOverrides"
     ></amplify-auth-confirm-sign-in-core>
 
     <amplify-auth-forgot-password-core
     *ngIf="!shouldHide('ForgotPassword')"
     [authState]="authState"
+    [forgotPasswordConfig]="_forgotPasswordConfig"
+    [classOverrides]="_classOverrides"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
@@ -52,6 +61,8 @@ const template = `
      <amplify-auth-require-new-password-core
     *ngIf="!shouldHide('RequireNewPassword')"
     [authState]="authState"
+    [requireNewPasswordConfig]="_requireNewPasswordConfig"
+    [classOverrides]="_classOverrides"
     ></amplify-auth-require-new-password-core>
   </div>
 `;
@@ -59,7 +70,15 @@ const template = `
 
 @Component({
   selector: 'amplify-authenticator-core',
-  template
+  template,
+  styles: [
+    `.amplify-authenticator {
+      width: var(--component-width-desktop);
+      margin: 0 auto;
+      border-radius: 6px;
+      background-color: var(--color-white);
+    }`
+  ]
 })
 export class AuthenticatorComponentCore {
   authState: AuthState = {
@@ -67,6 +86,12 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
+  _signInConfig: any = {};
+  _confirmSignUpConfig: any = {};
+  _confirmSignInConfig: any = {};
+  _requireNewPasswordConfig: any = {};
+  _forgotPasswordConfig: any = {};
+  _classOverrides: any;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -79,12 +104,26 @@ export class AuthenticatorComponentCore {
 
   @Input()
   set data(data: any) {
-    if (data.signUpConfig) {
-      this._signUpConfig = data.signUpConfig;
-    }
     if (data.hide) {
       this.hide = data.hide;
     }
+    if (data.signUpConfig) {
+      this._signUpConfig = data.signUpConfig;
+    }
+    if (data.signInConfig) { 
+      this._signInConfig = data.signInConfig;
+    }
+    if (data.confirmSignInConfig) {
+      this._confirmSignInConfig = data.confirmSignInConfig;
+    }
+    if (data.classOverrides) {
+      this._classOverrides = data.classOverrides;
+    }
+  }
+
+  @Input()
+  set signInConfig(signInConfig: any) {
+    this._signInConfig = signInConfig;
   }
 
   @Input()
@@ -92,16 +131,28 @@ export class AuthenticatorComponentCore {
     this._signUpConfig = signUpConfig;
   }
 
+  @Input()
+  set confirmSignInConfig(confirmSignInConfig: any) {
+    this._confirmSignInConfig = confirmSignInConfig;
+  }
+
+  @Input()
+  set classOverrides(classOverrides) {
+    this._classOverrides = classOverrides;
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
-        this.authState = state;
-      }, () => {
-        this.authState = {
-          'state': 'signIn',
-          'user': null
-        }
-      });
+      .subscribe(
+        state => {
+          this.authState = state;
+        }, 
+        () => {
+          this.authState = {
+            'state': 'signIn',
+            'user': null
+          };
+        });
   }
 
   shouldHide(comp) {
