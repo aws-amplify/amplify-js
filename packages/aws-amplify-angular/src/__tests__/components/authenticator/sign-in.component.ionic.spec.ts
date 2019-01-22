@@ -145,7 +145,7 @@ describe('SignInComponentIonic (classOverides unused): ', () => {
     expect(sectionBody).toBeTruthy();
   });
 
-  it('...it should have two inputs with an AmplifyUI class', () => {
+  it('...it should have two amplifyIonicInputs with an AmplifyUI class', () => {
     const input = signInEl.querySelectorAll(`.${ui.amplifyIonicInput}`);
     expect(input.length).toEqual(2);
   });

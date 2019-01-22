@@ -85,6 +85,9 @@ import * as AmplifyUI from '@aws-amplify/ui';
       return Object.assign(defaults, this.requireNewPasswordConfig || {})
       }
     },
+    mounted() {
+      this.logger = new this.$Amplify.Logger(this.$options.name);
+    },
     methods: {
       setError: function(e) {
         this.error = this.$Amplify.I18n.get(e.message || e);

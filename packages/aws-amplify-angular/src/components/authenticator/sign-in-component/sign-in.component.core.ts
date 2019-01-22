@@ -112,6 +112,10 @@ export class SignInComponentCore {
   @Input()
   set data(data: any) {
     this._authState = data.authState;
+    this._show = includes(['signIn', 'signedOut', 'signedUp'], this._authState.state);
+    this.username = this._authState.user && this._authState.user.username ?
+    this._authState.user.username : '';
+
     if (data.signInConfig) {
       this._signInConfig = data.signInConfig;
       if (data.signInConfig.header) {
