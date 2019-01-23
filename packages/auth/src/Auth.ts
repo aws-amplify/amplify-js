@@ -570,12 +570,10 @@ export default class AuthClass {
             user.getMFAOptions((err, mfaOptions) => {
                 if (err) {
                     logger.debug('get MFA Options failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 }
                 logger.debug('get MFA options success', mfaOptions);
-                res(mfaOptions);
-                return;
+                return res(mfaOptions);
             });
         });
     }
@@ -590,17 +588,14 @@ export default class AuthClass {
             user.getUserData((err, data) => {
                 if (err) {
                     logger.debug('getting preferred mfa failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 }
                 
                 const mfaType = that._getMfaTypeFromUserData(data);
                 if (!mfaType) {
-                    rej('invalid MFA Type');
-                    return;
+                    return rej('invalid MFA Type');
                 } else {
-                    res(mfaType);
-                    return;
+                    return res(mfaType);
                 }
             });
         });
@@ -641,11 +636,9 @@ export default class AuthClass {
             user.getUserData((err, data) => {
                 if (err) {
                     logger.debug('getting user data failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 } else {
-                    res(data);
-                    return;
+                    return res(data);
                 }
             });
         });
@@ -742,12 +735,10 @@ export default class AuthClass {
             user.disableMFA((err, data) => {
                 if (err) {
                     logger.debug('disable mfa failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 }
                 logger.debug('disable mfa succeed', data);
-                res(data);
-                return;
+                return res(data);
             });
         });
     }
@@ -763,12 +754,10 @@ export default class AuthClass {
             user.enableMFA((err, data) => {
                 if (err) {
                     logger.debug('enable mfa failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 }
                 logger.debug('enable mfa succeed', data);
-                res(data);
-                return;
+                return res(data);
             });
         });
     }
@@ -783,13 +772,11 @@ export default class AuthClass {
             user.associateSoftwareToken({
                 onFailure: (err) => {
                     logger.debug('associateSoftwareToken failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 },
                 associateSecretCode: (secretCode) => {
                     logger.debug('associateSoftwareToken sucess', secretCode);
-                    res(secretCode);
-                    return;
+                    return res(secretCode);
                 }
             });
         });
@@ -807,13 +794,11 @@ export default class AuthClass {
             user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
                 onFailure: (err) => {
                     logger.debug('verifyTotpToken failed', err);
-                    rej(err);
-                    return;
+                    return rej(err);
                 },
                 onSuccess: (data) => {
                     logger.debug('verifyTotpToken success', data);
-                    res(data);
-                    return;
+                    return res(data);
                 }
             });
         });
@@ -902,10 +887,11 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.forgotPassword({
                 onSuccess: () => { 
+                    logger.debug('Forgot password succeeds');
                     return resolve();  
                 },
                 onFailure: err => {
-                    logger.debug('forgot password failure', err);
+                    logger.debug('Forgot password failure', err);
                     return reject(err);
                     
                 },
@@ -1044,13 +1030,13 @@ export default class AuthClass {
 
         return new Promise((resolve, reject) => {
             user.verifyAttribute(attr, code, {
-                onSuccess(data) { 
-                    resolve(data); 
-                    return;
+                onSuccess(data) {
+                    logger.debug('Verify user attributes succeeds'); 
+                    return resolve(data); 
                 },
-                onFailure(err) { 
-                    reject(err); 
-                    return;
+                onFailure(err) {
+                    logger.debug('Failed to verify user attributes', err); 
+                    return reject(err); 
                 }
             });
         });
@@ -1088,16 +1074,14 @@ export default class AuthClass {
                 const user = that.userPool.getCurrentUser();
                 if (!user) { 
                     logger.debug('Failed to get user from user pool');
-                    rej('No current user');
-                    return;
+                    return rej('No current user');
                 }
 
                 // refresh the session if the session expired.
                 user.getSession((err, session) => {
                     if (err) {
                         logger.debug('Failed to get the user session', err);
-                        rej(err); 
-                        return;
+                        return rej(err); 
                     }
              
                     // get user data from Cognito
@@ -1108,13 +1092,12 @@ export default class AuthClass {
                                 logger.debug('getting user data failed', err);
                                 // Make sure the user is still valid
                                 if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                                    rej(err);
+                                    return rej(err);
                                 } else {
                                     // the error may also be thrown when lack of permissions to get user info etc
                                     // in that case we just bypass the error
-                                    res(user);
+                                    return res(user);
                                 }
-                                return;
                             }
                             const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
                             const attributeList = [];
@@ -1231,12 +1214,10 @@ export default class AuthClass {
             user.getSession(function(err, session) {
                 if (err) { 
                     logger.debug('Failed to get the session from user', user);
-                    reject(err);
-                    return;
+                    return reject(err);
                 } else {
                     logger.debug('Succeed to get the user session', session);
-                    resolve(session); 
-                    return;
+                    return resolve(session); 
                 }
             });
         });
