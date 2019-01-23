@@ -1292,7 +1292,7 @@ export default class AuthClass {
         if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             let user = null;
             try {
-                const user = await this.currentUserPoolUser();
+                user = await this.currentUserPoolUser();
             } catch (e) {
                 logger.debug('Failed to get the current user pool user', e);
             }
@@ -1581,4 +1581,4 @@ export default class AuthClass {
         }
     }
 }
-//endregion
+//#endregion

@@ -1528,7 +1528,12 @@ describe('auth unit test', () => {
 
             const auth = new Auth(authOptionsWithNoUserPoolId);
 
-            expect(await auth.signOut()).toBeUndefined();            
+            try {
+                await auth.signOut();
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+                  
             spyonStorageHelper.mockClear();
         });
 
@@ -1568,8 +1573,12 @@ describe('auth unit test', () => {
                 }
             });
 
-            const auth = new Auth(authOptionsWithNoUserPoolId);
-
+            const auth = new Auth(authOptions);
+            const spyon = jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementationOnce(() => {
+                return {
+                    signOut: jest.fn()
+                }
+            });
             const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
                 callback(null);
             });
@@ -1578,6 +1587,7 @@ describe('auth unit test', () => {
 
             cognitoCredentialSpyon.mockClear();
             spyonStorageHelper.mockClear();
+            spyon.mockClear();
         });
     });
 
