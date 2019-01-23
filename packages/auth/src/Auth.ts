@@ -258,7 +258,8 @@ export default class AuthClass {
         }
     }
 
-    /*<---------------------------------- Registration Related Methods -------------------------------->*/
+    //#region Registration Related Methods 
+    
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
@@ -354,7 +355,8 @@ export default class AuthClass {
         });
     }
 
-    /*<---------------------------------- Sign In Related Methods --------------------------------->*/
+    //#endregion
+    //#region Sign In Related Methods
     /**
      * Sign in
      * @param {String | SignInOpts} usernameOrSignInOpts - The username to be signed in or the sign in options
@@ -554,7 +556,8 @@ export default class AuthClass {
         });
     }
 
-    /*<---------------------------------- MFA Related Methods ------------------------------------>*/
+    //#endregion
+    //#region MFA Related Methods
     /**
      * get user current preferred mfa option
      * this method doesn't work with totp, we need to deprecate it.
@@ -816,8 +819,8 @@ export default class AuthClass {
         });
     }
 
-    
-    /*<---------------------------- ResetPassword Related Methods ---------------------------->*/
+    //#endregion
+    //#region ResetPassword Related Methods
     public completeNewPassword(
         user: CognitoUser | any,
         password: string,
@@ -871,7 +874,7 @@ export default class AuthClass {
      * @param {String} newPassword - the requested new password
      * @return - A promise resolves if success
      */
-    public changePassword(user: CognitoUser | any, oldPassword: string, newPassword: string): Promise<"SUCCESS"> {
+    public changePassword(user: CognitoUser | any, oldPassword: string, newPassword: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.userSession(user).then(session => {
                 user.changePassword(oldPassword, newPassword, (err, data) => {
@@ -899,17 +902,15 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.forgotPassword({
                 onSuccess: () => { 
-                    resolve();
-                    return; 
+                    return resolve();  
                 },
                 onFailure: err => {
                     logger.debug('forgot password failure', err);
-                    reject(err);
-                    return;
+                    return reject(err);
+                    
                 },
                 inputVerificationCode: data => {
-                    resolve(data);
-                    return;
+                    return resolve(data);
                 }
             });
         });
@@ -936,19 +937,17 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.confirmPassword(code, password, {
                 onSuccess: () => { 
-                    resolve(); 
-                    return;
+                    return resolve();
                 },
                 onFailure: err => { 
-                    reject(err); 
-                    return;
+                    return reject(err); 
                 }
             });
         });
     }
 
-    
-    /*<----------------------------- Attributes Related Methods -------------------------------->*/
+    //#endregion
+    //#region Attributes Related Methods
     /**
      * Update an authenticated users' attributes
      * @param {CognitoUser} - The currently logged in user object
@@ -1075,7 +1074,8 @@ export default class AuthClass {
             .then(user => that.verifyUserAttributeSubmit(user, attr, code));
     }
 
-    /*<---------------- Current User/Session/Credentials Related Methods ----------------------->*/
+    //#endregion
+    //#region Current User/Session/Credentials Related Methods
     /**
      * Get current authenticated user
      * @return - A promise resolves to current authenticated CognitoUser if success
@@ -1289,9 +1289,13 @@ export default class AuthClass {
      */
     public async currentUserInfo() {
         const sessionSource = this._getSessionSource();
-         if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
-            const user = await this.currentUserPoolUser()
-                .catch(err => logger.debug(err));
+        if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
+            let user = null;
+            try {
+                const user = await this.currentUserPoolUser();
+            } catch (e) {
+                logger.debug('Failed to get the current user pool user', e);
+            }
             if (!user) { return null; }
 
             try {
@@ -1320,7 +1324,8 @@ export default class AuthClass {
         }
     }
 
-    /*<----------------------------- SignOut Related Methods -------------------------------->*/
+    //#endregion
+    //#region SignOut Related Methods
 
     private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
         return new Promise((res, rej) => {
@@ -1375,9 +1380,8 @@ export default class AuthClass {
         this._removeSessionSource();
         if (!sessionSource || sessionSource === AWSCognitoProvider.NAME) {
             if (!this.userPool) {
-                // throw('No userPool'); 
-                logger.debug('no Congito User pool');
-                return;
+                logger.error('No Congito User pool configured in the Auth module');
+                throw new Error('No userPool');
             }
             const user = this.userPool.getCurrentUser();
             if (user) {
@@ -1577,3 +1581,4 @@ export default class AuthClass {
         }
     }
 }
+//endregion
