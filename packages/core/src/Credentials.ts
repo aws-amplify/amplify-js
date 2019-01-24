@@ -12,11 +12,11 @@ const logger = new Logger('Credentials');
 export class Credentials {
     private _config;
     private _credentials;
-    private _credentials_source;
     private _gettingCredPromise = null;
     private _refreshHandlers = {};
     private _storage;
     private _storageSync;
+    private _keyPrefix;
 
     constructor(config) {
         this.configure(config);
@@ -24,15 +24,11 @@ export class Credentials {
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
     }
 
-    public getCredSource() {
-        return this._credentials_source;
-    }
-
     public configure(config){
         if (!config) return this._config || {};
 
         this._config = Object.assign({}, this._config, config);
-        const { refreshHandlers } = this._config;
+        const { refreshHandlers, _keyPrefix } = this._config;
          // If the developer has provided an object of refresh handlers,
         // then we can merge the provided handlers with the current handlers.
         if (refreshHandlers) {
@@ -49,6 +45,7 @@ export class Credentials {
             this._storageSync = this._storage['sync']();
         }
 
+        this._keyPrefix = _keyPrefix;
         return this._config;
     }
 
@@ -86,43 +83,6 @@ export class Credentials {
             return Amplify.Auth.currentUserCredentials();
         } else {
             return Promise.reject('No Auth module registered in Amplify');
-        }
-    }
-
-    public refreshFederatedToken(federatedInfo) {
-        logger.debug('Getting federated credentials');
-        const { provider, user } = federatedInfo;
-        let token = federatedInfo.token;
-        let expires_at = federatedInfo.expires_at;
-        let identity_id = federatedInfo.identity_id;
-
-        const that = this;
-        logger.debug('checking if federated jwt token expired');
-        if (expires_at > new Date().getTime()) {
-            // if not expired
-            logger.debug('token not expired');
-            return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at });
-        } else {
-            // if refresh handler exists
-            if (that._refreshHandlers[provider] && typeof that._refreshHandlers[provider] === 'function') {
-                logger.debug('getting refreshed jwt token from federation provider');
-                return that._refreshHandlers[provider]().then((data) => {
-                    logger.debug('refresh federated token sucessfully', data);
-                    token = data.token;
-                    identity_id = data.identity_id;
-                    expires_at = data.expires_at;
-                    
-                    return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
-                }).catch(e => {
-                    logger.debug('refresh federated token failed', e);
-                    this.clear();
-                    return Promise.reject('refreshing federation token failed: ' + e);
-                });
-            } else {
-                logger.debug('no refresh handler for provider:', provider);
-                this.clear();
-                return Promise.reject('no refresh handler for provider');
-            }
         }
     }
 
@@ -170,12 +130,10 @@ export class Credentials {
             region
         });
 
-        const that = this;
-        return this._loadCredentials(credentials, 'guest', false, null)
-        .then((res) => {
-            return res;
-         })
-        .catch(async (e) => {
+        let cred = null;
+        try {
+            cred = await this._loadCredentials(credentials, false);
+        } catch (e) {
             // If identity id is deleted in the console, we make one attempt to recreate it
             // and remove existing id from cache. 
             if (e.code === 'ResourceNotFoundException' &&
@@ -194,11 +152,22 @@ export class Credentials {
                         region
                     }
                 );
-                return this._loadCredentials(newCredentials, 'guest', false, null);
+                cred = await this._loadCredentials(credentials, false);
             } else {
-                return e;
+                throw e;
             }
-        });
+        }
+
+        try {
+            await this._storageSync;
+            this._storage.setItem(
+                'CognitoIdentityId-' + identityPoolId, 
+                cred['identityId']
+            );
+        } catch (e) {
+            logger.debug('Failed to cache identityId', e);
+        }
+        return cred;
     }
 
     private _setCredentialsFromAWS() {
@@ -213,23 +182,17 @@ export class Credentials {
         }
     }
 
-    private _setCredentialsFromFederation(params) {
-        const { provider, token, identity_id, user, expires_at } = params;
-        const domains = {
-            'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com',
-            'developer': 'cognito-identity.amazonaws.com'
-        };
+    private async _setCredentialsFromFederation(params) {
+        const { tokens, federatedWithIDP={}, provider } = params;
+        const { domain, token, identityId} = federatedWithIDP;
 
-        // Use custom provider url instead of the predefined ones
-        const domain = domains[provider] || provider;
+        const credentialsToken = token === 'id_token' ? tokens.idToken : tokens.accessToken;
         if (!domain) {
             return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
-        logins[domain] = token;
+        logins[domain] = credentialsToken;
 
         const { identityPoolId, region } = this._config;
         if (!identityPoolId) {
@@ -239,18 +202,15 @@ export class Credentials {
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
-            IdentityId: identity_id,
+            IdentityId: identityId,
             Logins: logins
         },  {
             region
         });
 
-        return this._loadCredentials(
-            credentials, 
-            'federated', 
-            true, 
-            params,
-        );
+        
+        const cred = await this._loadCredentials(credentials, true);
+        return cred;
     }
 
     private _setCredentialsFromSession(session): Promise<ICredentials> {
@@ -273,10 +233,10 @@ export class Credentials {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'userPool', true, null);
+        return this._loadCredentials(credentials, true);
     }
 
-    private _loadCredentials(credentials, source, authenticated, info): Promise<ICredentials> {
+    private _loadCredentials(credentials, authenticated): Promise<ICredentials> {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
@@ -290,56 +250,6 @@ export class Credentials {
                 logger.debug('Load credentials successfully', credentials);
                 that._credentials = credentials;
                 that._credentials.authenticated = authenticated;
-                that._credentials_source = source;
-                if (source === 'federated') {
-                    const user = Object.assign(
-                        { id: this._credentials.identityId },
-                        info.user
-                    );
-                    const { provider, token, expires_at, identity_id } = info;
-                    try {
-                        this._storage.setItem(
-                            'aws-amplify-federatedInfo',
-                            JSON.stringify({
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            })
-                        );
-                    } catch(e) {
-                        logger.debug('Failed to put federated info into auth storage', e);
-                    }
-                    // the Cache module no longer stores federated info
-                    // this is just for backward compatibility
-                    if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-                        Amplify.Cache.setItem(
-                            'federatedInfo', 
-                            { 
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            }, 
-                            { priority: 1 }
-                        );
-                    } else {
-                        logger.debug('No Cache module registered in Amplify');
-                    }
-                }
-                if (source === 'guest') {
-                    try {
-                        await this._storageSync;
-                        this._storage.setItem(
-                            'CognitoIdentityId-' + identityPoolId, 
-                            credentials.identityId
-                        );
-                    } catch (e) {
-                        logger.debug('Failed to cache identityId', e);
-                    }
-                }
                 res(that._credentials);
                 return;
             });
@@ -372,16 +282,6 @@ export class Credentials {
             credentials.clearCachedId();
         }
         this._credentials = null;
-        this._credentials_source = null;
-        this._storage.removeItem('aws-amplify-federatedInfo');
-
-        // the Cache module no longer stores federated info
-        // this is just for backward compatibility
-        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-            await Amplify.Cache.removeItem('federatedInfo');
-        } else {
-            logger.debug('No Cache module registered in Amplify');
-        }
     }
 
     /**

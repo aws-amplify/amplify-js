@@ -11,8 +11,14 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute } from "amazon-cognito-identity-js";
-
+import { 
+    ICookieStorageData, 
+    ICognitoStorage, 
+    CognitoUserAttribute, 
+    CognitoUser, 
+    CognitoUserSession 
+} from "amazon-cognito-identity-js";
+import { ICredentials } from '@aws-amplify/core';
 /**
 * Parameters for user sign up
 */
@@ -71,7 +77,9 @@ export interface FederatedResponse {
  */
 export interface FederatedUser {
     name: string,
-    email?: string
+    id?: string,
+    email?: string,
+    attributes?: Object
 }
 
 export interface awsCognitoOAuthOpts {
@@ -94,6 +102,67 @@ export interface ConfirmSignUpOptions {
 
 export interface SignOutOpts {
     global?: boolean
+}
+
+export interface AuthTokens {
+    idToken?: string,
+    accessToken?: string,
+    refreshToken?: string,
+}
+
+export interface ExternalSession {
+    username: string,
+    attributes?: Object,
+    tokens: AuthTokens,
+    expires_at?: number,
+    provider: string,
+    federatedWithIDP?: FederatedWithIDP
+}
+
+export interface FederatedWithIDP {
+    token?: string,
+    domain?: string,
+    identityId?: string,
+    errorHandler?: Function,
+}
+
+export interface SetSessionResult {
+    session: FederatedProviderSession | CognitoUserSession,
+    user?: CognitoUser | FederatedUser,
+    credentials?: ICredentials
+}
+
+export interface FederatedProviderSession {
+    tokens: AuthTokens,
+    expires_at: number,
+    type: string,
+    provider: string,
+    federatedWithIDP?: FederatedWithIDP
+}
+
+export interface AuthProvider {
+    getProviderName(): string,
+    getCategory(): string,
+    setSession(params: ExternalSession): Promise<SetSessionResult>,
+    getSession(): Promise<any>;
+    clearSession(): Promise<void>;
+    getUser(): Promise<any>;
+}
+
+export enum SessionType {
+    FederatedProviderSession = 'FederatedProviderSession'
+}
+
+export enum MFAType {
+    SMS_MFA = 'SMS_MFA',
+    SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA'
+}
+
+export enum FederatedProvider {
+    Google = 'Google',
+    Facebook = 'Facebook',
+    Amazon = 'Amazon',
+    Developer = 'Developer'
 }
 
 export interface CurrentUserOpts {

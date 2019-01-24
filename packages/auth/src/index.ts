@@ -28,4 +28,6 @@ const Auth = _instance;
 Amplify.register(Auth);
 
 export default Auth;
+export * from './providers';
+export * from './types';
 export { AuthClass, CognitoUser, CookieStorage };
