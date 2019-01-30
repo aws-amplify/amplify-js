@@ -64,7 +64,7 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-sign-in-core',
-  templateUrl: 'amplify-auth-sign-in-template.html'
+  template
 })
 export class SignInComponentCore {
   _authState: AuthState;
