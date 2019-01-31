@@ -102,6 +102,11 @@ export default class XR {
         return this._pluggables[provider].isVRCapable(sceneName);
     }
 
+    public vrPresentationActive(sceneName: string, provider: string = this._defaultProvider) {
+        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
+        return this._pluggables[provider].vrPresentationActive(sceneName);
+    }
+
     public start(sceneName: string, provider: string = this._defaultProvider) {
         if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
         return this._pluggables[provider].start(sceneName);

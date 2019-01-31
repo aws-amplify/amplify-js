@@ -32,7 +32,8 @@ class SumerianScene extends React.Component {
       loading: true,
       percentage: 0,
       isFullscreen: false,
-      sceneError: null
+      sceneError: null,
+      vrPresentationActive: false
     };
   }
 
@@ -120,9 +121,19 @@ class SumerianScene extends React.Component {
     }
   }
 
+  async enterVR() {
+    await XR.enterVR(this.props.sceneName);
+    this.setState({ vrPresentationActive: true});
+  }
+
+  async exitVR() {
+    await XR.exitVR(this.props.sceneName);
+    this.setState({ vrPresentationActive: false });
+  }
+
   render() {
     let muteButton;
-    let enterVRButton;
+    let enterOrExitVRButton;
     let screenSizeButton;
 
     if (XR.isSceneLoaded(this.props.sceneName)) {
@@ -135,8 +146,15 @@ class SumerianScene extends React.Component {
       }
 
       if (XR.isVRCapable(this.props.sceneName)) {
-        enterVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => XR.enterVR(this.props.sceneName)} />
+        if (XR.vrPresentationActive(this.props.sceneName)) {
+          logger.info('VR Presentation Active');
+          enterOrExitVRButton = <IconButton variant="exit-vr" tooltip="Exit VR" onClick={() => this.exitVR()} />
+        } else {
+          logger.info('VR Presentation Inactive');
+          enterOrExitVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => this.enterVR()} />
+        }
       }
+
       if (this.state.isFullscreen) {
         screenSizeButton = <IconButton variant="minimize" tooltip="Exit Fullscreen" onClick={() => this.minimize()} />
       } else {
@@ -152,7 +170,7 @@ class SumerianScene extends React.Component {
         <div className={AmplifyUI.sceneBar}>
           <span className={AmplifyUI.sceneActions}>
             {muteButton}
-            {enterVRButton}
+            {enterOrExitVRButton}
             {screenSizeButton}
           </span>
         </div>

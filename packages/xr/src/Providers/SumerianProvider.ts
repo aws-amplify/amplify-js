@@ -224,6 +224,11 @@ export class SumerianProvider extends AbstractXRProvider {
     return sceneController.vrCapable;
   }
 
+  public vrPresentationActive(sceneName: string): boolean {
+    const sceneController = this.getSceneController(sceneName);
+    return sceneController.vrPresentationActive;
+  }
+
   public start(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.start();
