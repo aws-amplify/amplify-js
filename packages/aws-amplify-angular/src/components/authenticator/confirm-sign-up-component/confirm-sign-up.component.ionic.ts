@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
 
 const template = `
