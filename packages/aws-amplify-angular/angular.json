@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "projects": {
     "aws-amplify-angular": {
-      "root": "./",
+      "root": "",
       "sourceRoot": "src",
       "projectType": "library",
       "architect": {

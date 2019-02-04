@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "7.2.12",
+  "version": "7.2.15",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular2.umd.js",
   "module": "fesm5/aws-amplify-angular2.js",
@@ -68,5 +68,8 @@
     "uglify-js": "^3.4.7",
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
+  },
+  "dependencies": {
+    "@angular/cli": "^7.3.0"
   }
 }

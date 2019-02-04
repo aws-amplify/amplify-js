@@ -74,11 +74,11 @@ const defaultVoiceConfig = {
 		time: 2000,
 		amplitude: 0.2
 	}
-}
+};
 
 @Component({
 	selector: 'amplify-interactions-core',
-	template: template
+	template
 })
 export class ChatbotComponentCore {
 	errorMessage: string;
