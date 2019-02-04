@@ -1,6 +1,6 @@
 {
   "name": "amplifyangular2",
-  "version": "0.0.9",
+  "version": "0.0.20",
   "peerDependencies": {
     "@angular/common": "^7.1.0",
     "@angular/core": "^7.1.0"
