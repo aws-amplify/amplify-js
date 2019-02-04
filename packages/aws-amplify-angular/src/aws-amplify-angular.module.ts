@@ -39,13 +39,13 @@ import { S3ImageComponent } from './components/storage/s3-image-component/s3-ima
 import { S3ImageComponentCore } from './components/storage/s3-image-component/s3-image.component.core';
 import { PhotoPickerComponent } from './components/storage/photo-picker-component/photo-picker.factory';
 import { PhotoPickerComponentCore } from './components/storage/photo-picker-component/photo-picker.component.core';
-// import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
-// import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
+import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
+import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
-// import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
-// import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
-// import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.core';
+import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
+import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
+import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.core';
 // tslint:enable:max-line-length
 
 const components = [
@@ -71,12 +71,12 @@ const components = [
   S3ImageComponentCore,
   PhotoPickerComponent,
   PhotoPickerComponentCore,
-  // ChatBotComponent,
-  // ChatbotComponentCore,
+  ChatBotComponent,
+  ChatbotComponentCore,
   FormComponent,
-  // SumerianSceneComponent,
-  // SumerianSceneComponentCore,
-  // SumerianSceneLoadingComponentCore
+  SumerianSceneComponent,
+  SumerianSceneComponentCore,
+  SumerianSceneLoadingComponentCore
 ];
 
 @NgModule({

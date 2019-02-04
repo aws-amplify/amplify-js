@@ -146,6 +146,9 @@ describe('withGoogle test', () => {
                         getName() {
                             return 'name';
                         }
+                        getImageUrl() {
+                            return 'picture';
+                        }
                     };
                 }
             };
@@ -171,7 +174,7 @@ describe('withGoogle test', () => {
             expect(spyon).toBeCalledWith(
                 'google',
                 { expires_at: 0, token: 'id_token' },
-                { email: 'email', name: 'name' }
+                { email: 'email', name: 'name', picture: 'picture' }
             );
 
             spyon.mockClear();
@@ -202,6 +205,9 @@ describe('withGoogle test', () => {
                         getName() {
                             return 'name';
                         }
+                        getImageUrl() {
+                            return 'picture';
+                        }
                     };
                 }
             };
@@ -230,7 +236,7 @@ describe('withGoogle test', () => {
             expect(spyon).toBeCalledWith(
                 'google',
                 { expires_at: 0, token: 'id_token' },
-                { email: 'email', name: 'name' }
+                { email: 'email', name: 'name', picture: 'picture' }
             );
             expect(mockFn).toBeCalledWith('signedIn', 'user');
 
@@ -305,8 +311,9 @@ describe('withGoogle test', () => {
                             },
                             getBasicProfile() {
                                 return {
-                                    getEmail() { return 'email' },
-                                    getName() { return 'name' }
+                                    getEmail() { return 'email'; },
+                                    getName() { return 'name'; },
+                                    getImageUrl() { return 'picture'; }
                                 };
                             }
                         };
@@ -329,7 +336,8 @@ describe('withGoogle test', () => {
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { return Promise.resolve() });
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { return Promise.resolve(); });
 
             await comp.refreshGoogleToken();
 
@@ -434,7 +442,7 @@ describe('withGoogle test', () => {
                     getAuthInstance() {
                         return Promise.resolve({
                             signOut: mockFn
-                        })
+                        });
                     }
                 }
             };

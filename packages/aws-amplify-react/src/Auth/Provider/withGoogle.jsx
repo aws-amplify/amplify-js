@@ -48,7 +48,7 @@ export default function withGoogle(Comp) {
                     this.federatedSignIn(googleUser);
                     const payload = {
                         provider: Constants.GOOGLE
-                    }
+                    };
 
                     try {
                         localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
@@ -68,7 +68,8 @@ export default function withGoogle(Comp) {
             const profile = googleUser.getBasicProfile();
             let user = {
                 email: profile.getEmail(),
-                name: profile.getName()
+                name: profile.getName(),
+                picture: profile.getImageUrl(),
             };
 
             const { onStateChange } = this.props;

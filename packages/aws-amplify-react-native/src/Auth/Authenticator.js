@@ -152,14 +152,14 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault } = this.props;
+        const { hideDefault, signUpConfig } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
             <SignIn/>,
             <ConfirmSignIn/>,
             <VerifyContact/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <ForgotPassword/>,
             <RequireNewPassword />,

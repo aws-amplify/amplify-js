@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 <template>
   <div>
     <template v-if="isMutation">
@@ -112,11 +125,16 @@ export default {
 
       if (hasValidMutation) {
         this.isMutation = true;
-
         this.internalMutation = async () => {
-          const result = await this.$Amplify.API.graphql({ query: mutation, variables: mutationVariables });
-          this.$emit('done', result);
-          return result;
+          this.$Amplify.API.graphql({ query: mutation, variables: mutationVariables }).then((result) => {
+            this.$emit('done', result);
+            return result;
+          })
+          .catch((error) => {
+            this.logger.warn(error);
+            this.errors = error.errors;
+            return this.$emit('error', error);
+          })
         };
       }
 

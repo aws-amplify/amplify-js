@@ -104,7 +104,7 @@ export default class APIClass {
             this._api = new RestClass(this._options);
             return true;
         } else {
-            return Promise.reject('API no configured');
+            return Promise.reject('API not configured');
         }
     }
 
@@ -126,7 +126,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.get(endpoint + path, init);
     }
@@ -149,7 +149,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
     }
@@ -172,7 +172,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
     }
@@ -195,7 +195,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.patch(endpoint + path, init);
     }
@@ -218,7 +218,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.del(endpoint + path, init);
     }
@@ -241,7 +241,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.head(endpoint + path, init);
     }
@@ -325,11 +325,11 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
 
-        const doc = parse(query);
+        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-        const [operationDef = {},] = doc.definitions.filter(def => def.kind === 'OperationDefinition');
+        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
@@ -343,7 +343,7 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -357,20 +357,17 @@ export default class APIClass {
             graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
-        const doc = parse(queryStr);
-        const query = print(doc);
-
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
             ...(customGraphqlEndpoint &&
                 (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
             ...additionalHeaders,
-            ... await graphql_headers({ query: doc, variables }),
+            ... await graphql_headers({ query, variables }),
         };
 
         const body = {
-            query,
+            query: print(query),
             variables,
         };
 
@@ -428,9 +425,9 @@ export default class APIClass {
                         aws_appsync_authenticationType: authenticationType,
                     } = this._options;
                     const additionalheaders = {
-                        ...(authenticationType === 'API_KEY' && {
+                        ...(authenticationType === 'API_KEY' ? {
                             'x-amz-subscriber-id': this.clientIdentifier
-                        })
+                        } : {})
                     };
 
                     try {

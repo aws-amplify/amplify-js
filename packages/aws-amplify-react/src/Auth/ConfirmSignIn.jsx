@@ -93,7 +93,7 @@ export default class ConfirmSignIn extends AuthPiece {
                 <SectionHeader theme={theme}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
                 <SectionBody theme={theme}>
                     <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Code')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
                         <Input
                             autoFocus
                             placeholder={I18n.get('Code')}
