@@ -5,7 +5,7 @@ import { ComponentMount }      from '../../component.mount';
 import { RequireNewPasswordClass } from './require-new-password.class';
 import { RequireNewPasswordComponentIonic } from './require-new-password.component.ionic'
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
-import { AuthState } from '../../../providers';
+import { AuthState } from '../../../providers/auth.state';
 
 @Component({
   selector: 'amplify-auth-require-new-password',

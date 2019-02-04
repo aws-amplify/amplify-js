@@ -4,7 +4,7 @@ import { ComponentMount }      from '../../component.mount';
 import { SignInClass } from './sign-in.class';
 import { SignInComponentIonic } from './sign-in.component.ionic'
 import { SignInComponentCore } from './sign-in.component.core';
-import { AuthState } from '../../../providers';
+import { AuthState } from '../../../providers/auth.state';
 import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({

@@ -5,7 +5,7 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic'
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
-import { AuthState } from '../../../providers';
+import { AuthState } from '../../../providers/auth.state';
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up',

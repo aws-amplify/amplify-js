@@ -5,7 +5,7 @@ import { ComponentMount }      from '../../component.mount';
 import { GreetingClass } from './greeting.class';
 import { GreetingComponentIonic } from './greeting.component.ionic'
 import { GreetingComponentCore } from './greeting.component.core';
-import { AuthState } from '../../../providers';
+import { AuthState } from '../../../providers/auth.state';
 
 @Component({
   selector: 'amplify-auth-greetings',
