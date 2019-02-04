@@ -1,23 +1,15 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-<<<<<<< HEAD
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-=======
     "baseUrl": ".",
     "allowJs": true,
     "stripInternal": true,
     "experimentalDecorators": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
->>>>>>> master
     "module": "es2015",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
     "typeRoots": [
@@ -26,7 +18,6 @@
     "lib": [
       "es2018",
       "dom"
-<<<<<<< HEAD
     ],
     "paths": {
       "aws-amplify-angular": [
@@ -36,8 +27,6 @@
         "dist/aws-amplify-angular/*"
       ]
     }
-=======
-    ]
   },
   "files": [
     "index.ts",
@@ -45,6 +34,5 @@
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true
->>>>>>> master
   }
 }
