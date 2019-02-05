@@ -16,6 +16,8 @@ import * as Kinesis from 'aws-sdk/clients/kinesis';
 import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
 
+import { isBrowser } from '../utils/IsBrowser';
+
 const logger = new Logger('AWSKineisProvider');
 
 // events buffer
@@ -47,23 +49,25 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
     }
 
     private _setupTimer() {
-        if (this._timer) {
-            clearInterval(this._timer);
+        if (isBrowser) {
+            if (this._timer) {
+                window.clearInterval(this._timer);
+            }
+            const { flushSize, flushInterval } = this._config;
+            const that = this;
+            this._timer = window.setInterval(
+                () => {
+                    const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
+                    const events = [];
+                    for (let i = 0; i < size; i += 1) {
+                        const params = this._buffer.shift();
+                        events.push(params);
+                    }
+                    that._sendFromBuffer(events);
+                },
+                flushInterval
+            );
         }
-        const { flushSize, flushInterval } = this._config;
-        const that = this;
-        this._timer = setInterval(
-            () => {
-                const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
-                const events = [];
-                for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    events.push(params);
-                } 
-                that._sendFromBuffer(events);
-            },
-            flushInterval
-        );
     }
 
     /**
@@ -189,7 +193,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
                 {
                     Records: records[streamName],
                     StreamName: streamName
-                }, 
+                },
                 (err, data)=> {
                     if (err) logger.debug('Failed to upload records to Kinesis', err);
                     else logger.debug('Upload records to stream', streamName);
@@ -202,7 +206,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         logger.debug('init clients');
 
         if (this._kinesis
-            && this._config.credentials 
+            && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
             && this._config.credentials.identityId === credentials.identityId) {
             logger.debug('no change for analytics config, directly return from init');
