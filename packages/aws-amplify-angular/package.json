@@ -34,6 +34,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@angular/cli": "^7.3.0",
     "@angular/common": "^5.2.6",
     "@angular/compiler": "^5.2.9",
     "@angular/compiler-cli": "^5.2.9",
@@ -68,7 +69,4 @@
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
   },
-  "dependencies": {
-    "@angular/cli": "^7.3.0"
-  }
 }
