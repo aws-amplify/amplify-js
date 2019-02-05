@@ -12,7 +12,7 @@
  */
 
 
-import { NgModule , forwardRef} from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -46,6 +46,7 @@ import { FormComponent } from './components/common/form.component';
 import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
 import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
 import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.core';
+import { AMPLIFY_SERVICE_PROVIDER } from './providers';
 // tslint:enable:max-line-length
 
 const components = [
@@ -91,7 +92,9 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [ ],
+  providers: [
+    AMPLIFY_SERVICE_PROVIDER
+  ],
   exports: [
     ...components,
   ]
