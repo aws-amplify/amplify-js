@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service';
-import { ConfirmSignInComponentIonic } from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
+import { ConfirmSignInComponentIonic } 
+from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
 
 
 describe('ConfirmSignInComponentIonic: ', () => {
@@ -12,8 +16,18 @@ describe('ConfirmSignInComponentIonic: ', () => {
   let setAuthStateSpy;
   let confirmSignInSpy;
 
+  const modules = {
+    Auth: {
+      confirmSignIn: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      }
+    }
+  };
+
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(modules);
     component = new ConfirmSignInComponentIonic(service);
     setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
     confirmSignInSpy = jest.spyOn(component.amplifyService.auth(), 'confirmSignIn');

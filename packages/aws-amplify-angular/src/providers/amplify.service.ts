@@ -1,3 +1,18 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
 import { Injectable, Optional, Inject } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import Amplify, { Logger } from '@aws-amplify/core';
@@ -42,7 +57,7 @@ export class AmplifyService {
   auth() { return this._auth; }
   analytics(): any { return this._analytics; }
   storage(): any { return this._storage; }
-  // api(): any { return this._api; }
+  api(): any { return this._api; }
   interactions(): any { return this._interactions; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }

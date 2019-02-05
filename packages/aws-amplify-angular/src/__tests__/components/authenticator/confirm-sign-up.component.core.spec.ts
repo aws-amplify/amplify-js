@@ -1,14 +1,27 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { ConfirmSignUpComponentCore } from '../../../components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core'
+import { 
+  BrowserDynamicTestingModule,platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { ConfirmSignUpComponentCore } 
+from '../../../components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core';
 
 
 describe('ConfirmSignUpComponentCore: ', () => {
 
   let component: ConfirmSignUpComponentCore;
   let service: AmplifyService;
+
+  const modules = {
+    Auth: {
+      signIn: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      }
+    }
+  };
 
   beforeEach(() => { 
     service = new AmplifyService();
@@ -44,5 +57,4 @@ describe('ConfirmSignUpComponentCore: ', () => {
   it('...should have an setUsername method', () => {
     expect(component.setUsername).toBeTruthy();
   });
-
 });

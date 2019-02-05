@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { 
+  BrowserDynamicTestingModule, platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
-import { ConfirmSignInComponentCore } from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core';
+import { ConfirmSignInComponentCore }
+from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core';
 
 
 describe('ConfirmSignInComponentCore: ', () => {
@@ -13,8 +16,18 @@ describe('ConfirmSignInComponentCore: ', () => {
   let setAuthStateSpy;
   let confirmSignInSpy;
 
+  const modules = {
+    Auth: {
+      confirmSignIn: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      }
+    }
+  };
+
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(modules);
     component = new ConfirmSignInComponentCore(service);
     setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
     confirmSignInSpy = jest.spyOn(component.amplifyService.auth(), 'confirmSignIn');
@@ -38,8 +51,7 @@ describe('ConfirmSignInComponentCore: ', () => {
 
   it('...should have a code property that is initally undefined', () => {
     expect(component.code).toBeUndefined();
-  })
-
+  });
 
   it('...the setCode method should set the component\'s code property', () => {
     component.setCode('200');
@@ -51,7 +63,7 @@ describe('ConfirmSignInComponentCore: ', () => {
   });
 
   it('...should call confirmSignIn within the onConfirm method', () => {
-    component._authState = {user: {challengeName: 'test-challange-name'}, state: 'test-state'}
+    component._authState = {user: {challengeName: 'test-challange-name'}, state: 'test-state'};
     const callingAuthState = component.onConfirm();
     expect(component.amplifyService.auth().confirmSignIn).toBeCalled();
   });
@@ -68,6 +80,4 @@ describe('ConfirmSignInComponentCore: ', () => {
   it('...should have a _setError method', () => {
     expect(component._setError).toBeTruthy();
   });
-
-
 });

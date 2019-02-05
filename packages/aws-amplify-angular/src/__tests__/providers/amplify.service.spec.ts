@@ -1,5 +1,8 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
 import { Subject } from 'rxjs/Subject';
 import { AmplifyService } from '../../providers/amplify.service';
 import Amplify, {
@@ -10,6 +13,8 @@ import Amplify, {
   APIClass
 } from 'aws-amplify';
 import { AuthState } from '../../providers/auth.state';
+
+// tslint:disable:max-line-length
 
 describe('AmplifyService:', () => {
 
@@ -77,14 +82,14 @@ describe('AmplifyService:', () => {
       const myAuthState =  service.authState();
       service.authStateChange$.subscribe((data) => {
         expect(data.state).toEqual('signedOut');
-      })
+      });
     }));
 
     it('...should have an AuthState with a default user property equaling null', inject([AmplifyService], (service: AmplifyService) => {
       const myAuthState =  service.authState();
       service.authStateChange$.subscribe((data) => {
-        expect(data.user).toBeNull()
-      })
+        expect(data.user).toBeNull();
+      });
     }));
 
   });
@@ -139,5 +144,5 @@ describe('AmplifyService:', () => {
   afterAll(() => {
     TestBed.resetTestEnvironment();
   });
-
+// tslint:enable:max-line-length
 });

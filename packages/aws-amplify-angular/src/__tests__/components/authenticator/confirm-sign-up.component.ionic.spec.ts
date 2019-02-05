@@ -44,5 +44,4 @@ describe('ConfirmSignUpComponentIonic: ', () => {
   it('...should have an setUsername method', () => {
     expect(component.setUsername).toBeTruthy();
   });
-
 });
