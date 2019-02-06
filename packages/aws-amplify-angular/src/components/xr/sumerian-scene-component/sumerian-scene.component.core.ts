@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Logger, XR } from 'aws-amplify';
+import { Logger } from '@aws-amplify/core';
+import XR from '@aws-amplify/xr';
 import { AmplifyService } from '../../../providers';
 
 import * as AmplifyUI from '@aws-amplify/ui';
