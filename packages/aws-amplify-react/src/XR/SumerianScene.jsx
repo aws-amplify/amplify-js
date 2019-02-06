@@ -83,6 +83,7 @@ class SumerianScene extends React.Component {
 
     this.setStateAsync({ 
       muted: XR.isMuted(sceneName),
+      vrPresentationActive: XR.vrPresentationActive(sceneName),
       loading: false
     });
 
@@ -121,14 +122,28 @@ class SumerianScene extends React.Component {
     }
   }
 
-  async enterVR() {
-    await XR.enterVR(this.props.sceneName);
-    this.setState({ vrPresentationActive: true});
-  }
+  // async enterVR() {
+  //   await XR.enterVR(this.props.sceneName);
+  //   this.setState({ vrPresentationActive: true});
+  // }
 
-  async exitVR() {
-    await XR.exitVR(this.props.sceneName);
-    this.setState({ vrPresentationActive: false });
+  // async exitVR() {
+  //   await XR.exitVR(this.props.sceneName);
+  //   this.setState({ vrPresentationActive: false });
+  // }
+
+  toggleVRPresentation() {
+    try {
+      if (this.state.vrPresentationActive) {
+        XR.exitVR(this.props.sceneName);
+      } else {
+        XR.enterVR(this.props.sceneName);
+      }
+    } catch(e) {
+      logger.error('Unable to start/stop WebVR System: ' + e.message);
+      return;
+    }
+    this.setState({vrPresentationActive: !this.state.vrPresentationActive});
   }
 
   render() {
@@ -146,12 +161,12 @@ class SumerianScene extends React.Component {
       }
 
       if (XR.isVRCapable(this.props.sceneName)) {
-        if (XR.vrPresentationActive(this.props.sceneName)) {
+        if (this.state.vrPresentationActive) {
           logger.info('VR Presentation Active');
-          enterOrExitVRButton = <IconButton variant="exit-vr" tooltip="Exit VR" onClick={() => this.exitVR()} />
+          enterOrExitVRButton = <IconButton variant="exit-vr" tooltip="Exit VR" onClick={() => this.toggleVRPresentation()} />
         } else {
           logger.info('VR Presentation Inactive');
-          enterOrExitVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => this.enterVR()} />
+          enterOrExitVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => this.toggleVRPresentation()} />
         }
       }
 

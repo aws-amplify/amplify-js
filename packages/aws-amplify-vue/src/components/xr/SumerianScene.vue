@@ -94,7 +94,7 @@
             </svg>
           </button>
         </div>
-        <div v-if="isVRCapable && !vrPresentationActive" v-bind:class="amplifyUI.tooltip" data-text="Enter VR" v-on:click="enterVR()">
+        <div v-if="isVRCapable && !vrPresentationActive" v-bind:class="amplifyUI.tooltip" data-text="Enter VR" v-on:click="toggleVRPresentation()">
           <button v-bind:class="amplifyUI.actionButton">
             <svg width='19' height='19' viewBox='0 0 17 10' xmlns='http://www.w3.org/2000/svg'>
               <g id='Page-1' fill='none' fillRule='evenodd'>
@@ -106,7 +106,7 @@
             </svg>
           </button>
         </div>
-        <div v-if="isVRCapable && vrPresentationActive" v-bind:class="amplifyUI.tooltip" data-text="Exit VR" v-on:click="exitVR()">
+        <div v-if="isVRCapable && vrPresentationActive" v-bind:class="amplifyUI.tooltip" data-text="Exit VR" v-on:click="toggleVRPresentation()">
           <button v-bind:class="amplifyUI.actionButton">
             <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="icons/minis/VRon-Copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -200,6 +200,7 @@ export default {
       this.muted = this.$Amplify.XR.isMuted(this.sceneName);
 
       this.isVRCapable = this.$Amplify.XR.isVRCapable(this.sceneName);
+      this.vrPresentationActive = this.$Amplify.XR.vrPresentationActive(this.sceneName);
 
       this.$Amplify.XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
       this.$Amplify.XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
@@ -212,13 +213,18 @@ export default {
         this.showEnableAudio = false;
       }
     },
-    enterVR() {
-      this.$Amplify.XR.enterVR(this.sceneName);
-      this.vrPresentationActive = true;
-    },
-    exitVR() {
-      this.$Amplify.XR.exitVR(this.sceneName);
-      this.vrPresentationActive = false;
+    toggleVRPresentation() {
+      try {
+        if (this.vrPresentationActive) {
+          this.$Amplify.XR.exitVR(this.sceneName);
+        } else {
+          this.$Amplify.XR.enterVR(this.sceneName);
+        }
+      } catch(e) {
+        logger.error('Unable to start/stop WebVR System: ' + e.message);
+        return;
+      }
+      this.vrPresentationActive = !this.vrPresentationActive;
     },
     onFullscreenChange() {
       const doc = document;
