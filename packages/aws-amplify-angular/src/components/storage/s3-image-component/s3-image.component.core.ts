@@ -32,6 +32,7 @@ export class S3ImageComponentCore implements OnInit {
   url: any;
   _path: string;
   _options: any = {};
+  logger: any;
   amplifyService: AmplifyService;
 
   @Output()
@@ -39,10 +40,7 @@ export class S3ImageComponentCore implements OnInit {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
-  }
-
-  onImageClicked() {
-    this.selected.emit(this.url);
+    this.logger = this.amplifyService.logger('S3ImageComponent');
   }
 
   @Input()
@@ -64,7 +62,14 @@ export class S3ImageComponentCore implements OnInit {
 
   ngOnInit() {
     if (!this._path) { return; }
+    if (!this.amplifyService.storage()){
+      this.logger.warn('Storage module not registered on AmplifyService provider');
+    }
     this.getImage(this._path, this._options);
+  }
+
+  onImageClicked() {
+    this.selected.emit(this.url);
   }
 
   getImage(path, options) {

@@ -38,6 +38,7 @@ export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
   _path: string;
   _options: any = {};
+  logger: any;
   amplifyService: AmplifyService;
 
   @Output()
@@ -45,6 +46,14 @@ export class S3AlbumComponentCore implements OnInit {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('S3AlbumComponent');
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.storage()){
+      this.logger.warn('Storage module not registered on AmplifyService provider');
+    }
+    this.getList(this._path, this._options);
   }
 
   onImageSelected(event) {
@@ -63,9 +72,6 @@ export class S3AlbumComponentCore implements OnInit {
 
   @Input() set options(options: any) {
     this._options = options;
-  }
-   ngOnInit() {
-    this.getList(this._path, this._options);
   }
 
   getList(path, options) {

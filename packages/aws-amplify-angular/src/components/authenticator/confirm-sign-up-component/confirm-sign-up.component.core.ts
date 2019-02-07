@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
@@ -76,23 +76,25 @@ const template = `
 </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-core',
-  template: template
+  template
 })
 
-export class ConfirmSignUpComponentCore {
+export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   username: string;
   code: string;
+  logger: any;
   errorMessage: string;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
   }
 
   @Input()
@@ -109,6 +111,12 @@ export class ConfirmSignUpComponentCore {
     this._show = authState.state === 'confirmSignUp';
 
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
   }
 
   setUsername(username: string) {

@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
+    "experimentalDecorators": true,
     "module": "commonjs",
     "target": "es5",
     "baseUrl": "",

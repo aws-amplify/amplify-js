@@ -1,11 +1,10 @@
 import { Subject } from 'rxjs/Subject';
-import Auth from '@aws-amplify/auth';
 import Core from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
 
 
-function check(authState: Subject<AuthState>) {
+function check(authState: Subject<AuthState>, Auth) {
   // check for current authenticated user to init authState
   Auth.currentAuthenticatedUser()
     .then(user => {
@@ -34,7 +33,7 @@ function listen(authState: Subject<AuthState>) {
   }
 }
 
-function decorateSignIn(authState: Subject<AuthState>) {
+function decorateSignIn(authState: Subject<AuthState>, Auth) {
   const _signIn = Auth.signIn;
   Auth.signIn = (
     username: string,
@@ -70,7 +69,7 @@ function decorateSignIn(authState: Subject<AuthState>) {
   };
 }
 
-function decorateSignOut(authState: Subject<AuthState>) {
+function decorateSignOut(authState: Subject<AuthState>, Auth) {
   const _signOut = Auth.signOut;
   Auth.signOut = (): Promise<any> => {
     return _signOut.call(Auth)
@@ -86,7 +85,7 @@ function decorateSignOut(authState: Subject<AuthState>) {
   };
 }
 
-function decorateSignUp(authState: Subject<AuthState>) {
+function decorateSignUp(authState: Subject<AuthState>, Auth) {
   const _signUp = Auth.signUp;
   Auth.signUp = (
     username: string,
@@ -107,7 +106,7 @@ function decorateSignUp(authState: Subject<AuthState>) {
   };
 }
 
-function decorateConfirmSignUp(authState: Subject<AuthState>) {
+function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
   const _confirmSignUp = Auth.confirmSignUp;
   Auth.confirmSignUp = (
     username: string,
@@ -126,12 +125,11 @@ function decorateConfirmSignUp(authState: Subject<AuthState>) {
   };
 }
 
-export function authDecorator(authState: Subject<AuthState>) {
-  check(authState);
+export function authDecorator(authState: Subject<AuthState>, authModule) {
+  check(authState, authModule);
   listen(authState);
-
-  decorateSignIn(authState);
-  decorateSignOut(authState);
-  decorateSignUp(authState);
-  decorateConfirmSignUp(authState);
+  decorateSignIn(authState, authModule);
+  decorateSignOut(authState, authModule);
+  decorateSignUp(authState, authModule);
+  decorateConfirmSignUp(authState, authModule);
 }

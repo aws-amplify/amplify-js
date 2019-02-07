@@ -19,8 +19,6 @@ import Amplify, { Logger } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import { authDecorator } from './auth.decorator';
 
-const logger = new Logger('AmplifyService');
-
 @Injectable()
 export class AmplifyService {
   private _auth: any;
@@ -35,23 +33,27 @@ export class AmplifyService {
   private _authState = new Subject<AuthState>();
   authStateChange$ = this._authState.asObservable();
 
+
   constructor (
     @Inject('modules') 
     @Optional()
     private modules: any = {}) {
-    authDecorator(this._authState);
 
     const source = modules || Amplify;
 
-    this._auth = source.Auth || {};
-    this._analytics = source.Analytics || {};
-    this._storage = source.Storage || {};
-    this._api = source.API || {} ;
-    this._cache = source.Cache || {};
-    this._pubsub = source.PubSub || {};
-    this._interactions = source.Interactions || {};
-    this._logger = source.Logger;
-    this._xr = source.XR || {};
+    if (source.Auth) {
+      authDecorator(this._authState, source.Auth);
+    }
+
+    this._auth = source.Auth;
+    this._analytics = source.Analytics;
+    this._storage = source.Storage;
+    this._api = source.API;
+    this._cache = source.Cache;
+    this._pubsub = source.PubSub;
+    this._interactions = source.Interactions;
+    this._logger = Logger;
+    this._xr = source.XR;
   }
 
   auth() { return this._auth; }
@@ -61,10 +63,10 @@ export class AmplifyService {
   interactions(): any { return this._interactions; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }
-  logger(name, level): Logger { return new this._logger(name, level); }
+  logger(name, level?): Logger { return new this._logger(name, level); }
   xr(): any { return this._xr; }
 
   authState() { return this._authState; }
-  setAuthState(state: AuthState) { this._authState.next(state);
-  }
+  setAuthState(state: AuthState) { this._authState.next(state); }
+  authStateUnsubscribe(state: AuthState) { this._authState.unsubscribe(); }
 }

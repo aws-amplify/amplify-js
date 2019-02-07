@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 const template = `
@@ -24,26 +24,32 @@ const template = `
       (click)="onSignOut()"
     >Sign out</a>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-greetings-core',
-  template: template
+  template
 })
-export class GreetingComponentCore {
+export class GreetingComponentCore implements OnInit {
   signedIn: boolean;
   greeting: string;
-
+  logger: any;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('GreetingComponent');
     this.subscribe();
   }
 
   @Input()
   authState: AuthState;
-  
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
+  }
 
   subscribe() {
     this.amplifyService.authStateChange$

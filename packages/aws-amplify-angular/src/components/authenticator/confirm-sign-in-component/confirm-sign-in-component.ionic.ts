@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core'
+import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
@@ -9,7 +9,12 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">Confirm your sign in code</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code *</ion-label>
+        <ion-label 
+          class="amplify-input-label amplify-input-label-ionic"
+          position="stacked"
+        >
+          Code *
+        </ion-label>
         <ion-input 
           #code
           type="text"
@@ -32,11 +37,11 @@ const template = `
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-in-ionic',
-  template: template
+  template
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _authState: AuthState;
@@ -46,6 +51,6 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
-    super(amplifyService)
+    super(amplifyService);
   }
 }

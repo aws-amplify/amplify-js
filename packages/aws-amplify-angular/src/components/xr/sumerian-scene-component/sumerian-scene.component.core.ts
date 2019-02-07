@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 /*
  * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,13 +12,8 @@
  * and limitations under the License.
  */
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Logger } from '@aws-amplify/core';
-import XR from '@aws-amplify/xr';
 import { AmplifyService } from '../../../providers';
-
 import * as AmplifyUI from '@aws-amplify/ui';
-
-const logger = new Logger('SumerianSceneComponentCore');
 
 const template = `
 <div id="sumerian-scene-container" class={{amplifyUI.sumerianSceneContainer}}>
@@ -74,6 +70,7 @@ const template = `
 </div>
 `;
 
+// tslint:enable
 @Component({
   selector: 'sumerian-scene-core',
   template
@@ -88,10 +85,10 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isVRCapable = false;
   isFullscreen = false;
   sceneError = null;
-  
-
+  logger: any;
   amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
+  XR: any;
 
   @Input()
   set data(data: any) {
@@ -101,14 +98,18 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
     this.amplifyUI = AmplifyUI;
+    this.XR = this.amplifyService.xr();
+    this.logger = this.amplifyService.logger('SumerianSceneComponent');
   }
 
-  ngOnInit() {   
+  ngOnInit() {
+    if (!this.amplifyService.xr()){
+      this.logger.warn('XR module not registered on AmplifyService provider');
+    }
     document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
-
     this.loadAndStartScene();
   }
 
@@ -122,7 +123,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   progressCallback = (progress) => {
     const percentage = progress * 100;
     this.loadPercentage = percentage;
-  };
+  }
 
   async loadAndStartScene() {
     this.loading = true;
@@ -130,34 +131,34 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
       progressCallback: this.progressCallback
     };
     try {
-      await XR.loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
+      await this.XR.loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
     } catch (e) {
       this.sceneError = 'Failed to load scene';
-      logger.error(this.sceneError, e);
+      this.logger.error(this.sceneError, e);
       return;
     }
-    XR.start(this.sceneName);
+    this.XR.start(this.sceneName);
 
     this.loading = false;
-    this.muted = XR.isMuted(this.sceneName);
+    this.muted = this.XR.isMuted(this.sceneName);
 
-    this.isVRCapable = XR.isVRCapable(this.sceneName);
+    this.isVRCapable = this.XR.isVRCapable(this.sceneName);
 
-    XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-    XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
+    this.XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
+    this.XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
   }
   
   setMuted(muted) {
     this.muted = muted;
-    XR.setMuted(this.sceneName, muted);
+    this.XR.setMuted(this.sceneName, muted);
     if (this.showEnableAudio) {
-      XR.enableAudio(this.sceneName);
+      this.XR.enableAudio(this.sceneName);
       this.showEnableAudio = false;
     }
   }
 
   enterVR() {
-    XR.enterVR(this.sceneName);
+    this.XR.enterVR(this.sceneName);
   }
 
   onFullscreenChange() {
@@ -167,7 +168,11 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
 
   async maximize() {
     const sceneDomElement: any = document.getElementById("sumerian-scene-container");
-    const requestFullScreen = sceneDomElement.requestFullscreen || sceneDomElement.msRequestFullscreen || sceneDomElement.mozRequestFullScreen || sceneDomElement.webkitRequestFullscreen;
+    const requestFullScreen =
+      sceneDomElement.requestFullscreen ||
+      sceneDomElement.msRequestFullscreen ||
+      sceneDomElement.mozRequestFullScreen ||
+      sceneDomElement.webkitRequestFullscreen;
     requestFullScreen.call(sceneDomElement);
   }
 

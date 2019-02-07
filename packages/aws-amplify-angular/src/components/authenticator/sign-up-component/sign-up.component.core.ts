@@ -25,7 +25,6 @@ const template = `
   <div class="amplify-form-container">
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{this.header}}</div>
-
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
@@ -38,15 +37,15 @@ const template = `
             type={{field.type}}
             placeholder={{field.label}}
             [(ngModel)]="user[field.key]" name="field.key" />
-            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
+            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
+              {{passwordPolicy}}
+            </div>
         </div>
-            
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
             {{field.label}} 
             <span *ngIf="field.required">*</span>
           </label>
-          
           <div class="amplify-input-group">
             <div class="amplify-input-group-item">
               <select #countryCode
@@ -73,25 +72,19 @@ const template = `
         </div>
       </div>
       <div class="amplify-form-actions">
-        
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
             Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
           </div>
         </div>
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
           >Sign Up</button>
         </div>
-
       </div>
-
     </div>
-
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -99,7 +92,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
@@ -130,6 +122,7 @@ export class SignUpComponentCore implements OnInit {
   header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
+  logger: any;
   errorMessage: string;
   amplifyService: AmplifyService;
   hiddenFields: any = [];
@@ -138,6 +131,7 @@ export class SignUpComponentCore implements OnInit {
   constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('SignUpComponent');
   }
 
   @Input()
@@ -193,6 +187,9 @@ export class SignUpComponentCore implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
     this.sortFields();
   }
 

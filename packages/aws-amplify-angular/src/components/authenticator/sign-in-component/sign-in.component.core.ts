@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { includes } from '../common';
@@ -61,7 +61,10 @@ const template = `
         </div>
 
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
+          <div class="amplify-form-signup">
+            No account?
+            <a class="amplify-form-link" (click)="onSignUp()">Create account</a>
+          </div>
         </div>
       </div>
     </div>
@@ -76,22 +79,24 @@ const template = `
   </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-core',
   template
 })
-export class SignInComponentCore {
+export class SignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   username: string;
   password: string;
   errorMessage: string;
+  logger: any;
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('SignInComponent');
   }
 
   @Input()
@@ -99,6 +104,12 @@ export class SignInComponentCore {
     this._authState = authState;
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
   }
 
   setUsername(username: string) {
@@ -113,11 +124,11 @@ export class SignInComponentCore {
     this.amplifyService.auth().signIn(this.username, this.password)
       .then(user => {
         if (user['challengeName'] === 'SMS_MFA' || user['challengeName'] === 'SOFTWARE_TOKEN_MFA') {
-          this.amplifyService.setAuthState({ state: 'confirmSignIn', user: user });
+          this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
         } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
-          this.amplifyService.setAuthState({ state: 'requireNewPassword', user: user });
+          this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
         } else {
-          this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+          this.amplifyService.setAuthState({ state: 'signedIn', user });
         }
       })
       .catch((err) => {
@@ -131,12 +142,12 @@ export class SignInComponentCore {
 
   onForgotPassword() {
     const user = this.username? { username: this.username } : null;
-    this.amplifyService.setAuthState({ state: 'forgotPassword', user: user });
+    this.amplifyService.setAuthState({ state: 'forgotPassword', user });
   }
 
   onSignUp() {
     const user = this.username? { username: this.username } : null;
-    this.amplifyService.setAuthState({ state: 'signUp', user: user });
+    this.amplifyService.setAuthState({ state: 'signUp', user });
   }
 
   _setError(err) {
@@ -144,7 +155,7 @@ export class SignInComponentCore {
       this.errorMessage = null;
       return;
     }
-
     this.errorMessage = err.message || err;
+    this.logger(this.errorMessage);
   }
 }

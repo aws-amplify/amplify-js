@@ -30,8 +30,6 @@ const template =  `
 </div>
 `;
 
-
-
 @Component({
   selector: 'amplify-s3-album-ionic',
   template

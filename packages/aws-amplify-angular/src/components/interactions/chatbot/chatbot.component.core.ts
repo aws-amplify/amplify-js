@@ -13,13 +13,18 @@
  */
 // tslint:enable
 
-import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+	Component,
+	Input,
+	Output,
+	EventEmitter,
+	OnInit,
+	ChangeDetectorRef
+} from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { isUndefined } from 'util';
-require('./aws-lex-audio.js')
+require('./aws-lex-audio.js');
 
-const logger = new Logger('ChatBot');
 
 const template = `
 <div class="amplify-interactions">
@@ -52,9 +57,23 @@ const template = `
 					[disabled]="!textEnabled"
 					*ngIf="!textEnabled">
 
-				<button type="button" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</button>
-				<button type="button" *ngIf="textEnabled" ng-style="{float: 'right'}" class="amplify-interactions-button" [disabled]="inputDisabled" ng-click="!inputDisabled || onSubmit(inputValue.value)"></button>
-
+				<button
+					type="button"
+					*ngIf="voiceEnabled"
+					ng-style="{float: 'right'}"
+					(click)="micButtonHandler()"
+					[disabled]="micButtonDisabled"
+				>
+					{{micText}}
+				</button>
+				<button
+					type="button"
+					*ngIf="textEnabled"
+					ng-style="{float: 'right'}"
+					class="amplify-interactions-button"
+					[disabled]="inputDisabled"
+					ng-click="!inputDisabled || onSubmit(inputValue.value)"
+				></button>
 			</div>
 		</div>
 	</div>
@@ -62,7 +81,7 @@ const template = `
 `;
 declare var LexAudio: any;
 
-let STATES = {
+const STATES = {
 	INITIAL: { MESSAGE: 'Type your message or click  🎤', ICON: '🎤' },
 	LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴' },
 	SENDING: { MESSAGE: 'Please wait...', ICON: '🔊' },
@@ -80,13 +99,14 @@ const defaultVoiceConfig = {
 	selector: 'amplify-interactions-core',
 	template
 })
-export class ChatbotComponentCore {
+export class ChatbotComponentCore implements OnInit  {
 	errorMessage: string;
 	amplifyService: AmplifyService;
 	inputText: string = "";
 	botName: string;
 	chatTitle: string;
 	clearComplete: boolean = false;
+	logger: any;
 	messages: any = [];
 	completions: any = {};
 	currentVoiceState: string = STATES.INITIAL.MESSAGE;
@@ -110,6 +130,7 @@ export class ChatbotComponentCore {
 		this.amplifyService = amplifyService;
 		this.ref = ref;
 		this.continueConversation = false;
+		this.logger = this.amplifyService.logger('ChatbotComponent');
 	}
 
 	@Input()
@@ -125,20 +146,18 @@ export class ChatbotComponentCore {
 		this.amplifyService.interactions().onComplete(this.botName, this.performOnComplete);
 
 		if (!this.textEnabled && this.voiceEnabled) {
-			this.currentVoiceState = "Click the mic button"
-			STATES.INITIAL.MESSAGE = "Click the mic button"
+			this.currentVoiceState = "Click the mic button";
+			STATES.INITIAL.MESSAGE = "Click the mic button";
 		}
 
 		if (!this.voiceEnabled && this.textEnabled) {
-			this.currentVoiceState = "Type a message"
-			STATES.INITIAL.MESSAGE = "Type a message"
+			this.currentVoiceState = "Type a message";
+			STATES.INITIAL.MESSAGE = "Type a message";
 		}
 
 		if (this.voiceEnabled) {
 			this.audioControl = new LexAudio.audioControl();
 		}
-
-
 	}
 
 
@@ -159,6 +178,12 @@ export class ChatbotComponentCore {
 		this.clearComplete = clearComplete;
 	}
 
+	ngOnInit() {
+    if (!this.amplifyService.interactions()){
+      this.logger.warn('Interactions module not registered on AmplifyService provider');
+    }
+  }
+
 	performOnComplete(evt) {
 		this.complete.emit(evt);
 		if (this.clearComplete) {
@@ -174,7 +199,7 @@ export class ChatbotComponentCore {
 		if (!this.inputText) {
 			return;
 		}
-		let message = {
+		const message = {
 			'me': this.inputText,
 			'meSentTime': new Date().toLocaleTimeString(),
 			'bot': '',
@@ -187,7 +212,7 @@ export class ChatbotComponentCore {
 				message.botSentTime = new Date().toLocaleTimeString();
 				this.messages.push(message);
 			})
-			.catch((error) => logger.error(error));
+			.catch((error) => this.logger.error(error));
 	}
 
 	onSilenceHandler = () => {
@@ -216,7 +241,7 @@ export class ChatbotComponentCore {
 	}
 
 	onError(error) {
-		logger.error(error)
+		this.logger.error(error);
 	}
 
 	async lexResponseHandler() {
@@ -238,7 +263,7 @@ export class ChatbotComponentCore {
 		this.micText = STATES.SPEAKING.ICON;
 		this.micButtonDisabled = true;
 
-		let message = {
+		const message = {
 			'me': this.lexResponse.inputTranscript,
 			'meSentTime': new Date().toLocaleTimeString(),
 			'bot': '',
@@ -273,7 +298,11 @@ export class ChatbotComponentCore {
 					this.currentVoiceState = STATES.LISTENING.MESSAGE;
 					this.micText = STATES.LISTENING.ICON;
 					this.micButtonDisabled = false;
-					this.audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
+					this.audioControl.startRecording(
+						this.onSilenceHandler,
+						null,
+						this.voiceConfig.silenceDetectionConfig
+					);
 					this.ref.detectChanges();
 				}
 			});
@@ -297,9 +326,12 @@ export class ChatbotComponentCore {
 			this.currentVoiceState = STATES.LISTENING.MESSAGE;
 			this.micText = STATES.LISTENING.ICON;
 			this.micButtonDisabled = false;
-			this.audioControl.startRecording(this.onSilenceHandler, null, this.voiceConfig.silenceDetectionConfig);
+			this.audioControl.startRecording(
+				this.onSilenceHandler,
+				null,
+				this.voiceConfig.silenceDetectionConfig
+			);
 			this.ref.detectChanges();
 		}
 	}
-
 }

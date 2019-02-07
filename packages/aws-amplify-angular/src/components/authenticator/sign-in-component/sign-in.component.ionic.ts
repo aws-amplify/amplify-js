@@ -24,8 +24,11 @@ const template = `
     <div class="amplify-form-header">Sign in to your account</div>
     <ion-list lines="none">
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">Username *</ion-label>
-          <ion-input type="text" 
+        <ion-label class="amplify-input-label" for="username" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input 
+          type="text" 
           #username
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
@@ -33,7 +36,9 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="password" position="stacked">Password *</ion-label>
+        <ion-label class="amplify-input-label" for="password" position="stacked">
+          Password *
+        </ion-label>
         <ion-input 
           #password
           type="password" 
@@ -52,8 +57,13 @@ const template = `
       </div>
       
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
-        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">Reset Password</a></div>
+        <div class="amplify-form-signup">
+          No account? 
+          <a class="amplify-form-link" (click)="onSignUp()">Create account</a>
+        </div>
+        <div class="amplify-form-signup">
+          <a class="amplify-form-link" (click)="onForgotPassword()">Reset Password</a>
+        </div>
       </div>
 
     </div>
@@ -66,14 +76,12 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template: template
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
@@ -87,7 +95,9 @@ export class SignInComponentIonic extends SignInComponentCore {
       return;
     }
 
-    alert(err.message || err);
+    const errorMessage = err.message || err;
+    alert(errorMessage);
+    this.logger(errorMessage);
   }
   
 }

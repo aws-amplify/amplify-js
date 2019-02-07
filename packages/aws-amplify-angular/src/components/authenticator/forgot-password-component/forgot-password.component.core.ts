@@ -13,10 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -24,9 +23,10 @@ const template = `
     <div class="amplify-form-body">
     <div class="amplify-form-header">Reset your password</div>
     <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code</div>
-    <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
-
-      <div class="amplify-form-row" *ngIf="!code_sent">
+    <div class="amplify-form-text" *ngIf="code_sent">
+      Enter the code you received and set a new password
+    </div>
+    <div class="amplify-form-row" *ngIf="!code_sent">
       <label class="amplify-input-label" for="username"> Username *</label>
         <input #username
           (keyup)="setUsername($event.target.value)"
@@ -55,30 +55,24 @@ const template = `
           placeholder="Password"
         />
       </div>
-
       <div class="amplify-form-actions">
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             *ngIf="!code_sent"
             (click)="onSend()">Submit</button>
-        
           <button class="amplify-form-button"
             *ngIf="code_sent"
             (click)="onSubmit()">Verify</button>
         </div>
-
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
             <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">Resend Code</a>
             <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
           </div>
         </div>
-      
       </div>
     </div>
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -86,7 +80,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
@@ -94,14 +87,14 @@ const template = `
   selector: 'amplify-auth-forgot-password-core',
   template
 })
-export class ForgotPasswordComponentCore {
+export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
 
   username: string;
   code: string;
   password: string;
-
+  logger: any;
   errorMessage: string;
 
   code_sent = false;
@@ -110,6 +103,7 @@ export class ForgotPasswordComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('ForgotPasswordComponent');
   }
 
   @Input()
@@ -126,6 +120,12 @@ export class ForgotPasswordComponentCore {
     this._show = authState.state === 'forgotPassword';
 
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
   }
 
   setUsername(username: string) {
@@ -150,7 +150,7 @@ export class ForgotPasswordComponentCore {
         this.code_sent = true;
       })
       .catch((err) => {
-        this._setError(err)
+        this._setError(err);
         this.code_sent = false;
       });
   }

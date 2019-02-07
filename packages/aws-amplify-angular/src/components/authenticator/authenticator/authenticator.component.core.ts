@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
@@ -62,7 +62,7 @@ const template = `
   selector: 'amplify-authenticator-core',
   template
 })
-export class AuthenticatorComponentCore {
+export class AuthenticatorComponentCore implements OnDestroy {
   authState: AuthState = {
     state: 'signIn',
     user: null
@@ -93,15 +93,21 @@ export class AuthenticatorComponentCore {
     this._signUpConfig = signUpConfig;
   }
 
+  ngOnDestroy() {
+    this.amplifyService.authStateUnsubscribe(this.authState);
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
+    .subscribe(
+      state => {
         this.authState = state;
-      }, () => {
+      }, 
+      () => {
         this.authState = {
           'state': 'signIn',
           'user': null
-        }
+        };
       });
   }
 

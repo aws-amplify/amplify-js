@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 /*
  * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -69,6 +70,8 @@ const template = `
   </div>
 </div>
 `;
+
+// tslint:enable
 
 @Component({
   selector: 'sumerian-scene-ionic',
