@@ -1348,8 +1348,8 @@ export default class AuthClass {
         // To check if the user is already logged in
         try {
             const loggedInUser = await this.currentAuthenticatedUser();
-            logger.warn(`There is already a signed in user: ${loggedInUser} in your app. 
-                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
+            logger.warn(`There is already a signed in user in your app. 
+                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`, loggedInUser);
         } catch (e) {}
 
         const { token, identity_id, expires_at } = response;
