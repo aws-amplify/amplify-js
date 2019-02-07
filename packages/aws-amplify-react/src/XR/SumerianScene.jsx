@@ -122,16 +122,6 @@ class SumerianScene extends React.Component {
     }
   }
 
-  // async enterVR() {
-  //   await XR.enterVR(this.props.sceneName);
-  //   this.setState({ vrPresentationActive: true});
-  // }
-
-  // async exitVR() {
-  //   await XR.exitVR(this.props.sceneName);
-  //   this.setState({ vrPresentationActive: false });
-  // }
-
   toggleVRPresentation() {
     try {
       if (this.state.vrPresentationActive) {
