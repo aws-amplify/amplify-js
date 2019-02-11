@@ -5,6 +5,7 @@
     "entryFile": "src/public_api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "."
+    ".",
+    "@aws-amplify/core"
   ]
 }
