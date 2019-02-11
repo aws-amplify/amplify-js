@@ -36,7 +36,6 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [],
   exports: [
     ...components,
     DynamicComponentDirective,
