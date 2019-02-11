@@ -44,6 +44,6 @@ module.exports = {
     enableAudio: jest.fn(),
     enterVR: jest.fn(),
     exitVR: jest.fn(),
-    vrPresentationActive: jest.fn(() => { return false })
+    isVRPresentationActive: jest.fn(() => { return false })
   }
 };

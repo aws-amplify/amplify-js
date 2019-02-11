@@ -39,7 +39,7 @@ const template = `
           </svg>
         </button>
       </div>
-      <div *ngIf="isVRCapable && !vrPresentationActive" class={{amplifyUI.tooltip}} data-text="Enter VR" (click)="toggleVRPresentation()">
+      <div *ngIf="isVRCapable && !isVRPresentationActive" class={{amplifyUI.tooltip}} data-text="Enter VR" (click)="toggleVRPresentation()">
         <button class={{amplifyUI.actionButton}}>
           <svg width="19px" height="19px" viewBox="0 0 17 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -50,7 +50,7 @@ const template = `
           </svg>
         </button>
       </div>
-      <div *ngIf="isVRCapable && vrPresentationActive" class={{amplifyUI.tooltip}} data-text="Exit VR" (click)="toggleVRPresentation()">
+      <div *ngIf="isVRCapable && isVRPresentationActive" class={{amplifyUI.tooltip}} data-text="Exit VR" (click)="toggleVRPresentation()">
         <button class={{amplifyUI.actionButton}}>
           <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="icons/minis/VRon-Copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -96,7 +96,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   muted = false;
   showEnableAudio = false;
   isVRCapable = false;
-  vrPresentationActive = false;
+  isVRPresentationActive = false;
   isFullscreen = false;
   sceneError = null;
 
@@ -152,7 +152,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     this.muted = XR.isMuted(this.sceneName);
 
     this.isVRCapable = XR.isVRCapable(this.sceneName);
-    this.vrPresentationActive = XR.vrPresentationActive(this.sceneName);
+    this.isVRPresentationActive = XR.isVRPresentationActive(this.sceneName);
 
     XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
     XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
@@ -169,7 +169,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   
   toggleVRPresentation() {
     try {
-      if (this.vrPresentationActive) {
+      if (this.isVRPresentationActive) {
         XR.exitVR(this.sceneName);
       } else {
         XR.enterVR(this.sceneName);
@@ -178,7 +178,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
       logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
-    this.vrPresentationActive = !this.vrPresentationActive;
+    this.isVRPresentationActive = !this.isVRPresentationActive;
   }
 
   onFullscreenChange() {

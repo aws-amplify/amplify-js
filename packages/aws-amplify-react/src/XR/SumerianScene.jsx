@@ -33,7 +33,7 @@ class SumerianScene extends React.Component {
       percentage: 0,
       isFullscreen: false,
       sceneError: null,
-      vrPresentationActive: false
+      isVRPresentationActive: false
     };
   }
 
@@ -83,7 +83,7 @@ class SumerianScene extends React.Component {
 
     this.setStateAsync({ 
       muted: XR.isMuted(sceneName),
-      vrPresentationActive: XR.vrPresentationActive(sceneName),
+      isVRPresentationActive: XR.isVRPresentationActive(sceneName),
       loading: false
     });
 
@@ -124,7 +124,7 @@ class SumerianScene extends React.Component {
 
   toggleVRPresentation() {
     try {
-      if (this.state.vrPresentationActive) {
+      if (this.state.isVRPresentationActive) {
         XR.exitVR(this.props.sceneName);
       } else {
         XR.enterVR(this.props.sceneName);
@@ -133,7 +133,7 @@ class SumerianScene extends React.Component {
       logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
-    this.setState({vrPresentationActive: !this.state.vrPresentationActive});
+    this.setState({isVRPresentationActive: !this.state.isVRPresentationActive});
   }
 
   render() {
@@ -151,7 +151,7 @@ class SumerianScene extends React.Component {
       }
 
       if (XR.isVRCapable(this.props.sceneName)) {
-        if (this.state.vrPresentationActive) {
+        if (this.state.isVRPresentationActive) {
           logger.info('VR Presentation Active');
           enterOrExitVRButton = <IconButton variant="exit-vr" tooltip="Exit VR" onClick={() => this.toggleVRPresentation()} />
         } else {

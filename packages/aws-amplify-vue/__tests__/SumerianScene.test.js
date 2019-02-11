@@ -40,11 +40,11 @@ describe('SumerianScene', () => {
       expect(wrapper.vm.$Amplify.XR.setMuted).toHaveBeenCalled();
     });
 
-    it('...should call toggle vrPresentationActive after toggleVRPresentation is called', () => {
-      expect(wrapper.vm.vrPresentationActive).toBeFalsy();
+    it('...should call toggle isVRPresentationActive after toggleVRPresentation is called', () => {
+      expect(wrapper.vm.isVRPresentationActive).toBeFalsy();
       wrapper.vm.toggleVRPresentation();
       expect(wrapper.vm.$Amplify.XR.enterVR).toHaveBeenCalled();
-      expect(wrapper.vm.vrPresentationActive).toBeTruthy();
+      expect(wrapper.vm.isVRPresentationActive).toBeTruthy();
 
       wrapper.vm.toggleVRPresentation();
       expect(wrapper.vm.$Amplify.XR.exitVR).toHaveBeenCalled();
