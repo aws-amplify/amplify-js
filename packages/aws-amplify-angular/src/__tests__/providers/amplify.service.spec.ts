@@ -5,13 +5,11 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 import { Subject } from 'rxjs/Subject';
 import { AmplifyService } from '../../providers/amplify.service';
-import Amplify, {
-  Logger,
-  AuthClass,
-  AnalyticsClass,
-  StorageClass,
-  APIClass
-} from 'aws-amplify';
+import Amplify, { Logger } from '@aws-amplify/core';
+import { AuthClass } from '@aws-amplify/auth';
+import { AnalyticsClass } from '@aws-amplify/analytics';
+import { StorageClass } from '@aws-amplify/storage';
+import { APIClass } from '@aws-amplify/api';
 import { AuthState } from '../../providers/auth.state';
 
 // tslint:disable:max-line-length
