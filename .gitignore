@@ -7,6 +7,7 @@ packages/*/node_modules/**
 packages/**/lib/
 packages/**/dist/
 packages/**/es/
+packages/aws-amplify-angular/src/aws-amplify-angular.metadata.json
 .DS_Store
 .vscode
 .idea
