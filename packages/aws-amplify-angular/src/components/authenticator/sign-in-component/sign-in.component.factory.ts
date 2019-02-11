@@ -59,6 +59,8 @@ export class SignInComponent implements OnInit, OnDestroy {
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);
 
+    console.log('signin', this.componentHost.viewContainerRef);
+
     const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 

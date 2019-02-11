@@ -88,12 +88,10 @@ export class ConfirmSignUpComponentCore implements OnInit {
   _show: boolean;
   username: string;
   code: string;
-  logger: any;
   errorMessage: string;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
   }
 

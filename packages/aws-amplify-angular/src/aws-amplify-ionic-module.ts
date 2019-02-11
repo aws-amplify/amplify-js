@@ -17,7 +17,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AmplifyService } from './providers/amplify.service';
-// // tslint:disable:max-line-length
+// tslint:disable:max-line-length
 import { AuthenticatorIonicComponent } from './components/authenticator/authenticator/authenticator.component.ionic';
 import { ConfirmSignInComponentIonic } from './components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
 import { ConfirmSignUpComponentIonic } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.component.ionic';
@@ -33,6 +33,9 @@ import { ChatbotComponentIonic } from './components/interactions/chatbot/chatbot
 import { SumerianSceneComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene.component.ionic';
 import { SumerianSceneLoadingComponentIonic } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.ionic';
 // tslint:enable:max-line-length
+
+import { AmplifyAngularSharedModule } from './aws-amplify-angular-shared.module';
+
 
 const components = [
   AuthenticatorIonicComponent,
@@ -53,8 +56,7 @@ const components = [
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule
+    AmplifyAngularSharedModule
   ],
   declarations: [
     ...components,
@@ -62,7 +64,7 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [AmplifyService],
+  providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     ...components

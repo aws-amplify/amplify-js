@@ -65,12 +65,10 @@ export class RequireNewPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   password: string;
-  logger: any;
   errorMessage: string;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
   }
 

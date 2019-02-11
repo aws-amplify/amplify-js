@@ -91,11 +91,9 @@ export class SignInComponentCore implements OnInit {
   username: string;
   password: string;
   errorMessage: string;
-  logger: any;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('SignInComponent');
   }
 

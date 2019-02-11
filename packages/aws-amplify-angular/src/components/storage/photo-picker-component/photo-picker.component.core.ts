@@ -62,13 +62,10 @@ export class PhotoPickerComponentCore implements OnInit {
   s3ImageFile: any = null;
   s3ImagePath: string = "";
   _storageOptions: any = {};
-  amplifyService: AmplifyService;
-  logger: any;
   errorMessage: string;
+  protected logger: any;
 
-
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('PhotoPickerComponent');
   }
   

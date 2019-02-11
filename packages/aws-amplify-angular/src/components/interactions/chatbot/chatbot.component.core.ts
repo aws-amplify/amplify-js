@@ -101,12 +101,10 @@ const defaultVoiceConfig = {
 })
 export class ChatbotComponentCore implements OnInit  {
 	errorMessage: string;
-	amplifyService: AmplifyService;
 	inputText: string = "";
 	botName: string;
 	chatTitle: string;
 	clearComplete: boolean = false;
-	logger: any;
 	messages: any = [];
 	completions: any = {};
 	currentVoiceState: string = STATES.INITIAL.MESSAGE;
@@ -122,12 +120,12 @@ export class ChatbotComponentCore implements OnInit  {
 	voiceEnabled: boolean = false;
 	textEnabled: boolean = true;
 	audioControl: any;
+	protected logger;
 
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
 
-	constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
-		this.amplifyService = amplifyService;
+	constructor(ref: ChangeDetectorRef, protected amplifyService: AmplifyService) {
 		this.ref = ref;
 		this.continueConversation = false;
 		this.logger = this.amplifyService.logger('ChatbotComponent');

@@ -19,15 +19,21 @@ import Amplify, { Logger } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import { authDecorator } from './auth.decorator';
 
+import { AnalyticsClass } from '@aws-amplify/analytics';
+import { APIClass } from '@aws-amplify/api';
+import { AuthClass } from '@aws-amplify/auth';
+import { InteractionsClass} from '@aws-amplify/interactions';
+import { StorageClass } from '@aws-amplify/storage';
+ 
 @Injectable()
 export class AmplifyService {
-  private _auth: any;
-  private _analytics: any;
-  private _storage: any;
-  private _api: any;
+  private _auth: AuthClass;
+  private _analytics: AnalyticsClass;
+  private _storage: StorageClass;
+  private _api: APIClass;
   private _cache: any;
   private _pubsub: any;
-  private _interactions: any;
+  private _interactions: InteractionsClass;
   private _logger: any;
   private _xr: any;
   private _authState = new Subject<AuthState>();
@@ -56,11 +62,11 @@ export class AmplifyService {
     this._xr = source.XR;
   }
 
-  auth() { return this._auth; }
-  analytics(): any { return this._analytics; }
-  storage(): any { return this._storage; }
-  api(): any { return this._api; }
-  interactions(): any { return this._interactions; }
+  auth(): AuthClass { return this._auth; }
+  analytics(): AnalyticsClass { return this._analytics; }
+  storage(): StorageClass { return this._storage; }
+  api(): APIClass { return this._api; }
+  interactions(): InteractionsClass { return this._interactions; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }
   logger(name, level?): Logger { return new this._logger(name, level); }
@@ -68,5 +74,4 @@ export class AmplifyService {
 
   authState() { return this._authState; }
   setAuthState(state: AuthState) { this._authState.next(state); }
-  authStateUnsubscribe(state: AuthState) { this._authState.unsubscribe(); }
 }

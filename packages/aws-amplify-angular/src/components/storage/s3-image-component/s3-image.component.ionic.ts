@@ -31,9 +31,7 @@ const template = `
 })
 export class S3ImageComponentIonic extends S3ImageComponentCore {
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
     
   }

@@ -26,11 +26,6 @@
       "node_modules/(?!@ionic)"
     ]
   },
-  "ngPackage": {
-    "whitelistedNonPeerDependencies": [
-      "."
-    ]
-  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {

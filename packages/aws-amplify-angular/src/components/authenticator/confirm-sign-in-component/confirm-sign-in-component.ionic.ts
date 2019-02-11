@@ -48,9 +48,8 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

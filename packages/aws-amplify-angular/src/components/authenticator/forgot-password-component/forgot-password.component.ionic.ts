@@ -99,10 +99,8 @@ const template = `
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
-    
   }
 
   _setError(err) {

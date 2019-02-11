@@ -3,5 +3,8 @@
   "dest": "./dist/aws-amplify-angular",
   "lib": {
     "entryFile": "src/public_api.ts"
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "."
+  ]
 }

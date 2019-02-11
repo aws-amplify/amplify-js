@@ -122,15 +122,13 @@ export class SignUpComponentCore implements OnInit {
   header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
-  logger: any;
   errorMessage: string;
-  amplifyService: AmplifyService;
   hiddenFields: any = [];
   passwordPolicy: string;
+  protected logger: any;
 
-  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
-    this.amplifyService = amplifyService;
     this.logger = this.amplifyService.logger('SignUpComponent');
   }
 

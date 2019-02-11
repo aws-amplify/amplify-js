@@ -33,11 +33,9 @@ const template = `
 export class GreetingComponentCore implements OnInit {
   signedIn: boolean;
   greeting: string;
-  logger: any;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('GreetingComponent');
     this.subscribe();
   }

@@ -38,14 +38,12 @@ export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
   _path: string;
   _options: any = {};
-  logger: any;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('S3AlbumComponent');
   }
 

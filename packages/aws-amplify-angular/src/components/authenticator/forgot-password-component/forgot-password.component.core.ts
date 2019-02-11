@@ -90,19 +90,14 @@ const template = `
 export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-
   username: string;
   code: string;
   password: string;
-  logger: any;
   errorMessage: string;
-
   code_sent = false;
+  protected logger: any;
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ForgotPasswordComponent');
   }
 

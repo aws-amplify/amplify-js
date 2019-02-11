@@ -1,3 +1,5 @@
+// tslint:disable:max-line-length
+
 /*
  * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -10,12 +12,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
+// tslint:enable
 
 import { NgModule , forwardRef} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
+import { AmplifyAngularSharedModule } from './aws-amplify-angular-shared.module';
 // tslint:disable:max-line-length
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
@@ -41,7 +41,7 @@ import { PhotoPickerComponent } from './components/storage/photo-picker-componen
 import { PhotoPickerComponentCore } from './components/storage/photo-picker-component/photo-picker.component.core';
 import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
 import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
-import { DynamicComponentDirective } from './directives/dynamic.component.directive';
+// import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
 import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
 import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
@@ -73,7 +73,6 @@ const components = [
   PhotoPickerComponentCore,
   ChatBotComponent,
   ChatbotComponentCore,
-  FormComponent,
   SumerianSceneComponent,
   SumerianSceneComponentCore,
   SumerianSceneLoadingComponentCore
@@ -81,17 +80,15 @@ const components = [
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
+    AmplifyAngularSharedModule,
   ],
   declarations: [
-    DynamicComponentDirective,
     ...components,
   ],
   entryComponents: [
     ...components
   ],
-  providers: [ ],
+  providers: [],
   exports: [
     ...components,
   ]

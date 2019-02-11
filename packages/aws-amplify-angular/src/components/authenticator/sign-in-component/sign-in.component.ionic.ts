@@ -85,7 +85,7 @@ const template = `
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);    
   }
 

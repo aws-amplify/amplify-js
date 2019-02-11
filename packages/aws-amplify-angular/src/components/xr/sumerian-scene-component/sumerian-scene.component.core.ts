@@ -85,20 +85,16 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isVRCapable = false;
   isFullscreen = false;
   sceneError = null;
-  logger: any;
-  amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
-  XR: any;
+  protected logger;
 
   @Input()
   set data(data: any) {
     this.sceneName = data.sceneName;
   }
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.amplifyUI = AmplifyUI;
-    this.XR = this.amplifyService.xr();
     this.logger = this.amplifyService.logger('SumerianSceneComponent');
   }
 
@@ -131,34 +127,37 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
       progressCallback: this.progressCallback
     };
     try {
-      await this.XR.loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
+      await this.amplifyService.xr()
+      .loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
     } catch (e) {
       this.sceneError = 'Failed to load scene';
       this.logger.error(this.sceneError, e);
       return;
     }
-    this.XR.start(this.sceneName);
+    this.amplifyService.xr().start(this.sceneName);
 
     this.loading = false;
-    this.muted = this.XR.isMuted(this.sceneName);
+    this.muted = this.amplifyService.xr().isMuted(this.sceneName);
 
-    this.isVRCapable = this.XR.isVRCapable(this.sceneName);
+    this.isVRCapable = this.amplifyService.xr().isVRCapable(this.sceneName);
 
-    this.XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-    this.XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
+    this.amplifyService.xr()
+    .onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
+    this.amplifyService.xr()
+    .onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
   }
   
   setMuted(muted) {
     this.muted = muted;
-    this.XR.setMuted(this.sceneName, muted);
+    this.amplifyService.xr().setMuted(this.sceneName, muted);
     if (this.showEnableAudio) {
-      this.XR.enableAudio(this.sceneName);
+      this.amplifyService.xr().enableAudio(this.sceneName);
       this.showEnableAudio = false;
     }
   }
 
   enterVR() {
-    this.XR.enterVR(this.sceneName);
+    this.amplifyService.xr().enterVR(this.sceneName);
   }
 
   onFullscreenChange() {

@@ -112,7 +112,7 @@ export class ChatbotComponentIonic extends ChatbotComponentCore {
 	
 	inputValue;
 	
-  constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
+  constructor(ref: ChangeDetectorRef, protected amplifyService: AmplifyService) {
     super(ref, amplifyService);    
   }
 
