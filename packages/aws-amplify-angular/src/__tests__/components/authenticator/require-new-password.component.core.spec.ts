@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+// tslint:disable:max-line-length
 import { RequireNewPasswordComponentCore } from '../../../components/authenticator/require-new-password-component/require-new-password.component.core';
-
+// tslint:enable
 
 describe('RequireNewPasswordComponentCore: ', () => {
 

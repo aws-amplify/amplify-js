@@ -1,8 +1,13 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { AuthenticatorIonicComponent } from '../../../components/authenticator/authenticator/authenticator.component.ionic'
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+import {
+  AuthenticatorIonicComponent
+} from '../../../components/authenticator/authenticator/authenticator.component.ionic';
 
 
 describe('AuthenticatorIonicComponent: ', () => {
@@ -33,7 +38,7 @@ describe('AuthenticatorIonicComponent: ', () => {
     expect(component.shouldHide).toBeTruthy();
   });
 
-  it('...the shouldHide method should return false when receiving a value not in the hide array', () => {
+  it('...the shouldHide method returns false when receiving a value not in the hide array', () => {
     component.hide = ['value one', 'value two'];
     expect(component.shouldHide('value three')).toEqual(false);
   });
@@ -41,6 +46,6 @@ describe('AuthenticatorIonicComponent: ', () => {
   it('...the shouldHide method should return true when receiving a value in the hide array', () => {
     component.hide = ['value one', 'value two'];
     expect(component.shouldHide('value two')).toEqual(true);
-  })
-
+  });
+  
 });

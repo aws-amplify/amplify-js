@@ -22,6 +22,11 @@ describe('ConfirmSignInComponentCore: ', () => {
         return new Promise((resolve, reject) => {
           resolve(1);
         });
+      },
+      currentAuthenticatedUser: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
       }
     }
   };
@@ -29,15 +34,13 @@ describe('ConfirmSignInComponentCore: ', () => {
   beforeEach(() => { 
     service = new AmplifyService(modules);
     component = new ConfirmSignInComponentCore(service);
-    setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
-    confirmSignInSpy = jest.spyOn(component.amplifyService.auth(), 'confirmSignIn');
+    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
+    confirmSignInSpy = jest.spyOn(service.auth(), 'confirmSignIn');
   });
 
   afterEach(() => {
     service = null;
     component = null;
-    setAuthStateSpy.mockRestore();
-    confirmSignInSpy.mockRestore();
   });
 
 
@@ -65,7 +68,7 @@ describe('ConfirmSignInComponentCore: ', () => {
   it('...should call confirmSignIn within the onConfirm method', () => {
     component._authState = {user: {challengeName: 'test-challange-name'}, state: 'test-state'};
     const callingAuthState = component.onConfirm();
-    expect(component.amplifyService.auth().confirmSignIn).toBeCalled();
+    expect(service.auth().confirmSignIn).toBeCalled();
   });
 
   it('...should have an onSignIn method', () => {
@@ -74,7 +77,7 @@ describe('ConfirmSignInComponentCore: ', () => {
 
   it('...should call setAuthState within the onSignIn method', () => {
     const callingAuthState = component.onSignIn();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
   });
 
   it('...should have a _setError method', () => {

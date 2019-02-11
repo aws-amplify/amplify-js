@@ -22,7 +22,12 @@ describe('SignInComponentIonic: ', () => {
         return new Promise((resolve, reject) => {
           resolve(1);
         });
-      }
+      },
+      currentAuthenticatedUser: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      },      
     }
   };
 
@@ -30,8 +35,8 @@ describe('SignInComponentIonic: ', () => {
   beforeEach(() => { 
     service = new AmplifyService(modules);
     component = new SignInComponentIonic(service);
-    setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
-    signInSpy = jest.spyOn(component.amplifyService.auth(), 'signIn');
+    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
+    signInSpy = jest.spyOn(service.auth(), 'signIn');
   });
 
   afterEach(() => {
@@ -51,7 +56,7 @@ describe('SignInComponentIonic: ', () => {
   it('...should call setAuthState within the onForgotPassword method', () => {
     component.username = 'test-username2';
     const callingAuthState = component.onForgotPassword();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
     setAuthStateSpy.mockRestore();
   });
 
@@ -63,7 +68,7 @@ describe('SignInComponentIonic: ', () => {
     component.username = 'test-username3';
     component.password = 'test-password3';
     const callingAuthState = component.onSignIn();
-    expect(component.amplifyService.auth().signIn).toBeCalled();
+    expect(service.auth().signIn).toBeCalled();
     signInSpy.mockRestore();
   });
 
@@ -74,7 +79,7 @@ describe('SignInComponentIonic: ', () => {
   it('...should call setAuthState within the onSignUp method', () => {
     component.username = 'test-username2';
     const callingAuthState = component.onSignUp();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
     setAuthStateSpy.mockRestore();
   });
 

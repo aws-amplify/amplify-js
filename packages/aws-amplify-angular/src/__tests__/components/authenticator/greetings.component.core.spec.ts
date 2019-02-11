@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { GreetingComponentCore } from '../../../components/authenticator/greeting-component/greeting.component.core';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { GreetingComponentCore } 
+from '../../../components/authenticator/greeting-component/greeting.component.core';
 
 
 describe('GreetingsComponentCore: ', () => {

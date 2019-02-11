@@ -22,6 +22,11 @@ describe('ConfirmSignInComponentIonic: ', () => {
         return new Promise((resolve, reject) => {
           resolve(1);
         });
+      },
+      currentAuthenticatedUser: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
       }
     }
   };
@@ -29,15 +34,13 @@ describe('ConfirmSignInComponentIonic: ', () => {
   beforeEach(() => { 
     service = new AmplifyService(modules);
     component = new ConfirmSignInComponentIonic(service);
-    setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
-    confirmSignInSpy = jest.spyOn(component.amplifyService.auth(), 'confirmSignIn');
+    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
+    confirmSignInSpy = jest.spyOn(service.auth(), 'confirmSignIn');
   });
 
   afterEach(() => {
     service = null;
     component = null;
-    setAuthStateSpy.mockRestore();
-    confirmSignInSpy.mockRestore();
   });
 
 
@@ -51,8 +54,7 @@ describe('ConfirmSignInComponentIonic: ', () => {
 
   it('...should have a code property that is initally undefined', () => {
     expect(component.code).toBeUndefined();
-  })
-
+  });
 
   it('...the setCode method should set the component\'s code property', () => {
     component.setCode('200');
@@ -64,9 +66,9 @@ describe('ConfirmSignInComponentIonic: ', () => {
   });
 
   it('...should call confirmSignIn within the onConfirm method', () => {
-    component._authState = {user: {challengeName: 'test-challange-name'}, state: 'test-state'}
+    component._authState = {user: {challengeName: 'test-challange-name'}, state: 'test-state'};
     const callingAuthState = component.onConfirm();
-    expect(component.amplifyService.auth().confirmSignIn).toBeCalled();
+    expect(service.auth().confirmSignIn).toBeCalled();
   });
 
   it('...should have an onSignIn method', () => {
@@ -75,12 +77,11 @@ describe('ConfirmSignInComponentIonic: ', () => {
 
   it('...should call setAuthState within the onSignIn method', () => {
     const callingAuthState = component.onSignIn();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
   });
 
   it('...should have a _setError method', () => {
     expect(component._setError).toBeTruthy();
   });
-
 
 });

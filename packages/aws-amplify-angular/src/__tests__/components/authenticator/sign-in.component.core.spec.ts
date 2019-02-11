@@ -23,6 +23,11 @@ describe('SignInComponentCore: ', () => {
         return new Promise((resolve, reject) => {
           resolve(1);
         });
+      },
+      currentAuthenticatedUser: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
       }
     }
   };
@@ -30,15 +35,13 @@ describe('SignInComponentCore: ', () => {
   beforeEach(() => { 
     service = new AmplifyService(modules);
     component = new SignInComponentCore(service);
-    setAuthStateSpy = jest.spyOn(component.amplifyService, 'setAuthState');
-    signInSpy = jest.spyOn(component.amplifyService.auth(), 'signIn');
+    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
+    signInSpy = jest.spyOn(service.auth(), 'signIn');
   });
 
   afterEach(() => {
     service = null;
     component = null;
-    setAuthStateSpy.mockRestore();
-    signInSpy.mockRestore();
   });
 
 
@@ -53,7 +56,7 @@ describe('SignInComponentCore: ', () => {
   it('...should call setAuthState within the onForgotPassword method', () => {
     component.username = 'test-username2';
     const callingAuthState = component.onForgotPassword();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
   });
 
   it('...should have an onSignIn method', () => {
@@ -64,7 +67,7 @@ describe('SignInComponentCore: ', () => {
     component.username = 'test-username3';
     component.password = 'test-password3';
     const callingAuthState = component.onSignIn();
-    expect(component.amplifyService.auth().signIn).toBeCalled();
+    expect(service.auth().signIn).toBeCalled();
   });
 
   it('...should have an onSignUp method', () => {
@@ -74,7 +77,7 @@ describe('SignInComponentCore: ', () => {
   it('...should call setAuthState within the onSignUp method', () => {
     component.username = 'test-username2';
     const callingAuthState = component.onSignUp();
-    expect(component.amplifyService.setAuthState).toBeCalled();
+    expect(service.setAuthState).toBeCalled();
   });
 
   it('...should have a setPassword method', () => {

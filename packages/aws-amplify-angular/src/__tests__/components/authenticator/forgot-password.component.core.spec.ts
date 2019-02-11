@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { ForgotPasswordComponentCore } from '../../../components/authenticator/forgot-password-component/forgot-password.component.core'
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { ForgotPasswordComponentCore } 
+from '../../../components/authenticator/forgot-password-component/forgot-password.component.core';
 
 
 describe('ForgotPasswordComponentCore: ', () => {
