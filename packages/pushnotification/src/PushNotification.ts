@@ -61,14 +61,20 @@ export default class PushNotification {
             };
         }
 
-        this._config = Object.assign({}, this._config, conf);
+        this._config = Object.assign(
+            { // defaults
+                requestIOSPermissions: true, // for backwards compatibility
+            },
+            this._config,
+            conf,
+        );
 
         if (Platform.OS === 'android' && !this._androidInitialized){
             this.initializeAndroid();
             this._androidInitialized = true;
         } 
         else if (Platform.OS === 'ios' && !this._iosInitialized) {
-            this.initializeIOS();
+            this.initializeIOS(this._config.requestIOSPermissions);
             this._iosInitialized = true;
         }
     }
@@ -111,12 +117,18 @@ export default class PushNotification {
         RNPushNotification.initialize();
     }
 
-    initializeIOS() {
+    requestIOSPermissions() {
         PushNotificationIOS.requestPermissions({
             alert: true,
             badge: true,
             sound: true
         });
+    }
+
+    initializeIOS(requestPermissions: boolean = true) {
+        if (requestPermissions) {
+            this.requestIOSPermissions();
+        }
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
     }
