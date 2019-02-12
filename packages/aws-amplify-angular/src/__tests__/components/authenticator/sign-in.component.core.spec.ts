@@ -4,7 +4,7 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service';
+import { AmplifyService, AmplifyModules } from '../../../providers';
 import { SignInComponentCore } 
 from '../../../components/authenticator/sign-in-component/sign-in.component.core';
 import Amplify from 'aws-amplify';
@@ -13,9 +13,14 @@ import Amplify from 'aws-amplify';
 describe('SignInComponentCore: ', () => {
 
   let component: SignInComponentCore;
+  let fixtureComponent: SignInComponentCore;
   let service: AmplifyService;
+  let fixture;
   let setAuthStateSpy;
   let signInSpy;
+  let onSignInSpy;
+  let onSignUpSpy;
+  let onForgotPasswordSpy;
 
   const modules = {
     Auth: {
@@ -37,6 +42,26 @@ describe('SignInComponentCore: ', () => {
     component = new SignInComponentCore(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     signInSpy = jest.spyOn(service.auth(), 'signIn');
+    TestBed.configureTestingModule({
+      declarations: [
+        SignInComponentCore
+      ],
+      providers: [
+        {
+          provide: AmplifyService,
+          useFactory: () => {
+            return AmplifyModules({
+              ...modules
+            });
+          }
+        }
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(SignInComponentCore);
+    fixtureComponent = fixture.componentInstance;
+    onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
+    onSignUpSpy = jest.spyOn(fixtureComponent, 'onSignUp');
+    onForgotPasswordSpy = jest.spyOn(fixtureComponent, 'onForgotPassword');
   });
 
   afterEach(() => {
@@ -67,7 +92,7 @@ describe('SignInComponentCore: ', () => {
     component.username = 'test-username3';
     component.password = 'test-password3';
     const callingAuthState = component.onSignIn();
-    expect(service.auth().signIn).toBeCalled();
+    expect(signInSpy).toBeCalled();
   });
 
   it('...should have an onSignUp method', () => {
@@ -96,5 +121,44 @@ describe('SignInComponentCore: ', () => {
   it('...should set this.username with the setUsername method', () => {
     component.setUsername('my-test-name');
     expect(component.username).toEqual('my-test-name');
+  });
+
+  it('...should not display if _show is not set', () => {
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeFalsy();
+  });
+
+  it('...should display if _show is set', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeTruthy();
+  });
+
+  it('...should call onSignIn when button is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('.amplify-form-button');
+    button.click();
+    expect(onSignInSpy).toHaveBeenCalled();
+    expect(signInSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onSignUp when "No account?" element is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const parent = fixture.debugElement.nativeElement.querySelector('.amplify-form-signup');
+    const a = parent.querySelector('.amplify-form-link');
+    a.click();
+    expect(onSignUpSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onForgotPassword when "Forgot password?" element is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const parent = fixture.debugElement.nativeElement.querySelector('.amplify-form-action');
+    const a = parent.querySelector('.amplify-form-link');
+    a.click();
+    expect(onForgotPasswordSpy).toHaveBeenCalled();
   });
 });

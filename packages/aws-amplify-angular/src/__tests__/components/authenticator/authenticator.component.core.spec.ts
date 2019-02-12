@@ -4,20 +4,33 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service';
+import { AmplifyService, AmplifyModules } from '../../../providers';
 import {
   AuthenticatorComponentCore
 } from '../../../components/authenticator/authenticator/authenticator.component.core';
+import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
 
 
 describe('AuthenticatorComponentCore: ', () => {
 
   let component: AuthenticatorComponentCore;
   let service: AmplifyService;
+  let fixture;
 
   beforeEach(() => { 
     service = new AmplifyService();
     component = new AuthenticatorComponentCore(service);
+    TestBed.configureTestingModule({
+      imports: [
+        AmplifyAngularModule
+      ],
+      providers: [
+        AmplifyService
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(AuthenticatorComponentCore);
+
+
   });
 
   afterEach(() => {

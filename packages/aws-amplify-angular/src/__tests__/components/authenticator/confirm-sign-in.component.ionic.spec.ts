@@ -1,20 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
+import { 
+  BrowserDynamicTestingModule, platformBrowserDynamicTesting, 
 } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service';
-import { ConfirmSignInComponentIonic } 
+
+import { AmplifyService, AmplifyModules } from '../../../providers';
+import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
+import { ConfirmSignInComponentIonic }
 from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
 
 
 describe('ConfirmSignInComponentIonic: ', () => {
 
   let component: ConfirmSignInComponentIonic;
+  let fixtureComponent: ConfirmSignInComponentIonic;
   let service: AmplifyService;
+  let fixture;
   let setAuthStateSpy;
   let confirmSignInSpy;
+  let onConfirmSpy;
+  let onSignInSpy;
 
   const modules = {
     Auth: {
@@ -27,6 +32,11 @@ describe('ConfirmSignInComponentIonic: ', () => {
         return new Promise((resolve, reject) => {
           resolve(1);
         });
+      },
+      setAuthState: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });        
       }
     }
   };
@@ -36,11 +46,32 @@ describe('ConfirmSignInComponentIonic: ', () => {
     component = new ConfirmSignInComponentIonic(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     confirmSignInSpy = jest.spyOn(service.auth(), 'confirmSignIn');
+    TestBed.configureTestingModule({
+      declarations: [
+        ConfirmSignInComponentIonic
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: AmplifyService,
+          useFactory: () => {
+            return AmplifyModules({
+              ...modules
+            });
+          }
+        }
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(ConfirmSignInComponentIonic);
+    fixtureComponent = fixture.componentInstance;
+    onConfirmSpy = jest.spyOn(fixtureComponent, 'onConfirm');
+    onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
   });
 
   afterEach(() => {
     service = null;
     component = null;
+    fixtureComponent = null;
   });
 
 
@@ -82,6 +113,31 @@ describe('ConfirmSignInComponentIonic: ', () => {
 
   it('...should have a _setError method', () => {
     expect(component._setError).toBeTruthy();
+  });
+
+  it('...should not display if _show is not set', () => {
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-form-container');
+    expect(rootEl).toBeFalsy();
+  });
+
+  it('...should display if _show is set', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-form-container');
+    expect(rootEl).toBeTruthy();
+  });
+
+  it('...should call onConfirm when button is clicked', () => {
+    fixtureComponent._show = true;
+    fixtureComponent._authState = {
+      state: 'confirmSignIn',
+      user: {}
+    };
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('ion-button');
+    button.click();
+    expect(onConfirmSpy).toHaveBeenCalled();
+    expect(confirmSignInSpy).toHaveBeenCalled();
   });
 
 });

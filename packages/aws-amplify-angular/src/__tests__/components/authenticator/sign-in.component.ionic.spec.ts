@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service';
+import { AmplifyService, AmplifyModules } from '../../../providers';
 import { SignInComponentIonic } 
 from '../../../components/authenticator/sign-in-component/sign-in.component.ionic';
 import Amplify from 'aws-amplify';
@@ -12,9 +12,14 @@ import Amplify from 'aws-amplify';
 describe('SignInComponentIonic: ', () => {
 
   let component: SignInComponentIonic;
+  let fixtureComponent: SignInComponentIonic;
+  let fixture;
   let service: AmplifyService;
   let setAuthStateSpy;
   let signInSpy;
+  let onSignInSpy;
+  let onSignUpSpy;
+  let onForgotPasswordSpy;
   
   const modules = {
     Auth: {
@@ -37,6 +42,27 @@ describe('SignInComponentIonic: ', () => {
     component = new SignInComponentIonic(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     signInSpy = jest.spyOn(service.auth(), 'signIn');
+    TestBed.configureTestingModule({
+      declarations: [
+        SignInComponentIonic
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: AmplifyService,
+          useFactory: () => {
+            return AmplifyModules({
+              ...modules
+            });
+          }
+        }
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(SignInComponentIonic);
+    fixtureComponent = fixture.componentInstance;
+    onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
+    onSignUpSpy = jest.spyOn(fixtureComponent, 'onSignUp');
+    onForgotPasswordSpy = jest.spyOn(fixtureComponent, 'onForgotPassword');
   });
 
   afterEach(() => {
@@ -68,8 +94,7 @@ describe('SignInComponentIonic: ', () => {
     component.username = 'test-username3';
     component.password = 'test-password3';
     const callingAuthState = component.onSignIn();
-    expect(service.auth().signIn).toBeCalled();
-    signInSpy.mockRestore();
+    expect(signInSpy).toBeCalled();
   });
 
   it('...should have an onSignUp method', () => {
@@ -99,5 +124,36 @@ describe('SignInComponentIonic: ', () => {
   it('...should set this.username with the setUsername method', () => {
     component.setUsername('my-test-name');
     expect(component.username).toEqual('my-test-name');
+  });
+
+
+  it('...should not display if _show is not set', () => {
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-authenticator');
+    expect(rootEl).toBeFalsy();
+  });
+
+  it('...should display if _show is set', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-authenticator');
+    expect(rootEl).toBeTruthy();
+  });
+
+  it('...should call onSignIn when button is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('ion-button');
+    button.click();
+    expect(onSignInSpy).toHaveBeenCalled();
+    expect(signInSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onSignUp when "No account?" element is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const parent = fixture.debugElement.nativeElement.querySelector('.amplify-form-signup');
+    const a = parent.querySelector('.amplify-form-link');
+    a.click();
+    expect(onSignUpSpy).toHaveBeenCalled();
   });
 });
