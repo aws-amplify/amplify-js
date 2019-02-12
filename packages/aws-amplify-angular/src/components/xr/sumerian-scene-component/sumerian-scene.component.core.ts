@@ -182,7 +182,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
         this.amplifyService.xr().enterVR(this.sceneName);
       }
     } catch(e) {
-      logger.error('Unable to start/stop WebVR System: ' + e.message);
+      this.logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
     this.isVRPresentationActive = !this.isVRPresentationActive;
