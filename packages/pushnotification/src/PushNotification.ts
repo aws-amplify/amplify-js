@@ -131,7 +131,7 @@ export default class PushNotification {
             }).catch(e => {	
                 logger.debug('Failed to get the initial notification.', e);	
             });	
-        };
+        }
         this._currentState = nextAppState;	
     }
 
@@ -147,7 +147,7 @@ export default class PushNotification {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
                 campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
                 treatment_id: data['pinpoint.campaign.treatment_id']
-            }
+            };
         }
 
         if (!campaign) {
@@ -187,7 +187,7 @@ export default class PushNotification {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
                 campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
                 treatment_id: data['pinpoint.campaign.treatment_id']
-            }
+            };
         }
 
         if (!campaign) {
