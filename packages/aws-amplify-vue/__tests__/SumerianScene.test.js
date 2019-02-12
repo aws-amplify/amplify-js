@@ -25,24 +25,13 @@ describe('SumerianScene', () => {
       expect(wrapper.vm.$options.name).toEqual('SumerianScene');
     });
 
-    it('...should call $Amplify.XR.loadScene when mounted', () => {
-      expect(wrapper.vm.$Amplify.XR.loadScene).toHaveBeenCalled();
-    });
-
-    it('...should call $Amplify.XR.isMuted after scene load', () => {
-      expect(wrapper.vm.$Amplify.XR.isMuted).toHaveBeenCalled();
-    });
-
-    it('...should call $Amplify.XR.start after scene load', () => {
-      expect(wrapper.vm.$Amplify.XR.start).toHaveBeenCalled();
-    });
-
-    it('...should call $Amplify.XR.isVRCapable after scene load', () => {
-      expect(wrapper.vm.$Amplify.XR.isVRCapable).toHaveBeenCalled();
-    });
-
-    it('...should call $Amplify.XR.onSceneEvent after scene load', () => {
+    it('...should call scene setup functions after scene load', async () => {
+      await wrapper.vm.loadAndStartScene();
       expect(wrapper.vm.$Amplify.XR.onSceneEvent).toHaveBeenCalled();
+      expect(wrapper.vm.$Amplify.XR.isVRCapable).toHaveBeenCalled();
+      expect(wrapper.vm.$Amplify.XR.isMuted).toHaveBeenCalled();
+      expect(wrapper.vm.$Amplify.XR.start).toHaveBeenCalled();
+      expect(wrapper.vm.$Amplify.XR.loadScene).toHaveBeenCalled();
     });
     
     it('...should call $Amplify.XR.setMuted after setMuted is called', () => {
@@ -51,10 +40,14 @@ describe('SumerianScene', () => {
       expect(wrapper.vm.$Amplify.XR.setMuted).toHaveBeenCalled();
     });
 
-    it('...should call $Amplify.XR.enterVR after enterVR is called', () => {
-      expect(wrapper.vm.$Amplify.XR.enterVR).not.toHaveBeenCalled();
-      wrapper.vm.enterVR();
+    it('...should call toggle isVRPresentationActive after toggleVRPresentation is called', () => {
+      expect(wrapper.vm.isVRPresentationActive).toBeFalsy();
+      wrapper.vm.toggleVRPresentation();
       expect(wrapper.vm.$Amplify.XR.enterVR).toHaveBeenCalled();
+      expect(wrapper.vm.isVRPresentationActive).toBeTruthy();
+
+      wrapper.vm.toggleVRPresentation();
+      expect(wrapper.vm.$Amplify.XR.exitVR).toHaveBeenCalled();
     });
 
     it('...should have sceneName prop', () => {
