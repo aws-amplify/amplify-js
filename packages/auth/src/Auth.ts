@@ -20,7 +20,8 @@ import {
     SignOutOpts,
     CurrentUserOpts,
     SignInOpts,
-    isUsernamePasswordOpts
+    isUsernamePasswordOpts,
+    awsCognitoOAuthOpts
 } from './types';
 
 import {
@@ -50,65 +51,34 @@ import {
     CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
+import { parse } from 'url';
+
+import './overrides';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
     Hub.dispatch('auth', { event, data }, 'Auth');
 };
 
+let linkingHandlers = [];
+
 const urlListener = async (callback: ({ url: string }) => void) => {
     if (Platform.isReactNative) {
-        let Buffer: any;
         let Linking: any;
 
         try {
-            ({ Buffer } = require('buffer'));
             ({ Linking } = require('react-native'));
         } catch (error) { /* Keep webpack happy */ }
 
-        const initialUrl = await Linking.getInitialURL();
-
-        //#region react-native overrides
-        CognitoAuth.prototype.createCORSRequest = (method: string, url: string) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open(method, url, true);
-            return xhr;
-        };
-        (global as any).atob = (global as any).atob
-            || ((payload: string) => Buffer.from(payload, 'base64').toString('utf8'));
-        CognitoAuth.prototype.launchUri = async (url: string) => {
-            logger.debug({ launchUri: url });
-
-            let WebBrowser: any;
-
-            try {
-                ({ WebBrowser } = require('expo'));
-            } catch (_e) { /* expo sdk not available */ }
-
-            try {
-                if (WebBrowser) {
-                    const { type } = await WebBrowser.openAuthSessionAsync(url, initialUrl);
-
-                    if (type === 'success'){
-                        await WebBrowser.dismissBrowser();
-                    }
-
-                    return;
-                }
-
-                await Linking.openURL(url);
-            } catch (error) {
-                logger.debug({ error });
-            }
-        };
-        //#endregion
-
-        const handler = ({ url, ...rest }) => {
+        const handler = ({ url, ...rest }: { url: string }) => {
             logger.debug('addEventListener', { url, ...rest });
             callback({ url });
         };
+        linkingHandlers.forEach(lh => Linking.removeEventListener('url', lh));
         Linking.addEventListener('url', handler);
+        linkingHandlers = [handler];
 
+        const initialUrl = await Linking.getInitialURL();
         logger.debug('before callback', { initialUrl });
         callback({ url: initialUrl });
     } else if (JS.browserOrNode().isBrowser && window.location) {
@@ -229,6 +199,25 @@ export default class AuthClass {
                 },
                 cognitoHostedUIConfig['options']
             );
+
+            const { urlOpener } = cognitoHostedUIConfig as awsCognitoOAuthOpts;
+            if (typeof urlOpener === 'function') {
+                CognitoAuth.prototype.launchUri = (url: string, redirectUrl?: string) => {
+                    const {
+                        redirect_uri,
+                        logout_uri
+                    } = (parse(url || '').query || '')
+                        .split('&')
+                        .filter(Boolean)
+                        .map(param => param.split('='))
+                        .reduce((r, [k, v]) => ({ ...r, [k]: decodeURIComponent(v) }), {}) as any;
+
+                    // If no redirectUrl was provided, we take it from the query string.
+                    // (redirect_uri first, then logout_uri).
+                    return urlOpener(url, redirectUrl || redirect_uri || logout_uri);
+                };
+            }
+
             urlListener(({ url }) => {
                 logger.debug('cognito auth params', cognitoAuthParams);
                 this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
