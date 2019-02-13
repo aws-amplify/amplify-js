@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "2.1.7-unstable.8",
+  "version": "10.6.6",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -70,6 +70,7 @@
     "aws-amplify": "^1.x"
   },
   "dependencies": {
+    "@aws-amplify/ui": "^1.1.6",
     "@types/lodash": "^4.14.106"
   }
 }
