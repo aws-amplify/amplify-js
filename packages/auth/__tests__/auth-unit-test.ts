@@ -673,15 +673,31 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('no username', async () => {
+        test('null username', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
             const auth = new Auth(authOptions);
 
-            expect.assertions(1);
+            expect.assertions(2);
             try {
                 await auth.signIn(null, 'password');
             } catch (e) {
                 expect(e).not.toBeNull();
+                expect(e.message).not.toEqual(expect.stringMatching(/.*Cannot read property 'username'.*/));
+            }
+
+            spyon.mockClear();
+        });
+
+        test('undefined username', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
+            const auth = new Auth(authOptions);
+
+            expect.assertions(2);
+            try {
+                await auth.signIn(undefined, 'password');
+            } catch (e) {
+                expect(e).not.toBeNull();
+                expect(e.message).not.toEqual(expect.stringMatching(/.*Cannot read property 'username'.*/));
             }
 
             spyon.mockClear();

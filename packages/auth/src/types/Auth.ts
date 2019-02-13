@@ -110,5 +110,5 @@ export type UsernamePasswordOpts = {
 export type SignInOpts = UsernamePasswordOpts;
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
-    return !!(obj as UsernamePasswordOpts).username;
+    return !!obj && !!(obj as UsernamePasswordOpts).username;
 }
