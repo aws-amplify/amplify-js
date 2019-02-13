@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "aws-amplify-angular": {
+      "root": "projects/aws-amplify-angular",
+      "sourceRoot": "projects/aws-amplify-angular/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/aws-amplify-angular/tsconfig.lib.json",
+            "project": "projects/aws-amplify-angular/ng-package.json"
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "aws-amplify-angular"
+}

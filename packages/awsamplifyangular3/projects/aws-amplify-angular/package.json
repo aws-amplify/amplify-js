@@ -1,0 +1,8 @@
+{
+  "name": "aws-amplify-angular",
+  "version": "0.0.13",
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0"
+  }
+}
