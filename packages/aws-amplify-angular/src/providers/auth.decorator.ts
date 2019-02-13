@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject } from 'rxjs/Subject';
 import Amplify, { Logger, Hub } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
