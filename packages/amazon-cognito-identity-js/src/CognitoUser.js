@@ -1049,7 +1049,8 @@ export default class CognitoUser {
         return callback(err, null);
       }
 
-      return callback(null, userData.MFAOptions);
+      const { UserMFASettingList, PreferredMfaSetting } = userData;
+      return callback(null, { UserMFASettingList, PreferredMfaSetting });
     });
     return undefined;
   }
