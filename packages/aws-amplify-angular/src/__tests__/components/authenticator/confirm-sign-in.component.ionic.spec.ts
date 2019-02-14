@@ -6,6 +6,7 @@ import {
 
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
+import { authModule } from '../../../__mocks__/mock_module';
 import { ConfirmSignInComponentIonic }
 from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
 
@@ -42,7 +43,7 @@ describe('ConfirmSignInComponentIonic: ', () => {
   };
 
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new ConfirmSignInComponentIonic(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     confirmSignInSpy = jest.spyOn(service.auth(), 'confirmSignIn');
@@ -56,7 +57,7 @@ describe('ConfirmSignInComponentIonic: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }

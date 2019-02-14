@@ -5,6 +5,7 @@ import {
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
 import { ForgotPasswordComponentIonic }
 from '../../../components/authenticator/forgot-password-component/forgot-password.component.ionic';
 
@@ -21,33 +22,8 @@ describe('ForgotPasswordComponentIonic: ', () => {
   let forgotPasswordSubmitSpy;
   let onSignInSpy;
 
-  const modules = {
-    Auth: {
-      forgotPasswordSubmit: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      forgotPassword: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      currentAuthenticatedUser: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      setAuthState: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });        
-      }
-    }
-  };
-
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new ForgotPasswordComponentIonic(service);
     TestBed.configureTestingModule({
       declarations: [
@@ -59,7 +35,7 @@ describe('ForgotPasswordComponentIonic: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }
