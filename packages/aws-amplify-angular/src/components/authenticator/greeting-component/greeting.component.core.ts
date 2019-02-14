@@ -24,20 +24,17 @@ const template = `
       (click)="onSignOut()"
     >Sign out</a>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-greetings-core',
-  template: template
+  template
 })
 export class GreetingComponentCore {
   signedIn: boolean;
   greeting: string;
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
   }
 

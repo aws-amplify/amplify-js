@@ -32,14 +32,11 @@ export class S3ImageComponentCore implements OnInit {
   url: any;
   _path: string;
   _options: any = {};
-  amplifyService: AmplifyService;
 
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   onImageClicked() {
     this.selected.emit(this.url);

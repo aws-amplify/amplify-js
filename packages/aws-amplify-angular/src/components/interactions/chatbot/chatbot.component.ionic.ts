@@ -14,7 +14,7 @@
 // tslint:enable
 
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ChatbotComponentCore } from './chatbot.component.core'
+import { ChatbotComponentCore } from './chatbot.component.core';
 import { AmplifyService } from '../../../providers';
 
 const template = `
@@ -85,8 +85,21 @@ const template = `
 				[disabled]="!textEnabled"
 				*ngIf="!textEnabled"></ion-input>
 
-			<ion-button expand="block" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</ion-button>
-			<ion-button expand="block" *ngIf="textEnabled" ng-style="{float: 'right'}" (click)="inputDisabled === false || onSubmit(inputValue.value)">Send</ion-button>
+			<ion-button
+				expand="block"
+				*ngIf="voiceEnabled"
+				ng-style="{float: 'right'}"
+				(click)="micButtonHandler()"
+				[disabled]="micButtonDisabled">
+				{{micText}}
+			</ion-button>
+			<ion-button
+				expand="block"
+				*ngIf="textEnabled"
+				ng-style="{float: 'right'}"
+				(click)="inputDisabled === false || onSubmit(inputValue.value)">
+				Send
+			</ion-button>
 		</div>
 	</div>
 </div>
@@ -98,8 +111,7 @@ const template = `
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
   
-  constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
+  constructor(ref: ChangeDetectorRef, protected amplifyService: AmplifyService) {
     super(ref, amplifyService);    
   }
-
 }

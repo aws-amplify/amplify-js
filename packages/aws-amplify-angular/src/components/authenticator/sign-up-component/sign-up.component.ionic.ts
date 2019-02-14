@@ -126,7 +126,7 @@ const template = `
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 

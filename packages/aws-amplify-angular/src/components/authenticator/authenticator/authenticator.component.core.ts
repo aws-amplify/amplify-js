@@ -67,10 +67,8 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
   }
 
@@ -94,13 +92,15 @@ export class AuthenticatorComponentCore {
 
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
+    .subscribe(
+      state => {
         this.authState = state;
-      }, () => {
+      },
+      () => {
         this.authState = {
           'state': 'signIn',
           'user': null
-        }
+        };
       });
   }
 

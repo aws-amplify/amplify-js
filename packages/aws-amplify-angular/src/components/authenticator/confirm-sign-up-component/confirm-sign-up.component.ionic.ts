@@ -23,7 +23,9 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">Confirm your sign up code</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username *</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Username *
+        </ion-label>
         <ion-input type="text" 
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
@@ -32,7 +34,9 @@ const template = `
       </ion-item>
     
       <ion-item lines="none">
-        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">Code *</ion-label>
+        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Code *
+        </ion-label>
         <ion-input 
           #code
           type="text"
@@ -50,10 +54,16 @@ const template = `
         >Confirm Code</ion-button>
       </div>
     <div class="amplify-form-cell-left">
-      <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign In</a></div>
+      <div class="amplify-form-signup">
+        Have an account?
+        <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
+      </div>
     </div>
     <div class="amplify-form-cell-left">
-      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onResend()">Resend</a></div>
+      <div class="amplify-form-signup">
+        Lost your code?
+        <a class="amplify-form-link" (click)="onResend()">Resend</a>
+      </div>
     </div>
   </div>
   <div class="amplify-form-footer">
@@ -69,9 +79,7 @@ const template = `
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
-
-
 }

@@ -23,7 +23,9 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Password
+        </ion-label>
         <ion-input 
           #password
           type="password"
@@ -50,17 +52,15 @@ const template = `
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
 </div>
-
 `;
 
 @Component({
   selector: 'amplify-auth-require-new-password-ionic',
-  template: template
+  template
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
 
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
     
   }

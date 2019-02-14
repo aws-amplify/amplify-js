@@ -38,14 +38,11 @@ export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
   _path: string;
   _options: any = {};
-  amplifyService: AmplifyService;
 
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   onImageSelected(event) {
     this.selected.emit(event);

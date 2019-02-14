@@ -70,11 +70,8 @@ export class ConfirmSignInComponentCore {
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   @Input()
   set data(data: any) {

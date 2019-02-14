@@ -18,8 +18,6 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
-
-
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
@@ -38,7 +36,9 @@ const template = `
             type={{field.type}}
             placeholder={{field.label}}
             [(ngModel)]="user[field.key]" name="field.key" />
-            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
+            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
+              {{passwordPolicy}}
+            </div>
         </div>
             
         <div *ngIf="field.key === 'phone_number'">
@@ -131,13 +131,11 @@ export class SignUpComponentCore implements OnInit {
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
-  amplifyService: AmplifyService;
   hiddenFields: any = [];
   passwordPolicy: string;
 
-  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
-    this.amplifyService = amplifyService;
   }
 
   @Input()

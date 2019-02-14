@@ -23,8 +23,9 @@ const template = `
     <div class="amplify-form-body">
     <div class="amplify-form-header">Reset your password</div>
     <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code</div>
-    <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
-
+    <div class="amplify-form-text" *ngIf="code_sent">
+      Enter the code you received and set a new password
+    </div>
       <div class="amplify-form-row" *ngIf="!code_sent">
       <label class="amplify-input-label" for="username"> Username *</label>
         <input #username
@@ -96,20 +97,13 @@ const template = `
 export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-
   username: string;
   code: string;
   password: string;
-
   errorMessage: string;
-
   code_sent = false;
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   @Input()
   set data(data: any) {
@@ -149,7 +143,7 @@ export class ForgotPasswordComponentCore {
         this.code_sent = true;
       })
       .catch((err) => {
-        this._setError(err)
+        this._setError(err);
         this.code_sent = false;
       });
   }

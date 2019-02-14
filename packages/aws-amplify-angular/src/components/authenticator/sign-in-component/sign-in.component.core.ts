@@ -60,7 +60,10 @@ const template = `
         </div>
 
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
+          <div class="amplify-form-signup">
+            No account?
+            <a class="amplify-form-link" (click)="onSignUp()">Create account</a>
+          </div>
         </div>
       </div>
     </div>
@@ -75,11 +78,11 @@ const template = `
   </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-core',
-  template: template
+  template
 })
 export class SignInComponentCore {
   _authState: AuthState;
@@ -87,11 +90,8 @@ export class SignInComponentCore {
   username: string;
   password: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   @Input()
   set authState(authState: AuthState) {
@@ -112,11 +112,11 @@ export class SignInComponentCore {
     this.amplifyService.auth().signIn(this.username, this.password)
       .then(user => {
         if (user['challengeName'] === 'SMS_MFA' || user['challengeName'] === 'SOFTWARE_TOKEN_MFA') {
-          this.amplifyService.setAuthState({ state: 'confirmSignIn', user: user });
+          this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
         } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
-          this.amplifyService.setAuthState({ state: 'requireNewPassword', user: user });
+          this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
         } else {
-          this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+          this.amplifyService.setAuthState({ state: 'signedIn', user });
         }
       })
       .catch((err) => {
@@ -130,12 +130,12 @@ export class SignInComponentCore {
 
   onForgotPassword() {
     const user = this.username? { username: this.username } : null;
-    this.amplifyService.setAuthState({ state: 'forgotPassword', user: user });
+    this.amplifyService.setAuthState({ state: 'forgotPassword', user });
   }
 
   onSignUp() {
     const user = this.username? { username: this.username } : null;
-    this.amplifyService.setAuthState({ state: 'signUp', user: user });
+    this.amplifyService.setAuthState({ state: 'signUp', user });
   }
 
   _setError(err) {
