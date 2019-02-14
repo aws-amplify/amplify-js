@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 
 const template = `
@@ -60,10 +61,7 @@ const template = `
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
   }
-
-
 }

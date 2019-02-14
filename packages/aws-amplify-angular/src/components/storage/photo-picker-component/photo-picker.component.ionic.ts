@@ -15,7 +15,7 @@
 // tslint:enable
 import { Component } from '@angular/core';
 
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService} from '../../../providers/amplify.service';
 import { PhotoPickerComponentCore } from './photo-picker.component.core';
 
 

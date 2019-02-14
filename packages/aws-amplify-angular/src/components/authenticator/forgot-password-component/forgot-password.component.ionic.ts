@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
 
@@ -26,7 +27,6 @@ const template = `
     You will receive a verification code to reset your password
   </div>
   <ion-list>
-
     <ion-item lines="none" *ngIf="!code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         Username *
@@ -37,7 +37,6 @@ const template = `
         [value]="username"
       ></ion-input>
     </ion-item>
-  
     <ion-item lines="none" *ngIf="code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         Code *
@@ -49,7 +48,6 @@ const template = `
         (keyup)="setCode(code.value)"
       ></ion-input>
     </ion-item>
-
     <ion-item lines="none" *ngIf="code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         Password *
@@ -62,7 +60,6 @@ const template = `
         (keyup.enter)="onSubmit()"
       ></ion-input>
     </ion-item>
-  
   </ion-list>
   <div class="amplify-form-actions">
     <div>
@@ -77,16 +74,15 @@ const template = `
     </div>
     <div class="amplify-form-row">
       <div class="amplify-form-signup">
-        Have an account? 
+        Have an account?
         <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
       </div>
       <div class="amplify-form-signup">
-        Lost your code? 
+        Lost your code?
         <a class="amplify-form-link" (click)="onSend()">Resend</a>
       </div>
     </div>
   </div>
-
 <div class="amplify-alert" *ngIf="errorMessage">
   <div class="amplify-alert-body">
     <span class="amplify-alert-icon">&#9888;</span>
@@ -103,7 +99,6 @@ const template = `
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
-
   constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
@@ -116,4 +111,6 @@ export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
     alert(err.message || err);
   }
+
+
 }

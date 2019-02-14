@@ -7,7 +7,7 @@ const logger = new Logger('AuthDecorator');
 
 function check(authState: Subject<AuthState>, Auth) {
   // check for current authenticated user to init authState
-  Amplify.Auth.currentAuthenticatedUser()
+  Auth.currentAuthenticatedUser()
     .then(user => {
       logger.debug('has authenticated user', user);
       authState.next({ state: 'signedIn', user });
@@ -35,12 +35,12 @@ function listen(authState: Subject<AuthState>) {
 }
 
 function decorateSignIn(authState: Subject<AuthState>, Auth) {
-  const _signIn = Amplify.Auth.signIn;
-  Amplify.Auth.signIn = (
+  const _signIn = Auth.signIn;
+  Auth.signIn = (
     username: string,
     password: string
   ): Promise<any> => {
-    return _signIn.call(Amplify.Auth, username, password)
+    return _signIn.call(Auth, username, password)
       .then(user => {
         logger.debug('signIn success');
         if (!user.challengeName) {
@@ -71,8 +71,8 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateSignOut(authState: Subject<AuthState>, Auth) {
-  const _signOut = Amplify.Auth.signOut;
-  Amplify.Auth.signOut = (): Promise<any> => {
+  const _signOut = Auth.signOut;
+  Auth.signOut = (): Promise<any> => {
     return _signOut.call(Amplify.Auth)
       .then(data => {
         logger.debug('signOut success');
@@ -87,14 +87,14 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateSignUp(authState: Subject<AuthState>, Auth) {
-  const _signUp = Amplify.Auth.signUp;
-  Amplify.Auth.signUp = (
+  const _signUp = Auth.signUp;
+  Auth.signUp = (
     username: string,
     password: string,
     email: string,
     phone_number: string
   ): Promise<any> => {
-    return _signUp.call(Amplify.Auth, username, password, email, phone_number)
+    return _signUp.call(Auth, username, password, email, phone_number)
       .then(data => {
         logger.debug('signUp success');
         authState.next({ state: 'confirmSignUp', user: { username }});
@@ -108,12 +108,12 @@ function decorateSignUp(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
-  const _confirmSignUp = Amplify.Auth.confirmSignUp;
-  Amplify.Auth.confirmSignUp = (
+  const _confirmSignUp = Auth.confirmSignUp;
+  Auth.confirmSignUp = (
     username: string,
     code: string
   ): Promise<any> => {
-    return _confirmSignUp.call(Amplify.Auth, username, code)
+    return _confirmSignUp.call(Auth, username, code)
       .then(data => {
         logger.debug('confirmSignUp success');
         authState.next({ state: 'signIn', user: { username }});

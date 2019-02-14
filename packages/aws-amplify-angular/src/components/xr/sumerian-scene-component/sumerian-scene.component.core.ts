@@ -11,12 +11,9 @@
  * and limitations under the License.
  */
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Logger } from '@aws-amplify/core';
 import { AmplifyService } from '../../../providers';
 
 import * as AmplifyUI from '@aws-amplify/ui';
-
-const logger = new Logger('SumerianSceneComponentCore');
 
 const template = `
 <div id="sumerian-scene-container" class={{amplifyUI.sumerianSceneContainer}}>
@@ -100,6 +97,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isFullscreen = false;
   sceneError = null;
   amplifyUI: AmplifyUI;
+  protected logger: any;
 
   @Input()
   set data(data: any) {
@@ -108,6 +106,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
 
   constructor(protected amplifyService: AmplifyService) {
     this.amplifyUI = AmplifyUI;
+    this.logger = this.amplifyService.logger('SumerianSceneComponentCore');
   }
 
   ngOnInit() {   
@@ -141,7 +140,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
       .loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
     } catch (e) {
       this.sceneError = 'Failed to load scene';
-      logger.error(this.sceneError, e);
+      this.logger.error(this.sceneError, e);
       return;
     }
     this.amplifyService.xr().start(this.sceneName);
@@ -175,7 +174,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
         this.amplifyService.xr().enterVR(this.sceneName);
       }
     } catch(e) {
-      logger.error('Unable to start/stop WebVR System: ' + e.message);
+      this.logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
     this.isVRPresentationActive = !this.isVRPresentationActive;

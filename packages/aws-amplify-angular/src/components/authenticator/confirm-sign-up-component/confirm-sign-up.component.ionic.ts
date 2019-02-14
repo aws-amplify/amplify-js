@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
 
 const template = `
@@ -55,13 +56,13 @@ const template = `
       </div>
     <div class="amplify-form-cell-left">
       <div class="amplify-form-signup">
-        Have an account?
+        Have an account? 
         <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
       </div>
     </div>
     <div class="amplify-form-cell-left">
       <div class="amplify-form-signup">
-        Lost your code?
+        Lost your code? 
         <a class="amplify-form-link" (click)="onResend()">Resend</a>
       </div>
     </div>

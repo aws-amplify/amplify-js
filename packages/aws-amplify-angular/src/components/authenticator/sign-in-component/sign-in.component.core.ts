@@ -13,8 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, OnInit } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { includes } from '../common';
 
 const template = `
@@ -84,20 +85,29 @@ const template = `
   selector: 'amplify-auth-sign-in-core',
   template
 })
-export class SignInComponentCore {
+export class SignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   username: string;
   password: string;
   errorMessage: string;
+  protected logger: any;
 
-  constructor(protected amplifyService: AmplifyService) {}
+  constructor(protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('SignInComponent');
+  }
 
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
   }
 
   setUsername(username: string) {
@@ -143,7 +153,7 @@ export class SignInComponentCore {
       this.errorMessage = null;
       return;
     }
-
     this.errorMessage = err.message || err;
+    this.logger(this.errorMessage);
   }
 }

@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
@@ -8,7 +9,10 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">Confirm your sign in code</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+        <ion-label 
+          class="amplify-input-label amplify-input-label-ionic"
+          position="stacked"
+        >
           Code *
         </ion-label>
         <ion-input 
