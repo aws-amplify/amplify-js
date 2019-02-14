@@ -5,6 +5,7 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
+import { authModule } from '../../../__mocks__/mock_module';
 import { ConfirmSignInComponentCore }
 from '../../../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core';
 
@@ -20,28 +21,8 @@ describe('ConfirmSignInComponentCore: ', () => {
   let onConfirmSpy;
   let onSignInSpy;
 
-  const modules = {
-    Auth: {
-      confirmSignIn: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      currentAuthenticatedUser: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      setAuthState: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });        
-      }
-    }
-  };
-
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new ConfirmSignInComponentCore(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     confirmSignInSpy = jest.spyOn(service.auth(), 'confirmSignIn');
@@ -54,7 +35,7 @@ describe('ConfirmSignInComponentCore: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }

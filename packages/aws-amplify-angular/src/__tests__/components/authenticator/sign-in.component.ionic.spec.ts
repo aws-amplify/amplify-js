@@ -4,6 +4,7 @@ import {
   BrowserDynamicTestingModule,platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
 import { SignInComponentIonic } 
 from '../../../components/authenticator/sign-in-component/sign-in.component.ionic';
 import Amplify from 'aws-amplify';
@@ -21,24 +22,8 @@ describe('SignInComponentIonic: ', () => {
   let onSignUpSpy;
   let onForgotPasswordSpy;
   
-  const modules = {
-    Auth: {
-      signIn: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      currentAuthenticatedUser: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },      
-    }
-  };
-
-
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new SignInComponentIonic(service);
     setAuthStateSpy = jest.spyOn(service, 'setAuthState');
     signInSpy = jest.spyOn(service.auth(), 'signIn');
@@ -52,7 +37,7 @@ describe('SignInComponentIonic: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }

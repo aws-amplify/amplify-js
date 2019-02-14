@@ -4,6 +4,7 @@ import {
   BrowserDynamicTestingModule,platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
 import { ConfirmSignUpComponentCore } 
 from '../../../components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core';
 
@@ -18,33 +19,8 @@ describe('ConfirmSignUpComponentCore: ', () => {
   let onConfirmSpy;
   let confirmSignUpSpy;
 
-  const modules = {
-    Auth: {
-      signIn: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      confirmSignUp: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      currentAuthenticatedUser: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      setAuthState: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });        
-      }
-    }
-  };
-
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new ConfirmSignUpComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
@@ -55,15 +31,15 @@ describe('ConfirmSignUpComponentCore: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }
       ],
     }).compileComponents();
-    confirmSignUpSpy = jest.spyOn(service.auth(), 'confirmSignUp');
     fixture = TestBed.createComponent(ConfirmSignUpComponentCore);
     fixtureComponent = fixture.componentInstance;
+    confirmSignUpSpy = jest.spyOn(service.auth(), 'confirmSignUp');
     onConfirmSpy = jest.spyOn(fixtureComponent, 'onConfirm');
     onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
   });

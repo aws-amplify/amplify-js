@@ -5,9 +5,9 @@ import {
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
 import { ForgotPasswordComponentCore } 
 from '../../../components/authenticator/forgot-password-component/forgot-password.component.core';
-
 
 describe('ForgotPasswordComponentCore: ', () => {
 
@@ -21,33 +21,8 @@ describe('ForgotPasswordComponentCore: ', () => {
   let forgotPasswordSubmitSpy;
   let onSignInSpy;
 
-  const modules = {
-    Auth: {
-      forgotPasswordSubmit: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      forgotPassword: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      currentAuthenticatedUser: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });
-      },
-      setAuthState: () => {
-        return new Promise((resolve, reject) => {
-          resolve(1);
-        });        
-      }
-    }
-  };
-
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(authModule);
     component = new ForgotPasswordComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
@@ -58,7 +33,7 @@ describe('ForgotPasswordComponentCore: ', () => {
           provide: AmplifyService,
           useFactory: () => {
             return AmplifyModules({
-              ...modules
+              ...authModule
             });
           }
         }
@@ -172,5 +147,4 @@ describe('ForgotPasswordComponentCore: ', () => {
     a.click();
     expect(onSignInSpy).toHaveBeenCalled();
   });
-
 });
