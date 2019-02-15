@@ -25,8 +25,6 @@ describe('SignInComponentCore: ', () => {
   beforeEach(() => { 
     service = new AmplifyService(authModule);
     component = new SignInComponentCore(service);
-    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
-    signInSpy = jest.spyOn(service.auth(), 'signIn');
     TestBed.configureTestingModule({
       declarations: [
         SignInComponentCore
@@ -44,6 +42,8 @@ describe('SignInComponentCore: ', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(SignInComponentCore);
     fixtureComponent = fixture.componentInstance;
+    setAuthStateSpy = jest.spyOn(service, 'setAuthState');
+    signInSpy = jest.spyOn(service.auth(), 'signIn');
     onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
     onSignUpSpy = jest.spyOn(fixtureComponent, 'onSignUp');
     onForgotPasswordSpy = jest.spyOn(fixtureComponent, 'onForgotPassword');

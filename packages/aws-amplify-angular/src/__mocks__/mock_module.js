@@ -51,4 +51,19 @@ const authModule = {
   }
 };
 
-export { authModule };
+const interactionsModule = {
+  Interactions: {
+    onComplete: () => {
+      return new Promise((resolve, reject) => {
+        resolve(1);
+      });
+    },
+    send: () => {
+      return new Promise((resolve, reject) => {
+        resolve(1);
+      });
+    },
+  }
+}
+
+export { authModule, interactionsModule };
