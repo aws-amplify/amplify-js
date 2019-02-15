@@ -1,11 +1,11 @@
 import { Subject } from 'rxjs';
-import Amplify, { Logger, Hub } from '@aws-amplify/core';
+import Amplify, { Logger, Hub } from 'aws-amplify';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
 
 const logger = new Logger('AuthDecorator');
 
-function check(authState: Subject<AuthState>, Auth) {
+function check(authState: Subject<AuthState>) {
   // check for current authenticated user to init authState
   Amplify.Auth.currentAuthenticatedUser()
     .then(user => {
@@ -34,7 +34,7 @@ function listen(authState: Subject<AuthState>) {
   }
 }
 
-function decorateSignIn(authState: Subject<AuthState>, Auth) {
+function decorateSignIn(authState: Subject<AuthState>) {
   const _signIn = Amplify.Auth.signIn;
   Amplify.Auth.signIn = (
     username: string,
@@ -70,7 +70,7 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
   };
 }
 
-function decorateSignOut(authState: Subject<AuthState>, Auth) {
+function decorateSignOut(authState: Subject<AuthState>) {
   const _signOut = Amplify.Auth.signOut;
   Amplify.Auth.signOut = (): Promise<any> => {
     return _signOut.call(Amplify.Auth)
@@ -86,7 +86,7 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
   };
 }
 
-function decorateSignUp(authState: Subject<AuthState>, Auth) {
+function decorateSignUp(authState: Subject<AuthState>) {
   const _signUp = Amplify.Auth.signUp;
   Amplify.Auth.signUp = (
     username: string,
@@ -107,7 +107,7 @@ function decorateSignUp(authState: Subject<AuthState>, Auth) {
   };
 }
 
-function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
+function decorateConfirmSignUp(authState: Subject<AuthState>) {
   const _confirmSignUp = Amplify.Auth.confirmSignUp;
   Amplify.Auth.confirmSignUp = (
     username: string,
@@ -126,11 +126,11 @@ function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
   };
 }
 
-export function authDecorator(authState: Subject<AuthState>, authModule) {
-  check(authState, authModule);
+export function authDecorator(authState: Subject<AuthState>) {
+  check(authState);
   listen(authState);
-  decorateSignIn(authState, authModule);
-  decorateSignOut(authState, authModule);
-  decorateSignUp(authState, authModule);
-  decorateConfirmSignUp(authState, authModule);
+  decorateSignIn(authState);
+  decorateSignOut(authState);
+  decorateSignUp(authState);
+  decorateConfirmSignUp(authState);
 }
