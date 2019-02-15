@@ -70,7 +70,6 @@
     "aws-amplify": "^1.x"
   },
   "dependencies": {
-    "@aws-amplify/ui": "^1.1.6",
     "@types/lodash": "^4.14.106"
   }
 }

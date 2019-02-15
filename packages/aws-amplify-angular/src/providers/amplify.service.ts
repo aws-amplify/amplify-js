@@ -24,12 +24,12 @@ export class AmplifyService {
   private _cache: any;
   private _pubsub: any;
   private _interactions: InteractionsClass;
-  private _logger: any;
+  private _logger: any; 
   private _xr: XRClass;
   private _authState = new Subject<AuthState>();
   authStateChange$ = this._authState.asObservable();
 
-  constructor () {
+  constructor() {
     authDecorator(this._authState);
 
     this._auth = Amplify.Auth;
@@ -39,7 +39,7 @@ export class AmplifyService {
     this._cache = Amplify.Cache;
     this._pubsub = Amplify.PubSub;
     this._interactions = Amplify.Interactions;
-    this._logger = Amplify.Logger;
+    this._logger =  Amplify.Logger;
     this._xr = Amplify.XR;
   }
 
@@ -50,8 +50,8 @@ export class AmplifyService {
   interactions(): InteractionsClass { return this._interactions; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }
-  logger(name, level?): Logger { return new this._logger(name, level); }
-  xr(): XRClass { return this._xr; }
+  logger(name, level): Logger { return new this._logger(name, level); }
+  xr(): any { return this._xr; }
 
   authState() { return this._authState; }
   setAuthState(state: AuthState) { this._authState.next(state); }
