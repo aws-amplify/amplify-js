@@ -244,9 +244,7 @@ export class SignUpComponentCore implements OnInit {
     if (key.indexOf('custom:') !== 0) {
       return field.custom ;
     } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-      this.amplifyService.logger('SignUpComponent', 'WARN')
-      .log('Custom prefix prepended to key but custom field flag is set to false');
-      
+      this.logger.warn('Custom prefix prepended to key but custom field flag is set to false');
     }
     return null;
   }

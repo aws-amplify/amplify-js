@@ -66,4 +66,18 @@ const interactionsModule = {
   }
 }
 
-export { authModule, interactionsModule };
+const storageModule = {
+  Storage: {
+    put: () => {
+      return new Promise((resolve, reject) => {
+        resolve(1);
+      })
+    }
+  }
+}
+
+export {
+  authModule,
+  interactionsModule,
+  storageModule
+};
