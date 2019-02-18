@@ -22,6 +22,8 @@ import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
 import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
+import UI from '@aws-amplify/ui';
+import XR, { XRClass } from '@aws-amplify/xr';
 import Amplify, {
     ConsoleLogger as Logger,
     Hub,
@@ -44,6 +46,8 @@ Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
 Amplify.Interactions = Interactions;
+Amplify.UI = UI;
+Amplify.XR = XR;
 
 export { 
     Auth, 
@@ -59,7 +63,9 @@ export {
     ClientDevice, 
     Signer, 
     ServiceWorker, 
-    Interactions 
+    Interactions,
+    UI,
+    XR
 };
 
 export { 
@@ -69,8 +75,9 @@ export {
     StorageClass,
     PubSubClass,
     InteractionsClass,
+    XRClass,
     AnalyticsProvider, 
     AWSPinpointProvider, 
-    AWSKinesisProvider 
+    AWSKinesisProvider
 };
 export { graphqlOperation };

@@ -13,19 +13,23 @@
 import {
     ConsoleLogger as Logger,
 } from '../Logger';
-import '../Polyfills';
+import JS from '../JS';
 
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
+    if (!JS.browserOrNode().isBrowser) {
+        logger.debug('not in the browser, directly resolved');
+        return res();
+    }
     const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
     if (ga) {
         logger.debug('google api already loaded');
-        res();
+        return res();
     } else {
         setTimeout(
             () => {
-                res();
+                return res();
             }, 
             2000
         );
@@ -53,7 +57,8 @@ export default class GoogleOAuth {
     }
 
     private _refreshGoogleTokenImpl() {
-        const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        let ga = null;
+        if (JS.browserOrNode().isBrowser) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
         if (!ga) {
             logger.debug('no gapi auth2 available');
             return Promise.reject('no gapi auth2 available');

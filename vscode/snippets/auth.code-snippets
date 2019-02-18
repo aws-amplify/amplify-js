@@ -1,7 +1,7 @@
 {
     "Amplify Auth Configuration": {
         "prefix": "Amplify.configure",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import awsmobile from './aws-exports';",
             "let awsmobileMandatorySignIn = awsmobile.aws_mandatory_sign_in == \"enable\" ? true : false;\n\n",
@@ -34,7 +34,7 @@
     },
     "Auth.signIn": {
         "prefix": "Auth.signIn",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.signIn(username, password)",
             "\t.then(user => console.log(user))",
@@ -43,7 +43,7 @@
     },
     "Auth.confirmSignIn": {
         "prefix": "Auth.confirmSignIn",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// If MFA enabled, sign-in should be confirmed with the confirmation code",
             "// `user` : Return object from Auth.signIn()",
@@ -56,7 +56,7 @@
     },
     "Auth.signUp": {
         "prefix": "Auth.signUp",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.signUp({",
             "\tusername,",
@@ -74,7 +74,7 @@
     },
     "Auth.confirmSignUp": {
         "prefix": "Auth.confirmSignUp",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// After retrieveing the confirmation code from the user",
             "Auth.confirmSignUp(username, code, {",
@@ -86,7 +86,7 @@
     },
     "Auth.signOut": {
         "prefix": "Auth.signOut",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.signOut()",
             "\t.then(data => console.log(data))",
@@ -95,7 +95,7 @@
     },
     "Auth Change Password": {
         "prefix": "Auth.currentAuthenticatedUser",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.currentAuthenticatedUser()",
             "\t.then(user => {",
@@ -107,7 +107,7 @@
     },
     "Auth Forgot Password": {
         "prefix": "Auth.forgotPassword",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.forgotPassword(username)",
             "\t.then(data => console.log(data))",
@@ -116,7 +116,7 @@
     },
     "Auth Forgot Password Submit": {
         "prefix": "Auth.forgotPasswordSubmit",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// Collect confirmation code and new password , then",
             "Auth.forgotPasswordSubmit(username, code, new_password)",
@@ -126,7 +126,7 @@
     },
     "Auth oauth": {
         "prefix": "oauth",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "oauth = {",
             "\t// Domain name",
@@ -150,35 +150,35 @@
     },
     "logInWithReadPermissionsAsync": {
         "prefix": "logInWithReadPermissionsAsync",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "logInWithReadPermissionsAsync"
         ]
     },
     "handleAuthStateChange": {
         "prefix": "handleAuthStateChange",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "handleAuthStateChange"
         ]
     },
     "userPoolWebClientId": {
         "prefix": "userPoolWebClientId",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "userPoolWebClientId"
         ]
     },
     "OAuthSignIn": {
         "prefix": "OAuthSignIn",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "OAuthSignIn"
         ]
     },
     "Auth.verifyTotpToken": {
         "prefix": "Auth.verifyTotpToken",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// Then you will have your TOTP account in your TOTP-generating app (like Google Authenticator)",
             "// Use the generated one-time password to verify the setup",
@@ -193,84 +193,84 @@
     },
     "setPreferredMFA": {
         "prefix": "setPreferredMFA",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "setPreferredMFA"
         ]
     },
     "publicChallengeParameters": {
         "prefix": "publicChallengeParameters",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "publicChallengeParameters"
         ]
     },
     "privateChallengeParameters": {
         "prefix": "privateChallengeParameters",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "privateChallengeParameters"
         ]
     },
     "challengeMetadata": {
         "prefix": "challengeMetadata",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "challengeMetadata"
         ]
     },
     "challengeName": {
         "prefix": "challengeName",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "challengeName"
         ]
     },
     "failAuthentication": {
         "prefix": "failAuthentication",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "failAuthentication"
         ]
     },
     "issueTokens": {
         "prefix": "issueTokens",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "issueTokens"
         ]
     },
     "length": {
         "prefix": "length",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "length"
         ]
     },
     "challengeResult": {
         "prefix": "challengeResult",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "challengeResult"
         ]
     },
     "challengeAnswer": {
         "prefix": "challengeAnswer",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "challengeAnswer"
         ]
     },
     "answerCorrect": {
         "prefix": "answerCorrect",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "answerCorrect"
         ]
     },
     "authScreenLabels": {
         "prefix": "authScreenLabels",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "authScreenLabels = {",
                 "\ten: {",
@@ -284,7 +284,7 @@
     },
     "Auth.currentCredentials": {
         "prefix": "Auth.currentCredentials",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Auth.currentCredentials()",
             "\t.then(credentials => {",

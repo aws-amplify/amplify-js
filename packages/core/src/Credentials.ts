@@ -4,6 +4,7 @@ import { AWS } from './Facet';
 import JS from './JS';
 import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
+import { ICredentials } from './types';
 import Amplify from './Amplify';
 
 const logger = new Logger('Credentials');
@@ -60,7 +61,7 @@ export class Credentials {
         logger.debug('picking up credentials');
         if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
             logger.debug('getting new cred promise');
-            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof Credentials) {
+            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof AWS.Credentials) {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._setCredentialsFromAWS());
             } else {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._keepAlive());
@@ -141,6 +142,7 @@ export class Credentials {
     }
 
     private async _setCredentialsForGuest() {
+        let attempted = false;
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
@@ -152,8 +154,13 @@ export class Credentials {
             return Promise.reject('No Cognito Federated Identity pool provided');
         }
         
-        await this._storageSync;
-        const identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        let identityId = undefined;
+        try {
+            await this._storageSync;
+            identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        } catch (e) {
+            logger.debug('Failed to get the cached identityId', e);
+        }
         
         const credentials = new AWS.CognitoIdentityCredentials(
             {
@@ -164,7 +171,34 @@ export class Credentials {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'guest', false, null);
+        return this._loadCredentials(credentials, 'guest', false, null)
+        .then((res) => {
+            return res;
+         })
+        .catch(async (e) => {
+            // If identity id is deleted in the console, we make one attempt to recreate it
+            // and remove existing id from cache. 
+            if (e.code === 'ResourceNotFoundException' &&
+                e.message === `Identity '${identityId}' not found.`
+                && !attempted) {
+                attempted = true;
+                logger.debug('Failed to load guest credentials');
+                this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+                credentials.clearCachedId();
+                const newCredentials = new AWS.CognitoIdentityCredentials(
+                    {
+                        IdentityPoolId: identityPoolId,
+                        IdentityId: undefined
+                    },  
+                    {
+                        region
+                    }
+                );
+                return this._loadCredentials(newCredentials, 'guest', false, null);
+            } else {
+                return e;
+            }
+        });
     }
 
     private _setCredentialsFromAWS() {
@@ -172,7 +206,7 @@ export class Credentials {
         logger.debug('setting credentials from aws');
         const that = this;
         if (credentials instanceof AWS.Credentials){
-            return this._loadCredentials(credentials, 'aws', undefined, null);
+            return Promise.resolve(credentials);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
@@ -219,7 +253,7 @@ export class Credentials {
         );
     }
 
-    private _setCredentialsFromSession(session) {
+    private _setCredentialsFromSession(session): Promise<ICredentials> {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
         const { region, userPoolId, identityPoolId } = this._config;
@@ -242,7 +276,7 @@ export class Credentials {
         return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
-    private _loadCredentials(credentials, source, authenticated, info) {
+    private _loadCredentials(credentials, source, authenticated, info): Promise<ICredentials> {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
@@ -277,6 +311,8 @@ export class Credentials {
                     } catch(e) {
                         logger.debug('Failed to put federated info into auth storage', e);
                     }
+                    // the Cache module no longer stores federated info
+                    // this is just for backward compatibility
                     if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
                         Amplify.Cache.setItem(
                             'federatedInfo', 
@@ -290,8 +326,7 @@ export class Credentials {
                             { priority: 1 }
                         );
                     } else {
-                        rej('No Cache module registered in Amplify');
-                        return;
+                        logger.debug('No Cache module registered in Amplify');
                     }
                 }
                 if (source === 'guest') {
@@ -311,7 +346,7 @@ export class Credentials {
         });
     }
 
-    public set(params, source) {
+    public set(params, source): Promise<ICredentials> {
         if (source === 'session') {
             return this._setCredentialsFromSession(params);
         } else if (source === 'federation') {
@@ -340,10 +375,12 @@ export class Credentials {
         this._credentials_source = null;
         this._storage.removeItem('aws-amplify-federatedInfo');
 
+        // the Cache module no longer stores federated info
+        // this is just for backward compatibility
         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
             await Amplify.Cache.removeItem('federatedInfo');
         } else {
-            return Promise.reject('No Cache module registered in Amplify');
+            logger.debug('No Cache module registered in Amplify');
         }
     }
 

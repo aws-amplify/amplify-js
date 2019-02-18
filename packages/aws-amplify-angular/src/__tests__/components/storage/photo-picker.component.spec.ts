@@ -6,20 +6,13 @@ import { PhotoPickerComponentCore } from '../../../components/storage/photo-pick
     describe('PhotoPickerComponentCore:', () => {
 
       let component: PhotoPickerComponentCore;
-      let fixture: ComponentFixture<PhotoPickerComponentCore>;
     
-      beforeEach(() => {
+      beforeEach(() => { 
+        component = new PhotoPickerComponentCore();
+      });
     
-        TestBed.configureTestingModule({
-          declarations: [PhotoPickerComponentCore]
-        });
-    
-        // create component and test fixture
-        fixture = TestBed.createComponent(PhotoPickerComponentCore);
-    
-        // get test component from the fixture
-        component = fixture.componentInstance;
-
+      afterEach(() => {
+        component = null;
       });
 
       it('...should be created', () => {

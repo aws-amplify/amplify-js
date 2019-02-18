@@ -1,33 +1,33 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "baseUrl": ".",
+    "allowJs": true,
+    "stripInternal": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "module": "es2015",
     "moduleResolution": "node",
-    "noEmit": true,
+    "paths": {
+      "@angular/core": ["node_modules/@angular/core"],
+      "rxjs/*": ["node_modules/rxjs/*"]
+    },
+    "rootDir": ".",
+    "outDir": "dist",
     "sourceMap": true,
-    "declaration": false,
-    "noImplicitAny": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "inlineSources": true,
+    "target": "es5",
+    "skipLibCheck": true,
     "lib": [
-      "es2015",
-      "dom",
-      "esnext"
-    ],
-    "typeRoots" : [
-      "./node_modules/@types"
-    ],
-    "types": [
-      "webpack",
-      "webpack-env"
+      "es2015", 
+      "dom"
     ]
   },
-  "include": [
-    "src/**/*.ts"
+  "files": [
+    "index.ts",
+    "src/components/interactions/chatbot/aws-lex-audio.js"
   ],
-  "exclude": [
-    "src/**/*.spec.ts",
-    "node_modules",
-    "lib"
-  ]
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
 }

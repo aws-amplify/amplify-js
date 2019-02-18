@@ -1,7 +1,7 @@
 {
     "Amplify API Configuration": {
         "prefix": "API: ",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API: {",
             "\tendpoints: [",
@@ -25,7 +25,7 @@
     },
     "Amplify Get": {
         "prefix": "API.get",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API.get(${1:apiName, path, myInit})",
             "\t.then(response => {",
@@ -38,7 +38,7 @@
     },
     "Amplify Post": {
         "prefix": "API.post",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API.post(${1:apiName, path, myInit})",
             "\t.then(response => {",
@@ -51,7 +51,7 @@
     },
     "Amplify Put": {
         "prefix": "API.put",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API.put(${1:apiName, path, myInit})",
             "\t.then(response => {",
@@ -64,7 +64,7 @@
     },
     "Amplify Delete": {
         "prefix": "API.del",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API.del(${1:apiName, path, myInit})",
             "\t.then(response => {",
@@ -77,7 +77,7 @@
     },
     "Amplify Head": {
         "prefix": "API.head",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "API.head(${1:apiName, path, myInit})",
             "\t.then(response => {",
@@ -87,7 +87,7 @@
     },
     "API async getData()": {
         "prefix": "getData()",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "getData() {",
             "\tlet apiName = ${1:'MyApiName'};",
@@ -102,7 +102,7 @@
     },
     "API async postData()": {
         "prefix": "postData()",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "postData() {",
             "\tlet apiName = ${1:'MyApiName'};",
@@ -118,7 +118,7 @@
     },
     "API async putData()": {
         "prefix": "putData()",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "putData() {",
             "\tlet apiName = ${1:'MyApiName'};",
@@ -134,7 +134,7 @@
     },
     "API async deleteData()": {
         "prefix": "deleteData()",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "deleteData() {",
             "\tlet apiName = ${1:'MyApiName'};",
@@ -149,7 +149,7 @@
     },
     "API async head()": {
         "prefix": "head()",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "head() {",
             "\tlet apiName = ${1:'MyApiName'};",
@@ -164,28 +164,28 @@
     },
     "APIGraphQL Endpoint": {
         "prefix": "graphql_endpoint:",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "graphql_endpoint: ${1:'https:/www.example.com/my-graphql-endpoint'}"
         ]
     },
     "APIGraphQL Endpoint IAM Region": {
         "prefix": "graphql_endpoint_iam_region:",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "graphql_endpoint_iam_region: ${1:'my_graphql_apigateway_region'}"
         ]
     },
     "APIGraphQL Operation": {
         "prefix": "graphqlOperation",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "graphqlOperation"
         ]
     },
     "API AppSync Configuration": {
         "prefix": "myAppConfig",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "myAppConfig = {",
                 "\t// ...",
@@ -199,7 +199,7 @@
     },
     "Query ListEvents": {
         "prefix": "ListEvents",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "ListEvents = `query ListEvents {",
                 "\tlistEvents {",
@@ -214,7 +214,7 @@
     },
     "Query GetEvent": {
         "prefix": "GetEvent",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "GetEvent = `query GetEvent($id: ID! $nextToken: String) {",
                 "\tgetEvent(id: $id) {",
@@ -232,7 +232,7 @@
     },
     "Mutations CreateEvent": {
         "prefix": "CreateEvent",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "CreateEvent = `mutation CreateEvent($name: String!, $when: String!, $where: String!, $description: String!) {",
                 "\tcreateEvent(name: $name, when: $when, where: $where, description: $description) {",
@@ -256,7 +256,7 @@
     },
     "Subscriptions SubscribeToEventComments": {
         "prefix": "SubscribeToEventComments",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {",
                 "\tsubscribeToEventComments(eventId: $eventId) {",
@@ -277,28 +277,28 @@
     },
     "queryStringParameters": {
         "prefix": "queryStringParameters",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "queryStringParameters"
         ]
     },
     "awsServerlessExpressMiddleware": {
         "prefix": "awsServerlessExpressMiddleware",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "awsServerlessExpressMiddleware"
         ]
     },
     "apiGateway": {
         "prefix": "apiGateway",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "apiGateway"
         ]
     },
     "custom_header": {
         "prefix": "custom_header",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "custom_header: async () => {",
                 "\treturn { Authorization : ${1:'token'} }",
@@ -309,7 +309,7 @@
     },
     "React Connect": {
         "prefix": "<Connect",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "<Connect query={graphqlOperation(GetEvent, { id: currEventId })}",
             "\t\tsubscription={graphqlOperation(SubscribeToEventComments, { eventId: currEventId })}",

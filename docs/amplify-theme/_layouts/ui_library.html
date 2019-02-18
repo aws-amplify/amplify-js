@@ -1,0 +1,126 @@
+{% if jekyll.environment == 'production' %}
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "/{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; /url={% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="/{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library">https://aws-amplify.github.io/media/ui_library</a></p>
+  </body>
+</html>
+{% else %}
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}" data-spy="scroll" data-target=".js-scrollspy">
+		{% include site-header.html %}
+
+		<div class="hero-subheader dark">
+			<div class="container homepage-header">
+				<div class="row">
+					<div class="col-md-8 ui-header">
+						<div class="align-container" data-mh>
+							<div class="align-inner">
+								<h1 class="hero-subheader__title">A beautiful component library connected to the cloud</h1>
+								<div id="button-logo-container">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/ui_guide" class="btn btn--dark btn--rounded btn--w-icon">
+										{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+										Get Started
+									</a>
+									<img id="half-chatbot" class="hidden-xs" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
+								</div>
+							</div><!-- /.align-inner -->
+						</div><!-- /.align-container -->
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.hero-subheader -->
+
+		<div id="styleguide-section">
+			<div class="container docs-page-container">
+				<!-- <div class="github-edit-link">
+					<a title="Edit this page on github" class="" target="_blank" rel="noopener noreferrer" 
+					href="{{ site.github.repository_url }}{{ page.path }}">
+						<span class="">Edit this page</span> 
+					</a>				
+				</div> -->
+
+				{% if site.category_list %}
+					{% for category in site.category_list %}
+						{% for item in category.subs %}
+							{% if page.url contains item.url %}
+								{% assign isPageInCategories = true %}	
+							{% endif %}	
+						{% endfor %}
+					{% endfor %}
+				{% endif %}
+
+				<div class="row">
+					<div class="col-md-8 section-top docs-container styleguide-container">
+						<div class="content">
+							{{ content }}
+						</div><!-- /.content -->
+					</div><!-- /.col -->
+					<div class="col-md-4 col-md-offset-1 dev-guide-container styleguide-nav">
+						<div class="sections-list-wrapper">
+							<div class="sections-list js-affix js-scrollspy styleguide-affix">
+								<div class="dev-guide"> 
+									{% if site.styleguide %}
+										<div class="left-nav-section hidden-xs">
+											<div class="feature-list">
+                                                <ul class="nav">
+												{% for item in site.styleguide %}
+														<li><a href="{{ item.url }}" class="js-smooth-scroll style-category">{{ item.title }}</a></li>
+                                                {% endfor %}
+                                                </ul>   
+											</div>
+										</div>
+									{% endif %}
+								</div>						
+							</div><!-- /.sections-list -->
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		<!-- <div class="section section--grey"> -->
+			<!-- <div class="container"> -->
+				<!-- <div class="row"> -->
+					<!-- <div class="col-md-7"> -->
+						<!-- {% include comments.html %} -->
+					<!-- </div>/.col -->
+				<!-- </div>/.row -->
+			<!-- </div>/.container -->
+		<!-- </div>/.section -->
+		<div class="js-footer-area">
+			{% if page.page_nav.prev.content or page.page_nav.next.content %}
+				<nav class="page-nav">
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								{% if page.page_nav.prev.content and page.page_nav.prev.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.prev.url }}" class="page-nav__item page-nav__item--prev">
+										<i class="icon icon--arrow-left"></i>
+										{{ page.page_nav.prev.content }}
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+								{% if page.page_nav.next.content and page.page_nav.next.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.next.url }}" class="page-nav__item page-nav__item--next">
+										{{ page.page_nav.next.content }}
+										<i class="icon icon--arrow-right"></i>
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.container -->
+				</nav><!-- /.page-nav -->
+			{% endif %}
+			{% if page.micro_nav == true %}
+				{% include micro-nav.html %}
+			{% endif %}
+			{% include site-footer.html %}
+		</div><!-- /.js-footer-area -->
+	</body>
+</html>
+{% endif %}

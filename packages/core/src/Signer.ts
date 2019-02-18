@@ -19,6 +19,7 @@ const logger = new Logger('Signer'),
     crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
+const IOT_SERVICE_NAME = 'iotdevicegateway';
 
 const encrypt = function(key, src, encoding?) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
@@ -299,11 +300,15 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         service
     );
 
+    // IoT service does not allow the session token in the canonical request
+    // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+    const sessionTokenRequired = accessInfo.session_token && service !== IOT_SERVICE_NAME;
     const queryParams = {
         'X-Amz-Algorithm': DEFAULT_ALGORITHM,
         'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
         'X-Amz-Date': now.substr(0, 16),
-        ...(expiration && { 'X-Amz-Expires': `${expiration}` }),
+        ...(sessionTokenRequired ? { 'X-Amz-Security-Token': `${accessInfo.session_token}` } : {}),
+        ...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
         'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
     };
 

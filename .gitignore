@@ -6,6 +6,7 @@ node_modules/**
 packages/*/node_modules/**
 packages/**/lib/
 packages/**/dist/
+packages/**/es/
 .DS_Store
 .vscode
 .idea

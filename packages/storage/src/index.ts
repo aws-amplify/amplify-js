@@ -12,6 +12,7 @@
  */
 
 import StorageClass from './Storage';
+import { StorageProvider } from './types';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -21,8 +22,9 @@ let _instance: StorageClass = null;
 
 if (!_instance) {
     logger.debug('Create Storage Instance');
-    _instance = new StorageClass(null);
-    _instance.vault = new StorageClass({ level: 'private' });
+    _instance = new StorageClass();
+    _instance.vault = new StorageClass();
+    _instance.vault.configure({ level: 'private' });
 
     const old_configure = _instance.configure;
     _instance.configure = (options) => {
@@ -39,3 +41,5 @@ Amplify.register(Storage);
 
 export default Storage;
 export { StorageClass };
+export { StorageProvider };
+export * from './Providers';

@@ -1,8 +1,8 @@
 ---
-layout: blog-detail
+layout: examples
 ---
 
-## React Native apps with AWS Amplify
+# React Native apps with AWS Amplify
 
 ### AWS Amplify helps mobile developers to create cloud-powered React Native apps quickly.
 
@@ -22,7 +22,7 @@ With AWS Amplify's cloud connectivity support, you can create your apps quickly 
 
 ###  Building React Native Apps with AWS Amplify
 
-React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view,  React Native apps run on a faster runtime environment which has better integration with native capabilities of the device. 
+React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view,  React Native apps run on a faster runtime environment which has better integration with native capabilities of the device. 
 
 When building React Native apps, your app bundle is deployed to the app stores, and your mobile app's backend logic will be handled by cloud operations that you integrate with AWS Amplify.
 
@@ -47,36 +47,32 @@ In this example, AWS Amplify Storage category already knows about the authentica
 
 #### CLI support
 
-AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify add api
 ```
 
-AWS Mobile CLI generates JavaScript files for your app's backend logic, and places them to the appropriate folder structure in your project. 
+Amplify CLI generates JavaScript files for your app's backend logic, and places them to the appropriate folder structure in your project. 
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
 After working with your backend code, deploying your app backend is very simple with the CLI:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
-#### Manage your Backend with AWS Mobile Hub
+#### Manage your Backend with Amplify CLI
 
 If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify by setting up resource credentials in your app's configuration.
 
-Alternatively, AWS Mobile Hub is an excellent tool for creating AWS resources, related user roles, and security policies.
-
-Mix and match building blocks for your app and start working with cloud operations:
-
-![Performance Results](../images/mobile_hub_services.png?raw=true "Performance Results")
+Alternatively, Amplify CLI is an excellent tool for creating AWS resources, related user roles, and security policies.
 
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
 ```bash
-awsmobile pull
+amplify push
 ```
 
 #### React Native components
@@ -110,5 +106,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building a React Native app now!
 
-Start building your Web app today with AWS Amplify by visiting our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?platform=react-native&utm_source=web-apps&utm_campaign=build-pages).
+Start building your Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?platform=react-native&utm_source=web-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

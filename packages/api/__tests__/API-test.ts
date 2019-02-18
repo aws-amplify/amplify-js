@@ -5,8 +5,7 @@ import API, { graphqlOperation } from '../src/API';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
-import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
+import { Signer, Credentials } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 
 jest.mock('axios');
@@ -104,6 +103,75 @@ describe('API test', () => {
             };
 
             await api.graphql(graphqlOperation(GetEvent, variables));
+
+            expect(spyon).toBeCalledWith(url, init);
+        });
+
+        test('happy-case-query-ast', async () => {
+            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const spyon = jest.spyOn(RestClient.prototype, 'post')
+                .mockImplementationOnce((url, init) => {
+                    return new Promise((res, rej) => {
+                        res({})
+                    });
+                });
+
+            const api = new API(config);
+            const url = 'https://appsync.amazonaws.com',
+                region = 'us-east-2',
+                apiKey = 'secret_api_key',
+                variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+            api.configure({
+                aws_appsync_graphqlEndpoint: url,
+                aws_appsync_region: region,
+                aws_appsync_authenticationType: 'API_KEY',
+                aws_appsync_apiKey: apiKey
+            })
+            const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+                getEvent(id: $id) {
+                    id
+                    name
+                    where
+                    when
+                    description
+                    comments(nextToken: $nextToken) {
+                      items {
+                        commentId
+                        content
+                        createdAt
+                      }
+                    }
+                  }
+                }`;
+
+            const doc = parse(GetEvent);
+            const query = print(doc);
+
+            const headers = {
+                Authorization: null,
+                'X-Api-Key': apiKey
+            };
+
+            const body = {
+                query,
+                variables,
+            };
+
+            const init = {
+                headers,
+                body,
+                signerServiceInfo: {
+                    service: 'appsync',
+                    region,
+                }
+            };
+
+            await api.graphql(graphqlOperation(doc, variables));
 
             expect(spyon).toBeCalledWith(url, init);
         });
@@ -384,7 +452,6 @@ describe('API test', () => {
         });
 
         test('custom_header', async () => {
-            Logger.LOG_LEVEL = 'DEBUG';
             const custom_config = {
                 API: {
                     endpoints: [
@@ -409,7 +476,6 @@ describe('API test', () => {
                     res({});
                 });
             });
-            console.log('api options', JSON.stringify(api._options, null, 2));
             await api.get('apiName', 'path', {});
 
             expect(spyonRequest).toBeCalledWith({
@@ -470,7 +536,7 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"ke:y3": "val:ue 3"}, "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
             expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
@@ -572,7 +638,7 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items?key1=value1&key2=value', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"key2": "value2_real"}, "url": "endpoint/items?key1=value1&key2=value2_real"};
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?key1=value1&key2=value2_real"};
             expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
@@ -594,7 +660,7 @@ describe('API test', () => {
             try {
                 await api.get('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -653,7 +719,6 @@ describe('API test', () => {
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
-                console.log('spyon2, post');
                 return Promise.resolve();
             });
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
@@ -686,7 +751,7 @@ describe('API test', () => {
             try {
                 await api.post('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -768,7 +833,7 @@ describe('API test', () => {
             try {
                 await api.put('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -851,7 +916,7 @@ describe('API test', () => {
             try {
                 await api.patch('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -934,7 +999,7 @@ describe('API test', () => {
             try {
                 await api.del('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });
@@ -1016,7 +1081,7 @@ describe('API test', () => {
             try {
                 await api.head('apiName', 'path', 'init');
             } catch (e) {
-                expect(e).toBe('Api apiName does not exist');
+                expect(e).toBe('API apiName does not exist');
             }
 
         });

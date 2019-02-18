@@ -11,18 +11,19 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../AmplifyTheme';
 import Picker from './Picker';
 
 const Container = {
-}
+};
 
 const PickerPreview = {
     maxWidth: '100%'
-}
+};
 
 const logger = new Logger('TextPicker');
 
@@ -38,7 +39,7 @@ export default class TextPicker extends Component {
     }
 
     handlePick(data) {
-        var that = this;
+        const that = this;
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
 
@@ -50,7 +51,7 @@ export default class TextPicker extends Component {
                 const text  = e.target.result;
                 that.setState({ previewText: text });
                 if (onLoad) { onLoad(text); }
-            }
+            };
             reader.readAsText(file);
         }
     }
@@ -85,6 +86,6 @@ export default class TextPicker extends Component {
                     onPick={this.handlePick}
                 />
             </div>
-        )
+        );
     }
 }

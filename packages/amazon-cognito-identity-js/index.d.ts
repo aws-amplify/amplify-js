@@ -4,14 +4,25 @@ declare module "amazon-cognito-identity-js" {
 
     export type NodeCallback<E,T> = (err?: E, result?: T) => void;
 
+    export interface IAuthenticationCallback {
+        onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
+        onFailure: (err: any) => void,
+        newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
+        mfaRequired?: (challengeName: any, challengeParameters: any) => void,
+        totpRequired?: (challengeName: any, challengeParameters: any) => void,
+        customChallenge?: (challengeParameters: any) => void,
+        mfaSetup?: (challengeName: any, challengeParameters: any) => void,
+        selectMFAType?: (challengeName: any, challengeParameters: any) => void
+    }
+
     export interface IMfaSettings {
         PreferredMfa: boolean,
         Enabled: boolean
     }
-
     export interface IAuthenticationDetailsData {
         Username: string;
         Password?: string;
+        ValidationData?: {[key: string]: any}
     }
 
     export class AuthenticationDetails {
@@ -48,29 +59,11 @@ declare module "amazon-cognito-identity-js" {
         public getSession(callback: Function): any;
         public refreshSession(refreshToken: CognitoRefreshToken, callback: NodeCallback<any, any>): void;
         public authenticateUser(authenticationDetails: AuthenticationDetails,
-                                callbacks: {
-                                    onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
-                                    onFailure: (err: any) => void,
-                                    newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
-                                    mfaRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    totpRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    customChallenge?: (challengeParameters: any) => void,
-                                    mfaSetup?: (challengeName: any, challengeParameters: any) => void,
-                                    selectMFAType?: (challengeName: any, challengeParameters: any) => void
-                                }): void;
+                                callbacks: IAuthenticationCallback): void;
         public initiateAuth(authenticationDetails: AuthenticationDetails,
-                                callbacks: {
-                                    onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
-                                    onFailure: (err: any) => void,
-                                    newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
-                                    mfaRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    totpRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    customChallenge?: (challengeParameters: any) => void,
-                                    mfaSetup?: (challengeName: any, challengeParameters: any) => void,
-                                    selectMFAType?: (challengeName: any, challengeParameters: any) => void
-                                }): void;
+                                callbacks: IAuthenticationCallback): void;
         public confirmRegistration(code: string, forceAliasCreation: boolean, callback: NodeCallback<any, any>): void;
-        public sendCustomChallengeAnswer(answerChallenge: any, callback:NodeCallback<any, any>):void;
+        public sendCustomChallengeAnswer(answerChallenge: any, callback:IAuthenticationCallback):void;
         public resendConfirmationCode(callback: NodeCallback<Error, "SUCCESS">): void;
         public changePassword(oldPassword: string, newPassword: string, callback: NodeCallback<Error, "SUCCESS">): void;
         public forgotPassword(callbacks: { onSuccess: (data: any) => void, onFailure: (err: Error) => void, inputVerificationCode?: (data: any) => void }): void;
@@ -88,7 +81,8 @@ declare module "amazon-cognito-identity-js" {
                                                 onSuccess: (session: CognitoUserSession) => void,
                                                 onFailure: (err: any) => void,
                                                 mfaRequired?: (challengeName: any, challengeParameters: any) => void,
-                                                customChallenge?: (challengeParameters: any) => void
+                                                customChallenge?: (challengeParameters: any) => void,
+                                                mfaSetup?: (challengeName: any, challengeParameters: any) => void
                                             }): void;
         public signOut(): void;
         public globalSignOut(callbacks: { onSuccess: (msg: string) => void, onFailure: (err: Error) => void }): void;
@@ -96,7 +90,7 @@ declare module "amazon-cognito-identity-js" {
         public getUserAttributes(callback: NodeCallback<Error, CognitoUserAttribute[]>): void;
         public updateAttributes(attributes: ICognitoUserAttributeData[], callback: NodeCallback<Error,string>): void;
         public deleteAttributes(attributeList: string[], callback: NodeCallback<Error, string>): void;
-        public getAttributeVerificationCode(name: string, callback: { onSuccess: () => void, onFailure: (err: Error) => void, inputVerificationCode: (data: string) => void | null }): void;
+        public getAttributeVerificationCode(name: string, callback: { onSuccess: () => void, onFailure: (err: Error) => void, inputVerificationCode?: (data: string) => void | null }): void;
         public deleteUser(callback: NodeCallback<Error, string>): void;
         public enableMFA(callback: NodeCallback<Error, string>): void;
         public disableMFA(callback: NodeCallback<Error, string>): void;
@@ -108,7 +102,7 @@ declare module "amazon-cognito-identity-js" {
                 onFailure: (err: any) => void
             }): void;
         public verifySoftwareToken(totpCode: string, friendlyDeviceName: string, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): void;
-        public setUserMfaPreference(smsMfaSettings: IMfaSettings, softwareTokenMfaSettings: IMfaSettings, callback: NodeCallback<Error, string>): void;
+        public setUserMfaPreference(smsMfaSettings: IMfaSettings | null, softwareTokenMfaSettings: IMfaSettings | null, callback: NodeCallback<Error, string>): void;
     }
 
     export interface MFAOption {
@@ -184,6 +178,8 @@ declare module "amazon-cognito-identity-js" {
     }
     */
     export class CognitoAccessToken {
+        payload: {[key: string]: any};
+
         constructor({ AccessToken }: { AccessToken: string });
 
         public getJwtToken(): string;
@@ -193,6 +189,8 @@ declare module "amazon-cognito-identity-js" {
     }
 
     export class CognitoIdToken {
+        payload: {[key: string]: any};
+
         constructor({ IdToken }: { IdToken: string });
 
         public getJwtToken(): string;

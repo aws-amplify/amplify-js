@@ -11,15 +11,16 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData, ICognitoStorage } from "amazon-cognito-identity-js";
+ import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute } from "amazon-cognito-identity-js";
 
 /**
 * Parameters for user sign up
 */
 export interface SignUpParams {
-    username: string;
-    password: string;
-    SignupAttributes?: Object;
+    username: string,
+    password: string,
+    attributes?: object,
+    validationData?: CognitoUserAttribute[],
 }
 
 export interface AuthCache {
@@ -34,9 +35,9 @@ export interface AuthCache {
 export interface AuthOptions {
     userPoolId: string,
     userPoolWebClientId: string,
-    identityPoolId: string,
+    identityPoolId?: string,
     region?: string,
-    mandatorySignIn: boolean
+    mandatorySignIn?: boolean
     cookieStorage?: ICookieStorageData,
     oauth?: OAuth,
     refreshHandlers?: object,
@@ -65,15 +66,49 @@ export interface FederatedResponse {
     expires_at: number
 }
 
-export interface OAuth {
-    domain : string,
-	scope : Array<string>,
-	redirectSignIn : string,
-	redirectSignOut : string,
+/**
+ * interface for federatedUser
+ */
+export interface FederatedUser {
+    name: string,
+    email?: string
+}
+
+export interface awsCognitoOAuthOpts {
+    domain: string,
+	scope: Array<string>,
+	redirectSignIn: string,
+	redirectSignOut: string,
     responseType: string,
     options?: object
 }
 
+export interface OAuth {
+    awsCognito?: awsCognitoOAuthOpts,
+    auth0?: any
+}
+
 export interface ConfirmSignUpOptions {
     forceAliasCreation?: boolean
+}
+
+export interface SignOutOpts {
+    global?: boolean
+}
+
+export interface CurrentUserOpts {
+    bypassCache: boolean
+}
+
+export type UsernamePasswordOpts = {
+    username: string,
+    password: string,
+    validationData?: {[key:string]: any}
+};
+
+// We can extend this in the future if needed
+export type SignInOpts = UsernamePasswordOpts;
+
+export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
+    return !!(obj as UsernamePasswordOpts).username;
 }
