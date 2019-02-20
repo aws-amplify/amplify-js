@@ -10,10 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { 
-    ConsoleLogger as Logger, 
-    ClientDevice, 
-    Platform, 
+import {
+    ConsoleLogger as Logger,
+    ClientDevice,
+    Platform,
     Credentials,
     Signer,
     JS,
@@ -77,7 +77,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
-                } 
+                }
             },
             flushInterval
         );
@@ -119,9 +119,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 success = await this._recordCustomEvent(params);
                 break;
         }
-        
+
         if (!success) {
-            params.resendLimits = typeof params.resendLimits === 'number' ? 
+            params.resendLimits = typeof params.resendLimits === 'number' ?
                 params.resendLimits : resendLimit;
             if (params.resendLimits > 0) {
                 logger.debug(
@@ -169,7 +169,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 });
             } else {
                 dispatchAnalyticsEvent('pinpointProvider_configured', null);
-            }  
+            }
             this._setupTimer();
         } else {
             if (this._timer) { clearInterval(this._timer); }
@@ -186,7 +186,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         if (!credentials || !this._config['appId'] || !this._config['region']){
             logger.debug('cannot send events without credentials, applicationId or region');
             return Promise.resolve(false);
-        } 
+        }
         const timestamp = new Date().getTime();
         // attach the session and eventId
         this._generateSession(params);
@@ -315,7 +315,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _startSession(params) {
         // credentials updated
@@ -329,7 +329,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _stopSession(params) {
         // credentials updated
@@ -343,13 +343,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _recordCustomEvent(params) {
         // credentials updated
         const { event, timestamp, config, credentials } = params;
         this._initClients(config, credentials);
-        
+
         logger.debug('record event with params');
         const eventParams = this._generateBatchItemContext(params);
         return this._pinpointPutEvents(eventParams);
@@ -361,9 +361,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { appId, region, endpointId } = config;
 
         this._initClients(config, credentials);
-        
+
         const request = this._endpointRequest(
-            config, 
+            config,
             JS.transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
         );
         const update_params = {
@@ -385,7 +385,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                             return res(false);
                         }).catch(e => {
                             logger.warn(`Failed to remove unused endpoints with error: ${e}`);
-                            logger.warn(`Please ensure you have updated you Pinpoint IAM Policy ` + 
+                            logger.warn(`Please ensure you have updated your Pinpoint IAM Policy ` +
                                 `with the Action: "mobiletargeting:GetUserEndpoints" ` +
                                 `in order to get endpoints info of the user`);
                             return res(false);
@@ -406,7 +406,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 {
                     ApplicationId: appId,
                     UserId: userId
-                }, 
+                },
                 (err, data) => {
                     if (err) {
                         logger.debug(`Failed to get endpoints associated with the userId: ${userId} with error`, err);
@@ -448,18 +448,18 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                         });
             });
         });
-        
+
     }
 
     /**
      * @private
-     * @param config 
+     * @param config
      * Init the clients
      */
     private async _initClients(config, credentials) {
         logger.debug('init clients');
 
-        if (this.mobileAnalytics 
+        if (this.mobileAnalytics
             && this.pinpointClient
             && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
@@ -480,7 +480,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 });
             });
         }
-        
+
     }
 
     private async _getEndpointId(cacheKey) {
@@ -515,13 +515,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             platform: clientInfo.platform
         };
         // for backward compatibility
-        const { 
-            clientId, 
-            appTitle, 
-            appVersionName, 
-            appVersionCode, 
-            appPackageName, 
-            ...demographicByClientContext 
+        const {
+            clientId,
+            appTitle,
+            appVersionName,
+            appVersionCode,
+            appPackageName,
+            ...demographicByClientContext
         } = clientContext;
         const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {
