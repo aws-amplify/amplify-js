@@ -117,7 +117,7 @@ export default class Connect extends Component {
     _unsubscribe() {
         const subs = Object.keys(this.subSubscription)
         if (subs.length) {
-            subs.forEach(idx => {
+            subs.forEach((_subscription, idx) => {
                 this.subSubscription[`${idx}`].unsubscribe()
             });
         }
