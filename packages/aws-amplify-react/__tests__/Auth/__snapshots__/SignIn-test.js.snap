@@ -2705,7 +2705,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       >
-        Forget your password? 
+        Forgot your password? 
         <Component
           onClick={[Function]}
           theme={
@@ -6894,7 +6894,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       >
-        Forget your password? 
+        Forgot your password? 
         <Component
           onClick={[Function]}
           theme={
@@ -11083,7 +11083,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       >
-        Forget your password? 
+        Forgot your password? 
         <Component
           onClick={[Function]}
           theme={

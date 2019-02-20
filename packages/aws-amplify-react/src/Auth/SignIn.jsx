@@ -156,7 +156,7 @@ export default class SignIn extends AuthPiece {
                         />
                         {
                             !hideForgotPassword && <Hint theme={theme}>
-                                {I18n.get('Forget your password? ')}
+                                {I18n.get('Forgot your password? ')}
                                 <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
                                     {I18n.get('Reset password')}
                                 </Link>
