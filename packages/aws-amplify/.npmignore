@@ -3,7 +3,6 @@ __tests__/**
 coverage/**
 docs/**
 node_modules/**
-src/**
 .vscode/**
 .DS_Store
 *.log
