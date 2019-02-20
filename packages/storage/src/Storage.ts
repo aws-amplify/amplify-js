@@ -149,12 +149,14 @@ export default class StorageClass {
      */
     public async put(key: string, object, config?):Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
+        let putConfig;
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
-        return prov.put(key,object,config);
+        putConfig = Object.assign({level: this._config.level}, config);
+        return prov.put(key, object, putConfig);
     }
 
     /**
