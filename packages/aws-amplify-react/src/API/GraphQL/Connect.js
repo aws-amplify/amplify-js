@@ -10,7 +10,7 @@ export default class Connect extends Component {
         super(props);
 
         this.state = this.getInitialState();
-        this.subSubscription = null;
+        this.subSubscription = {};
     }
 
     getInitialState() {
@@ -43,6 +43,8 @@ export default class Connect extends Component {
             onSubscriptionMsg = (prevData) => prevData,
         } = this.props;
 
+        let subArray;
+
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
         if (!API || typeof API.graphql !== 'function' || typeof API.getGraphqlOperationType !== 'function') {
@@ -51,7 +53,16 @@ export default class Connect extends Component {
 
         const hasValidQuery = query && API.getGraphqlOperationType(query) === 'query';
         const hasValidMutation = mutation && API.getGraphqlOperationType(mutation) === 'mutation';
-        const hasValidSubscription = subscription && API.getGraphqlOperationType(subscription.query) === 'subscription';
+        let hasValidSubscription;
+        if (subscription) {
+            if (Array.isArray(subscription)) {
+                hasValidSubscription = subscription.every(sub => API.getGraphqlOperationType(sub.query) === 'subscription');
+                subArray = subscription;
+            } else {
+                hasValidSubscription = API.getGraphqlOperationType(subscription.query) === 'subscription';
+                subArray = [subscription];
+            }
+        }
 
         if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
             console.warn('No query, mutation or subscription was specified');
@@ -80,30 +91,35 @@ export default class Connect extends Component {
         }
 
         if (hasValidSubscription) {
-            const { query: subsQuery, variables: subsVars } = subscription;
+            subArray.forEach((_subscription, idx) => {
+                const { query: subsQuery, variables: subsVars } = _subscription;
 
-            try {
-                const observable = API.graphql({ query: subsQuery, variables: subsVars });
-
-                this.subSubscription = observable.subscribe({
-                    next: ({ value: { data } }) => {
-                        const { data: prevData } = this.state;
-                        const newData = onSubscriptionMsg(prevData, data);
-                        this.setState({ data: newData });
-                    },
-                    error: err => console.error(err),
-                });
-            } catch (err) {
-                errors = err.errors;
-            }
+                try {
+                    const observable = API.graphql({ query: subsQuery, variables: subsVars });
+    
+                    this.subSubscription[`${idx}`] = observable.subscribe({
+                        next: ({ value: { data } }) => {
+                            const { data: prevData } = this.state;
+                            const newData = onSubscriptionMsg(prevData, data);
+                            this.setState({ data: newData });
+                        },
+                        error: err => console.error(err),
+                    });
+                } catch (err) {
+                    errors = err.errors;
+                }
+            })
         }
 
         this.setState({ data, errors, mutation: mutationProp, loading: false });
     }
 
     _unsubscribe() {
-        if (this.subSubscription) {
-            this.subSubscription.unsubscribe();
+        const subs = Object.keys(this.subSubscription)
+        if (subs.length) {
+            subs.forEach(idx => {
+                this.subSubscription[`${idx}`].unsubscribe()
+            });
         }
     }
 
