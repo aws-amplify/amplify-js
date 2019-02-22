@@ -38,6 +38,6 @@ export class GreetingComponentIonic extends GreetingComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
+
   }
 }

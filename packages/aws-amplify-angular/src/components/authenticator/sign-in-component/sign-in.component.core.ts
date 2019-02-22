@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, I18n } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { includes } from '../common';
 
@@ -21,34 +21,34 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">Sign in to your account</div>
+      <div class="amplify-form-header">{{ I18n.get('Sign in to your account') }}</div>
       <div class="amplify-amplify-form-row amplify-signin-username">
-        <label class="amplify-input-label" for="amplifyUsername"> Username *</label>
+        <label class="amplify-input-label" for="amplifyUsername"> {{ I18n.get('Username *') }}</label>
         <input
           #amplifyUsername
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
           required
-          placeholder="Username"
+          placeholder="{{ I18n.get('Username') }}"
           [value]="username"
         />
       </div>
 
       <div class="amplify-form-row amplify-signin-password">
-        <label class="amplify-input-label" for="password">Password *</label>
+        <label class="amplify-input-label" for="password">{{ I18n.get('Password *') }}</label>
         <input #password
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
           class="amplify-form-input"
           type="password"
           required
-          placeholder="Enter your password"
+          placeholder="{{ I18n.get('Enter your password') }}"
         />
-        <span class="amplify-form-action">Forgot Password?
+        <span class="amplify-form-action">{{ I18n.get('Forgot Password?') }}
         <a class="amplify-form-link"
             (click)="onForgotPassword()"
-          >Reset your password</a></span>    
+          >{{ I18n.get('Reset your password') }}</a></span>
       </div>
 
       <div class="amplify-form-actions">
@@ -56,11 +56,11 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             (click)="onSignIn()"
-          >Sign In</button>
+          >{{ I18n.get('Sign In') }}</button>
         </div>
 
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
+          <div class="amplify-form-signup">{{ I18n.get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ I18n.get('Create account') }}</a></div>
         </div>
       </div>
     </div>

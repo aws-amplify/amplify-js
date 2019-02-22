@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, I18n } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { countrylist, country }  from '../../../assets/countries';
@@ -25,12 +25,11 @@ const template = `
     <div class="amplify-form-header">{{this.header}}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
-        <ion-label class="amplify-input-label" 
-        position="stacked" 
+        <ion-label class="amplify-input-label"
+        position="stacked"
         *ngIf="field.key !== 'phone_number'"
         >
-          {{field.label}} 
-          <span *ngIf="field.required">*</span>
+          {{field.label}}
         </ion-label>
         <ion-input
           [ngClass]="{'amplify-input-invalid ': field.invalid}"
@@ -43,13 +42,13 @@ const template = `
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
-       
+
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <ion-grid class="amplify-ionic-grid-padding-left">
             <ion-row>
               <ion-col col-6 class="amplify-ionic-grid-padding-left">
-                <ion-label class="amplify-input-label push-right" 
-                position="stacked" 
+                <ion-label class="amplify-input-label push-right"
+                position="stacked"
                 *ngIf="field.key === 'phone_number'"
                 >
                   {{field.label}}
@@ -57,21 +56,21 @@ const template = `
                 </ion-label>
                 <ion-select #countryCode
                 *ngIf="field.key === 'phone_number'"
-                name="countryCode" 
+                name="countryCode"
                 [value]="country_code"
-                class="amplify-select-phone-country" 
+                class="amplify-select-phone-country"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 (ionChange)="onCodeChange($event.target.value)">
-                  <ion-select-option *ngFor="let country of countries"  
+                  <ion-select-option *ngFor="let country of countries"
                   value={{country.value}}>
-                    {{country.label}} 
+                    {{country.label}}
                   </ion-select-option>
                 </ion-select>
               </ion-col>
 
               <ion-col col-6>
                 <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
-                <ion-input 
+                <ion-input
                   #phone_number
                   [ngClass]="{'amplify-input-invalid ': field.invalid}"
                   *ngIf="field.key === 'phone_number'"
@@ -85,24 +84,24 @@ const template = `
             </ion-row>
           </ion-grid>
         </ion-content>
-      </ion-item>    
+      </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
       <div>
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
-        >Sign Up</ion-button>
+        >{{ I18n.get('Sign Up') }}</ion-button>
       </div>
       <div class="amplify-form-cell-left">
         <div class="amplify-form-signup">
-          Have an account? 
-          <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
+          {{ I18n.get('Have an account?') }}
+          <a class="amplify-form-link" (click)="onSignIn()">{{ I18n.get('Sign In') }}</a>
         </div>
       </div>
       <div class="amplify-form-cell-left">
         <div class="amplify-form-signup">
-          Have an code?
-          <a class="amplify-form-link" (click)="onConfirmSignUp()">Confirm</a>
+          {{ I18n.get('Have a code?') }}
+          <a class="amplify-form-link" (click)="onConfirmSignUp()">{{ I18n.get('Confirm') }}</a>
         </div>
       </div>
     </div>

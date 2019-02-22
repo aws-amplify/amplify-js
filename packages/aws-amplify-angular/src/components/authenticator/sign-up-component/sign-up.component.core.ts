@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, Inject } from '@angular/core';
+import { Component, Input, OnInit, Inject, I18n } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
@@ -29,8 +29,7 @@ const template = `
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
-            <span *ngIf="field.required">*</span>
+            {{field.label}}
           </label>
           <input #{{field.key}}
             class="amplify-form-input"
@@ -40,27 +39,27 @@ const template = `
             [(ngModel)]="user[field.key]" name="field.key" />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
         </div>
-            
+
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
+            {{field.label}}
             <span *ngIf="field.required">*</span>
           </label>
-          
+
           <div class="amplify-input-group">
             <div class="amplify-input-group-item">
               <select #countryCode
-                name="countryCode" 
+                name="countryCode"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country" 
+                class="amplify-select-phone-country"
                 [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"  
-                  value={{country.value}}>{{country.label}} 
+                <option *ngFor="let country of countries"
+                  value={{country.value}}>{{country.label}}
                 </option>
               </select>
             </div>
             <div class="amplify-input-group-item">
-              <input 
+              <input
                 class="amplify-form-input"
                 placeholder={{field.label}}
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
@@ -73,17 +72,17 @@ const template = `
         </div>
       </div>
       <div class="amplify-form-actions">
-        
+
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
-            Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
+            {{ I18n.get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ I18n.get('Sign in') }}</a>
           </div>
         </div>
 
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          >Sign Up</button>
+          >{{ I18n.get('Sign Up') }}</button>
         </div>
 
       </div>
@@ -127,7 +126,7 @@ export class SignUpComponentCore implements OnInit {
   local_phone_number: string;
   country_code: string = '1';
   countries: country[];
-  header: string = 'Create a new account';
+  header: string = I18n.get('Create a new account');
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
@@ -153,7 +152,7 @@ export class SignUpComponentCore implements OnInit {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
       if (this._signUpConfig.header) {
-        this.header = this._signUpConfig.header;
+        this.header = I18n.get(this._signUpConfig.header);
       }
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
@@ -181,7 +180,7 @@ export class SignUpComponentCore implements OnInit {
         this.signUpFields = this._signUpConfig.signUpFields;
       }
       if (this._signUpConfig.header) {
-        this.header = this._signUpConfig.header;
+        this.header = I18n.get(this._signUpConfig.header);
       }
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
@@ -250,7 +249,7 @@ export class SignUpComponentCore implements OnInit {
     } else if (key.indexOf('custom:') === 0 && field.custom === false) {
       this.amplifyService.logger('SignUpComponent', 'WARN')
       .log('Custom prefix prepended to key but custom field flag is set to false');
-      
+
     }
     return null;
   }
@@ -267,7 +266,7 @@ export class SignUpComponentCore implements OnInit {
         return !this.hiddenFields.includes(d.key);
       });
     }
-    
+
     if (this._signUpConfig &&
       this._signUpConfig.signUpFields &&
       this._signUpConfig.signUpFields.length > 0
@@ -285,7 +284,7 @@ export class SignUpComponentCore implements OnInit {
         });
       }
 
-      /* 
+      /*
         sort fields based on following rules:
         1. Fields with displayOrder are sorted before those without displayOrder
         2. Fields with conflicting displayOrder are sorted alphabetically by key
@@ -340,7 +339,7 @@ export class SignUpComponentCore implements OnInit {
           invalids.push(el.label);
         } else {
           el.invalid = false;
-        }        
+        }
       } else {
         if (el.required && (!this.country_code || !this.local_phone_number)) {
           el.invalid = true;
