@@ -65,7 +65,6 @@
     }
   },
   "dependencies": {
-    "cypress": "^3.1.5",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   },
