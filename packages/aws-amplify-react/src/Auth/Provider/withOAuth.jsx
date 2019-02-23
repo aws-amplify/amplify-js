@@ -34,6 +34,14 @@ export default function withOAuth(Comp, options) {
         }
 
         signIn() {
+          return this._authAction('/login');
+        }
+
+        signUp() {
+          return this._authAction('/signup')
+        }
+
+        _authAction(urlPath) {
             if (!Auth || typeof Auth.configure !== 'function') {
                 throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
             }
@@ -53,7 +61,7 @@ export default function withOAuth(Comp, options) {
 
             const options = config.options || {};
             const url = 'https://' + domain 
-                + '/login?redirect_uri=' + redirectSignIn 
+                + urlPath + '?redirect_uri=' + redirectSignIn
                 + '&response_type=' + responseType 
                 + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
 
@@ -67,7 +75,10 @@ export default function withOAuth(Comp, options) {
 
         render() {
             return (
-                <Comp {...this.props} OAuthSignIn={this.signIn} />
+                <Comp {...this.props}
+                      OAuthSignIn={this.signIn}
+                      OAuthSignUp={this.signUp}
+                />
             );
         }
     };
