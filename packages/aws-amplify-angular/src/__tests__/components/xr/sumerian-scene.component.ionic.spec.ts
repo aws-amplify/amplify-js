@@ -22,7 +22,7 @@ describe('SumerianSceneComponentIonic: ', () => {
   });
 
   it('...should have a enterVR method', () => {
-    expect(component.enterVR).toBeTruthy();
+    expect(component.toggleVRPresentation).toBeTruthy();
   });
 
   it('...should have an loadAndStartScene method', () => {
