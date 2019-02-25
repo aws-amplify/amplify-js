@@ -31,6 +31,7 @@ export default function withOAuth(Comp, options) {
         constructor(props) {
             super(props);
             this.signIn = this.signIn.bind(this);
+            this.signUp = this.signUp.bind(this);
         }
 
         signIn() {
