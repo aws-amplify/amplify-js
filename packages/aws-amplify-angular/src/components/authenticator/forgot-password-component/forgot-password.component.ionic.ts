@@ -73,6 +73,7 @@ const template = `
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
     </div>
   </div>
+  </div>
 
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
