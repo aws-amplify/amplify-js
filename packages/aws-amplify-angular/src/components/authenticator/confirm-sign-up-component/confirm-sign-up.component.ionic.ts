@@ -49,17 +49,19 @@ const template = `
           (click)="onConfirm()"
         >{{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
-    <div class="amplify-form-cell-left">
+    <div class="amplify-form-row">
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
-    </div>
-    <div class="amplify-form-cell-left">
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onResend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
-  </div>
 
+<div class="amplify-alert" *ngIf="errorMessage">
+  <div class="amplify-alert-body">
+    <span class="amplify-alert-icon">&#9888;</span>
+    <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
+    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  </div>
+</div>
 </div>
 `;
 

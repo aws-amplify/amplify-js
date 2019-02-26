@@ -35,20 +35,29 @@ const template = `
 
     </ion-list>
 
-    <div class="amplify-form-row">
-    <ion-button
-      expand="block"
-      (click)="onSignIn()"
-    >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
-    <ion-button
-      expand="block"
-      (click)="onSubmit()"
-    >Submit</ion-button>
+    <div class="amplify-form-actions">
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSignIn()"
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
+      </div>
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSubmit()"
+        >Submit</ion-button>
+      </div>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
+
 </div>
 
 `;

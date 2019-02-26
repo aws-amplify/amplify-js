@@ -87,18 +87,16 @@ const template = `
       </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
-      <div>
+      <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
         >{{ this.amplifyService.i18n().get('Sign Up') }}</ion-button>
       </div>
-      <div class="amplify-form-cell-left">
+      <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
           <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a>
         </div>
-      </div>
-      <div class="amplify-form-cell-left">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have a code?') }}
           <a class="amplify-form-link" (click)="onConfirmSignUp()">{{ this.amplifyService.i18n().get('Confirm') }}</a>
@@ -111,7 +109,7 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
@@ -127,15 +125,6 @@ export class SignUpComponentIonic extends SignUpComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-
-    alert(err.message || err);
   }
 
   setProp(target){

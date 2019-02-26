@@ -51,13 +51,14 @@ const template = `
   </div>
 
 
-<div class="amplify-alert" *ngIf="errorMessage">
-  <div class="amplify-alert-body">
-    <span class="amplify-alert-icon">&#9888;</span>
-    <div class="amplify-alert-message">{{ errorMessage }}</div>
-    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
-</div>
+
 </div>
 `;
 
