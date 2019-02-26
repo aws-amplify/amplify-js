@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, I18n } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
@@ -43,7 +43,7 @@ export class GreetingComponentCore {
 
   @Input()
   authState: AuthState;
-  
+
 
   subscribe() {
     this.amplifyService.authStateChange$
@@ -55,7 +55,7 @@ export class GreetingComponentCore {
     this.signedIn = authState.state === 'signedIn';
 
     this.greeting = this.signedIn
-      ? "Hello, " + authState.user.username
+      ? I18n.get("Hello, {{username}}").replace('{{username}}', authState.user.username)
       : "";
   }
 

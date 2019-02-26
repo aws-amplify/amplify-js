@@ -1,18 +1,18 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, I18n } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core'
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">Confirm your sign in code</div>
+    <div class="amplify-form-header amplify-form-header-ionic">{{ I18n.get('Confirm your sign in code') }}</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code *</ion-label>
-        <ion-input 
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ I18n.get('Code *') }}</ion-label>
+        <ion-input
           #code
           type="text"
-          class="amplify-form-input" 
+          class="amplify-form-input"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
         ></ion-input>
@@ -23,7 +23,7 @@ const template = `
       <div>
         <ion-button expand="block" color="primary"
           (click)="onConfirm()"
-        >Confirm Code</ion-button>
+        >{{ I18n.get('Confirm Code') }}</ion-button>
       </div>
     </div>
   </div>
