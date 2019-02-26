@@ -35,7 +35,7 @@ const template = `
             class="amplify-form-input"
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
-            placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
+            [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
             [(ngModel)]="user[field.key]" name="field.key" />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
         </div>
@@ -60,7 +60,7 @@ const template = `
             <div class="amplify-input-group-item">
               <input
                 class="amplify-form-input"
-                placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
+                [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
