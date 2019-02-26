@@ -22,14 +22,14 @@ import { countrylist, country }  from '../../../assets/countries';
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">{{this.header}}</div>
+    <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
         <ion-label class="amplify-input-label"
         position="stacked"
         *ngIf="field.key !== 'phone_number'"
         >
-          {{field.label}}
+          {{ this.amplifyService.i18n().get(field.label) }}
         </ion-label>
         <ion-input
           [ngClass]="{'amplify-input-invalid ': field.invalid}"
@@ -38,7 +38,7 @@ const template = `
           type="text"
           class="amplify-form-input"
           type={{field.type}}
-          placeholder={{field.label}}
+          placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
@@ -51,8 +51,7 @@ const template = `
                 position="stacked"
                 *ngIf="field.key === 'phone_number'"
                 >
-                  {{field.label}}
-                  <span *ngIf="field.required">*</span>
+                  {{ this.amplifyService.i18n().get(field.label) }}
                 </ion-label>
                 <ion-select #countryCode
                 *ngIf="field.key === 'phone_number'"
@@ -76,7 +75,7 @@ const template = `
                   *ngIf="field.key === 'phone_number'"
                   type={{field.type}}
                   class="amplify-form-input-phone-ionic"
-                  placeholder={{field.label}}
+                  placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
                   (ionChange)="onNumberChange($event.target.value)"
                   name="local_phone_number"
                 ></ion-input>

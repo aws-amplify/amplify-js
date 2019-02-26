@@ -15,12 +15,14 @@
 export default [
   {
     label: 'Username',
+    placeholder: 'Username',
     key: 'username',
     required: false,
     displayOrder: 1
   },
   {
     label: 'Password *',
+    placeholder: 'Password',
     key: 'password',
     required: true,
     type: 'password',
@@ -28,6 +30,7 @@ export default [
   },
   {
     label: 'Email *',
+    placeholder: "Email",
     key: 'email',
     required: true,
     type: 'email',
@@ -35,6 +38,7 @@ export default [
   },
   {
     label: 'Phone Number *',
+    placeholder: 'Phone Number',
     key: 'phone_number',
     required: true,
     displayOrder: 4

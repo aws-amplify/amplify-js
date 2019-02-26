@@ -35,7 +35,7 @@ const template = `
             class="amplify-form-input"
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
-            placeholder={{ this.amplifyService.i18n().get(field.label) }}
+            placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
             [(ngModel)]="user[field.key]" name="field.key" />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
         </div>
@@ -43,7 +43,6 @@ const template = `
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
             {{ this.amplifyService.i18n().get(field.label) }}
-            <span *ngIf="field.required">*</span>
           </label>
 
           <div class="amplify-input-group">
@@ -61,7 +60,7 @@ const template = `
             <div class="amplify-input-group-item">
               <input
                 class="amplify-form-input"
-                placeholder={{ this.amplifyService.i18n().get(field.label) }}
+                placeholder={{ this.amplifyService.i18n().get(field.placeholder) }}
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
@@ -94,7 +93,7 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
@@ -105,6 +104,7 @@ const template = `
 
 export class SignUpField{
   label: string;
+  placeholder: string;
   key: string;
   required?: boolean;
   type?: string;
@@ -336,14 +336,14 @@ export class SignUpComponentCore implements OnInit {
       if (el.key !== 'phone_number') {
         if (el.required && !this.user[el.key]) {
           el.invalid = true;
-          invalids.push(el.label);
+          invalids.push(this.amplifyService.i18n().get(el.placeholder));
         } else {
           el.invalid = false;
         }
       } else {
         if (el.required && (!this.country_code || !this.local_phone_number)) {
           el.invalid = true;
-          invalids.push(el.label);
+          invalids.push(this.amplifyService.i18n().get(el.placeholder));
         } else {
           el.invalid = false;
         }

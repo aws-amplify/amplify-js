@@ -62,15 +62,15 @@ const template = `
       <ion-button expand="block" color="primary"
         (click)="onSend()"
         *ngIf="!code_sent"
-      >Submit</ion-button>
+      >{{ this.amplifyService.i18n().get('Submit') }}</ion-button>
       <ion-button expand="block" color="primary"
       *ngIf="code_sent"
       (click)="onSubmit()"
       >{{ this.amplifyService.i18n().get('Verify') }}</ion-button>
     </div>
     <div class="amplify-form-row">
-      <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
-      <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
+      <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
+      <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
     </div>
   </div>
 
