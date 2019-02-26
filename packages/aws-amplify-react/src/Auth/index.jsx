@@ -73,12 +73,6 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             if (signedIn) {
                 return (
                     <React.Fragment>
-                        <Comp
-                            {...this.props}
-                            authState={authState}
-                            authData={authData}
-                            onStateChange={this.handleAuthStateChange}
-                        />
                         <Authenticator
                             {...this.props}
                             theme={this.authConfig.theme}
@@ -87,6 +81,12 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             signUpConfig={this.authConfig.signUpConfig}
                             onStateChange={this.handleAuthStateChange}
                             children={this.authConfig.authenticatorComponents || []}
+                        />
+                        <Comp
+                            {...this.props}
+                            authState={authState}
+                            authData={authData}
+                            onStateChange={this.handleAuthStateChange}
                         />;
                     </React.Fragment>
                 );
