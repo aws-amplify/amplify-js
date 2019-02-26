@@ -12,31 +12,29 @@
  * and limitations under the License.
  */
 // tslint:enable
-import { I18n } from '@angular/core';
-
 export default [
   {
-    label: I18n.get('Username'),
+    label: 'Username',
     key: 'username',
     required: false,
     displayOrder: 1
   },
   {
-    label: I18n.get('Password *'),
+    label: 'Password *',
     key: 'password',
     required: true,
     type: 'password',
     displayOrder: 2,
   },
   {
-    label: I18n.get('Email *'),
+    label: 'Email *',
     key: 'email',
     required: true,
     type: 'email',
     displayOrder: 3
   },
   {
-    label: I18n.get('Phone Number *'),
+    label: 'Phone Number *',
     key: 'phone_number',
     required: true,
     displayOrder: 4

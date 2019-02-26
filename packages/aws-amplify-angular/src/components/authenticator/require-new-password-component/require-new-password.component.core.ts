@@ -13,34 +13,34 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container">
   <div class="amplify-form-body">
-  <div class="amplify-form-header">{{ I18n.get('You are required to update your password') }}</div>
+  <div class="amplify-form-header">{{ this.amplifyService.i18n().get('You are required to update your password') }}</div>
     <div class="amplify-form-row">
-      <label class="amplify-input-label" for="password"> {{ I18n.get('Password *') }}</label>
+      <label class="amplify-input-label" for="password"> {{ this.amplifyService.i18n().get('Password *') }}</label>
       <input #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
         class="amplify-form-input"
         type="password"
-        placeholder="{{ I18n.get('Password') }}"
+        placeholder="{{ this.amplifyService.i18n().get('Password') }}"
       />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
-        >{{ I18n.get('Back to Sign In') }}</a>
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
           (click)="onSubmit()"
-        >{{ I18n.get('Submit') }}</button>
+        >{{ this.amplifyService.i18n().get('Submit') }}</button>
       </div>
     </div>
   </div>

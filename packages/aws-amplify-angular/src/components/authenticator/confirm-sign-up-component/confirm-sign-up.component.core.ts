@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
@@ -21,45 +21,45 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ I18n.get('Confirm Sign up') }}</div>
+    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
 
     <div class="amplify-form-row">
-      <label class="amplify-input-label" for="amplifyUsername"> {{ I18n.get('Username *') }}</label>
+      <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
       <input
         #amplifyUsername
         class="amplify-form-input"
         type="text"
         disabled
-        placeholder="{{ I18n.get('Username') }}"
+        placeholder="{{ this.amplifyService.i18n().get('Username') }}"
         [value]="username"
       />
     </div>
     <div class="amplify-form-row">
-      <label class="amplify-input-label" for="code"> {{ I18n.get('Confirmation Code *') }}</label>
+      <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
       <input #code
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
         class="amplify-form-input"
         type="text"
-        placeholder="{{ I18n.get('Enter your Code') }}"
+        placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
       />
-      <span class="amplify-form-action">{{ I18n.get('Lost your code?') }}
+      <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Lost your code?') }}
         <a class="amplify-form-link"
             (click)="onResend()"
-          >{{ I18n.get('Resend Code') }}</a></span>
+          >{{ this.amplifyService.i18n().get('Resend Code') }}</a></span>
     </div>
 
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <div class="amplify-form-actions-left">
-          <a class="amplify-form-link" (click)="onSignIn()">{{ I18n.get('Back to Sign in') }}</a>
+          <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
         </div>
       </div>
 
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
-          (click)="onConfirm()">S{{ I18n.get('Confirm') }}</button>
+          (click)="onConfirm()">S{{ this.amplifyService.i18n().get('Confirm') }}</button>
       </div>
     </div>
 

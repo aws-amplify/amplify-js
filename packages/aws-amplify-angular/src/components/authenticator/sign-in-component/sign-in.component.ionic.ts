@@ -13,17 +13,17 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ I18n.get('Sign in to your account') }}</div>
+    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
     <ion-list lines="none">
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">{{ I18n.get('Username *') }}</ion-label>
+        <ion-label class="amplify-input-label" for="username" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
           <ion-input type="text"
           #username
           class="amplify-form-input"
@@ -32,7 +32,7 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="password" position="stacked">{{ I18n.get('Password *') }}</ion-label>
+        <ion-label class="amplify-input-label" for="password" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
         <ion-input
           #password
           type="password"
@@ -47,12 +47,12 @@ const template = `
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"
-          >{{ I18n.get('Sign In') }}</ion-button>
+          >{{ this.amplifyService.i18n().get('Sign In') }}</ion-button>
       </div>
 
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">{{ I18n.get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ I18n.get('Create account') }}</a></div>
-        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">{{ I18n.get('Reset Password') }}</a></div>
+        <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ this.amplifyService.i18n().get('Create account') }}</a></div>
+        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">{{ this.amplifyService.i18n().get('Reset Password') }}</a></div>
       </div>
 
     </div>

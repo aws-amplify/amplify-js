@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
@@ -22,7 +22,7 @@ const template = `
     <div class="amplify-greeting-flex-spacer"></div>
     <a class="amplify-form-link amplify-greeting-sign-out"
       (click)="onSignOut()"
-    >Sign out</a>
+    >{{ this.amplifyService.i18n().get('Sign out') }}</a>
 </div>
 `
 
@@ -55,7 +55,7 @@ export class GreetingComponentCore {
     this.signedIn = authState.state === 'signedIn';
 
     this.greeting = this.signedIn
-      ? I18n.get("Hello, {{username}}").replace('{{username}}', authState.user.username)
+      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', authState.user.username)
       : "";
   }
 

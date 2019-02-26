@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { countrylist, country }  from '../../../assets/countries';
@@ -90,18 +90,18 @@ const template = `
       <div>
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
-        >{{ I18n.get('Sign Up') }}</ion-button>
+        >{{ this.amplifyService.i18n().get('Sign Up') }}</ion-button>
       </div>
       <div class="amplify-form-cell-left">
         <div class="amplify-form-signup">
-          {{ I18n.get('Have an account?') }}
-          <a class="amplify-form-link" (click)="onSignIn()">{{ I18n.get('Sign In') }}</a>
+          {{ this.amplifyService.i18n().get('Have an account?') }}
+          <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a>
         </div>
       </div>
       <div class="amplify-form-cell-left">
         <div class="amplify-form-signup">
-          {{ I18n.get('Have a code?') }}
-          <a class="amplify-form-link" (click)="onConfirmSignUp()">{{ I18n.get('Confirm') }}</a>
+          {{ this.amplifyService.i18n().get('Have a code?') }}
+          <a class="amplify-form-link" (click)="onConfirmSignUp()">{{ this.amplifyService.i18n().get('Confirm') }}</a>
         </div>
       </div>
     </div>

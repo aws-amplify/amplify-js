@@ -13,17 +13,17 @@
  */
 // tslint:enable
 
-import { Component, Input, I18n } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">{{ I18n.get('Reset your password') }}</div>
+    <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ I18n.get('Password') }}</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password') }}</ion-label>
         <ion-input
           #password
           type="password"
@@ -39,7 +39,7 @@ const template = `
     <ion-button
       expand="block"
       (click)="onSignIn()"
-    >{{ I18n.get('Back to Sign In') }}</ion-button>
+    >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
     <ion-button
       expand="block"
       (click)="onSubmit()"
