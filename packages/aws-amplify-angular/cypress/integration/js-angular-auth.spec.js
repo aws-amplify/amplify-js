@@ -5,7 +5,7 @@ describe('Angular Authenticator: ', function() {
 
   describe('SignIn', () => {
     it('renders a sign in header by default', () => {
-      cy.get('.amplify-form-header').contains('Sign in to your account')
+      cy.get('.amplify-form-header').contains('Sign in to your account');
     });
   
     it('allows the user to sign in', () => {
@@ -117,7 +117,7 @@ describe('Angular Authenticator: ', function() {
     //   cy.get('input[placeholder="Email"]').type(Cypress.env('COGNITO_SIGN_IN_PHONE'));
     // });
 
-    it('allows the user to attempt sign up', () => {
+    it('allows the user to attempt sign up (user already exists)', () => {
       cy.get('input[placeholder="Username"]').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
       cy.get('input[placeholder="Password"]').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
       cy.get('input[placeholder="Email"]').type(Cypress.env('COGNITO_SIGN_IN_EMAIL'));
@@ -129,7 +129,32 @@ describe('Angular Authenticator: ', function() {
 
       cy.get('.amplify-alert-message').contains('User already exists');
     });
+  });
 
+  describe('Forgot Password', function() {
+    beforeEach(() => {
+      cy.get('.amplify-form-link').contains('Reset your password')
+      .click();
+    });
+
+    it('allows the user to navigate to the forgot password component', () => {
+      cy.get('.amplify-form-header').contains('Reset your password');
+    });
+
+    it('renders a username field', () => {
+      cy.get('input[placeholder="Username"]');
+    });
+
+    it('renders a Back to Sign In link', () => {
+      cy.get('.amplify-form-link').contains('Back to Sign in');
+    });
+
+    it('allows the user to navigate back to sign in', () => {
+      cy.get('.amplify-form-link').contains('Back to Sign in').click();
+      cy.get('.amplify-form-header').contains('Sign in to your account');
+    });
+
+    // To test further, need a way of handling attempt limit exceptions
   });
 
 })
