@@ -57,11 +57,12 @@ export class FederatedButtons extends Component {
 
     OAuth(oauth_config) {
         if (!oauth_config) { return null;}
-        const { theme, onStateChange } = this.props;
+        const { theme, onStateChange, OAuthClientState } = this.props;
         return <OAuthButton
                 label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
+                OAuthClientState={OAuthClientState}
               />;
     }
 
@@ -127,12 +128,12 @@ export class FederatedButtons extends Component {
 
 export default class FederatedSignIn extends Component {
     render() {
-        const { authState, onStateChange } = this.props;
+        const { authState, onStateChange, OAuthClientState } = this.props;
         const federated = this.props.federated || {};
         if (!Auth || typeof Auth.configure !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        
+
          const { oauth={} } = Auth.configure();
         // backward compatibility
         if (oauth['domain']) {
@@ -161,6 +162,7 @@ export default class FederatedSignIn extends Component {
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
+                        OAuthClientState={OAuthClientState}
                     />
                 </SectionBody>
             </FormSection>

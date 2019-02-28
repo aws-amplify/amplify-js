@@ -57,5 +57,71 @@ describe('withOAuth test', () => {
             );
             spyon.mockClear();
         });
+
+        test('correctly constructs url with client state from props', () => {
+            const mockFn = jest.fn();
+            window.location.assign = mockFn;
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
+                return {
+                    oauth: {
+                        awsCognito: {
+                            domain: 'domain',
+                            redirectSignIn: 'redirectUriSignIn',
+                            redirectSignOut: 'redirectUriSignOut',
+                            responseType: 'responseType'
+                        }
+                    },
+                    userPoolWebClientId: 'userPoolWebClientId'
+                };
+            });
+            const Comp = withOAuth(MockComp);
+            const wrapper = shallow(<Comp OAuthClientState="oAuthClientState" />);
+            const comp = wrapper.instance();
+
+            comp.signIn();
+            expect(mockFn).toBeCalledWith(
+              "https://domain/login?redirect_uri=redirectUriSignIn&response_type=responseType&client_id=userPoolWebClientId&state=oAuthClientState"
+            );
+            spyon.mockClear();
+        });
+
+        test('correctly constructs url with client state from props when prop has value of false', () => {
+            const mockFn = jest.fn();
+            window.location.assign = mockFn;
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
+                return {
+                    oauth: {
+                        awsCognito: {
+                            domain: 'domain',
+                            redirectSignIn: 'redirectUriSignIn',
+                            redirectSignOut: 'redirectUriSignOut',
+                            responseType: 'responseType'
+                        }
+                    },
+                    userPoolWebClientId: 'userPoolWebClientId'
+                };
+            });
+            const Comp = withOAuth(MockComp);
+            const wrapper = shallow(<Comp OAuthClientState={false} />);
+            const comp = wrapper.instance();
+
+            comp.signIn();
+            expect(mockFn).toBeCalledWith(
+              "https://domain/login?redirect_uri=redirectUriSignIn&response_type=responseType&client_id=userPoolWebClientId&state=false"
+            );
+            spyon.mockClear();
+        });
     });
 });

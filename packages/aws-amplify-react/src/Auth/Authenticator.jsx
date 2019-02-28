@@ -131,7 +131,7 @@ export default class Authenticator extends Component {
         }
 
         if (this._isMounted) {
-            this.setState({ authState: state, authData: data, error: null, showToast: false });            
+            this.setState({ authState: state, authData: data, error: null, showToast: false });
         }
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
@@ -141,7 +141,7 @@ export default class Authenticator extends Component {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
             this.setState({ error: message, showToast });
-            
+
         }
     }
 
@@ -177,11 +177,11 @@ export default class Authenticator extends Component {
             } else {
                 props_children.push(this.props.children);
             }
-        } 
+        }
 
         const default_children = [
             <Greetings federated={federated}/>,
-            <SignIn federated={federated}/>,
+            <SignIn federated={federated} OAuthClientState={this.props.OAuthClientState}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
             <SignUp signUpConfig={signUpConfig}/>,
@@ -194,7 +194,7 @@ export default class Authenticator extends Component {
 
         const props_children_override =  React.Children.map(props_children, child => child.props.override);
         hide = hide.filter((component) => !props_children.find(child => child.type === component));
-        
+
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
@@ -208,7 +208,7 @@ export default class Authenticator extends Component {
                     override: props_children_override
                 });
         });
-       
+
         const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
@@ -224,11 +224,11 @@ export default class Authenticator extends Component {
             });
 
         const render_children = render_default_children.concat(render_props_children);
-        const error = this.state.error;        
+        const error = this.state.error;
 
         return (
             <Wrapper theme={theme}>
-                {this.state.showToast && 
+                {this.state.showToast &&
                     <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>

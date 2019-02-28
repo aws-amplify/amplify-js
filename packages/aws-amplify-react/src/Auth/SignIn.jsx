@@ -103,7 +103,7 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[] } = this.props;
+        const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[], OAuthClientState } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
         const hideSignUp = !override.includes('SignUp') && hide.some(component => component === SignUp);
         const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
@@ -116,6 +116,7 @@ export default class SignIn extends AuthPiece {
                         authState={authState}
                         onStateChange={onStateChange}
                         onAuthEvent={onAuthEvent}
+                        OAuthClientState={OAuthClientState}
                     />
                 <form onSubmit={this.signIn}>
                 <SectionBody theme={theme}>

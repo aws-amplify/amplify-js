@@ -36,7 +36,7 @@ export * from './Provider';
 import Greetings from './Greetings';
 
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}, OAuthClientState = null) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -58,7 +58,8 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                     authenticatorComponents,
                     federated,
                     theme,
-                    signUpConfig
+                    signUpConfig,
+                    OAuthClientState
                 }
             }
         }
@@ -102,6 +103,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents || []}
+                OAuthClientState={this.props.OAuthClientState || this.authConfig.OAuthClientState}
             />;
         }
     };

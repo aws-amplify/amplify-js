@@ -18,8 +18,8 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { oAuthSignInButton } from '@aws-amplify/ui';
-import { 
-    SignInButton, 
+import {
+    SignInButton,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 import Constants from '../common/constants';
@@ -44,18 +44,19 @@ export default function withOAuth(Comp, options) {
             const config = this.props.oauth_config || options || cognitoHostedUIConfig;
 
             logger.debug('withOAuth configuration', config);
-            const { 
-                domain, 
+            const {
+                domain,
                 redirectSignIn,
                 redirectSignOut,
                 responseType
             } = config;
 
             const options = config.options || {};
-            const url = 'https://' + domain 
-                + '/login?redirect_uri=' + redirectSignIn 
-                + '&response_type=' + responseType 
-                + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
+            const url = 'https://' + domain
+                + '/login?redirect_uri=' + redirectSignIn
+                + '&response_type=' + responseType
+                + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId)
+                + (this.props.OAuthClientState != null ? '&state=' + this.props.OAuthClientState : '');
 
             try {
                 localStorage.setItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY, 'true');
