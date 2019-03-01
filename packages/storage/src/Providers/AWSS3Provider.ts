@@ -155,7 +155,7 @@ export default class AWSS3Provider implements StorageProvider{
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, track, progressCallback } = opt;
-        const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
+        const { contentType, contentDisposition, cacheControl, expires, metadata, tagging } = opt;
         const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
@@ -174,6 +174,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
+        if (tagging) { params.Tagging = tagging; }
         if (serverSideEncryption) {
             params.ServerSideEncryption = serverSideEncryption;
             if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }

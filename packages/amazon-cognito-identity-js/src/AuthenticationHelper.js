@@ -17,7 +17,7 @@
 
 import { Buffer } from 'buffer/';
 import CryptoJS from 'crypto-js/core';
-import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
+import 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import SHA256 from 'crypto-js/sha256';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
 
