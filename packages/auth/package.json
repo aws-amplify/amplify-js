@@ -51,10 +51,10 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "1.0.23-unstable.3",
-    "@aws-amplify/core": "1.0.23-unstable.3",
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "3.0.8-unstable.4"
+    "@aws-amplify/cache": "1.0.23-unstable.2",
+    "@aws-amplify/core": "1.0.23-unstable.2",
+    "amazon-cognito-auth-js": "^1.3.2",
+    "amazon-cognito-identity-js": "^3.0.8-unstable.2"
   },
   "peerDependencies": {
     "buffer": "4.x",

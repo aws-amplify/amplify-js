@@ -143,7 +143,6 @@ export default class AuthClass {
             identityPoolId,
             mandatorySignIn,
             refreshHandlers,
-            storage,
             identityPoolRegion
         } = this._config;
 
@@ -183,26 +182,26 @@ export default class AuthClass {
 
         // initiailize cognitoauth client if hosted ui options provided
         // to keep backward compatibility:
-        const cognitoHostedUIConfig = oauth? (oauth['domain']? oauth : oauth.awsCognito) : undefined;
+        const cognitoHostedUIConfig: awsCognitoOAuthOpts = oauth
+            ? (oauth['domain'] ? oauth as awsCognitoOAuthOpts : oauth.awsCognito)
+            : undefined;
+
         if (cognitoHostedUIConfig) {
             const that = this;
-            const cognitoAuthParams = Object.assign(
-                {
-                    ClientId: userPoolWebClientId,
-                    UserPoolId: userPoolId,
-                    AppWebDomain: cognitoHostedUIConfig['domain'],
-                    TokenScopesArray: cognitoHostedUIConfig['scope'],
-                    RedirectUriSignIn: cognitoHostedUIConfig['redirectSignIn'],
-                    RedirectUriSignOut: cognitoHostedUIConfig['redirectSignOut'],
-                    ResponseType: cognitoHostedUIConfig['responseType'],
-                    Storage: this._storage
-                },
-                cognitoHostedUIConfig['options']
-            );
+            const {
+                domain: AppWebDomain,
+                scope: TokenScopesArray,
+                redirectSignIn: RedirectUriSignIn,
+                redirectSignOut: RedirectUriSignOut,
+                responseType: ResponseType,
+                urlOpener,
+                options
+            } = cognitoHostedUIConfig as awsCognitoOAuthOpts;
 
-            const { urlOpener } = cognitoHostedUIConfig as awsCognitoOAuthOpts;
-            if (typeof urlOpener === 'function') {
-                CognitoAuth.prototype.launchUri = (url: string, redirectUrl?: string) => {
+            let LaunchUri = urlOpener;
+
+            if (typeof LaunchUri === 'function') {
+                LaunchUri = (url: string, redirectUrl?: string) => {
                     const {
                         redirect_uri,
                         logout_uri
@@ -217,6 +216,19 @@ export default class AuthClass {
                     return urlOpener(url, redirectUrl || redirect_uri || logout_uri);
                 };
             }
+
+            const cognitoAuthParams = {
+                ClientId: userPoolWebClientId,
+                UserPoolId: userPoolId,
+                AppWebDomain,
+                TokenScopesArray,
+                RedirectUriSignIn,
+                RedirectUriSignOut,
+                ResponseType,
+                Storage: this._storage,
+                LaunchUri,
+                options
+            };
 
             urlListener(({ url }) => {
                 logger.debug('cognito auth params', cognitoAuthParams);
