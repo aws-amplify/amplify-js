@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import ConfirmSignUp from '../src/components/authenticator/ConfirmSignUp.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -67,12 +67,12 @@ describe('ConfirmSignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Confirm Sign Up');
+      expect(wrapper.vm.options.header).toEqual('i18n Confirm Sign Up');
       expect(wrapper.vm.options.username).toEqual('');
     });
 
     it('...should set the error property when a valid username is not received', () => {
-      expect(wrapper.vm.error).toEqual('Valid username not received.');
+      expect(wrapper.vm.error).toEqual('i18n Valid username not received.');
     });
 
     it('...should call Auth.confirmSignUp when confirm method is called', () => {

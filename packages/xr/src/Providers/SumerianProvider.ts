@@ -82,8 +82,22 @@ export class SumerianProvider extends AbstractXRProvider {
 
     const sceneUrl = scene.sceneConfig.url;
     const sceneId = scene.sceneConfig.sceneId;
+
+    let sceneRegion;
+    if(scene.sceneConfig.hasOwnProperty('region')) {
+      // Use the scene region on the Sumerian scene configuration
+      sceneRegion = scene.sceneConfig.region;
+    } else if (this.options.hasOwnProperty('region')) {
+      // Use the scene region on the XR category configuration
+      sceneRegion = this.options.region;
+    } else {
+      const errorMsg = `No region configured for scene: ${sceneName}`;
+      logger.error(errorMsg);
+      throw(new XRSceneLoadFailure(errorMsg));
+    }
+
     const awsSDKConfigOverride = {
-        region: this.options.region,
+        region: sceneRegion,
         // This is passed to the AWS clients created in
         // Sumerian's AwsSystem
         // This helps other services(like Lex and Polly) to track
@@ -113,13 +127,23 @@ export class SumerianProvider extends AbstractXRProvider {
         session_token: credentials.sessionToken,
       };
       
-      const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
+      const serviceInfo = { region: sceneRegion, service: SUMERIAN_SERVICE_NAME };
       url = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
     }
+
     const apiResponse = await fetch(url, fetchOptions);
     const apiResponseJson = await apiResponse.json();
+    if (apiResponse.status === 403) {
+      if (apiResponseJson.message) {
+        logger.error(`Failure to authenticate user: ${apiResponseJson.message}`);
+        throw(new XRSceneLoadFailure(`Failure to authenticate user: ${apiResponseJson.message}`));
+      } else {
+        logger.error(`Failure to authenticate user`);
+        throw(new XRSceneLoadFailure(`Failure to authenticate user`));
+      }
+    }
     
     // Get bundle data from scene api response
     const sceneBundleData = apiResponseJson.bundleData[sceneId];
@@ -212,6 +236,11 @@ export class SumerianProvider extends AbstractXRProvider {
   public isVRCapable(sceneName: string): boolean {
     const sceneController = this.getSceneController(sceneName);
     return sceneController.vrCapable;
+  }
+
+  public isVRPresentationActive(sceneName: string): boolean {
+    const sceneController = this.getSceneController(sceneName);
+    return sceneController.vrPresentationActive;
   }
 
   public start(sceneName: string) {

@@ -3,6 +3,188 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.23-unstable.2"></a>
+## [1.0.23-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.23-unstable.1...@aws-amplify/pubsub@1.0.23-unstable.2) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.23-unstable.1"></a>
+## [1.0.23-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.23-unstable.0...@aws-amplify/pubsub@1.0.23-unstable.1) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.23-unstable.0"></a>
+## [1.0.23-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.22...@aws-amplify/pubsub@1.0.23-unstable.0) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.22"></a>
+## [1.0.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.22-unstable.0...@aws-amplify/pubsub@1.0.22) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.22-unstable.0"></a>
+## [1.0.22-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.21...@aws-amplify/pubsub@1.0.22-unstable.0) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.21"></a>
+## [1.0.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.21-unstable.0...@aws-amplify/pubsub@1.0.21) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.21-unstable.0"></a>
+## [1.0.21-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.20...@aws-amplify/pubsub@1.0.21-unstable.0) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.20"></a>
+## [1.0.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.20-unstable.0...@aws-amplify/pubsub@1.0.20) (2018-12-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.20-unstable.0"></a>
+## [1.0.20-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19...@aws-amplify/pubsub@1.0.20-unstable.0) (2018-12-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19"></a>
+## [1.0.19](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19-unstable.4...@aws-amplify/pubsub@1.0.19) (2018-12-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19-unstable.4"></a>
+## [1.0.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19-unstable.3...@aws-amplify/pubsub@1.0.19-unstable.4) (2018-11-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19-unstable.3"></a>
+## [1.0.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19-unstable.2...@aws-amplify/pubsub@1.0.19-unstable.3) (2018-11-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19-unstable.2"></a>
+## [1.0.19-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19-unstable.1...@aws-amplify/pubsub@1.0.19-unstable.2) (2018-11-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19-unstable.1"></a>
+## [1.0.19-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.19-unstable.0...@aws-amplify/pubsub@1.0.19-unstable.1) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.19-unstable.0"></a>
+## [1.0.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18...@aws-amplify/pubsub@1.0.19-unstable.0) (2018-11-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.18"></a>
+## [1.0.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18-unstable.3...@aws-amplify/pubsub@1.0.18) (2018-11-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.18-unstable.3"></a>
+## [1.0.18-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18-unstable.2...@aws-amplify/pubsub@1.0.18-unstable.3) (2018-11-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** correctly match # and + wildcards in message topic ([#2008](https://github.com/aws/aws-amplify/issues/2008)) ([522372e](https://github.com/aws/aws-amplify/commit/522372e))
+
+
+
+
+<a name="1.0.18-unstable.2"></a>
+## [1.0.18-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18-unstable.1...@aws-amplify/pubsub@1.0.18-unstable.2) (2018-11-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.18-unstable.1"></a>
+## [1.0.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.18-unstable.0...@aws-amplify/pubsub@1.0.18-unstable.1) (2018-11-09)
+
+
+### Bug Fixes
+
+* **pubsub,appsync:** Fix NPE when unsubscribing ([#1955](https://github.com/aws/aws-amplify/issues/1955)) ([e651728](https://github.com/aws/aws-amplify/commit/e651728)), closes [#1940](https://github.com/aws/aws-amplify/issues/1940)
+
+
+
+
+<a name="1.0.18-unstable.0"></a>
+## [1.0.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.17...@aws-amplify/pubsub@1.0.18-unstable.0) (2018-11-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.17-unstable.0...@aws-amplify/pubsub@1.0.17) (2018-11-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.17-unstable.0"></a>
+## [1.0.17-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.16...@aws-amplify/pubsub@1.0.17-unstable.0) (2018-10-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.16-unstable.3...@aws-amplify/pubsub@1.0.16) (2018-10-17)
 

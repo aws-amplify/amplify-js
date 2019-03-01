@@ -27,7 +27,12 @@ depending on your project setup and experience with modern JavaScript build tool
 
 * Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill.
+**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
+
+```javascript
+global.fetch = require('node-fetch');
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+```
 
 Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
@@ -228,7 +233,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
             alert(err.message || JSON.stringify(err));
             return;
         }
-        cognitoUser = result.user;
+        var cognitoUser = result.user;
         console.log('user name is ' + cognitoUser.getUsername());
     });
 ```
@@ -273,6 +278,9 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
 
 ```javascript
+
+    import * as AWS from 'aws-sdk/global';
+    
     var authenticationData = {
         Username : 'username',
         Password : 'password',
@@ -559,6 +567,9 @@ In React Native, loading the persisted current user information requires an extr
         cognitoUser.getSession(function(err, result) {
             if (result) {
                 console.log('You are now logged in.');
+                
+                //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+                AWS.config.region = '<region>';
 
                 // Add the User's Id Token to the Cognito credentials login map.
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -850,7 +861,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	     });
   ```
   
-**Use case 31.** Retrieve the user data for an authenticated user. 
+**Use case 31.** Retrieve the user data for an authenticated user.
 
   ```js
 	    cognitoUser.getUserData(function(err, userData) {
@@ -860,6 +871,16 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	        }
 	        console.log('User data for user ' + userData);
 	    });
+
+        // If you want to force to get the user data from backend,
+        // you can set the bypassCache to true
+        cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err.message || JSON.stringify(err));
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    }, {bypassCache: true});
   ```
 
 **Use case 32.** Handling expiration of the Id Token. 

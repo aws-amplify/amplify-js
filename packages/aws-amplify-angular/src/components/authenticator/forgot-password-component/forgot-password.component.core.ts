@@ -1,3 +1,18 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
@@ -11,7 +26,8 @@ const template = `
     <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
 
       <div class="amplify-form-row" *ngIf="!code_sent">
-        <input
+      <label class="amplify-input-label" for="username"> Username *</label>
+        <input #username
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
@@ -20,6 +36,7 @@ const template = `
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="code"> Confirmation Code *</label>
         <input #code
           (keyup)="setCode(code.value)"
           class="amplify-form-input"
@@ -28,6 +45,7 @@ const template = `
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="password"> New Password *</label>
         <input #password
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"

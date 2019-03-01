@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -10,6 +23,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 const logger = new Logger('withAmazon');
 
@@ -20,6 +34,7 @@ export default function withAmazon(Comp) {
 
             this.initAmazon = this.initAmazon.bind(this);
             this.signIn = this.signIn.bind(this);
+            this.signOut = this.signOut.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
             this.state = {};
@@ -32,6 +47,15 @@ export default function withAmazon(Comp) {
                 if (response.error) {
                     logger.debug('Failed to login with amazon: ' + response.error);
                     return;
+                }
+
+                const payload = {
+                    provider: Constants.AMAZON
+                };
+                try {
+                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                } catch (e) {
+                    logger.debug('Failed to cache auth source into localStorage', e);
                 }
                 
                 this.federatedSignIn(response);
@@ -56,7 +80,7 @@ export default function withAmazon(Comp) {
 
                 const user = {
                     name: userInfo.profile.Name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {
@@ -74,9 +98,20 @@ export default function withAmazon(Comp) {
             });
         }
 
+        signOut() {
+            const amz = window.amazon;
+            if (!amz) {
+                logger.debug('Amazon Login sdk undefined');
+                return Promise.resolve();
+            }
+
+            logger.debug('Amazon signing out');
+            amz.Login.logout();
+        }
+
         componentDidMount() {
             const { amazon_client_id } = this.props;
-            if (amazon_client_id) this.createScript();
+            if (amazon_client_id && !window.amazon) this.createScript();
         }
 
         createScript() {
@@ -97,7 +132,7 @@ export default function withAmazon(Comp) {
         render() {
             const amz = window.amazon;
             return (
-                <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} />
+                <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} amazonSignOut={this.signOut} />
             );
         }
     };

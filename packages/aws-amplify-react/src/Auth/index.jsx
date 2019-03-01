@@ -29,12 +29,14 @@ export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
 export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
 export { default as TOTPSetup } from './TOTPSetup';
+export { default as Loading } from './Loading';
 
 export * from './Provider';
 
 import Greetings from './Greetings';
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null) {
+
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -45,6 +47,20 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authState: props.authState || null,
                 authData: props.authData || null
             };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    federated,
+                    theme,
+                    signUpConfig
+                }
+            }
         }
 
         handleAuthStateChange(state, data) {
@@ -56,13 +72,15 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
                 return (
-                    <div>
+                    <React.Fragment>
                         {
-                            includeGreetings?
+                            this.authConfig.includeGreetings?
                             <Greetings
                                 authState={authState}
                                 authData={authData}
+                                federated={this.authConfig.federated || this.props.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
+                                theme={theme}
                             />
                             : null
                         }
@@ -72,17 +90,18 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                    </div>
+                    </React.Fragment>
                 );
             }
 
             return <Authenticator
                 {...this.props}
-                theme={theme}
-                federated={federated || this.props.federated}
-                hideDefault={authenticatorComponents.length > 0}
+                theme={this.authConfig.theme}
+                federated={this.authConfig.federated || this.props.federated}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
+                children={this.authConfig.authenticatorComponents || []}
             />;
         }
     };

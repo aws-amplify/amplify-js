@@ -9,7 +9,6 @@
   width: 100%;
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
-  border-radius: 5px 5px 0 0;
   padding: 16px;
   background-color: var(--lightSquidInk);
   font-size: 14px;

@@ -16,25 +16,25 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Username *</div>
-        <input v-bind:class="amplifyUI.input"  v-model="options.username" placeholder="Username" autofocus v-on:keyup.enter="signIn" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
+        <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" />
       </div>
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">Password *</div>
-        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" placeholder="Password" v-on:keyup.enter="signIn" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
+        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" />
         <div v-bind:class="amplifyUI.hint">
-          Forgot your password?
-          <a v-bind:class="amplifyUI.a" v-on:click="forgot">Reset</a>
+          {{$Amplify.I18n.get('Forget your password? ')}}
+          <a v-bind:class="amplifyUI.a" v-on:click="forgot">{{$Amplify.I18n.get('Reset password')}}</a>
         </div>
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signIn">Sign In</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</button>
       </span>
-      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        No Account?
-        <a v-bind:class="amplifyUI.a" v-on:click="signUp">Sign Up</a>
+      <span v-bind:class="amplifyUI.sectionFooterSecondaryContent" v-if="options.isSignUpDisplayed">
+        {{$Amplify.I18n.get('No account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -47,7 +47,6 @@
 // import Auth from '@aws-amplify/auth';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
-
 
 export default {
   name: 'SignIn',
@@ -63,8 +62,9 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: 'Sign In',
-        username: ''
+        header: this.$Amplify.I18n.get('Sign In Account'),
+        username: '',
+        isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})
     }
@@ -78,13 +78,27 @@ export default {
       this.$Amplify.Auth.signIn(this.options.username, this.password)
         .then(data => {
           this.logger.info('sign in success');
-          if (data.challengeName) {
+          if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'confirmSignIn')
-          } 
-          return AmplifyEventBus.$emit('authState', 'signedIn')
+          } else if (data.challengeName === 'NEW_PASSWORD_REQUIRED') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'requireNewPassword');
+          } else if (data.challengeName === 'MFA_SETUP') {
+            AmplifyEventBus.$emit('localUser', data);
+            return AmplifyEventBus.$emit('authState', 'setMfa');
+          } else {
+            return AmplifyEventBus.$emit('authState', 'signedIn')
+          }
         })
-        .catch(e => this.setError(e));
+        .catch((e) => {
+          if (e.code && e.code === 'UserNotConfirmedException'){
+            AmplifyEventBus.$emit('localUser', {username: this.options.username})
+            AmplifyEventBus.$emit('authState', 'confirmSignUp')
+          } else {
+            this.setError(e);
+          }
+        });
     },
     forgot: function() {
       AmplifyEventBus.$emit('authState', 'forgotPassword')
@@ -93,7 +107,7 @@ export default {
       AmplifyEventBus.$emit('authState', 'signUp')
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
     }
   }

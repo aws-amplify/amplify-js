@@ -19,13 +19,13 @@ describe('Storage Common test', () => {
         test('happy case when fileToKey is a function', () => {
             const mockFn = jest.fn().mockImplementation((obj) => {
                 let str = '';
-                for (let k in obj) {
+                for (const k in obj) {
                     str += obj[k] + ' ';
                 }
                 return str;
             });
 
-            expect(calcKey(file, mockFn)).toBe('name_size_type_')
+            expect(calcKey(file, mockFn)).toBe('name_size_type_');
         });
 
         test('happy case when fileToKey is a object', () => {

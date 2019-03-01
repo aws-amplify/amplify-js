@@ -3,7 +3,7 @@ import Vue from 'vue';
 import { shallowMount, mount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import PhotoPicker from '../src/components/storage/PhotoPicker.vue';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -67,8 +67,8 @@ describe('PhotoPicker', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('File Upload');
-      expect(wrapper.vm.options.title).toEqual('Upload');
+      expect(wrapper.vm.options.header).toEqual('i18n File Upload');
+      expect(wrapper.vm.options.title).toEqual('i18n Upload');
       expect(wrapper.vm.options.accept).toEqual('*/*');
     });
   });
@@ -78,9 +78,10 @@ describe('PhotoPicker', () => {
     it('...should have a upload method that calls Amplify.Auth.PhotoPicker', () => {
       wrapper.vm.s3ImagePath = 'testPath';
       wrapper.vm.file = { type: 'fakeFile' };
+      wrapper.vm.options.storageOptions = { level: 'private', contentType: 'fakeType' };
       wrapper.vm.upload();
       expect(wrapper.vm.$Amplify.Storage.put)
-      .toHaveBeenCalledWith('testPath', { type: 'fakeFile' }, { contentType: 'fakeFile' });
+      .toHaveBeenCalledWith('testPath', { type: 'fakeFile' }, { level: 'private', contentType: 'fakeType' }, );
     });
   });
 

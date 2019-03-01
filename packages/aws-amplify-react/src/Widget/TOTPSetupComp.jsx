@@ -30,7 +30,7 @@ import {
 
 import { totpQrcode } from '@aws-amplify/ui';
 
-import QRCode from 'qrcode.react';
+const QRCode = require('qrcode.react');
 
 const logger = new Logger('TOTPSetupComp');
 
@@ -113,7 +113,7 @@ export default class TOTPSetupComp extends Component {
                 <div className={totpQrcode}>
                     <QRCode value={code} />
                 </div>
-                <InputLabel>{I18n.get('Enter Security Code:')}</InputLabel>
+                <InputLabel theme={theme}>{I18n.get('Enter Security Code:')}</InputLabel>
                 <Input
                     autoFocus
                     theme={theme}
@@ -144,7 +144,7 @@ export default class TOTPSetupComp extends Component {
                     }
                 </SectionBody>
 
-                <SectionFooter>
+                <SectionFooter theme={theme}>
                     <Button theme={theme} onClick={this.verifyTotpToken} style={{width: '100%'}}>
                         {I18n.get('Verify Security Token')}
                     </Button>

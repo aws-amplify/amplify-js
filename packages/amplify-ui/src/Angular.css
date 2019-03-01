@@ -226,34 +226,6 @@ border: 0px solid var(--color-white) !important;
   padding: 1em;
   margin: 1em;
   width: 75%;
-  border-radius: 20px 20px 20px 0;
-  background-color: #DBDBDB;
-  box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
-  font-size: 13px;
-  line-height: 16px;
-  color: #4A4A4A;
-}
-
-.amplify-interactions-input-timestamp {
-  color: #828282;
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  line-height: 16px;
-  margin-left: 1.5em;
-}
-
-.amplify-interactions-response-timestamp {
-  color: #828282;
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  line-height: 16px;
-  text-align:right;
-}
-
-.amplify-interactions-response {
-  padding: 1em;
-  margin: 1em;
-  width: 75%;
   margin-left: 5em;
   border-radius: 20px 20px 0 20px;
   background-color: #009ECF;
@@ -261,6 +233,34 @@ border: 0px solid var(--color-white) !important;
   color: var(--color-white);
   font-size: 13px;
   line-height: 16px;
+}
+
+.amplify-interactions-input-timestamp {
+  color: #828282;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 16px;
+  text-align:right;
+}
+
+.amplify-interactions-response-timestamp {
+  color: #828282;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 16px;
+  margin-left: 1.5em;
+}
+
+.amplify-interactions-response {
+  padding: 1em;
+  margin: 1em;
+  width: 75%;
+  border-radius: 20px 20px 20px 0;
+  background-color: #DBDBDB;
+  box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+  font-size: 13px;
+  line-height: 16px;
+  color: #4A4A4A;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -323,8 +323,25 @@ border: 0px solid var(--color-white) !important;
   border-bottom: var(--input-border);
   background-color: transparent;
   margin-top: 0em;
-  width: 110px;
-  height: 44px;
+  min-width: 100% !important;
+  height: 47px !important;
+  padding-left: 0;
+}
+
+.amplify-form-input-phone-ionic {
+  height: 36px;
+  min-width: 100%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
+  border: none;
+  border-bottom: var(--input-border);
+  border-radius: 0px;
+}
+
+.amplify-ionic-grid-padding-left {
+  padding-left: 0
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -391,6 +408,12 @@ border: 0px solid var(--color-white) !important;
   margin: 0.5em;
 }
 
+.amplify-form-extra-details {
+  margin: 0.5em;
+  font-size: 12px;
+  color: var(--color-gray);
+}
+
 /** Ionic styles for material design */
 .md .amplify-form-input {
   border: none;
@@ -400,6 +423,7 @@ border: 0px solid var(--color-white) !important;
 
 .amplify-form-actions {
   margin-top:1.8em;
+  padding-bottom: 1.5em;
 }
 
 .amplify-signin-username {
@@ -479,6 +503,10 @@ color: var(--color-primary-highlight);
 
 .amplify-footer {
   clear: both;
+}
+
+.amplify-input-invalid {
+  border-color: red !important;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -568,3 +596,10 @@ z-index: 1;
 visibility: visible;
 }
   
+/************************************
+** Ionic
+************************************/
+
+.amplify-phone-ion-content {
+  height: 100px;
+}

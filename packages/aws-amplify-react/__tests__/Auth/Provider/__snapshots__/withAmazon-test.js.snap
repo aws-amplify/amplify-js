@@ -3,6 +3,7 @@
 exports[`AmazonButton test render test render correctly 1`] = `
 <Button
   amazonSignIn={[Function]}
+  amazonSignOut={[Function]}
   amz="amz"
 />
 `;
@@ -10,6 +11,7 @@ exports[`AmazonButton test render test render correctly 1`] = `
 exports[`withAmazon test render test render correctly 1`] = `
 <class_1
   amazonSignIn={[Function]}
+  amazonSignOut={[Function]}
   amz="amz"
 />
 `;

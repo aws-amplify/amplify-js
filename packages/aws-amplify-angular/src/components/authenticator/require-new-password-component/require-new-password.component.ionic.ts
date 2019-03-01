@@ -1,3 +1,18 @@
+// tslint:disable
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+// tslint:enable
+
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
@@ -7,25 +22,6 @@ const template = `
   <div class="amplify-form-body">
     <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
     <ion-list>
-      <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username</ion-label>
-        <ion-input type="text"
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-          [value]="username"
-        ></ion-input>
-      </ion-item>
-  
-      <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code</ion-label>
-        <ion-input 
-          #code
-          type="text"
-          class="amplify-form-input"
-          (keyup)="setCode(code.value)"
-        ></ion-input>
-      </ion-item>
-
       <ion-item lines="none">
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
         <ion-input 
@@ -42,8 +38,8 @@ const template = `
     <div class="amplify-form-row">
     <ion-button
       expand="block"
-      (click)="onSend()"
-    >Send Code</ion-button>
+      (click)="onSignIn()"
+    >Back to Sign In</ion-button>
     <ion-button
       expand="block"
       (click)="onSubmit()"

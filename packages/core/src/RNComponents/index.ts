@@ -12,6 +12,7 @@
  */
 
 import JS from '../JS';
+import MemoryStorage from '../StorageHelper';
 
 const Linking = {};
 const AppState = {
@@ -21,6 +22,6 @@ const AppState = {
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = JS.browserOrNode().isBrowser ? window.localStorage : undefined;
+const AsyncStorage = JS.browserOrNode().isBrowser ? new MemoryStorage().getStorage() : undefined;
 
 export { Linking, AppState, AsyncStorage };

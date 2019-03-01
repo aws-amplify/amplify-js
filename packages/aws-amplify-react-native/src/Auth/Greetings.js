@@ -48,20 +48,21 @@ export default class Greetings extends AuthPiece {
 
         let defaultMessage = "";
         if (Auth.user && Auth.user.username) {
-            defaultMessage = "Hello, " + Auth.user.username;
+            defaultMessage = `${I18n.get('Hello')} ${Auth.user.username}`;
         }
 
         let message;
         if (signedIn) {
             message = this.props.signedInMessage || defaultMessage;
         } else {
-            message = this.props.signedOutMessage || "Please Sign In / Sign Up";
+            message = this.props.signedOutMessage || I18n.get("Please Sign In / Sign Up");
         }
 
         const content = signedIn ? (
             <View style={theme.navBar}>
                 <Text>{message}</Text>
                 <AmplifyButton
+                    theme={theme}
                     text={I18n.get('Sign Out')}
                     onPress={this.signOut}
                     style={theme.navButton}

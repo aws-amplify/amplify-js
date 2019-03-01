@@ -16,9 +16,12 @@ import {
   Chatbot,
   PhotoPicker,
   S3Album,
-  S3Image
+  S3Image,
+  SumerianScene,
+  RequireNewPassword,
+  Connect
 } from './components';
-import { AmplifyPlugin } from './plugins/AmplifyPlugin';
+import AmplifyPlugin from './plugins/AmplifyPlugin';
 import AmplifyEventBus from './events/AmplifyEventBus';
 
 export default {
@@ -35,7 +38,10 @@ export default {
     Chatbot,
     PhotoPicker,
     S3Album,
-    S3Image
+    S3Image,
+    SumerianScene,
+    RequireNewPassword,
+    Connect
   },
   AmplifyPlugin,
   AmplifyEventBus,

@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignIn from '../src/components/authenticator/SignIn.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -66,7 +66,7 @@ describe('SignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Sign In');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign In Account');
       expect(wrapper.vm.options.username).toEqual('');
     });
     it('...should call Auth.signIn when signIn function is called', () => {

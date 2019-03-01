@@ -111,6 +111,25 @@ export default AmplifyTheme = StyleSheet.create({
     },
     inputLabel: {
         marginBottom: 8
-    }
+    },
+    phoneContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    phoneInput: {
+        flex: 2,
+        padding: 16,
+        borderWidth: 1,
+        borderRadius: 3,
+        borderColor: "#C4C4C4",
+    },
+    picker: {
+        flex: 1,
+        height: 44,
+    },
+    pickerItem: {
+        height: 44,
+    },
 });
 

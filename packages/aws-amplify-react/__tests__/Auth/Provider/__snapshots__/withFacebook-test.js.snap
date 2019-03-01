@@ -3,6 +3,7 @@
 exports[`FacebookButton test render test render correctly 1`] = `
 <Button
   facebookSignIn={[Function]}
+  facebookSignOut={[Function]}
   fb="fb"
 />
 `;
@@ -10,6 +11,7 @@ exports[`FacebookButton test render test render correctly 1`] = `
 exports[`withFacebook test render test render correctly 1`] = `
 <class_1
   facebookSignIn={[Function]}
+  facebookSignOut={[Function]}
   fb="fb"
 />
 `;

@@ -10,12 +10,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { 
-    ConsoleLogger as Logger, 
-    ClientDevice, 
-    Platform, 
+import {
+    ConsoleLogger as Logger,
+    ClientDevice,
+    Platform,
     Credentials,
-    Signer
+    Signer,
+    JS,
+    Hub
 } from '@aws-amplify/core';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
@@ -24,6 +26,10 @@ import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
+
+const dispatchAnalyticsEvent = (event, data) => {
+    Hub.dispatch('analytics', { event, data }, 'Analytics');
+};
 
 const logger = new Logger('AWSPinpointProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -57,9 +63,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
         this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
         this._clientInfo = ClientDevice.clientInfo();
-
-        // flush event buffer
-        this._setupTimer();
     }
 
     private _setupTimer() {
@@ -74,7 +77,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
-                } 
+                }
             },
             flushInterval
         );
@@ -100,15 +103,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event, config } = params;
 
         const { appId, region, resendLimit } = config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
         let success = true;
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 success = await this._startSession(params);
                 break;
-            case '_session_stop':
+            case '_session.stop':
                 success = await this._stopSession(params);
                 break;
             case '_update_endpoint':
@@ -118,9 +119,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 success = await this._recordCustomEvent(params);
                 break;
         }
-        
+
         if (!success) {
-            params.resendLimits = typeof params.resendLimits === 'number' ? 
+            params.resendLimits = typeof params.resendLimits === 'number' ?
                 params.resendLimits : resendLimit;
             if (params.resendLimits > 0) {
                 logger.debug(
@@ -156,7 +157,23 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
 
-        this._setupTimer();
+        if (this._config['appId'] && !this._config['disabled']) {
+            if (!this._config['endpointId']) {
+                const cacheKey = this.getProviderName() + '_' + this._config['appId'];
+                this._getEndpointId(cacheKey).then(endpointId => {
+                    logger.debug('setting endpoint id from the cache', endpointId);
+                    this._config['endpointId'] = endpointId;
+                    dispatchAnalyticsEvent('pinpointProvider_configured', null);
+                }).catch(e => {
+                    logger.debug('Failed to generate endpointId', e);
+                });
+            } else {
+                dispatchAnalyticsEvent('pinpointProvider_configured', null);
+            }
+            this._setupTimer();
+        } else {
+            if (this._timer) { clearInterval(this._timer); }
+        }
         return this._config;
     }
 
@@ -169,14 +186,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         if (!credentials || !this._config['appId'] || !this._config['region']){
             logger.debug('cannot send events without credentials, applicationId or region');
             return Promise.resolve(false);
-        } 
+        }
         const timestamp = new Date().getTime();
         // attach the session and eventId
         this._generateSession(params);
         params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-
         // temporary solution, will refactor in the future
         if (params.event.immediate) {
             return this._send(params);
@@ -190,7 +206,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event } = params;
 
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 // refresh the session id and session start time
                 this._sessionStartTimestamp = new Date().getTime();
                 this._sessionId = uuid();
@@ -199,7 +215,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     StartTimestamp: new Date(this._sessionStartTimestamp).toISOString()
                 };
                 break;
-            case '_session_stop':
+            case '_session.stop':
                 const stopTimestamp = new Date().getTime();
                 this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
                 this._sessionId = this._sessionId || uuid();
@@ -226,10 +242,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private async _send(params) {
         const { event, config } = params;
 
-        const { appId, region } = config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
-
         switch (event.name) {
             case '_session_start':
                 return this._startSession(params);
@@ -247,7 +259,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { name, attributes, metrics, eventId, session } = event;
         const { appId, endpointId } = config;
 
-        const endpointContext = this._generateEndpointContext(config);
+        const endpointContext = {};
 
         const eventParams = {
             ApplicationId: appId,
@@ -285,11 +297,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
             request.send((err, data) => {
                 if (err) {
-                    logger.debug('record event failed. ', err);
-                    logger.error(
-                        'Please ensure you have updated you Pinpoint IAM Policy' +
-                        'with the Action: \"mobiletargeting:PutEvents\" in order to' +
-                        'continue using AWS Pinpoint Service'
+                    logger.error('record event failed. ', err);
+                    logger.warn(
+                        'If you have not updated your Pinpoint IAM Policy' + 
+                        ' with the Action: \"mobiletargeting:PutEvents\" yet, please do it.' + 
+                        ' This action is not necessary for now' + 
+                        ' but in order to avoid breaking changes in the future,' + 
+                        ' please update it as soon as possible.'
                     );
                     res(false);
                 }
@@ -303,7 +317,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _startSession(params) {
         // credentials updated
@@ -317,7 +331,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _stopSession(params) {
         // credentials updated
@@ -331,13 +345,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param params 
+     * @param params
      */
     private async _recordCustomEvent(params) {
         // credentials updated
         const { event, timestamp, config, credentials } = params;
         this._initClients(config, credentials);
-        
+
         logger.debug('record event with params');
         const eventParams = this._generateBatchItemContext(params);
         return this._pinpointPutEvents(eventParams);
@@ -349,8 +363,11 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { appId, region, endpointId } = config;
 
         this._initClients(config, credentials);
-        
-        const request = this._endpointRequest(config, event);
+
+        const request = this._endpointRequest(
+            config,
+            JS.transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
+        );
         const update_params = {
             ApplicationId: appId,
             EndpointId: endpointId,
@@ -363,24 +380,88 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
                     logger.debug('updateEndpoint failed', err);
-                    res(false);
+                    if (err.message === 'Exceeded maximum endpoint per user count 10') {
+                        this._removeUnusedEndpoints(appId, credentials.identityId)
+                        .then(() => {
+                            logger.debug('Remove the unused endpoints successfully');
+                            return res(false);
+                        }).catch(e => {
+                            logger.warn(`Failed to remove unused endpoints with error: ${e}`);
+                            logger.warn(`Please ensure you have updated your Pinpoint IAM Policy ` +
+                                `with the Action: "mobiletargeting:GetUserEndpoints" ` +
+                                `in order to get endpoints info of the user`);
+                            return res(false);
+                        });
+                    }
+                    return res(false);
                 } else {
                     logger.debug('updateEndpoint success', data);
-                    res(true);
+                    return res(true);
                 }
             });
         });
     }
 
+    private async _removeUnusedEndpoints(appId, userId) {
+        return new Promise((res, rej) => {
+            this.pinpointClient.getUserEndpoints(
+                {
+                    ApplicationId: appId,
+                    UserId: userId
+                },
+                (err, data) => {
+                    if (err) {
+                        logger.debug(`Failed to get endpoints associated with the userId: ${userId} with error`, err);
+                        return rej(err);
+                    }
+                    const endpoints = data.EndpointsResponse.Item;
+                    logger.debug(`get endpoints associated with the userId: ${userId} with data`, endpoints);
+                    let endpointToBeDeleted = endpoints[0];
+                    for (let i = 1; i < endpoints.length; i++) {
+                        const timeStamp1 = Date.parse(endpointToBeDeleted['EffectiveDate']);
+                        const timeStamp2 = Date.parse(endpoints[i]['EffectiveDate']);
+                        // delete the one with invalid effective date
+                        if (isNaN(timeStamp1)) break;
+                        if (isNaN(timeStamp2)) { endpointToBeDeleted = endpoints[i]; break; }
+
+                        if (timeStamp2 < timeStamp1) {
+                            endpointToBeDeleted = endpoints[i];
+                        }
+                    }
+                    // update the endpoint's user id with an empty string
+                    const update_params = {
+                        ApplicationId: appId,
+                        EndpointId: endpointToBeDeleted['Id'],
+                        EndpointRequest: {
+                            User: {
+                                UserId: ''
+                            }
+                        }
+                    };
+                    this.pinpointClient.updateEndpoint(
+                        update_params,
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('Failed to update the endpoint', err);
+                                return rej(err);
+                            }
+                            logger.debug('The old endpoint is updated with an empty string for user id');
+                            return res(data);
+                        });
+            });
+        });
+
+    }
+
     /**
      * @private
-     * @param config 
+     * @param config
      * Init the clients
      */
     private async _initClients(config, credentials) {
         logger.debug('init clients');
 
-        if (this.mobileAnalytics 
+        if (this.mobileAnalytics
             && this.pinpointClient
             && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
@@ -394,6 +475,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         logger.debug('init clients with credentials', credentials);
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
+        if (Platform.isReactNative) {
+            this.pinpointClient.customizeRequests(function(request) {
+                request.on('build', function(req) {
+                    req.httpRequest.headers['user-agent'] = Platform.userAgent;
+                });
+            });
+        }
+
     }
 
     private async _getEndpointId(cacheKey) {
@@ -413,62 +502,66 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private _endpointRequest(config, event) {
         const { credentials } = config;
-        const clientInfo = this._clientInfo;
-        const {
-            Address, 
-            RequestId, 
-            Attributes,
-            UserAttributes,
-            UserId,
-            OptOut
-        } = event;
-
-        const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-
-        const ret = {
-            Address,
-            Attributes,
-            ChannelType,
-            Demographic: {
-                AppVersion: event.appVersion || clientInfo.appVersion,
-                Make: clientInfo.make,
-                Model: clientInfo.model,
-                ModelVersion: clientInfo.version,
-                Platform: clientInfo.platform
-            },
-            OptOut,
-            RequestId,
-            EffectiveDate: Address? new Date().toISOString() : undefined,
-            User: { 
-                UserId: UserId? UserId: credentials.identityId,
-                UserAttributes
-            }
-        };
-        return ret;
-    }
-
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    private _generateEndpointContext(config) {
-        const { endpointId, appId } = config;
-
+        const clientInfo = this._clientInfo || {};
         const clientContext = config.clientContext || {};
-        const clientInfo = this._clientInfo;
-
-        const endpointCtx = {
-            Demographic: {
-                Make: clientContext.make || clientInfo.make,
-                Model: clientContext.model || clientInfo.model,
-                Locale: clientContext.locale,
-                AppVersion: clientContext.appVersionName,
-                Platform: clientContext.platform || clientInfo.platform,
-                PlatformVersion: clientContext.platformVersion || clientInfo.version
+        // for now we have three different ways for default endpoint configurations
+        // clientInfo
+        // clientContext (deprecated)
+        // config.endpoint
+        const defaultEndpointConfig = config.endpoint || {};
+        const demographicByClientInfo = {
+            appVersion: clientInfo.appVersion,
+            make: clientInfo.make,
+            model: clientInfo.model,
+            modelVersion: clientInfo.version,
+            platform: clientInfo.platform
+        };
+        // for backward compatibility
+        const {
+            clientId,
+            appTitle,
+            appVersionName,
+            appVersionCode,
+            appPackageName,
+            ...demographicByClientContext
+        } = clientContext;
+        const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        const tmp = {
+            channelType,
+            requestId: uuid(),
+            effectiveDate:new Date().toISOString(),
+            ...defaultEndpointConfig,
+            ...event,
+            attributes: {
+                ...defaultEndpointConfig.attributes,
+                ...event.attributes
+            },
+            demographic: {
+                ...demographicByClientInfo,
+                ...demographicByClientContext,
+                ...defaultEndpointConfig.demographic,
+                ...event.demographic
+            },
+            location: {
+                ...defaultEndpointConfig.location,
+                ...event.location
+            },
+            metrics: {
+                ...defaultEndpointConfig.metrics,
+                ...event.metrics
+            },
+            user: {
+                userId: event.userId || defaultEndpointConfig.userId || credentials.identityId,
+                userAttributes: {
+                    ...defaultEndpointConfig.userAttributes,
+                    ...event.userAttributes
+                }
             }
         };
 
-        return endpointCtx;
+        // eliminate unnecessary params
+        const { userId, userAttributes, name, session, eventId, immediate, ...ret } = tmp;
+        return JS.transferKeyToUpperCase(ret, [], ['metrics', 'userAttributes', 'attributes']);
     }
 
     /**

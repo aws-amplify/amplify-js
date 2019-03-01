@@ -22,6 +22,7 @@
           v-for="item in items"
           v-bind:key="item.key"
           :imagePath="item.path"
+          :s3ImageConfig="s3AlbumConfig"
         ></amplify-s3-image>
       </div>
     </div>
@@ -36,12 +37,19 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 
 export default {
   name: 'S3Album',
-  props: ['path'],
+  props: ['s3AlbumConfig', 'path'],
   data () {
     return {
       logger: {},
       error: '',
       items: [],
+    }
+  },
+  computed: {
+    options() {
+      //retain for future use
+      const defaults = {}
+      return Object.assign(defaults, this.s3AlbumConfig || {})
     }
   },
   mounted() {
@@ -58,7 +66,7 @@ export default {
         return; 
       }
       const that = this;
-      this.$Amplify.Storage.list(this.path)
+      this.$Amplify.Storage.list(this.path, this.options)
         .then(res => {
           that.items = res.map(item => {
             return { path: item.key };
@@ -74,7 +82,7 @@ export default {
       this.items.push({key: 123, path: img});
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
 

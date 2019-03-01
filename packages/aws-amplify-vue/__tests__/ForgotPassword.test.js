@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import ForgotPassword from '../src/components/authenticator/ForgotPassword.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
-import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
+import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
@@ -66,7 +66,7 @@ describe('ForgotPassword', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Forgot Password');
+      expect(wrapper.vm.options.header).toEqual('i18n Reset your password');
     });
 
     it('...should call Auth.forgotPassword when submit method is called', () => {
@@ -76,7 +76,7 @@ describe('ForgotPassword', () => {
 
     it('...should set the local error variable when setError is called', () => {
       wrapper.vm.setError('I messed up');
-      expect(wrapper.vm.error).toEqual('I messed up');
+      expect(wrapper.vm.error).toEqual('i18n I messed up');
     });
 
     it('...should call Auth.forgotPasswordSubmit when verify method is called', () => {
