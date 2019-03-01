@@ -53,8 +53,6 @@ import {
 import { CognitoAuth } from 'amazon-cognito-auth-js';
 import { parse } from 'url';
 
-import './overrides';
-
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
     Hub.dispatch('auth', { event, data }, 'Auth');
