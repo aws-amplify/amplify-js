@@ -131,7 +131,7 @@ export default class StorageClass {
     public async get(key: string, config?): Promise<String|Object> {
 
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const getConfig = Object.assign(this._config, config || {});
+        const getConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -150,7 +150,7 @@ export default class StorageClass {
      */
     public async put(key: string, object, config?):Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const putConfig = Object.assign(this._config, config || {});
+        const putConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -167,7 +167,7 @@ export default class StorageClass {
      */
     public async remove(key: string, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const removeConfig = Object.assign(this._config, config || {});
+        const removeConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
@@ -184,7 +184,7 @@ export default class StorageClass {
      */
     public async list(path, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const listConfig = Object.assign(this._config, config || {});
+        const listConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
         if(prov === undefined) {
             logger.debug('No plugin found with providerName', provider);

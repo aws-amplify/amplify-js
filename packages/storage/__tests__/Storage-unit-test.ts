@@ -54,7 +54,8 @@ describe('Storage', () => {
             
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
+                level: 'private'
             };
 
             const config = storage.configure(aws_options);
@@ -64,6 +65,31 @@ describe('Storage', () => {
                     region: 'region'
                 }
             });
+        });
+    });
+
+    describe('configure test', () => {
+        test('happy case with user-initiated configuration', () => {
+            const storage = new Storage();
+            
+            const aws_options = {
+                aws_user_files_s3_bucket: 'bucket',
+                aws_user_files_s3_bucket_region: 'region',
+                level: 'private'
+            };
+
+            const config = storage.configure(aws_options);
+            expect(config).toEqual({
+                AWSS3:{
+                    bucket: 'bucket',
+                    region: 'region'
+                }
+            });
+
+            const userConfig = {level: 'private'};
+            const config2 = storage.configure(userConfig);
+            const mergedValue = {...config, ...userConfig};
+            expect(config2).toEqual(mergedValue);
         });
     });
 
@@ -85,6 +111,75 @@ describe('Storage', () => {
             }
             }) ;
             expect(get_spyon).toBeCalled();
+            get_spyon.mockClear();
+        });
+
+        test('get object with global storage config', async () => { 
+            const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.get('key', {
+                Storage: {
+                    AWSS3: {
+                    bucket: 'bucket', 
+                    region: 'us-east-1', 
+                }
+            }
+            }) ;
+            expect(get_spyon).toBeCalledWith('key', {
+                "Storage": {
+                    "AWSS3": {
+                        "bucket": "bucket",
+                        "region": "us-east-1"}
+                    }, 
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    "level": "private",
+                    "region": "region"
+                }
+            );
+            get_spyon.mockClear();
+        });
+
+        test('get object with call-level storage config', async () => { 
+            const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.get('key', {level: 'public'});
+            expect(get_spyon).toBeCalledWith('key', {
+                "Storage": {
+                    "AWSS3": {
+                        "bucket": "bucket",
+                        "region": "us-east-1"}
+                    }, 
+                    "level": 'public',
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                },
+                
+            );
             get_spyon.mockClear();
         });
     });
