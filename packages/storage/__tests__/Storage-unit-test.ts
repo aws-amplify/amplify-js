@@ -123,20 +123,8 @@ describe('Storage', () => {
             storage.addPluggable(provider);
             storage.configure(options);
             storage.configure({level: 'private'});
-            await storage.get('key', {
-                Storage: {
-                    AWSS3: {
-                    bucket: 'bucket', 
-                    region: 'us-east-1', 
-                }
-            }
-            }) ;
+            await storage.get('key') ;
             expect(get_spyon).toBeCalledWith('key', {
-                "Storage": {
-                    "AWSS3": {
-                        "bucket": "bucket",
-                        "region": "us-east-1"}
-                    }, 
                     "bucket": "bucket",
                     "credentials": {
                         "accessKeyId": "accessKeyId",
@@ -145,6 +133,7 @@ describe('Storage', () => {
                         "secretAccessKey": "secretAccessKey",
                         "sessionToken": "sessionToken"
                     }, 
+                    // expect level to be private, matching global config
                     "level": "private",
                     "region": "region"
                 }
@@ -163,23 +152,18 @@ describe('Storage', () => {
             storage.configure({level: 'private'});
             await storage.get('key', {level: 'public'});
             expect(get_spyon).toBeCalledWith('key', {
-                "Storage": {
-                    "AWSS3": {
-                        "bucket": "bucket",
-                        "region": "us-east-1"}
-                    }, 
-                    "level": 'public',
-                    "bucket": "bucket",
-                    "credentials": {
-                        "accessKeyId": "accessKeyId",
-                        "authenticated": true,
-                        "identityId": "identityId",
-                        "secretAccessKey": "secretAccessKey",
-                        "sessionToken": "sessionToken"
-                    }, 
-                },
-                
-            );
+                "bucket": "bucket",
+                "credentials": {
+                    "accessKeyId": "accessKeyId",
+                    "authenticated": true,
+                    "identityId": "identityId",
+                    "secretAccessKey": "secretAccessKey",
+                    "sessionToken": "sessionToken"
+                }, 
+                "region": "region",
+                // expect level to be public, matching call-level config
+                "level": "public",
+            });
             get_spyon.mockClear();
         });
     });
@@ -205,6 +189,61 @@ describe('Storage', () => {
             expect(put_spyon).toBeCalled();
             put_spyon.mockClear();
         });
+
+        test('put object with global storage config', async () => { 
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.put('key', {}) ;
+            expect(put_spyon).toBeCalledWith('key', {}, {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be private, matching global config
+                    "level": "private",
+                    "region": "region"
+                }
+            );
+            put_spyon.mockClear();
+        });
+
+        test('put object with call-level storage config', async () => { 
+            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.put('key', {}, {level: 'public'}) ;
+            expect(put_spyon).toBeCalledWith('key', {}, {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be public, matching call-level config
+                    "level": "public",
+                    "region": "region"
+                }
+            );
+            put_spyon.mockClear();
+        });
+        
     });
 
     describe('remove test', () => {
@@ -227,6 +266,60 @@ describe('Storage', () => {
             expect(remove_spyon).toBeCalled();
             remove_spyon.mockClear();
         });
+
+        test('remove object with global storage config', async () => { 
+            const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.remove('key', {} ) ;
+            expect(remove_spyon).toBeCalledWith('key', {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be private, matching global config
+                    "level": "private",
+                    "region": "region"
+                }
+            );
+            remove_spyon.mockClear();
+        });
+
+        test('remove object with call-level storage config', async () => { 
+            const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.remove('key', {level: 'public'} ) ;
+            expect(remove_spyon).toBeCalledWith('key', {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be public, matching call-level config
+                    "level": "public",
+                    "region": "region"
+                }
+            );
+            remove_spyon.mockClear();
+        });
     });
 
     describe('list test', () => {
@@ -247,6 +340,60 @@ describe('Storage', () => {
             }
             }) ;
             expect(list_spyon).toBeCalled();
+            list_spyon.mockClear();
+        });
+
+        test('list object with global storage config', async () => { 
+            const list_spyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.list('path', {} ) ;
+            expect(list_spyon).toBeCalledWith('path', {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be private, matching global config
+                    "level": "private",
+                    "region": "region"
+                }
+            );
+            list_spyon.mockClear();
+        });
+
+        test('remove object with call-level storage config', async () => { 
+            const list_spyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => {
+                return ;
+            });
+            const storage = new Storage();
+            const provider = new AWSStorageProvider();
+            storage.addPluggable(provider);
+            storage.configure(options);
+            storage.configure({level: 'private'});
+            await storage.list('path', {level: 'public'} ) ;
+            expect(list_spyon).toBeCalledWith('path', {
+                    "bucket": "bucket",
+                    "credentials": {
+                        "accessKeyId": "accessKeyId",
+                        "authenticated": true,
+                        "identityId": "identityId",
+                        "secretAccessKey": "secretAccessKey",
+                        "sessionToken": "sessionToken"
+                    }, 
+                    // expect level to be public, matching call-level config
+                    "level": "public",
+                    "region": "region"
+                }
+            );
             list_spyon.mockClear();
         });
     });
