@@ -54,8 +54,7 @@ describe('Storage', () => {
             
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region',
-                level: 'private'
+                aws_user_files_s3_bucket_region: 'region'
             };
 
             const config = storage.configure(aws_options);
