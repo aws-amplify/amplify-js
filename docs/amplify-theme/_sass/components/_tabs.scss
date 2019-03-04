@@ -1,0 +1,38 @@
+/**
+ * Tab av (components/_tab.scss)
+ */
+
+/* ----- General ----- */
+ul.tabs{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+ul.tabs li{
+	background: none;
+	color: #222;
+	display: inline-block;
+	padding: 10px 15px;
+	cursor: pointer;
+
+	&:before {
+		content: '';
+	}
+}
+
+ul.tabs li.current{
+	color: #222;
+	font-weight: bold;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color:#333;
+}
+
+.tab-content{
+	display: none;
+	padding: 15px;
+}
+
+.tab-content.current{
+	display: inherit;
+}

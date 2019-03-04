@@ -1,19 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`signUp normal case render correctly with authState signedIn 1`] = `""`;
+exports[`Greetings normal case render correctly with authState signedIn 1`] = `
+<Component
+  theme="theme"
+>
+  <Component
+    theme="theme"
+  >
+    <Component
+      theme="theme"
+    >
+      <span>
+        <Component
+          theme="theme"
+        >
+          Hello username
+        </Component>
+        <SignOut
+          authData={
+            Object {
+              "attributes": Object {
+                "name": "username",
+              },
+            }
+          }
+          authState="signedIn"
+          theme="theme"
+        />
+      </span>
+    </Component>
+  </Component>
+</Component>
+`;
 
-exports[`signUp render corrently with other authStates 1`] = `""`;
+exports[`Greetings normal case render correctly with hide 1`] = `""`;
 
-exports[`signUp render corrently with other authStates 2`] = `""`;
+exports[`Greetings render corrently with other authStates 1`] = `""`;
 
-exports[`signUp render corrently with other authStates 3`] = `""`;
+exports[`Greetings render corrently with other authStates 2`] = `""`;
 
-exports[`signUp render corrently with other authStates 4`] = `""`;
+exports[`Greetings render corrently with other authStates 3`] = `""`;
 
-exports[`signUp render corrently with other authStates 5`] = `""`;
+exports[`Greetings render corrently with other authStates 4`] = `""`;
 
-exports[`signUp render corrently with other authStates 6`] = `""`;
+exports[`Greetings render corrently with other authStates 5`] = `""`;
 
-exports[`signUp render corrently with other authStates 7`] = `""`;
+exports[`Greetings render corrently with other authStates 6`] = `""`;
 
-exports[`signUp render corrently with other authStates 8`] = `""`;
+exports[`Greetings render corrently with other authStates 7`] = `""`;
+
+exports[`Greetings render corrently with other authStates 8`] = `""`;

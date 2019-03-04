@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
+import { Component } from 'react';
 import withFacebook, { FacebookButton } from '../../../src/Auth/Provider/withFacebook';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 
 describe('withFacebook test', () => {
@@ -11,7 +12,7 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             window.FB = 'fb';
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -25,20 +26,20 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 status: 'connected',
                 authResponse: {
                     token: 'token'
                 }
-            }
+            };
 
    
             window.FB =  {
                 getLoginStatus(callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -59,18 +60,18 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 authResponse: { token: null },
                 status: 'not connected'
-            }
+            };
 
             const fbResponse2 = {
                 authResponse: {
                     authResponse: { token: 'token' },
                     status: 'connected'
                 }
-            }
+            };
 
             
             window.FB = {
@@ -80,7 +81,7 @@ describe('withFacebook test', () => {
                 login(callback, option) {
                     callback(fbResponse2);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -101,15 +102,15 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 authResponse: { token: null },
                 status: 'not connected'
-            }
+            };
 
             const fbResponse2 = {
                 authResponse: null
-            }
+            };
 
             
             window.FB = {
@@ -119,7 +120,7 @@ describe('withFacebook test', () => {
                 login(callback, option) {
                     callback(fbResponse2);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -142,16 +143,17 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
-                name: 'username'
-            }
+                name: 'username',
+                email: 'user@example.com'
+            };
 
             window.FB = {
-                    api(path, callback) {
+                    api(path, {}, callback) {
                         callback(fbResponse);
                     }
-                }
+                };
             
 
             const Comp = withFacebook(MockComp);
@@ -165,15 +167,23 @@ describe('withFacebook test', () => {
             });
             const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn({
                 accessToken: 'accessToken',
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
+            expect(spyon).toBeCalledWith(
+                'facebook',
+                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('happy case with onStateChange exists', async () => {
@@ -181,22 +191,27 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
-                name: 'username'
-            }
+                name: 'username',
+                email: 'user@example.com'
+            };
 
             window.FB = {
-                api(path, callback) {
+                api(path, {}, callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
             const mockFn = jest.fn();
 
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
+
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return 'user';
+            });
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
@@ -214,11 +229,14 @@ describe('withFacebook test', () => {
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
-            expect(mockFn).toBeCalledWith('signedIn');
+            expect(spyon).toBeCalledWith(
+                'facebook',
+                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('directly return if no accesstoken', async () => {
@@ -226,16 +244,16 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const fbResponse = {
                 name: 'username'
-            }
+            };
 
             window.FB = {
                 api(path, callback) {
                     callback(fbResponse);
                 }
-            }
+            };
             
 
             const Comp = withFacebook(MockComp);
@@ -248,6 +266,10 @@ describe('withFacebook test', () => {
                 });
             });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn({
                 accessToken: null,
             });
@@ -255,6 +277,7 @@ describe('withFacebook test', () => {
             expect(spyon).not.toBeCalled();
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
     });
 
@@ -264,10 +287,10 @@ describe('withFacebook test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const mockFn = jest.fn().mockImplementationOnce((callback) => {
-                callback('response')
+                callback('response');
             });
             const mockFn2 = jest.fn();
             window.FB = {
@@ -285,6 +308,58 @@ describe('withFacebook test', () => {
             expect(mockFn2).toBeCalled();
         });
     });
+
+    describe('facebook signout test', () => {
+        test('happy case', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback({
+                        status: 'connected'
+                    });
+                },
+                logout: mockFn
+            };
+
+            const Comp = withFacebook(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            await comp.signOut();
+            expect(mockFn).toBeCalled();
+        });
+
+        test('not connected', async () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+            const mockFn = jest.fn();
+
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback({
+                        status: 'not connected'
+                    });
+                },
+                logout: mockFn
+            };
+            const Comp = withFacebook(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+            
+            await comp.signOut();
+            expect(mockFn).not.toBeCalled();
+        });
+    });
 });
 
 describe('FacebookButton test', () => {
@@ -297,4 +372,3 @@ describe('FacebookButton test', () => {
         });
     });
 });
-

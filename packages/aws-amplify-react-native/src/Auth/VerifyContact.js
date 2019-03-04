@@ -14,38 +14,25 @@
 import React from 'react';
 import { 
     View, 
-    Text, 
-    TextInput,
     Picker, 
-    Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import { 
-    ConfirmationCode, 
+    AmplifyButton,
+    FormField, 
     LinkCell, 
     Header, 
     ErrorRow 
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signedIn')}>
-                {I18n.get('Skip')}
-            </LinkCell>
-        </View>
-    )
-}
+const logger = new Logger('VerifyContact');
 
 export default class VerifyContact extends AuthPiece {
     constructor(props) {
@@ -93,6 +80,42 @@ export default class VerifyContact extends AuthPiece {
         this.changeState('signedIn');
     }
 
+    // Have to do it in this way to avoid null or undefined element in React.createElement()
+    createPicker(unverified) {
+        const { email, phone_number } = unverified;
+        if (email && phone_number) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Email')} value="email"/>
+                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                </Picker>
+            );
+        } else if (email) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Email')} value="email"/>
+                </Picker>
+            );
+        } else if (phone_number) {
+            return (
+                <Picker
+                    selectedValue={this.state.pickAttr}
+                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                >
+                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                </Picker>
+            );
+        } else {
+            return null;
+        }
+    }
+
     verifyBody(theme) {
         const { unverified } = this.props.authData;
         if (!unverified) {
@@ -103,15 +126,10 @@ export default class VerifyContact extends AuthPiece {
         const { email, phone_number } = unverified;
         return (
             <View style={theme.sectionBody}>
-                <Picker
-                    selectedValue={this.state.pickAttr}
-                    onValueChange={(value, index) => this.setState({pickAttr: value})}
-                >
-                    { email? <Picker.Item label={I18n.get('Email')} value="email"/> : null }
-                    { phone_number? <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/> : null }
-                </Picker>
-                <Button
-                    title={I18n.get('Verify')}
+                {this.createPicker(unverified)}
+                <AmplifyButton
+                    theme={theme}
+                    text={I18n.get('Verify')}
                     onPress={this.verify}
                     disabled={!this.state.pickAttr}
                 />
@@ -122,12 +140,16 @@ export default class VerifyContact extends AuthPiece {
     submitBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                <ConfirmationCode
+                <FormField
                     theme={theme}
                     onChangeText={(text) => this.setState({ code: text })}
+                    label={I18n.get('Confirmation Code')}
+                    placeholder={I18n.get('Enter your confirmation code')}
+                    required={true}
                 />
-                <Button
-                    title={I18n.get('Submit')}
+                <AmplifyButton
+                    theme={theme}
+                    text={I18n.get('Submit')}
                     onPress={this.submit}
                     disabled={!this.state.code}
                 />
@@ -137,13 +159,19 @@ export default class VerifyContact extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-                { !this.state.verifyAttr && this.verifyBody(theme) }
-                { this.state.verifyAttr && this.submitBody(theme) }
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
+                    { !this.state.verifyAttr && this.verifyBody(theme) }
+                    { this.state.verifyAttr && this.submitBody(theme) }
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signedIn')}>
+                            {I18n.get('Skip')}
+                        </LinkCell>
+                    </View>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

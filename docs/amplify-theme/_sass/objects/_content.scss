@@ -1,0 +1,148 @@
+/**
+ * Content (objects/_content.scss)
+ */
+
+/* ----- Headings ----- */
+.content {
+	> :first-child {
+		margin-top: 50;
+	}
+}
+
+.language-terminal {
+	.go {
+		font-size:13px;
+		line-height: 13px;
+	}
+}
+
+.next-link, .tab-link.current {
+	&:before {
+		font-family: 'icons' !important;
+		content: '\e91f';
+		font-size: 15px;
+		font-weight: bold;
+		color: #212834;
+		margin-left:-4px;
+	}
+}
+
+/* ----- Small grid ----- */
+@media (min-width: $screen-sm-min) {
+	.github-edit-link {
+		display: none;
+	}
+}
+
+@media (min-width: $screen-xs-min) {
+	.github-edit-link {
+		display: none;
+	}
+}
+ 
+
+/* ----- Medium grid ----- */
+@media (min-width: $screen-md-min) {
+	.github-edit-link {
+		position: absolute;
+		margin-top: 0px;
+		right: 100px;
+		font-size:12px;
+		display: inherit;
+	}
+	
+}
+
+/* ----- Large grid ----- */
+@media (min-width: $screen-lg-min) {
+	.github-edit-link {
+		position: absolute;
+		margin-top: 0px;
+		right: 100px;
+		font-size:12px;
+		display: inherit;
+	}
+}
+
+.sections-list-wrapper {
+	.dev-guide {
+		.category-header {
+			font-size: 13px;
+			margin-left: 12px;
+			color: orange;
+		}
+		.in-this-page {
+
+		}
+	}
+	.section-header {
+		padding-left: 0px;
+		font-weight: bold;
+	}
+}
+
+// .site-search {
+
+// 	#search-input {
+// 		vertical-align: middle !important;
+// 		border-radius: 20px;
+// 		border-width: 1px;
+// 		border-style:solid;
+// 		border-color:#d8d8d8;
+// 		padding:4px;
+// 		font-size: 16px;
+// 		padding-left:0px;
+// 		margin-top:-4px;
+// 		border: none;
+// 		outline: none;
+// 		cursor: pointer;
+// 		line-height: 30px;
+// 	}
+// }
+
+ 
+.gitter-chat-embed {
+	z-index:99999;
+}
+
+.gitter-open-chat-button {
+	background-color: orange;
+    height: 30px;
+	padding-top: 2px;
+	opacity: 0.8;
+	padding-left: 15px;
+	padding-right: 15px;
+	right: 20px;
+}
+
+.notification-bar{
+	
+	// controlled by JS
+	display: none;
+
+	background:#ffb850;
+	color:black;
+	text-align: center;
+	margin-top: -3px;
+	//opacity: 0.94;
+	font-size: 16px;
+	padding-top: 5px;
+
+	a {
+		text-decoration: underline;
+	}
+	.close-button{
+		float: right;
+		i {
+			font-size: 25px;
+			margin-right: 20px;
+		}
+		a {
+			text-decoration: none;
+		}
+	}
+}
+
+img.screencap {
+	margin-top:10px;
+}

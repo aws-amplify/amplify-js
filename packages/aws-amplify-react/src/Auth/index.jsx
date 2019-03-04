@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
 
 import Authenticator from './Authenticator';
 
@@ -20,6 +20,7 @@ export { default as Authenticator } from './Authenticator';
 export { default as AuthPiece } from './AuthPiece';
 export { default as SignIn } from './SignIn';
 export { default as ConfirmSignIn } from './ConfirmSignIn';
+export { default as SignOut } from './SignOut';
 export { default as RequireNewPassword } from './RequireNewPassword';
 export { default as SignUp } from './SignUp';
 export { default as ConfirmSignUp } from './ConfirmSignUp';
@@ -28,12 +29,14 @@ export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
 export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
 export { default as TOTPSetup } from './TOTPSetup';
+export { default as Loading } from './Loading';
 
 export * from './Provider';
 
 import Greetings from './Greetings';
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -44,6 +47,20 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 authState: props.authState || null,
                 authData: props.authData || null
             };
+
+            this.authConfig = {};
+
+            if (typeof includeGreetings === 'object' && includeGreetings !== null){
+                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            } else {
+                this.authConfig = {
+                    includeGreetings,
+                    authenticatorComponents,
+                    federated,
+                    theme,
+                    signUpConfig
+                }
+            }
         }
 
         handleAuthStateChange(state, data) {
@@ -55,13 +72,15 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
             const signedIn = (authState === 'signedIn');
             if (signedIn) {
                 return (
-                    <div>
+                    <React.Fragment>
                         {
-                            includeGreetings?
+                            this.authConfig.includeGreetings?
                             <Greetings
                                 authState={authState}
                                 authData={authData}
+                                federated={this.authConfig.federated || this.props.federated || {} }
                                 onStateChange={this.handleAuthStateChange}
+                                theme={theme}
                             />
                             : null
                         }
@@ -71,18 +90,21 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                    </div>
-                )
+                    </React.Fragment>
+                );
             }
 
             return <Authenticator
                 {...this.props}
-                hideDefault={authenticatorComponents.length > 0}
+                theme={this.authConfig.theme}
+                federated={this.authConfig.federated || this.props.federated}
+                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
-                children={authenticatorComponents}
-            />
+                children={this.authConfig.authenticatorComponents || []}
+            />;
         }
-    }
+    };
 }
 
 export class AuthenticatorWrapper extends Component {
@@ -104,10 +126,6 @@ export class AuthenticatorWrapper extends Component {
                 <Authenticator {...this.props} onStateChange={this.handleAuthState} />
                 {this.props.children(this.state.auth)}
             </div>
-        )
+        );
     }
-}
-
-AuthenticatorWrapper.propTypes = {
-    children: PropTypes.func.isRequired
 }

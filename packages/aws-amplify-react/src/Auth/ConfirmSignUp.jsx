@@ -11,23 +11,25 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import * as React from 'react';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ActionRow,
-    MessageRow,
     Button,
-    Space,
-    Link
-} from '../AmplifyUI';
+    Link,
+    InputLabel,
+    Input,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+    FormField,
+    Hint,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -43,6 +45,10 @@ export default class ConfirmSignUp extends AuthPiece {
     confirm() {
         const username = this.usernameFromAuthData() || this.inputs.username;
         const { code } = this.inputs;
+        if (!Auth || typeof Auth.confirmSignUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.confirmSignUp(username, code)
             .then(() => this.changeState('signedUp'))
             .catch(err => this.error(err));
@@ -50,6 +56,9 @@ export default class ConfirmSignUp extends AuthPiece {
 
     resend() {
         const username = this.usernameFromAuthData() || this.inputs.username;
+        if (!Auth || typeof Auth.resendSignUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.resendSignUp(username)
             .then(() => logger.debug('code resent'))
             .catch(err => this.error(err));
@@ -64,42 +73,54 @@ export default class ConfirmSignUp extends AuthPiece {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>
-                    {I18n.get('Confirm')} {I18n.get('Sign Up')}
+                    {I18n.get('Confirm Sign Up')}
                 </SectionHeader>
                 <SectionBody theme={theme}>
-                    { username? <MessageRow>{username}</MessageRow>
-                            : <InputRow
-                                placeholder={I18n.get('Username')}
-                                theme={theme}
-                                key="username"
-                                name="username"
-                                onChange={this.handleInputChange}
-                            />
-                    }
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Code')}
-                        theme={theme}
-                        key="code"
-                        name="code"
-                        onChange={this.handleInputChange}
-                    />
-                    <ActionRow theme={theme}>
+                    <FormField theme={theme}>
+                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
+                        <Input
+                            placeholder={I18n.get('Username')}
+                            theme={theme}
+                            key="username"
+                            name="username"
+                            onChange={this.handleInputChange}
+                            disabled={username}
+                            value={username ? username : ""}
+                        />
+                    </FormField>
+
+                    <FormField theme={theme}>
+                        <InputLabel theme={theme}>{I18n.get('Confirmation Code')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Enter your code')}
+                            theme={theme}
+                            key="code"
+                            name="code"
+                            autoComplete="off"
+                            onChange={this.handleInputChange}
+                        />
+                        <Hint theme={theme}>
+                            {I18n.get('Lost your code? ')}
+                            <Link theme={theme} onClick={this.resend}>
+                                {I18n.get('Resend Code')}
+                            </Link>
+                        </Hint>
+                    </FormField>
+                </SectionBody>
+                <SectionFooter theme={theme}>
+                    <SectionFooterPrimaryContent theme={theme}>
                         <Button theme={theme} onClick={this.confirm}>
                             {I18n.get('Confirm')}
                         </Button>
-                        <Space theme={theme} />
-                        <Button theme={theme} onClick={this.resend}>
-                            {I18n.get('Resend Code')}
-                        </Button>
-                    </ActionRow>
-                </SectionBody>
-                <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

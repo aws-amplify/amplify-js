@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withOAuth test render test render correctly 1`] = `
+<class_1
+  OAuthSignIn={[Function]}
+/>
+`;
+
+exports[`withOAuth test render test render correctly with button 1`] = `
+<Button
+  OAuthSignIn={[Function]}
+/>
+`;

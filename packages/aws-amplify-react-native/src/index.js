@@ -19,8 +19,9 @@ export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
 export * from './AmplifyUI';
 export * from './Auth';
+export * from './API';
 export * from './Storage';
-export { default as PushNotification } from './PushNotification'
+export * from './Interactions';
 
 const configure = function(config) {
   const msg = [

@@ -163,6 +163,9 @@ exports[`S3Image render test render with picker true 1`] = `
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",

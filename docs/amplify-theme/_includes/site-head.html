@@ -1,0 +1,16 @@
+<meta charset="UTF-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+<meta name="google-site-verification" content="VJl2taz2CHF9qo4BCVHRgX93Pyd3qHs4zMgqFqIrrMg" />
+<title>{{ page.title }}</title>
+{% if page.description %}
+	<meta name="description" content="{{ page.description }}">
+{% endif %}
+{% if page.keywords %}
+	<meta name="keywords" content="{{ page.keywords }}">
+{% endif %}
+<link rel="icon" htype="image/png"  href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/favicon.png">
+<link rel='apple-touch-icon' type='image/png' href='{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/favicon.png'> <!-- iPhone -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,500,500i,700,700i|Noto+Sans:400,400i,700,700i|Source+Code+Pro&amp;subset=latin-ext">
+<link rel="stylesheet" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" /> 

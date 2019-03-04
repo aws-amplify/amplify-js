@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Authenticator normal case render if no error 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -119,6 +119,9 @@ exports[`Authenticator normal case render if no error 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -243,12 +246,13 @@ exports[`Authenticator normal case render if no error 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -366,6 +370,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -490,12 +497,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -613,6 +621,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -737,12 +748,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -860,6 +872,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -984,12 +999,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1107,6 +1123,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1231,12 +1250,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1354,6 +1374,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1478,12 +1501,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1601,6 +1625,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1725,12 +1752,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -1848,6 +1876,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1972,12 +2003,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2095,6 +2127,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2219,12 +2254,13 @@ exports[`Authenticator normal case render if no error 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2342,6 +2378,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2465,11 +2504,262 @@ exports[`Authenticator normal case render if no error 1`] = `
       }
     }
   />
-</Container>
+  <Loading
+    authState="loading"
+    hide={Array []}
+    key="aws-amplify-authenticator-default-children-9/.9"
+    messageMap={[Function]}
+    onAuthEvent={[Function]}
+    onStateChange={[Function]}
+    override={Array []}
+    theme={
+      Object {
+        "a": Object {
+          "color": "#007bff",
+          "cursor": "pointer",
+        },
+        "actionRow": Object {
+          "marginBottom": "15px",
+        },
+        "button": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "0",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "col1": Object {
+          "display": "inline-block",
+          "width": "8.33333333%",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "width": "83.33333333%",
+        },
+        "col11": Object {
+          "display": "inline-block",
+          "width": "91.66666667%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "width": "100%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.66666667%",
+        },
+        "col3": Object {
+          "display": "inline-block",
+          "width": "25%",
+        },
+        "col4": Object {
+          "display": "inline-block",
+          "width": "33.33333333%",
+        },
+        "col5": Object {
+          "display": "inline-block",
+          "width": "41.66666667%",
+        },
+        "col6": Object {
+          "display": "inline-block",
+          "width": "50%",
+        },
+        "col7": Object {
+          "display": "inline-block",
+          "width": "58.33333333%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "width": "66.66666667%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "width": "75%",
+        },
+        "container": Object {
+          "color": "#212529",
+          "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+          "fontWeight": "400",
+          "lineHeight": "1.5",
+          "paddingLeft": "15px",
+          "paddingRight": "15px",
+          "textAlign": "left",
+        },
+        "errorSection": Object {
+          "backgroundColor": "#f0ad4e",
+          "border": "1px solid #eea236",
+          "borderRadius": "4px",
+          "color": "#fff",
+          "marginBottom": "20px",
+          "textAlign": "left",
+        },
+        "formContainer": Object {
+          "textAlign": "center",
+        },
+        "formRow": Object {
+          "marginBottom": "15px",
+        },
+        "formSection": Object {
+          "backgroundColor": "#fff",
+          "border": "1px solid #ddd",
+          "borderRadius": "4px",
+          "display": "inline-block",
+          "marginBottom": "20px",
+          "textAlign": "left",
+          "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
+        },
+        "input": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+          "boxSizing": "border-box",
+          "color": "#555",
+          "display": "block",
+          "fontSize": "14px",
+          "height": "34px",
+          "lineHeight": "1.42857143",
+          "padding": "6px 12px",
+          "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+          "width": "100%",
+        },
+        "nav": Object {
+          "margin": "7.5px",
+        },
+        "navBar": Object {
+          "border": "1px solid transparent",
+          "borderColor": "#e7e7e7",
+          "position": "relative",
+        },
+        "navButton": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "8px",
+          "marginTop": "8px",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "navItem": Object {
+          "display": "inline-block",
+          "lineHeight": "20px",
+          "padding": "10px 5px",
+        },
+        "navRight": Object {
+          "textAlign": "right",
+        },
+        "pre": Object {
+          "backgroundColor": "#f5f5f5",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "display": "block",
+          "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+          "fontSize": "13px",
+          "lineHeight": "1.42857143",
+          "margin": "0 0 10px",
+          "overflow": "auto",
+          "padding": "9.5px",
+          "wordBreak": "break-all",
+          "wordWrap": "break-word",
+        },
+        "sectionBody": Object {
+          "padding": "15px",
+        },
+        "sectionFooter": Object {
+          "backgroundColor": "#f5f5f5",
+          "borderTop": "1px solid #ddd",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#333",
+          "padding": "10px 15px",
+        },
+        "sectionHeader": Object {
+          "backgroundColor": "#337ab7",
+          "borderBottom": "1px solid transparent",
+          "borderColor": "#337ab7",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#fff",
+          "padding": "10px 15px",
+          "textAlign": "center",
+        },
+        "signInButton": Object {
+          "#facebook_signin_btn": Object {
+            "backgroundColor": "#3b5998",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "#google_signin_btn": Object {
+            "backgroundColor": "#dd4b39",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "display": "block",
+          "fontSize": "14px",
+          "marginTop": "2px",
+          "overflow": "hidden",
+          "padding": "6px 12px 6px 44px",
+          "position": "relative",
+          "textAlign": "left",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "20px",
+        },
+      }
+    }
+  />
+</Component>
 `;
 
 exports[`Authenticator normal case render if no error with children 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -2587,6 +2877,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -2711,12 +3004,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -2834,6 +3128,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2958,12 +3255,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3081,6 +3379,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3205,12 +3506,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3328,6 +3630,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3452,12 +3757,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3575,6 +3881,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3699,12 +4008,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -3822,6 +4132,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3946,12 +4259,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4069,6 +4383,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4193,12 +4510,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4316,6 +4634,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4440,12 +4761,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4563,6 +4885,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4687,12 +5012,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -4810,6 +5136,260 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
+        },
+        "input": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+          "boxSizing": "border-box",
+          "color": "#555",
+          "display": "block",
+          "fontSize": "14px",
+          "height": "34px",
+          "lineHeight": "1.42857143",
+          "padding": "6px 12px",
+          "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+          "width": "100%",
+        },
+        "nav": Object {
+          "margin": "7.5px",
+        },
+        "navBar": Object {
+          "border": "1px solid transparent",
+          "borderColor": "#e7e7e7",
+          "position": "relative",
+        },
+        "navButton": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "8px",
+          "marginTop": "8px",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "navItem": Object {
+          "display": "inline-block",
+          "lineHeight": "20px",
+          "padding": "10px 5px",
+        },
+        "navRight": Object {
+          "textAlign": "right",
+        },
+        "pre": Object {
+          "backgroundColor": "#f5f5f5",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "display": "block",
+          "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+          "fontSize": "13px",
+          "lineHeight": "1.42857143",
+          "margin": "0 0 10px",
+          "overflow": "auto",
+          "padding": "9.5px",
+          "wordBreak": "break-all",
+          "wordWrap": "break-word",
+        },
+        "sectionBody": Object {
+          "padding": "15px",
+        },
+        "sectionFooter": Object {
+          "backgroundColor": "#f5f5f5",
+          "borderTop": "1px solid #ddd",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#333",
+          "padding": "10px 15px",
+        },
+        "sectionHeader": Object {
+          "backgroundColor": "#337ab7",
+          "borderBottom": "1px solid transparent",
+          "borderColor": "#337ab7",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#fff",
+          "padding": "10px 15px",
+          "textAlign": "center",
+        },
+        "signInButton": Object {
+          "#facebook_signin_btn": Object {
+            "backgroundColor": "#3b5998",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "#google_signin_btn": Object {
+            "backgroundColor": "#dd4b39",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "display": "block",
+          "fontSize": "14px",
+          "marginTop": "2px",
+          "overflow": "hidden",
+          "padding": "6px 12px 6px 44px",
+          "position": "relative",
+          "textAlign": "left",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "20px",
+        },
+      }
+    }
+  />
+  <Loading
+    authState="loading"
+    hide={Array []}
+    key="aws-amplify-authenticator-default-children-9/.9"
+    messageMap={[Function]}
+    onAuthEvent={[Function]}
+    onStateChange={[Function]}
+    override={Array []}
+    theme={
+      Object {
+        "a": Object {
+          "color": "#007bff",
+          "cursor": "pointer",
+        },
+        "actionRow": Object {
+          "marginBottom": "15px",
+        },
+        "button": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "0",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "col1": Object {
+          "display": "inline-block",
+          "width": "8.33333333%",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "width": "83.33333333%",
+        },
+        "col11": Object {
+          "display": "inline-block",
+          "width": "91.66666667%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "width": "100%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.66666667%",
+        },
+        "col3": Object {
+          "display": "inline-block",
+          "width": "25%",
+        },
+        "col4": Object {
+          "display": "inline-block",
+          "width": "33.33333333%",
+        },
+        "col5": Object {
+          "display": "inline-block",
+          "width": "41.66666667%",
+        },
+        "col6": Object {
+          "display": "inline-block",
+          "width": "50%",
+        },
+        "col7": Object {
+          "display": "inline-block",
+          "width": "58.33333333%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "width": "66.66666667%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "width": "75%",
+        },
+        "container": Object {
+          "color": "#212529",
+          "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+          "fontWeight": "400",
+          "lineHeight": "1.5",
+          "paddingLeft": "15px",
+          "paddingRight": "15px",
+          "textAlign": "left",
+        },
+        "errorSection": Object {
+          "backgroundColor": "#f0ad4e",
+          "border": "1px solid #eea236",
+          "borderRadius": "4px",
+          "color": "#fff",
+          "marginBottom": "20px",
+          "textAlign": "left",
+        },
+        "formContainer": Object {
+          "textAlign": "center",
+        },
+        "formRow": Object {
+          "marginBottom": "15px",
+        },
+        "formSection": Object {
+          "backgroundColor": "#fff",
+          "border": "1px solid #ddd",
+          "borderRadius": "4px",
+          "display": "inline-block",
+          "marginBottom": "20px",
+          "textAlign": "left",
+          "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4934,11 +5514,13 @@ exports[`Authenticator normal case render if no error with children 1`] = `
     }
   />
   <div
-    authState="signIn"
+    authState="loading"
+    hide={Array []}
     key="aws-amplify-authenticator-props-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5056,6 +5638,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5179,11 +5764,11 @@ exports[`Authenticator normal case render if no error with children 1`] = `
       }
     }
   />
-</Container>
+</Component>
 `;
 
 exports[`Authenticator normal case render with hidedefault 1`] = `
-<Container
+<Component
   theme={
     Object {
       "a": Object {
@@ -5301,6 +5886,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -5425,12 +6013,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
   }
 >
   <Greetings
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5548,6 +6137,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5672,12 +6264,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <SignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-1/.1"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -5795,6 +6388,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5919,12 +6515,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ConfirmSignIn
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-2/.2"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6042,6 +6639,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6166,12 +6766,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <RequireNewPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-3/.3"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6289,6 +6890,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6413,12 +7017,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <SignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-4/.4"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6536,6 +7141,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6660,12 +7268,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ConfirmSignUp
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-5/.5"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -6783,6 +7392,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6907,12 +7519,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <VerifyContact
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-6/.6"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7030,6 +7643,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7154,12 +7770,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <ForgotPassword
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-7/.7"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7277,6 +7894,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7401,12 +8021,13 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
     }
   />
   <TOTPSetup
-    authState="signIn"
+    authState="loading"
     hide={Array []}
     key="aws-amplify-authenticator-default-children-8/.8"
     messageMap={[Function]}
     onAuthEvent={[Function]}
     onStateChange={[Function]}
+    override={Array []}
     theme={
       Object {
         "a": Object {
@@ -7524,6 +8145,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7647,5 +8271,256 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
       }
     }
   />
-</Container>
+  <Loading
+    authState="loading"
+    hide={Array []}
+    key="aws-amplify-authenticator-default-children-9/.9"
+    messageMap={[Function]}
+    onAuthEvent={[Function]}
+    onStateChange={[Function]}
+    override={Array []}
+    theme={
+      Object {
+        "a": Object {
+          "color": "#007bff",
+          "cursor": "pointer",
+        },
+        "actionRow": Object {
+          "marginBottom": "15px",
+        },
+        "button": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "0",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "col1": Object {
+          "display": "inline-block",
+          "width": "8.33333333%",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "width": "83.33333333%",
+        },
+        "col11": Object {
+          "display": "inline-block",
+          "width": "91.66666667%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "width": "100%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.66666667%",
+        },
+        "col3": Object {
+          "display": "inline-block",
+          "width": "25%",
+        },
+        "col4": Object {
+          "display": "inline-block",
+          "width": "33.33333333%",
+        },
+        "col5": Object {
+          "display": "inline-block",
+          "width": "41.66666667%",
+        },
+        "col6": Object {
+          "display": "inline-block",
+          "width": "50%",
+        },
+        "col7": Object {
+          "display": "inline-block",
+          "width": "58.33333333%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "width": "66.66666667%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "width": "75%",
+        },
+        "container": Object {
+          "color": "#212529",
+          "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+          "fontWeight": "400",
+          "lineHeight": "1.5",
+          "paddingLeft": "15px",
+          "paddingRight": "15px",
+          "textAlign": "left",
+        },
+        "errorSection": Object {
+          "backgroundColor": "#f0ad4e",
+          "border": "1px solid #eea236",
+          "borderRadius": "4px",
+          "color": "#fff",
+          "marginBottom": "20px",
+          "textAlign": "left",
+        },
+        "formContainer": Object {
+          "textAlign": "center",
+        },
+        "formRow": Object {
+          "marginBottom": "15px",
+        },
+        "formSection": Object {
+          "backgroundColor": "#fff",
+          "border": "1px solid #ddd",
+          "borderRadius": "4px",
+          "display": "inline-block",
+          "marginBottom": "20px",
+          "textAlign": "left",
+          "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
+        },
+        "input": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+          "boxSizing": "border-box",
+          "color": "#555",
+          "display": "block",
+          "fontSize": "14px",
+          "height": "34px",
+          "lineHeight": "1.42857143",
+          "padding": "6px 12px",
+          "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+          "width": "100%",
+        },
+        "nav": Object {
+          "margin": "7.5px",
+        },
+        "navBar": Object {
+          "border": "1px solid transparent",
+          "borderColor": "#e7e7e7",
+          "position": "relative",
+        },
+        "navButton": Object {
+          "backgroundColor": "#fff",
+          "backgroundImage": "none",
+          "border": "1px solid transparent",
+          "borderColor": "#ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "cursor": "pointer",
+          "display": "inline-block",
+          "fontSize": "14px",
+          "fontWeight": 400,
+          "lineHeight": "1.42857143",
+          "marginBottom": "8px",
+          "marginTop": "8px",
+          "padding": "6px 12px",
+          "textAlign": "center",
+          "touchAction": "manipulation",
+          "userSelect": "none",
+          "verticalAlign": "middle",
+          "whiteSpace": "nowrap",
+        },
+        "navItem": Object {
+          "display": "inline-block",
+          "lineHeight": "20px",
+          "padding": "10px 5px",
+        },
+        "navRight": Object {
+          "textAlign": "right",
+        },
+        "pre": Object {
+          "backgroundColor": "#f5f5f5",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          "color": "#333",
+          "display": "block",
+          "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+          "fontSize": "13px",
+          "lineHeight": "1.42857143",
+          "margin": "0 0 10px",
+          "overflow": "auto",
+          "padding": "9.5px",
+          "wordBreak": "break-all",
+          "wordWrap": "break-word",
+        },
+        "sectionBody": Object {
+          "padding": "15px",
+        },
+        "sectionFooter": Object {
+          "backgroundColor": "#f5f5f5",
+          "borderTop": "1px solid #ddd",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#333",
+          "padding": "10px 15px",
+        },
+        "sectionHeader": Object {
+          "backgroundColor": "#337ab7",
+          "borderBottom": "1px solid transparent",
+          "borderColor": "#337ab7",
+          "borderTopLeftRadius": "3px",
+          "borderTopRightRadius": "3px",
+          "color": "#fff",
+          "padding": "10px 15px",
+          "textAlign": "center",
+        },
+        "signInButton": Object {
+          "#facebook_signin_btn": Object {
+            "backgroundColor": "#3b5998",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "#google_signin_btn": Object {
+            "backgroundColor": "#dd4b39",
+            "borderColor": "rgba(0,0,0,0.2)",
+            "color": "#fff",
+          },
+          "display": "block",
+          "fontSize": "14px",
+          "marginTop": "2px",
+          "overflow": "hidden",
+          "padding": "6px 12px 6px 44px",
+          "position": "relative",
+          "textAlign": "left",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "20px",
+        },
+      }
+    }
+  />
+</Component>
 `;

@@ -4,12 +4,23 @@
         "outDir": "./lib/",
         "target": "es5",
         "noImplicitAny": false,
-        "lib": ["es5", "es2015","dom"],
+        "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+        ],
         "sourceMap": true,
         "module": "commonjs",
         "moduleResolution": "node",
         "allowJs": false,
-        "declaration": true
+        "declaration": true,
+        "typeRoots": [ "./node_modules/@types" ],
+        // temporary fix
+        "types": ["node", "lodash"]
     },
-    "include": ["src/**/*"]
- }
+    "include": [
+        "src/**/*"
+    ]
+}

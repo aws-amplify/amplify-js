@@ -1,9 +1,9 @@
+import Auth from '@aws-amplify/auth';
 import ForgotPassword from '../../src/Auth/ForgotPassword';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'forgotPassword'
@@ -23,7 +23,7 @@ const deniedStates = [
 describe('forgotPassword', () => {
     describe('normal case', () => {
         test('render correctly with authState forgotPassword', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 const wrapper = shallow(<ForgotPassword/>);
                 wrapper.setProps({
                     authState: acceptedStates[i],
@@ -34,7 +34,7 @@ describe('forgotPassword', () => {
         });
 
         test('render correctly with state delivery set', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 const wrapper = shallow(<ForgotPassword/>);
                 wrapper.setProps({
                     authState: acceptedStates[i],
@@ -44,6 +44,15 @@ describe('forgotPassword', () => {
 
                 expect(wrapper).toMatchSnapshot();
             }
+        });
+
+        test('hidden if hide include ForgotPassword', () => {
+            const wrapper = shallow(<ForgotPassword/>);
+            wrapper.setProps({
+                authState: acceptedStates[0],
+                hide: [ForgotPassword]
+            });
+            expect(wrapper).toMatchSnapshot();
         });
 
         test('simulating clicking submit', async () => {
@@ -71,19 +80,19 @@ describe('forgotPassword', () => {
                     name: 'code',
                     value: 'code'
                 }
-            }
+            };
 
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
+            wrapper.find(Input).at(0).simulate('change', event_code);
+            wrapper.find(Input).at(1).simulate('change', event_password);
 
-            await wrapper.find(ButtonRow).simulate('click');
+            await wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalledWith(undefined, 'code', 'abc');
 
@@ -110,11 +119,11 @@ describe('forgotPassword', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(0).simulate('change', event_username);
 
-            await wrapper.find(ButtonRow).simulate('click');
+            await wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalledWith('user1');
 
@@ -126,7 +135,7 @@ describe('forgotPassword', () => {
         test('render corrently', () => {
             const wrapper = shallow(<ForgotPassword/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -136,4 +145,4 @@ describe('forgotPassword', () => {
             }
         });
     });
-})
+});

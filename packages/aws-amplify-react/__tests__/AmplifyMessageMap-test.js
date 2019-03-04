@@ -6,7 +6,11 @@ test('MapEntries', () => {
         ["User already exists", /user.*already.*exist/i], 
         ["Incorrect username or password", /incorrect.*username.*password/i], 
         ["Invalid password format", /validation.*password/i], 
-        ["Invalid phone number format", /invalid.*phone/i, "Invalid phone number format. Please use a phone number format of +12345678900"]
+        [
+            "Invalid phone number format",
+            /invalid.*phone/i,
+            "Invalid phone number format. Please use a phone number format of +12345678900"
+        ]
     ]);
 });  
 
@@ -23,5 +27,6 @@ test('AmplifyMessageMap no match', () => {
 });
 
 test('AmplifyMessageMap return message instead of i18n token if message exists', () => {
-    expect(AmplifyMessageMap('invalid phone')).toBe('Invalid phone number format. Please use a phone number format of +12345678900');
+    expect(AmplifyMessageMap('invalid phone'))
+        .toBe('Invalid phone number format. Please use a phone number format of +12345678900');
 });

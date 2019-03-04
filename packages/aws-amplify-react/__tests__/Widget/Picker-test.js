@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import Picker from '../../src/Widget/Picker';
 
 describe('Picker test', () => {
@@ -44,7 +44,7 @@ describe('Picker test', () => {
                         type: 'type'
                     }]
                 }
-            }
+            };
             picker.handleInput(event);
             
             expect(onPickFn).toBeCalledWith({"file": {"name": "name", "size": "size", "type": "type"}, 
@@ -65,7 +65,7 @@ describe('Picker test', () => {
                         type: 'type'
                     }]
                 }
-            }
+            };
             picker.handleInput(event);
         });
     });

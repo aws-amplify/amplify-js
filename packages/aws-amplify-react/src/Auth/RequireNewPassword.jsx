@@ -11,8 +11,10 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import * as React from 'react';
+
+import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -21,10 +23,12 @@ import {
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -34,20 +38,45 @@ export default class RequireNewPassword extends AuthPiece {
 
         this._validAuthStates = ['requireNewPassword'];
         this.change = this.change.bind(this);
+        this.checkContact = this.checkContact.bind(this);
+    }
+
+    checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
     }
 
     change() {
         const user = this.props.authData;
         const { password } = this.inputs;
         const { requiredAttributes } = user.challengeParam;
-        Auth.completeNewPassword(user, password, requiredAttributes)
+        const attrs = objectWithProperties(this.inputs, requiredAttributes);
+
+        if (!Auth || typeof Auth.completeNewPassword !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        Auth.completeNewPassword(user, password, attrs)
             .then(user => {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
-                        this.changeState('confirmSignIn', user);
+                    this.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('TOTP setup', user.challengeParam);
+                    this.changeState('TOTPSetup', user);
                 } else {
-                this.changeState('signedIn');
+                    this.checkContact(user);
                 }
+                
             })
             .catch(err => this.error(err));
     }
@@ -56,11 +85,14 @@ export default class RequireNewPassword extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
+
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
-                <SectionBody>
-                    <InputRow
+                <SectionBody theme={theme}>
+                    <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
                         theme={theme}
@@ -69,16 +101,51 @@ export default class RequireNewPassword extends AuthPiece {
                         type="password"
                         onChange={this.handleInputChange}
                     />
-                    <ButtonRow theme={theme} onClick={this.change}>
-                        {I18n.get('Change')}
-                    </ButtonRow>
+
+                    {requiredAttributes
+                        .map(attribute => (
+                            <Input
+                                placeholder={I18n.get(convertToPlaceholder(attribute))}
+                                theme={theme}
+                                key={attribute}
+                                name={attribute}
+                                type="text"
+                                onChange={this.handleInputChange}
+                            />
+                        ))}
+
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.change}>
+                            {I18n.get('Change')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )
     }
+}
+
+function convertToPlaceholder(str) {
+    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+}
+
+function objectWithProperties(obj, keys) {
+    const target = {};
+    for (const key in obj) {
+        if (keys.indexOf(key) === -1) {
+            continue;
+        }
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+            continue;
+        }
+        target[key] = obj[key];
+    }
+    return target;
 }

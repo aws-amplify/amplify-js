@@ -11,20 +11,25 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import * as React from 'react';
+
+import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
+    FormField,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    InputLabel,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -34,22 +39,45 @@ export default class ConfirmSignIn extends AuthPiece {
 
         this._validAuthStates = ['confirmSignIn'];
         this.confirm = this.confirm.bind(this);
+        this.checkContact = this.checkContact.bind(this);
         this.state = {
             mfaType: 'SMS'
+        };
+    }
+
+    checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
+
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    const newUser = Object.assign(user, data);
+                    this.changeState('verifyContact', newUser);
+                }
+            });
     }
 
     confirm() {
         const user = this.props.authData;
         const { code } = this.inputs;
         const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+        if (!Auth || typeof Auth.confirmSignIn !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.confirmSignIn(user, code, mfaType)
-            .then(() => this.changeState('signedIn'))
+            .then(() => {
+                this.checkContact(user);
+            })
             .catch(err => this.error(err));
     }
 
     componentDidUpdate() {
-        //logger.debug('component did update with props', this.props);
+        // logger.debug('component did update with props', this.props);
         const user = this.props.authData;
         const mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA'?
             'TOTP' : 'SMS';
@@ -64,24 +92,32 @@ export default class ConfirmSignIn extends AuthPiece {
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Code')}
-                        theme={theme}
-                        key="code"
-                        name="code"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow theme={theme} onClick={this.confirm}>
-                        {I18n.get('Confirm')}
-                    </ButtonRow>
+                    <FormField theme={theme}>
+                        <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Code')}
+                            theme={theme}
+                            key="code"
+                            name="code"
+                            autoComplete="off"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.confirm}>
+                            {I18n.get('Confirm')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

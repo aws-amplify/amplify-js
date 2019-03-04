@@ -1,0 +1,249 @@
+/**
+ * Base (generic/_base.scss)
+ */
+
+/* ----- General ----- */
+html {
+	font-size: 14px;
+	@include box-sizing(border-box);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	@media (min-width: $screen-sm-min) {
+		font-size: 16px;
+	}
+}
+
+body {
+	color: $color-dark;
+	font-family: $font-family-primary;
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+}
+
+/* ----- Everything ----- */
+* {
+	&,
+	&::before,
+	&::after {
+		@include box-sizing(inherit);
+	}
+}
+
+/* ----- Headings ----- */
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+	font-family: $font-family-secondary;
+	font-weight: 400;
+	line-height: $line-height-headings;
+	margin: 2.5rem 0 .9375rem 0;
+
+	&[id] {
+		position: relative;
+	}
+
+	& + & {
+		margin-top: 0;
+	}
+}
+
+h1, .h1 {
+	font-size: $font-size-h1;
+	font-weight: 700;
+}
+
+h2, .h2 {
+	font-size: $font-size-h2;
+	font-weight: 300;
+	border-bottom: 1px solid $color-h2-border;
+	padding-bottom: .5rem;
+}
+
+h3, .h3 {
+	font-size: $font-size-h3;
+	font-weight: 300;
+}
+
+h4, .h4 {
+	font-size: $font-size-h4;
+}
+
+h5, .h5 {
+	font-size: $font-size-h5;
+}
+
+h6, .h6 {
+	font-size: $font-size-h6;
+}
+
+/* ----- Inline elements ----- */
+small,
+.text-small {
+	font-size: $font-size-small;
+}
+
+/* ----- Paragraphs ----- */
+p {
+	margin: 0 0 1.25rem 0;
+}
+
+/* ----- Hyperlinks ----- */
+a {
+	color: orange;
+	text-decoration: none;
+	border-bottom: .0625em solid;
+	border-color: inherit;
+	padding-bottom: .125em;
+	border-color: #ffa50042;
+	&:hover {
+		border-color: orange;
+	}
+}
+
+/* ----- Images ----- */
+img {
+	max-width: 100%;
+	height: auto;
+	vertical-align: top;
+}
+
+/* ----- Horizontal rules ----- */
+hr {
+	border: 0;
+	border-top: 1px solid $color-horizontal-rule;
+	margin: 0 0 1.25rem 0;
+}
+
+/* ----- States ----- */
+::-moz-selection {
+	background: rgba($color-yellow, .99);
+	color: $color-dark-blue;
+}
+
+::selection {
+	background: rgba($color-yellow, .99);
+	color: $color-dark-blue;
+}
+
+/* ----- Quotes ----- */
+blockquote {
+	margin: 0 0 1.25rem 0;
+}
+
+q {
+	color: $color-dark-blue;
+}
+
+/* ----- Lists ----- */
+ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 1.25rem 0;
+
+	li {
+		position: relative;
+		padding-left: 1.575rem;
+		margin-bottom: .3125rem;
+
+		&:before {
+			content: '•';
+			color: $color-list-prefix;
+			position: absolute;
+			left: 0;
+		}
+	}
+}
+
+/* ----- Definition lists ----- */
+dl {
+	margin: 0 0 1.25rem 0;
+
+	dt {
+		color: $color-definition-list;
+		font-weight: 700;
+	}
+
+	dd {
+		margin: 0;
+	}
+}
+
+/* ----- Acronym and Emphasize tags ----- */
+acronym,
+em {
+	font-style: italic;
+}
+
+/* ----- Tables ----- */
+table {
+	width: 100%;
+	text-align: left;
+	font-size: $font-size-base;
+	border-collapse: collapse;
+	margin: 0 0 1.25rem 0;
+
+	th, td {
+		border: 2px solid $color-table-border;
+		vertical-align: middle;
+		padding: .625rem .9375rem;
+
+		@media (min-width: $screen-sm-min) {
+			padding: .8125rem 1.25rem;
+		}
+
+		a {
+			border-color: $color-dark;
+		}
+	}
+
+	th {
+		font-family: $font-family-secondary;
+		text-transform: uppercase;
+		background-color: $color-table-header-bg;
+		border-color: $color-table-header-border;
+	}
+}
+
+.table-responsive {
+	width: 100%;
+	overflow-x: scroll;
+	-webkit-overflow-scrolling: touch;
+	margin: 0 0 1.25rem 0;
+
+	@media (min-width: $screen-sm-min) {
+		overflow-x: visible;
+	}
+
+	table {
+		min-width: 43.75rem;
+		margin: 0;
+
+		@media (min-width: $screen-sm-min) {
+			min-width: 0;
+			margin: 0;
+		}
+	}
+}
+
+/* ----- Iframe ----- */
+iframe {
+	display: block;
+	border: 0;
+	margin: 0 0 1.25rem 0;
+}
+
+/* ----- Button ----- */
+button {
+	border: 0;
+	padding: 0;
+	background-color: transparent;
+
+	&:focus {
+		outline: none;
+	}
+}

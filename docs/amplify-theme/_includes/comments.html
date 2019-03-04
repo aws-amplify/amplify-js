@@ -1,0 +1,41 @@
+<div id="disqus_thread"></div>
+<script>
+	/**
+	 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+	 *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+	 */
+	 /*
+	var disqus_config = function () {
+	this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+		this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+	};
+	*/
+
+	// Adds the onNewComment callback to the disqus_config of the embed code
+	// that sends 'New Comment' events over to Google Analytics.
+	// The callback can also be used for any other analytics service like Parse.ly, Chartbeat, Mixpanel
+	var disqus_config = function() {
+			this.callbacks.onNewComment = [function(comment) {
+				ga('send', {
+					'hitType': 'event',            // Required.
+					'eventCategory': 'Comments',   // Required.
+					'eventAction': 'New Comment',  // Required.
+					'eventLabel': 'New Comment'
+				});
+			}];
+	};
+
+	(function() {
+		var d = document, s = d.createElement('script');
+
+		s.src = 'https://aws-amplify.disqus.com/embed.js';
+
+		s.setAttribute('data-timestamp', +new Date());
+		(d.head || d.body).appendChild(s);
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+ 
+									

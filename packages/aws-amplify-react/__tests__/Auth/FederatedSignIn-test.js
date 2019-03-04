@@ -1,5 +1,12 @@
-import React from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
 import FederatedSignIn, { FederatedButtons } from '../../src/Auth/FederatedSignIn';
+
+const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
+    return {
+        hostedUIOptions: {}
+    };
+});
 
 describe('FederatedSignIn test', () => {
     describe('render test', () => {
@@ -7,7 +14,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: true,
+                federated: {},
                 authState: 'signIn',
                 onStateChange: jest.fn()
             });
@@ -18,7 +25,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: true,
+                federated: {},
                 authState: 'signedIn',
                 onStateChange: jest.fn()
             });
@@ -29,7 +36,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: false,
+                federated: undefined,
                 authState: 'signIn',
                 onStateChange: jest.fn()
             });

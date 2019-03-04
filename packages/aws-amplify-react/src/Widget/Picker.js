@@ -11,25 +11,12 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { I18n, Logger } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
-
-const PickerPicker = {
-    position: 'relative'
-}
-
-const PickerPreview = {
-    maxWidth: '100%'
-}
-
-const PickerButton = {
-    width: '10em',
-    height: '3em',
-    fontSize: '1.2em',
-    textAlign: 'center'
-}
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import { PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerInput = {
     width: '100%',
@@ -40,13 +27,13 @@ const PickerInput = {
     top: 0,
     opacity: 0,
     cursor: 'pointer'
-}
+};
 
 const logger = new Logger('Picker');
 
 export default class Picker extends Component {
     handleInput(e) {
-        var that = this;
+        const that = this;
 
         const file = e.target.files[0];
         if (!file) { return; }
@@ -57,10 +44,10 @@ export default class Picker extends Component {
         const { onPick } = this.props;
         if (onPick) {
             onPick({
-                file: file,
-                name: name,
-                size: size,
-                type: type
+                file,
+                name,
+                size,
+                type
             });
         }
     }
@@ -70,26 +57,21 @@ export default class Picker extends Component {
         const accept = this.props.accept || '*/*';
 
         const theme = this.props.theme || AmplifyTheme;
-        const pickerStyle = Object.assign(
-            {},
-            PickerPicker,
-            theme.pickerPicker
-        );
-        const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
         return (
-            <div style={pickerStyle}>
-                <button style={buttonStyle}>
+            <div style={theme.pickerPicker}>
+                <PhotoPickerButton theme={theme}>
                     {I18n.get(title)}
-                </button>
+                </PhotoPickerButton>
                 <input
                     title={I18n.get(title)}
-                    type="file" accept={accept}
+                    type="file"
+                    accept={accept}
                     style={inputStyle}
                     onChange={(e) => this.handleInput(e)}
                 />
             </div>
-        )
+        );
     }
 }

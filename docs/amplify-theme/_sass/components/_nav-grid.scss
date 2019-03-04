@@ -1,0 +1,121 @@
+/**
+ * Nav grid (components/_nav-grid.scss)
+ */
+
+/* ----- General ----- */
+.nav-grid {
+	font-size: .9375em;
+	line-height: 1.8em;
+	color: $color-dark-blue;
+}
+
+.nav-grid--out {
+	@media (min-width: $screen-sm-min) {
+		//margin-top: -11.25rem;
+	}
+}
+
+/* ----- Item ----- */
+.nav-grid__item {
+	@include link-reset;
+	display: block;
+	background-color: white;
+	border: 1px solid rgba($color-dark-blue, .2);
+	border-radius: 3px;
+	margin-bottom: .9375rem;
+	transition: background-color .2s, border .2s;
+
+	@media (min-width: $screen-sm-min) {
+		margin-bottom: 1.875rem;
+	}
+
+	&:hover,
+	&:active,
+	&:focus {
+		border-color: orange;
+
+		.nav-grid__btn {
+			border-color: orange;
+			.icon {
+				@include translate(.625rem, 0);
+			}
+		}
+	}
+}
+
+/* ----- Content ----- */
+.nav-grid__content {
+	@include clearfix();
+	padding: 1.25rem 1.875rem .625rem 1.875rem;
+
+	@media (min-width: $screen-md-min) {
+		padding: 1.875rem 2.5rem 1.25rem 2.5rem;
+		.nav-services {
+ 
+		}
+	}
+
+	p {
+		margin-bottom: .625rem;
+	}
+
+	.nav-services {
+		font-size: small;
+		bottom:10px;
+		small {
+			margin-bottom:-5px;
+		}
+		i {
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+	.tutorial-image {
+		img {
+			float:left;
+			margin-top: -7px;
+			margin-right: 7px;
+		}
+	}
+}
+
+/* ----- Title ----- */
+.nav-grid__title {
+	display: block;
+	font-size: $font-size-h3;
+	font-weight: 500;
+	padding: 0;
+	margin-top: 0;
+	border: 0;
+	line-height: 1.3em;
+}
+
+.nav-grid-tutorials {
+	.nav-grid__title {
+		font-size: 1.4em;
+	}
+}
+
+/* ----- Read more ----- */
+.nav-grid__btn {
+	font-family: $font-family-secondary;
+	font-weight: 500;
+	text-transform: uppercase;
+	border-top: 1px solid rgba($color-dark-blue, .2);
+	padding: 1.25rem 1.875rem 0 1.875rem;
+	transition: border .2s;
+
+	@media (min-width: $screen-md-min) {
+		padding: 1.25rem 2.5rem 0 2.5rem;
+	}
+
+	.icon {
+		display: inline-block;
+		font-size: 1.25em;
+		margin-left: .5rem;
+		position: relative;
+		bottom: -.125rem;
+		transition: transform .2s;
+	}
+}

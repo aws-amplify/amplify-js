@@ -1,0 +1,84 @@
+/**
+ * Hero subheader (components/_hero-subheader.scss)
+ */
+
+/* ----- General ----- */
+.hero-subheader {
+	color: $color-dark-blue;
+	//background-image: url("{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/background.jpg");
+	padding: 3.75rem 0 (4.6875rem - 1.25rem) 0;
+	background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+	@media (min-width: $screen-sm-min) {
+		padding: 9.375rem 0 (10.3125rem - 1.25rem) 0;
+	}
+
+	.btn {
+		margin-right: .9375rem;
+	}
+
+	.btn--github,
+	.btn--w-arrow-down {
+		@extend .btn--dark;
+	}
+
+	.site-header + & {
+		padding: 9.375rem 0 (4.6875rem - 1.25rem) 0;
+
+		@media (min-width: $screen-sm-min) {
+			padding: 15rem 0 (10.3125rem - 1.25rem) 0;
+		}
+	}
+}
+
+.hero-subheader--before-out {
+	@media (min-width: $screen-sm-min) {
+		padding: 9.375rem 0 (15.3125rem - 1.25rem) 0;
+	}
+}
+
+/* ----- Title ----- */
+.hero-subheader__title {
+	margin-top: 0;
+	color:white;
+}
+
+/* ----- Title ----- */
+.hero-subheader__desc {
+	margin-bottom: 1.875rem;
+	font-size: 1.3rem;
+	color:white;
+}
+
+/* ----- Author ----- */
+.hero-subheader__author {
+	border-left: 2px solid;
+	padding-left: 2.5rem;
+
+	.btn {
+		margin-bottom: 0;
+	}
+}
+
+.hero-subheader__author-title {
+	font-size: $font-size-h5;
+}
+
+/* ----- More ----- */
+.hero-subheader__btn-more {
+	color: inherit;
+}
+
+
+.photo-credit {
+    font-size: 10px;
+    bottom: -340px;
+    left: 90%;
+    color: lightgray;
+    margin-top: -30px;
+    text-align: right;
+    padding-right: 30px;
+}

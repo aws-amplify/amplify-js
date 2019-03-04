@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,24 +11,29 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import Amplify, { Auth, Logger } from 'aws-amplify';
-
+import * as React from 'react';
+import { Component } from 'react';
+import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import RequireNewPassword from './RequireNewPassword';
 import SignUp from './SignUp';
+import Loading from './Loading';
 import ConfirmSignUp from './ConfirmSignUp';
 import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 import TOTPSetup from './TOTPSetup';
+import Constants from './common/constants';
 
-import AmplifyTheme from '../AmplifyTheme';
-import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
+import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
+
 const logger = new Logger('Authenticator');
+const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export default class Authenticator extends Component {
     constructor(props) {
@@ -36,51 +41,114 @@ export default class Authenticator extends Component {
 
         this.handleStateChange = this.handleStateChange.bind(this);
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
-        this.errorRenderer = this.errorRenderer.bind(this);
+        this.onHubCapsule = this.onHubCapsule.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this._initialAuthState = this.props.authState || 'signIn';
+        this.state = { authState: 'loading' };
+        Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const config = this.props.amplifyConfig;
         if (config) {
             Amplify.configure(config);
+        }
+        this._isMounted = true;
+        // the workaround for Cognito Hosted UI
+        // don't check the user immediately if redirected back from Hosted UI
+        // instead waiting for the hub event sent from Auth module
+        // the item in the localStorage is a mark to indicate whether
+        // the app is redirected back from Hosted UI or not
+        const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
+        localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
+        if (!byHostedUI) this.checkUser();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    checkUser() {
+        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        return Auth.currentAuthenticatedUser()
+            .then(user => {
+                if (!this._isMounted) { return; }
+                this.handleStateChange('signedIn', user);
+            })
+            .catch(err => {
+                if (!this._isMounted) { return; }
+                let cachedAuthState = null;
+                try {
+                    cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+                } catch (e) {
+                    logger.debug('Failed to get the auth state from local storage', e);
+                }
+                const promise = cachedAuthState === 'signedIn'? Auth.signOut() : Promise.resolve();
+                promise.then(() => this.handleStateChange(this._initialAuthState))
+                    .catch((e) => {
+                        logger.debug('Failed to sign out', e);
+                    });
+            });
+    }
+
+    onHubCapsule(capsule) {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth') {
+            switch (payload.event) {
+                case 'cognitoHostedUI':
+                    this.handleStateChange('signedIn', payload.data);
+                    break;
+                case 'cognitoHostedUI_failure':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'parsingUrl_failure':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'signOut':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'customGreetingSignOut':
+                    this.handleStateChange('signIn', null);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        try {
+            localStorage.setItem(AUTHENTICATOR_AUTHSTATE, state);
+        } catch (e) {
+            logger.debug('Failed to set the auth state into local storage', e);
+        }
+
+        if (this._isMounted) {
+            this.setState({ authState: state, authData: data, error: null, showToast: false });            
+        }
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event) {
+    handleAuthEvent(state, event, showToast = true) {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message });
+            this.setState({ error: message, showToast });
+            
         }
     }
 
-    errorRenderer(err) {
-        const theme = this.props.theme || AmplifyTheme;
-        return (
-            <ErrorSection theme={theme}>
-                <SectionBody theme={theme}>{err}</SectionBody>
-            </ErrorSection>
-        )
-    }
-
     render() {
-        const { auth, authData } = this.state;
+        const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide, federated } = this.props;
-        if (!hide) { hide = []; }
+        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -91,56 +159,76 @@ export default class Authenticator extends Component {
                 ConfirmSignUp,
                 VerifyContact,
                 ForgotPassword,
-                TOTPSetup
+                TOTPSetup,
+                Loading
             ]);
         }
-        const props_children = this.props.children || [];
+
+        let props_children = [];
+        if (typeof this.props.children === 'object') {
+            if (Array.isArray(this.props.children)){
+                props_children = this.props.children;
+            } else {
+                props_children.push(this.props.children);
+            }
+        } 
+
         const default_children = [
-            <Greetings/>,
+            <Greetings federated={federated}/>,
             <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
-            <TOTPSetup/>
+            <TOTPSetup/>,
+            <Loading/>
         ];
 
+        const props_children_override =  React.Children.map(props_children, child => child.props.override);
+        hide = hide.filter((component) => !props_children.find(child => child.type === component));
+        
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
-                    authState: auth,
-                    authData: authData,
-                    onStateChange: this.handleStateChange,
-                    onAuthEvent: this.handleAuthEvent
-                });
-        });
-        
-        const render_default_children = React.Children.map(default_children, (child, index) => {
-                return React.cloneElement(child, {
-                    key: 'aws-amplify-authenticator-default-children-' + index,
-                    theme: theme,
-                    messageMap: messageMap,
-                    authState: auth,
-                    authData: authData,
+                    theme,
+                    messageMap,
+                    authState,
+                    authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide
+                    hide,
+                    override: props_children_override
+                });
+        });
+       
+        const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
+                return React.cloneElement(child, {
+                    key: 'aws-amplify-authenticator-default-children-' + index,
+                    theme,
+                    messageMap,
+                    authState,
+                    authData,
+                    onStateChange: this.handleStateChange,
+                    onAuthEvent: this.handleAuthEvent,
+                    hide,
+                    override: props_children_override
                 });
             });
 
         const render_children = render_default_children.concat(render_props_children);
+        const error = this.state.error;        
 
-        const errorRenderer = this.props.errorRenderer || this.errorRenderer;
-        const error = this.state.error;
         return (
             <Container theme={theme}>
+                {this.state.showToast && 
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
+                        { I18n.get(error) }
+                    </Toast>
+                }
                 {render_children}
-                {error? errorRenderer(error) : null}
             </Container>
-        )
+        );
     }
 }
