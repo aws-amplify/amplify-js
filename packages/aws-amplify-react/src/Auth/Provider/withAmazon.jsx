@@ -48,7 +48,8 @@ export default function withAmazon(Comp) {
                 }
 
                 const user = {
-                    name: userInfo.profile.Name
+                    name: userInfo.profile.Name,
+                    email: userInfo.profile.PrimaryEmail
                 }
 
                 Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user)
