@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.1-unstable.5...aws-amplify-react@2.3.1) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.1-unstable.5"></a>
+## [2.3.1-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.1-unstable.4...aws-amplify-react@2.3.1-unstable.5) (2019-03-04)
+
+
+### Features
+
+* **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+
+
+
+
+<a name="2.3.1-unstable.4"></a>
+## [2.3.1-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.1-unstable.3...aws-amplify-react@2.3.1-unstable.4) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.3.1-unstable.3"></a>
 ## [2.3.1-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.1-unstable.2...aws-amplify-react@2.3.1-unstable.3) (2019-03-02)
 
