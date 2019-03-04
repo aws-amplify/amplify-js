@@ -128,7 +128,7 @@ export default class StorageClass {
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to either a presigned url or the object
     */
-    public async get(key: string, config?): Promise<String|Object> {
+    public async get(key: string, config:any = {}): Promise<String|Object> {
 
         const { provider = DEFAULT_PROVIDER } = config || {};
         const getConfig = { ...this._config, ...config };
@@ -148,7 +148,7 @@ export default class StorageClass {
      *  progressCallback: function }
      * @return - promise resolves to object on success
      */
-    public async put(key: string, object, config?):Promise<Object> {
+    public async put(key: string, object, config:any = {}):Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const putConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -165,7 +165,7 @@ export default class StorageClass {
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
-    public async remove(key: string, config?): Promise<any> {
+    public async remove(key: string, config:any = {}): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const removeConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -182,7 +182,7 @@ export default class StorageClass {
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
-    public async list(path, config?): Promise<any> {
+    public async list(path, config:any = {}): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const listConfig = { ...this._config, ...config };
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
