@@ -196,6 +196,7 @@ export default class AuthClass {
                 options
             } = cognitoHostedUIConfig as awsCognitoOAuthOpts;
 
+            // TODO: remove this once we refactor web browser support
             let LaunchUri = urlOpener;
 
             if (typeof LaunchUri === 'function') {
