@@ -465,6 +465,7 @@ export default class CognitoUser {
     }
 
     this.signInUserSession = this.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+    this.challengeName = challengeName;
     this.cacheTokens();
 
     const newDeviceMetadata = dataAuthenticate.AuthenticationResult.NewDeviceMetadata;
