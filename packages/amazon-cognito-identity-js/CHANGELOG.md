@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.8"></a>
+## [3.0.8](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.4...amazon-cognito-identity-js@3.0.8) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.4"></a>
+## [3.0.8-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.3...amazon-cognito-identity-js@3.0.8-unstable.4) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.3"></a>
+## [3.0.8-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.2...amazon-cognito-identity-js@3.0.8-unstable.3) (2019-03-01)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.2"></a>
+## [3.0.8-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.1...amazon-cognito-identity-js@3.0.8-unstable.2) (2019-02-27)
+
+
+### Bug Fixes
+
+* **build:** Prevent tree-shaking of crypto-js/lib-typedarrays ([#2718](https://github.com/aws/aws-amplify/issues/2718)) ([3134a64](https://github.com/aws/aws-amplify/commit/3134a64)), closes [#1181](https://github.com/aws/aws-amplify/issues/1181)
+
+
+
+
 <a name="3.0.8-unstable.1"></a>
 ## [3.0.8-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.0...amazon-cognito-identity-js@3.0.8-unstable.1) (2019-01-21)
 
