@@ -79,7 +79,7 @@ export class HubClass {
             try {
                 listener.listener.onHubCapsule(capsule);
             } catch (e) {
-                logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
+                logger.warn(`error happend when dispatching ${channel} event to ${listener.name}: ${e}`);
             }
         });
 
