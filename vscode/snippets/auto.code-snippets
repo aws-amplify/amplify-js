@@ -1372,7 +1372,7 @@
             "\t// refresh the token here and get the new token info",
             "\t// ......",
             "",
-            "\treturn new Promise(res, rej => {",
+            "\treturn new Promise((res, rej) => {",
             "\t\tconst data = {",
             "\t\t\ttoken, // the token from the provider",
             "\t\t\texpires_at, // the timestamp for the expiration",
