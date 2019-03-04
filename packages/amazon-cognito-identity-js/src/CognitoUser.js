@@ -903,8 +903,8 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to enable MFA for itself
-   * @param {string[]} smsMfaSettings the sms mfa settings
-   * @param {string[]} softwareTokenMfaSettings the software token mfa settings
+   * @param {IMfaSettings} smsMfaSettings the sms mfa settings
+   * @param {IMFASettings} softwareTokenMfaSettings the software token mfa settings
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */

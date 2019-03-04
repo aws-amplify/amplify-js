@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.23-unstable.3"></a>
+## [1.0.23-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.23-unstable.2...@aws-amplify/core@1.0.23-unstable.3) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
 <a name="1.0.23-unstable.2"></a>
 ## [1.0.23-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.23-unstable.1...@aws-amplify/core@1.0.23-unstable.2) (2019-02-27)
 

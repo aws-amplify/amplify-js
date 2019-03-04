@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.16-unstable.8"></a>
+## [1.2.16-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.7...@aws-amplify/auth@1.2.16-unstable.8) (2019-03-04)
+
+
+### Features
+
+* **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+
+
+
+
+<a name="1.2.16-unstable.7"></a>
+## [1.2.16-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.6...@aws-amplify/auth@1.2.16-unstable.7) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.2.16-unstable.6"></a>
 ## [1.2.16-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.5...@aws-amplify/auth@1.2.16-unstable.6) (2019-03-01)
 

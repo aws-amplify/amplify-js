@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.16-unstable.6",
+  "version": "1.2.16-unstable.8",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -12,6 +12,7 @@
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
+    "build:watch": "npm run clean && tsc --watch",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
@@ -52,8 +53,12 @@
   "dependencies": {
     "@aws-amplify/cache": "1.0.23-unstable.2",
     "@aws-amplify/core": "1.0.23-unstable.2",
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "3.0.8-unstable.3"
+    "amazon-cognito-auth-js": "^1.3.2",
+    "amazon-cognito-identity-js": "^3.0.8-unstable.2"
+  },
+  "peerDependencies": {
+    "buffer": "4.x",
+    "react-native": "^0.44.0"
   },
   "jest": {
     "transform": {
