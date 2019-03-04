@@ -64,7 +64,6 @@ export default class PhotoPicker extends Component {
         const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;
-        const containerStyle = Object.assign({}, Picker, theme.picker);
         const previewStyle = Object.assign(
             {},
             PickerPreview,
