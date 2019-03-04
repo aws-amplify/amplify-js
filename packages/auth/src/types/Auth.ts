@@ -80,7 +80,8 @@ export interface awsCognitoOAuthOpts {
 	redirectSignIn: string,
 	redirectSignOut: string,
     responseType: string,
-    options?: object
+    options?: object,
+    urlOpener?: (url:string, redirectUrl: string) => Promise<any>
 }
 
 export interface OAuth {
