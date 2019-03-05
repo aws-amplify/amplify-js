@@ -14,7 +14,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-import { ClientDevice, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 
 import Picker from '../Widget/Picker';
@@ -68,7 +68,6 @@ export default class S3Album extends Component {
     }
 
     handlePick(data) {
-        const that = this;
         const { onPick, onLoad, onError, track, level } = this.props;
 
         if (onPick) { onPick(data); }
