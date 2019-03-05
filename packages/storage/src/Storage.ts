@@ -121,13 +121,15 @@ export default class StorageClass {
         return this._config;
     }
 
+    // tslint:disable
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
     * @param {String} key - key of the object
-    * @param {Object} [config] - { level : private|protected|public, download: true|false }
+    * @param {Object} [config] - The configuration value for the storage provider. Example: { level : private|protected|public, download: true|false }
     * @return - A promise resolves to either a presigned url or the object
     */
+    // tslint:enable
     public async get(key: string, config:any = {}): Promise<String|Object> {
 
         const { provider = DEFAULT_PROVIDER } = config || {};
@@ -140,14 +142,15 @@ export default class StorageClass {
         return prov.get(key, getConfig);
     }
 
+    // tslint:disable
     /**
      * Put a file in storage bucket specified to configure method
      * @param {String} key - key of the object
      * @param {Object} object - File to be put in bucket
-     * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
-     *  progressCallback: function }
+     * @param {Object} [config] - The configuration value for the storage provider. Example: { level : private|protected|public, contentType: MIME Types, progressCallback: function }
      * @return - promise resolves to object on success
      */
+    // tslint:enable
     public async put(key: string, object, config:any = {}):Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const putConfig = { ...this._config, ...config };
@@ -159,12 +162,15 @@ export default class StorageClass {
         return prov.put(key, object, putConfig);
     }
 
+    // tslint:disable
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
-     * @param {Object} [config] - { level : private|protected|public }
+     
+     * @param {Object} [config] - The configuration value for the storage provider. Example: { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
+    // tslint:enable
     public async remove(key: string, config:any = {}): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const removeConfig = { ...this._config, ...config };
@@ -176,12 +182,14 @@ export default class StorageClass {
         return prov.remove(key, removeConfig);
     }
 
+    // tslint:disable
     /**
      * List bucket objects relative to the level and prefix specified
      * @param {String} path - the path that contains objects
-     * @param {Object} [config] - { level : private|protected|public }
+     * @param {Object} [config] - The configuration value for the storage provider. Example : { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
+    // tslint:enable
     public async list(path, config:any = {}): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const listConfig = { ...this._config, ...config };
