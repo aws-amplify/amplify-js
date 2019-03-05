@@ -3,12 +3,14 @@ import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignIn from '../src/components/authenticator/SignIn.vue';
+import FederatedSignIn from '../src/components/authenticator/FederatedSignIn.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
+Vue.component('amplify-federated-sign-in', FederatedSignIn);
 
 describe('SignIn', () => {
   it('has a mounted hook', () => {
@@ -68,6 +70,7 @@ describe('SignIn', () => {
     it('...have default options', () => {
       expect(wrapper.vm.options.header).toEqual('i18n Sign In Account');
       expect(wrapper.vm.options.username).toEqual('');
+      expect(wrapper.vm.options.federated).toEqual({});
     });
     it('...should call Auth.signIn when signIn function is called', () => {
       wrapper.vm.signIn();
@@ -109,6 +112,7 @@ describe('SignIn', () => {
           signInConfig: {
             username: 'TestPerson',
             header,
+            federated: {}
           },
         },
       });

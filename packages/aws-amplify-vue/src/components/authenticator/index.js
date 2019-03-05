@@ -24,7 +24,7 @@ import ForgotPassword from './ForgotPassword.vue';
 import Authenticator from './Authenticator.vue';
 import SetMfa from './SetMFA.vue';
 import RequireNewPassword from './RequireNewPassword.vue';
-
+import FederatedSignIn from './FederatedSignIn.vue';
 
 Vue.component('amplify-authenticator', Authenticator);
 Vue.component('amplify-sign-in', SignIn);
@@ -35,11 +35,12 @@ Vue.component('amplify-confirm-sign-in', ConfirmSignIn);
 Vue.component('amplify-forgot-password', ForgotPassword);
 Vue.component('amplify-set-mfa', SetMfa);
 Vue.component('amplify-require-new-password', RequireNewPassword);
-
+Vue.component('amplify-federated-sign-in', FederatedSignIn);
 
 export {
   Authenticator,
   SignIn,
+  FederatedSignIn,
   SignUp,
   SignOut,
   ConfirmSignUp,

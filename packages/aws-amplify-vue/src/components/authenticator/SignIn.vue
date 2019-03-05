@@ -15,6 +15,14 @@
   <div v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
+      <div v-if="options.federated">
+        <amplify-federated-sign-in v-bind:federatedSignInConfig="options.federated"></amplify-federated-sign-in>
+        <div :class="amplifyUI.strike">
+          <span :class="amplifyUI.strikeContent">
+            {{$Amplify.I18n.get('or')}}
+          </span>
+        </div>
+      </div>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
         <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" />
@@ -44,26 +52,24 @@
 </template>
 
 <script>
-// import Auth from '@aws-amplify/auth';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'SignIn',
   props: ['signInConfig'],
-  data () {
-    return {
-        password: '',
-        error: '',
-        amplifyUI: AmplifyUI,
-        logger: {},
-    }
-  },
+  data: () => ({
+    password: '',
+    error: '',
+    amplifyUI: AmplifyUI,
+    logger: {}
+  }),
   computed: {
     options() {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign In Account'),
         username: '',
+        federated: {},
         isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})
