@@ -44,7 +44,6 @@
 </template>
 
 <script>
-// import Auth from '@aws-amplify/auth';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import Vue from 'vue';
@@ -76,7 +75,8 @@ export default {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign in to your account'),
         username: '',
-        isSignUpDisplayed: true,
+        federated: {},
+        isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})
     },
