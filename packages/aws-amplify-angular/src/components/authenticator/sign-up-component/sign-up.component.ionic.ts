@@ -30,6 +30,7 @@ const template = `
         *ngIf="field.key !== 'phone_number'"
         >
           {{ this.amplifyService.i18n().get(field.label) }}
+          <span *ngIf="field.required">*</span>
         </ion-label>
         <ion-input
           [ngClass]="{'amplify-input-invalid ': field.invalid}"
@@ -38,7 +39,7 @@ const template = `
           type="text"
           class="amplify-form-input"
           type={{field.type}}
-          [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
+          [placeholder]="this.amplifyService.i18n().get(field.label)"
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
@@ -52,6 +53,7 @@ const template = `
                 *ngIf="field.key === 'phone_number'"
                 >
                   {{ this.amplifyService.i18n().get(field.label) }}
+                  <span *ngIf="field.required">*</span>
                 </ion-label>
                 <ion-select #countryCode
                 *ngIf="field.key === 'phone_number'"
@@ -75,7 +77,7 @@ const template = `
                   *ngIf="field.key === 'phone_number'"
                   type={{field.type}}
                   class="amplify-form-input-phone-ionic"
-                  [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
+                  [placeholder]="this.amplifyService.i18n().get(field.label)"
                   (ionChange)="onNumberChange($event.target.value)"
                   name="local_phone_number"
                 ></ion-input>

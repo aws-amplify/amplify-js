@@ -30,12 +30,13 @@ const template = `
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
             {{ this.amplifyService.i18n().get(field.label) }}
+            <span *ngIf="field.required">*</span>
           </label>
           <input #{{field.key}}
             class="amplify-form-input"
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
-            [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
+            [placeholder]="this.amplifyService.i18n().get(field.label)"
             [(ngModel)]="user[field.key]" name="field.key" />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">{{passwordPolicy}}</div>
         </div>
@@ -43,6 +44,7 @@ const template = `
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
             {{ this.amplifyService.i18n().get(field.label) }}
+            <span *ngIf="field.required">*</span>
           </label>
 
           <div class="amplify-input-group">
@@ -60,7 +62,7 @@ const template = `
             <div class="amplify-input-group-item">
               <input
                 class="amplify-form-input"
-                [placeholder]="this.amplifyService.i18n().get(field.placeholder)"
+                [placeholder]="this.amplifyService.i18n().get(field.label)"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
@@ -104,7 +106,6 @@ const template = `
 
 export class SignUpField{
   label: string;
-  placeholder: string;
   key: string;
   required?: boolean;
   type?: string;
@@ -336,14 +337,14 @@ export class SignUpComponentCore implements OnInit {
       if (el.key !== 'phone_number') {
         if (el.required && !this.user[el.key]) {
           el.invalid = true;
-          invalids.push(this.amplifyService.i18n().get(el.placeholder));
+          invalids.push(this.amplifyService.i18n().get(el.label));
         } else {
           el.invalid = false;
         }
       } else {
         if (el.required && (!this.country_code || !this.local_phone_number)) {
           el.invalid = true;
-          invalids.push(this.amplifyService.i18n().get(el.placeholder));
+          invalids.push(this.amplifyService.i18n().get(el.label));
         } else {
           el.invalid = false;
         }
