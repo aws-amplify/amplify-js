@@ -46,7 +46,7 @@ const template = `
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <ion-grid class="amplify-ionic-grid-padding-left">
             <ion-row>
-              <ion-col col-6 class="amplify-ionic-grid-padding-left">
+              <ion-col size="6" class="amplify-ionic-grid-padding-left">
                 <ion-label class="amplify-input-label push-right"
                 position="stacked"
                 *ngIf="field.key === 'phone_number'"
@@ -67,7 +67,7 @@ const template = `
                 </ion-select>
               </ion-col>
 
-              <ion-col col-6>
+              <ion-col size="6">
                 <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
                 <ion-input
                   #phone_number
