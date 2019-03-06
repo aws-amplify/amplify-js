@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.18-unstable.0",
+  "version": "1.2.18-unstable.1",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -57,8 +57,7 @@
     "amazon-cognito-identity-js": "3.0.9-unstable.0"
   },
   "peerDependencies": {
-    "buffer": "4.x",
-    "react-native": "^0.44.0"
+    "buffer": "4.x"
   },
   "jest": {
     "transform": {

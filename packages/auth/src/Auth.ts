@@ -52,40 +52,11 @@ import {
 } from 'amazon-cognito-identity-js';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
 import { parse } from 'url';
+import { default as urlListener } from './urlListener';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
     Hub.dispatch('auth', { event, data }, 'Auth');
-};
-
-let linkingHandlers = [];
-
-const urlListener = async (callback: ({ url: string }) => void) => {
-    if (Platform.isReactNative) {
-        let Linking: any;
-
-        try {
-            ({ Linking } = require('react-native'));
-        } catch (error) { /* Keep webpack happy */ }
-
-        const handler = ({ url, ...rest }: { url: string }) => {
-            logger.debug('addEventListener', { url, ...rest });
-            callback({ url });
-        };
-        linkingHandlers.forEach(lh => Linking.removeEventListener('url', lh));
-        Linking.addEventListener('url', handler);
-        linkingHandlers = [handler];
-
-        const initialUrl = await Linking.getInitialURL();
-        logger.debug('before callback', { initialUrl });
-        callback({ url: initialUrl });
-    } else if (JS.browserOrNode().isBrowser && window.location) {
-        const url = window.location.href;
-
-        callback({ url });
-    } else {
-        throw new Error('Not supported');
-    }
 };
 
 export enum CognitoHostedUIIdentityProvider {
