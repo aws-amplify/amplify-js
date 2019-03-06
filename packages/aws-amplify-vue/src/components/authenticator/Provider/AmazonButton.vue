@@ -31,8 +31,8 @@ export default {
   }),
   methods: {
     initAmazon: function() {
-      this.logger.debug('init amazon');
       const amz = window.amazon;
+      this.logger.debug('init amazon');
       amz.Login.setClientId(this.amazon_client_id);
     },
     createScript: function() {
@@ -88,7 +88,7 @@ export default {
           expires_at
         }, user)
         .then(credentials => AmplifyEventBus.$emit('authState', 'signedIn'))
-        .catch(error => this.logger.error(this.error))
+        .catch(error => this.logger.error(error))
       });
     }
   },
