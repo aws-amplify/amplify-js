@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.10-unstable.0"></a>
+## [2.1.10-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.9...aws-amplify-angular@2.1.10-unstable.0) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="2.1.9"></a>
 ## [2.1.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.1.9-unstable.3...aws-amplify-angular@2.1.9) (2019-03-06)
 
