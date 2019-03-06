@@ -57,8 +57,7 @@
     "amazon-cognito-identity-js": "3.0.9-unstable.0"
   },
   "peerDependencies": {
-    "buffer": "4.x",
-    "react-native": "^0.44.0"
+    "buffer": "4.x"
   },
   "jest": {
     "transform": {
