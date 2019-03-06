@@ -5,70 +5,53 @@ describe('Angular Authenticator: ', function() {
 
   describe('SignIn', () => {
     it('renders a sign in header by default', () => {
-      cy.get('.amplify-form-header').contains('Sign in to your account');
+      cy.contains('.amplify-form-header', 'Sign in to your account');
     });
   
     it('allows the user to sign in', () => {
-      cy.get('.amplify-signin-username').within(() => {
-        cy.get('input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
-      })
-  
-      cy.get('.amplify-signin-password').within(() => {
-        cy.get('input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
-      })
-  
-      cy.get('button').contains('Sign In').click()
-  
-      cy.wait(500);
-  
-      cy.get('.amplify-greeting-text').contains(`Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
+      cy.get('.amplify-signin-username input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
+      cy.get('.amplify-signin-password input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
+      cy.contains('button', 'Sign In').click()
+      cy.contains('.amplify-greeting-text', `Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
     });
 
     it('renders a signup link', () => {
-      cy.get('.amplify-form-link').contains('Create account');
+      cy.contains('.amplify-form-link', 'Create account');
     });
 
     it('renders a forgot password link', () => {
-      cy.get('.amplify-form-link').contains('Reset your password');
+      cy.contains('.amplify-form-link', 'Reset your password');
     });
 
   })
 
   describe('Sign Out', function() {
     beforeEach(() => {
-      cy.get('.amplify-signin-username').within(() => {
-        cy.get('input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
-      })
+      cy.get('.amplify-signin-username input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
   
-      cy.get('.amplify-signin-password').within(() => {
-        cy.get('input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
-      })
+      cy.get('.amplify-signin-password input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
   
-      cy.get('button').contains('Sign In').click()
-  
-      cy.wait(500);
-  
+      cy.contains('button', 'Sign In').click()
     })
 
     it('renders a greeting component when signed in', () => {
-      cy.get('.amplify-greeting-text').contains(`Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
-      cy.get('.amplify-greeting-sign-out').contains('Sign out');
+      cy.contains('.amplify-greeting-text', `Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
+      cy.contains('.amplify-greeting-sign-out', 'Sign out');
     });
 
     it('allows the user to sign out', () => {
-      cy.get('.amplify-greeting-sign-out').contains('Sign out').click();
-      cy.wait(500);
-      cy.get('.amplify-form-header').contains('Sign in to your account')
+      cy.contains('.amplify-greeting-sign-out', 'Sign out').click();
+      cy.contains('.amplify-form-header', 'Sign in to your account')
     });
   });
 
   describe('Sign Up', function() {
     beforeEach(() => {
-      cy.get('.amplify-form-link').contains('Create account').click();
+      cy.contains('.amplify-form-link', 'Create account').click();
     })
     
     it('allows the user to navigate to the sign up component', () => {
-      cy.get('.amplify-form-header').contains('Create a new account');
+      cy.contains('.amplify-form-header', 'Create a new account');
     });
 
     it('renders a username field by default', () => {
@@ -88,7 +71,7 @@ describe('Angular Authenticator: ', function() {
     });
 
     it('renders a sign in link', () => {
-      cy.get('.amplify-form-link').contains('Sign in');
+      cy.contains('.amplify-form-link', 'Sign in');
     });
 
     // TODO: CLI INTEGRATION TO SPIN UP NEW RESOURCES SO WE CAN TEST HAPPY PATH SIGNUP FLOW:
@@ -123,22 +106,19 @@ describe('Angular Authenticator: ', function() {
       cy.get('input[placeholder="Email"]').type(Cypress.env('COGNITO_SIGN_IN_EMAIL'));
       cy.get('input[placeholder="Phone Number"]').type(Cypress.env('COGNITO_SIGN_IN_PHONE'));
 
-      cy.get('.amplify-form-button').contains('Sign Up').click();
+      cy.contains('.amplify-form-button', 'Sign Up').click();
 
-      cy.wait(500);
-
-      cy.get('.amplify-alert-message').contains('User already exists');
+      cy.contains('.amplify-alert-message', 'User already exists');
     });
   });
 
   describe('Forgot Password', function() {
     beforeEach(() => {
-      cy.get('.amplify-form-link').contains('Reset your password')
-      .click();
+      cy.contains('.amplify-form-link', 'Reset your password').click();
     });
 
     it('allows the user to navigate to the forgot password component', () => {
-      cy.get('.amplify-form-header').contains('Reset your password');
+      cy.contains('.amplify-form-header', 'Reset your password');
     });
 
     it('renders a username field', () => {
@@ -146,12 +126,12 @@ describe('Angular Authenticator: ', function() {
     });
 
     it('renders a Back to Sign In link', () => {
-      cy.get('.amplify-form-link').contains('Back to Sign in');
+      cy.contains('.amplify-form-link', 'Back to Sign in');
     });
 
     it('allows the user to navigate back to sign in', () => {
-      cy.get('.amplify-form-link').contains('Back to Sign in').click();
-      cy.get('.amplify-form-header').contains('Sign in to your account');
+      cy.contains('.amplify-form-link', 'Back to Sign in').click();
+      cy.contains('.amplify-form-header', 'Sign in to your account');
     });
 
     // To test further, need a way of handling attempt limit exceptions
