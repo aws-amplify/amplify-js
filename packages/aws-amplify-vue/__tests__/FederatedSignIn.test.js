@@ -47,6 +47,12 @@ describe('FederatedSignIn', () => {
       });
     });
 
+    it('...should get the passed options', () => {
+      expect(wrapper.vm.options.facebook_app_id).toEqual('test');
+      expect(wrapper.vm.options.amazon_client_id).toEqual('test');
+      expect(wrapper.vm.options.google_client_id).toEqual('test');
+    });
+
     it('...should render google button component', () => {
       expect(wrapper.find({name: 'GoogleButton'}).exists()).toBe(true)
     });

@@ -35,7 +35,7 @@ export default {
 
       const ga = window.gapi;
       const self = this;
-      ga.load('auth2', function() {
+      ga.load('auth2', () => {
           ga.auth2.init({
               client_id: self.google_client_id,
               scope: 'profile email openid'
@@ -52,8 +52,8 @@ export default {
     signIn: function() {
       const ga = window.gapi.auth2.getAuthInstance();
 
-      ga.signIn().then(
-        googleUser => {
+      ga.signIn()
+        .then(googleUser => {
           this.federatedSignIn(googleUser);
           const payload = { provider: constants.GOOGLE };
 
@@ -63,7 +63,7 @@ export default {
             this.logger.debug('Failed to cache auth source into localStorage', e);
           }
         },
-        error => this.logger.error(this.error)
+        error => this.logger.error(error)
       );
     },
     federatedSignIn: function(googleUser) {
@@ -86,7 +86,7 @@ export default {
         expires_at
       }, user)
       .then(credentials => AmplifyEventBus.$emit('authState', 'signedIn'))
-      .catch(error => this.logger.error(this.error))
+      .catch(error => this.logger.error(error))
     }
   },
   created: function() {

@@ -109,7 +109,7 @@ export default {
           expires_at 
         }, user)
         .then(credentials => AmplifyEventBus.$emit('authState', 'signedIn'))
-        .catch(error => this.logger.error(this.error))
+        .catch(error => this.logger.error(error))
       });
     }
   },
