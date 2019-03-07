@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.7"></a>
+## [0.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7-unstable.0...aws-amplify-vue@0.2.7) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.7-unstable.0"></a>
+## [0.2.7-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6...aws-amplify-vue@0.2.7-unstable.0) (2019-03-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/aws-amplify-vue:** Access the 'key' property of the 'signUpField' object to avoid a [objec Object] value in the HTML ([fb98183](https://github.com/aws-amplify/amplify-js/commit/fb98183))
+* **@aws-amplify/aws-amplify-vue:** Change the 'type' property values taken from the 'username' and 'email' objects in the signUpFields array so that they are valid HTML attribute values. ([8c28cae](https://github.com/aws-amplify/amplify-js/commit/8c28cae))
+* **@aws-amplify/aws-amplify-vue:** Change the tests to check for the HTML valid attribute value 'text' rather than 'string' ([5f982e1](https://github.com/aws-amplify/amplify-js/commit/5f982e1))
+
+
+
+
 <a name="0.2.6"></a>
 ## [0.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.5...aws-amplify-vue@0.2.6) (2019-03-04)
 
