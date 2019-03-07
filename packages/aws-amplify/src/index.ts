@@ -11,11 +11,12 @@
  * and limitations under the License.
  */
 
-import Analytics, { 
-    AnalyticsClass, 
-    AnalyticsProvider, 
-    AWSPinpointProvider, 
-    AWSKinesisProvider } from '@aws-amplify/analytics';
+import Analytics, {
+    AnalyticsClass,
+    AnalyticsProvider,
+    AWSPinpointProvider,
+    AWSKinesisProvider,
+    AWSKinesisFirehoseProvider } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
@@ -49,35 +50,36 @@ Amplify.Interactions = Interactions;
 Amplify.UI = UI;
 Amplify.XR = XR;
 
-export { 
-    Auth, 
-    Analytics, 
+export {
+    Auth,
+    Analytics,
     Storage,
-    API, 
-    PubSub, 
-    I18n, 
-    Logger, 
-    Hub, 
-    Cache, 
-    JS, 
-    ClientDevice, 
-    Signer, 
-    ServiceWorker, 
+    API,
+    PubSub,
+    I18n,
+    Logger,
+    Hub,
+    Cache,
+    JS,
+    ClientDevice,
+    Signer,
+    ServiceWorker,
     Interactions,
     UI,
     XR
 };
 
-export { 
-    AuthClass, 
-    AnalyticsClass, 
-    APIClass, 
+export {
+    AuthClass,
+    AnalyticsClass,
+    APIClass,
     StorageClass,
     PubSubClass,
     InteractionsClass,
     XRClass,
-    AnalyticsProvider, 
-    AWSPinpointProvider, 
-    AWSKinesisProvider
+    AnalyticsProvider,
+    AWSPinpointProvider,
+    AWSKinesisProvider,
+    AWSKinesisFirehoseProvider
 };
 export { graphqlOperation };

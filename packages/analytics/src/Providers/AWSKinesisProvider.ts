@@ -59,7 +59,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     events.push(params);
-                } 
+                }
                 that._sendFromBuffer(events);
             },
             flushInterval
@@ -156,7 +156,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         });
     }
 
-    private _sendEvents(group) {
+    protected _sendEvents(group) {
         if (group.length === 0) {
             // logger.debug('events array is empty, directly return');
             return;
@@ -189,7 +189,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
                 {
                     Records: records[streamName],
                     StreamName: streamName
-                }, 
+                },
                 (err, data)=> {
                     if (err) logger.debug('Failed to upload records to Kinesis', err);
                     else logger.debug('Upload records to stream', streamName);
@@ -198,11 +198,11 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         });
     }
 
-    private _init(config, credentials) {
+    protected _init(config, credentials) {
         logger.debug('init clients');
 
         if (this._kinesis
-            && this._config.credentials 
+            && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
             && this._config.credentials.identityId === credentials.identityId) {
             logger.debug('no change for analytics config, directly return from init');
@@ -211,13 +211,17 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
         this._config.credentials = credentials;
         const { region } = config;
+
+        return this._initKinesis(region, credentials);
+    }
+
+    protected _initKinesis(region, credentials) {
         logger.debug('initialize kinesis with credentials', credentials);
         this._kinesis = new Kinesis({
             apiVersion: '2013-12-02',
             region,
             credentials
         });
-
         return true;
     }
 
