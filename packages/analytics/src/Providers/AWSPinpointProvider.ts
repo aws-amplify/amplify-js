@@ -243,9 +243,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event, config } = params;
 
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 return this._startSession(params);
-            case '_session_stop':
+            case '_session.stop':
                 return this._stopSession(params);
             case '_update_endpoint':
                 return this._updateEndpoint(params);
