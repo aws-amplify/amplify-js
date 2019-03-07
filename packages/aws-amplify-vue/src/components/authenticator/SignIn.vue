@@ -75,7 +75,7 @@ export default {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign in to your account'),
         username: '',
-        federated: {},
+        federated: null,
         isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})

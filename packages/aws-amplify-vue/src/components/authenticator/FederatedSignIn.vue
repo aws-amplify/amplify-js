@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div v-if="options.google_client_id">
-      <google-button :google_client_id="options.google_client_id"></google-button>
+    <div v-if="google_client_id">
+      <google-button :google_client_id="google_client_id"/>
     </div>
-    <div v-if="options.facebook_app_id">
-      <facebook-button :facebook_app_id="options.facebook_app_id"></facebook-button>
+    <div v-if="facebook_app_id">
+      <facebook-button :facebook_app_id="facebook_app_id"/>
     </div>
-    <div v-if="options.amazon_client_id">
-      <amazon-button :amazon_client_id="options.amazon_client_id"></amazon-button>
+    <div v-if="amazon_client_id">
+      <amazon-button :amazon_client_id="amazon_client_id"/>
     </div>
   </div>    
 </template>
@@ -21,9 +21,20 @@ import AmazonButton from './Provider/AmazonButton';
 export default {
   name: 'FederatedSignIn',
   props: {
-    federatedSignInConfig: {
-      type: Object,
-      required: false
+    amazon_client_id: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    google_client_id: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    facebook_app_id: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   components: {
@@ -34,16 +45,6 @@ export default {
   data: () => ({
     amplifyUI: AmplifyUI
   }),
-  computed: {
-    options: function() {
-      const defaults = {
-        facebook_app_id: '',
-        google_client_id: '',
-        amazon_client_id: ''
-      }
-      return Object.assign(defaults, this.federatedSignInConfig || {})
-    }
-  },
   methods: {},
   mounted: function() {}
 }
