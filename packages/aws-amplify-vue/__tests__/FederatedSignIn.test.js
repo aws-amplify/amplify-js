@@ -27,10 +27,10 @@ describe('FederatedSignIn', () => {
       expect(wrapper.vm.$options.name).toEqual('FederatedSignIn');
     });
 
-    it('...have default options', () => {
-      expect(wrapper.vm.options.facebook_app_id).toEqual('');
-      expect(wrapper.vm.options.amazon_client_id).toEqual('');
-      expect(wrapper.vm.options.google_client_id).toEqual('');
+    it('...have default props', () => {
+      expect(wrapper.vm.$props.facebook_app_id).toEqual('');
+      expect(wrapper.vm.$props.amazon_client_id).toEqual('');
+      expect(wrapper.vm.$props.google_client_id).toEqual('');
     });
   })
 
@@ -38,19 +38,17 @@ describe('FederatedSignIn', () => {
     beforeEach(() => {
       wrapper = shallowMount(FederatedSignIn, {
         propsData: {
-          federatedSignInConfig: {
-            facebook_app_id: 'test',
-            google_client_id: 'test',
-            amazon_client_id: 'test'
-          },
+          facebook_app_id: 'test',
+          google_client_id: 'test',
+          amazon_client_id: 'test'
         },
       });
     });
 
-    it('...should get the passed options', () => {
-      expect(wrapper.vm.options.facebook_app_id).toEqual('test');
-      expect(wrapper.vm.options.amazon_client_id).toEqual('test');
-      expect(wrapper.vm.options.google_client_id).toEqual('test');
+    it('...should get the passed props', () => {
+      expect(wrapper.vm.$props.facebook_app_id).toEqual('test');
+      expect(wrapper.vm.$props.amazon_client_id).toEqual('test');
+      expect(wrapper.vm.$props.google_client_id).toEqual('test');
     });
 
     it('...should render google button component', () => {

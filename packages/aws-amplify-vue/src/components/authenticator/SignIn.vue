@@ -16,7 +16,11 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-if="options.federated">
-        <amplify-federated-sign-in v-bind:federatedSignInConfig="options.federated"></amplify-federated-sign-in>
+        <amplify-federated-sign-in 
+          v-bind:google_client_id="options.federated.google_client_id"
+          v-bind:facebook_app_id="options.federated.facebook_app_id"
+          v-bind:amazon_client_id="options.federated.amazon_client_id">
+        </amplify-federated-sign-in>
         <div :class="amplifyUI.strike">
           <span :class="amplifyUI.strikeContent">
             {{$Amplify.I18n.get('or')}}
@@ -69,7 +73,7 @@ export default {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign In Account'),
         username: '',
-        federated: {},
+        federated: null,
         isSignUpDisplayed: true
       }
       return Object.assign(defaults, this.signInConfig || {})

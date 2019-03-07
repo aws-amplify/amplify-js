@@ -124,7 +124,7 @@ Config:
 |-----------|--------|-----------------------------------------|-----------|----------|
 | header    | string | the component header                    | 'Sign In' | no       |
 | username  | string | the default value of the username field | ''        | no       |
-| federated | object | the scocial provider application ID(s)  | {}        | no       |
+| federated | object | the scocial provider application ID(s)  | N/A       | no       |
 
 Events: 
 
@@ -141,7 +141,11 @@ Usage: ```<amplify-federated-sign-in></amplify-federated-sign-in>```
 
 Config:
 ```
-<amplify-federated-sign-in v-bind:federatedSignInConfig="federatedSignInConfig"></amplify-federated-sign-in>
+<amplify-federated-sign-in 
+  v-bind:google_client_id="google_client_id" 
+  v-bind:facebook_app_id="facebook_app_id" 
+  v-bind:amazon_client_id="amazon_client_id">
+</amplify-federated-sign-in>
 ```
 
 | Attribute        | Type   | Description                               | Default   | Required |
