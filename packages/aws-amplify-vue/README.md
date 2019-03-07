@@ -124,6 +124,7 @@ Config:
 |-----------|--------|-----------------------------------------|-----------|----------|
 | header    | string | the component header                    | 'Sign In' | no       |
 | username  | string | the default value of the username field | ''        | no       |
+| federated | object | the scocial provider application ID(s)  | {}        | no       |
 
 Events: 
 
@@ -131,6 +132,27 @@ Events:
 * ```AmplifyEventBus.$emit('authState', 'confirmSignIn')```: Emitted when a user successfully provides their credentials but is then asked to answer and MFA challenge.
 * ```AmplifyEventBus.$emit('authState', 'forgotPassword')```: Emitted when a user clicks the 'Forgot Password' button.
 * ```AmplifyEventBus.$emit('authState', 'signUp')```: Emitted when a user clicks 'Back to Sign Up'.
+
+### FederatedSignIn
+
+The FederatedSignIn component provides your users with the ability to sign in using social providers.  
+
+Usage: ```<amplify-federated-sign-in></amplify-federated-sign-in>```
+
+Config:
+```
+<amplify-federated-sign-in v-bind:federatedSignInConfig="federatedSignInConfig"></amplify-federated-sign-in>
+```
+
+| Attribute        | Type   | Description                               | Default   | Required |
+|------------------|--------|-------------------------------------------|-----------|----------|
+| google_client_id | string | the application id to the social provider | ''        | no       |
+| facebook_app_id  | string | the application id to the social provider | ''        | no       |
+| amazon_client_id | string | the application id to the social provider | ''        | no       |
+
+Events: 
+
+* ```AmplifyEventBus.$emit('authState', 'signedIn')```: Emitted when a user successfully signs in without answering an MFA challenge.
 
 ### ConfirmSignIn
 
