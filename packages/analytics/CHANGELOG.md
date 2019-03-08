@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.12-unstable.0"></a>
+## [1.2.12-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11...@aws-amplify/analytics@1.2.12-unstable.0) (2019-03-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11"></a>
+## [1.2.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.7...@aws-amplify/analytics@1.2.11) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.7"></a>
+## [1.2.11-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.6...@aws-amplify/analytics@1.2.11-unstable.7) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.6"></a>
+## [1.2.11-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.5...@aws-amplify/analytics@1.2.11-unstable.6) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.5"></a>
+## [1.2.11-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.4...@aws-amplify/analytics@1.2.11-unstable.5) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.4"></a>
+## [1.2.11-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.3...@aws-amplify/analytics@1.2.11-unstable.4) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.3"></a>
+## [1.2.11-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.2...@aws-amplify/analytics@1.2.11-unstable.3) (2019-02-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.11-unstable.2"></a>
+## [1.2.11-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.1...@aws-amplify/analytics@1.2.11-unstable.2) (2019-01-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 <a name="1.2.11-unstable.1"></a>
 ## [1.2.11-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11-unstable.0...@aws-amplify/analytics@1.2.11-unstable.1) (2019-01-10)
 

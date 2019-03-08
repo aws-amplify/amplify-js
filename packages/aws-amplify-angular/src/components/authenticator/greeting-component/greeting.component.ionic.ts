@@ -26,7 +26,7 @@ const template = `
         size="small"
         *ngIf="signedIn"
         (click)="onSignOut()"
-      >Sign Out</ion-button>
+      >{{ this.amplifyService.i18n().get('Sign Out') }}</ion-button>
 </div>
 `
 
@@ -38,6 +38,6 @@ export class GreetingComponentIonic extends GreetingComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
+
   }
 }

@@ -27,6 +27,7 @@ export interface XRProvider {
     isSceneLoaded(sceneName): boolean;
     getSceneController(sceneName: string): any;
     isVRCapable(sceneName: string): boolean;
+    isVRPresentationActive(sceneName: string): boolean;
     start(sceneName: string): void;
     enterVR(sceneName: string): void;
     exitVR(sceneName: string): void;

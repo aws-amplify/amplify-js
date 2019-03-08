@@ -125,11 +125,16 @@ export default {
 
       if (hasValidMutation) {
         this.isMutation = true;
-
         this.internalMutation = async () => {
-          const result = await this.$Amplify.API.graphql({ query: mutation, variables: mutationVariables });
-          this.$emit('done', result);
-          return result;
+          this.$Amplify.API.graphql({ query: mutation, variables: mutationVariables }).then((result) => {
+            this.$emit('done', result);
+            return result;
+          })
+          .catch((error) => {
+            this.logger.warn(error);
+            this.errors = error.errors;
+            return this.$emit('error', error);
+          })
         };
       }
 

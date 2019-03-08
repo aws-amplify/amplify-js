@@ -7,6 +7,7 @@ import Amplify, {
   StorageClass,
   APIClass,
   InteractionsClass,
+  I18n,
   XRClass
 } from 'aws-amplify';
 
@@ -24,7 +25,8 @@ export class AmplifyService {
   private _cache: any;
   private _pubsub: any;
   private _interactions: InteractionsClass;
-  private _logger: any; 
+  private _i18n: any;
+  private _logger: any;
   private _xr: XRClass;
   private _authState = new Subject<AuthState>();
   authStateChange$ = this._authState.asObservable();
@@ -39,6 +41,7 @@ export class AmplifyService {
     this._cache = Amplify.Cache;
     this._pubsub = Amplify.PubSub;
     this._interactions = Amplify.Interactions;
+    this._i18n = Amplify.I18n;
     this._logger =  Amplify.Logger;
     this._xr = Amplify.XR;
   }
@@ -48,6 +51,7 @@ export class AmplifyService {
   storage(): StorageClass { return this._storage; }
   api(): APIClass { return this._api; }
   interactions(): InteractionsClass { return this._interactions; }
+  i18n(): any { return this._i18n; }
   cache(): any { return this._cache; }
   pubsub(): any { return this._pubsub; }
   logger(name, level): Logger { return new this._logger(name, level); }

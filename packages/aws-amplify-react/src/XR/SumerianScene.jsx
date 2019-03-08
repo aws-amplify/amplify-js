@@ -32,7 +32,8 @@ class SumerianScene extends React.Component {
       loading: true,
       percentage: 0,
       isFullscreen: false,
-      sceneError: null
+      sceneError: null,
+      isVRPresentationActive: false
     };
   }
 
@@ -82,6 +83,7 @@ class SumerianScene extends React.Component {
 
     this.setStateAsync({ 
       muted: XR.isMuted(sceneName),
+      isVRPresentationActive: XR.isVRPresentationActive(sceneName),
       loading: false
     });
 
@@ -120,9 +122,23 @@ class SumerianScene extends React.Component {
     }
   }
 
+  toggleVRPresentation() {
+    try {
+      if (this.state.isVRPresentationActive) {
+        XR.exitVR(this.props.sceneName);
+      } else {
+        XR.enterVR(this.props.sceneName);
+      }
+    } catch(e) {
+      logger.error('Unable to start/stop WebVR System: ' + e.message);
+      return;
+    }
+    this.setState({isVRPresentationActive: !this.state.isVRPresentationActive});
+  }
+
   render() {
     let muteButton;
-    let enterVRButton;
+    let enterOrExitVRButton;
     let screenSizeButton;
 
     if (XR.isSceneLoaded(this.props.sceneName)) {
@@ -135,8 +151,15 @@ class SumerianScene extends React.Component {
       }
 
       if (XR.isVRCapable(this.props.sceneName)) {
-        enterVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => XR.enterVR(this.props.sceneName)} />
+        if (this.state.isVRPresentationActive) {
+          logger.info('VR Presentation Active');
+          enterOrExitVRButton = <IconButton variant="exit-vr" tooltip="Exit VR" onClick={() => this.toggleVRPresentation()} />
+        } else {
+          logger.info('VR Presentation Inactive');
+          enterOrExitVRButton = <IconButton variant="enter-vr" tooltip="Enter VR" onClick={() => this.toggleVRPresentation()} />
+        }
       }
+
       if (this.state.isFullscreen) {
         screenSizeButton = <IconButton variant="minimize" tooltip="Exit Fullscreen" onClick={() => this.minimize()} />
       } else {
@@ -152,7 +175,7 @@ class SumerianScene extends React.Component {
         <div className={AmplifyUI.sceneBar}>
           <span className={AmplifyUI.sceneActions}>
             {muteButton}
-            {enterVRButton}
+            {enterOrExitVRButton}
             {screenSizeButton}
           </span>
         </div>
