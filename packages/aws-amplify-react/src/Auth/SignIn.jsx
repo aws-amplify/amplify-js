@@ -61,7 +61,12 @@ export default class SignIn extends AuthPiece {
         if (e.keyCode !== 13) return;
 
         const { hide = [] } = this.props;
-        if (this.props.authState === 'signIn' && !hide.includes(SignIn)) {
+        if (
+            this.props.authState === 'signIn' &&
+            !hide.includes(SignIn) &&
+            e.target.dataset &&
+            ['amplify-username', 'amplify-password'].includes(e.target.dataset.id)
+        ) {
             this.signIn();
         }
     }
@@ -141,6 +146,7 @@ export default class SignIn extends AuthPiece {
                             theme={theme}
                             key="username"
                             name="username"
+                            data-id="amplify-username"
                             onChange={this.handleInputChange}
                         />
                     </FormField>
@@ -152,6 +158,7 @@ export default class SignIn extends AuthPiece {
                             key="password"
                             type="password"
                             name="password"
+                            data-id="amplify-password"
                             onChange={this.handleInputChange}
                         />
                         {
