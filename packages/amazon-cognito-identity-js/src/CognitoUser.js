@@ -1070,6 +1070,9 @@ export default class CognitoUser {
     
     let userData = this.storage.getItem(this.userDataKey);
     // get the cached user data
+    
+    const refresh = this.signInUserSession.getRefreshToken().getToken();
+
     if (!userData || bypassCache) {
       this.client.request('GetUser', {
         AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
@@ -1078,6 +1081,14 @@ export default class CognitoUser {
           return callback(err, null);
         }
         this.cacheUserData(userData);
+        if (refresh) {
+          this.refreshSession(refresh, (refreshError, data) => {
+            if (refreshError) {
+              return callback(refreshError, null);
+            }
+            return callback(null, userData);
+          });
+        }
         return callback(null, userData);
       });
     } else {
