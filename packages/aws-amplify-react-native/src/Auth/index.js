@@ -25,6 +25,7 @@ import ForgotPassword from './ForgotPassword';
 import RequireNewPassword from './RequireNewPassword';
 import VerifyContact from './VerifyContact';
 import Greetings from './Greetings';
+import withOAuth from './withOAuth';
 
 const logger = new Logger('auth components');
 
@@ -39,7 +40,8 @@ export {
     Loading,
     RequireNewPassword,
     VerifyContact,
-    Greetings
+    Greetings,
+    withOAuth
 };
 
 export function withAuthenticator(
