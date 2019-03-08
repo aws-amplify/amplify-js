@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.18-unstable.0"></a>
+## [1.0.18-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.17...@aws-amplify/ui@1.0.18-unstable.0) (2019-03-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.17-unstable.0...@aws-amplify/ui@1.0.17) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.17-unstable.0"></a>
+## [1.0.17-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.16...@aws-amplify/ui@1.0.17-unstable.0) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.16-unstable.0...@aws-amplify/ui@1.0.16) (2019-03-04)
 
