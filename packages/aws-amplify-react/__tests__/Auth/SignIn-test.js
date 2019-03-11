@@ -3,7 +3,7 @@ import SignIn from '../../src/Auth/SignIn';
 import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Header, Footer, Input, Button, WebForm } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signIn',  
@@ -19,6 +19,10 @@ const deniedStates = [
     'forgotPassword',
     'verifyContact'
 ];
+
+const fakeEvent = {
+    preventDefault: jest.fn()
+};
 
 describe('SignIn', () => {
     describe('normal case', () => {
@@ -80,10 +84,10 @@ describe('SignIn', () => {
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find(Button).simulate('click');
+            wrapper.find(WebForm).at(0).simulate('submit', fakeEvent);
 
-            await Promise.resolve(); // await for all other promises to resolve
-
+            await Promise.resolve();
+           
             expect(spyon.mock.calls.length).toBe(1);
             expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
             expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
@@ -141,7 +145,7 @@ describe('SignIn', () => {
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
-            await wrapper.find(Button).simulate('click');
+            wrapper.find(WebForm).at(0).simulate('submit', fakeEvent);
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -196,7 +200,7 @@ describe('SignIn', () => {
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
-            await wrapper.find(Button).simulate('click');
+            wrapper.find(WebForm).at(0).simulate('submit', fakeEvent);
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -237,7 +241,7 @@ describe('SignIn', () => {
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
         
-            await wrapper.find(Button).simulate('click');
+            wrapper.find(WebForm).at(0).simulate('submit', fakeEvent);
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -272,7 +276,7 @@ describe('SignIn', () => {
             });
 
             const spyon2 = jest.spyOn(signIn, 'changeState');
-            await signIn.signIn();
+            await signIn.signIn(fakeEvent);
 
             spyon.mockClear();
             spyon2.mockClear();
