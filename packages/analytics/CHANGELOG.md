@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.12-unstable.1"></a>
+## [1.2.12-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.12-unstable.0...@aws-amplify/analytics@1.2.12-unstable.1) (2019-03-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** use the correct user id when unlinking endpoints ([acb955f](https://github.com/aws/aws-amplify/commit/acb955f))
+
+
+
+
 <a name="1.2.12-unstable.0"></a>
 ## [1.2.12-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.11...@aws-amplify/analytics@1.2.12-unstable.0) (2019-03-07)
 
