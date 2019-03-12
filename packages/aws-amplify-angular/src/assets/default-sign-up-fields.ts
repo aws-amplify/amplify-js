@@ -12,7 +12,6 @@
  * and limitations under the License.
  */
 // tslint:enable
-
 export default [
   {
     label: 'Username',

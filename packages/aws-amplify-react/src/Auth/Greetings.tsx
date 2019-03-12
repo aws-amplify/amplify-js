@@ -42,7 +42,9 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         super(props);
         this.state = {};
         Hub.listen('auth', this);
-        this.onHubCapsule = this.onHubCapsule.bind(this)
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        this._validAuthStates = ['signedIn'];
+
     }
 
     componentDidMount() {

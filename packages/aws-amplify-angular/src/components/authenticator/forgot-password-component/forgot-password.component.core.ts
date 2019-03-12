@@ -21,37 +21,37 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-    <div class="amplify-form-header">Reset your password</div>
-    <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code</div>
-    <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
+    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
+    <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code') }}</div>
+    <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
 
       <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> Username *</label>
+      <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
         <input #username
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
-          placeholder="Username"
+          placeholder="{{ this.amplifyService.i18n().get('Username') }}"
           [value]="username"
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
-      <label class="amplify-input-label" for="code"> Confirmation Code *</label>
+      <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
         <input #code
           (keyup)="setCode(code.value)"
           class="amplify-form-input"
           type="text"
-          placeholder="Enter code"
+          placeholder="{{ this.amplifyService.i18n().get('Enter code') }}"
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
-      <label class="amplify-input-label" for="password"> New Password *</label>
+      <label class="amplify-input-label" for="password"> {{ this.amplifyService.i18n().get('New Password *') }}</label>
         <input #password
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
           class="amplify-form-input"
           type="password"
-          placeholder="Password"
+          placeholder="{{ this.amplifyService.i18n().get('Password') }}"
         />
       </div>
 
@@ -60,20 +60,20 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             *ngIf="!code_sent"
-            (click)="onSend()">Submit</button>
-        
+            (click)="onSend()">{{ this.amplifyService.i18n().get('Submit') }}</button>
+
           <button class="amplify-form-button"
             *ngIf="code_sent"
-            (click)="onSubmit()">Verify</button>
+            (click)="onSubmit()">{{ this.amplifyService.i18n().get('Verify') }}</button>
         </div>
 
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">Resend Code</a>
-            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
+            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend Code') }}</a>
+            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
           </div>
         </div>
-      
+
       </div>
     </div>
   </div>
@@ -81,7 +81,7 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>

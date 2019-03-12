@@ -6,6 +6,9 @@ module.exports = {
         'aws-amplify-auth': './src/index.ts',
         'aws-amplify-auth.min': './src/index.ts'
     },
+    externals: {
+        'react-native': 'react-native'
+    },
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
