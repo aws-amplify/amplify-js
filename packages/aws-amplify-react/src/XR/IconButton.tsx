@@ -14,7 +14,14 @@ import * as React from 'react';
 import Tooltip from './Tooltip';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const IconButton = (props) => {
+export interface IIconButtonProps {
+  autoShowTooltip?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  tooltip: string;
+  variant: string;
+}
+
+const IconButton = (props: IIconButtonProps) => {
   let buttonIcon;
   switch(props.variant) {
     case "sound-mute":

@@ -60,11 +60,11 @@ export interface IChatBotProps {
     botName?: string;
     clearOnComplete?: boolean;
     conversationModeOn?: boolean;
-    onComplete;
+    onComplete: any;
     textEnabled?: boolean;
-    theme?;
+    theme?: any;
     title?: string;
-    voiceConfig?;
+    voiceConfig?: any;
     voiceEnabled?: boolean;
     welcomeMessage?: string;
 }
@@ -75,21 +75,21 @@ export interface IChatBotDialog {
 }
 
 export interface IChatBotState {
-    audioInput?;
+    audioInput?: any;
     continueConversation: boolean;
-    currentVoiceState;
+    currentVoiceState: any;
     dialog: IChatBotDialog[];
     inputDisabled: boolean;
     inputText: string;
-    lexResponse?;
+    lexResponse?: any;
     micButtonDisabled: boolean;
     micText: string;
 }
 
 export class ChatBot extends Component<IChatBotProps, IChatBotState> {
-    public listItemsRef;
+    public listItemsRef: any;
 
-    constructor(props) {
+    constructor(props: IChatBotProps) {
         super(props);
 
         if (this.props.voiceEnabled) {
@@ -272,7 +272,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
         });
     }
 
-    async submit(e) {
+    async submit(e: any) {
         e.preventDefault();
 
         if (!this.state.inputText) {
@@ -300,11 +300,11 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
     }
 
-    async changeInputText(event) {
+    async changeInputText(event: any) {
         await this.setState({ inputText: event.target.value });
     }
 
-    getOnComplete(fn) {
+    getOnComplete(fn: any) {
         return  (...args) => {
             const { clearOnComplete } = this.props;
             const message = fn(...args);
@@ -335,7 +335,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
         }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: IChatBotProps) {
         const {onComplete, botName} = this.props;
 
         if (botName && this.props.onComplete !== prevProps.onComplete) {
@@ -368,15 +368,24 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
                         inputDisabled={this.state.inputDisabled}
                         micButtonDisabled={this.state.micButtonDisabled}
                         handleMicButton={this.micButtonHandler}
-                        currentVoiceState={this.state.currentVoiceState}>
-                    </ChatBotInputs>
+                        currentVoiceState={this.state.currentVoiceState} />
                 </SectionFooter>
             </FormSection>
         );
     }
 }
 
-function ChatBotTextInput(props) {
+export interface IChatBotTextInputProps {
+  styles: any;
+  onChange: any;
+  inputText: any;
+  inputDisabled: any;
+  currentVoiceState: any;
+  onSubmit: any;
+  type: any;
+}
+
+function ChatBotTextInput(props: IChatBotTextInputProps) {
     const styles=props.styles
     const onChange=props.onChange
     const inputText=props.inputText
@@ -395,7 +404,15 @@ function ChatBotTextInput(props) {
     )
 }
 
-function ChatBotMicButton(props) {
+export interface IChatBotMicButtonProps {
+  voiceEnabled: any;
+  styles: any;
+  micButtonDisabled: any;
+  handleMicButton: any;
+  micText: any;
+}
+
+function ChatBotMicButton(props: IChatBotMicButtonProps) {
     const voiceEnabled = props.voiceEnabled;
     const styles = props.styles;
     const micButtonDisabled = props.micButtonDisabled;
@@ -416,7 +433,15 @@ function ChatBotMicButton(props) {
     )
 }
 
-function ChatBotTextButton(props) {
+export interface IChatBotTextButtonProps {
+  textEnabled: any;
+  styles: any;
+  inputDisabled: any;
+  onSubmit: any;
+  type: any;
+}
+
+function ChatBotTextButton(props: IChatBotTextButtonProps) {
     const textEnabled = props.textEnabled;
     const styles = props.styles;
     const inputDisabled = props.inputDisabled;
@@ -435,7 +460,21 @@ function ChatBotTextButton(props) {
     )
 }
 
-function ChatBotInputs(props) {
+export interface IChatBotInputsProps {
+  voiceEnabled: any;
+  textEnabled: any;
+  styles: any;
+  onChange: any;
+  inputDisabled: any;
+  micButtonDisabled: any;
+  inputText: any;
+  onSubmit: any;
+  handleMicButton: any;
+  micText: any;
+  currentVoiceState: any;
+}
+
+function ChatBotInputs(props: IChatBotInputsProps) {
     const voiceEnabled = props.voiceEnabled;
     const textEnabled = props.textEnabled;
     const styles = props.styles;

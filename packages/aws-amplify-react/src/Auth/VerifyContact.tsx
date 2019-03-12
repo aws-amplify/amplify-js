@@ -33,11 +33,11 @@ import {
 const logger = new Logger('VerifyContact');
 
 export interface IVerifyContactState extends IAuthPieceState {
-    verifyAttr;
+    verifyAttr: any;
 }
 
 export default class VerifyContact extends AuthPiece<IAuthPieceProps, IVerifyContactState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['verifyContact'];
@@ -134,7 +134,7 @@ export default class VerifyContact extends AuthPiece<IAuthPieceProps, IVerifyCon
         );
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { authData, hide } = this.props;
         if (hide && hide.includes(VerifyContact)) { return null; }
 

@@ -25,13 +25,13 @@ import {
 const logger = new Logger('Loading');
 
 export default class Loading extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['loading'];
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { hide } = this.props;
         if (hide && hide.includes(Loading)) { return null; }
 

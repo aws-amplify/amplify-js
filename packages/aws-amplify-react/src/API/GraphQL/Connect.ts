@@ -3,23 +3,23 @@ import { Component } from 'react';
 import API from '@aws-amplify/api';
 
 export interface IConnectProps {
-  mutation?;
-  onSubscriptionMsg?;
-  query?;
-  subscription?;
+  mutation?: any;
+  onSubscriptionMsg?: (prevData: any) => any;
+  query?: any;
+  subscription?: any;
 }
 
 export interface IConnectState {
-  loading;
-  data;
-  errors;
-  mutation;
+  loading: boolean;
+  data: any;
+  errors: any;
+  mutation: any;
 }
 
 export default class Connect extends Component<IConnectProps, IConnectState> {
     public subSubscription;
 
-    constructor(props) {
+    constructor(props: IConnectProps) {
         super(props);
 
         this.state = this.getInitialState();
@@ -55,7 +55,7 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
             // @ts-ignore
             mutation: { query: mutation, mutationVariables = {} } = {},
             subscription,
-            onSubscriptionMsg = (prevData) => prevData,
+            onSubscriptionMsg = (prevData: any) => prevData,
         } = this.props;
 
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
@@ -106,6 +106,7 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
                 this.subSubscription = observable.subscribe({
                     next: ({ value: { data } }) => {
                         const { data: prevData } = this.state;
+                        // @ts-ignore
                         const newData = onSubscriptionMsg(prevData, data);
                         this.setState({ data: newData });
                     },

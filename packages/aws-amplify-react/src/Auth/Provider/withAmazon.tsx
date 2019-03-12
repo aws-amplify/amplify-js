@@ -33,7 +33,7 @@ declare global {
 
 export default function withAmazon(Comp) {
     return class extends Component<any, any> {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
 
             this.initAmazon = this.initAmazon.bind(this);
@@ -143,7 +143,7 @@ export default function withAmazon(Comp) {
     };
 }
 
-const Button = (props) => (
+const Button = (props: any) => (
     <SignInButton
         id={amazonSignInButton}
         onClick={props.amazonSignIn}

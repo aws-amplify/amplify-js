@@ -40,19 +40,19 @@ export interface IMFATypes {
 export interface ISelectMFATypeProps {
     authData;
     MFATypes: IMFATypes;
-    theme?;
+    theme?: any;
 }
 
 export interface ISelectMFATypeState {
-    selectMessage;
-    showToast?;
+    selectMessage: string | null;
+    showToast?: boolean;
     TOTPSetup: boolean;
 }
 
 export default class SelectMFAType extends Component<ISelectMFATypeProps, ISelectMFATypeState> {
-    public inputs;
+    public inputs: any;
 
-    constructor(props) {
+    constructor(props: ISelectMFATypeProps) {
         super(props);
 
         this.verify = this.verify.bind(this);
@@ -64,7 +64,7 @@ export default class SelectMFAType extends Component<ISelectMFATypeProps, ISelec
         };
     }
 
-    handleInputChange(evt) {
+    handleInputChange(evt: any) {
         // clear current state
         this.setState({
             TOTPSetup: false,
@@ -125,7 +125,7 @@ export default class SelectMFAType extends Component<ISelectMFATypeProps, ISelec
         });
     }
 
-    selectView(theme) {
+    selectView(theme: any) {
         const { MFATypes } = this.props;
         if (!MFATypes || Object.keys(MFATypes).length < 2) {
             logger.debug('less than 2 mfa types available');

@@ -35,20 +35,20 @@ const QRCode = require('qrcode.react');
 const logger = new Logger('TOTPSetupComp');
 
 export interface ITOTPSetupCompProps {
-    authData;
-    onTOTPEvent?;
-    theme?;
+    authData: any;
+    onTOTPEvent?: (event: any, data: any, user: any) => void;
+    theme?: any;
 }
 
 export interface ITOTPSetupCompState {
-    code;
-    setupMessage;
+    code: string | null;
+    setupMessage: string | null;
 }
 
 export default class TOTPSetupComp extends Component<ITOTPSetupCompProps, ITOTPSetupCompState> {
-    public inputs;
+    public inputs: any;
     
-    constructor(props) {
+    constructor(props: ITOTPSetupCompProps) {
         super(props);
 
         this.setup = this.setup.bind(this);
@@ -67,13 +67,13 @@ export default class TOTPSetupComp extends Component<ITOTPSetupCompProps, ITOTPS
         this.setup();
     }
 
-    triggerTOTPEvent(event, data, user) {
+    triggerTOTPEvent(event: any, data: any, user: any) {
         if (this.props.onTOTPEvent) {
             this.props.onTOTPEvent(event, data, user);
         }
     }
     
-    handleInputChange(evt) {
+    handleInputChange(evt: any) {
         this.setState({setupMessage: null});
         this.inputs = {};
         const { name, value, type, checked } = evt.target;
@@ -119,7 +119,7 @@ export default class TOTPSetupComp extends Component<ITOTPSetupCompProps, ITOTPS
             });
     }
 
-    showSecretCode(code, theme) {
+    showSecretCode(code: string, theme: any) {
         if (!code) return null;
         return (
             <div>

@@ -33,13 +33,13 @@ const logger = new Logger('Picker');
 
 export interface IPickerProps {
     accept?: string;
-    onPick?;
+    onPick?: (data: any) => void;
     title? : string;
-    theme?;
+    theme?: any;
 }
 
 export default class Picker extends Component<IPickerProps, {}> {
-    handleInput(e) {
+    handleInput(e: any) {
         const that = this;
 
         const file = e.target.files[0];

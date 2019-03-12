@@ -25,7 +25,7 @@ export const MapEntries: Array<[string, RegExp] | [string, RegExp, string]> = [
     ]
 ];
 
-export default function AmplifyMessageMap(message) {
+export default function AmplifyMessageMap(message: string) {
     const match = MapEntries.filter(entry => entry[1].test(message));
     if (match.length === 0) {
         return message;

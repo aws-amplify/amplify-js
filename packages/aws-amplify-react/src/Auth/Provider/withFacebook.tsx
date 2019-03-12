@@ -33,7 +33,7 @@ declare global {
 
 export default function withFacebook(Comp) {
     return class extends Component<any, any> {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
 
             this.fbAsyncInit = this.fbAsyncInit.bind(this);
@@ -175,7 +175,7 @@ export default function withFacebook(Comp) {
     };
 }
 
-const Button = (props) => (
+const Button = (props: any) => (
     <SignInButton
         id={facebookSignInButton}
         onClick={props.facebookSignIn}

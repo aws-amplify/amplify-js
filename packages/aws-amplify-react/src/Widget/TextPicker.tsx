@@ -28,11 +28,11 @@ const PickerPreview = {
 const logger = new Logger('TextPicker');
 
 export interface ITextPickerProps {
-    onLoad?;
-    onPick?;
-    preview?;
+    onLoad?: (dataUrl: any) => void;
+    onPick?: (data: any) => void;
+    preview?: 'hidden';
     previewText?: string;
-    theme?;
+    theme?: any;
     title?: string;
 }
 
@@ -41,7 +41,7 @@ export interface ITextPickerState {
 }
 
 export default class TextPicker extends Component<ITextPickerProps, ITextPickerState> {
-    constructor(props) {
+    constructor(props: ITextPickerProps) {
         super(props);
 
         this.handlePick = this.handlePick.bind(this);
@@ -51,7 +51,7 @@ export default class TextPicker extends Component<ITextPickerProps, ITextPickerS
         };
     }
 
-    handlePick(data) {
+    handlePick(data: { file: Blob, name: string, size: number, type: string }) {
         const that = this;
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
@@ -61,6 +61,7 @@ export default class TextPicker extends Component<ITextPickerProps, ITextPickerS
         if (preview) {
             const reader = new FileReader();
             reader.onload = function(e) {
+                // @ts-ignore
                 const text  = e.target.result;
                 that.setState({ previewText: text });
                 if (onLoad) { onLoad(text); }

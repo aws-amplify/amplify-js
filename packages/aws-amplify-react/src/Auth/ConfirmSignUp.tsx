@@ -34,7 +34,7 @@ import {
 const logger = new Logger('ConfirmSignUp');
 
 export default class ConfirmSignUp extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['confirmSignUp'];
@@ -64,7 +64,7 @@ export default class ConfirmSignUp extends AuthPiece<IAuthPieceProps, IAuthPiece
             .catch(err => this.error(err));
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { hide } = this.props;
         const username = this.usernameFromAuthData();
 

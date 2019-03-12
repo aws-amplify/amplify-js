@@ -38,19 +38,19 @@ import Greetings from './Greetings';
 
 
 export interface IWithAuthenticatorProps extends IAuthenticatorProps {
-    federated?;
+    federated?: any;
 }
 
 export interface IWithAuthenticatorState {
-    authData;
-    authState;
+    authData: any;
+    authState: any;
 }
 
 export function withAuthenticator(Comp, includeGreetings: boolean = false, authenticatorComponents: AuthPiece<any, any>[] = [], federated = null, theme = null, signUpConfig: ISignUpConfig = {}) {
     return class extends Component<IWithAuthenticatorProps, IWithAuthenticatorState> {
-        public authConfig;
+        public authConfig: any;
 
-        constructor(props) {
+        constructor(props: IWithAuthenticatorProps) {
             super(props);
 
             this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
@@ -75,7 +75,7 @@ export function withAuthenticator(Comp, includeGreetings: boolean = false, authe
             }
         }
 
-        handleAuthStateChange(state, data) {
+        handleAuthStateChange(state: any, data: any) {
             this.setState({ authState: state, authData: data });
         }
 
@@ -125,11 +125,11 @@ export interface IAuthenticatorWrapperProps extends IAuthenticatorProps {
 
 export interface IAuthenticatorWrapperState {
     auth: string;
-    authData?;
+    authData?: any;
 }
 
 export class AuthenticatorWrapper extends Component<IAuthenticatorWrapperProps, IAuthenticatorWrapperState> {
-    constructor(props) {
+    constructor(props: IAuthenticatorWrapperProps) {
         super(props);
 
         this.state = { auth: 'init' };

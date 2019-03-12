@@ -40,7 +40,7 @@ export default function withAuth0(Comp, options?) {
     return class extends Component<any, any> {
         public _auth0;
 
-        constructor(props) {
+        constructor(props: any) {
             super(props);
             this._auth0 = null;
 
@@ -163,7 +163,7 @@ export default function withAuth0(Comp, options?) {
     };
 }
 
-const Button = props => (
+const Button = (props: any) => (
     <SignInButton
         id={auth0SignInButton}
         onClick={props.auth0SignIn}

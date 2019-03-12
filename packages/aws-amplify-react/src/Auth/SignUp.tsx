@@ -55,7 +55,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
     public header: string;
     public signUpFields: ISignUpField[];
 
-    constructor(props) {
+    constructor(props: ISignUpProps) {
         super(props);
 
         this._validAuthStates = ['signUp'];
@@ -150,7 +150,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
         }
     }
 
-    needPrefix(key) {
+    needPrefix(key: any) {
         const field = this.signUpFields.find(e => e.key === key);
         if (key.indexOf('custom:') !== 0) {
           return field.custom ;
@@ -218,7 +218,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
         .catch(err => this.error(err));
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { hide } = this.props;
         if (hide && hide.includes(SignUp)) { return null; }
         if (this.checkCustomSignUpFields()) {

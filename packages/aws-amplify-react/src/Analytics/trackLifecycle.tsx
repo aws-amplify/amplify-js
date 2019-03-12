@@ -23,12 +23,12 @@ const Default_Track_Events = [
     'render'
 ];
 
-export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
+export function trackLifecycle(Comp, trackerName: string, events: string[]=Default_Track_Events) {
     return class WithTrackLifecycle extends Component<any, {}> {
-        public trackerName;
-        public trackEvents;
+        public trackerName: string;
+        public trackEvents: string[];
 
-        constructor(props) {
+        constructor(props: any) {
             super(props);
             this.trackerName = trackerName;
             this.trackEvents = events;

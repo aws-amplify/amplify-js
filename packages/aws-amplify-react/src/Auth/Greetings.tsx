@@ -24,13 +24,13 @@ import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Pr
 const logger = new Logger('Greetings');
 
 export interface IGreetingsProps extends IAuthPieceProps {
-    federated?;
+    federated?: any;
     inGreeting?: string;
     outGreeting?: string;
 }
 
 export interface IGreetingsState extends IAuthPieceState {
-    authData?;
+    authData?: any;
     authState?: string;
     stateFromStorage?: boolean;
 }
@@ -38,7 +38,7 @@ export interface IGreetingsState extends IAuthPieceState {
 export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
     private _isMounted: boolean;
 
-    constructor(props) {
+    constructor(props: IGreetingsProps) {
         super(props);
         this.state = {};
         Hub.listen('auth', this);
@@ -71,7 +71,7 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         }
     }
 
-    onHubCapsule(capsule) {
+    onHubCapsule(capsule: any) {
         if (this._isMounted) {
             const { channel, payload, source } = capsule;
             if (channel === 'auth' && payload.event === 'signIn') {
@@ -90,11 +90,11 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         }
     }
 
-    inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
+    inGreeting(name: any) { return `${I18n.get('Hello')} ${name}`; }
     outGreeting() { return ''; }
 
 
-    userGreetings(theme) {
+    userGreetings(theme: any) {
         const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
@@ -147,7 +147,7 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
             />;
     }
 
-    noUserGreetings(theme) {
+    noUserGreetings(theme: any) {
         const greeting = this.props.outGreeting || this.outGreeting;
         const message = (typeof greeting === 'function')? greeting() : greeting;
         return message? <NavItem theme={theme}>{message}</NavItem> : null;

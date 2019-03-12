@@ -24,23 +24,23 @@ import Constants from './common/constants';
 const logger = new Logger('SignOut');
 
 export interface ISignOutProps extends IAuthPieceProps {
-    googleSignOut?;
-    facebookSignOut?;
-    amazonSignOut?;
-    auth0SignOut?;
-    stateFromStorage?;
+    googleSignOut?: any;
+    facebookSignOut?: any;
+    amazonSignOut?: any;
+    auth0SignOut?: any;
+    stateFromStorage?: any;
 }
 
 export interface ISignOutState extends IAuthPieceState {
-    authData?;
-    authState?;
-    stateFromStorage?;
+    authData?: any;
+    authState?: any;
+    stateFromStorage?: any;
 }
 
 export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
     public _isMounted: boolean;
 
-    constructor(props) {
+    constructor(props: ISignOutProps) {
         super(props);
 
         this.signOut = this.signOut.bind(this);
@@ -76,7 +76,7 @@ export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
         }
     }
 
-    onHubCapsule(capsule) {
+    onHubCapsule(capsule: any) {
         if (this._isMounted) {
             const { channel, payload, source } = capsule;
             if (channel === 'auth' && payload.event === 'signIn') {

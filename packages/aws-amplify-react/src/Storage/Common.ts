@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-export function calcKey(file, fileToKey) {
+export function calcKey(file: { name: string, size: number, type: string}, fileToKey: any) {
     const { name, size, type } = file;
     let key = encodeURI(name);
     if (fileToKey) {

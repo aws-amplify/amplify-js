@@ -26,9 +26,9 @@ import Constants from '../common/constants';
 
 const logger = new Logger('withOAuth');
 
-export default function withOAuth(Comp, options?) {
+export default function withOAuth(Comp, options?: any) {
     return class extends Component<any, any> {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
             this.signIn = this.signIn.bind(this);
         }
@@ -76,7 +76,7 @@ export default function withOAuth(Comp, options?) {
     };
 }
 
-const Button = (props) => (
+const Button = (props: any) => (
     <SignInButton
         id={oAuthSignInButton}
         onClick={props.OAuthSignIn}

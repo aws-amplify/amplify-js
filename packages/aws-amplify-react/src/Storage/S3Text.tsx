@@ -24,23 +24,24 @@ import { calcKey } from './Common';
 const logger = new Logger('Storage.S3Text');
 
 export interface IS3TextProps {
-    body?;
-    contentType?;
-    fileToKey?;
-    hidden?;
-    identityId?;
-    level?;
-    onClick?;
-    onError?;
-    onLoad?;
-    path?;
-    picker?;
-    selected?;
-    style?;
-    theme?;
-    textKey?;
-    track?;
-    translate?;
+    body?: any;
+    contentType?: any;
+    fileToKey?: string | ((param: { name: string, size: number, type: string}) => string);
+    hidden?: any;
+    identityId?: any;
+    level?: string;
+    onClick?: any;
+    onError?: any;
+    onLoad?: any;
+    path?: any;
+    picker?: any;
+    selected?: any;
+    style?: any;
+    theme?: any;
+    text?: string;
+    textKey?: string;
+    track?: any;
+    translate?: string | ((params: { type: string, key: string, content: string }) => string)
 }
 
 export interface IS3TextState {
@@ -49,7 +50,7 @@ export interface IS3TextState {
 }
 
 export default class S3Text extends Component<IS3TextProps, IS3TextState> {
-    constructor(props) {
+    constructor(props: IS3TextProps) {
         super(props);
 
         this.handleOnLoad = this.handleOnLoad.bind(this);
@@ -64,7 +65,7 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
         };
     }
 
-    getText(key, level, track, identityId) {
+    getText(key: any, level: any, track: any, identityId: any) {
         if (!Storage || typeof Storage.get !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
@@ -112,17 +113,17 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
         }
     }
 
-    handleOnLoad(text) {
+    handleOnLoad(text: string) {
         const { onLoad } = this.props;
         if (onLoad) { onLoad(text); }
     }
 
-    handleOnError(err) {
+    handleOnError(err: any) {
         const { onError } = this.props;
         if (onError) { onError(err); }
     }
 
-    handlePick(data) {
+    handlePick(data: any) {
         const that = this;
 
         const path = this.props.path || '';
@@ -144,7 +145,7 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
             .catch(err => logger.debug('handle pick error', err));
     }
 
-    handleClick(evt) {
+    handleClick(evt: any) {
         const { onClick } = this.props;
         if (onClick) { onClick(evt); }
     }
@@ -153,7 +154,7 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
         this.load();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: IS3TextProps) {
         const update = prevProps.path !== this.props.path ||
                         prevProps.textKey !== this.props.textKey ||
                         prevProps.body !== this.props.body
@@ -162,7 +163,7 @@ export default class S3Text extends Component<IS3TextProps, IS3TextState> {
         }
     }
 
-    textEl(text, theme) {
+    textEl(text: string, theme: any) {
         if (!text) { return null; }
 
         const { selected } = this.props;

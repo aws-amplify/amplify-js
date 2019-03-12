@@ -20,7 +20,7 @@ import TOTPSetupComp from '../Widget/TOTPSetupComp';
 const logger = new Logger('TOTPSetup');
 
 export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['TOTPSetup'];
@@ -28,7 +28,7 @@ export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceStat
         this.checkContact = this.checkContact.bind(this);
     }
 
-    checkContact(user) {
+    checkContact(user: any) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -43,7 +43,7 @@ export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceStat
             });
     }
 
-    onTOTPEvent(event, data, user) {
+    onTOTPEvent(event: any, data: any, user: any) {
         logger.debug('on totp event', event, data);
         // const user = this.props.authData;
         if (event === 'Setup TOTP') {
@@ -53,7 +53,7 @@ export default class TOTPSetup extends AuthPiece<IAuthPieceProps, IAuthPieceStat
         }
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { authData, hide } = this.props;
         if (hide && hide.includes(TOTPSetup)) { return null; }
 

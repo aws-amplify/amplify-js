@@ -36,11 +36,11 @@ import {
 const logger = new Logger('ForgotPassword');
 
 export interface IForgotPasswordState extends IAuthPieceState {
-    delivery;
+    delivery: any;
 }
 
 export default class ForgotPassword extends AuthPiece<IAuthPieceProps, IForgotPasswordState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this.send = this.send.bind(this);
@@ -124,7 +124,7 @@ export default class ForgotPassword extends AuthPiece<IAuthPieceProps, IForgotPa
         );
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { authState, hide, authData={} } = this.props;
         if (hide && hide.includes(ForgotPassword)) { return null; }
 

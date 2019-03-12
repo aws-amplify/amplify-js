@@ -25,24 +25,24 @@ import { calcKey } from './Common';
 const logger = new Logger('Storage.S3Image');
 
 export interface IS3ImageProps {
-    body?;
-    contentType?;
-    fileToKey?;
-    hidden?;
-    identityId?;
-    imgKey?;
-    level?;
-    onClick?;
-    onError?;
-    onLoad?;
-    path?;
-    picker?;
-    selected?;
-    src?;
-    style?;
-    theme?;
-    track?;
-    translate?;
+    body?: any;
+    contentType?: any;
+    fileToKey?: any;
+    hidden?: any;
+    identityId?: any;
+    imgKey?: any;
+    level?: any;
+    onClick?: any;
+    onError?: any;
+    onLoad?: any;
+    path?: any;
+    picker?: any;
+    selected?: any;
+    src?: any;
+    style?: any;
+    theme?: any;
+    track?: any;
+    translate?: string | ((params: { type: string, key: string, content: string }) => string)
 }
 
 export interface IS3ImageState {
@@ -50,7 +50,7 @@ export interface IS3ImageState {
 }
 
 export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
-    constructor(props) {
+    constructor(props: IS3ImageProps) {
         super(props);
 
         this.handleOnLoad = this.handleOnLoad.bind(this);
@@ -63,7 +63,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
         this.state = { src: initSrc };
     }
 
-    getImageSource(key, level, track, identityId) {
+    getImageSource(key: any, level: any, track: any, identityId: any) {
         if (!Storage || typeof Storage.get !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
@@ -106,17 +106,17 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
         }
     }
 
-    handleOnLoad(evt) {
+    handleOnLoad(evt: any) {
         const { onLoad } = this.props;
         if (onLoad) { onLoad(this.state.src); }
     }
 
-    handleOnError(evt) {
+    handleOnError(evt: any) {
         const { onError } = this.props;
         if (onError) { onError(this.state.src); }
     }
 
-    handlePick(data) {
+    handlePick(data: any) {
         const that = this;
 
         const path = this.props.path || '';
@@ -138,7 +138,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
             .catch(err => logger.debug('handle pick error', err));
     }
 
-    handleClick(evt) {
+    handleClick(evt: any) {
         const { onClick } = this.props;
         if (onClick) { onClick(evt); }
     }
@@ -147,7 +147,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
         this.load();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: IS3ImageProps) {
         const update = prevProps.path !== this.props.path ||
                         prevProps.imgKey !== this.props.imgKey ||
                         prevProps.body !== this.props.body;
@@ -156,7 +156,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
         }
     }
 
-    imageEl(src, theme) {
+    imageEl(src: any, theme: any) {
         if (!src) { return null; }
 
         const { selected } = this.props;

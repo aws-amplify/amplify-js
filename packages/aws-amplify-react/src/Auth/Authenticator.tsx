@@ -36,16 +36,16 @@ const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export interface IAuthenticatorProps {
-    amplifyConfig?;
-    authData?;
+    amplifyConfig?: any;
+    authData?: any;
     authState?: string;
     errorMessage?: (message: string) => string;
-    federated?;
+    federated?: any;
     hide?: any[];
     hideDefault?: boolean;
     onStateChange?: (authState: string, data?) => void;
-    signUpConfig?;
-    theme?;
+    signUpConfig?: any;
+    theme?: any;
 }
 
 export interface IAuthenticatorState {
@@ -59,7 +59,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
     public _initialAuthState: string;
     public _isMounted: boolean;
 
-    constructor(props) {
+    constructor(props: IAuthenticatorProps) {
         super(props);
 
         this.handleStateChange = this.handleStateChange.bind(this);
@@ -115,7 +115,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
             });
     }
 
-    onHubCapsule(capsule) {
+    onHubCapsule(capsule: any) {
         const { channel, payload, source } = capsule;
         if (channel === 'auth') {
             switch (payload.event) {
@@ -140,7 +140,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         }
     }
 
-    handleStateChange(state, data?) {
+    handleStateChange(state: any, data?: any) {
         logger.debug('authenticator state change ' + state, data);
         if (state === this.state.authState) { return; }
 
@@ -157,7 +157,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event, showToast = true) {
+    handleAuthEvent(state: any, event: any, showToast: boolean = true) {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);

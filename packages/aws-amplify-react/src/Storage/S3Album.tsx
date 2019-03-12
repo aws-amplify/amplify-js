@@ -26,35 +26,35 @@ import { calcKey } from './Common';
 const logger = new Logger('Storage.S3Album');
 
 export interface IS3AlbumProps {
-    contentType?;
-    fileToKey?;
-    filter?;
-    identityId;
-    level?;
-    onClickItem?;
-    onError?;
-    onLoad?;
-    onPick?;
-    onSelect?;
-    track?;
-    path;
-    picker;
+    contentType?: any;
+    fileToKey?: any;
+    filter?: any;
+    identityId: any;
+    level?: any;
+    onClickItem?: any;
+    onError?: any;
+    onLoad?: any;
+    onPick?: any;
+    onSelect?: any;
+    track?: any;
+    path: any;
+    picker: any;
     pickerTitle?: string;
-    select?;
-    sort?;
-    theme?;
-    translateItem?;
-    ts?;
+    select?: any;
+    sort?: any;
+    theme?: any;
+    translateItem?: any;
+    ts?: any;
 }
 
 export interface IS3AlbumState {
-    items;
-    theme;
-    ts;
+    items: any;
+    theme: any;
+    ts: any;
 }
 
 export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
-    constructor(props) {
+    constructor(props: IS3AlbumProps) {
         super(props);
 
         this.handlePick = this.handlePick.bind(this);
@@ -72,7 +72,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         Hub.listen('window', this, 'S3Album');
     }
 
-    getKey(file) {
+    getKey(file: any) {
         const { fileToKey } = this.props;
 
         const { name, size, type } = file;
@@ -95,7 +95,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         return key.replace(/\s/g, '_');
     }
 
-    handlePick(data) {
+    handlePick(data: any) {
         const { onPick, onLoad, onError, track, level } = this.props;
 
         if (onPick) { onPick(data); }
@@ -130,7 +130,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         this.setState({ ts: new Date().getTime() });
     }
 
-    handleClick(item) {
+    handleClick(item: any) {
         const { onClickItem, select, onSelect } = this.props;
         if (onClickItem) { onClickItem(item); }
 
@@ -145,7 +145,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         onSelect(item, selected_items);
     }
 
-    onHubCapsule(capsule) {
+    onHubCapsule(capsule: any) {
         const theme = this.props.theme || AmplifyTheme;
         this.setState({ theme: Object.assign({}, theme) });
     }
@@ -154,7 +154,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         this.list();
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps: IS3AlbumProps, prevState: IS3AlbumState) {
         if (this.props.path === prevProps.path &&
             this.props.ts === prevProps.ts &&
             this.props.select === prevProps.select
@@ -189,11 +189,11 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
             });
     }
 
-    contentType(item) {
+    contentType(item: any) {
         return JS.filenameToContentType(item.key, 'image/*');
     }
 
-    marshal(list) {
+    marshal(list: any) {
         const contentType = this.props.contentType || '';
         list.forEach(item => {
             if (item.contentType) { return; }
@@ -207,12 +207,12 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
         this.setState({ items });
     }
 
-    filter(list) {
+    filter(list: any) {
         const { filter } = this.props;
         return filter? filter(list) : list;
     }
 
-    sort(list) {
+    sort(list: any) {
         const { sort } = this.props;
         const typeof_sort = typeof sort;
         if (typeof_sort === 'function') { return sort(list); }

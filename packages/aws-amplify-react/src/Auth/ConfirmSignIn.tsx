@@ -38,7 +38,7 @@ export interface IConfirmSignInState {
 }
 
 export default class ConfirmSignIn extends AuthPiece<IAuthPieceProps, IConfirmSignInState> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['confirmSignIn'];
@@ -49,7 +49,7 @@ export default class ConfirmSignIn extends AuthPiece<IAuthPieceProps, IConfirmSi
         };
     }
 
-    checkContact(user) {
+    checkContact(user: any) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -88,7 +88,7 @@ export default class ConfirmSignIn extends AuthPiece<IAuthPieceProps, IConfirmSi
         if (this.state.mfaType !== mfaType) this.setState({ mfaType });
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { hide, authData } = this.props;
         if (hide && hide.includes(ConfirmSignIn)) { return null; }
 

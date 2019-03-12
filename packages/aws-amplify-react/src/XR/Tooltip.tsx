@@ -13,7 +13,13 @@
 import * as React from 'react';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const Tooltip = (props) => {
+export class ITooltipProps {
+  autoShowTooltip: boolean;
+  children: any;
+  text: string;
+}
+
+const Tooltip = (props: ITooltipProps) => {
   let classes = `${AmplifyUI.tooltip}`;
   
   if (props.autoShowTooltip) {

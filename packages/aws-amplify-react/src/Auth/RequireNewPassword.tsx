@@ -33,7 +33,7 @@ import {
 const logger = new Logger('RequireNewPassword');
 
 export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuthPieceProps> {
-    constructor(props) {
+    constructor(props: IAuthPieceProps) {
         super(props);
 
         this._validAuthStates = ['requireNewPassword'];
@@ -41,7 +41,7 @@ export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuth
         this.checkContact = this.checkContact.bind(this);
     }
 
-    checkContact(user) {
+    checkContact(user: any) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -81,7 +81,7 @@ export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuth
             .catch(err => this.error(err));
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
@@ -132,11 +132,11 @@ export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuth
     }
 }
 
-function convertToPlaceholder(str) {
-    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+function convertToPlaceholder(str: string) {
+    return str.split('_').map((part: string) => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
 }
 
-function objectWithProperties(obj, keys) {
+function objectWithProperties(obj: any, keys: any) {
     const target = {};
     for (const key in obj) {
         if (keys.indexOf(key) === -1) {

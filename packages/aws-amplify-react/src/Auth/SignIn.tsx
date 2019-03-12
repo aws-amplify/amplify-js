@@ -38,16 +38,16 @@ import {
 const logger = new Logger('SignIn');
 
 export interface ISignInProps extends IAuthPieceProps {
-    federated?;
-    override?;
+    federated?: any;
+    override?: any;
 }
 
 export interface ISignInState extends IAuthPieceState {
-    loading?;
+    loading?: boolean;
 }
 
 export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
-    constructor(props) {
+    constructor(props: ISignInProps) {
         super(props);
 
         this.checkContact = this.checkContact.bind(this);
@@ -66,7 +66,7 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
         window.removeEventListener('keydown', this.onKeyDown);
     }
 
-    onKeyDown(e) {
+    onKeyDown(e: any) {
         if (e.keyCode !== 13) return;
 
         const { hide = [] } = this.props;
@@ -75,7 +75,7 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
         }
     }
 
-    checkContact(user) {
+    checkContact(user: any) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -126,7 +126,7 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
         }
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[] } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
         const hideSignUp = !override.includes('SignUp') && hide.some(component => component === SignUp);

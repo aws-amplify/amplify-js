@@ -29,8 +29,22 @@ declare global {
   }
 }
 
-class SumerianScene extends React.Component<any, any> {
-  constructor(props) {
+interface ISumerianSceneProps {
+  sceneName: string
+}
+
+interface ISumerianSceneState {
+  showEnableAudio: boolean;
+  muted: boolean;
+  loading: boolean;
+  percentage: number;
+  isFullscreen: boolean;
+  sceneError: any;
+  isVRPresentationActive: boolean;
+}
+
+class SumerianScene extends React.Component<ISumerianSceneProps, ISumerianSceneState> {
+  constructor(props: ISumerianSceneProps) {
     super(props);
 
     this.state = {
@@ -44,7 +58,7 @@ class SumerianScene extends React.Component<any, any> {
     };
   }
 
-  setStateAsync(state) {
+  setStateAsync(state: any) {
     return new Promise((resolve) => {
       this.setState(state, resolve)
     });
@@ -66,7 +80,7 @@ class SumerianScene extends React.Component<any, any> {
     document.removeEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
   }
   
-  async loadAndSetupScene(sceneName, sceneDomId) {
+  async loadAndSetupScene(sceneName: string, sceneDomId: any) {
     this.setStateAsync({ loading: true });
     const sceneOptions = { 
       progressCallback: (progress) => {
@@ -98,7 +112,7 @@ class SumerianScene extends React.Component<any, any> {
     XR.onSceneEvent(sceneName, 'AudioDisabled', () => this.setStateAsync({showEnableAudio: true}));
   }
   
-  setMuted(muted) {
+  setMuted(muted: any) {
     if (this.state.showEnableAudio) {
       XR.enableAudio(this.props.sceneName);
       this.setState({showEnableAudio: false});
@@ -110,6 +124,7 @@ class SumerianScene extends React.Component<any, any> {
 
   onFullscreenChange() {
     const doc = document;
+    // @ts-ignore
     this.setState({ isFullscreen: doc.fullscreenElement !== null });
   }
 

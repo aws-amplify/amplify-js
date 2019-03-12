@@ -22,15 +22,15 @@ import {
 const logger = new Logger('FederatedSignIn');
 
 export interface IFederatedButtonsProps {
-    authState;
-    federated;
-    onAuthEvent?;
-    onStateChange;
-    theme;
+    authState: any;
+    federated: any;
+    onAuthEvent?: any;
+    onStateChange: any;
+    theme: any;
 }
 
 export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
-    google(google_client_id) {
+    google(google_client_id: any) {
         if (!google_client_id) { return null; }
 
         const { theme, onStateChange } = this.props;
@@ -41,7 +41,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
               />;
     }
 
-    facebook(facebook_app_id) {
+    facebook(facebook_app_id: any) {
         if (!facebook_app_id) { return null; }
 
         const { theme, onStateChange } = this.props;
@@ -52,7 +52,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
                 />;
     }
 
-    amazon(amazon_client_id) {
+    amazon(amazon_client_id: any) {
         if (!amazon_client_id) { return null; }
 
         const { theme, onStateChange } = this.props;
@@ -63,7 +63,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
               />;
     }
 
-    OAuth(oauth_config) {
+    OAuth(oauth_config: any) {
         if (!oauth_config) { return null;}
         const { theme, onStateChange } = this.props;
         return <OAuthButton
@@ -73,7 +73,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
               />;
     }
 
-    auth0(auth0) {
+    auth0(auth0: any) {
         if (!auth0) { return null;}
         const { theme, onStateChange } = this.props;
         return <Auth0Button

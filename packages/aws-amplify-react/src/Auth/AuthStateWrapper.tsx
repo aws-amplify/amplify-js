@@ -8,19 +8,20 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 const logger = new Logger('AuthStateWrapper');
 
 export interface IAuthStateWrapperProps {
-    amplifyConfig?;
-    onStateChange?;
-    theme?;
+    amplifyConfig?: any;
+    authState?: string;
+    onStateChange?: any;
+    theme?: any;
 }
 
 export interface IAuthStateWrapperState {
-    authData?;
+    authData?: any;
     authState: string;
-    error?;
+    error?: any;
 }
 
 export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, IAuthStateWrapperState> {
-    constructor(props) {
+    constructor(props: IAuthStateWrapperProps) {
         super(props);
 
         this.handleStateChange = this.handleStateChange.bind(this);
@@ -41,7 +42,7 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
         this.checkUser();
     }
 
-    handleStateChange(state, data) {
+    handleStateChange(state: any, data: any) {
         logger.debug('authStateWrapper state change ' + state, data);
         if (state === this.state.authState) { return; }
 
@@ -50,7 +51,7 @@ export default class AuthStateWrapper extends Component<IAuthStateWrapperProps, 
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
-    handleAuthEvent(state, event) {
+    handleAuthEvent(state: any, event: any) {
         if (event.type === 'error') {
             this.setState({ error: event.data });
         }

@@ -13,7 +13,13 @@
 import * as React from 'react';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const Loading = (props) => {
+export interface ILoadingProps {
+  percentage: number;
+  sceneName: string;
+  sceneError: any;
+}
+
+const Loading = (props: ILoadingProps) => {
   return (
     <div className={AmplifyUI.loadingOverlay}>
       <div className={AmplifyUI.loadingContainer}>

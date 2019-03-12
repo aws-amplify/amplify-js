@@ -17,13 +17,13 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 export interface IAuthPieceProps {
-    authData?;
+    authData?: any;
     authState?: string;
-    hide?;
-    onAuthEvent?;
+    hide?: any;
+    onAuthEvent?: any;
     onStateChange?: (state: string, data?) => void;
     track?: () => void;
-    theme?;
+    theme?: any;
 }
 
 export interface IAuthPieceState {
@@ -32,9 +32,9 @@ export interface IAuthPieceState {
 export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends Component<Props, State> {
     public _validAuthStates: string[];
     public _isHidden: boolean;
-    public inputs; 
+    public inputs: any; 
 
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
         this.inputs = {};
@@ -61,17 +61,17 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
         return username;
     }
 
-    errorMessage(err) {
+    errorMessage(err: any) {
         if (typeof err === 'string') { return err; }
         return err.message? err.message : JSON.stringify(err);
     }
 
-    triggerAuthEvent(event) {
+    triggerAuthEvent(event: any) {
         const state = this.props.authState;
         if (this.props.onAuthEvent) { this.props.onAuthEvent(state, event); }
     }
 
-    changeState(state, data?) {
+    changeState(state: any, data?: any) {
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
 
         this.triggerAuthEvent({
@@ -80,14 +80,14 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
         });
     }
 
-    error(err) {
+    error(err: any) {
         this.triggerAuthEvent({
             type: 'error',
             data: this.errorMessage(err)
         });
     }
 
-    handleInputChange(evt) {
+    handleInputChange(evt: any) {
         this.inputs = this.inputs || {};
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
@@ -112,7 +112,7 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
         return this.showComponent(this.props.theme || AmplifyTheme);
     }
 
-    showComponent(theme) {
+    showComponent(theme: any) {
         console.error('You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.');
         return null;
     }

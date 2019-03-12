@@ -29,19 +29,20 @@ const logger = new Logger('PhotoPicker');
 export interface IPhotoPickerProps {
     headerHint?: string;
     headerText?: string;
-    onLoad?;
-    onPick?;
+    onLoad?: (dataUrl: any) => void;
+    onPick?: (data: any) => void;
     preview?: 'hidden';
+    previewSrc?: string;
     title?: string;
-    theme?;
+    theme?: any;
 }
 
 export interface IPhotoPickerState {
-    previewSrc;
+    previewSrc?: string;
 }
 
 export default class PhotoPicker extends Component<IPhotoPickerProps, IPhotoPickerState> {
-    constructor(props) {
+    constructor(props: IPhotoPickerProps) {
         super(props);
 
         this.handlePick = this.handlePick.bind(this);
@@ -51,7 +52,7 @@ export default class PhotoPicker extends Component<IPhotoPickerProps, IPhotoPick
         };
     }
 
-    handlePick(data) {
+    handlePick(data: any) {
         const that = this;
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
@@ -61,6 +62,7 @@ export default class PhotoPicker extends Component<IPhotoPickerProps, IPhotoPick
         if (preview) {
             const reader = new FileReader();
             reader.onload = function(e) {
+                // @ts-ignore
                 const url = e.target.result;
                 that.setState({ previewSrc: url });
                 if (onLoad) { onLoad(url); }

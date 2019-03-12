@@ -33,7 +33,7 @@ declare global {
 
 export default function withGoogle(Comp) {
     return class extends Component<any, any> {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
 
             this.initGapi = this.initGapi.bind(this);
@@ -153,7 +153,7 @@ export default function withGoogle(Comp) {
     };
 }
 
-const Button = props => (
+const Button = (props: any) => (
     <SignInButton
         id={googleSignInButton}
         onClick={props.googleSignIn}
