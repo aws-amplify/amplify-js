@@ -19,7 +19,7 @@
       <input
         ref="file_input"  
         type="file"
-        accept="options.accept"
+        :accept="options.accept"
         @change="pick"
       />
     </div>
@@ -68,7 +68,7 @@ export default {
     }
   },
   methods: {
-    upload() {
+    upload: function() {
       this.$Amplify.Storage.put(
         this.s3ImagePath,
         this.file, 
@@ -79,7 +79,7 @@ export default {
       })
       .catch(e => this.setError(e));
     },
-    pick(evt) {
+    pick: function(evt) {
       this.file = evt.target.files[0];
       if (!this.file) { return ;};
       if (!this.options.storageOptions.contentType) {
@@ -96,7 +96,7 @@ export default {
       }
       reader.readAsDataURL(this.file);
     },
-    completeFileUpload(img) {
+    completeFileUpload: function(img) {
       this.file = null;
       this.s3ImageFile = null;
       this.$refs.file_input.value = null;
