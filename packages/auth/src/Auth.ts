@@ -56,7 +56,7 @@ import { default as urlListener } from './urlListener';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
-    Hub.dispatch('auth', { event, data }, 'Auth');
+    Hub.dispatch('auth', { event, data }, 'Auth', Symbol.for('amplify_default'));
 };
 
 export enum CognitoHostedUIIdentityProvider {

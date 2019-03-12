@@ -15,77 +15,150 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Hub');
 
-export class HubClass {
-    name;
-    bus = [];
-    listeners = {};
+interface IPattern {
+    pattern: RegExp,
+    callback: Function
+}
 
-    constructor(name) {
+interface IListener {
+    name: string,
+    callback: HubCallback
+}
+
+export type HubCapsule = {
+    channel: string,
+    payload: HubPayload,
+    source: string
+}
+
+export type HubPayload = {
+    event: string,
+    data?: any
+}
+
+export type HubCallback = (capsule: HubCapsule) => void;
+
+export type LegacyCallback = { onHubCapsule: HubCallback };
+
+function isLegacyCallback(callback: any): callback is LegacyCallback {
+    return (<LegacyCallback>callback).onHubCapsule !== undefined;
+}
+
+export class HubClass {
+    name: string;
+    listeners: IListener[] = [];
+    patterns: IPattern[] = [];
+
+    protectedChannels = ['core', 'auth', 'api', 'analytics', 'interactions', 'pubsub', 'storage', 'xr'];
+
+    constructor(name: string) {
         this.name = name;
     }
 
-    static createHub(name) {
-        return new HubClass(name);
+    // Note - Need to pass channel as a reference for removal to work and not anonymous function
+    remove(channel: string | RegExp, listener: HubCallback) {
+        if (channel instanceof RegExp) {
+            let pattern = this.patterns.find(({ pattern }) => pattern.source === channel.source);
+            if (!pattern) {
+                logger.warn(`No listeners for ${channel}`);
+                return;
+            }
+            this.patterns = [...this.patterns.filter(x => x !== pattern)];
+        } else {
+            let holder = this.listeners[channel];
+            if (!holder) {
+                logger.warn(`No listeners for ${channel}`);
+                return;
+            }
+            this.listeners[channel] = [...holder.filter(({ callback }) => callback !== listener)];
+        }
     }
 
-    dispatch(channel, payload, source='') {
-        const capsule = {
-            'channel': channel,
-            'payload': Object.assign({}, payload),
-            'source': source
+    dispatch(channel: string, payload: HubPayload, source: string = '', ampSymbol?: Symbol) {
+
+        if (this.protectedChannels.indexOf(channel) > -1) {
+            const hasAccess = ampSymbol === Symbol.for('amplify_default');
+
+            if (!hasAccess) {
+                logger.warn(`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`);
+            }
+        }
+
+        const capsule: HubCapsule = {
+            channel: channel,
+            payload: { ...payload },
+            source: source
         };
 
         try {
-            this.bus.push(capsule);
-            this.toListeners(capsule);
-        } catch (e) {
-            logger.warn('Hub dispatch error', e);
-        }
+            this._toListeners(capsule);
+        } catch (e) { logger.error(e) }
     }
 
-    listen(channel, listener, listenerName='noname') {
-        logger.debug(listenerName + ' listening ' + channel);
-
-        let holder = this.listeners[channel];
-        if (!holder) {
-            holder = [];
-            this.listeners[channel] = holder;
+    listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
+        //Check for legacy onHubCapsule callback for backwards compatability
+        if (isLegacyCallback(callback)) {
+            logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. Please pass in a callback.`);
+            callback = callback.onHubCapsule
+        } else if (typeof callback !== 'function') {
+            throw new Error('No callback supplied to Hub');
         }
 
-        holder.push({
-            'name': listenerName,
-            'listener': listener
-        });
-    }
+        if (channel instanceof RegExp) {
+            if (callback != undefined) {
+                this.patterns.push({
+                    pattern: channel,
+                    callback: callback
+                });
+            } else { logger.error(`Cannot listen for ${channel} without a callback defined`) }
+        } else {
+            let holder = this.listeners[channel];
 
-    remove(channel, listener, listenerName='noname') {
-        logger.debug(listenerName + ' removing listener ' + channel);
-
-        let holder = this.listeners[channel];
-        if (holder) {
-            holder = holder.filter(_listener =>
-              !(listener === _listener.listener && listenerName === _listener.name)
-            );
-          this.listeners[channel] = holder;
-        }
-    }
-
-    toListeners(capsule) {
-        const { channel, payload, source } = capsule;
-        const holder = this.listeners[channel];
-        if (!holder) { return; }
-
-        holder.forEach(listener => {
-            try {
-                listener.listener.onHubCapsule(capsule);
-            } catch (e) {
-                logger.warn(`error happend when dispatching ${channel} event to ${listener.name}: ${e}`);
+            if (!holder) {
+                holder = [];
+                this.listeners[channel] = holder;
             }
-        });
 
-        this.bus.pop();
+            holder.push({
+                name: listenerName,
+                callback: callback
+            })
+        }
     }
-}
 
+    private _toListeners(capsule: HubCapsule) {
+        const { channel, payload } = capsule;
+        const holder = this.listeners[channel];
+
+        if (holder) {
+            holder.forEach(listener => {
+                logger.debug(`Dispatching to ${listener}: `, payload);
+                try {
+                    listener.callback(capsule);
+                } catch (e) { logger.error(e); }
+            })
+        }
+
+        if (this.patterns.length > 0) {
+
+            if (!payload.data) {
+                logger.warn(`Cannot perform pattern matching without a data key in your payload`);
+                return;
+            }
+
+            this.patterns.forEach(pattern => {
+                if (pattern.pattern.test(payload.data.toString())) {
+                    try {
+                        pattern.callback(capsule)
+                    } catch (e) { logger.error(e); }
+                }
+            })
+        }
+    }
+};
+
+/*We export a __default__ instance of HubClass to use it as a 
+psuedo Singleton for the main messaging bus, however you can still create
+your own instance of HubClass() for a separate "private bus" of events.*/
 const Hub = new HubClass('__default__');
 export default Hub;

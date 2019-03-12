@@ -26,7 +26,7 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 const logger = new Logger('AnalyticsClass');
 
 const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics');
+    Hub.dispatch('analytics', { event, data }, 'Analytics', Symbol.for('amplify_default'));
 };
 
 const trackers = {
