@@ -17,7 +17,7 @@ const logger = new Logger('Hub');
 
 interface IPattern {
     pattern: RegExp,
-    callback: Function
+    callback: HubCallback
 }
 
 interface IListener {
@@ -96,20 +96,24 @@ export class HubClass {
     }
 
     listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
+        let _cb: HubCallback;
         // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
             logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. 
                 Please pass in a callback.`);
-            callback = callback.onHubCapsule;
+            _cb = callback.onHubCapsule;
         } else if (typeof callback !== 'function') {
             throw new Error('No callback supplied to Hub');
+        } else {
+            _cb = callback;
         }
 
         if (channel instanceof RegExp) {
             if (callback !== undefined) {
+                const cb = callback as HubCallback;
                 this.patterns.push({
                     pattern: channel,
-                    callback
+                    callback: cb
                 });
             } else { logger.error(`Cannot listen for ${channel} without a callback defined`); }
         } else {
@@ -122,9 +126,10 @@ export class HubClass {
 
             holder.push({
                 name: listenerName,
-                callback
+                callback: _cb
             });
         }
+
     }
 
     private _toListeners(capsule: HubCapsule) {
