@@ -34,7 +34,7 @@ describe('GoogleButton', () => {
           signIn: mockSignIn,
         },
         propsData: {
-          google_client_id: 'test'
+          googleClientId: 'test'
         },
       });
     });
@@ -73,7 +73,7 @@ describe('GoogleButton', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.props('google_client_id')).toEqual('test');
+      expect(wrapper.props('googleClientId')).toEqual('test');
     });
 
     it('...should render the button', () => {
@@ -113,7 +113,7 @@ describe('FacebookButton', () => {
           initFB: mockInitFB
         },
         propsData: {
-          facebook_app_id: 'test'
+          facebookAppId: 'test'
         },
       });
     });
@@ -155,7 +155,7 @@ describe('FacebookButton', () => {
     });
 
     it('...have default props', () => {
-      expect(wrapper.props('facebook_app_id')).toEqual('test');
+      expect(wrapper.props('facebookAppId')).toEqual('test');
     });
 
     it('...should render the button', () => {
@@ -194,7 +194,7 @@ describe('AmazonButton', () => {
           initAmazon: mockInitAmazon
         },
         propsData: {
-          amazon_client_id: 'test'
+          amazonClientId: 'test'
         },
       });
     });
@@ -233,7 +233,7 @@ describe('AmazonButton', () => {
     });
   
     it('...have default props', () => {
-      expect(wrapper.props('amazon_client_id')).toEqual('test');
+      expect(wrapper.props('amazonClientId')).toEqual('test');
     });
   
     it('...should render the button', () => {
