@@ -39,7 +39,7 @@ describe('Hub', () => {
     expect(listener.onHubCapsule).toHaveBeenCalled();
     expect(loggerSpy).toHaveBeenCalledWith(
       'WARN',
-      'WARNING onHubCapsule is Deprecated and will be removed in the future. Please pass in a callback.'
+      'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
     );
   });
 

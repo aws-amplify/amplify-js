@@ -99,8 +99,7 @@ export class HubClass {
         let _cb: HubCallback;
         // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
-            logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. 
-                Please pass in a callback.`);
+            logger.warn(`WARNING onHubCapsule is Deprecated. Please pass in a callback.`);
             _cb = callback.onHubCapsule;
         } else if (typeof callback !== 'function') {
             throw new Error('No callback supplied to Hub');
@@ -123,7 +122,8 @@ export class HubClass {
                 holder = [];
                 this.listeners[channel] = holder;
             }
-
+            console.log('callback: ', callback);
+            console.log('_cb: ', _cb);
             holder.push({
                 name: listenerName,
                 callback: _cb
