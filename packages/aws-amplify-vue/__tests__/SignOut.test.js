@@ -49,6 +49,18 @@ describe('SignOut', () => {
       expect(wrapper.vm.signOut).toBeTruthy();
     });
 
+    it('...it should have a amazonSignOut method', () => {
+      expect(wrapper.vm.amazonSignOut).toBeTruthy();
+    });
+
+    it('...it should have a facebookSignOut method', () => {
+      expect(wrapper.vm.facebookSignOut).toBeTruthy();
+    });
+
+    it('...it should have a googleSignOut method', () => {
+      expect(wrapper.vm.googleSignOut).toBeTruthy();
+    });
+
     it('...it should have a setError method', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
