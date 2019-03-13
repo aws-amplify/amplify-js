@@ -32,8 +32,7 @@ import {
     Input,
     InputLabel,
     SectionFooterPrimaryContent,
-    SectionFooterSecondaryContent,
-    WebForm
+    SectionFooterSecondaryContent
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('SignIn');
@@ -110,7 +109,7 @@ export default class SignIn extends AuthPiece {
         const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
         return (
             <FormSection theme={theme}>
-                <WebForm onSubmit={this.signIn}>
+                <form onSubmit={this.signIn}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <SectionBody theme={theme}>
                     <FederatedButtons
@@ -166,7 +165,7 @@ export default class SignIn extends AuthPiece {
                         </SectionFooterSecondaryContent>
                     }
                 </SectionFooter>
-                </WebForm>
+                </form>
             </FormSection>
         );
     }

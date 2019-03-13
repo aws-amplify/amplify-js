@@ -28,15 +28,6 @@ export const FormContainer = (props) => {
     );
 };
 
-// currently just a wrapper of the web form
-export const WebForm = (props) => {
-    return beforeAfter(
-        <form onSubmit={props.onSubmit}>
-            {props.children}
-        </form>
-    )
-}
-
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.formSection);
