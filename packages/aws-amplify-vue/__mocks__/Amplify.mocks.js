@@ -3,6 +3,7 @@ module.exports = {
     this.name = name;
     this.info = jest.fn();
     this.error = jest.fn();
+    this.debug = jest.fn();
   },
   Auth: {
     currentAuthenticatedUser: jest.fn(() => Promise.resolve({})),
