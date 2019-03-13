@@ -26,8 +26,8 @@ const template = `
     <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
 
       <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-        <input #username
+      <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+        <input #amplifyUsername
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
