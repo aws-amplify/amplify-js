@@ -29,12 +29,12 @@ export type HubCapsule = {
     channel: string,
     payload: HubPayload,
     source: string
-}
+};
 
 export type HubPayload = {
     event: string,
     data?: any
-}
+};
 
 export type HubCallback = (capsule: HubCapsule) => void;
 
@@ -58,14 +58,14 @@ export class HubClass {
     // Note - Need to pass channel as a reference for removal to work and not anonymous function
     remove(channel: string | RegExp, listener: HubCallback) {
         if (channel instanceof RegExp) {
-            let pattern = this.patterns.find(({ pattern }) => pattern.source === channel.source);
+            const pattern = this.patterns.find(({ pattern }) => pattern.source === channel.source);
             if (!pattern) {
                 logger.warn(`No listeners for ${channel}`);
                 return;
             }
             this.patterns = [...this.patterns.filter(x => x !== pattern)];
         } else {
-            let holder = this.listeners[channel];
+            const holder = this.listeners[channel];
             if (!holder) {
                 logger.warn(`No listeners for ${channel}`);
                 return;
@@ -85,18 +85,18 @@ export class HubClass {
         }
 
         const capsule: HubCapsule = {
-            channel: channel,
+            channel,
             payload: { ...payload },
-            source: source
+            source
         };
 
         try {
             this._toListeners(capsule);
-        } catch (e) { logger.error(e) }
+        } catch (e) { logger.error(e); }
     }
 
     listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
-        //Check for legacy onHubCapsule callback for backwards compatability
+        // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
             logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. Please pass in a callback.`);
             callback = callback.onHubCapsule
@@ -105,12 +105,12 @@ export class HubClass {
         }
 
         if (channel instanceof RegExp) {
-            if (callback != undefined) {
+            if (callback !== undefined) {
                 this.patterns.push({
                     pattern: channel,
-                    callback: callback
+                    callback
                 });
-            } else { logger.error(`Cannot listen for ${channel} without a callback defined`) }
+            } else { logger.error(`Cannot listen for ${channel} without a callback defined`); }
         } else {
             let holder = this.listeners[channel];
 
@@ -121,8 +121,8 @@ export class HubClass {
 
             holder.push({
                 name: listenerName,
-                callback: callback
-            })
+                callback
+            });
         }
     }
 
@@ -136,7 +136,7 @@ export class HubClass {
                 try {
                     listener.callback(capsule);
                 } catch (e) { logger.error(e); }
-            })
+            });
         }
 
         if (this.patterns.length > 0) {
@@ -145,16 +145,16 @@ export class HubClass {
                 logger.warn(`Cannot perform pattern matching without a data key in your payload`);
                 return;
             }
-            
+
             const payloadStr = payload.data.toString();
 
             this.patterns.forEach(pattern => {
                 if (pattern.pattern.test(payloadStr)) {
                     try {
-                        pattern.callback(capsule)
+                        pattern.callback(capsule);
                     } catch (e) { logger.error(e); }
                 }
-            })
+            });
         }
     }
 };
