@@ -22,6 +22,7 @@ const template = `
   <div class="amplify-form-container">
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
+
       <div class="amplify-amplify-form-row amplify-signin-username">
         <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
         <input
@@ -88,9 +89,13 @@ export class SignInComponentCore {
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  test: any;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.test = {
+      googleClientId: '309340288959-gq43dljiqj4js6p2dbnue4b1i9qle10q.apps.googleusercontent.com'
+    }
   }
 
   @Input()

@@ -25,6 +25,10 @@ import { ConfirmSignUpComponent } from './components/authenticator/confirm-sign-
 import { ConfirmSignUpComponentCore } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core';
 import { SignInComponent } from './components/authenticator/sign-in-component/sign-in.component.factory';
 import { SignInComponentCore } from './components/authenticator/sign-in-component/sign-in.component.core';
+import { FederatedSignInComponent } from './components/authenticator/federated-sign-in-component/federated-sign-in.component.factory';
+import { FederatedSignInComponentCore } from './components/authenticator/federated-sign-in-component/federated-sign-in.component.core';
+import { GoogleSignInComponent } from './components/authenticator/federated-sign-in-component/google-sign-in-component/google-sign-in.component.factory';
+import { GoogleSignInComponentCore } from './components/authenticator/federated-sign-in-component/google-sign-in-component/google-sign-in.component.core';
 import { SignUpComponent } from './components/authenticator/sign-up-component/sign-up.factory';
 import { SignUpComponentCore } from './components/authenticator/sign-up-component/sign-up.component.core';
 import { RequireNewPasswordComponent } from './components/authenticator/require-new-password-component/require-new-password.factory';
@@ -57,6 +61,10 @@ const components = [
   ConfirmSignUpComponentCore,
   SignInComponent,
   SignInComponentCore,
+  FederatedSignInComponent,
+  FederatedSignInComponentCore,
+  GoogleSignInComponent,
+  GoogleSignInComponentCore,
   SignUpComponent,
   SignUpComponentCore,
   RequireNewPasswordComponent,
@@ -86,7 +94,7 @@ const components = [
   ],
   declarations: [
     DynamicComponentDirective,
-    ...components,
+    ...components
   ],
   entryComponents: [
     ...components

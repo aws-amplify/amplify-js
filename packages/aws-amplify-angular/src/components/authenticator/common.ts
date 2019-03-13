@@ -16,3 +16,11 @@
 export function includes(ary, match) {
   return ary.filter(item => item === match).length > 0;
 }
+
+export const constants = {
+  AUTH_SOURCE_KEY: 'amplify-vue-auth-source',
+  AUTH0: 'auth0',
+  GOOGLE: 'google',
+  FACEBOOK: 'facebook',
+  AMAZON: 'amazon',
+};

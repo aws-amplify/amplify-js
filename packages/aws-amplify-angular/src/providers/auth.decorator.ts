@@ -70,6 +70,28 @@ function decorateSignIn(authState: Subject<AuthState>) {
   };
 }
 
+function decorateFederatedSignIn(authState: Subject<AuthState>) {
+  const _federatedSignIn = Amplify.Auth.federatedSignIn;
+  Amplify.Auth.federatedSignIn = (
+    provider: string,
+    data: object
+  ): Promise<any> => {
+    return _federatedSignIn.call(Amplify.Auth, provider, data)
+      .then(user => {
+        logger.debug('signIn success');
+        console.log('decorator: ', user)
+        if (!user.challengeName) {
+          authState.next({ state: 'signedIn', user });
+          return user;
+        }
+      })
+      .catch(err => {
+        logger.debug('signIn error', err);
+        throw err;
+      });
+  };
+}
+
 function decorateSignOut(authState: Subject<AuthState>) {
   const _signOut = Amplify.Auth.signOut;
   Amplify.Auth.signOut = (): Promise<any> => {
@@ -131,6 +153,7 @@ export function authDecorator(authState: Subject<AuthState>) {
   listen(authState);
 
   decorateSignIn(authState);
+  decorateFederatedSignIn(authState);
   decorateSignOut(authState);
   decorateSignUp(authState);
   decorateConfirmSignUp(authState);

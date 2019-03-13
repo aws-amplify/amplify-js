@@ -14,26 +14,26 @@
 // tslint:enable
 
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
-import { FederatedSignInClass } from './federated-sign-in.class';
-import { FederatedSignInComponentIonic } from './federated-sign-in.component.ionic'
-import { FederatedSignInComponentCore } from './federated-sign-in.component.core';
-import { AuthState } from '../../../providers';
-import { authDecorator } from '../../../providers/auth.decorator';
+import { DynamicComponentDirective } from '../../../../directives/dynamic.component.directive';
+import { ComponentMount } from '../../../component.mount';
+import { GoogleSignInClass } from './google-sign-in.class';
+import { GoogleSignInComponentIonic } from './google-sign-in.component.ionic'
+import { GoogleSignInComponentCore } from './google-sign-in.component.core';
+import { AuthState } from '../../../../providers';
+import { authDecorator } from '../../../../providers/auth.decorator';
 
 @Component({
-  selector: 'amplify-auth-federated-sign-in',
+  selector: 'amplify-auth-google-sign-in',
   template: `
               <div>
                 <ng-template component-host></ng-template>
               </div>
             `
 })
-export class FederatedSignInComponent implements OnInit, OnDestroy {
+export class GoogleSignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() federatedSignInConfig: any;
+  @Input() googleClientId: string;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -47,13 +47,13 @@ export class FederatedSignInComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(FederatedSignInComponentIonic,{ 
+      ? new ComponentMount(GoogleSignInComponentIonic,{ 
         authState: this.authState, 
-        federatedSignInConfig: this.federatedSignInConfig 
+        googleClientId: this.googleClientId 
       }) 
-      : new ComponentMount(FederatedSignInComponentCore, { 
+      : new ComponentMount(GoogleSignInComponentCore, { 
         authState: this.authState, 
-        federatedSignInConfig: this.federatedSignInConfig 
+        googleClientId: this.googleClientId 
       });
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
@@ -62,6 +62,6 @@ export class FederatedSignInComponent implements OnInit, OnDestroy {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<FederatedSignInClass>componentRef.instance).data = authComponent.data;
+    (<GoogleSignInClass>componentRef.instance).data = authComponent.data;
   }
 }

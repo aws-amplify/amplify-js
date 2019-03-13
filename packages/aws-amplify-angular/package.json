@@ -1,6 +1,10 @@
 {
   "name": "aws-amplify-angular",
+<<<<<<< 4c29f82ce7605ac786e9021d2b2c892bebb6225f
   "version": "2.1.10-unstable.5",
+=======
+  "version": "2.1.36",
+>>>>>>> init commit
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",

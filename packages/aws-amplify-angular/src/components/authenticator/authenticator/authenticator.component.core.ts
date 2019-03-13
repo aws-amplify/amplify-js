@@ -18,6 +18,12 @@ import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
   <div class="amplify-authenticator">
+    <amplify-auth-google-sign-in
+      *ngIf="!shouldHide('SignIn')"
+      [authState]="authState"
+      googleClientId="309340288959-gq43dljiqj4js6p2dbnue4b1i9qle10q.apps.googleusercontent.com"
+    ></amplify-auth-google-sign-in>
+
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
@@ -95,6 +101,7 @@ export class AuthenticatorComponentCore {
   subscribe() {
     this.amplifyService.authStateChange$
       .subscribe(state => {
+        console.log(state)
         this.authState = state;
       }, () => {
         this.authState = {
