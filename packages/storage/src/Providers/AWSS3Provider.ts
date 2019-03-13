@@ -21,9 +21,12 @@ import { StorageOptions, StorageProvider } from '../types';
 
 const logger = new Logger('AWSS3Provider');
 
-const dispatchStorageEvent = (track, attrs, metrics) => {
+const dispatchStorageEvent = (track, event, attrs, metrics) => {
     if (track) {
-        Hub.dispatch('storage', { attrs, metrics }, 'Storage', Symbol.for('amplify_default'));
+        Hub.dispatch('storage', {
+            event,
+            data: { attrs, metrics }
+        }, 'Storage', Symbol.for('amplify_default'));
     }
 };
 
@@ -106,12 +109,14 @@ export default class AWSS3Provider implements StorageProvider{
                     if (err) {
                         dispatchStorageEvent(
                             track,
+                            'download',
                             { method: 'get', result: 'failed' },
                             null);
                         rej(err);
                     } else {
                         dispatchStorageEvent(
                             track,
+                            'download',
                             { method: 'get', result: 'success' },
                             { fileSize: Number(data.Body['length']) });
                         res(data);
@@ -127,6 +132,7 @@ export default class AWSS3Provider implements StorageProvider{
                 const url = s3.getSignedUrl('getObject', params);
                 dispatchStorageEvent(
                     track,
+                    'getSignedUrl',
                     { method: 'get', result: 'success' },
                     null);
                 res(url);
@@ -134,6 +140,7 @@ export default class AWSS3Provider implements StorageProvider{
                 logger.warn('get signed url error', e);
                 dispatchStorageEvent(
                     track,
+                    'getSignedUrl',
                     { method: 'get', result: 'failed' },
                     null);
                 rej(e);
@@ -200,6 +207,7 @@ export default class AWSS3Provider implements StorageProvider{
             logger.debug('upload result', data);
             dispatchStorageEvent(
                 track,
+                'upload',
                 { method: 'put', result: 'success' },
                 null);
 
@@ -210,6 +218,7 @@ export default class AWSS3Provider implements StorageProvider{
             logger.warn("error uploading", e);
             dispatchStorageEvent(
                 track,
+                'upload',
                 { method: 'put', result: 'failed' },
                 null);
 
@@ -245,12 +254,14 @@ export default class AWSS3Provider implements StorageProvider{
                 if (err) {
                     dispatchStorageEvent(
                         track,
+                        'delete',
                         { method: 'remove', result: 'failed' },
                         null);
                     rej(err);
                 } else {
                     dispatchStorageEvent(
                         track,
+                        'delete',
                         { method: 'remove', result: 'success' },
                         null);
                     res(data);
@@ -288,6 +299,7 @@ export default class AWSS3Provider implements StorageProvider{
                     logger.warn('list error', err);
                     dispatchStorageEvent(
                         track,
+                        'list',
                         { method: 'list', result: 'failed' },
                         null);
                     rej(err);
@@ -302,6 +314,7 @@ export default class AWSS3Provider implements StorageProvider{
                     });
                     dispatchStorageEvent(
                         track,
+                        'list',
                         { method: 'list', result: 'success' },
                         null);
                     logger.debug('list', list);

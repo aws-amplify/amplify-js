@@ -145,9 +145,11 @@ export class HubClass {
                 logger.warn(`Cannot perform pattern matching without a data key in your payload`);
                 return;
             }
+            
+            const payloadStr = payload.data.toString();
 
             this.patterns.forEach(pattern => {
-                if (pattern.pattern.test(payload.data.toString())) {
+                if (pattern.pattern.test(payloadStr)) {
                     try {
                         pattern.callback(capsule)
                     } catch (e) { logger.error(e); }
