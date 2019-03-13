@@ -134,7 +134,7 @@ export class HubClass {
 
         if (holder) {
             holder.forEach(listener => {
-                logger.debug(`Dispatching to ${listener}: `, payload);
+                logger.debug(`Dispatching to ${channel} with `, payload);
                 try {
                     listener.callback(capsule);
                 } catch (e) { logger.error(e); }

@@ -21,8 +21,6 @@ describe('Hub', () => {
     const listener = {
       onHubCapsule: jest.fn((capsule) => {
         const { channel, payload, source } = capsule;
-        console.log(source);
-        console.log(capsule);
       })
     };
     const loggerSpy = jest.spyOn(Logger.prototype, '_log');
