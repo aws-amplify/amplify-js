@@ -98,8 +98,9 @@ export class HubClass {
     listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
         // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
-            logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. Please pass in a callback.`);
-            callback = callback.onHubCapsule
+            logger.warn(`WARNING onHubCapsule is Deprecated and will be removed in the future. 
+                Please pass in a callback.`);
+            callback = callback.onHubCapsule;
         } else if (typeof callback !== 'function') {
             throw new Error('No callback supplied to Hub');
         }
@@ -157,7 +158,7 @@ export class HubClass {
             });
         }
     }
-};
+}
 
 /*We export a __default__ instance of HubClass to use it as a 
 psuedo Singleton for the main messaging bus, however you can still create
