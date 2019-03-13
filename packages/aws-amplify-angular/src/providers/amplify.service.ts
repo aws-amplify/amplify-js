@@ -16,7 +16,9 @@ import { authDecorator } from './auth.decorator';
 
 const logger = new Logger('AmplifyService');
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AmplifyService {
   private _auth: AuthClass;
   private _analytics: AnalyticsClass;
