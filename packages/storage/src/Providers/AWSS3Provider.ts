@@ -23,10 +23,15 @@ const logger = new Logger('AWSS3Provider');
 
 const dispatchStorageEvent = (track, event, attrs, metrics) => {
     if (track) {
-        Hub.dispatch('storage', {
-            event,
-            data: { attrs, metrics }
-        }, 'Storage', Symbol.for('amplify_default'));
+        Hub.dispatch(
+            'storage', 
+            { 
+                event,
+                data: { attrs, metrics }
+            }, 
+            'Storage', 
+            Symbol.for('amplify_default')
+        );
     }
 };
 
