@@ -92,7 +92,8 @@ export class HubClass {
             source,
             patternInfo: []
         };
-
+        console.log('PAYLOAD: ', payload);
+        console.log('dispatch capsule: ', capsule);
         try {
             this._toListeners(capsule);
         } catch (e) { logger.error(e); }
@@ -144,7 +145,8 @@ export class HubClass {
             });
         }
 
-        
+        console.log('listeners capsule: ', capsule);
+        console.log('listeners payload: ', payload);
         if (this.patterns.length > 0) {
             
             if (!payload.message) {
