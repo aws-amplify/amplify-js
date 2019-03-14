@@ -91,19 +91,47 @@ function browserType(userAgent) {
 
 if (JS.browserOrNode().isBrowser && typeof window.addEventListener === 'function') {
     window.addEventListener('resize', function() {
-        Hub.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
+        Hub.dispatch(
+            'window',
+            {
+                event: 'resize',
+                data: dimension(),
+                message: 'A browser resize has occurred'
+            },
+            'DeviceInfo');
     });
 
     window.addEventListener('scroll', function() {
         const pos = { x: window.scrollX, y: window.scrollY };
-        Hub.dispatch('window', { event: 'scroll', data: pos }, 'DeviceInfo');
+        Hub.dispatch(
+            'window',
+            {
+                event: 'scroll',
+                data: pos,
+                message: 'A browser scroll has occurred'
+            },
+            'DeviceInfo');
     });
 
     window.addEventListener('offline', function() {
-        Hub.dispatch('window', { event: 'offline' }, 'DeviceInfor');
+        Hub.dispatch(
+            'window',
+            {
+                event: 'offline',
+                data: null,
+                message: 'The browser has gone offline'
+            },
+            'DeviceInfor');
     });
 
     window.addEventListener('online', function() {
-        Hub.dispatch('window', { event: 'online' }, 'DeviceInfor');
+        Hub.dispatch(
+            'window',
+            {
+                event: 'online',
+                data: null,
+                message: 'The browser has come back online'
+            },
+            'DeviceInfor');
     });
 }

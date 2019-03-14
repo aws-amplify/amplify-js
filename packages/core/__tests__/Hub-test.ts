@@ -8,7 +8,11 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut', data: 'the user has been signed out' },
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
       'Auth',
       Symbol.for('amplify_default')
     );
@@ -29,7 +33,11 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut', data: 'the user has been signed out' },
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
       'Auth',
       Symbol.for('amplify_default')
     );
@@ -50,7 +58,11 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut', data: 'the user has been signed out' },
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
       'Auth'
     );
 
@@ -64,23 +76,116 @@ describe('Hub', () => {
   test('Regex Listener', () => {
     const listener = jest.fn(() => { });
 
-    Hub.listen(/user(.*)/, listener);
+    Hub.listen(/user/, listener);
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut', data: 'the user has been signed out' },
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
       'Auth',
       Symbol.for('amplify_default')
     );
 
     expect(listener).toHaveBeenCalledWith({
       "channel": "auth", "payload":
-        { "data": "the user has been signed out", "event": "signOut" },
+        { 
+          data: "the user has been signed out", 
+          event: "signOut",
+          message: 'A user sign out event has taken place.'
+        },
+        patternInfo: [],
       "source": "Auth"
     });
   });
 
-  test('Regex Listener No Data', () => {
+  test('Regex Listener one group', () => {
+    const listener = jest.fn(() => { });
+
+    Hub.listen(/user(.*)/, listener);
+
+    Hub.dispatch(
+      'auth',
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
+
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+        { 
+          data: "the user has been signed out", 
+          event: "signOut",
+          message: 'A user sign out event has taken place.'
+        },
+        patternInfo: [" sign out event has taken place."],
+      "source": "Auth"
+    });
+  });
+
+  test('Regex Listener three groups', () => {
+    const listener = jest.fn(() => { });
+
+    Hub.listen(/user ([^ ]+) ([^ ]+) (.*)/, listener);
+
+    Hub.dispatch(
+      'auth',
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
+
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+        { 
+          data: "the user has been signed out", 
+          event: "signOut",
+          message: 'A user sign out event has taken place.'
+        },
+        patternInfo: ["sign", "out", "event has taken place."],
+      "source": "Auth"
+    });
+  });
+
+  test('Regex All Messages', () => {
+    const listener = jest.fn(() => { });
+
+    Hub.listen(/.*/, listener);
+
+    Hub.dispatch(
+      'auth',
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
+
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+        { 
+          data: "the user has been signed out", 
+          event: "signOut",
+          message: 'A user sign out event has taken place.'
+        },
+        patternInfo: [],
+      "source": "Auth"
+    });
+  });
+
+  test('Regex Listener No Message', () => {
     const listener = jest.fn(() => { });
 
     Hub.listen(/user(.*)/, listener);
@@ -88,7 +193,10 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut' },
+      { 
+        event: 'signOut',
+        message: null
+      },
       'Auth',
       Symbol.for('amplify_default')
     );
@@ -96,7 +204,7 @@ describe('Hub', () => {
     expect(listener).not.toHaveBeenCalled();
     expect(loggerSpy).toHaveBeenCalledWith(
       'WARN',
-      'Cannot perform pattern matching without a data key in your payload'
+      'Cannot perform pattern matching without a message key'
     );
   });
 
@@ -107,7 +215,11 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut', data: 'the user has been signed out' },
+      { 
+        event: 'signOut', 
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
       'Auth',
       Symbol.for('amplify_default')
     );
@@ -120,7 +232,11 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { event: 'signOut2', data: 'the user has been signed out' },
+      { 
+        event: 'signOut2', 
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
       'Auth',
       Symbol.for('amplify_default')
     );

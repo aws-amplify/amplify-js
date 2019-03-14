@@ -14,6 +14,10 @@ import  StorageProvider  from '../../src/Providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
+/**
+ * NOTE - These test cases use Hub.dispatch but they should
+ * actually be using dispatchStorageEvent from Storage
+ */
 
  
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
@@ -130,7 +134,13 @@ describe('StorageProvider test', () => {
 
             expect.assertions(3);
             expect(await storage.get('key', { downloaded: false, track: true })).toBe('url');
-            expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
+            expect(spyon).toBeCalledWith(
+                'getObject', 
+                {
+                    "Bucket": "bucket", 
+                    "Key": "public/key"
+                }
+            );
             expect(spyon2).toBeCalledWith(
                 'storage', 
                 {
@@ -138,8 +148,9 @@ describe('StorageProvider test', () => {
                     data : {
                         attrs: {"method": "get", "result": "success"},
                         metrics: null
-                    }
-                }, 
+                    },
+                    message: 'Signed URL: url'
+                },
                 'Storage', 
                 Symbol.for('amplify_default')
             );
@@ -395,8 +406,12 @@ describe('StorageProvider test', () => {
                 {
                     event: 'upload',
                     data : {
-                        attrs: {"method": "put", "result": "success"}, 
-                        metrics: null}
+                        attrs: 
+                        {
+                            "method": "put", "result": "success"}, 
+                            metrics: null,
+                        },
+                        message: 'Upload success for key'
                 }, 
                 'Storage', 
                 Symbol.for('amplify_default')
@@ -527,8 +542,9 @@ describe('StorageProvider test', () => {
                     event: 'delete',
                     data : {
                         attrs: {"method": "remove", "result": "success"},
-                        metrics: null
-                    }
+                        metrics: null,
+                    },
+                    message: 'Deleted key successfully'
                 }, 
                 'Storage',
                 Symbol.for('amplify_default')
@@ -662,7 +678,8 @@ describe('StorageProvider test', () => {
                     data: {
                         attrs: { "method": "list", "result": "success" },
                         metrics: null
-                    }
+                    },
+                    message: '1 items returned from list operation'
                 },
                 'Storage',
                 Symbol.for('amplify_default')

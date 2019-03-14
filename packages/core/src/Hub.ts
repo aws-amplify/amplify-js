@@ -28,12 +28,14 @@ interface IListener {
 export type HubCapsule = {
     channel: string,
     payload: HubPayload,
-    source: string
+    source: string,
+    patternInfo?: string[] 
 };
 
 export type HubPayload = {
     event: string,
-    data?: any
+    data?: any,
+    message?: string
 };
 
 export type HubCallback = (capsule: HubCapsule) => void;
@@ -87,7 +89,8 @@ export class HubClass {
         const capsule: HubCapsule = {
             channel,
             payload: { ...payload },
-            source
+            source,
+            patternInfo: []
         };
 
         try {
@@ -141,19 +144,23 @@ export class HubClass {
             });
         }
 
+        
         if (this.patterns.length > 0) {
-
-            if (!payload.data) {
-                logger.warn(`Cannot perform pattern matching without a data key in your payload`);
+            
+            if (!payload.message) {
+                logger.warn(`Cannot perform pattern matching without a message key`);
                 return;
             }
 
-            const payloadStr = payload.data.toString();
+            const payloadStr = payload.message;
 
             this.patterns.forEach(pattern => {
-                if (pattern.pattern.test(payloadStr)) {
+                const match = payloadStr.match(pattern.pattern);
+                if (match){
+                    const [, ...groups] = match;
+                    const dispatchingCapsule:HubCapsule = {...capsule, patternInfo:groups};
                     try {
-                        pattern.callback(capsule);
+                        pattern.callback(dispatchingCapsule);
                     } catch (e) { logger.error(e); }
                 }
             });

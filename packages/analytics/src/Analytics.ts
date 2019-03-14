@@ -25,8 +25,8 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
-const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics', Symbol.for('amplify_default'));
+const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
+    Hub.dispatch('analytics', { event, data, message }, 'Analytics', Symbol.for('amplify_default'));
 };
 
 const trackers = {
@@ -93,7 +93,11 @@ export default class AnalyticsClass {
             this._config['autoSessionRecord'] = true;
         }
 
-        dispatchAnalyticsEvent('configured', null);
+        dispatchAnalyticsEvent(
+            'configured', 
+            null,
+            `The Analytics category has been configured successfully`
+        );
         logger.debug('current configuration', this._config);
 
         
