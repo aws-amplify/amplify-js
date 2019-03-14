@@ -245,7 +245,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <Component
+  <form
     onSubmit={[Function]}
   >
     <Component
@@ -4189,7 +4189,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
       </Component>
     </Component>
-  </Component>
+  </form>
 </Component>
 `;
 
@@ -4438,7 +4438,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <Component
+  <form
     onSubmit={[Function]}
   >
     <Component
@@ -8382,7 +8382,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
       </Component>
     </Component>
-  </Component>
+  </form>
 </Component>
 `;
 
@@ -8631,7 +8631,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <Component
+  <form
     onSubmit={[Function]}
   >
     <Component
@@ -12575,7 +12575,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
       </Component>
     </Component>
-  </Component>
+  </form>
 </Component>
 `;
 
