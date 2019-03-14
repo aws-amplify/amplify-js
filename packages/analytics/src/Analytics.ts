@@ -173,13 +173,6 @@ export default class AnalyticsClass {
     }
 
     /**
-    * Receive a capsule from Hub
-    * @param {any} capsuak - The message from hub
-    */
-   public onHubCapsule(capsule: any): void {}
-
-
-    /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */

@@ -40,8 +40,8 @@ export default class S3Album extends Component {
             items: [],
             ts: new Date().getTime()
         };
-
-        Hub.listen('window', this, 'S3Album');
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        Hub.listen('window', this.onHubCapsule, 'S3Album');
     }
 
     getKey(file) {

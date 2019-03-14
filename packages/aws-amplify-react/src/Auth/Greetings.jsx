@@ -28,7 +28,7 @@ export default class Greetings extends AuthPiece {
         super(props);
         this.state = {};
         this.onHubCapsule = this.onHubCapsule.bind(this);
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
         this._validAuthStates = ['signedIn'];
 
     }
