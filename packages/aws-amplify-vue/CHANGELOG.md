@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.8-unstable.0"></a>
+## [0.2.8-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7...aws-amplify-vue@0.2.8-unstable.0) (2019-03-11)
+
+
+### Bug Fixes
+
+* **aws-amplify-vue/storage:** Fixed PhotoPicker input element not using the given accept attribute ([f2f8240](https://github.com/aws-amplify/amplify-js/commit/f2f8240))
+
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7-unstable.0...aws-amplify-vue@0.2.7) (2019-03-06)
 
