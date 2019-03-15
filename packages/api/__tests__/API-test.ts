@@ -171,7 +171,7 @@ describe('API test', () => {
                 }
             };
 
-            await api.graphql(graphqlOperation(doc, variables));
+            await api.graphql(graphqlOperation(doc, variables, query));
 
             expect(spyon).toBeCalledWith(url, init);
         });

@@ -69,6 +69,7 @@ export interface apiOptions {
 export interface GraphQLOptions {
     query: string | DocumentNode,
     variables?: object,
+    source?: string,
 }
 
 export interface GraphQLResult {

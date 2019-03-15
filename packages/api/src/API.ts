@@ -22,7 +22,7 @@ import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}) => ({ query, variables });
+export const graphqlOperation = (query, variables = {}, source = null) => ({ query, variables, source });
 
 /**
  * Export Cloud Logic APIs
@@ -325,9 +325,20 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, source: paramSource }: GraphQLOptions) {
 
-        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
+        const [query, source] = (() => {
+            if (typeof paramQuery === 'string') {
+                const query = parse(paramQuery);
+
+                return [query, print(query)];
+            }
+            if (typeof paramSource === 'string') {
+                return [paramQuery, paramSource];
+            }
+
+            return [paramQuery, print(paramQuery)];
+        })();
 
         const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
@@ -335,15 +346,15 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables });
+                return this._graphql({ query, variables, source });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables });
+                return this._graphqlSubscribe({ query, variables, source });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables, source }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -363,11 +374,11 @@ export default class APIClass {
                 (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
             ...additionalHeaders,
-            ... await graphql_headers({ query, variables }),
+            ... await graphql_headers({ query, variables, source }),
         };
 
         const body = {
-            query: print(query),
+            query: source,
             variables,
         };
 
@@ -414,7 +425,7 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, source }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -434,7 +445,7 @@ export default class APIClass {
                         const {
                             extensions: { subscription },
 
-                        } = await this._graphql({ query, variables }, additionalheaders);
+                        } = await this._graphql({ query, variables, source }, additionalheaders);
 
                         const { newSubscriptions } = subscription;
 
