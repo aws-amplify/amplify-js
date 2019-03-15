@@ -243,9 +243,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { event, config } = params;
 
         switch (event.name) {
-            case '_session_start':
+            case '_session.start':
                 return this._startSession(params);
-            case '_session_stop':
+            case '_session.stop':
                 return this._stopSession(params);
             case '_update_endpoint':
                 return this._updateEndpoint(params);
@@ -381,7 +381,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 if (err) {
                     logger.debug('updateEndpoint failed', err);
                     if (err.message === 'Exceeded maximum endpoint per user count 10') {
-                        this._removeUnusedEndpoints(appId, credentials.identityId)
+                        this._removeUnusedEndpoints(appId, request.User.UserId)
                         .then(() => {
                             logger.debug('Remove the unused endpoints successfully');
                             return res(false);
