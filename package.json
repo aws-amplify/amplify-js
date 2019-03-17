@@ -4,7 +4,6 @@
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "pre-commit": "lerna exec yarn test --scope @aws-amplify/core",
     "test": "lerna exec yarn test",
     "coverage": "codecov || exit 0",
     "docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/",
@@ -17,9 +16,6 @@
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --exact",
     "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
-  "pre-commit": [
-    "pre-commit"
-  ],
   "private": true,
   "workspaces": [
     "packages/*"
@@ -42,7 +38,6 @@
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "lerna": "2.11.0",
-    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
