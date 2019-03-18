@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.3-unstable.1"></a>
+## [2.3.3-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.0...aws-amplify-react@2.3.3-unstable.1) (2019-03-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** use <form/> for the login component ([8f94b32](https://github.com/aws/aws-amplify/commit/8f94b32))
+
+
+
+
 <a name="2.3.3-unstable.0"></a>
 ## [2.3.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.2...aws-amplify-react@2.3.3-unstable.0) (2019-03-11)
 
