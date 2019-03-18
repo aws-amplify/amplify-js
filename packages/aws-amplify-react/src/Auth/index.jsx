@@ -73,23 +73,23 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             if (signedIn) {
                 return (
                     <React.Fragment>
-                        {
-                            this.authConfig.includeGreetings?
-                            <Greetings
-                                authState={authState}
-                                authData={authData}
-                                federated={this.authConfig.federated || this.props.federated || {} }
+                        { this.authConfig.includeGreetings ? 
+                            <Authenticator
+                                {...this.props}
+                                theme={this.authConfig.theme}
+                                federated={this.authConfig.federated || this.props.federated}
+                                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
+                                signUpConfig={this.authConfig.signUpConfig}
                                 onStateChange={this.handleAuthStateChange}
-                                theme={theme}
-                            />
-                            : null
+                                children={this.authConfig.authenticatorComponents || []}
+                            /> : null
                         }
                         <Comp
                             {...this.props}
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
-                        />
+                        />;
                     </React.Fragment>
                 );
             }
