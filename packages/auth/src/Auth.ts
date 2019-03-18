@@ -289,7 +289,7 @@ export default class AuthClass {
 
 
         return new Promise((resolve, reject) => {
-            this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
+            this.userPool.signUp(username, password, attributes, validationData, (err, data) => {
                 if (err) {
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
@@ -318,7 +318,7 @@ export default class AuthClass {
             ? options.forceAliasCreation : true;
 
         return new Promise((resolve, reject) => {
-            user.confirmRegistration(code, forceAliasCreation, function (err, data) {
+            user.confirmRegistration(code, forceAliasCreation, (err, data) => {
                 if (err) { reject(err); } else { resolve(data); }
             });
         });
@@ -335,7 +335,7 @@ export default class AuthClass {
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
-            user.resendConfirmationCode(function (err, data) {
+            user.resendConfirmationCode((err, data) => {
                 if (err) { reject(err); } else { resolve(data); }
             });
         });
@@ -1069,7 +1069,7 @@ export default class AuthClass {
         }
         return new Promise((resolve, reject) => {
             logger.debug('Getting the session from this user:', user);
-            user.getSession(function (err, session) {
+            user.getSession((err, session) => {
                 if (err) {
                     logger.debug('Failed to get the session from user', user);
                     reject(err);
