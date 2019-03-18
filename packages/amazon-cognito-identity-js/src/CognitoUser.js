@@ -1081,7 +1081,7 @@ export default class CognitoUser {
         this.cacheUserData(latestUserData);
         const refresh = this.signInUserSession.getRefreshToken();
         if (refresh && refresh.getToken()) {
-          this.refreshSession(refresh.getToken(), (refreshError, data) => {
+          this.refreshSession(refresh, (refreshError, data) => {
             if (refreshError) {
               return callback(refreshError, null);
             }
