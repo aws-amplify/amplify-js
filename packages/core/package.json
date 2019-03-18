@@ -71,7 +71,6 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
-    "mapCoverage": true,
     "coverageThreshold": {
       "global": {
         "branches": 0,
