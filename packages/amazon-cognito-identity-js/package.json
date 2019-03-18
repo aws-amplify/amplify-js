@@ -49,7 +49,8 @@
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
-    "lint2": "eslint enhance-rn.js"
+    "lint2": "eslint enhance-rn.js",
+    "test": "jest --passWithNoTests"
   },
   "main": "lib/index.js",
   "react-native": {
