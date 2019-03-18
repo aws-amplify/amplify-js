@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.8-unstable.0"></a>
+## [0.2.8-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7...aws-amplify-vue@0.2.8-unstable.0) (2019-03-11)
+
+
+### Bug Fixes
+
+* **aws-amplify-vue/storage:** Fixed PhotoPicker input element not using the given accept attribute ([f2f8240](https://github.com/aws-amplify/amplify-js/commit/f2f8240))
+
+
+
+
+<a name="0.2.7"></a>
+## [0.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7-unstable.0...aws-amplify-vue@0.2.7) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.7-unstable.0"></a>
+## [0.2.7-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6...aws-amplify-vue@0.2.7-unstable.0) (2019-03-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/aws-amplify-vue:** Access the 'key' property of the 'signUpField' object to avoid a [objec Object] value in the HTML ([fb98183](https://github.com/aws-amplify/amplify-js/commit/fb98183))
+* **@aws-amplify/aws-amplify-vue:** Change the 'type' property values taken from the 'username' and 'email' objects in the signUpFields array so that they are valid HTML attribute values. ([8c28cae](https://github.com/aws-amplify/amplify-js/commit/8c28cae))
+* **@aws-amplify/aws-amplify-vue:** Change the tests to check for the HTML valid attribute value 'text' rather than 'string' ([5f982e1](https://github.com/aws-amplify/amplify-js/commit/5f982e1))
+
+
+
+
+<a name="0.2.6"></a>
+## [0.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.5...aws-amplify-vue@0.2.6) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.5"></a>
+## [0.2.6-unstable.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.4...aws-amplify-vue@0.2.6-unstable.5) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.4"></a>
+## [0.2.6-unstable.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.3...aws-amplify-vue@0.2.6-unstable.4) (2019-02-18)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.3"></a>
+## [0.2.6-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.2...aws-amplify-vue@0.2.6-unstable.3) (2019-02-11)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.2"></a>
+## [0.2.6-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.1...aws-amplify-vue@0.2.6-unstable.2) (2019-01-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.1"></a>
+## [0.2.6-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.6-unstable.0...aws-amplify-vue@0.2.6-unstable.1) (2019-01-18)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.6-unstable.0"></a>
+## [0.2.6-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.5...aws-amplify-vue@0.2.6-unstable.0) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.2.5"></a>
 ## [0.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.5-unstable.0...aws-amplify-vue@0.2.5) (2018-12-26)
 

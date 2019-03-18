@@ -334,7 +334,6 @@ export class ChatBot extends Component {
                     onSubmitEditing={this.submit}
                     editable={this.state.inputEditable}
                     handleMicButton={this.handleMicButton}
-                    micText={this.state.micText}
                     submit={this.submit}>
                 </ChatBotInputs>
             </KeyboardAvoidingView>
