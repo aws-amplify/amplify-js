@@ -73,6 +73,12 @@ export default class PushNotification {
         }
     }
 
+    getAndroidFCMDeviceToken () {
+        if (Platform.OS === 'android' && !this._androidInitialized){
+            return RNPushNotification.getAndroidFCMDeviceToken();
+        }
+    }
+
     onNotification(handler) {
         if (typeof handler === 'function') {
             // check platform
