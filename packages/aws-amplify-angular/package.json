@@ -1,14 +1,6 @@
 {
   "name": "aws-amplify-angular",
-<<<<<<< a40360ddee477c9f5d8603300aa8bf10d4b450fb
-<<<<<<< 4c29f82ce7605ac786e9021d2b2c892bebb6225f
   "version": "2.1.10-unstable.5",
-=======
-  "version": "2.1.36",
->>>>>>> init commit
-=======
-  "version": "2.1.9-unstable.2",
->>>>>>> added full component implementations of social provider login buttons
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
