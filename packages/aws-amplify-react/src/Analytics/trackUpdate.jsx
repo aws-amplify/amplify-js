@@ -11,8 +11,9 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Analytics } from 'aws-amplify';
+import * as React from 'react';
+import { Component } from 'react';
+import Analytics from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {
     return class extends Component {
@@ -23,11 +24,18 @@ export function trackUpdate(Comp, trackerName) {
 
         componentDidUpdate(prevProps, prevState) {
             const attributes = Object.assign({}, this.props, this.state);
-            Analytics.record(this.trackerName, attributes);
+            if (Analytics && typeof Analytics.record === 'function') {
+                Analytics.record({
+                    name: this.trackerName, 
+                    attributes
+                });
+            } else {
+                throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
+            }   
         }
 
         render() {
-            return <Comp {...this.props} />
+            return <Comp {...this.props} />;
         }
-    }
+    };
 }

@@ -27,27 +27,27 @@ export const Container = {
     textAlign: 'left',
     paddingLeft: '15px',
     paddingRight: '15px'
-}
+};
 
 export const NavBar = {
     position: 'relative',
     border: '1px solid transparent',
     borderColor: '#e7e7e7'
-}
+};
 
 export const NavRight = {
     textAlign: 'right'
-}
+};
 
 export const Nav = {
     margin: '7.5px'
-}
+};
 
 export const NavItem = {
     display: 'inline-block',
     padding: '10px 5px',
     lineHeight: '20px'
-}
+};
 
 export const NavButton = {
     display: 'inline-block',
@@ -69,11 +69,11 @@ export const NavButton = {
     color: '#333',
     backgroundColor: '#fff',
     borderColor: '#ccc'
-}
+};
 
 export const FormContainer = {
     textAlign: 'center'
-}
+};
 
 export const FormSection = {
     marginBottom: '20px',
@@ -83,7 +83,7 @@ export const FormSection = {
     textAlign: 'left',
     width: '400px',
     display: 'inline-block'
-}
+};
 
 export const ErrorSection = {
     marginBottom: '20px',
@@ -92,7 +92,7 @@ export const ErrorSection = {
     border: '1px solid #eea236',
     borderRadius: '4px',
     textAlign: 'left'
-}
+};
 
 export const SectionHeader = {
     color: '#fff',
@@ -103,7 +103,7 @@ export const SectionHeader = {
     borderTopLeftRadius: '3px',
     borderTopRightRadius: '3px',
     textAlign: 'center'
-}
+};
 
 export const SectionFooter = {
     color: '#333',
@@ -112,19 +112,19 @@ export const SectionFooter = {
     borderTop: '1px solid #ddd',
     borderTopLeftRadius: '3px',
     borderTopRightRadius: '3px'
-}
+};
 
 export const SectionBody = {
     padding: '15px'
-}
+};
 
 export const FormRow = {
     marginBottom: '15px'
-}
+};
 
 export const ActionRow = {
     marginBottom: '15px'
-}
+};
 
 export const Input = {
     display: 'block',
@@ -141,7 +141,7 @@ export const Input = {
     boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
     boxSizing: 'border-box',
     transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s'
-}
+};
 
 export const Button = {
     display: 'inline-block',
@@ -162,7 +162,7 @@ export const Button = {
     color: '#333',
     backgroundColor: '#fff',
     borderColor: '#ccc'
-}
+};
 
 export const SignInButton = {
     position: 'relative',
@@ -185,17 +185,17 @@ export const SignInButton = {
         backgroundColor: '#3b5998',
         borderColor: 'rgba(0,0,0,0.2)',
     }
-}
+};
 
 export const Space = {
     display: 'inline-block',
     width: '20px'
-}
+};
 
 export const A = {
     color: '#007bff',
     cursor: 'pointer'
-}
+};
 
 export const Pre = {
     overflow: 'auto',
@@ -215,71 +215,71 @@ export const Pre = {
     backgroundColor: '#f5f5f5',
     border: '1px solid #ccc',
     borderRadius: '4px'
-}
+};
 
 export const Col1 = {
     display: 'inline-block',
     width: '8.33333333%'
-}
+};
 
 export const Col2 = {
     display: 'inline-block',
     width: '16.66666667%'
-}
+};
 
 export const Col3 = {
     display: 'inline-block',
     width: '25%'
-}
+};
 
 export const Col4 = {
     display: 'inline-block',
     width: '33.33333333%'
-}
+};
 
 export const Col5 = {
     display: 'inline-block',
     width: '41.66666667%'
-}
+};
 
 export const Col6 = {
     display: 'inline-block',
     width: '50%'
-}
+};
 
 export const Col7 = {
     display: 'inline-block',
     width: '58.33333333%'
-}
+};
 
 export const Col8 = {
     display: 'inline-block',
     width: '66.66666667%'
-}
+};
 
 export const Col9 = {
     display: 'inline-block',
     width: '75%'
-}
+};
 
 export const Col10 = {
     display: 'inline-block',
     width: '83.33333333%'
-}
+};
 
 export const Col11 = {
     display: 'inline-block',
     width: '91.66666667%'
-}
+};
 
 export const Col12 = {
     display: 'inline-block',
     width: '100%'
-}
+};
 
 export const Hidden = {
     display: 'none'
-}
+};
 
 const Bootstrap = {
     container: Container,
@@ -323,6 +323,6 @@ const Bootstrap = {
     col12: Col12,
 
     hidden: Hidden,
-}
+};
 
 export default Bootstrap;

@@ -5,10 +5,6 @@ import { AuthState }  from '../../providers/auth.state';
 
 describe('AuthState', () => {
 
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  })
-
   beforeEach(() => {
     TestBed.configureTestingModule({});
   });

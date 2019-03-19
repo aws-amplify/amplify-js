@@ -11,7 +11,7 @@
 
 .nav-grid--out {
 	@media (min-width: $screen-sm-min) {
-		margin-top: -11.25rem;
+		//margin-top: -11.25rem;
 	}
 }
 
@@ -71,6 +71,13 @@
 			}
 		}
 	}
+	.tutorial-image {
+		img {
+			float:left;
+			margin-top: -7px;
+			margin-right: 7px;
+		}
+	}
 }
 
 /* ----- Title ----- */
@@ -81,6 +88,13 @@
 	padding: 0;
 	margin-top: 0;
 	border: 0;
+	line-height: 1.3em;
+}
+
+.nav-grid-tutorials {
+	.nav-grid__title {
+		font-size: 1.4em;
+	}
 }
 
 /* ----- Read more ----- */

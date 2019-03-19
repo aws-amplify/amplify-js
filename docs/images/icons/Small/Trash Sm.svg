@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>Icons/Small/Trash Sm</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons/Small/Trash-Sm" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M16.989502,2.02380371 L16.989502,1.23761332 C16.989502,1.10637619 16.8721585,1 16.7268635,1 L9.29901539,1 C9.15398413,1 9.03637695,1.10637619 9.03637695,1.23761332 L9.03637695,2.02380371 L6,2.02380371 L6,3.99890137 L20,3.99890137 L20,2.02380371 L16.989502,2.02380371 Z M7,17.7058621 C7,18.420338 7.60138622,18.9989014 8.34320817,18.9989014 L17.6578283,18.9989014 C18.3996502,18.9989014 19,18.4205874 19,17.7058621 L19,6.00024414 L7,6.00024414 L7,17.7058621 Z" id="Fill-1" fill="#FFFFFF"></path>
+    </g>
+</svg>

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
-import { Auth } from 'aws-amplify';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
 
 
@@ -12,7 +12,7 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -24,7 +24,7 @@ describe('SelectMFAType test', () => {
         test('render without totpsetup and with less than 2 mfa types', () => {
             const MFATypes = {
                 SMS: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -36,7 +36,7 @@ describe('SelectMFAType test', () => {
             const MFATypes = {
                 SMS: true,
                 TOTP: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: false});
@@ -49,7 +49,7 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
             wrapper.setState({TOTPSetup: true});
@@ -68,10 +68,10 @@ describe('SelectMFAType test', () => {
                 SMS: true,
                 TOTP: true,
                 Optional: true
-            }
+            };
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
-            wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalled();
         });
@@ -89,7 +89,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
         });
     });
@@ -106,7 +106,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
@@ -132,7 +132,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
@@ -174,7 +174,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
@@ -202,7 +202,7 @@ describe('SelectMFAType test', () => {
                     type: 'radio',
                     checked: true
                 }
-            }
+            };
             instance.handleInputChange(evt);
 
             const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {

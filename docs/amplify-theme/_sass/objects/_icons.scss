@@ -257,7 +257,7 @@ h2.with-icon {
 }
 
 [class^="aws-icon-ps-"]:before, [class*=" aws-icon-ps-"]:before {
-	background-image: url(../images/icons/products_services_sprite_9182ebfe54f4fa0c8e7a5e67da3c85d4.png);
+	background-image: url(images/icons/products_services_sprite_9182ebfe54f4fa0c8e7a5e67da3c85d4.png);
 }
 
  
@@ -282,9 +282,15 @@ h2.with-icon {
 }
 
 .aws-icon-ps-60-bubble-gear:before {
-    background-position: -300px -450px;
+    background-position: -300px -440px;
 }
 
 .aws-icon-ps-60-circular-circuit:before {
     background-position: -540px 0;
 }
+
+.aws-icon-ps-60-device-message:before {
+    background-position: -84px -680px;
+}
+
+

@@ -1,16 +1,15 @@
 jest.mock('../../src/Storage/Common', () => {
     const calcKey = () => {
         return '';
-    }
+    };
 
     return { calcKey };
 });
-
+import Storage from '@aws-amplify/storage';
 import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
-import { TextPicker } from '../../src/Widget'
-import { Storage, Logger } from 'aws-amplify';
-import React, { Component }from 'react';
+import { TextPicker } from '../../src/Widget';
+import * as React from 'react';
 
 describe('S3Text test', () => {
     describe('render test', () => {
@@ -101,17 +100,10 @@ describe('S3Text test', () => {
         });
 
         test('nothing to do if no textKey and path set', async () => {
-            const spyon = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
 
             await s3Text.load();
-
-            expect.assertions(1);
-            expect(spyon).toBeCalledWith('empty textKey and path');
-
-            spyon.mockClear();
         });
 
         test('only get text when body no specified', async () => {
@@ -172,7 +164,8 @@ describe('S3Text test', () => {
             await s3Text.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
+            expect(spyon)
+                .toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
@@ -185,8 +178,6 @@ describe('S3Text test', () => {
                     rej('err');
                 });
             });
-
-            const spyon2 = jest.spyOn(Logger.prototype, 'debug');
 
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
@@ -207,7 +198,6 @@ describe('S3Text test', () => {
             await s3Text.handlePick(data);
 
             spyon.mockClear();
-            spyon2.mockClear();
         });
     });
 
@@ -218,7 +208,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onClick: mockFn
-            }
+            };
 
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
@@ -234,7 +224,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -250,7 +240,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onLoad: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -265,7 +255,7 @@ describe('S3Text test', () => {
             const props = {
                 text: 'text',
                 textKey: 'textKey'
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -281,7 +271,7 @@ describe('S3Text test', () => {
                 text: 'text',
                 textKey: 'textKey',
                 onError: mockFn
-            }
+            };
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps(props);
@@ -323,8 +313,8 @@ describe('S3Text test', () => {
                 });
             });
 
-            s3Text.getText('key', 'level', false);
-            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false});
+            s3Text.getText('key', 'level', false, 'identityId');
+            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false, identityId: 'identityId'});
             spyon.mockClear();
         });
 

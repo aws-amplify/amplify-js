@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import PhotoPicker from '../../src/Widget/PhotoPicker';
 import Picker from '../../src/Widget/Picker';
 
@@ -47,12 +48,12 @@ describe('PhotoPicker test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
             const props = {
                 preview: true,
                 onPick: onPickFn,
                 onLoad: onLoadFn
-            }
+            };
             const wrapper = shallow(<PhotoPicker/>);
             const photoPicker = wrapper.instance();
             wrapper.setProps(props);
@@ -77,11 +78,11 @@ describe('PhotoPicker test', () => {
                 name: 'name',
                 size: 'size',
                 type: 'type'
-            }
+            };
             const props = {
                 preview: false,
                 onLoad: onLoadFn
-            }
+            };
             const wrapper = shallow(<PhotoPicker/>);
             const photoPicker = wrapper.instance();
             wrapper.setProps(props);
@@ -94,5 +95,3 @@ describe('PhotoPicker test', () => {
         });
     });
 });
-
-

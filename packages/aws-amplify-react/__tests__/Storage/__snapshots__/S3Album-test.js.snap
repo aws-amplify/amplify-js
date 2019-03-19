@@ -125,6 +125,9 @@ exports[`S3Album test render test render correctly if has images and texts 1`] =
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -368,6 +371,9 @@ exports[`S3Album test render test render correctly if has images and texts 1`] =
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -613,6 +619,9 @@ exports[`S3Album test render test render correctly if has images and texts 1`] =
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",

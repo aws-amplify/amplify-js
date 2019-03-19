@@ -11,23 +11,11 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
-
+import * as React from 'react';
+import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
-import {
-    FormSection,
-    SectionHeader,
-    SectionBody,
-    SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
-
-import QRCode from 'qrcode.react';
-import { TOTPSetupComp } from '../Widget';
+import TOTPSetupComp from '../Widget/TOTPSetupComp';
 
 const logger = new Logger('TOTPSetup');
 
@@ -37,14 +25,30 @@ export default class TOTPSetup extends AuthPiece {
 
         this._validAuthStates = ['TOTPSetup'];
         this.onTOTPEvent = this.onTOTPEvent.bind(this);
+        this.checkContact = this.checkContact.bind(this);
+    }
+
+    checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    const newUser = Object.assign(user, data);
+                    this.changeState('verifyContact', newUser);
+                }
+            });
     }
 
     onTOTPEvent(event, data, user) {
         logger.debug('on totp event', event, data);
-        //const user = this.props.authData;
+        // const user = this.props.authData;
         if (event === 'Setup TOTP') {
             if (data === 'SUCCESS') {
-                this.changeState('signedIn', user);
+                this.checkContact(user);
             }
         }
     }
@@ -55,6 +59,6 @@ export default class TOTPSetup extends AuthPiece {
 
         return (
             <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
-        )
+        );
     }
 }

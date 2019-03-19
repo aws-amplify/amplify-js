@@ -13,10 +13,6 @@ import { AuthState } from '../../providers/auth.state';
 
 describe('AmplifyService:', () => {
 
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  })
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [AmplifyService]

@@ -13,9 +13,10 @@
 
 import React from 'react';
 
-import { 
+import {
     Auth,
-    Logger 
+    Logger,
+    JS 
 } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
@@ -39,6 +40,19 @@ export default class AuthPiece extends React.Component {
         }
     }
 
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                logger.debug('verified user attributes', data);
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
+    }
+
     error(err) {
         logger.debug(err);
 
@@ -51,7 +65,7 @@ export default class AuthPiece extends React.Component {
             msg = JSON.stringify(err);
         }
 
-        const map = this.props.errorMessage || AmplifyMessageMap;
+        const map = this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
         msg = (typeof map === 'string')? map : map(msg);
         this.setState({ error: msg });
     }

@@ -82,6 +82,16 @@
 	);
   })(window.document, window.history, window.location);
 
+  	// get UR parameters
+	$.urlParam = function(name){
+		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+
+		if ( results && results[ 1 ] )
+			return results[ 1 ];
+		else	
+			return 0;
+	};
+
 	// Reduce
 	$.fn.reduce = function( fnReduce, initialValue ) {
 		var values = this,
@@ -178,6 +188,9 @@
 	var generateList = function( list, isFirstLevel ) {
 		var $ul = $( '<ul></ul>' );
 		$ul.addClass( 'level-' + list[ 0 ].level );
+		if (list[ 0 ].level > 2) {
+			$ul.addClass( 'hidden-xs' );
+		}
 
 		if ( true === isFirstLevel ) {
 			$ul.addClass( 'nav first-level' );
@@ -190,7 +203,7 @@
 			$li = $( '<li></li>' );
 
 			if (true === isFirstLevel && i == 0 ) {
-				aClass='section-head';
+				aClass='section-head orange-section-head';
 			}
 
 			$li.append(
@@ -202,11 +215,13 @@
 			if ( list[ i ].childrens && list[ i ].childrens.length ) {
 				$li.append( generateList( list[ i ].childrens ) );
 				$li.addClass( 'has-submenu' );
+				if ( isFirstLevel ) {
+					$li.addClass( 'first-submenu' );
+				}
 			}
 
 			$ul.append( $li );
 		}
-
 		return $ul;
 	};
 
@@ -255,7 +270,21 @@
 	// Offcanvas
 	$( '.offcanvas-toggle' ).on( 'click', function() {
 		$( 'body' ).toggleClass( 'offcanvas-expanded' );
-	} );
+	});
+
+	// Create next action for installation page
+	if ( $(location).attr('href').search ('install_n_config') > 1) {
+		var ref_url =  $.urlParam( 'ref_url' );
+		var ref_content =  unescape($.urlParam( 'ref_content' ));
+		var ref_content_section =  $.urlParam( 'ref_content_section' );
+		 
+		if (ref_url && ref_content) {
+			$('.installation_default_next_step').hide();
+			$('.installation_custom_next_step').html ("Continue following the <a href='" + ref_url + "#" + ref_content_section +"'>" + ref_content + "</a> from where you left off.");
+		} else {
+			$('.installation_custom_next_step').hide();
+		}
+	}
 
 	// Handle click on tabs
 	$('ul.tabs li').click(function(event, stopPropogation){
@@ -274,23 +303,165 @@
 
 		// Find other tab classes in page and trigger click respectively
 		// Without propogating
-		$('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
+		// $('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
 
 	});
 
-	$.urlParam = function(name){
-		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-		return results[1] || 0;
-	}
-
 	// Open tabs when the page is launched with the query params 
-	if ($.urlParam('platform')) {
+	if ( $.urlParam( 'platform' )) {
 		var platform = $.urlParam('platform');
 		if (platform) {
 			$('li.tab-link.'+ platform ).trigger('click');
 		}
 	}
 
+	//Handle click for notification bar
+	$( 	'div.row.notification-bar a' )
+		.click( function( event ) {
+			Cookies.set('notificationMessage_LastReceived', new String( new Date() ) );
+			Cookies.set('notificationStatus', 'none');
+			$( 'div.row.notification-bar' ).hide();
+
+			if ( this.className == 'link-button' ) {
+				// go to link
+			} else {
+				return false;
+			}
+		}
+	);
+
+	var showNotificationBar = function ( messageDate ) {
+
+		var lastMessageReceived;
+		
+		if (Cookies.get('notificationMessage_LastReceived')) {
+			lastMessageReceived = new Date( Cookies.get('notificationMessage_LastReceived'));
+		} else {
+			lastMessageReceived = new Date('January 1, 2017 12:00:00') ;
+		} 
+		
+		// new message reveived
+		if ( messageDate.getTime() > lastMessageReceived.getTime() ){
+			$( 'div.row.notification-bar' ).show();
+			Cookies.set('notificationStatus', 'received');
+		} else {
+			// do nothing
+		}
+
+	}
+
+	// When the last message is received. Typicaly the announcement time
+	showNotificationBar( new Date('August 1, 2018 11:42:00') );
+
+	// Hide magnifying glass in search bar
+
+	var hideSearchIcon = function() {
+		let search_box = document.getElementById("search-input")
+		search_box.onclick = function() {
+			document.getElementById("search-image").style.display = "none";
+			search_box.style.outline = "none";
+			search_box.placeholder = "Search";
+			search_box.style.paddingLeft = "2px";
+		}
+	}
+
+	hideSearchIcon();
+
+	// temporary for editing notif bar
+	//document.getElementById("notification-bar").style.display = "block";
+
+	var addLineNumbers = function() {
+		var pre = document.getElementsByTagName('pre'), pl = pre.length;
+		for (var i = 0; i < pl; i++) {
+			var parent  = pre[i].parentNode.parentNode;
+			if (parent.classList.contains("language-js")) {
+				pre[i].innerHTML = '<span class="line-number"></span>' + pre[i].innerHTML + '<span class="cl"></span>';
+				var num = pre[i].innerHTML.split(/\n/).length;
+				for (var j = 0; j < (num - 1); j++) {
+					var line_num = pre[i].getElementsByTagName('span')[0];
+					line_num.innerHTML += '<span>' + (j + 1) + '</span>';
+				}
+			}
+		}
+	};
+
+	addLineNumbers();
+
+	var expandSearchBar = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.classList.add('search-box-expanded');
+		const collapse_search = document.getElementById("collapse-search");
+		collapse_search.style.display = "inline-block";
+		const logo_container = document.getElementById("logo-container");
+		logo_container.style.visibility = "hidden";
+		document.getElementsByClassName("offcanvas-toggle")[0].style.visibility = "hidden";
+	}
+
+	var collapseSearchBar = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.classList.remove('search-box-expanded');
+		const collapse_search = document.getElementById("collapse-search");
+		collapse_search.style.display = "none";
+		const logo_container = document.getElementById("logo-container");
+		logo_container.style.visibility = "visible";
+		search_box.value = "";
+		document.getElementsByClassName("offcanvas-toggle")[0].style.visibility = "visible";
+	}
+
+	var moveOffCanvasToggle = function() {
+		const container = document.getElementById("toggle-button-container");
+		container.classList.toggle('toggle-button-container-expanded');
+	}
+
+	let search_box = document.getElementById("search-input-xs");
+	let collapse_search = document.getElementById("collapse-search");
+	let offcanvas_toggle = document.getElementsByClassName("offcanvas-toggle")[0];
+
+	if (search_box) search_box.addEventListener("click", expandSearchBar);
+	if (collapse_search) collapse_search.addEventListener("click", collapseSearchBar);
+	if (offcanvas_toggle) offcanvas_toggle.addEventListener("click", moveOffCanvasToggle);
+	$('meta[name=viewport]').attr('content', 'width=device-width,initial-scale=1,maximum-scale=1');
+
+	let apiLink = function() {
+		let api_select = document.getElementById('api-select');
+		if (api_select.value != "default") {
+			window.open(api_select.value, '_blank');
+			api_select.value = "default";
+		}
+	}
+	let api_select = document.getElementById('api-select');
+	if (api_select) api_select.addEventListener("change", apiLink);
+
+	let docsLink = function() {
+		let docs_select = document.getElementById('docs-select');
+		if (docs_select.value != "default") {
+			if (docs_select.value.includes("aws-mobile")) {
+				window.open(docs_select.value, '_blank');
+				docs_select.value = "default";
+			}
+			else {
+				window.open(docs_select.value, '_self');
+			}
+		}
+	}
+	let docs_select = document.getElementById('docs-select');
+	if (docs_select) docs_select.addEventListener("change", docsLink);
 
 }( jQuery ) );
 
+	/**
+	* Function that tracks a click on an outbound link in Analytics.
+	* This function takes a valid URL string as an argument, and uses that URL string
+	* as the event label. Setting the transport method to 'beacon' lets the hit be sent
+	* using 'navigator.sendBeacon' in browser that support it.
+	*/
+	var trackOutboundLink = function(url) {
+		gtag('event', 'click', {
+		'event_category': 'outbound',
+		'event_label': url,
+		'transport_type': 'beacon',
+		'event_callback': function(){document.location = url;}
+		});
+
+		return false;
+	}

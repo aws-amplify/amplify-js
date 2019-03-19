@@ -45,7 +45,7 @@
 														<div class='in-this-page js-sections'></div>
 													{% else %}
 														<li class="section-link">
-															<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}">{{ item.title }}</a>
+															<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}">{{ item.title }}</a>
 														</li>
 													{% endif %}	
 												{% endfor %}
@@ -64,15 +64,15 @@
 				</div><!-- /.row -->
 			</div><!-- /.container -->
 		</div><!-- /.section -->
-		<div class="section section--grey">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-7">
-						{% include comments.html %}
-					</div><!-- /.col -->
-				</div><!-- /.row -->
-			</div><!-- /.container -->
-		</div><!-- /.section -->
+		<!-- <div class="section section--grey"> -->
+			<!-- <div class="container"> -->
+				<!-- <div class="row"> -->
+					<!-- <div class="col-md-7"> -->
+						<!-- {% include comments.html %} -->
+					<!-- </div>/.col -->
+				<!-- </div>/.row -->
+			<!-- </div>/.container -->
+		<!-- </div>/.section -->
 		<div class="js-footer-area">
 			{% if page.page_nav.prev.content or page.page_nav.next.content %}
 				<nav class="page-nav">

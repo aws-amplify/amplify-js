@@ -1,11 +1,9 @@
-
-
+import Auth from '@aws-amplify/auth';
 import SignIn from '../../src/Auth/SignIn';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signIn',  
@@ -22,14 +20,31 @@ const deniedStates = [
     'verifyContact'
 ];
 
+const fakeEvent = {
+    preventDefault: jest.fn()
+};
+
 describe('SignIn', () => {
     describe('normal case', () => {
         test('render correctly with Props signIn, signedOut or signedUp', () => {
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 const wrapper = shallow(<SignIn/>);
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
+        test('render correctly with hide', () => {
+            for (let i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignIn]
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -59,19 +74,20 @@ describe('SignIn', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
-
+            await Promise.resolve();
+           
             expect(spyon.mock.calls.length).toBe(1);
             expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
             expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
@@ -119,17 +135,17 @@ describe('SignIn', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -174,17 +190,17 @@ describe('SignIn', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -214,18 +230,18 @@ describe('SignIn', () => {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
             const event_password = {
                 target: {
                     name: 'password',
                     value: 'abc'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
         
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -236,7 +252,7 @@ describe('SignIn', () => {
         test('render corrently', () => {
             const wrapper = shallow(<SignIn/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -260,10 +276,11 @@ describe('SignIn', () => {
             });
 
             const spyon2 = jest.spyOn(signIn, 'changeState');
-            await signIn.signIn();
+            await signIn.signIn(fakeEvent);
 
             spyon.mockClear();
             spyon2.mockClear();
-        })
+        });
     });
-})
+});
+

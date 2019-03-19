@@ -4,7 +4,14 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'UA-115615468-1');
+  gtag('config', 'UA-115615468-1',{
+    'linker': {
+      'accept_incoming': true
+    }
+  });
 </script>
+
+
+
+
 

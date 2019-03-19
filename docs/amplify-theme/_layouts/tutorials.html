@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}">
+		{% include site-header.html %}
+
+		<div class="page-container">
+			{% if page.marketing_grid%}
+			<div class="section section-category">
+		
+				<div class="container">
+					<div class="row">	
+						<div class="dev-guide-heading">
+							<div class="row">
+								{% for item in page.marketing_grid %}
+									<div class="col-sm-8 col-lg-8">
+										<span>
+											<div class="dev-guide-content" data-mh>
+												<p class="dev-guide__title">{{ item.title }}</p>
+												<!-- <p class="dev-guide__excerpt">{{ item.excerpt }}</p> -->
+											</div><!-- /.nav-grid__content -->
+										</span><!-- /.nav-grid__item -->
+									</div><!-- /.col -->
+								{% endfor %}
+							</div><!-- /.row -->
+						</div><!-- /.nav-grid -->
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+			</div><!-- /.section -->
+			{% endif %}
+
+			{% if page.tutorial_list %}
+				<div class="section">
+					<div class="container">
+							<div class="row">
+									<div class="nav-grid nav-grid--out nav-grid-tutorials">
+										{% for category in page.tutorial_list %}
+
+										<div class="section-top section-top-category" {% if category.title == 'AWS Amplify Cloud Features' %}id="bottom-section"{% endif %}>
+											<div class="container">
+													<div class="header">
+														{{ category.title}}
+													</div>
+													<div class="subheader">
+														{{ category.excerpt}}
+													</div>
+													{% if category.enable_filter %} 
+													<div class="content-filter">
+														<div class="row">
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn" id="all-filter">All</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="angular-filter">Angular</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="react-filter">React</button> 
+																</a>
+															</div>
+														</div>
+													</div>
+													{% endif %}
+													<div class="row">
+														{% for item in category.subs %}
+															<div class="col-xs-12 col-sm-6 col-lg-4">
+																<a href="{% if item.url_external  %}
+																			{{ item.url_external }} 
+																		{% endif %}
+																		{% if item.url %}
+																			{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }} 
+																		{% endif %}" 
+																	{% if item.url_external %} target="_blank" {% endif %}
+																	class="dev-guide-item">					
+																	<div class="dev-guide-content tutorials-content" data-mh>
+																		<div class="dev-guide-title" >
+																			{{ item.title }}
+																		</div>
+																		{% if item.by %} 
+																			<div class="dev-guide-by">
+																				by {{ item.by}}
+																			</div>
+																		{% endif %}
+																		<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
+																	</div><!-- /.nav-grid__content -->
+																	<div class="services-container">
+																		<div class='dev-guide-services'>
+																			{% for service in item.services %} 
+																				<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >
+																					{{ service.title }}
+																				</i>
+																			{% endfor %}
+																		</div >
+																	</div>
+																</a><!-- /.nav-grid__item -->
+															</div><!-- /.col -->
+														{% endfor %}
+													</div><!-- /.row -->
+											</div>
+										</div>
+										{% endfor %}
+									</div><!-- /.nav-grid -->
+							</div><!-- /.row -->
+						
+					</div><!-- /.container -->
+				</div><!-- /.section -->
+			{% endif %}
+		</div>
+
+		{% include site-footer.html %}
+	</body>
+</html>

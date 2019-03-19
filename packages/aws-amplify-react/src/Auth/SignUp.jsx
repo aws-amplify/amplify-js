@@ -11,21 +11,33 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 
-import { Auth, I18n } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    FormField,
+    Input,
+    InputLabel,
+    SelectInput,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
+import countryDialCodes from './common/country-dial-codes.js';
+import defaultSignUpFields from './common/default-sign-in-fields'
+import { valid } from 'semver';
+
+const logger = new Logger('SignUp');
+
 
 export default class SignUp extends AuthPiece {
     constructor(props) {
@@ -33,70 +45,242 @@ export default class SignUp extends AuthPiece {
 
         this._validAuthStates = ['signUp'];
         this.signUp = this.signUp.bind(this);
+        this.sortFields = this.sortFields.bind(this);
+        this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
+        this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
+        this.defaultSignUpFields = defaultSignUpFields;
+        this.needPrefix = this.needPrefix.bind(this);
+        this.header = (this.props &&
+            this.props.signUpConfig && 
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
+    }
+
+    validate() {
+        const invalids = [];
+        this.signUpFields.map((el) => {
+          if (el.key !== 'phone_number') {
+            if (el.required && !this.inputs[el.key]) {
+              el.invalid = true;
+              invalids.push(el.label);
+            } else {
+              el.invalid = false;
+            }        
+          } else {
+            if (el.required && (!this.inputs.dial_code || !this.inputs.phone_line_number)) {
+              el.invalid = true;
+              invalids.push(el.label);
+            } else {
+              el.invalid = false;
+            }
+          }
+        });
+        return invalids;
+    }
+
+    sortFields() {
+
+        if (this.props.signUpConfig && this.props.signUpConfig.hiddenDefaults && this.props.signUpConfig.hiddenDefaults.length > 0){
+            this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+              return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
+            });
+        }
+
+        if (this.checkCustomSignUpFields()) {
+
+          if (!this.props.signUpConfig || !this.props.signUpConfig.hideAllDefaults) {
+            // see if fields passed to component should override defaults
+            this.defaultSignUpFields.forEach((f, i) => {
+              const matchKey = this.signUpFields.findIndex((d) => {
+                return d.key === f.key;
+              });
+              if (matchKey === -1) {
+                this.signUpFields.push(f);
+              }
+            });
+          }
+    
+          /* 
+            sort fields based on following rules:
+            1. Fields with displayOrder are sorted before those without displayOrder
+            2. Fields with conflicting displayOrder are sorted alphabetically by key
+            3. Fields without displayOrder are sorted alphabetically by key
+          */
+          this.signUpFields.sort((a, b) => {
+            if (a.displayOrder && b.displayOrder) {
+              if (a.displayOrder < b.displayOrder) {
+                return -1;
+              } else if (a.displayOrder > b.displayOrder) {
+                return 1;
+              } else {
+                if (a.key < b.key) {
+                  return -1;
+                } else {
+                  return 1;
+                }
+              }
+            } else if (!a.displayOrder && b.displayOrder) {
+              return 1;
+            } else if (a.displayOrder && !b.displayOrder) {
+              return -1;
+            } else if (!a.displayOrder && !b.displayOrder) {
+              if (a.key < b.key) {
+                return -1;
+              } else {
+                return 1;
+              }
+            }
+          });
+        } else {
+          this.signUpFields = this.defaultSignUpFields;
+        }
+    }
+
+    needPrefix(key) {
+        const field = this.signUpFields.find(e => e.key === key);
+        if (key.indexOf('custom:') !== 0) {
+          return field.custom ;
+        } else if (key.indexOf('custom:') === 0 && field.custom === false) {
+            logger.warn('Custom prefix prepended to key but custom field flag is set to false; retaining manually entered prefix');
+          
+        }
+        return null;
+    }
+
+
+    getDefaultDialCode() {
+        return this.props.signUpConfig &&
+        this.props.signUpConfig.defaultCountryCode  &&
+        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
+        `+${this.props.signUpConfig.defaultCountryCode}` :
+        "+1"
+    }
+
+    checkCustomSignUpFields() {
+        return this.props.signUpConfig &&
+        this.props.signUpConfig.signUpFields &&
+        this.props.signUpConfig.signUpFields.length > 0
     }
 
     signUp() {
-        const { username, password, email, phone_number } = this.inputs;
-        Auth.signUp(username, password, email, phone_number)
-            .then(() => this.changeState('confirmSignUp', username))
-            .catch(err => this.error(err));
+        if (!this.inputs.dial_code) {
+            this.inputs.dial_code = this.getDefaultDialCode();
+        }
+        const validation = this.validate();
+        if (validation && validation.length > 0) {
+          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
+        }
+        if (!Auth || typeof Auth.signUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
+        let signup_info = {
+            username: this.inputs.username,
+            password: this.inputs.password,
+            attributes: {
+                
+            }
+        };
+
+        const inputKeys = Object.keys(this.inputs);
+        const inputVals = Object.values(this.inputs);
+
+        inputKeys.forEach((key, index) => {
+            if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
+              if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
+                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                signup_info.attributes[newKey] = inputVals[index];
+              } else if (inputVals[index]) {
+                  signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
+              }
+            }
+        });
+
+        Auth.signUp(signup_info).then((data) => {
+            this.changeState('confirmSignUp', data.user.username)
+        })
+        .catch(err => this.error(err));
     }
 
     showComponent(theme) {
         const { hide } = this.props;
         if (hide && hide.includes(SignUp)) { return null; }
-
+        if (this.checkCustomSignUpFields()) {
+            this.signUpFields = this.props.signUpConfig.signUpFields;
+        }
+        this.sortFields();
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Sign Up Account')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Username')}
-                        theme={theme}
-                        key="username"
-                        name="username"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Password')}
-                        theme={theme}
-                        type="password"
-                        key="password"
-                        name="password"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Email')}
-                        theme={theme}
-                        key="email"
-                        name="email"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Phone Number')}
-                        theme={theme}
-                        key="phone_number"
-                        name="phone_number"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow onClick={this.signUp} theme={theme}>
-                        {I18n.get('Sign Up')}
-                    </ButtonRow>
+                    {
+                        this.signUpFields.map((field) => {
+                            return field.key !== 'phone_number' ? (
+                                <FormField theme={theme} key={field.key}>
+                                {
+                                    field.required ? 
+                                    <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                    <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
+                                }
+                                    <Input
+                                        autoFocus={
+                                            this.signUpFields.findIndex((f) => {
+                                                return f.key === field.key
+                                            }) === 0 ? true : false
+                                        }
+                                        placeholder={I18n.get(field.placeholder)}
+                                        theme={theme}
+                                        type={field.type}
+                                        name={field.key}
+                                        key={field.key}
+                                        onChange={this.handleInputChange}
+                                    />
+                                </FormField>
+                            ) : (
+                                <FormField theme={theme} key="phone_number">
+                                    {
+                                        field.required ? 
+                                        <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
+                                        <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
+                                    }
+                                    <SelectInput theme={theme}>
+                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
+                                        onChange={this.handleInputChange}>
+                                            {countryDialCodes.map(dialCode =>
+                                                <option key={dialCode} value={dialCode}>
+                                                    {dialCode}
+                                                </option>
+                                            )}
+                                        </select>
+                                        <Input
+                                            placeholder={I18n.get(field.placeholder)}
+                                            theme={theme}
+                                            type="tel"
+                                            id="phone_line_number"
+                                            key="phone_line_number"
+                                            name="phone_line_number"
+                                            onChange={this.handleInputChange}
+                                        />
+                                    </SelectInput>
+                                </FormField>
+                            )
+                        })
+                    }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <div style={theme.col6}>
-                        <Link theme={theme} onClick={() => this.changeState('confirmSignUp')}>
-                            {I18n.get('Confirm a Code')}
-                        </Link>
-                    </div>
-                    <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button onClick={this.signUp} theme={theme}>
+                            {I18n.get('Create Account')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        {I18n.get('Have an account? ')}
                         <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                            {I18n.get('Sign In')}
+                            {I18n.get('Sign in')}
                         </Link>
-                    </div>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
+
 }

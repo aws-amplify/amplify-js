@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import Amplify, { Auth, Logger } from 'aws-amplify';
+import * as React from 'react';
+import { Component } from 'react';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const logger = new Logger('AuthStateWrapper');
 
@@ -13,7 +15,7 @@ export default class AuthStateWrapper extends Component {
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
         this.checkUser = this.checkUser.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this.state = { authState: props.authState || 'signIn' };
     }
 
     componentWillMount() {
@@ -29,10 +31,10 @@ export default class AuthStateWrapper extends Component {
 
     handleStateChange(state, data) {
         logger.debug('authStateWrapper state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        this.setState({ authState: state, authData: data, error: null });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
@@ -43,27 +45,30 @@ export default class AuthStateWrapper extends Component {
     }
 
     checkUser() {
+        if (!Auth || typeof Auth.currentUser !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         return Auth.currentUser()
             .then(user => {
                 const state = user? 'signedIn' : 'signIn';
-                this.handleStateChange(state, user)
+                this.handleStateChange(state, user);
             })
             .catch(err => logger.error(err));
     }
 
     render() {
-        const { auth, authData } = this.state;
+        const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const render_children = React.Children.map(this.props.children, (child) => {
                 if (!child) { return null; }
                 return React.cloneElement(child, {
-                    authState: auth,
-                    authData: authData,
-                    theme: theme,
+                    authState,
+                    authData,
+                    theme,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent
                 });
-            })
+            });
 
         return (
             <div className="amplify-state-wrapper" style={theme.stateWrapper}>
@@ -77,6 +82,6 @@ export default class AuthStateWrapper extends Component {
                     </div>
                 }
             </div>
-        )
+        );
     }
 }

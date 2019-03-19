@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import withFacebook from '../../../src/Auth/Provider/withFacebook';
 import withGoogle from '../../../src/Auth/Provider/withGoogle';
 import { withFederated } from '../../../src/Auth/Provider/index';
@@ -10,7 +11,7 @@ describe('withFederated test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const Comp = withFederated(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();

@@ -35,6 +35,7 @@ export default class Client {
     };
 
     let response;
+    let responseJsonData;
 
     fetch(this.endpoint, options)
       .then(resp => {
@@ -50,7 +51,9 @@ export default class Client {
       })
       .then(resp => resp.json().catch(() => ({})))
       .then(data => {
+        // return parsed body stream
         if (response.ok) return callback(null, data);
+        responseJsonData = data;
 
         // Taken from aws-sdk-js/lib/protocol/json.js
         // eslint-disable-next-line no-underscore-dangle
@@ -63,31 +66,31 @@ export default class Client {
         return callback(error);
       })
       .catch(err => {
-        // default to return 'UnknownError'
-        let error = { code: 'UnknownError', message: 'Unkown error' };
-
         // first check if we have a service error
         if (response && response.headers && response.headers.get('x-amzn-errortype')) {
           try {
-            const code = (response.headers.get('x-amz-errortype')).split(':')[0];
-            error = {
+            const code = (response.headers.get('x-amzn-errortype')).split(':')[0];
+            const error = {
               code,
               name: code,
               statusCode: response.status,
               message: (response.status) ? response.status.toString() : null,
             };
+            return callback(error);
           } catch (ex) {
-              // pass through so it doesn't get swallowed if we can't parse it
+              return callback(err);
           }
         // otherwise check if error is Network error
         } else if (err instanceof Error && err.message === 'Network error') {
-          error = {
+          const error = {
             code: 'NetworkError',
             name: err.name,
             message: err.message,
           };
+          return callback(error);
+        } else {
+          return callback(err);
         }
-        return callback(error);
       });
   }
 }

@@ -114,6 +114,6 @@ Utilice el formato de número de teléfono +12345678900`
         'Invalid password format': "密码格式错误",
         'Invalid phone number format': "电话格式错误，请使用格式 +12345678900"
     }
-}
+};
 
 export default dict;

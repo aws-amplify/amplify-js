@@ -1,0 +1,37 @@
+{
+    "AppState": {
+        "prefix": "AppState",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "AppState"
+        ]
+    },
+    "Constants": {
+        "prefix": "Constants",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Constants"
+        ]
+    },
+    "LOG_LEVELS": {
+        "prefix": "LOG_LEVELS",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "LOG_LEVELS"
+        ]
+    },
+    "Platform": {
+        "prefix": "Platform",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Platform"
+        ]
+    },
+    "defaultConfig": {
+        "prefix": "defaultConfig",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "defaultConfig"
+        ]
+    }   
+}
