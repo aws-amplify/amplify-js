@@ -14,7 +14,7 @@
 import StorageClass from './Storage';
 import { StorageProvider } from './types';
 
-import Amplify, { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 
