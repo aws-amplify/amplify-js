@@ -16,13 +16,24 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { includes } from '../common';
+import * as AmplifyUI from '@aws-amplify/ui';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
+      <div *ngIf="_signInConfig.federatedSignInConfig">
+        <amplify-auth-federated-sign-in-core
+          [authState]="_authState"
+          [federatedSignInConfig]="_signInConfig.federatedSignInConfig"
+        ></amplify-auth-federated-sign-in-core>
 
+        <div class={{amplifyUI.strike}}>
+          <span class={{amplifyUI.strikeContent}}> or </span>
+        </div>
+      </div>
+    
       <div class="amplify-amplify-form-row amplify-signin-username">
         <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
         <input
@@ -84,18 +95,17 @@ const template = `
 })
 export class SignInComponentCore {
   _authState: AuthState;
+  _signInConfig: any;
   _show: boolean;
   username: string;
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
-  test: any;
+  amplifyUI: any;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
-    this.test = {
-      googleClientId: '309340288959-gq43dljiqj4js6p2dbnue4b1i9qle10q.apps.googleusercontent.com'
-    }
+    this.amplifyUI = AmplifyUI
   }
 
   @Input()
@@ -103,6 +113,11 @@ export class SignInComponentCore {
     this._authState = authState;
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  @Input() 
+  set signInConfig(signInConfig: any) {
+    this._signInConfig = signInConfig;
   }
 
   setUsername(username: string) {

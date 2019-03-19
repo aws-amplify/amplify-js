@@ -1,6 +1,6 @@
 // tslint:disable
 /*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -13,116 +13,97 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../../providers';
-import { constants } from '../../common'
+import { Component, Input, OnInit  } from '@angular/core';
+import { AmplifyService } from '../../../../providers/amplify.service';
+import { constants, setLocalStorage } from '../../common'
+import * as AmplifyUI from '@aws-amplify/ui';
 
 const template = `
-  <button id="Button__googleSignInButton___12y9G" class="Button__signInButton___2nUbs" variant="googleSignInButton" (click)="onSignIn()">
-    <span class="Button__signInButtonIcon___341B9">
+  <button id={{amplifyUI.googleSignInButton}} class={{amplifyUI.signInButton}} variant="googleSignInButton" (click)="onSignIn()">
+    <span class={{amplifyUI.signInButtonIcon}}>
       <svg viewBox="0 0 256 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid"><path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"/><path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853"/><path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05"/><path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335"/></svg>
     </span>
-    <span class="Button__signInButtonContent___2GM4s" style="color: var(--color-white);">
-      {{ this.amplifyService.i18n().get('Sign In with Google') }}
+    <span class={{amplifyUI.signInButtonContent}} style="color: var(--color-white);">
+     Sign In with Google
     </span>
   </button>
 `
 
 @Component({
   selector: 'amplify-auth-google-sign-in-core',
-  template: template
+  template
 })
-export class GoogleSignInComponentCore {
-  _authState: AuthState;
-  _googleClientId: string;
-  amplifyService: AmplifyService;
+export class GoogleSignInComponentCore implements OnInit {
+  @Input() googleClientId: string;
+  protected logger: any;
+  amplifyUI: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
-
-  @Input() 
-  set data(data: any) {
-    this._authState = data.authState
-    if (data.googleClientId) {
-      this._googleClientId = data.googleClientId
-    }
-  }
-
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-  }
-
-  @Input() 
-  set googleClientId(googleClientId: string) {
-    if (googleClientId) {
-      this._googleClientId = googleClientId
-    }
+  constructor(protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('GoogleSignInComponent', 'INFO');
+    this.amplifyUI = AmplifyUI
   }
 
   ngOnInit() {
+    if (!this.amplifyService.auth() || 
+      typeof this.amplifyService.auth().federatedSignIn !== 'function' || 
+      typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function') {
+      this.logger.warn('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+
     const ga = (<any>window).gapi && (<any>window).gapi.auth2 
       ? (<any>window).gapi.auth2.getAuthInstance() 
       : null;
-    if (this._googleClientId && !ga) {
+    if (this.googleClientId && !ga) {
       this.createScript();
     }
   }
 
-  onSignIn() {
+  async onSignIn() {
     const ga = (<any>window).gapi.auth2.getAuthInstance();
-    ga.signIn()
-      .then((googleUser: any) => {
-        console.log(googleUser)
-        this.federatedSignIn(googleUser);
-        const payload = { provider: constants.GOOGLE };
-        try {
-          localStorage.setItem(constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
-        } catch (e) {
-          console.log('Failed to cache auth source into localStorage', e);
-        }
-      },
-      (error: any) => console.log(error)
-    );
+    try {
+      const googleUser = await ga.signIn()
+      const { id_token, expires_at } = googleUser.getAuthResponse();
+      const profile = googleUser.getBasicProfile();
+      const gapiUser = {
+        email: profile.getEmail(),
+        name: profile.getName(),
+        picture: profile.getImageUrl(),
+      };
+
+      const payload = { provider: constants.GOOGLE };
+      setLocalStorage(constants.AUTH_SOURCE_KEY, payload, this.logger);
+
+      await this.amplifyService.auth().federatedSignIn('google', {
+        token: id_token,
+        expires_at
+      }, gapiUser);
+      this.logger.debug(`Signed in with federated identity: ${constants.GOOGLE}`);
+      
+      const user = await this.amplifyService.auth().currentAuthenticatedUser();
+      this.amplifyService.setAuthState({ state: 'signedIn', user: user});
+    } catch(error) {
+      this.logger.error(error);
+    }
+  }
+
+  initGapi() {
+    this.logger.debug('init gapi');
+    const ga = (<any>window).gapi;
+    const self = this;
+    ga.load('auth2', () => {
+        ga.auth2.init({
+            client_id: self.googleClientId,
+            scope: 'profile email openid'
+        });
+    });
   }
 
   createScript() {
     const script = document.createElement('script');
-    const clientId = this._googleClientId;
-
+  
     script.src = 'https://apis.google.com/js/platform.js';
     script.async = true;
-    script.onload = function() {
-      const ga = (<any>window).gapi;
-      ga.load('auth2', () => {
-        ga.auth2.init({
-          client_id: clientId,
-          scope: 'profile email openid'
-        });
-      });
-    }
+    script.onload = this.initGapi.bind(this)
     document.body.appendChild(script);
-  }
-
-  federatedSignIn(googleUser: any) {
-    const { id_token, expires_at } = googleUser.getAuthResponse();
-    const profile = googleUser.getBasicProfile();
-    let user = {
-      email: profile.getEmail(),
-      name: profile.getName(),
-      picture: profile.getImageUrl(),
-    };
-    if (!this.amplifyService.auth() || 
-      typeof this.amplifyService.auth().federatedSignIn !== 'function' || 
-      typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-    }
-    this.amplifyService.auth().federatedSignIn('google', {
-      token: id_token,
-      expires_at
-    }, user)
-    .then(credentials => this.amplifyService.setAuthState({ state: 'signedIn', user: credentials }))
-    .catch(error => console.log(error))
   }
 }

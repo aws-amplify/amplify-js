@@ -16,21 +16,21 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 import { DynamicComponentDirective } from '../../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../../component.mount';
-import { GoogleSignInClass } from './google-sign-in.class';
-import { GoogleSignInComponentIonic } from './google-sign-in.component.ionic'
-import { GoogleSignInComponentCore } from './google-sign-in.component.core';
+import { AmazonSignInClass } from './amazon-sign-in.class';
+import { AmazonSignInComponentIonic } from './amazon-sign-in.component.ionic'
+import { AmazonSignInComponentCore } from './amazon-sign-in.component.core';
 
 @Component({
-  selector: 'amplify-auth-google-sign-in',
+  selector: 'amplify-auth-amazon-sign-in',
   template: `
               <div>
                 <ng-template component-host></ng-template>
               </div>
             `
 })
-export class GoogleSignInComponent implements OnInit, OnDestroy {
+export class AmazonSignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
-  @Input() googleClientId: string;
+  @Input() amazonClientId: string;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -44,8 +44,8 @@ export class GoogleSignInComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(GoogleSignInComponentIonic, { googleClientId: this.googleClientId }) 
-      : new ComponentMount(GoogleSignInComponentCore, { googleClientId: this.googleClientId });
+      ? new ComponentMount(AmazonSignInComponentIonic, { amazonClientId: this.amazonClientId }) 
+      : new ComponentMount(AmazonSignInComponentCore, { amazonClientId: this.amazonClientId });
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
@@ -53,6 +53,6 @@ export class GoogleSignInComponent implements OnInit, OnDestroy {
     viewContainerRef.clear();
 
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<GoogleSignInClass>componentRef.instance).data = authComponent.data;
+    (<AmazonSignInClass>componentRef.instance).data = authComponent.data;
   }
 }

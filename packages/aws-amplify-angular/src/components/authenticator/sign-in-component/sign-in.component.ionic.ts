@@ -21,6 +21,17 @@ const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
+    <div *ngIf="_signInConfig.federatedSignInConfig">
+      <amplify-auth-federated-sign-in-ionic
+        [authState]="_authState"
+        [federatedSignInConfig]="_signInConfig.federatedSignInConfig"
+      ></amplify-auth-federated-sign-in-ionic>
+
+      <div class={{amplifyUI.strike}}>
+        <span class={{amplifyUI.strikeContent}}> or </span>
+      </div>
+    </div>
+
     <ion-list lines="none">
       <ion-item lines="none">
         <ion-label class="amplify-input-label" for="username" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>

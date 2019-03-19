@@ -13,8 +13,6 @@
  */
 // tslint:enable
 
-
-export {GoogleSignInComponent } from './google-sign-in.component.factory';
-export {GoogleSignInClass } from './google-sign-in.class';
-export {GoogleSignInComponentCore } from './google-sign-in.component.core';
-export {GoogleSignInComponentIonic } from './google-sign-in.component.ionic';
+export class FacebookSignInClass {
+  data: any;
+}

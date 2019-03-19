@@ -29,6 +29,10 @@ import { FederatedSignInComponent } from './components/authenticator/federated-s
 import { FederatedSignInComponentCore } from './components/authenticator/federated-sign-in-component/federated-sign-in.component.core';
 import { GoogleSignInComponent } from './components/authenticator/federated-sign-in-component/google-sign-in-component/google-sign-in.component.factory';
 import { GoogleSignInComponentCore } from './components/authenticator/federated-sign-in-component/google-sign-in-component/google-sign-in.component.core';
+import { FacebookSignInComponent } from './components/authenticator/federated-sign-in-component/facebook-sign-in-component/facebook-sign-in.component.factory';
+import { FacebookSignInComponentCore } from './components/authenticator/federated-sign-in-component/facebook-sign-in-component/facebook-sign-in.component.core';
+import { AmazonSignInComponent } from './components/authenticator/federated-sign-in-component/amazon-sign-in-component/amazon-sign-in.component.factory';
+import { AmazonSignInComponentCore } from './components/authenticator/federated-sign-in-component/amazon-sign-in-component/amazon-sign-in.component.core';
 import { SignUpComponent } from './components/authenticator/sign-up-component/sign-up.factory';
 import { SignUpComponentCore } from './components/authenticator/sign-up-component/sign-up.component.core';
 import { RequireNewPasswordComponent } from './components/authenticator/require-new-password-component/require-new-password.factory';
@@ -65,6 +69,10 @@ const components = [
   FederatedSignInComponentCore,
   GoogleSignInComponent,
   GoogleSignInComponentCore,
+  FacebookSignInComponent,
+  FacebookSignInComponentCore,
+  AmazonSignInComponent,
+  AmazonSignInComponentCore,
   SignUpComponent,
   SignUpComponentCore,
   RequireNewPasswordComponent,

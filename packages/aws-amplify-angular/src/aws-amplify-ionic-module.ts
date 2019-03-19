@@ -26,6 +26,8 @@ import { GreetingComponentIonic } from './components/authenticator/greeting-comp
 import { SignInComponentIonic } from './components/authenticator/sign-in-component/sign-in.component.ionic';
 import { FederatedSignInComponentIonic } from './components/authenticator/federated-sign-in-component/federated-sign-in.component.ionic';
 import { GoogleSignInComponentIonic } from './components/authenticator/federated-sign-in-component/google-sign-in-component/google-sign-in.component.ionic';
+import { FacebookSignInComponentIonic } from './components/authenticator/federated-sign-in-component/facebook-sign-in-component/facebook-sign-in.component.ionic';
+import { AmazonSignInComponentIonic } from './components/authenticator/federated-sign-in-component/amazon-sign-in-component/amazon-sign-in.component.ionic';
 import { SignUpComponentIonic } from './components/authenticator/sign-up-component/sign-up.component.ionic';
 import { RequireNewPasswordComponentIonic } from './components/authenticator/require-new-password-component/require-new-password.component.ionic';
 import { PhotoPickerIonicComponent } from './components/storage/photo-picker-component/photo-picker.component.ionic';
@@ -45,6 +47,8 @@ const components = [
   SignInComponentIonic,
   FederatedSignInComponentIonic,
   GoogleSignInComponentIonic,
+  FacebookSignInComponentIonic,
+  AmazonSignInComponentIonic,
   SignUpComponentIonic,
   RequireNewPasswordComponentIonic,
   PhotoPickerIonicComponent,

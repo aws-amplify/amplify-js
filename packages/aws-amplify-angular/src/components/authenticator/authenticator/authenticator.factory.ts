@@ -33,6 +33,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() hide: string[] = [];
   @Input() signUpConfig: any;
+  @Input() signInConfig: any;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -45,14 +46,24 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide, signUpConfig: this.signUpConfig}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide, signUpConfig: this.signUpConfig});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' 
+      ? new ComponentMount(AuthenticatorIonicComponent, {
+        hide: this.hide, 
+        signUpConfig: this.signUpConfig,
+        signInConfig: this.signInConfig
+      }) 
+      : new ComponentMount(AuthenticatorComponentCore, {
+        hide: this.hide, 
+        signUpConfig: this.signUpConfig,
+        signInConfig: this.signInConfig
+      });
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<AuthClass>componentRef.instance).data = authComponent.data;
   }
 }

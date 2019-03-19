@@ -18,6 +18,22 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { FederatedSignInComponentCore } from './federated-sign-in.component.core';
 
 const template = `
+<div>
+  <amplify-auth-google-sign-in-ionic
+    *ngIf="googleClientId"
+    [googleClientId]="googleClientId"
+  ></amplify-auth-google-sign-in-ionic>
+
+  <amplify-auth-facebook-sign-in-ionic
+    *ngIf="facebookAppId"
+    [facebookAppId]="facebookAppId"
+  ></amplify-auth-facebook-sign-in-ionic>
+
+  <amplify-auth-amazon-sign-in-ionic
+    *ngIf="amazonClientId"
+    [amazonClientId]="facebookAppId"
+  ></amplify-auth-amazon-sign-in-ionic>
+</div>
 `
 
 @Component({

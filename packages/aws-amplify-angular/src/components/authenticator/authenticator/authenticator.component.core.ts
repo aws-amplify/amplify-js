@@ -18,15 +18,11 @@ import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
   <div class="amplify-authenticator">
-    <amplify-auth-google-sign-in
-      *ngIf="!shouldHide('SignIn')"
-      [authState]="authState"
-      googleClientId="309340288959-gq43dljiqj4js6p2dbnue4b1i9qle10q.apps.googleusercontent.com"
-    ></amplify-auth-google-sign-in>
 
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [signInConfig]="_signInConfig"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
@@ -73,6 +69,7 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
+  _signInConfig: any = {};
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -88,6 +85,9 @@ export class AuthenticatorComponentCore {
     if (data.signUpConfig) {
       this._signUpConfig = data.signUpConfig;
     }
+    if (data.signInConfig) {
+      this._signInConfig = data.signInConfig;
+    }
     if (data.hide) {
       this.hide = data.hide;
     }
@@ -98,10 +98,14 @@ export class AuthenticatorComponentCore {
     this._signUpConfig = signUpConfig;
   }
 
+  @Input()
+  set signInConfig(signInConfig: any) {
+    this._signInConfig = signInConfig;
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
       .subscribe(state => {
-        console.log(state)
         this.authState = state;
       }, () => {
         this.authState = {

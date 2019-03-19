@@ -14,7 +14,7 @@
 // tslint:enable
 
 
-export {GoogleSignInComponent } from './google-sign-in.component.factory';
-export {GoogleSignInClass } from './google-sign-in.class';
-export {GoogleSignInComponentCore } from './google-sign-in.component.core';
-export {GoogleSignInComponentIonic } from './google-sign-in.component.ionic';
+export { AmazonSignInComponent } from './amazon-sign-in.component.factory';
+export { AmazonSignInClass } from './amazon-sign-in.class';
+export { AmazonSignInComponentCore } from './amazon-sign-in.component.core';
+export { AmazonSignInComponentIonic } from './amazon-sign-in.component.ionic';

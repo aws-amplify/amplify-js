@@ -14,7 +14,7 @@
 // tslint:enable
 
 
-export {GoogleSignInComponent } from './google-sign-in.component.factory';
-export {GoogleSignInClass } from './google-sign-in.class';
-export {GoogleSignInComponentCore } from './google-sign-in.component.core';
-export {GoogleSignInComponentIonic } from './google-sign-in.component.ionic';
+export { FacebookSignInComponent } from './facebook-sign-in.component.factory';
+export { FacebookSignInClass } from './facebook-sign-in.class';
+export { FacebookSignInComponentCore } from './facebook-sign-in.component.core';
+export { FacebookSignInComponentIonic } from './facebook-sign-in.component.ionic';

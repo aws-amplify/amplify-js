@@ -18,50 +18,37 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { includes } from '../common';
 
 const template = `
-  <div *ngIf="_show">
-    <amplify-auth-google-sign-in
-      [authState]="_authState"
+  <div>
+    <amplify-auth-google-sign-in-core
+      *ngIf="googleClientId"
       [googleClientId]="googleClientId"
-    ></amplify-auth-google-sign-in>
+    ></amplify-auth-google-sign-in-core>
+
+    <amplify-auth-facebook-sign-in-core
+      *ngIf="facebookAppId"
+      [facebookAppId]="facebookAppId"
+    ></amplify-auth-facebook-sign-in-core>
+
+    <amplify-auth-amazon-sign-in-core
+      *ngIf="amazonClientId"
+      [amazonClientId]="facebookAppId"
+    ></amplify-auth-amazon-sign-in-core>
   </div>
 `
 
 @Component({
   selector: 'amplify-auth-federated-sign-in-core',
-  template: template
+  template
 })
 export class FederatedSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
   _federatedSignInConfig: any;
-  errorMessage: string;
-  amplifyService: AmplifyService;
   googleClientId: string;
   facebookAppId: string;
   amazonClientId: string; 
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
-
-  @Input()
-  set data(data: any) {
-    this._authState = data.authState
-    this._show = includes(['signIn', 'signedOut', 'signedUp'], data.authState.state);
-
-    if (data.federatedSignInConfig) {
-      this._federatedSignInConfig = data.federatedSignInConfig;
-      if (this._federatedSignInConfig.googleClientId) {
-        this.googleClientId = this._federatedSignInConfig.googleClientId
-      }
-      if (this._federatedSignInConfig.facebookAppId) {
-        this.facebookAppId = this._federatedSignInConfig.facebookAppId
-      }
-      if (this._federatedSignInConfig.amazonClientId) {
-        this.amazonClientId = this._federatedSignInConfig.amazonClientId
-      }
-    }
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   @Input()
   set authState(authState: AuthState) {
@@ -83,14 +70,5 @@ export class FederatedSignInComponentCore {
         this.amazonClientId = this._federatedSignInConfig.amazonClientId
       }
     }
-  }
-
-  _setError(err: any) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-
-    this.errorMessage = err.message || err;
   }
 }
