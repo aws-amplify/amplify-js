@@ -3,7 +3,7 @@ import * as React from 'react';
 import Authenticator, { EmptyContainer } from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
 import AmplifyTheme  from '../../src/AmplifyTheme';
-import { Button, InputRow } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Button, InputRow, Container } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const waitForResolve = Promise.resolve();
 
