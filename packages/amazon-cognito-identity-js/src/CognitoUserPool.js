@@ -31,10 +31,9 @@ export default class CognitoUserPool {
    *        boolean flag indicating if the data collection is enabled
    *        to support cognito advanced security features. By default, this
    *        flag is set to true.
-   * @param {int} data.TokenExpirationMargin Optional token expiration margin. A positive value will result in a session expiring sooner.
    */
   constructor(data) {
-    const { UserPoolId, ClientId, endpoint, AdvancedSecurityDataCollectionFlag, TokenExpirationMargin } = data || {};
+    const { UserPoolId, ClientId, endpoint, AdvancedSecurityDataCollectionFlag } = data || {};
     if (!UserPoolId || !ClientId) {
       throw new Error('Both UserPoolId and ClientId are required.');
     }
@@ -55,8 +54,6 @@ export default class CognitoUserPool {
     this.advancedSecurityDataCollectionFlag = AdvancedSecurityDataCollectionFlag !== false;
 
     this.storage = data.Storage || new StorageHelper().getStorage();
-
-    this.tokenExpirationMargin = TokenExpirationMargin;
   }
 
   /**
@@ -107,7 +104,6 @@ export default class CognitoUserPool {
         Username: username,
         Pool: this,
         Storage: this.storage,
-        TokenExpirationMargin: this.tokenExpirationMargin,
       };
 
       const returnData = {
@@ -135,7 +131,6 @@ export default class CognitoUserPool {
         Username: lastAuthUser,
         Pool: this,
         Storage: this.storage,
-        TokenExpirationMargin: this.tokenExpirationMargin,
       };
 
       return new CognitoUser(cognitoUser);

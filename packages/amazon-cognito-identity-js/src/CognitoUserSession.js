@@ -22,10 +22,9 @@ export default class CognitoUserSession {
    * @param {CognitoIdToken} IdToken The session's Id token.
    * @param {CognitoRefreshToken=} RefreshToken The session's refresh token.
    * @param {CognitoAccessToken} AccessToken The session's access token.
-   * @param {int} TokenExpirationMargin Token expiration margin. A positive value will result in a session expiring sooner.
    * @param {int} ClockDrift The saved computer's clock drift or undefined to force calculation.
    */
-  constructor({ IdToken, RefreshToken, AccessToken, TokenExpirationMargin, ClockDrift } = {}) {
+  constructor({ IdToken, RefreshToken, AccessToken, ClockDrift } = {}) {
     if (AccessToken == null || IdToken == null) {
       throw new Error('Id token and Access Token must be present.');
     }
@@ -33,7 +32,6 @@ export default class CognitoUserSession {
     this.idToken = IdToken;
     this.refreshToken = RefreshToken;
     this.accessToken = AccessToken;
-    this.tokenExpirationMargin = TokenExpirationMargin || 0;
     this.clockDrift = ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
   }
 
@@ -77,12 +75,13 @@ export default class CognitoUserSession {
 
   /**
    * Checks to see if the session is still valid based on session expiry information found
-   * in tokens and the current time (adjusted with expiration margin and clock drift)
+   * in tokens and the current time (adjusted with clock drift). A safety margin of 5 minutes
+   * is added.
    * @returns {boolean} if the session is still valid
    */
   isValid() {
     const now = Math.floor(new Date() / 1000);
-    const adjusted = now + this.tokenExpirationMargin - this.clockDrift;
+    const adjusted = now + (5 * 60) - this.clockDrift;
 
     return adjusted < this.accessToken.getExpiration() && adjusted < this.idToken.getExpiration();
   }

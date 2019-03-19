@@ -79,7 +79,6 @@ export default class CognitoUser {
    * @param {string} data.Username The user's username.
    * @param {CognitoUserPool} data.Pool Pool containing the user.
    * @param {object} data.Storage Optional storage object.
-   * @param {int} data.TokenExpirationMargin Optional token expiration margin. A positive value will result in a session expiring sooner.
    */
   constructor(data) {
     if (data == null || data.Username == null || data.Pool == null) {
@@ -96,9 +95,7 @@ export default class CognitoUser {
     this.authenticationFlowType = 'USER_SRP_AUTH';
 
     this.storage = data.Storage || new StorageHelper().getStorage();
-
-    this.tokenExpirationMargin = data.TokenExpirationMargin;
-
+    
     this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
     this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
   }
@@ -338,7 +335,7 @@ export default class CognitoUser {
               if (errAuthenticate) {
                 return callback.onFailure(errAuthenticate);
               }
-
+              
               return this.authenticateUserInternal(
                 dataAuthenticate,
                 authenticationHelper,
@@ -1185,7 +1182,6 @@ export default class CognitoUser {
         IdToken: idToken,
         AccessToken: accessToken,
         RefreshToken: refreshToken,
-        TokenExpirationMargin: this.tokenExpirationMargin,
         ClockDrift: clockDrift,
       };
       const cachedSession = new CognitoUserSession(sessionData);
@@ -1373,7 +1369,6 @@ export default class CognitoUser {
       IdToken: idToken,
       AccessToken: accessToken,
       RefreshToken: refreshToken,
-      TokenExpirationMargin: this.tokenExpirationMargin
     };
 
     return new CognitoUserSession(sessionData);
