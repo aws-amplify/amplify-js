@@ -2167,7 +2167,8 @@ describe('auth unit test', () => {
                     return { scope: '' };
                 });
             
-            expect.assertions(1);
+            expect.assertions(2);
+            expect(spyon3).not.toBeCalled();
             expect(await auth.currentUserPoolUser()).toBe(user);
 
             spyon.mockClear();
