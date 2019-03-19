@@ -54,13 +54,14 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
 
-        const { signUpConfig={} } = this.props;
-        if (signUpConfig.signUpWith === 'Email') {
+        const signUpWith = this.props.signUpWith || Auth.configure().signUpWith || [];
+
+        if (signUpWith === 'email') {
             this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpConfig.signUpWith === 'PhoneNumber') {
+        } else if (signUpWith === 'phone_number') {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
-        } else if (signUpConfig.signUpWith === 'EmailOrPhoneNumber') {
-            this.defaultSignUpFields = signUpWithEmailOrPhoneNumberFields;
+        } else if (signUpWith.includes('email') && signUpWIth.includes('phone_number')) {
+            //this.defaultSignUpFields = signUpWithEmailOrPhoneNumberFields;
         }
         
         this.header = (this.props && 
@@ -159,7 +160,6 @@ export default class SignUp extends AuthPiece {
         return null;
     }
 
-
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
@@ -198,28 +198,23 @@ export default class SignUp extends AuthPiece {
         const inputVals = Object.values(this.inputs);
 
         inputKeys.forEach((key, index) => {
+            let attributeValue;
             if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
-              if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
-                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                signup_info.attributes[newKey] = inputVals[index];
-              } else if (inputVals[index]) {
-                  signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
-              }
+                if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
+                    const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                    attributeValue = inputVals[index];
+                    signup_info.attributes[newKey] = attributeValue;
+                } else if (inputVals[index]) {
+                    attributeValue = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+                    signup_info.attributes['phone_number'] = attributeValue;
+                }
+
+                if (this.signUpFields.find(e => 
+                    e.key === (key === 'phone_line_number'? 'phone_number' : key) && e.signUpWith
+                    ))
+                    signup_info.username = attributeValue;
             }
         });
-  
-        const { signUpWith } = this.props.signUpConfig || {};
-        if (signUpWith === 'Email') {
-            signup_info.username = signup_info.attributes['email'];
-        } else if (signUpWith === 'PhoneNumber') {
-            signup_info.username = signup_info.attributes['phone_number'];
-        } else if (signUpWith === 'EmailOrPhoneNumber') {
-            if (signup_info.username.includes('@')) {
-                signup_info.attributes['email'] = signup_info.username;
-            } else {
-                signup_info.attributes['phone_number'] = signup_info.username;
-            }
-        }
         
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)

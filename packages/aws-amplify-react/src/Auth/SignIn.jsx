@@ -120,7 +120,7 @@ export default class SignIn extends AuthPiece {
                         onAuthEvent={onAuthEvent}
                     />
                     <FormField theme={theme}>
-                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                         <Input
                             autoFocus
                             placeholder={I18n.get('Enter your username')}

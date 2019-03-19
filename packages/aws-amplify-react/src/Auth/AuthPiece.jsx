@@ -13,7 +13,7 @@
 
 import { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
+import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 export default class AuthPiece extends Component {
@@ -27,6 +27,20 @@ export default class AuthPiece extends Component {
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.getUsernameLabel = this.getUsernameLabel.bind(this);
+    }
+
+    getUsernameLabel() {
+        const signUpWith = this.props.signUpWith || Auth.configure().signUpWith || [];
+        if (signUpWith === 'email') {
+            return 'Email';
+        } else if (signUpWith === 'phone_number') {
+            return 'Phone Number';
+        } else if (signUpWith.includes('email') && signUpWIth.includes('phone_number')) {
+            return 'Email/Phone Number';
+        } else {
+            return 'Username';
+        }
     }
 
     // extract username from authData

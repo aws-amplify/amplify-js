@@ -148,7 +148,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig, signUpWith } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -199,7 +199,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    signUpWith
                 });
         });
        
@@ -213,7 +214,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    signUpWith
                 });
             });
 

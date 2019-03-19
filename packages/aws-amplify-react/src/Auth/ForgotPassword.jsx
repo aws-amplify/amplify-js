@@ -126,7 +126,7 @@ export default class ForgotPassword extends AuthPiece {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Reset your password')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get(this.getUsernameLabel())}</SectionHeader>
                 <SectionBody theme={theme}>
                     { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
                 </SectionBody>
