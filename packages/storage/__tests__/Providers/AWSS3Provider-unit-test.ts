@@ -14,7 +14,7 @@ import  StorageProvider  from '../../src/Providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
-
+const CUSTOM_IDD = "12345"
  
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
     return 'url';
@@ -29,14 +29,47 @@ S3.prototype.deleteObject = jest.fn((params, callback) => {
 });
 
 S3.prototype.listObjects = jest.fn((params, callback) => {
-    callback(null, {
-        Contents: [{
-            Key: 'public/path/itemsKey',
-            ETag: 'etag',
-            LastModified: 'lastmodified',
-            Size: 'size'
-        }]
-    });
+    if (params.Prefix.startsWith('public/')) {
+        callback(null, {
+            Contents: [{
+                Key: 'public/path/itemsKey',
+                ETag: 'etag',
+                LastModified: 'lastmodified',
+                Size: 'size'
+            }]
+        });
+    }
+    if (params.Prefix.startsWith('private/')) {
+        callback(null, {
+            Contents: [{
+                Key: 'private/identityId/path/itemsKey',
+                ETag: 'etag',
+                LastModified: 'lastmodified',
+                Size: 'size'
+            }]
+        });
+    }
+    if (params.Prefix.startsWith(`protected/${CUSTOM_IDD}`)) {
+        callback(null, {
+            Contents: [{
+                Key: `protected/${CUSTOM_IDD}/path/itemsKey`,
+                ETag: 'etag',
+                LastModified: 'lastmodified',
+                Size: 'size'
+            }]
+        });
+        return;
+    }
+    if (params.Prefix.startsWith('protected/')) {
+        callback(null, {
+            Contents: [{
+                Key: 'protected/identityId/path/itemsKey',
+                ETag: 'etag',
+                LastModified: 'lastmodified',
+                Size: 'size'
+            }]
+        });
+    }
 });
 
 S3.ManagedUpload.prototype.send = jest.fn(() => { });
@@ -573,7 +606,7 @@ describe('StorageProvider test', () => {
     });
 
     describe('list test', () => {
-        test('list object successfully', async () => {
+        test('list object public level successfully', async () => {
             const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
@@ -592,12 +625,122 @@ describe('StorageProvider test', () => {
                 "lastModified": "lastmodified",
                 "size": "size"
                 }]);
-            expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": "public/path"}, expect.anything());
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
         });
 
+        
+
+        test('list object private level successfully', async () => {
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'identityId'
+                        });
+                    });
+                });
+
+            const storage = new StorageProvider();
+            storage.configure(options);
+            const spyon = jest.spyOn(S3.prototype, 'listObjects');
+
+            expect.assertions(2);
+            expect(await storage.list('path', {level: 'private'})).toEqual([{
+                "eTag": "etag",
+                 "key": "path/itemsKey",
+                "lastModified": "lastmodified",
+                "size": "size"
+                }]);
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": "private/identityId/path"}, expect.anything());
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+
+        test('list object protected level successfully', async () => {
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'identityId'
+                        });
+                    });
+                });
+
+            const storage = new StorageProvider();
+            storage.configure(options);
+            const spyon = jest.spyOn(S3.prototype, 'listObjects');
+
+            expect.assertions(2);
+            expect(await storage.list('path', {level: 'protected'})).toEqual([{
+                "eTag": "etag",
+                 "key": "path/itemsKey",
+                "lastModified": "lastmodified",
+                "size": "size"
+                }]);
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": "protected/identityId/path"}, expect.anything());
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+
+        test('list object protected level, withoutIdentityId successfully', async () => {
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'identityId'
+                        });
+                    });
+                });
+
+            const storage = new StorageProvider();
+            storage.configure(options);
+            const spyon = jest.spyOn(S3.prototype, 'listObjects');
+
+            expect.assertions(2);
+            expect(await storage.list('path', {level: 'protected', withoutIdentityId:true})).toEqual([{
+                "eTag": "etag",
+                 "key": "identityId/path/itemsKey",
+                "lastModified": "lastmodified",
+                "size": "size"
+                }]);
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": "protected/path"}, expect.anything());
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+
+        test('list object protected level, with custom identityId successfully', async () => {
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'identityId'
+                        });
+                    });
+                });
+
+            const storage = new StorageProvider();
+            storage.configure(options);
+            const spyon = jest.spyOn(S3.prototype, 'listObjects');
+
+            expect.assertions(2);
+            expect(await storage.list('path', {level: 'protected', identityId:CUSTOM_IDD})).toEqual([{
+                "eTag": "etag",
+                 "key": "path/itemsKey",
+                "lastModified": "lastmodified",
+                "size": "size"
+                }]);
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": `protected/${CUSTOM_IDD}/path`}, expect.anything());
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+        
         test('list object with track', async () => {
             const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
@@ -618,7 +761,7 @@ describe('StorageProvider test', () => {
                 "lastModified": "lastmodified",
                 "size": "size"
                 }]);
-            expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
+            expect(spyon).toBeCalledWith({"Bucket": 'bucket', "Prefix": "public/path"}, expect.anything());
             expect(spyon2).toBeCalledWith(
                 'storage',
                 {attrs: {"method": "list", "result": "success"}, metrics: null}, 'Storage');
@@ -627,6 +770,7 @@ describe('StorageProvider test', () => {
             curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
+        
 
         test('list object failed', async () => {
             const curCredSpyOn = jest.spyOn(Credentials, 'get')

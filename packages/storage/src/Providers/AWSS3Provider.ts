@@ -335,23 +335,50 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     private _prefix(config) {
-        const { credentials, level } = config;
-
-        const customPrefix = config.customPrefix || {};
-        const identityId = config.identityId || credentials.identityId;
-        const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
-        const protectedPath = (customPrefix.protected !== undefined ?
-            customPrefix.protected : 'protected/') + identityId + '/';
-        const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
+        const { level } = config;
 
         switch (level) {
             case 'private':
-                return privatePath;
+                return this._privatePath(config);
             case 'protected':
-                return protectedPath;
+                return this._protectedPath(config);
             default:
-                return publicPath;
+                return this._publicPath(config);
         }
+    }
+
+    /**
+     * @private
+     */
+    private _publicPath(config) {
+        const customPrefix = config.customPrefix || {};
+        
+        return customPrefix.public !== undefined ? customPrefix.public : 'public/';
+    }
+
+    /**
+     * @private
+     */
+    private _privatePath(config) {
+        const { credentials = {}, customPrefix = {} } = config;
+        const identityIdPath = credentials.identityId;
+        
+        return (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityIdPath + '/';
+    }
+
+    /**
+     * @private
+     */
+    private _protectedPath(config) {
+        const { credentials = {}, customPrefix = {} } = config;
+
+        let identityIdPath = '';
+        if (!config.withoutIdentityId) {
+            identityIdPath = (config.identityId || credentials.identityId) + '/';
+        }
+
+        return (customPrefix.protected !== undefined ?
+            customPrefix.protected : 'protected/') + identityIdPath;
     }
 
     /**
