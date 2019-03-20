@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.3-unstable.3"></a>
+## [2.3.3-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.2...aws-amplify-react@2.3.3-unstable.3) (2019-03-20)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.3-unstable.2"></a>
+## [2.3.3-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.1...aws-amplify-react@2.3.3-unstable.2) (2019-03-19)
+
+
+### Bug Fixes
+
+* remove stray semicolon after app wrapper ([d2d5fa3](https://github.com/aws/aws-amplify/commit/d2d5fa3))
+
+
+
+
 <a name="2.3.3-unstable.1"></a>
 ## [2.3.3-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.0...aws-amplify-react@2.3.3-unstable.1) (2019-03-14)
 
