@@ -104,11 +104,34 @@ export default class PushNotification {
         }
     }
 
-    initializeAndroid() {
+    async initializeAndroid() {
         this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this.handleCampaignOpened);
         this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
         RNPushNotification.initialize();
+
+        // check if the token is cached properly
+        if (!(await this._registerTokenCached())) {
+            const { appId } = this._config;
+            const cacheKey = 'push_token' + appId;
+            RNPushNotification.getToken((token) => {
+                logger.debug('Get the token from Firebase Serivce', token);
+                // resend the token in case it's missing in the Pinpoint service
+                // the token will also be cached locally
+                this.updateEndpoint(token);
+            });   
+        }
+    }
+
+    async _registerTokenCached() : Promise<boolean> {
+        const { appId } = this._config;
+        const cacheKey = 'push_token' + appId;
+
+
+        return AsyncStorage.getItem(cacheKey).then((lastToken) => {
+            if (lastToken) return true;
+            else return false;
+        });
     }
 
     initializeIOS() {
