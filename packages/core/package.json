@@ -55,7 +55,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "aws-sdk": "2.329.0",
+    "aws-sdk": "https://s3-us-west-2.amazonaws.com/concierge-javascript-sdk/aws-sdk-launch.tgz",
     "url": "^0.11.0"
   },
   "jest": {
