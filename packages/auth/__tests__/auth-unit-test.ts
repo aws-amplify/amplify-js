@@ -467,10 +467,42 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
 
-            expect.assertions(1);
+            const spyon2 = jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
+                return Promise.resolve(user);
+            });
+            expect.assertions(2);
             expect(await auth.signIn('username', 'password')).toEqual(user);
+            expect(spyon2).toBeCalled();
 
             spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('throw error if failed to call currentUserPoolUser after signing in', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser')
+                .mockImplementationOnce((authenticationDetails, callback) => {
+                    callback.onSuccess(session);
+                });
+
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            const spyon2 = jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
+                return Promise.reject('User is disabled');
+            });
+            expect.assertions(2);
+            try {
+                await auth.signIn('username', 'password')
+            } catch (e) {
+                expect(e).toBe('User is disabled');
+                expect(spyon2).toBeCalled();
+            }
+            
+            spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('happy case using cookie storage', async () => {
@@ -486,10 +518,15 @@ describe('auth unit test', () => {
                 Storage: new CookieStorage({ domain: ".yourdomain.com" })
             });
 
+            const spyon2 = jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
+                return Promise.resolve(user);
+            });
+
             expect.assertions(1);
             expect(await auth.signIn('username', 'password')).toEqual(user);
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('onFailure', async () => {
@@ -2200,10 +2237,15 @@ describe('auth unit test', () => {
                     "challengeParam": "challengeParam"
                 });
 
+            const spyon2 = jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
+                return Promise.resolve(user);
+            });
+
             expect.assertions(1);
             expect(await auth.sendCustomChallengeAnswer(userAfterCustomChallengeAnswer, 'challengeResponse')).toEqual(user);
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('customChallenge', async () => {
