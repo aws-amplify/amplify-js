@@ -14,14 +14,13 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-import { JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 
 import Picker from '../Widget/Picker';
 import AmplifyTheme from '../AmplifyTheme';
 import S3Image from './S3Image';
 import S3Text from './S3Text';
-import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Album');
 
@@ -34,14 +33,10 @@ export default class S3Album extends Component {
         this.list = this.list.bind(this);
         this.marshal = this.marshal.bind(this);
 
-        const theme = this.props.theme || AmplifyTheme;
         this.state = {
-            theme,
             items: [],
             ts: new Date().getTime()
         };
-
-        Hub.listen('window', this, 'S3Album');
     }
 
     getKey(file) {
@@ -115,11 +110,6 @@ export default class S3Album extends Component {
 
         const selected_items = this.state.items.filter(item => item.selected);
         onSelect(item, selected_items);
-    }
-
-    onHubCapsule(capsule) {
-        const theme = this.props.theme || AmplifyTheme;
-        this.setState({ theme: Object.assign({}, theme) });
     }
 
     componentDidMount() {
