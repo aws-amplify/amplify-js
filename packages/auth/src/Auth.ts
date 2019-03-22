@@ -403,9 +403,16 @@ export default class AuthClass {
                 } catch (e) {
                     logger.debug('cannot get cognito credentials', e);
                 } finally {
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                    try {
+                        // In order to get user attributes and MFA methods
+                        // We need to trigger currentUserPoolUser again
+                        const currentUser = await this.currentUserPoolUser();
+                        dispatchAuthEvent('signIn', user);
+                        resolve(currentUser);
+                    } catch (e) {
+                        logger.error('Failed to get the signed in user', e);
+                        reject(e);
+                    }
                 }
             },
             onFailure: (err) => {
