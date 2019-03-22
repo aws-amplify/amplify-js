@@ -410,7 +410,7 @@ export default class AuthClass {
                         dispatchAuthEvent('signIn', user);
                         resolve(currentUser);
                     } catch (e) {
-                        logger.debug('Failed to get the signed in user', e);
+                        logger.error('Failed to get the signed in user', e);
                         reject(e);
                     }
                 }
