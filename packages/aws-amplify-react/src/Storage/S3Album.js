@@ -100,7 +100,7 @@ export default class S3Album extends Component {
                 logger.debug('handle pick error', err);
                 if (onError) { onError(err); }
             });
-        if (this.state._isMounted) {
+        if (this._isMounted) {
             this.setState({ ts: new Date().getTime() });
         }
     }
