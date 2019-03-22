@@ -27,6 +27,11 @@ const dispatchStorageEvent = (track, attrs, metrics) => {
     }
 };
 
+export enum S3OptionsIdentityId {
+    CURRENT = "@@Current",
+    NONE = "@@None"
+}
+
 /**
  * Provide storage methods to use AWS S3
  */
@@ -373,7 +378,7 @@ export default class AWSS3Provider implements StorageProvider{
         const { credentials = {}, customPrefix = {} } = config;
 
         let identityIdPath = '';
-        if (!config.withoutIdentityId) {
+        if (config.identityId !== S3OptionsIdentityId.NONE) {
             identityIdPath = (config.identityId || credentials.identityId) + '/';
         }
 

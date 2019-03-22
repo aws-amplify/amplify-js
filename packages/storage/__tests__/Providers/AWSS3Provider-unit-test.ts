@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import  StorageProvider  from '../../src/Providers/AWSS3Provider';
+import  StorageProvider, { S3OptionsIdentityId }  from '../../src/Providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
@@ -687,7 +687,7 @@ describe('StorageProvider test', () => {
             curCredSpyOn.mockClear();
         });
 
-        test('list object protected level, withoutIdentityId successfully', async () => {
+        test('list object protected level, S3OptionsIdentityId NONE successfully', async () => {
             const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
@@ -702,7 +702,7 @@ describe('StorageProvider test', () => {
             const spyon = jest.spyOn(S3.prototype, 'listObjects');
 
             expect.assertions(2);
-            expect(await storage.list('path', {level: 'protected', withoutIdentityId:true})).toEqual([{
+            expect(await storage.list('path', {level: 'protected', identityId: S3OptionsIdentityId.NONE})).toEqual([{
                 "eTag": "etag",
                  "key": "identityId/path/itemsKey",
                 "lastModified": "lastmodified",
