@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.19-unstable.3"></a>
+## [1.2.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.2...@aws-amplify/auth@1.2.19-unstable.3) (2019-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** get the user attributes after signing in ([c024263](https://github.com/aws/aws-amplify/commit/c024263))
+
+
+
+
 <a name="1.2.19-unstable.2"></a>
 ## [1.2.19-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.1...@aws-amplify/auth@1.2.19-unstable.2) (2019-03-22)
 
