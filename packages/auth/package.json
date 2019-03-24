@@ -56,9 +56,6 @@
     "amazon-cognito-auth-js": "^1.3.2",
     "amazon-cognito-identity-js": "3.0.10-unstable.0"
   },
-  "peerDependencies": {
-    "buffer": "4.x"
-  },
   "jest": {
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
