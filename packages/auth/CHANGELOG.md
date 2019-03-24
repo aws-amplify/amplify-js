@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.19-unstable.4"></a>
+## [1.2.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.3...@aws-amplify/auth@1.2.19-unstable.4) (2019-03-24)
+
+
+### Bug Fixes
+
+* **auth:** Remove react-native related peerDependencies ([#2871](https://github.com/aws/aws-amplify/issues/2871)) ([72f3d94](https://github.com/aws/aws-amplify/commit/72f3d94))
+
+
+
+
 <a name="1.2.19-unstable.3"></a>
 ## [1.2.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.2...@aws-amplify/auth@1.2.19-unstable.3) (2019-03-22)
 
