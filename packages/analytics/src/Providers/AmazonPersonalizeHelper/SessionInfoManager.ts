@@ -1,31 +1,28 @@
 import {RequestParams, SessionInfo} from './DataType';
 import {isEmpty, isEqual} from "lodash";
 import { v1 as uuid } from 'uuid';
-import {readCookie, setCookie, isCookieEnabled} from './AmazonPersonalizeCookie';
 import { StorageHelper, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
-const PERSONALIZE_COOKIE = "_awsct";
-const PERSONALIZE_COOKIE_USERID = "_awsct_uid";
-const PERSONALIZE_COOKIE_SESSIONID = "_awsct_sid";
+import Cache from '@aws-amplify/cache';
+
+const PERSONALIZE_CACHE = "_awsct";
+const PERSONALIZE_CACHE_USERID = "_awsct_uid";
+const PERSONALIZE_CACHE_SESSIONID = "_awsct_sid";
+const DEFAULT_CACHE_PREFIX = "peronslize";
 const TIMER_INTERVAL = 30 * 1000;
 const DELIMITER = ".";
-const COOKIE_EXPIRY_IN_DAYS = 7;
+const CACHE_EXPIRY_IN_DAYS = 7;
 const logger = new Logger('AmazonPersonalizeProvider');
 
 export class SessionInfoManager {
-    private _isCookieEnabled;
     private _isBrowser;
     private _cache;
     private _timer;
     private _timerKey;
 
     constructor(prefixKey="") {
-        this._timerKey = uuid().substr(0,15);
-        this._isCookieEnabled = isCookieEnabled(PERSONALIZE_COOKIE);
         this._isBrowser = JS.browserOrNode().isBrowser;
-        if (!this._isCookieEnabled) {
-            this._cache = new StorageHelper().getStorage();
-        }
+        this._timerKey = uuid().substr(0,15);
         this._refreshTimer();
     }
 
@@ -43,25 +40,21 @@ export class SessionInfoManager {
     }
 
     private storeValue(key: string, value: any): void {
-        if (this._isCookieEnabled) {
-            setCookie(key, value, COOKIE_EXPIRY_IN_DAYS);
-        } else {
-            this._cache.setItem(this._getCachePrefix(key), value);
-        }
+        const today = new Date();
+        const expire = new Date();
+        expire.setTime(today.getTime() + 3600000 * 24 * CACHE_EXPIRY_IN_DAYS);
+        Cache.setItem(this._getCachePrefix(key), value, { expires: expire.getTime()});
     }
 
     private retrieveValue(key: string): any {
-        if (this._isCookieEnabled) {
-            return readCookie(key);
-        }
-        return this._cache.getItem(this._getCachePrefix(key));
+        return Cache.getItem(this._getCachePrefix(key));
     }
 
     private _getCachePrefix(key): string {
         if (this._isBrowser) {
             return key + DELIMITER + window.location.host;
         }
-        logger.debug("Not for browser");
+        return DEFAULT_CACHE_PREFIX;
     }
 
     public getTimerKey() {
@@ -73,11 +66,11 @@ export class SessionInfoManager {
         const existSessionId = sessionInfo.sessionId;
         if (this._isRequireNewSession(userId, existUserId, existSessionId)) {
             const newSessionId = uuid();
-            this.storeValue(PERSONALIZE_COOKIE_USERID, userId);
-            this.storeValue(PERSONALIZE_COOKIE_SESSIONID, newSessionId);
+            this.storeValue(PERSONALIZE_CACHE_USERID, userId);
+            this.storeValue(PERSONALIZE_CACHE_SESSIONID, newSessionId);
             sessionInfo.sessionId = newSessionId;
         } else if (this._isRequireUpdateSessionInfo(userId, existUserId, existSessionId)){
-            this.storeValue(PERSONALIZE_COOKIE_USERID, userId);
+            this.storeValue(PERSONALIZE_CACHE_USERID, userId);
         }
         sessionInfo.userId = userId;
     }
@@ -92,13 +85,13 @@ export class SessionInfoManager {
     public retrieveSessionInfo(trackingId: string): SessionInfo {
         const sessionInfo = <SessionInfo>{};
         sessionInfo.trackingId = trackingId;
-        sessionInfo.sessionId = this.retrieveValue(PERSONALIZE_COOKIE_SESSIONID);
-        sessionInfo.userId = this.retrieveValue(PERSONALIZE_COOKIE_USERID);
+        sessionInfo.sessionId = this.retrieveValue(PERSONALIZE_CACHE_SESSIONID);
+        sessionInfo.userId = this.retrieveValue(PERSONALIZE_CACHE_USERID);
         if (isEmpty(sessionInfo.sessionId)) {
             sessionInfo.sessionId = uuid();
-            this.storeValue(PERSONALIZE_COOKIE_SESSIONID, sessionInfo.sessionId);
+            this.storeValue(PERSONALIZE_CACHE_SESSIONID, sessionInfo.sessionId);
         }
-        this.storeValue(PERSONALIZE_COOKIE,trackingId);
+        this.storeValue(PERSONALIZE_CACHE,trackingId);
         return sessionInfo;
     }
 

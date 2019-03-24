@@ -11,7 +11,7 @@ jest.mock('aws-sdk/clients/personalizeevents', () => {
     return PersonalizeEvents;
 });
 
-import { MobileAnalytics, Credentials } from '@aws-amplify/core';
+import { Credentials } from '@aws-amplify/core';
 import AmazonPersonalizeProvider from "../../src/Providers/AmazonPersonalizeProvider";
 
 jest.useFakeTimers();
@@ -39,7 +39,7 @@ jest.useFakeTimers()
 describe('Personalize provider test', () => {
     describe('getProviderName test', () => {
         test('happy case', () => {
-            const analytics = new AmazonPersonalizeProvider(TRACKING_ID);
+            const analytics = new AmazonPersonalizeProvider();
 
             expect(analytics.getProviderName()).toBe('AmazonPersonalize');
         });
@@ -47,17 +47,17 @@ describe('Personalize provider test', () => {
 
     describe('configure test', () => {
         test('happy case', () => {
-            const analytics = new AmazonPersonalizeProvider(TRACKING_ID);
-
+            const analytics = new AmazonPersonalizeProvider();
+            analytics.configure({"trackingId": TRACKING_ID});
             expect(analytics.configure({region: 'region1'})).toEqual(
-                {"flushInterval": 5000, "flushSize": 5, "region": "region1"});
+                {"flushInterval": 5000, "flushSize": 5, "region": "region1", "trackingId": "trackingId"});
         });
     });
 
     describe('record test', () => {
         test('record without credentials', async () => {
-            const analytics = new AmazonPersonalizeProvider(TRACKING_ID);
-
+            const analytics = new AmazonPersonalizeProvider();
+            analytics.configure({"trackingId": TRACKING_ID});
             const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
@@ -67,8 +67,8 @@ describe('Personalize provider test', () => {
         });
 
         test('record happy case with identify event', async () => {
-            const analytics = new AmazonPersonalizeProvider(TRACKING_ID);
-
+            const analytics = new AmazonPersonalizeProvider();
+            analytics.configure({"trackingId": TRACKING_ID});
             const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
@@ -76,7 +76,7 @@ describe('Personalize provider test', () => {
 
             await analytics.record({
                 event: {
-                    eventName: "Identify",
+                    eventType: "Identify",
                     properties: {"userId": "user1"},
                 },
                 config: {}
@@ -88,8 +88,8 @@ describe('Personalize provider test', () => {
         });
 
         test('record happy case with Click event', async () => {
-            const analytics = new AmazonPersonalizeProvider(TRACKING_ID);
-
+            const analytics = new AmazonPersonalizeProvider();
+            analytics.configure({"trackingId": TRACKING_ID});
             const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
@@ -97,8 +97,8 @@ describe('Personalize provider test', () => {
 
             await analytics.record({
                 event: {
-                    eventName: "Click",
-                    properties: {"id": "item1", "name": "itemA"},
+                    eventType: "Click",
+                    properties: {"itemId": "item1", "eventValue": "value1"},
                 },
                 config: {}
             });

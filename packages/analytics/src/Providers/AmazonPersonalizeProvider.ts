@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials, StorageHelper, JS} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, JS} from '@aws-amplify/core';
 import * as PersonalizeEvents from 'aws-sdk/clients/personalizeevents';
 import {SessionInfo, RequestParams, RecordEventPayload, SessionInfoManager,
     RecordEventListPayload, MediaAutoTrack} from './AmazonPersonalizeHelper';
@@ -39,15 +39,16 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
     private _listViewEventsCache;
     private _isBrowser;
 
-    constructor(trackingId: string, config?) {
+    constructor(config?) {
         this._buffer = [];
         this._config = config? config : {};
         this._config.flushSize = this._config.flushSize > 0
             && this._config.flushSize <= FLUSH_SIZE_THRESHHOLD ?  this._config.flushSize : FLUSH_SIZE;
         this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
         this._sessionManager = new SessionInfoManager();
-        this._listViewEventsCache = new StorageHelper().getStorage();
-        this._sessionInfo = this._sessionManager.retrieveSessionInfo(trackingId);
+        if (!isEmpty(this._config.trackingId)) {
+            this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
+        }
         this._isBrowser = JS.browserOrNode().isBrowser;
         // events batch
         const that = this;
@@ -134,7 +135,10 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         logger.debug('configure Analytics', config);
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
-
+        console.log(JSON.stringify(this._config));
+        if (!isEmpty(this._config.trackingId)) {
+            this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
+        }
         this._setupTimer();
         return this._config;
     }
@@ -193,9 +197,10 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 
     /**
      * Put event into buffer
+     * @private
      * @param params - params for the event recording
      */
-    public putToBuffer(params: RequestParams) {
+    private putToBuffer(params: RequestParams) {
         if (this._buffer.length < this._config.flushSize) {
             this._buffer.push(params);
         } else {

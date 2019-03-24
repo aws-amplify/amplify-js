@@ -33,7 +33,7 @@ export class MediaAutoTrack {
     constructor(params: RequestParams, provider) {
         const { eventData } = params;
         this._params = params;
-        this._mediaElement = document.getElementById(eventData.properties.domElementId);
+        this._mediaElement = document.getElementById(eventData.properties["domElementId"]);
         this._started = false;
         this._provider = provider;
         const mediaTrackFunMapping = {

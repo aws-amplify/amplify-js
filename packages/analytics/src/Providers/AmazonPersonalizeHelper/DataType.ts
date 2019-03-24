@@ -1,3 +1,5 @@
+import { AWS } from '@aws-amplify/core';
+
 interface BasePayload {
     userId: string;
     trackingId: string;
@@ -5,11 +7,16 @@ interface BasePayload {
 }
 
 export interface RequestParams {
-    eventData: any;
+    eventData: EventData;
     sessionInfo: SessionInfo;
     config: any;
     sentAt: number;
-    credentials: any;
+    credentials: AWS.Credentials & AWS.CognitoIdentityCredentials;
+}
+
+export interface EventData {
+    eventType: string;
+    properties: any;
 }
 
 export interface SessionInfo {
@@ -28,5 +35,5 @@ export interface RecordEventPayload {
 export interface RecordEventListPayload extends BasePayload {
     eventList: RecordEventPayload[];
     config?: any;
-    credentials?: any;
+    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
 }
