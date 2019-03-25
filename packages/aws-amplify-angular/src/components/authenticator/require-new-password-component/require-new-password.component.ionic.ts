@@ -20,11 +20,11 @@ import { RequireNewPasswordComponentCore } from './require-new-password.componen
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
+    <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
-        <ion-input 
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password') }}</ion-label>
+        <ion-input
           #password
           type="password"
           class="amplify-form-input"
@@ -35,20 +35,29 @@ const template = `
 
     </ion-list>
 
-    <div class="amplify-form-row">
-    <ion-button
-      expand="block"
-      (click)="onSignIn()"
-    >Back to Sign In</ion-button>
-    <ion-button
-      expand="block"
-      (click)="onSubmit()"
-    >Submit</ion-button>
+    <div class="amplify-form-actions">
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSignIn()"
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
+      </div>
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSubmit()"
+        >Submit</ion-button>
+      </div>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
+
 </div>
 
 `;
@@ -62,7 +71,7 @@ export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponen
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    
+
   }
 
 

@@ -465,6 +465,7 @@ export default class CognitoUser {
     }
 
     this.signInUserSession = this.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+    this.challengeName = challengeName;
     this.cacheTokens();
 
     const newDeviceMetadata = dataAuthenticate.AuthenticationResult.NewDeviceMetadata;
@@ -902,8 +903,8 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to enable MFA for itself
-   * @param {string[]} smsMfaSettings the sms mfa settings
-   * @param {string[]} softwareTokenMfaSettings the software token mfa settings
+   * @param {IMfaSettings} smsMfaSettings the sms mfa settings
+   * @param {IMFASettings} softwareTokenMfaSettings the software token mfa settings
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -1065,19 +1066,30 @@ export default class CognitoUser {
       return callback(new Error('User is not authenticated'), null);
     }
 
-    const bypassCache = params? params.bypassCache : false;
-    
-    let userData = this.storage.getItem(this.userDataKey);
+    const bypassCache = params ? params.bypassCache : false;
+
+    const userData = this.storage.getItem(this.userDataKey);
     // get the cached user data
+
     if (!userData || bypassCache) {
       this.client.request('GetUser', {
         AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-      }, (err, userData) => {
+      }, (err, latestUserData) => {
         if (err) {
           return callback(err, null);
         }
-        this.cacheUserData(userData);
-        return callback(null, userData);
+        this.cacheUserData(latestUserData);
+        const refresh = this.signInUserSession.getRefreshToken();
+        if (refresh && refresh.getToken()) {
+          this.refreshSession(refresh, (refreshError, data) => {
+            if (refreshError) {
+              return callback(refreshError, null);
+            }
+            return callback(null, latestUserData);
+          });
+        } else {
+          return callback(null, latestUserData);
+        }
       });
     } else {
       try {
