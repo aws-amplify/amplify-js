@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2019-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -100,7 +100,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
                 }
                 return;
             }
-            logger.debug("Not for browser");
+            logger.debug("MediaAutoTrack only for browser");
         }
         return this.putToBuffer(requestParams);
     }
@@ -135,7 +135,6 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         logger.debug('configure Analytics', config);
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
-        console.log(JSON.stringify(this._config));
         if (!isEmpty(this._config.trackingId)) {
             this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
         }
