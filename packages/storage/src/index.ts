@@ -13,6 +13,7 @@
 
 import StorageClass from './Storage';
 import { StorageProvider } from './types';
+import { S3OptionsIdentityId } from './Providers/AWSS3Provider';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -47,4 +48,5 @@ Amplify.register(Storage);
 export default Storage;
 export { StorageClass };
 export { StorageProvider };
+export { S3OptionsIdentityId };
 export * from './Providers';
