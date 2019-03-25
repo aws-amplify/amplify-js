@@ -54,7 +54,8 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
