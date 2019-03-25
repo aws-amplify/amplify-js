@@ -20,11 +20,11 @@ interface BasePayload {
 
 type Config = {
     [key: string]: string | number;
-}
+};
 
 type Properties = {
     [key: string]: any;
-}
+};
 
 export interface RequestParams {
     eventData: EventData;
