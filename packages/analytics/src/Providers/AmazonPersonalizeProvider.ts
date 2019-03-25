@@ -50,8 +50,6 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
             this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
         }
         this._isBrowser = JS.browserOrNode().isBrowser;
-        // events batch
-        const that = this;
 
          // flush event buffer
         this._setupTimer();
