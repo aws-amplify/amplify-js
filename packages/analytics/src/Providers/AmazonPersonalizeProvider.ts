@@ -15,7 +15,7 @@ import { ConsoleLogger as Logger, Credentials, JS} from '@aws-amplify/core';
 import * as PersonalizeEvents from 'aws-sdk/clients/personalizeevents';
 import {SessionInfo, RequestParams, RecordEventPayload, SessionInfoManager,
     RecordEventListPayload, MediaAutoTrack} from './AmazonPersonalizeHelper';
-import {isEmpty, isEqual, map} from "lodash";
+import {isEmpty, isEqual, map, get} from "lodash";
 import { v1 as uuid } from 'uuid';
 import { AnalyticsProvider } from '../types';
 
@@ -92,22 +92,21 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         const requestParams: RequestParams = this.generateRequestParams(params, this._sessionInfo);
         if (eventType === "MediaAutoTrack") {
             if (this._isBrowser) {
-                if (requestParams
-                    && requestParams.eventData
-                    && requestParams.eventData.properties
-                    && requestParams.eventData.properties["domElementId"]) {
+                if ( isEmpty(get(requestParams, "eventData.properties.domElementId", null))) {
                         const isLoaded = await this.isElementFullyLoaded(
                             this.loadElement, requestParams.eventData.properties["domElementId"], 500, 5);
                         if (isLoaded) {
                             new MediaAutoTrack(requestParams, this);
+                        } else {
+                            logger.debug("Cannot find the media element.");
                         }
                 } else {
-                    logger.debug("Missing domElementId field in properties for MediaAutoTrack event type.");
-                    return;
+                    logger.debug("Missing domElementId field in 'properties' for MediaAutoTrack event type.");
                 }
-                return;
+            } else {
+                logger.debug("MediaAutoTrack only for browser");
             }
-            logger.debug("MediaAutoTrack only for browser");
+            return;
         }
         return this.putToBuffer(requestParams);
     }
