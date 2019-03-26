@@ -115,7 +115,7 @@ export default class PushNotification {
             const { appId } = this._config;
             const cacheKey = 'push_token' + appId;
             RNPushNotification.getToken((token) => {
-                logger.debug('Get the token from Firebase Serivce', token);
+                logger.debug('Get the token from Firebase Service', token);
                 // resend the token in case it's missing in the Pinpoint service
                 // the token will also be cached locally
                 this.updateEndpoint(token);
