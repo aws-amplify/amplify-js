@@ -407,7 +407,8 @@ export default class AuthClass {
                         // In order to get user attributes and MFA methods
                         // We need to trigger currentUserPoolUser again
                         const currentUser = await this.currentUserPoolUser();
-                        dispatchAuthEvent('signIn', user);
+                        that.user = currentUser;
+                        dispatchAuthEvent('signIn', currentUser);
                         resolve(currentUser);
                     } catch (e) {
                         logger.error('Failed to get the signed in user', e);
