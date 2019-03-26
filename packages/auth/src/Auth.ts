@@ -598,13 +598,8 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public async setPreferredMFA(
-        user: CognitoUser | any,
-        mfaMethod: 'TOTP' | 'SMS' | 'NOMFA',
-        params?: CurrentUserOpts
-    ): Promise<string> {
-        const bypassCache = params? params.bypassCache: false;
-        const userData = await this._getUserData(user, { bypassCache });
+    public async setPreferredMFA(user: CognitoUser | any, mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'): Promise<string> {
+        const userData = await this._getUserData(user, { bypassCache: true });
         let smsMfaSettings = null;
         let totpMfaSettings = null;
 
