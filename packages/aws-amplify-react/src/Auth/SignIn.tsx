@@ -32,7 +32,7 @@ import {
     Input,
     InputLabel,
     SectionFooterPrimaryContent,
-    SectionFooterSecondaryContent,
+    SectionFooterSecondaryContent
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('SignIn');
@@ -52,27 +52,9 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
-        this.onKeyDown = this.onKeyDown.bind(this);
 
         this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
         this.state = {};
-    }
-
-    componentDidMount() {
-        window.addEventListener('keydown', this.onKeyDown);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.onKeyDown);
-    }
-
-    onKeyDown(e: any) {
-        if (e.keyCode !== 13) return;
-
-        const { hide = [] } = this.props;
-        if (this.props.authState === 'signIn' && !hide.includes(SignIn)) {
-            this.signIn();
-        }
     }
 
     checkContact(user: any) {
@@ -90,7 +72,10 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
             });
     }
 
-    async signIn() {
+    async signIn(event) {
+        // avoid submitting the form
+        event.preventDefault();
+        
         const { username, password } = this.inputs;
         if (!Auth || typeof Auth.signIn !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
@@ -134,14 +119,16 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
-                <SectionBody theme={theme}>
-                    <FederatedButtons
+                <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
                         onAuthEvent={onAuthEvent}
                     />
+                <form onSubmit={this.signIn}>
+                <SectionBody theme={theme}>
+                    
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                         <Input
@@ -172,11 +159,10 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
                             </Hint>
                         }
                     </FormField>
-
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button theme={theme} onClick={this.signIn} disabled={this.state.loading}>
+                        <Button theme={theme} type="submit" disabled={this.state.loading}>
                             {I18n.get('Sign In')}
                         </Button>
                     </SectionFooterPrimaryContent>
@@ -189,6 +175,7 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
                         </SectionFooterSecondaryContent>
                     }
                 </SectionFooter>
+                </form>
             </FormSection>
         );
     }

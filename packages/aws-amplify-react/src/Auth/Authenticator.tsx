@@ -39,6 +39,7 @@ export interface IAuthenticatorProps {
     amplifyConfig?: any;
     authData?: any;
     authState?: string;
+    container?: any;
     errorMessage?: (message: string) => string;
     federated?: any;
     hide?: any[];
@@ -54,6 +55,8 @@ export interface IAuthenticatorState {
     error?: string;
     showToast?: boolean;
 }
+
+export const EmptyContainer = ({ children }) => <>{children}</>;
 
 export default class Authenticator extends Component<IAuthenticatorProps, IAuthenticatorState> {
     public _initialAuthState: string;
@@ -170,6 +173,10 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
+        // If container prop is undefined, default to AWS Amplify UI Container
+        // otherwise if truthy, use the supplied render prop
+        // otherwise if falsey, use EmptyContainer
+        const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
 
         let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
@@ -244,14 +251,14 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         const error = this.state.error;        
 
         return (
-            <Container theme={theme}>
+            <Wrapper theme={theme}>
                 {this.state.showToast && 
                     <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }
                 {render_children}
-            </Container>
+            </Wrapper>
         );
     }
 }
