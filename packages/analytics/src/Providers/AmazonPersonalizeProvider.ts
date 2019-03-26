@@ -92,9 +92,18 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         const requestParams: RequestParams = this.generateRequestParams(params, this._sessionInfo);
         if (eventType === "MediaAutoTrack") {
             if (this._isBrowser) {
-                const isLoaded = await this.isDOMFullyLoaded();
-                if (isLoaded) {
-                    new MediaAutoTrack(requestParams, this);
+                if (requestParams
+                    && requestParams.eventData
+                    && requestParams.eventData.properties
+                    && requestParams.eventData.properties["domElementId"]) {
+                        const isLoaded = await this.isElementFullyLoaded(
+                            this.loadElement, requestParams.eventData.properties["domElementId"], 500, 5);
+                        if (isLoaded) {
+                            new MediaAutoTrack(requestParams, this);
+                        }
+                } else {
+                    logger.debug("Missing domElementId field in properties for MediaAutoTrack event type.");
+                    return;
                 }
                 return;
             }
@@ -103,10 +112,29 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         return this.putToBuffer(requestParams);
     }
 
-    private async isDOMFullyLoaded(): Promise<any> {
-        return new Promise<any>((res, rej) => {
-            window.addEventListener("load", function(event) {
-                return res(true);
+    private loadElement(domId): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if (document.getElementById(domId) && document.getElementById(domId).clientHeight) {
+                return resolve(true);
+            } else {
+                return reject(true);
+            }
+        });
+     }
+
+    private isElementFullyLoaded(operation, params, delay, times): Promise<boolean> {
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+        return new Promise((resolve, reject) => {
+          return operation(params)
+            .then(resolve)
+            .catch((reason) => {
+              if (times - 1 > 0) {
+                return wait(delay)
+                  .then(this.isElementFullyLoaded.bind(null, operation, params, delay, times - 1))
+                  .then(resolve)
+                  .catch(reject);
+              }
+              return reject(reason);
             });
         });
     }
