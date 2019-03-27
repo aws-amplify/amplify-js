@@ -438,7 +438,7 @@ export default class AuthClass {
                     dispatchAuthEvent(
                         'signIn', 
                         user,
-                        `A user ${user.getUsername()} has been signed out`
+                        `A user ${user.getUsername()} has been signed in`
                     );
                     resolve(user);
                 }
