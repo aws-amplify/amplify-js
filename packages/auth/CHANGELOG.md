@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.19-unstable.4"></a>
+## [1.2.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.3...@aws-amplify/auth@1.2.19-unstable.4) (2019-03-24)
+
+
+### Bug Fixes
+
+* **auth:** Remove react-native related peerDependencies ([#2871](https://github.com/aws/aws-amplify/issues/2871)) ([72f3d94](https://github.com/aws/aws-amplify/commit/72f3d94))
+
+
+
+
+<a name="1.2.19-unstable.3"></a>
+## [1.2.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.2...@aws-amplify/auth@1.2.19-unstable.3) (2019-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** get the user attributes after signing in ([c024263](https://github.com/aws/aws-amplify/commit/c024263))
+
+
+
+
+<a name="1.2.19-unstable.2"></a>
+## [1.2.19-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.1...@aws-amplify/auth@1.2.19-unstable.2) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.19-unstable.1"></a>
+## [1.2.19-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.0...@aws-amplify/auth@1.2.19-unstable.1) (2019-03-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** check if has the right scope to send the request GetUserData ([20bd92b](https://github.com/aws/aws-amplify/commit/20bd92b))
+
+
+
+
+<a name="1.2.19-unstable.0"></a>
+## [1.2.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.18...@aws-amplify/auth@1.2.19-unstable.0) (2019-03-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.2.18"></a>
 ## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.18-unstable.1...@aws-amplify/auth@1.2.18) (2019-03-06)
 

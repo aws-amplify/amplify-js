@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.24-unstable.0"></a>
+## [1.0.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.23...@aws-amplify/core@1.0.24-unstable.0) (2019-03-22)
+
+
+### Bug Fixes
+
+* **core:** Remove unneeded Hub.dispatch and Hub.listen ([#2919](https://github.com/aws/aws-amplify/issues/2919)) ([aea7fa9](https://github.com/aws/aws-amplify/commit/aea7fa9)), closes [#2623](https://github.com/aws/aws-amplify/issues/2623)
+
+
+
+
 <a name="1.0.23"></a>
 ## [1.0.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.23-unstable.3...@aws-amplify/core@1.0.23) (2019-03-04)
 
