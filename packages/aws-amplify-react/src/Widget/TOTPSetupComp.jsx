@@ -71,7 +71,7 @@ export default class TOTPSetupComp extends Component {
     setup() {
         this.setState({setupMessage: null});
         const user = this.props.authData;
-        const issuer = encodeURI(core_1.I18n.get('AWSCognito'));
+        const issuer = encodeURI(I18n.get('AWSCognito'));
         if (!Auth || typeof Auth.setupTOTP !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
