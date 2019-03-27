@@ -101,6 +101,10 @@ export interface CurrentUserOpts {
     bypassCache: boolean
 }
 
+export interface GetPreferredMFAOpts {
+    bypassCache: boolean
+}
+
 export type UsernamePasswordOpts = {
     username: string,
     password: string,

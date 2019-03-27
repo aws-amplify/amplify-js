@@ -19,6 +19,7 @@ import {
     ConfirmSignUpOptions,
     SignOutOpts,
     CurrentUserOpts,
+    GetPreferredMFAOpts,
     SignInOpts,
     isUsernamePasswordOpts,
     awsCognitoOAuthOpts
@@ -516,8 +517,9 @@ export default class AuthClass {
     /**
      * get preferred mfa method
      * @param {CognitoUser} user - the current cognito user
+     * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
      */
-    public getPreferredMFA(user: CognitoUser | any, params?: CurrentUserOpts): Promise<string> {
+    public getPreferredMFA(user: CognitoUser | any, params?: GetPreferredMFAOpts): Promise<string> {
         const that = this;
         return new Promise((res, rej) => {
             const bypassCache = params? params.bypassCache: false;
