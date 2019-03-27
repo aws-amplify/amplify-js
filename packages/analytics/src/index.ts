@@ -61,7 +61,7 @@ const listener = (capsule) => {
 };
 
 const storageEvent = (payload) => {
-    const { attrs, metrics } = payload;
+    const { data: { attrs, metrics }} = payload;
     if (!attrs) return;
 
     Analytics.record({
