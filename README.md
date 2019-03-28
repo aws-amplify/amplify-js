@@ -306,7 +306,7 @@ const eventDetails = {
   name: 'Party tonight!',
   when: '8:00pm',
   where: 'Ballroom',
-  decription: 'Coming together as a team!'
+  description: 'Coming together as a team!'
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));
