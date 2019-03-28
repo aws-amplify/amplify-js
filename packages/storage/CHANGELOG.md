@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.27-unstable.2"></a>
+## [1.0.27-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.27-unstable.1...@aws-amplify/storage@1.0.27-unstable.2) (2019-03-28)
+
+
+### Features
+
+* **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
+
+
+
+
 <a name="1.0.27-unstable.1"></a>
 ## [1.0.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.27-unstable.0...@aws-amplify/storage@1.0.27-unstable.1) (2019-03-22)
 
