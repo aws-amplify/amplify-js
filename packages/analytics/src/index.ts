@@ -41,7 +41,7 @@ export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
 
-Analytics.onHubCapsule = (capsule) => {
+const listener = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
@@ -61,7 +61,7 @@ Analytics.onHubCapsule = (capsule) => {
 };
 
 const storageEvent = (payload) => {
-    const { attrs, metrics } = payload;
+    const { data: { attrs, metrics }} = payload;
     if (!attrs) return;
 
     Analytics.record({
@@ -134,6 +134,6 @@ const analyticsEvent = (payload) => {
      }
 };
 
-Hub.listen('auth', Analytics);
-Hub.listen('storage', Analytics);
-Hub.listen('analytics', Analytics);
+Hub.listen('auth', listener);
+Hub.listen('storage', listener);
+Hub.listen('analytics', listener);

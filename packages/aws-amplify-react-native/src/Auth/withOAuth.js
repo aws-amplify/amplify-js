@@ -45,7 +45,8 @@ export default (Comp) => {
 
             listeners.forEach(listener => Hub.remove('auth', listener));
             listeners = [this];
-            Hub.listen('auth', this);
+            this.onHubCapsule = this.onHubCapsule.bind(this);
+            Hub.listen('auth', this.onHubCapsule);
         }
 
         componentDidMount() {

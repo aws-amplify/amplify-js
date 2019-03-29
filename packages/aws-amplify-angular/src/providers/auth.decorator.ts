@@ -21,16 +21,18 @@ function check(authState: Subject<AuthState>) {
 function listen(authState: Subject<AuthState>) {
   const config = Amplify.configure(null);
   if (_.has(config, 'Auth.oauth')) {
-    Hub.listen('auth', {
-      onHubCapsule: capsule => {
+    Hub.listen(
+      'auth',
+      capsule => {
         const { channel, payload } = capsule;
         if (channel === 'auth') {
           const { username } = payload.data;
           logger.debug('authentication oauth event', payload);
-          authState.next({ state: payload.event, user: { username} });
+          authState.next({ state: payload.event, user: { username } });
         }
-      }
-    },         'angularAuthListener');
+      },
+      'angularAuthListener'
+    );
   }
 }
 
