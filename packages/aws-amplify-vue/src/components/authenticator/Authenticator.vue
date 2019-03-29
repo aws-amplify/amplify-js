@@ -78,7 +78,7 @@ export default {
   methods: {
     updateDisplayMap: state => {
       return {
-        showSignIn: state === 'signedOut' || 'signIn',
+        showSignIn: state === 'signedOut' || state === 'signIn',
         showSignUp: state === 'signUp',
         showConfirmSignUp: state === 'confirmSignUp',
         showConfirmSignIn: state === 'confirmSignIn',

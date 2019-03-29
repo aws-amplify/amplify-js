@@ -78,7 +78,7 @@ export default {
         this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
           .then(() => {
             this.logger.info('confirmSignUp success')
-            AmplifyEventBus.$emit('authState', 'signedOut')
+            AmplifyEventBus.$emit('authState', 'signIn')
           })
           .catch(e => this.setError(e));
     },

@@ -217,9 +217,9 @@ export default {
               this.logger.info('sign up success');
               AmplifyEventBus.$emit('localUser', data.user)
               if (data.userConfirmed === false){
-                return AmplifyEventBus.$emit('authState', 'confirmSignUp');
+                return AmplifyEventBus.$emit('authState', 'confirmSignUp');In
               }
-              return AmplifyEventBus.$emit('authState', 'signedOut')
+              return AmplifyEventBus.$emit('authState', 'signIn')
             })
             .catch(e => this.setError(e));
 
