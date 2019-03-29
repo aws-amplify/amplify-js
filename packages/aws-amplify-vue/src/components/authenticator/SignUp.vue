@@ -239,7 +239,7 @@ export default {
       return invalids.length < 1;
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
     clear(field) {
       if (field && field.invalid && field.value) {
