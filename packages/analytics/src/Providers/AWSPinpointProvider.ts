@@ -28,7 +28,7 @@ import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
 const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics');
+    Hub.dispatch('analytics', { event, data }, 'Analytics', Symbol.for('amplify_default'));
 };
 
 const logger = new Logger('AWSPinpointProvider');

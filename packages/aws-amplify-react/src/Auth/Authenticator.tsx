@@ -71,7 +71,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
 
         this._initialAuthState = this.props.authState || 'signIn';
         this.state = { authState: 'loading' };
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {

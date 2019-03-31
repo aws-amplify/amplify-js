@@ -76,7 +76,7 @@ export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
         // avoid submitting the form
         event.preventDefault();
         
-        const { username, password } = this.inputs;
+        const { username='', password } = this.inputs;
         if (!Auth || typeof Auth.signIn !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }

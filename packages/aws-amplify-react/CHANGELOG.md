@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.4-unstable.0"></a>
+## [2.3.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3...aws-amplify-react@2.3.4-unstable.0) (2019-03-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.3"></a>
+## [2.3.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.8...aws-amplify-react@2.3.3) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.3-unstable.8"></a>
+## [2.3.3-unstable.8](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.7...aws-amplify-react@2.3.3-unstable.8) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.3-unstable.7"></a>
+## [2.3.3-unstable.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.6...aws-amplify-react@2.3.3-unstable.7) (2019-03-26)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** the username should not be undefined ([5ebddcb](https://github.com/aws/aws-amplify/commit/5ebddcb))
+
+
+
+
 <a name="2.3.3-unstable.6"></a>
 ## [2.3.3-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3-unstable.5...aws-amplify-react@2.3.3-unstable.6) (2019-03-23)
 
