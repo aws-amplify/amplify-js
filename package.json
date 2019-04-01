@@ -1,9 +1,10 @@
 {
-  "name": "aws-amplify",
+  "name": "aws-amplify-monorepo",
+  "private": true,
   "version": "0.1.30",
   "description": "",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "yarn && lerna bootstrap",
     "test": "lerna run test",
     "cypress": "lerna run cypress",
     "cypress:open": "lerna run cypress:open",
@@ -20,10 +21,8 @@
     "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
-  "private": true,
   "workspaces": [
     "packages/*"
   ],
@@ -46,7 +45,7 @@
     "husky": "^1.3.1",
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
-    "lerna": "2.11.0",
+    "lerna": "^3.13.1",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
