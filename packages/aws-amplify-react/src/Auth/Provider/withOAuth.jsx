@@ -48,12 +48,13 @@ export default function withOAuth(Comp, options) {
                 domain, 
                 redirectSignIn,
                 redirectSignOut,
-                responseType
+                responseType,
+                options
             } = config;
 
             const options = config.options || {};
             const url = 'https://' + domain 
-                + '/login?redirect_uri=' + redirectSignIn 
+                + (options.ProviderHostedUIFlag ? '/oauth2/authorize?redirect_uri=' : '/login?redirect_uri=') + redirectSignIn
                 + '&response_type=' + responseType 
                 + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
 
