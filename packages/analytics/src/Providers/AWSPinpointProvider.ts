@@ -27,8 +27,11 @@ import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics', Symbol.for('amplify_default'));
+    Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const logger = new Logger('AWSPinpointProvider');
