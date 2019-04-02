@@ -35,8 +35,7 @@ import {
 import countryDialCodes from './common/country-dial-codes.js';
 import signUpWithUsernameFields, { 
     signUpWithEmailFields, 
-    signUpWithPhoneNumberFields,
-    signUpWithEmailOrPhoneNumberFields
+    signUpWithPhoneNumberFields
  } from './common/default-sign-up-fields'
 import { valid } from 'semver';
 
@@ -54,14 +53,14 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
 
-        const signUpWith = this.props.signUpWith || Auth.configure().signUpWith || [];
+        const signUpWith = this.props.signUpWith || [];
 
         if (signUpWith === 'email') {
             this.defaultSignUpFields = signUpWithEmailFields;
         } else if (signUpWith === 'phone_number') {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
-        } else if (signUpWith.includes('email') && signUpWIth.includes('phone_number')) {
-            //this.defaultSignUpFields = signUpWithEmailOrPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
         }
         
         this.header = (this.props && 
@@ -210,7 +209,8 @@ export default class SignUp extends AuthPiece {
                 }
 
                 if (this.signUpFields.find(e => 
-                    e.key === (key === 'phone_line_number'? 'phone_number' : key) && e.signUpWith
+                    e.signUpWith &&
+                    e.key === (key === 'phone_line_number'? 'phone_number' : key)
                     ))
                     signup_info.username = attributeValue;
             }

@@ -11,12 +11,19 @@
  * and limitations under the License.
  */
 
-import { Component } from 'react';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as React from 'react';
+import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import countryDialCodes from './common/country-dial-codes.js';
+import { 
+    FormField,
+    Input,
+    InputLabel,
+    SelectInput
+ } from '../Amplify-UI/Amplify-UI-Components-React';
 
-export default class AuthPiece extends Component {
+export default class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
 
@@ -27,19 +34,76 @@ export default class AuthPiece extends Component {
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.getUsernameLabel = this.getUsernameLabel.bind(this);
+        this.renderUsernameField = this.renderUsernameField.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
-    getUsernameLabel() {
-        const signUpWith = this.props.signUpWith || Auth.configure().signUpWith || [];
+    getUsername() {
+        const signUpWith = this.props.signUpWith || [];
         if (signUpWith === 'email') {
-            return 'Email';
+            return this.inputs.email;
         } else if (signUpWith === 'phone_number') {
-            return 'Phone Number';
-        } else if (signUpWith.includes('email') && signUpWIth.includes('phone_number')) {
-            return 'Email/Phone Number';
+            return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
         } else {
-            return 'Username';
+            return this.inputs.username;
+        }
+    }
+
+    renderUsernameField(theme) {
+        const signUpWith = this.props.signUpWith || [];
+        if (signUpWith === 'email') {
+            return (
+                <FormField theme={theme}>           
+                    <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
+                    <Input
+                        autoFocus
+                        placeholder={I18n.get('Enter your email')}
+                        theme={theme}
+                        key="email"
+                        name="email"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
+            );
+        } else if (signUpWith === 'phone_number') {
+            return (
+                <FormField theme={theme} key="phone_number">
+                    <InputLabel theme={theme}>{I18n.get('Phone number')} *</InputLabel>
+                    <SelectInput theme={theme}>
+                        <select name="dial_code" defaultValue={"+1"} 
+                        onChange={this.handleInputChange}>
+                            {countryDialCodes.map(dialCode =>
+                                <option key={dialCode} value={dialCode}>
+                                    {dialCode}
+                                </option>
+                            )}
+                        </select>
+                        <Input
+                            placeholder={I18n.get("Please enter your phone number")}
+                            theme={theme}
+                            type="tel"
+                            id="phone_line_number"
+                            key="phone_line_number"
+                            name="phone_line_number"
+                            onChange={this.handleInputChange}
+                        />
+                    </SelectInput>
+                </FormField>
+            );
+        } else {
+            return (
+                <FormField theme={theme}>           
+                    <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
+                    <Input
+                        autoFocus
+                        placeholder={I18n.get('Enter your username')}
+                        theme={theme}
+                        key="username"
+                        name="username"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
+            );
         }
     }
 
