@@ -35,6 +35,8 @@ import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
+export const EmptyContainer = ({ children }) => <>{children}</>;
+
 export default class Authenticator extends Component {
     constructor(props) {
         super(props);
@@ -45,7 +47,7 @@ export default class Authenticator extends Component {
 
         this._initialAuthState = this.props.authState || 'signIn';
         this.state = { authState: 'loading' };
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
@@ -147,6 +149,10 @@ export default class Authenticator extends Component {
         const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
+        // If container prop is undefined, default to AWS Amplify UI Container
+        // otherwise if truthy, use the supplied render prop
+        // otherwise if falsey, use EmptyContainer
+        const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
 
         let { hideDefault, hide = [], federated, signUpConfig, signUpWith } = this.props;
         if (hideDefault) {
@@ -223,14 +229,14 @@ export default class Authenticator extends Component {
         const error = this.state.error;        
 
         return (
-            <Container theme={theme}>
+            <Wrapper theme={theme}>
                 {this.state.showToast && 
                     <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }
                 {render_children}
-            </Container>
+            </Wrapper>
         );
     }
 }

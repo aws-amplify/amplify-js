@@ -306,7 +306,7 @@ const eventDetails = {
   name: 'Party tonight!',
   when: '8:00pm',
   where: 'Ballroom',
-  decription: 'Coming together as a team!'
+  description: 'Coming together as a team!'
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));
@@ -342,7 +342,7 @@ Storage.put(key, fileObj, {level: 'private'})
   .then (result => console.log(result))
   .catch(err => console.log(err));
       
-  // Store data with specifying its MIME type
+  // Stores data with specifying its MIME type
 Storage.put(key, fileObj, {
   level: 'private',
   contentType: 'text/plain'
