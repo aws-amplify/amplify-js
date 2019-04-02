@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.4-unstable.1"></a>
+## [2.3.4-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.4-unstable.0...aws-amplify-react@2.3.4-unstable.1) (2019-04-02)
+
+
+### Bug Fixes
+
+* check is component is mounted ([47ae0b9](https://github.com/aws/aws-amplify/commit/47ae0b9))
+
+
+
+
 <a name="2.3.4-unstable.0"></a>
 ## [2.3.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.3...aws-amplify-react@2.3.4-unstable.0) (2019-03-29)
 
