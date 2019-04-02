@@ -244,6 +244,5 @@ describe('Hub', () => {
     expect(listener).not.toHaveBeenCalled();
 
   });
-
 });
 

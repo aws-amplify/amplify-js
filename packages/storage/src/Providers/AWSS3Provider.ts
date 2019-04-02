@@ -21,6 +21,9 @@ import { StorageOptions, StorageProvider } from '../types';
 
 const logger = new Logger('AWSS3Provider');
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:any, message:string) => {
     if (track) {
         Hub.dispatch(
@@ -31,7 +34,7 @@ const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:an
                 message
             }, 
             'Storage', 
-            Symbol.for('amplify_default')
+            AMPLIFY_SYMBOL
         );
     }
 };

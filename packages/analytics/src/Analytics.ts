@@ -25,8 +25,11 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
-    Hub.dispatch('analytics', { event, data, message }, 'Analytics', Symbol.for('amplify_default'));
+    Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const trackers = {

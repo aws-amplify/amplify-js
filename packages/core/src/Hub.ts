@@ -15,6 +15,8 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Hub');
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
 interface IPattern {
     pattern: RegExp,
     callback: HubCallback
@@ -29,7 +31,7 @@ export type HubCapsule = {
     channel: string,
     payload: HubPayload,
     source: string,
-    patternInfo?: string[] 
+    patternInfo?: string[]
 };
 
 export type HubPayload = {
@@ -48,8 +50,8 @@ function isLegacyCallback(callback: any): callback is LegacyCallback {
 
 export class HubClass {
     name: string;
-    listeners: IListener[] = [];
-    patterns: IPattern[] = [];
+    private listeners: IListener[] = [];
+    private patterns: IPattern[] = [];
 
     protectedChannels = ['core', 'auth', 'api', 'analytics', 'interactions', 'pubsub', 'storage', 'xr'];
 
@@ -79,7 +81,7 @@ export class HubClass {
     dispatch(channel: string, payload: HubPayload, source: string = '', ampSymbol?: Symbol) {
 
         if (this.protectedChannels.indexOf(channel) > -1) {
-            const hasAccess = ampSymbol === Symbol.for('amplify_default');
+            const hasAccess = ampSymbol === AMPLIFY_SYMBOL;
 
             if (!hasAccess) {
                 logger.warn(`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`);
@@ -145,7 +147,7 @@ export class HubClass {
         }
 
         if (this.patterns.length > 0) {
-            
+
             if (!payload.message) {
                 logger.warn(`Cannot perform pattern matching without a message key`);
                 return;
@@ -155,9 +157,9 @@ export class HubClass {
 
             this.patterns.forEach(pattern => {
                 const match = payloadStr.match(pattern.pattern);
-                if (match){
+                if (match) {
                     const [, ...groups] = match;
-                    const dispatchingCapsule:HubCapsule = {...capsule, patternInfo:groups};
+                    const dispatchingCapsule: HubCapsule = { ...capsule, patternInfo: groups };
                     try {
                         pattern.callback(dispatchingCapsule);
                     } catch (e) { logger.error(e); }
