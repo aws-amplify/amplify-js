@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.31-unstable.0"></a>
+## [1.0.31-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30...@aws-amplify/api@1.0.31-unstable.0) (2019-04-02)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
 <a name="1.0.30"></a>
 ## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.7...@aws-amplify/api@1.0.30) (2019-03-28)
 

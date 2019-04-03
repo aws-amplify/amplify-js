@@ -57,8 +57,11 @@ import { default as urlListener } from './urlListener';
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAuthEvent = (event:string, data:any, message:string) => {
-    Hub.dispatch('auth', { event, data, message }, 'Auth', Symbol.for('amplify_default'));
+    Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 
 };
 
