@@ -37,6 +37,7 @@ import signUpWithUsernameFields, {
     signUpWithEmailFields, 
     signUpWithPhoneNumberFields
  } from './common/default-sign-up-fields'
+import { UsernameAttributes } from './common/types';
 import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
@@ -53,11 +54,11 @@ export default class SignUp extends AuthPiece {
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
 
-        const signUpWith = this.props.signUpWith || [];
+        const usernameAttributes = this.props.usernameAttributes || [];
 
-        if (signUpWith === 'email') {
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
             this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpWith === 'phone_number') {
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
         } else {
             this.defaultSignUpFields = signUpWithUsernameFields;
@@ -209,10 +210,10 @@ export default class SignUp extends AuthPiece {
                 }
 
                 if (this.signUpFields.find(e => 
-                    e.signUpWith &&
-                    e.key === (key === 'phone_line_number'? 'phone_number' : key)
+                        e.signUpWith &&
+                        e.key === (key === 'phone_line_number'? 'phone_number' : key)
                     ))
-                    signup_info.username = attributeValue;
+                    { signup_info.username = attributeValue; }
             }
         });
         

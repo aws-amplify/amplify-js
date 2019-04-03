@@ -42,11 +42,23 @@ export default class ForgotPassword extends AuthPiece {
 
         this.send = this.send.bind(this);
         this.submit = this.submit.bind(this);
+        this.disabled = this.disabled.bind(this);
+    }
 
+    disabled() {
+        const signUpWith = this.props.usernameAttributes || [];
+
+        if (signUpWith === 'email') {
+            return !this.state.email || !this.state.password
+        } else if (signUpWith === 'phone_number') {
+            return !this.state.phone_number || !this.state.password
+        } else {
+            return !this.state.username || !this.state.password
+        }
     }
 
     send() {
-        const { username } = this.state;
+        const username = this.getUsername();
         if (!username) {
             this.error('Username cannot be empty');
             return;
@@ -60,7 +72,8 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     submit() {
-        const { username, code, password } = this.state;
+        const { code, password } = this.state;
+        const username = this.getUsername();
         Auth.forgotPasswordSubmit(username, code, password)
             .then(data => {
                 logger.debug(data);
@@ -72,13 +85,7 @@ export default class ForgotPassword extends AuthPiece {
     forgotBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                <FormField
-                    theme={theme}
-                    onChangeText={(text) => this.setState({ username: text })}
-                    label={I18n.get('Username')}
-                    placeholder={I18n.get('Enter your username')}
-                    required={true}
-                />
+                {this.renderUsernameField()}
                 <AmplifyButton
                     text={I18n.get('Send').toUpperCase()}
                     theme={theme}

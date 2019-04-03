@@ -39,10 +39,10 @@ export default class AuthPiece extends React.Component {
     }
 
     getUsername() {
-        const signUpWith = this.props.signUpWith || [];
-        if (signUpWith === 'email') {
+        const usernameAttributes = this.props.usernameAttributes || [];
+        if (usernameAttributes === 'email') {
             return this.inputs.email;
-        } else if (signUpWith === 'phone_number') {
+        } else if (usernameAttributes === 'phone_number') {
             return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
         } else {
             return this.inputs.username;
@@ -50,8 +50,8 @@ export default class AuthPiece extends React.Component {
     }
 
     renderUsernameField(theme) {
-        const signUpWith = this.props.signUpWith || [];
-        if (signUpWith === 'email') {
+        const usernameAttributes = this.props.usernameAttributes || [];
+        if (usernameAttributes === 'email') {
             return (
                 <FormField theme={theme}>           
                     <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
@@ -65,7 +65,7 @@ export default class AuthPiece extends React.Component {
                     />
                 </FormField>
             );
-        } else if (signUpWith === 'phone_number') {
+        } else if (usernameAttributes === 'phone_number') {
             return (
                 <FormField theme={theme} key="phone_number">
                     <InputLabel theme={theme}>{I18n.get('Phone number')} *</InputLabel>

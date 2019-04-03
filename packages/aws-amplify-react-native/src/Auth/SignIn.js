@@ -47,10 +47,24 @@ export default class SignIn extends AuthPiece {
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
+        this.disabled = this.disabled.bind(this);
+    }
+
+    disabled() {
+        const usernameAttributes = this.props.usernameAttributes || [];
+
+        if (usernameAttributes === 'email') {
+            return !this.state.email || !this.state.password
+        } else if (usernameAttributes === 'phone_number') {
+            return !this.state.phone_number || !this.state.password
+        } else {
+            return !this.state.username || !this.state.password
+        }
     }
 
     signIn() {
-        const { username, password } = this.state;
+        const username = this.getUsername();
+        const { password } = this.state;
         logger.debug('Sign In for ' + username);
         Auth.signIn(username, password)
             .then(user => {
@@ -74,13 +88,7 @@ export default class SignIn extends AuthPiece {
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
                     <View style={theme.sectionBody}>
-                        <FormField
-                            theme={theme}
-                            onChangeText={(text) => this.setState({ username: text })}
-                            label={I18n.get('Username')}
-                            placeholder={I18n.get('Enter your username')}
-                            required={true}
-                        />
+                        {this.renderUsernameField()}
                         <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}
@@ -93,7 +101,7 @@ export default class SignIn extends AuthPiece {
                             text={I18n.get('Sign In').toUpperCase()}
                             theme={theme}
                             onPress={this.signIn}
-                            disabled={!this.state.username || !this.state.password}
+                            disabled={this.disabled()}
                         />
                     </View>
                     <View style={theme.sectionFooter}>

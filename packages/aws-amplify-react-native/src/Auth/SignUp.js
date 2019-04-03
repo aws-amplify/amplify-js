@@ -50,11 +50,13 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
+        this.disabled = this.disabled.bind(this);
 
-        const { signUpConfig={} } = this.props || {};
-        if (signUpConfig.signUpWith === 'Email') {
+        const signUpWith = this.props.usernameAttributes || [];
+
+        if (signUpWith === 'email') {
             this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpConfig.signUpWith === 'Phone Number') {
+        } else if (signUpWith === 'phone_number') {
             this.defaultSignUpFields = signUpWithPhoneNumberFields;
         } else {
             this.defaultSignUpFields = signUpWithUsernameFields;
@@ -161,6 +163,18 @@ export default class SignUp extends AuthPiece {
         this.props.signUpConfig.signUpFields.length > 0
     }
 
+    disabled() {
+        const signUpWith = this.props.usernameAttributes || [];
+
+        if (signUpWith === 'email') {
+            return !this.state.email || !this.state.password
+        } else if (signUpWith === 'phone_number') {
+            return !this.state.phone_number || !this.state.password
+        } else {
+            return !this.state.username || !this.state.password
+        }
+    }
+
     signUp() {
         const validation = this.validate();
         if (validation && validation.length > 0) {
@@ -187,16 +201,18 @@ export default class SignUp extends AuthPiece {
                   const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                   signup_info.attributes[newKey] = inputVals[index];
                 }
-              }
+            }
+
+            if (this.signUpFields.find(e =>
+                e.signUpWith &&
+                e.key === key
+            ))
+                { 
+                    signup_info.username = inputVals[index]; 
+                }
         });
 
-        const { signUpWith } = this.props.signUpConfig;
-        if (signUpWith === 'Email') {
-            signup_info.username = signup_info.attributes['email'];
-        } else if (signUpWith === 'Phone Number') {
-            signup_info.username = signup_info.attributes['phone_number'];
-        }
-
+        logger.debug('Signing up with', signup_info);
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
         })
@@ -248,7 +264,7 @@ export default class SignUp extends AuthPiece {
                             text={I18n.get('Sign Up').toUpperCase()}
                             theme={theme}
                             onPress={this.signUp}
-                            disabled={!this.state.username || !this.state.password}
+                            disabled={this.disabled()}
                         />
                     </View>
                     <View style={theme.sectionFooter}>
