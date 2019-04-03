@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { View, Text, TextInput, TouchableHighlight, TouchableOpacity, Picker } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, { linkUnderlayColor, errorIconColor } from './AmplifyTheme';
@@ -33,7 +33,7 @@ export const FormField = (props) => {
     )
 }
 
-export class PhoneField extends Component {
+export class PhoneField extends React.Component {
     constructor(props) {
         super(props);
 

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import * as React from 'react';
 import { View, TextInput, Text, KeyboardAvoidingView, ScrollView } from "react-native";
 import Interactions from '@aws-amplify/interactions';
 import { I18n } from "aws-amplify";
@@ -72,7 +72,7 @@ const MIC_BUTTON_TEXT = {
 
 let timer = null;
 
-export class ChatBot extends Component {
+export class ChatBot extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { 
     Image, 
     StyleSheet 
@@ -24,7 +24,7 @@ import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Storage.S3Image');
 
-export default class S3Image extends Component {
+export default class S3Image extends React.Component {
     constructor(props) {
         super(props);
 

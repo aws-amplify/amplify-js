@@ -25,7 +25,7 @@ export const MapEntries = [
     ]
 ];
 
-export default AmplifyMessageMap = (message) => {
+const AmplifyMessageMap = (message) => {
     const match = MapEntries.filter(entry => entry[1].test(message));
     if (match.length === 0) {
         return message;
@@ -36,3 +36,5 @@ export default AmplifyMessageMap = (message) => {
 
     return I18n.get(entry[0], msg);
 }
+
+export default AmplifyMessageMap;

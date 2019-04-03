@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
+import * as React from 'react';
 import { parse } from 'graphql/language/parser';
 
 import { API } from "aws-amplify";
@@ -11,7 +11,7 @@ const getOperationType = operation => {
     return operationType;
 }
 
-export default class Connect extends Component {
+export default class Connect extends React.Component {
 
     constructor(props) {
         super(props);

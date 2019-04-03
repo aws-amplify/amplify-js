@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { View, Text } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AuthPiece from './AuthPiece';

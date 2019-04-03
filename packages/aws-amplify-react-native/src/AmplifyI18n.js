@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-export default dict = {
+const dict = {
     'fr': {
         'Loading...': "S'il vous plaît, attendez",
         'Sign In': "Se connecter",
@@ -106,3 +106,5 @@ Utilice el formato de número de teléfono +12345678900`
         'Invalid phone number format': "电话格式错误，请使用格式 +12345678900"
     }
 }
+
+export default dict;
