@@ -18,6 +18,7 @@ export interface IConnectState {
 
 export default class Connect extends Component<IConnectProps, IConnectState> {
     public subSubscription;
+    private mounted: boolean;
 
     constructor(props: IConnectProps) {
         super(props);
