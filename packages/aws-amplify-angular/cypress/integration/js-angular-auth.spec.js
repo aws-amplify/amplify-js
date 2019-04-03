@@ -108,7 +108,7 @@ describe('Angular Authenticator: ', function() {
 
       cy.contains('.amplify-form-button', 'Sign Up').click();
 
-      cy.contains('.amplify-alert-message', 'User already exists');
+      cy.get('.amplify-alert-message');
     });
   });
 
