@@ -56,8 +56,13 @@ import { default as urlListener } from './urlListener';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
-const dispatchAuthEvent = (event, data) => {
-    Hub.dispatch('auth', { event, data }, 'Auth');
+
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
+const dispatchAuthEvent = (event:string, data:any, message:string) => {
+    Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
+
 };
 
 export enum CognitoHostedUIIdentityProvider {
@@ -217,15 +222,31 @@ export default class AuthClass {
                             } catch (e) {
                                 logger.debug('sign in without aws credentials', e);
                             } finally {
-                                dispatchAuthEvent('signIn', that.user);
-                                dispatchAuthEvent('cognitoHostedUI', that.user);
+                                dispatchAuthEvent(
+                                    'signIn', 
+                                    that.user,
+                                    `A user ${that.user.username} has signed in`
+                                );
+                                dispatchAuthEvent(
+                                    'cognitoHostedUI', 
+                                    that.user,
+                                    `An OAuth login has taken place`
+                                );
                             }
                         });
                     },
                     onFailure: (err) => {
                         logger.debug("Error in cognito hosted auth response", err);
-                        dispatchAuthEvent('signIn_failure', err);
-                        dispatchAuthEvent('cognitoHostedUI_failure', err);
+                        dispatchAuthEvent(
+                            'signIn_failure', 
+                            err,
+                            `A user sign in event failed.`
+                        );
+                        dispatchAuthEvent(
+                            'cognitoHostedUI_failure', 
+                            err,
+                            `An OAuth sign in failed`
+                        );
                     }
                 };
                 // if not logged in, try to parse the url.
@@ -236,13 +257,21 @@ export default class AuthClass {
                         this._cognitoAuthClient.parseCognitoWebResponse(url);
                     } catch (err) {
                         logger.debug('something wrong when parsing the url', err);
-                        dispatchAuthEvent('parsingUrl_failure', null);
+                        dispatchAuthEvent(
+                            'parsingUrl_failure', 
+                            null,
+                            `The OAuth redirect failed to be parsed`
+                        );
                     }
                 });
             });
         }
 
-        dispatchAuthEvent('configured', null);
+        dispatchAuthEvent(
+            'configured', 
+            null,
+            `The Auth category has been configured successfully`
+        );
         return this._config;
     }
 
@@ -291,10 +320,18 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, validationData, (err, data) => {
                 if (err) {
-                    dispatchAuthEvent('signUp_failure', err);
+                    dispatchAuthEvent(
+                        'signUp_failure', 
+                        err,
+                        `${username} failed to signup`
+                    );
                     reject(err);
                 } else {
-                    dispatchAuthEvent('signUp', data);
+                    dispatchAuthEvent(
+                        'signUp', 
+                        data,
+                        `${username} has signed up successfully`
+                    );
                     resolve(data);
                 }
             });
@@ -403,14 +440,30 @@ export default class AuthClass {
                 } catch (e) {
                     logger.debug('cannot get cognito credentials', e);
                 } finally {
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                try {
+                        // In order to get user attributes and MFA methods
+                        // We need to trigger currentUserPoolUser again
+                        const currentUser = await this.currentUserPoolUser();
+                        that.user = currentUser;
+                        dispatchAuthEvent(
+                        'signIn', 
+                        currentUser,
+                        `A user ${user.getUsername()} has been signed in`
+                    );
+                        resolve(currentUser);
+                    } catch (e) {
+                        logger.error('Failed to get the signed in user', e);
+                        reject(e);
+                    }
                 }
             },
             onFailure: (err) => {
                 logger.debug('signIn failure', err);
-                dispatchAuthEvent('signIn_failure', err);
+                dispatchAuthEvent(
+                    'signIn_failure',
+                    err,
+                    `${user.getUsername()} failed to signin`
+                );
                 reject(err);
             },
             customChallenge: (challengeParam) => {
@@ -771,7 +824,12 @@ export default class AuthClass {
                             logger.debug('cannot get cognito credentials', e);
                         } finally {
                             that.user = user;
-                            dispatchAuthEvent('signIn', user);
+                            
+                            dispatchAuthEvent(
+                                'signIn', 
+                                user, 
+                                `${user} has signed in`
+                            );
                             resolve(user);
                         }
                     },
@@ -804,13 +862,20 @@ export default class AuthClass {
                         logger.debug('cannot get cognito credentials', e);
                     } finally {
                         that.user = user;
-                        dispatchAuthEvent('signIn', user);
+                        dispatchAuthEvent(
+                            'signIn', 
+                            user, `${user} has signed in`
+                        );
                         resolve(user);
                     }
                 },
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
-                    dispatchAuthEvent('completeNewPassword_failure', err);
+                    dispatchAuthEvent(
+                        'completeNewPassword_failure', 
+                        err,
+                        `${this.user} failed to complete the new password flow`
+                    );
                     reject(err);
                 },
                 mfaRequired: (challengeName, challengeParam) => {
@@ -1243,7 +1308,17 @@ export default class AuthClass {
             logger.debug('no Congito User pool');
         }
 
-        dispatchAuthEvent('signOut', this.user);
+        /** 
+         * Note for future refactor - no reliable way to get username with
+         * Cognito User Pools vs Identity when federating with Social Providers
+         * This is why we need a well structured session object that can be inspected
+         * and information passed back in the message below for Hub dispatch
+        */
+        dispatchAuthEvent(
+            'signOut', 
+            this.user, 
+            `A user has been signed out`
+        );
         this.user = null;
     }
 
@@ -1402,7 +1477,11 @@ export default class AuthClass {
         // So we need to retrieve the user again.
         const credentials = await Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation');
         const currentUser = await this.currentAuthenticatedUser();
-        dispatchAuthEvent('signIn', currentUser);
+        dispatchAuthEvent(
+            'signIn', 
+            currentUser,
+            `A user ${currentUser.username} has been signed out`
+        );
         logger.debug('federated sign in credentials', credentials);
         return credentials;
     }

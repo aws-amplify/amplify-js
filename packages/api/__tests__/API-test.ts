@@ -402,6 +402,28 @@ describe('API test', () => {
                 region: 'region'
             });
         });
+
+        test('with API options', () => {
+            const api = new API({});
+
+            const options = {
+                API: {
+                    aws_project_region: 'api-region',
+                },
+                aws_project_region: 'region',
+                aws_appsync_region: 'appsync-region',
+                aws_cloud_logic_custom
+            }
+
+            expect(api.configure(options)).toEqual({
+                aws_cloud_logic_custom,
+                aws_project_region: 'api-region',
+                aws_appsync_region: 'appsync-region',
+                endpoints: aws_cloud_logic_custom,
+                header: {},
+                region: 'api-region'
+            });
+        });
     });
 
 

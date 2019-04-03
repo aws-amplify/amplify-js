@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.9-unstable.0"></a>
+## [0.2.9-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.8...aws-amplify-vue@0.2.9-unstable.0) (2019-04-02)
+
+
+### Bug Fixes
+
+* **aws-amplify-vue:** Change the event name to signIn ([e555536](https://github.com/aws-amplify/amplify-js/commit/e555536))
+
+
+
+
+<a name="0.2.8"></a>
+## [0.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.8-unstable.0...aws-amplify-vue@0.2.8) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.2.8-unstable.0"></a>
 ## [0.2.8-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.7...aws-amplify-vue@0.2.8-unstable.0) (2019-03-11)
 

@@ -71,7 +71,7 @@ export default class Authenticator extends React.Component {
         this.onHubCapsule = this.onHubCapsule.bind(this);
         this.checkContact = this.checkContact.bind(this);
 
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
