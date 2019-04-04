@@ -31,6 +31,7 @@
     private _interactions: any;
     private _logger: any;
     private _xr: any;
+    private _i18n: any;
     private _authState = new Subject<AuthState>();
     authStateChange$ = this._authState.asObservable();
 
@@ -55,6 +56,7 @@
       this._interactions = source.Interactions;
       this._logger = Logger;
       this._xr = source.XR;
+      this._i18n = source.i18n;
     }
 
     auth(): any { return this._auth; }
@@ -66,6 +68,7 @@
     pubsub(): any { return this._pubsub; }
     logger(name, level?): Logger { return new this._logger(name, level); }
     xr(): any { return this._xr; }
+    i18n(): any { return this._i18n; }
 
     authState() { return this._authState; }
     setAuthState(state: AuthState) { this._authState.next(state); }

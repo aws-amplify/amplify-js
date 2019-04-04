@@ -131,13 +131,13 @@ export class ConfirmSignUpComponentCore implements OnInit {
         this.username,
         this.code
       )
-      .then(() => console.log('confirm success'))
+      .then(() => this.logger.info('confirm success'))
       .catch(err => this._setError(err));
   }
 
   onResend() {
     this.amplifyService.auth().resendSignUp(this.username)
-      .then(() => console.log('code resent'))
+      .then(() => this.logger.info('code resent'))
       .catch(err => this._setError(err));
   }
 

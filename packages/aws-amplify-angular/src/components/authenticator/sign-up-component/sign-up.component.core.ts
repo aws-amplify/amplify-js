@@ -25,12 +25,8 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-<<<<<<< HEAD
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
 
-=======
-      <div class="amplify-form-header">{{this.header}}</div>
->>>>>>> added logging of missing modules; updated unit tests
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
@@ -47,19 +43,11 @@ const template = `
               {{passwordPolicy}}
             </div>
         </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> added logging of missing modules; updated unit tests
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
             {{ this.amplifyService.i18n().get(field.label) }}
             <span *ngIf="field.required">*</span>
           </label>
-<<<<<<< HEAD
-
-=======
->>>>>>> added logging of missing modules; updated unit tests
           <div class="amplify-input-group">
             <div class="amplify-input-group-item">
               <select #countryCode
@@ -86,10 +74,6 @@ const template = `
         </div>
       </div>
       <div class="amplify-form-actions">
-<<<<<<< HEAD
-
-=======
->>>>>>> added logging of missing modules; updated unit tests
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign in') }}</a>
@@ -261,9 +245,7 @@ export class SignUpComponentCore implements OnInit {
     if (key.indexOf('custom:') !== 0) {
       return field.custom ;
     } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-      this.amplifyService.logger('SignUpComponent', 'WARN')
-      .log('Custom prefix prepended to key but custom field flag is set to false');
-
+      this.logger.warn('Custom prefix prepended to key but custom field flag is set to false');
     }
     return null;
   }

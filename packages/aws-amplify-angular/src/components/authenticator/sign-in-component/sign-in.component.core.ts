@@ -158,6 +158,6 @@ export class SignInComponentCore implements OnInit {
       return;
     }
     this.errorMessage = err.message || err;
-    this.logger(this.errorMessage);
+    this.logger.error(this.errorMessage);
   }
 }
