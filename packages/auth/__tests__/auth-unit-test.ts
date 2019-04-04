@@ -163,17 +163,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
     return CognitoUser;
 });
 
-jest.mock('amazon-cognito-auth-js/lib/CognitoAuth', () => {
-    const CognitoAuth = () => {};
-
-    CognitoAuth.prototype.parseCognitoWebResponse = () => {
-        CognitoAuth.prototype.userhandler.onSuccess();
-        throw 'err';
-    }
-
-    return CognitoAuth;
-});
-
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import Auth from '../src/Auth';
 import Cache from '@aws-amplify/cache';
