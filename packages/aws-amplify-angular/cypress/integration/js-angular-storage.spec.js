@@ -9,9 +9,9 @@ describe('Angular Storage: ', function() {
 
   describe('Photopicker', () => {
     it('renders a photopicker header by default', () => {
-      cy.get('.amplify-photo-picker-container').within(() => {
+      // cy.get('.amplify-photo-picker-container').within(() => {
         cy.contains('.amplify-form-header', 'Select Photos');
-      })
+      // })
     });
   })
 
