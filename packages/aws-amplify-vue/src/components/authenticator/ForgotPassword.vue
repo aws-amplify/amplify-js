@@ -87,12 +87,12 @@ export default {
       this.$Amplify.Auth.forgotPasswordSubmit(this.username, this.code, this.password)
         .then(() => {
           this.logger.info('forgotPasswordSubmit success');
-          AmplifyEventBus.$emit('authState', 'signedOut');
+          AmplifyEventBus.$emit('authState', 'signIn');
         })
         .catch(e => this.setError(e));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+      AmplifyEventBus.$emit('authState', 'signIn');
     },
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);

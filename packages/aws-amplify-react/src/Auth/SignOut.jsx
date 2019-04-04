@@ -28,8 +28,8 @@ export default class SignOut extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
-        Hub.listen('auth', this)
         this.onHubCapsule = this.onHubCapsule.bind(this)
+        Hub.listen('auth', this.onHubCapsule)
         this.state = {};
     }
 
