@@ -24,10 +24,6 @@ const template = `
   <div class="amplify-form-container">
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
-<<<<<<< HEAD
-
-=======
->>>>>>> angular-refactor-final-copy
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">

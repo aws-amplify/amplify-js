@@ -31,10 +31,7 @@
     private _interactions: any;
     private _logger: any;
     private _xr: any;
-<<<<<<< HEAD
     private _i18n: any;
-=======
->>>>>>> angular-refactor-final-copy
     private _authState = new Subject<AuthState>();
     authStateChange$ = this._authState.asObservable();
 
@@ -59,10 +56,7 @@
       this._interactions = source.Interactions;
       this._logger = Logger;
       this._xr = source.XR;
-<<<<<<< HEAD
       this._i18n = source.i18n;
-=======
->>>>>>> angular-refactor-final-copy
     }
 
     auth(): any { return this._auth; }
@@ -74,10 +68,7 @@
     pubsub(): any { return this._pubsub; }
     logger(name, level?): Logger { return new this._logger(name, level); }
     xr(): any { return this._xr; }
-<<<<<<< HEAD
     i18n(): any { return this._i18n; }
-=======
->>>>>>> angular-refactor-final-copy
 
     authState() { return this._authState; }
     setAuthState(state: AuthState) { this._authState.next(state); }
