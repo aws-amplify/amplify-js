@@ -1,18 +1,76 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { ForgotPasswordComponentCore } from '../../../components/authenticator/forgot-password-component/forgot-password.component.core'
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService, AmplifyModules } from '../../../providers';
+import { ForgotPasswordComponentCore } 
+from '../../../components/authenticator/forgot-password-component/forgot-password.component.core';
 
 
 describe('ForgotPasswordComponentCore: ', () => {
 
   let component: ForgotPasswordComponentCore;
+  let fixtureComponent: ForgotPasswordComponentCore;
   let service: AmplifyService;
+  let fixture;
+  let onSubmitSpy;
+  let onSendSpy;
+  let forgotPasswordSpy;
+  let forgotPasswordSubmitSpy;
+  let onSignInSpy;
+
+  const modules = {
+    Auth: {
+      forgotPasswordSubmit: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      },
+      forgotPassword: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      },
+      currentAuthenticatedUser: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });
+      },
+      setAuthState: () => {
+        return new Promise((resolve, reject) => {
+          resolve(1);
+        });        
+      }
+    }
+  };
 
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(modules);
     component = new ForgotPasswordComponentCore(service);
+    TestBed.configureTestingModule({
+      declarations: [
+        ForgotPasswordComponentCore
+      ],
+      providers: [
+        {
+          provide: AmplifyService,
+          useFactory: () => {
+            return AmplifyModules({
+              ...modules
+            });
+          }
+        }
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(ForgotPasswordComponentCore);
+    fixtureComponent = fixture.componentInstance;
+    forgotPasswordSpy = jest.spyOn(service.auth(), 'forgotPassword');
+    forgotPasswordSubmitSpy = jest.spyOn(service.auth(), 'forgotPasswordSubmit');
+    onSubmitSpy = jest.spyOn(fixtureComponent, 'onSubmit');
+    onSendSpy = jest.spyOn(fixtureComponent, 'onSend');
+    onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
   });
 
   afterEach(() => {
@@ -43,6 +101,76 @@ describe('ForgotPasswordComponentCore: ', () => {
 
   it('...should have an _setError method', () => {
     expect(component._setError).toBeTruthy();
+  });
+  
+  it('...should not display if _show is not set', () => {
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeFalsy();
+  });
+
+  it('...should display if _show is set', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeTruthy();
+  });
+
+  it('...should call onSend when button is clicked and !codeSent', () => {
+    fixtureComponent._show = true;
+    fixtureComponent._authState = {
+      state: 'requireNewPassword',
+      user: {}
+    };
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('.amplify-form-button');
+    button.click();
+    expect(forgotPasswordSpy).not.toHaveBeenCalled();
+    expect(onSendSpy).toHaveBeenCalled();
+    fixtureComponent.username = 'username';
+    fixture.detectChanges();
+    button.click();
+    expect(forgotPasswordSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onSubmit when button is clicked and codeSent', () => {
+    fixtureComponent._show = true;
+    fixtureComponent.code_sent = true;
+    fixtureComponent._authState = {
+      state: 'requireNewPassword',
+      user: {}
+    };
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('.amplify-form-button');
+    button.click();
+    expect(onSubmitSpy).toHaveBeenCalled();
+    expect(forgotPasswordSubmitSpy).toHaveBeenCalled();
+  });
+
+
+  it('...should call onSend when a tag is clicked and codeSent', () => {
+    fixtureComponent._show = true;
+    fixtureComponent.code_sent = true;
+    fixtureComponent._authState = {
+      state: 'requireNewPassword',
+      user: {}
+    };
+    fixture.detectChanges();
+    const a = fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
+    a.click();
+    expect(onSendSpy).toHaveBeenCalled();
+    expect(forgotPasswordSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onSignIn when a tag is clicked and !codeSent', () => {
+    fixtureComponent._show = true;
+    fixtureComponent._authState = {
+      state: 'requireNewPassword',
+      user: {}
+    };
+    fixture.detectChanges();
+    const a = fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
+    a.click();
+    expect(onSignInSpy).toHaveBeenCalled();
   });
 
 });

@@ -14,9 +14,10 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { SignUpComponentCore } from './sign-up.component.core';
-import { countrylist, country }  from '../../../assets/countries';
+import { countrylist, country } from '../../../assets/countries';
 
 
 const template = `
@@ -43,7 +44,10 @@ const template = `
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
+<<<<<<< HEAD
 
+=======
+>>>>>>> added logging of missing modules; updated unit tests
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <ion-grid class="amplify-ionic-grid-padding-left">
             <ion-row>
@@ -68,8 +72,12 @@ const template = `
                   </ion-select-option>
                 </ion-select>
               </ion-col>
+<<<<<<< HEAD
 
               <ion-col size="6">
+=======
+              <ion-col col-6>
+>>>>>>> added logging of missing modules; updated unit tests
                 <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
                 <ion-input
                   #phone_number
@@ -104,9 +112,7 @@ const template = `
         </div>
       </div>
     </div>
-
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -114,7 +120,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 

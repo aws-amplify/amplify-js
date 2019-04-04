@@ -14,7 +14,7 @@
 // tslint:enable
 
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
 import { S3AlbumComponentCore } from './s3-album.component.core';
 
 const template =  `
@@ -29,8 +29,6 @@ const template =  `
   </div>
 </div>
 `;
-
-
 
 @Component({
   selector: 'amplify-s3-album-ionic',

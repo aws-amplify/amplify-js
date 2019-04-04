@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
 
@@ -36,7 +37,6 @@ const template = `
     You will receive a verification code to reset your password
   </div>
   <ion-list>
-
     <ion-item lines="none" *ngIf="!code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         Username *
@@ -48,7 +48,10 @@ const template = `
         [value]="username"
       ></ion-input>
     </ion-item>
+<<<<<<< HEAD
 
+=======
+>>>>>>> added logging of missing modules; updated unit tests
     <ion-item lines="none" *ngIf="code_sent">
 <<<<<<< HEAD
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
@@ -65,7 +68,6 @@ const template = `
         (keyup)="setCode(code.value)"
       ></ion-input>
     </ion-item>
-
     <ion-item lines="none" *ngIf="code_sent">
 <<<<<<< HEAD
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
@@ -83,7 +85,10 @@ const template = `
         (keyup.enter)="onSubmit()"
       ></ion-input>
     </ion-item>
+<<<<<<< HEAD
 
+=======
+>>>>>>> added logging of missing modules; updated unit tests
   </ion-list>
   <div class="amplify-form-actions">
     <div>
@@ -102,16 +107,17 @@ const template = `
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
 =======
       <div class="amplify-form-signup">
-        Have an account? 
+        Have an account?
         <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
       </div>
       <div class="amplify-form-signup">
-        Lost your code? 
+        Lost your code?
         <a class="amplify-form-link" (click)="onSend()">Resend</a>
       </div>
 >>>>>>> linting and binding amplifyservice in constructor
     </div>
   </div>
+<<<<<<< HEAD
   </div>
 
   <div class="amplify-alert" *ngIf="errorMessage">
@@ -120,6 +126,13 @@ const template = `
       <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
+=======
+<div class="amplify-alert" *ngIf="errorMessage">
+  <div class="amplify-alert-body">
+    <span class="amplify-alert-icon">&#9888;</span>
+    <div class="amplify-alert-message">{{ errorMessage }}</div>
+    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+>>>>>>> added logging of missing modules; updated unit tests
   </div>
 
 </div>
@@ -130,7 +143,6 @@ const template = `
   template
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
-
 
   constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
@@ -146,4 +158,6 @@ export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 >>>>>>> linting and binding amplifyservice in constructor
 
   }
+
+
 }

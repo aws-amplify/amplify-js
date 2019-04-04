@@ -13,9 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-
+import { Component, Input, OnInit } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
     <div class="amplify-greeting-text">{{ greeting }}</div>
@@ -30,17 +30,27 @@ const template = `
   selector: 'amplify-auth-greetings-core',
   template
 })
-export class GreetingComponentCore {
+export class GreetingComponentCore implements OnInit {
   signedIn: boolean;
   greeting: string;
+  protected logger: any;
 
   constructor(protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('GreetingComponent');
     this.subscribe();
   }
 
   @Input()
   authState: AuthState;
 
+<<<<<<< HEAD
+=======
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
+  }
+>>>>>>> added logging of missing modules; updated unit tests
 
   subscribe() {
     this.amplifyService.authStateChange$

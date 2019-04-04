@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { GreetingComponentCore } from './greeting.component.core';
 
 const template = `
@@ -36,7 +37,7 @@ const template = `
 })
 export class GreetingComponentIonic extends GreetingComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
 <<<<<<< HEAD
 

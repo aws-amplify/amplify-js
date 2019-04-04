@@ -13,8 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, OnInit } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -60,18 +61,27 @@ const template = `
   selector: 'amplify-auth-require-new-password-core',
   template
 })
-export class RequireNewPasswordComponentCore {
+export class RequireNewPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   password: string;
   errorMessage: string;
+  protected logger: any;
 
-  constructor(protected amplifyService: AmplifyService) {}
+  constructor(protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
+  }
 
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'requireNewPassword';
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
   }
 
   setPassword(password: string) {

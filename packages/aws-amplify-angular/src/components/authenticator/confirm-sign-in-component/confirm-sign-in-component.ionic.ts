@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
@@ -9,10 +10,17 @@ const template = `
     <ion-list>
       <ion-item lines="none">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
         <ion-input
 =======
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+=======
+        <ion-label 
+          class="amplify-input-label amplify-input-label-ionic"
+          position="stacked"
+        >
+>>>>>>> added logging of missing modules; updated unit tests
           Code *
         </ion-label>
         <ion-input 
