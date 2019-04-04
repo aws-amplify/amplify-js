@@ -2557,36 +2557,6 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
     });
-
-    describe('hosted ui test', () => {
-        test('happy case', () => {
-            const oauth = {
-                awsCognito: {
-                    domain: 'domain'
-                }
-            };
-
-            const authOptions = {
-                Auth: {
-                    userPoolId: "awsUserPoolsId",
-                    userPoolWebClientId: "awsUserPoolsWebClientId",
-                    region: "region",
-                    identityPoolId: "awsCognitoIdentityPoolId",
-                    oauth
-                }
-            };
-            const spyon = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.reject('err');
-            });
-
-
-            const auth = new Auth(authOptions);
-            expect(spyon).toBeCalled();
-
-            spyon.mockClear();
-          
-        });
-    });
 });
 
 
