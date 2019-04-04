@@ -33,17 +33,42 @@ export interface AuthCache {
  * Auth instance options
  */
 export interface AuthOptions {
-    userPoolId: string,
-    userPoolWebClientId: string,
+    userPoolId?: string,
+    userPoolWebClientId?: string,
     identityPoolId?: string,
     region?: string,
     mandatorySignIn?: boolean
     cookieStorage?: ICookieStorageData,
-    oauth?: OAuth,
+    oauth?: OAuthOpts,
     refreshHandlers?: object,
     storage?: ICognitoStorage,
     authenticationFlowType?: string,
     identityPoolRegion?: string
+}
+
+export enum CognitoHostedUIIdentityProvider {
+    Cognito = 'COGNITO',
+    Google = 'Google',
+    Facebook = 'Facebook',
+    Amazon = 'LoginWithAmazon',
+}
+
+export type LegacyProvider = 'google'|'facebook'|'amazon'|'developer'| string;
+
+export type FederatedSignInOptions = {
+    provider: CognitoHostedUIIdentityProvider
+};
+
+export type FederatedSignInOptionsCustom = {
+    customProvider: string
+};
+
+export function isFederatedSignInOptions(obj:any): obj is FederatedSignInOptions  {
+    return obj && typeof(obj as FederatedSignInOptions).provider !== 'undefined';
+}
+
+export function isFederatedSignInOptionsCustom(obj:any): obj is FederatedSignInOptionsCustom  {
+    return obj && typeof(obj as FederatedSignInOptionsCustom).customProvider !== 'undefined';
 }
 
 /**
@@ -74,7 +99,7 @@ export interface FederatedUser {
     email?: string
 }
 
-export interface awsCognitoOAuthOpts {
+export interface AwsCognitoOAuthOpts {
     domain: string,
 	scope: Array<string>,
 	redirectSignIn: string,
@@ -84,10 +109,29 @@ export interface awsCognitoOAuthOpts {
     urlOpener?: (url:string, redirectUrl: string) => Promise<any>
 }
 
-export interface OAuth {
-    awsCognito?: awsCognitoOAuthOpts,
-    auth0?: any
+export function isCognitoHostedOpts(oauth: OAuthOpts): oauth is AwsCognitoOAuthOpts {
+    return (<AwsCognitoOAuthOpts>oauth).redirectSignIn !== undefined;
 }
+
+
+export interface Auth0OAuthOpts {
+    domain: string,
+    clientID: string,
+	scope: string,
+    redirectUri: string,
+    audience: string,
+    responseType: string,
+    returnTo: string,
+    urlOpener?: (url:string, redirectUrl: string) => Promise<any>
+}
+
+// Replacing to fix typings
+// export interface OAuth {
+//     awsCognito?: awsCognitoOAuthOpts,
+//     auth0?: any
+// }
+
+export type OAuthOpts = AwsCognitoOAuthOpts | Auth0OAuthOpts;
 
 export interface ConfirmSignUpOptions {
     forceAliasCreation?: boolean

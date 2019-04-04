@@ -51,11 +51,7 @@ export default (Comp) => {
 
         componentDidMount() {
             Linking.getInitialURL().then(url => {
-                const config = Auth.configure();
-
-                if (url && config) {
-                    Auth.configure(config);
-                }
+                Auth.handleAuthResponse(url);
             }).catch(error => {
                 logger.debug('componentDidMount [Linking.getInitialURL]', error);
             }).then(() => {

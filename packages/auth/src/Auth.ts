@@ -21,7 +21,12 @@ import {
     CurrentUserOpts,
     SignInOpts,
     isUsernamePasswordOpts,
-    awsCognitoOAuthOpts
+    isCognitoHostedOpts,
+    isFederatedSignInOptions,
+    isFederatedSignInOptionsCustom,
+    FederatedSignInOptionsCustom,
+    LegacyProvider,
+    FederatedSignInOptions
 } from './types';
 
 import {
@@ -48,11 +53,13 @@ import {
     CognitoUserSession,
     IAuthenticationCallback,
     ICognitoUserAttributeData,
-    CognitoUserAttribute
+    CognitoUserAttribute,
+    CognitoIdToken,
+    CognitoRefreshToken,
+    CognitoAccessToken
 } from 'amazon-cognito-identity-js';
-import { CognitoAuth } from 'amazon-cognito-auth-js';
 import { parse } from 'url';
-import { default as urlListener } from './urlListener';
+import OAuth from './OAuth/OAuth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -62,7 +69,6 @@ const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 
 
 const dispatchAuthEvent = (event:string, data:any, message:string) => {
     Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
-
 };
 
 export enum CognitoHostedUIIdentityProvider {
@@ -78,9 +84,8 @@ export enum CognitoHostedUIIdentityProvider {
 export default class AuthClass {
     private _config: AuthOptions;
     private userPool = null;
-    private _cognitoAuthClient = null;
     private user: any = null;
-
+    private _oAuthHandler: OAuth;
     private _storage;
     private _storageSync;
 
@@ -157,113 +162,41 @@ export default class AuthClass {
 
         // initiailize cognitoauth client if hosted ui options provided
         // to keep backward compatibility:
-        const cognitoHostedUIConfig: awsCognitoOAuthOpts = oauth
-            ? (oauth['domain'] ? oauth as awsCognitoOAuthOpts : oauth.awsCognito)
+        const cognitoHostedUIConfig = oauth? (isCognitoHostedOpts(this._config.oauth) 
+            ? oauth : (<any>oauth).awsCognito) 
             : undefined;
 
         if (cognitoHostedUIConfig) {
-            const that = this;
-            const {
-                domain: AppWebDomain,
-                scope: TokenScopesArray,
-                redirectSignIn: RedirectUriSignIn,
-                redirectSignOut: RedirectUriSignOut,
-                responseType: ResponseType,
-                urlOpener,
-                options
-            } = cognitoHostedUIConfig as awsCognitoOAuthOpts;
+            const cognitoAuthParams = Object.assign(
+                {
+                    cognitoClientId: userPoolWebClientId,
+                    UserPoolId: userPoolId,
+                    domain: cognitoHostedUIConfig['domain'],
+                    scopes: cognitoHostedUIConfig['scope'],
+                    redirectSignIn: cognitoHostedUIConfig['redirectSignIn'],
+                    redirectSignOut: cognitoHostedUIConfig['redirectSignOut'],
+                    responseType: cognitoHostedUIConfig['responseType'],
+                    Storage: this._storage,
+                    urlOpener: cognitoHostedUIConfig['urlOpener']
+                },
+                cognitoHostedUIConfig['options']
+            );
 
-            // TODO: remove this once we refactor web browser support
-            let LaunchUri = urlOpener;
+            this._oAuthHandler = new OAuth({
+                scopes: cognitoAuthParams.scopes,
+                config: cognitoAuthParams,
+                cognitoClientId: cognitoAuthParams.cognitoClientId
+            });
 
-            if (typeof LaunchUri === 'function') {
-                LaunchUri = (url: string, redirectUrl?: string) => {
-                    const {
-                        redirect_uri,
-                        logout_uri
-                    } = (parse(url || '').query || '')
-                            .split('&')
-                            .filter(Boolean)
-                            .map(param => param.split('='))
-                            .reduce((r, [k, v]) => ({ ...r, [k]: decodeURIComponent(v) }), {}) as any;
-
-                    // If no redirectUrl was provided, we take it from the query string.
-                    // (redirect_uri first, then logout_uri).
-                    return urlOpener(url, redirectUrl || redirect_uri || logout_uri);
-                };
-            }
-
-            const cognitoAuthParams = {
-                ClientId: userPoolWebClientId,
-                UserPoolId: userPoolId,
-                AppWebDomain,
-                TokenScopesArray,
-                RedirectUriSignIn,
-                RedirectUriSignOut,
-                ResponseType,
-                Storage: this._storage,
-                LaunchUri,
-                options
-            };
-
-            urlListener(({ url }) => {
-                logger.debug('cognito auth params', cognitoAuthParams);
-                this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
-                this._cognitoAuthClient.userhandler = {
-                    // user signed in
-                    onSuccess: (result) => {
-                        that.user = that.userPool.getCurrentUser();
-                        logger.debug("Cognito Hosted authentication result", result);
-                        that.currentSession().then(async (session) => {
-                            try {
-                                await Credentials.clear();
-                                const cred = await Credentials.set(session, 'session');
-                                logger.debug('sign in succefully with', cred);
-                            } catch (e) {
-                                logger.debug('sign in without aws credentials', e);
-                            } finally {
-                                dispatchAuthEvent(
-                                    'signIn', 
-                                    that.user,
-                                    `A user ${that.user.username} has signed in`
-                                );
-                                dispatchAuthEvent(
-                                    'cognitoHostedUI', 
-                                    that.user,
-                                    `An OAuth login has taken place`
-                                );
-                            }
-                        });
-                    },
-                    onFailure: (err) => {
-                        logger.debug("Error in cognito hosted auth response", err);
-                        dispatchAuthEvent(
-                            'signIn_failure', 
-                            err,
-                            `A user sign in event failed.`
-                        );
-                        dispatchAuthEvent(
-                            'cognitoHostedUI_failure', 
-                            err,
-                            `An OAuth sign in failed`
-                        );
-                    }
-                };
-                // if not logged in, try to parse the url.
-                this.currentAuthenticatedUser().then(() => {
-                    logger.debug('user already logged in');
-                }).catch(_e => {
-                    try {
-                        this._cognitoAuthClient.parseCognitoWebResponse(url);
-                    } catch (err) {
-                        logger.debug('something wrong when parsing the url', err);
-                        dispatchAuthEvent(
-                            'parsingUrl_failure', 
-                            null,
-                            `The OAuth redirect failed to be parsed`
-                        );
-                    }
-                });
+            // if not logged in, try to parse the url.
+            this.currentAuthenticatedUser().then(() => {
+                logger.debug('user already logged in');
+            }).catch(e => {
+                logger.debug('not logged in, try to parse the url');
+                if (!JS.browserOrNode().isBrowser || !window.location) {
+                    logger.debug('not in the browser');
+                    return;
+                }
             });
         }
 
@@ -1263,8 +1196,8 @@ export default class AuthClass {
                     user.globalSignOut({
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
-                            if (this._cognitoAuthClient) {
-                                this._cognitoAuthClient.signOut();
+                            if (this._oAuthHandler) {
+                                this._oAuthHandler.signOut();
                             }
                             return res();
                         },
@@ -1277,8 +1210,8 @@ export default class AuthClass {
             } else {
                 logger.debug('user sign out', user);
                 user.signOut();
-                if (this._cognitoAuthClient) {
-                    this._cognitoAuthClient.signOut();
+                if (this._oAuthHandler) {
+                    this._oAuthHandler.signOut();
                 }
                 return res();
             }
@@ -1452,38 +1385,161 @@ export default class AuthClass {
         }
     }
 
-    /**
-     * For federated login
-     * @param {String} provider - federation login provider
-     * @param {FederatedResponse} response - response should have the access token
-     * the identity id (optional)
-     * and the expiration time (the universal time)
-     * @param {String} user - user info
-     */
+
+    public async federatedSignIn(options?: FederatedSignInOptions):
+        Promise<ICredentials>;
     public async federatedSignIn(
-        provider: 'google' | 'facebook' | 'amazon' | 'developer' | string,
+        provider: LegacyProvider,
         response: FederatedResponse,
         user: FederatedUser
+    ): Promise<ICredentials>;
+    public async federatedSignIn(options?: FederatedSignInOptionsCustom):
+        Promise<ICredentials>;
+    public async federatedSignIn(
+        providerOrOptions: LegacyProvider | FederatedSignInOptions | FederatedSignInOptionsCustom,
+        response?: FederatedResponse,
+        user?: FederatedUser
     ): Promise<ICredentials> {
-        // To check if the user is already logged in
-        try {
-            const loggedInUser = await this.currentAuthenticatedUser();
-            logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
-                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
-        } catch (e) { }
 
-        const { token, identity_id, expires_at } = response;
-        // Because Credentials.set would update the user info with identity id
-        // So we need to retrieve the user again.
-        const credentials = await Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation');
-        const currentUser = await this.currentAuthenticatedUser();
-        dispatchAuthEvent(
-            'signIn', 
-            currentUser,
-            `A user ${currentUser.username} has been signed out`
-        );
-        logger.debug('federated sign in credentials', credentials);
-        return credentials;
+
+        if (!this._config.identityPoolId && !this._config.userPoolId) {
+            throw new Error(`Federation requires either a User Pool or Identity Pool in config`);
+        }
+
+        // Ensure backwards compatability
+        if (typeof providerOrOptions === 'undefined') {
+            if (this._config.identityPoolId && !this._config.userPoolId) {
+                throw new Error(`Federation with Identity Pools requires tokens passed as arguments`);
+            }
+        }
+
+
+        if (isFederatedSignInOptions(providerOrOptions) 
+            || isFederatedSignInOptionsCustom(providerOrOptions)
+            || typeof providerOrOptions === 'undefined') {
+
+            const options = providerOrOptions || { provider: CognitoHostedUIIdentityProvider.Cognito };
+            const provider = isFederatedSignInOptions(options)
+                ? options.provider
+                : (options as FederatedSignInOptionsCustom).customProvider;
+
+            if (this._config.userPoolId) {
+                const client_id = isCognitoHostedOpts(this._config.oauth)
+                    ? this._config.userPoolWebClientId
+                    : this._config.oauth.clientID;
+                /*Note: Invenstigate automatically adding trailing slash */
+                const redirect_uri = isCognitoHostedOpts(this._config.oauth)
+                    ? this._config.oauth.redirectSignIn
+                    : this._config.oauth.redirectUri;
+
+                this._oAuthHandler.oauthSignIn(
+                    this._config.oauth.responseType,
+                    this._config.oauth.domain,
+                    redirect_uri,
+                    client_id,
+                    provider);
+
+            }
+        } else {
+
+            const provider = providerOrOptions;
+            // To check if the user is already logged in
+            try {
+                const loggedInUser = await this.currentAuthenticatedUser();
+                logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
+                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
+            } catch (e) { }
+
+            const { token, identity_id, expires_at } = response;
+            // Because Credentials.set would update the user info with identity id
+            // So we need to retrieve the user again.
+            const credentials = await Credentials.set(
+                { provider, token, identity_id, user, expires_at },
+                'federation'
+            );
+            const currentUser = await this.currentAuthenticatedUser();
+            dispatchAuthEvent(
+                'signIn',
+                currentUser,
+                `A user ${currentUser.username} has been signed in`
+            );
+            logger.debug('federated sign in credentials', credentials);
+            return credentials;
+        }
+    }
+
+    /**
+     * Used to complete the OAuth flow with or without the Cognito Hosted UI
+     * @param {String} URL - optional parameter for customers to pass in the response URL
+     */
+    public async handleAuthResponse(URL?: string) {
+
+        if (!this._config.userPoolId){
+            throw new Error(`OAuth responses require a User Pool defined in config`);
+        }
+
+        const currentUrl = URL || window.location.href;
+
+        const hasCodeOrError = !!(parse(currentUrl).query || '')
+            .split('&')
+            .map(entry => entry.split('='))
+            .find(([k]) => k === 'code' || k === 'error');
+
+        const hasTokenOrError = !!(parse(currentUrl).hash || '#')
+            .substr(1)
+            .split('&')
+            .map(entry => entry.split('='))
+            .find(([k]) => k === 'access_token' || k === 'error');
+        
+
+        if (hasCodeOrError || hasTokenOrError) {
+            try {
+                this.userPool.getCurrentUser();
+                
+                const { accessToken, idToken, refreshToken } = await this._oAuthHandler.handleAuthResponse(currentUrl);
+                const session = new CognitoUserSession({
+                    IdToken: new CognitoIdToken({ IdToken: idToken }),
+                    RefreshToken: new CognitoRefreshToken({ RefreshToken: refreshToken }),
+                    AccessToken: new CognitoAccessToken({ AccessToken: accessToken })
+                });
+                
+                let credentials;
+                // Get AWS Credentials & store if Identity Pool is defined
+                if (this._config.identityPoolId) {
+                    credentials = await Credentials.set(session, 'session');
+                    logger.debug('AWS credentials', credentials);
+                }
+
+                /*The following is to create a user for the Cognito Identity SDK to store the tokens
+                  When we remove this SDK later that logic will have to be centralized in our new version*/
+                //#region 
+                const currentUser = this.createCognitoUser(session.getIdToken().decodePayload()['cognito:username']);
+                dispatchAuthEvent(
+                    'signIn', 
+                    currentUser,
+                    `A user ${currentUser.getUsername} has been signed in`
+                );
+                
+                // This calls cacheTokens() in Cognito SDK
+                currentUser.setSignInUserSession(session);
+                //#endregion
+                
+                return credentials;
+            } catch (err) {
+                logger.debug("Error in cognito hosted auth response", err);
+                dispatchAuthEvent(
+                    'signIn_failure', 
+                    err,
+                    `The OAuth response flow failed`
+                );
+                dispatchAuthEvent(
+                    'cognitoHostedUI_failure', 
+                    err,
+                    `A failure occurred when returning to the Cognito Hosted UI`
+                );
+            }
+        }
+
     }
 
     /**
