@@ -53,7 +53,7 @@ jobs:
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run test --scope aws-amplify-angular
       - run: yarn run test --scope aws-amplify-vue
-  integration_test_auth:
+  integration_test_angular:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -66,57 +66,97 @@ jobs:
             cd packages/aws-amplify
             yarn link
       - run:
-          name: "Link aws-amplify-react"
+          name: "Link aws-amplify-angular"
           command: |
-            cd packages/aws-amplify-react
+            cd packages/aws-amplify-angular
             yarn link
       - run: 
-          name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+          name: "Clone auth test package link amplify packages"
           command: |
-            mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             cd ~
-            git clone $AUTH_CLONE_URL
-            cd aws-amplify-cypress-auth
+            git clone $ANGULAR_CLONE_URL
+            cd angular-7-sample-modularized
             yarn
             yarn link aws-amplify
-            yarn link aws-amplify-react
+            yarn link aws-amplify-angular
             echo $AWS_EXPORTS_AUTH > src/aws-exports.js
       - run:
           name: "Start Auth test server in background"
           command: |
-            cd ~/aws-amplify-cypress-auth
-            yarn start
+            cd ~/angular-7-sample-modularized
+            ng serve
           background: true
       - run:
-          name: "Run cypress tests for aws-amplify-react"
+          name: "Run cypress tests for aws-amplify-angular"
           command: |
-            yarn cypress --scope aws-amplify-react
+            yarn cypress --scope aws-amplify-angular
       - store_artifacts:
-          path: /root/app/packages/aws-amplify-react/cypress/videos
+          path: /root/app/packages/aws-amplify-angular/cypress/videos
       - store_artifacts:
-          path: /root/app/packages/aws-amplify-react/cypress/screenshots
-  deploy:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          keys: 
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
-      - run:
-          name: "Publish to Amplify Package"
-          command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-              npm whoami
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              yarn run publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+          path: /root/app/packages/aws-amplify-angular/cypress/screenshots
+  # integration_test_react:
+  #   <<: *defaults
+  #   steps:
+  #     - attach_workspace:
+  #         at: ./
+  #     - restore_cache:
+  #         key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+  #     - run:
+  #         name: "Link aws-amplify"
+  #         command: |
+  #           cd packages/aws-amplify
+  #           yarn link
+  #     - run:
+  #         name: "Link aws-amplify-react"
+  #         command: |
+  #           cd packages/aws-amplify-react
+  #           yarn link
+  #     - run: 
+  #         name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+  #         command: |
+  #           mkdir ~/.ssh
+  #           echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+  #           cd ~
+  #           git clone $AUTH_CLONE_URL
+  #           cd aws-amplify-cypress-auth
+  #           yarn
+  #           yarn link aws-amplify
+  #           yarn link aws-amplify-react
+  #           echo $AWS_EXPORTS_AUTH > src/aws-exports.js
+  #     - run:
+  #         name: "Start Auth test server in background"
+  #         command: |
+  #           cd ~/aws-amplify-cypress-auth
+  #           yarn start
+  #         background: true
+  #     - run:
+  #         name: "Run cypress tests for aws-amplify-react"
+  #         command: |
+  #           yarn cypress --scope aws-amplify-react
+  #     - store_artifacts:
+  #         path: /root/app/packages/aws-amplify-react/cypress/videos
+  #     - store_artifacts:
+  #         path: /root/app/packages/aws-amplify-react/cypress/screenshots
+  # deploy:
+  #   <<: *defaults
+  #   steps:
+  #     - attach_workspace:
+  #         at: ./
+  #     - restore_cache:
+  #         keys: 
+  #           - amplify-ssh-deps-{{ .Branch }}
+  #           - amplify-ssh-deps
+  #     - run:
+  #         name: "Publish to Amplify Package"
+  #         command: |
+  #           if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+  #             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+  #             git config --global user.email $GITHUB_EMAIL
+  #             git config --global user.name $GITHUB_USER
+  #             yarn run publish:$CIRCLE_BRANCH
+  #           else
+  #             echo "Skipping deploy."
+  #           fi
 
 workflows:
   version: 2
@@ -126,20 +166,15 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integration_test_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
+      - integration_test_angular:
           requires:
             - build
-      - deploy:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
-          requires:
-            - unit_test
+      # - deploy:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
+      #     requires:
+      #       - unit_test
