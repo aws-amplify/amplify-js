@@ -71,6 +71,5 @@
   "dependencies": {
     "@aws-amplify/ui": "^1.0.18",
     "@types/lodash": "^4.14.106",
-    "copyfiles": "^2.1.0"
   }
 }
