@@ -1,10 +1,9 @@
+import { login } from '../test-utils/cypress-tasks'; 
+
 describe('Angular Interactions: ', function() {
   before(function() {
     cy.visit('/');
-    cy.get('.amplify-signin-username input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
-    cy.get('.amplify-signin-password input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
-    cy.contains('button', 'Sign In').click()
-    cy.contains('.amplify-greeting-text', `Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
+    login();
   });
 
   describe('Chatbot', () => {
@@ -19,7 +18,6 @@ describe('Angular Interactions: ', function() {
     it('should allow the user to type a message and receive a chat response', () => {
 
       cy.get('.amplify-interactions-actions input').type('book a trip {enter}', {force: true});
-      cy.get('.amplify-interactions-button').click();
       cy.get('.amplify-interactions-response');
     })
   })

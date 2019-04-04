@@ -1,3 +1,5 @@
+import { login } from '../test-utils/cypress-tasks'; 
+
 describe('Angular Authenticator: ', function() {
   beforeEach(function() {
     cy.visit('/');
@@ -9,9 +11,7 @@ describe('Angular Authenticator: ', function() {
     });
   
     it('allows the user to sign in', () => {
-      cy.get('.amplify-signin-username input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
-      cy.get('.amplify-signin-password input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
-      cy.contains('button', 'Sign In').click()
+      login();
       cy.contains('.amplify-greeting-text', `Hello, ${Cypress.env('COGNITO_SIGN_IN_USERNAME')}`);
     });
 
@@ -27,11 +27,7 @@ describe('Angular Authenticator: ', function() {
 
   describe('Sign Out', function() {
     beforeEach(() => {
-      cy.get('.amplify-signin-username input').type(Cypress.env('COGNITO_SIGN_IN_USERNAME'));
-  
-      cy.get('.amplify-signin-password input').type(Cypress.env('COGNITO_SIGN_IN_PASSWORD'));
-  
-      cy.contains('button', 'Sign In').click()
+      login();
     })
 
     it('renders a greeting component when signed in', () => {
