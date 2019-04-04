@@ -48,7 +48,6 @@
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-
 export default {
   name: 'SignIn',
   props: ['signInConfig'],
@@ -92,7 +91,14 @@ export default {
             return AmplifyEventBus.$emit('authState', 'signedIn')
           }
         })
-        .catch(e => this.setError(e));
+        .catch((e) => {
+          if (e.code && e.code === 'UserNotConfirmedException'){
+            AmplifyEventBus.$emit('localUser', {username: this.options.username})
+            AmplifyEventBus.$emit('authState', 'confirmSignUp')
+          } else {
+            this.setError(e);
+          }
+        });
     },
     forgot: function() {
       AmplifyEventBus.$emit('authState', 'forgotPassword')

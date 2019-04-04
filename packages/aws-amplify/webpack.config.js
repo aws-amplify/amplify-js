@@ -13,6 +13,9 @@ module.exports = {
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
+    externals: {
+        'react-native': 'react-native'
+    },
     // Enable sourcemaps for debugging webpack's output.
     devtool: 'source-map',
     resolve: {

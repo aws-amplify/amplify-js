@@ -79,7 +79,8 @@ export default function withAmazon(Comp) {
                 }
 
                 const user = {
-                    name: userInfo.profile.Name
+                    name: userInfo.profile.Name,
+                    email: userInfo.profile.PrimaryEmail
                 };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
