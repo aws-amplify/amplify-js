@@ -1,9 +1,9 @@
 import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import Authenticator from '../../src/Auth/Authenticator';
+import Authenticator, { EmptyContainer } from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
 import AmplifyTheme  from '../../src/AmplifyTheme';
-import { Button, InputRow } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Button, InputRow, Container } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const waitForResolve = Promise.resolve();
 
@@ -142,5 +142,24 @@ describe('Authenticator', () => {
             expect(spyon).toBeCalled();
         });
     });
-        
+
+    describe('container component', () => {
+        test("use provided Container component if this.props.container is truthy", () => {
+            const CustomContainer = ({ children }) => {
+                return <div className="custom-container">{children}</div>;
+            };
+            const wrapper = mount(<Authenticator container={CustomContainer} />);
+            expect(wrapper.childAt(0).type()).toBe(CustomContainer);
+        });
+
+        test("use AWS Amplify UI Container if this.props.container is undefined", () => {
+            const wrapper = mount(<Authenticator />);
+            expect(wrapper.childAt(0).type()).toBe(Container);
+        });
+
+        test("use EmptyContainer if this.props.container is falsey", () => {
+            const wrapper = mount(<Authenticator container="" />);
+            expect(wrapper.childAt(0).type()).toBe(EmptyContainer);
+        });
+    });
 });
