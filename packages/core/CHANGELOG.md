@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.25-unstable.1"></a>
+## [1.0.25-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.25-unstable.0...@aws-amplify/core@1.0.25-unstable.1) (2019-04-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** fix hub this binding issue ([#3002](https://github.com/aws/aws-amplify/issues/3002)) ([8fba1a2](https://github.com/aws/aws-amplify/commit/8fba1a2))
+
+
+
+
 <a name="1.0.25-unstable.0"></a>
 ## [1.0.25-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.24...@aws-amplify/core@1.0.25-unstable.0) (2019-04-02)
 
