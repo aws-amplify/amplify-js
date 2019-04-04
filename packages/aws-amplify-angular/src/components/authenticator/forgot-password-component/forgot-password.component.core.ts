@@ -15,7 +15,8 @@
 
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
-
+import { UsernameAttributes } from '../types';
+import { countrylist, country }  from '../../../assets/countries';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -24,16 +25,58 @@ const template = `
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
     <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code') }}</div>
     <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
+    <div class="amplify-form-row" *ngIf="!code_sent">
+      <div *ngIf="this._usernameAttributes === 'email'">
+          <label class="amplify-input-label" for="signInEmail"> {{ this.amplifyService.i18n().get('Email') }} *</label>
+          <input
+            #signInEmail
+            class="amplify-form-input"
+            type="text"
+            required
+            placeholder="{{ this.amplifyService.i18n().get('Enter your email') }}"
+            [(ngModel)]="email"
+          />
+        </div>
+        <div *ngIf="this._usernameAttributes === 'phone_number'">
+          <label class="amplify-input-label" for="signInLocalPhoneNumber">
+            {{ this.amplifyService.i18n().get("Phone Number") }} *
+          </label>
 
-      <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-        <input #username
-          (keyup)="setUsername($event.target.value)"
-          class="amplify-form-input"
-          type="text"
-          placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-          [value]="username"
-        />
+          <div class="amplify-input-group">
+            <div class="amplify-input-group-item">
+              <select 
+                #signInCountryCode
+                name="countryCode"
+                class="amplify-select-phone-country"
+                [(ngModel)]="country_code">
+                <option *ngFor="let country of countries"
+                  value={{country.value}}>{{country.label}}
+                </option>
+              </select>
+            </div>
+            <div class="amplify-input-group-item">
+              <input
+                #signInLocalPhoneNumber
+                class="amplify-form-input"
+                [placeholder]="this.amplifyService.i18n().get('Enter your phone number')"
+                [(ngModel)]="local_phone_number"
+                name="local_phone_number"
+                type="text"
+              />
+            </div>
+          </div>
+        </div>
+        <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">
+          <label class="amplify-input-label" for="signInUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+          <input
+            #signInUsername
+            class="amplify-form-input"
+            type="text"
+            required
+            placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+            [(ngModel)]="username"
+          />
+        </div>
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
       <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
@@ -96,7 +139,8 @@ const template = `
 export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-
+  _usernameAttributes: string | Array<string> = [];
+  
   username: string;
   code: string;
   password: string;
@@ -106,15 +150,21 @@ export class ForgotPasswordComponentCore {
   code_sent = false;
 
   amplifyService: AmplifyService;
+  countries: country[];
+  local_phone_number: string;
+  country_code: string = '1';
+  email: string;
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+    this.countries = countrylist;
   }
 
   @Input()
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
+    this._usernameAttributes = data.usernameAttributes;
 
     this.username = data.authState.user? data.authState.user.username || '' : '';
   }
@@ -125,10 +175,22 @@ export class ForgotPasswordComponentCore {
     this._show = authState.state === 'forgotPassword';
 
     this.username = authState.user? authState.user.username || '' : '';
+    this.email = authState.user? authState.user.email || '' : '';
+    this.country_code = authState.user? authState.user.country_code || '' : '';
+    this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
+  }
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string | Array<string>) {
+    this._usernameAttributes = usernameAttributes;
   }
 
   setUsername(username: string) {
     this.username = username;
+
+    if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        this.username = `+${this.country_code}${this.local_phone_number}`;
+    }
   }
 
   setCode(code: string) {

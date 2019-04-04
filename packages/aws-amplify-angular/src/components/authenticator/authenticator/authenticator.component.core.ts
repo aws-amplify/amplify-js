@@ -21,12 +21,14 @@ const template = `
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
+      [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
@@ -42,6 +44,7 @@ const template = `
     <amplify-auth-forgot-password-core
     *ngIf="!shouldHide('ForgotPassword')"
     [authState]="authState"
+    [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
@@ -56,7 +59,6 @@ const template = `
   </div>
 `;
 
-
 @Component({
   selector: 'amplify-authenticator-core',
   template
@@ -67,6 +69,7 @@ export class AuthenticatorComponentCore {
     user: null
   };
   _signUpConfig: any = {};
+  _usernameAttributes: string | Array<string> = [];
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -85,11 +88,19 @@ export class AuthenticatorComponentCore {
     if (data.hide) {
       this.hide = data.hide;
     }
+    if (data.usernameAttributes) {
+      this._usernameAttributes = data.usernameAttributes;
+    }
   }
 
   @Input()
   set signUpConfig(signUpConfig: any) {
     this._signUpConfig = signUpConfig;
+  }
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string | Array<string>) {
+    this._usernameAttributes = usernameAttributes;
   }
 
   subscribe() {

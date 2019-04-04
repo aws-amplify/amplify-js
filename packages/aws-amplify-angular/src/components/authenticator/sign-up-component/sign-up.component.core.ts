@@ -17,7 +17,7 @@ import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
 import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../../assets/default-sign-up-fields';
-
+import { UsernameAttributes } from '../types';
 
 
 const template = `
@@ -112,6 +112,7 @@ export class SignUpField{
   displayOrder?:number;
   invalid?: boolean;
   custom?: boolean;
+  signUpWith?: boolean;
 }
 
 @Component({
@@ -123,6 +124,7 @@ export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
+  _usernameAttributes: string | Array<string> = [];
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
@@ -144,6 +146,7 @@ export class SignUpComponentCore implements OnInit {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'signUp';
+    this._usernameAttributes = data.usernameAttributes;
     if (data.signUpConfig) {
       this._signUpConfig = data.signUpConfig;
       if (this._signUpConfig.defaultCountryCode) {
@@ -158,16 +161,27 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
-      // shall I add it here?
-      if (this._signUpConfig.signUpWith === 'Email') {
+      
+      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
           this.signUpFields = signUpWithEmailFields;
-      } else if (this._signUpConfig.signUpWith === 'Phone Number') {
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
           this.signUpFields = signUpWithPhoneNumberFields;
       }
+
       if (this._signUpConfig.passwordPolicy) {
         this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
     }
+  }
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string | Array<string>) {
+    this._usernameAttributes = usernameAttributes;
+    if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+          this.signUpFields = signUpWithEmailFields;
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+          this.signUpFields = signUpWithPhoneNumberFields;
+      }
   }
 
   @Input()
@@ -192,8 +206,6 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
-
-      // or here?
       if (this._signUpConfig.passwordPolicy) {
         this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
@@ -235,14 +247,13 @@ export class SignUpComponentCore implements OnInit {
         const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
         this.user.attributes[newKey] = userValues[index];
       }
+      
+      if (this.signUpFields.find(e => 
+            e.signUpWith &&
+            e.key === key)
+        )
+        { this.user.username = userValues[index]; }
     });
-
-    const signUpWith = this._signUpConfig? this._signUpConfig.signUpWith : undefined;
-    if (signUpWith === 'Email') {
-      this.user.username = this.user.attributes['email'];
-    } else if (signUpWith === 'Phone Number') {
-      this.user.username = this.user.attributes['phone_number'];
-    }
 
     this.amplifyService.auth()
       .signUp(this.user)

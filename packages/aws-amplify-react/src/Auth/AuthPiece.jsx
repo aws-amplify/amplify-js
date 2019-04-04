@@ -22,6 +22,7 @@ import {
     InputLabel,
     SelectInput
  } from '../Amplify-UI/Amplify-UI-Components-React';
+import { UsernameAttributes } from './common/types';
 
 export default class AuthPiece extends React.Component {
     constructor(props) {
@@ -40,9 +41,9 @@ export default class AuthPiece extends React.Component {
 
     getUsername() {
         const usernameAttributes = this.props.usernameAttributes || [];
-        if (usernameAttributes === 'email') {
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
             return this.inputs.email;
-        } else if (usernameAttributes === 'phone_number') {
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
         } else {
             return this.inputs.username;
@@ -51,7 +52,7 @@ export default class AuthPiece extends React.Component {
 
     renderUsernameField(theme) {
         const usernameAttributes = this.props.usernameAttributes || [];
-        if (usernameAttributes === 'email') {
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
             return (
                 <FormField theme={theme}>           
                     <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
@@ -65,7 +66,7 @@ export default class AuthPiece extends React.Component {
                     />
                 </FormField>
             );
-        } else if (usernameAttributes === 'phone_number') {
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             return (
                 <FormField theme={theme} key="phone_number">
                     <InputLabel theme={theme}>{I18n.get('Phone number')} *</InputLabel>
@@ -79,7 +80,7 @@ export default class AuthPiece extends React.Component {
                             )}
                         </select>
                         <Input
-                            placeholder={I18n.get("Please enter your phone number")}
+                            placeholder={I18n.get("Enter your phone number")}
                             theme={theme}
                             type="tel"
                             id="phone_line_number"

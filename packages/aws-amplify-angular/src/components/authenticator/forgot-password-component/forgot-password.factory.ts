@@ -33,6 +33,7 @@ import { AuthState } from '../../../providers';
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() usernameAttributes: string | Array<string> = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -46,8 +47,17 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ForgotPasswordComponentIonic,{authState: this.authState}) :
-    new ComponentMount(ForgotPasswordComponentCore, {authState: this.authState});
+    new ComponentMount(
+      ForgotPasswordComponentIonic,{
+        authState: this.authState,
+        usernameAttributes: this.usernameAttributes
+      }) 
+      :
+    new ComponentMount(
+      ForgotPasswordComponentCore, {
+        authState: this.authState,
+        usernameAttributes: this.usernameAttributes
+      });
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
