@@ -21,10 +21,14 @@ import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Confirm your sign up code') }}</div>
+    <div class="amplify-form-header amplify-form-header-ionic">
+      {{ this.amplifyService.i18n().get('Confirm your sign up code') }}
+    </div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          {{ this.amplifyService.i18n().get('Username *') }}
+        </ion-label>
         <ion-input type="text"
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
@@ -33,7 +37,9 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
+        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          {{ this.amplifyService.i18n().get('Code *') }}
+        </ion-label>
         <ion-input
           #code
           type="text"
@@ -51,8 +57,18 @@ const template = `
         >{{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
     <div class="amplify-form-row">
-      <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
-      <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onResend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
+      <div class="amplify-form-signup">
+        {{ this.amplifyService.i18n().get('Have an account?') }}
+        <a class="amplify-form-link" (click)="onSignIn()">
+          {{ this.amplifyService.i18n().get('Sign In') }}
+        </a>
+      </div>
+      <div class="amplify-form-signup">
+        {{ this.amplifyService.i18n().get('Lost your code?') }}
+        <a class="amplify-form-link" (click)="onResend()">
+          {{ this.amplifyService.i18n().get('Resend') }}
+        </a>
+      </div>
     </div>
   </div>
 </div>

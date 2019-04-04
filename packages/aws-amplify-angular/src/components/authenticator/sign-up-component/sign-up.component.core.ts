@@ -19,14 +19,15 @@ import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
-
-
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> angular-refactor-final-copy
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
@@ -99,7 +100,6 @@ const template = `
   </div>
 </div>
 `;
-
 
 export class SignUpField{
   label: string;

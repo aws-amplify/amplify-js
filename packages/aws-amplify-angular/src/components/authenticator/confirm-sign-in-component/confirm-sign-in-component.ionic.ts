@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
@@ -52,9 +53,8 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

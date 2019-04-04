@@ -14,7 +14,8 @@
 // tslint:enable
 
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
@@ -80,7 +81,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
@@ -90,7 +90,18 @@ const template = `
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);
+  constructor(protected amplifyService: AmplifyService) {
+    super(amplifyService);    
+  }
+
+  _setError(err) {
+    if (!err) {
+      this.errorMessage = null;
+      return;
+    }
+
+    const errorMessage = err.message || err;
+    alert(errorMessage);
+    this.logger(errorMessage);
   }
 }

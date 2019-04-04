@@ -1,6 +1,10 @@
 {
   "name": "aws-amplify-angular",
+<<<<<<< HEAD
   "version": "2.1.11-unstable.0",
+=======
+  "version": "2.1.7-unstable.8",
+>>>>>>> angular-refactor-final-copy
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",

@@ -49,7 +49,6 @@ const template = `
       </div>
     </div>
   </div>
-
 </div>
 <div class="amplify-alert" *ngIf="errorMessage">
 <div class="amplify-alert-body">

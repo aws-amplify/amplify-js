@@ -22,7 +22,6 @@ const template = `
   <div class="amplify-form-container">
     <div class="amplify-form-body">
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
-
       <div class="amplify-form-row">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}
@@ -36,7 +35,6 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
         />
       </div>
-
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
@@ -45,17 +43,13 @@ const template = `
             </a>
           </div>
         </div>
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
-
       </div>
   </div>
-
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -63,7 +57,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 

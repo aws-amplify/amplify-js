@@ -39,7 +39,6 @@ const template = `
           [value]="username"
         />
       </div>
-
       <div class="amplify-form-row amplify-signin-password">
         <label class="amplify-input-label" for="password">
           {{ this.amplifyService.i18n().get('Password *') }}
@@ -57,27 +56,23 @@ const template = `
             (click)="onForgotPassword()"
           >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
       </div>
-
       <div class="amplify-form-actions">
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             (click)="onSignIn()"
           >{{ this.amplifyService.i18n().get('Sign In') }}</button>
         </div>
-
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
-            {{ this.amplifyService.i18n().get('No account?') }} 
+            {{ this.amplifyService.i18n().get('No account?') }}
             <a class="amplify-form-link" (click)="onSignUp()">
-            {{ this.amplifyService.i18n().get('Create account') }}
+              {{ this.amplifyService.i18n().get('Create account') }}
             </a>
           </div>
         </div>
       </div>
     </div>
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -85,7 +80,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
