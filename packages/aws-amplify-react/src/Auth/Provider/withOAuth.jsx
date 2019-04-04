@@ -33,36 +33,12 @@ export default function withOAuth(Comp, options) {
             this.signIn = this.signIn.bind(this);
         }
 
+        componentDidMount(){
+            Auth.handleAuthResponse();
+        }
+
         signIn() {
-            if (!Auth || typeof Auth.configure !== 'function') {
-                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-            }
-
-            const { oauth={} } = Auth.configure();
-            // to keep backward compatibility
-            const cognitoHostedUIConfig = oauth? (oauth['domain']? oauth : oauth.awsCognito) : undefined;
-            const config = this.props.oauth_config || options || cognitoHostedUIConfig;
-
-            logger.debug('withOAuth configuration', config);
-            const { 
-                domain, 
-                redirectSignIn,
-                redirectSignOut,
-                responseType
-            } = config;
-
-            const options = config.options || {};
-            const url = 'https://' + domain 
-                + '/login?redirect_uri=' + redirectSignIn 
-                + '&response_type=' + responseType 
-                + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
-
-            try {
-                localStorage.setItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY, 'true');
-            } catch (e) {
-                logger.debug('Failed to set item into localStorage', e);
-            }
-            window.location.assign(url);
+            Auth.federatedSignIn();
         }
 
         render() {
