@@ -53,50 +53,7 @@ jobs:
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run test --scope aws-amplify-angular
       - run: yarn run test --scope aws-amplify-vue
-  integration_test_angular:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: "Link aws-amplify"
-          command: |
-            cd packages/aws-amplify
-            yarn link
-      - run:
-          name: "Link aws-amplify-angular"
-          command: |
-            cd packages/aws-amplify-angular
-            yarn link
-      - run: 
-          name: "Clone auth test package link amplify packages"
-          command: |
-            mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            cd ~
-            git clone $ANGULAR_CLONE_URL
-            cd aws-amplify-cypress-auth
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-angular
-            echo $AWS_EXPORTS_AUTH > src/aws-exports.js
-      - run:
-          name: "Start Auth test server in background"
-          command: |
-            cd ~/aws-amplify-cypress-auth
-            yarn start
-          background: true
-      - run:
-          name: "Run cypress tests for aws-amplify-angular"
-          command: |
-            yarn cypress --scope aws-amplify-angular
-      - store_artifacts:
-          path: /root/app/packages/aws-amplify-angular/cypress/videos
-      - store_artifacts:
-          path: /root/app/packages/aws-amplify-angular/cypress/screenshots
-  integration_test_react:
+  integration_test_auth:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -153,6 +110,7 @@ jobs:
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              npm whoami
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               yarn run publish:$CIRCLE_BRANCH
