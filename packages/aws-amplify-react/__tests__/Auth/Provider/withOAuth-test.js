@@ -26,36 +26,47 @@ describe('withOAuth test', () => {
 
     describe('signIn test', () => {
         test('happy case with connected response', () => {
-            const mockFn = jest.fn();
-            window.location.assign = mockFn;
             const MockComp = class extends Component {
                 render() {
                     return <div />;
                 }
             };
 
-            const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
-                return {
-                    oauth: {
-                        awsCognito: {
-                            domain: 'domain',
-                            redirectSignIn: 'redirectUriSignIn',
-                            redirectSignOut: 'redirectUriSignOut',
-                            responseType: 'responseType'
-                        }
-                    },
-                    userPoolWebClientId: 'userPoolWebClientId'
-                };
-            });
+            const spyon = jest.spyOn(Auth, 'federatedSignIn');
+            const spyon2 = jest.spyOn(Auth, 'handleAuthResponse');
+            
             const Comp = withOAuth(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = mount(<Comp/>);
             const comp = wrapper.instance();
 
             comp.signIn();
-            expect(mockFn).toBeCalledWith(
-                "https://domain/login?redirect_uri=redirectUriSignIn&response_type=responseType&client_id=userPoolWebClientId"
-            );
+
+            expect(spyon).toBeCalledWith(undefined);
+            expect(spyon2).toBeCalled();
             spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('Passing in a social provider', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const spyon = jest.spyOn(Auth, 'federatedSignIn');
+            const spyon2 = jest.spyOn(Auth, 'handleAuthResponse');
+            
+            const Comp = withOAuth(MockComp);
+            const wrapper = mount(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signIn('Facebook');
+
+            expect(spyon).toBeCalledWith({"provider": "Facebook"});
+            expect(spyon2).toBeCalled();
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 });

@@ -30,9 +30,14 @@ import {
 const SHA256 = require("crypto-js/sha256");
 const Base64 = require("crypto-js/enc-base64");
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAuthEvent = (event:string, data:any, message:string) => {
-  Hub.dispatch('auth', { event, data, message }, 'Auth', Symbol.for('amplify_default'));
+  Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
+
+const logger = new Logger('OAuth');
 
 export default class OAuth {
 
@@ -86,6 +91,7 @@ export default class OAuth {
     }).map(([k,v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
 
     const URL = `https://${domain}/oauth2/authorize?${queryString}`;
+    logger.debug(`Redirecting to ${URL}`);
     this._urlOpener(URL);
   }
 
@@ -99,7 +105,14 @@ export default class OAuth {
 
     if (!code) { return; }
 
+    
     const oAuthTokenEndpoint = 'https://' + this._config.domain + '/oauth2/token';
+      
+    dispatchAuthEvent(
+      'codeFlow',
+      {},
+      `Retrieving tokens from ${oAuthTokenEndpoint}`
+    );
 
     const client_id = isCognitoHostedOpts(this._config)
       ? this._cognitoClientId
@@ -118,6 +131,8 @@ export default class OAuth {
       redirect_uri,
       code_verifier
     };
+
+    logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
 
     const { access_token, refresh_token, id_token, error } = await (await fetch(oAuthTokenEndpoint, {
         method: 'POST',
@@ -140,7 +155,6 @@ export default class OAuth {
   }
 
   private async _handleImplicitFlow(currentUrl: string) {
-    console.log('TOKEN');
 
     const { id_token, access_token } = parse(currentUrl).hash
       .substr(1) // Remove # from returned code
@@ -149,6 +163,13 @@ export default class OAuth {
       .reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
         id_token: undefined, access_token: undefined
       });
+
+    dispatchAuthEvent(
+      'implicitFlow',
+      {},
+      `Got tokens from ${currentUrl}`
+    );
+    logger.debug(`Retrieving implicit tokens from ${currentUrl} with`);
 
     return {
       accessToken: access_token,
@@ -176,6 +197,7 @@ export default class OAuth {
 
     this._validateState(urlParams);
 
+    logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
     if (this._config.responseType === 'code') {
       return this._handleCodeFlow(currentUrl);
     } else {
@@ -211,6 +233,13 @@ export default class OAuth {
       logout_uri: signout_uri
     }).map(([k, v]) => `${k}=${v}`).join('&');
 
+    dispatchAuthEvent(
+      'oAuthSignOut',
+      {oAuth: 'signOut'},
+      `Signing out from ${oAuthLogoutEndpoint}`
+    );
+    logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
+    
     this._urlOpener(oAuthLogoutEndpoint);
   }
 
@@ -231,7 +260,7 @@ export default class OAuth {
   }
 
   private _generateRandom(size: number) {
-    const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     const buffer = new Uint8Array(size);
     for (let i = 0; i < size; i += 1) {
       buffer[i] = (Math.random() * CHARSET.length) | 0;

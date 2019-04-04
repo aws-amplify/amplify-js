@@ -187,17 +187,6 @@ export default class AuthClass {
                 config: cognitoAuthParams,
                 cognitoClientId: cognitoAuthParams.cognitoClientId
             });
-
-            // if not logged in, try to parse the url.
-            this.currentAuthenticatedUser().then(() => {
-                logger.debug('user already logged in');
-            }).catch(e => {
-                logger.debug('not logged in, try to parse the url');
-                if (!JS.browserOrNode().isBrowser || !window.location) {
-                    logger.debug('not in the browser');
-                    return;
-                }
-            });
         }
 
         dispatchAuthEvent(

@@ -37,8 +37,12 @@ export default function withOAuth(Comp, options) {
             Auth.handleAuthResponse();
         }
 
-        signIn() {
-            Auth.federatedSignIn();
+        signIn(provider) {
+            Auth.federatedSignIn(
+                provider
+                  ?{provider}
+                  :undefined
+            );
         }
 
         render() {
