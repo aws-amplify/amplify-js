@@ -99,8 +99,6 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isVRPresentationActive = false;
   isFullscreen = false;
   sceneError = null;
-
-  amplifyService: AmplifyService;
   amplifyUI: AmplifyUI;
 
   @Input()
@@ -108,8 +106,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     this.sceneName = data.sceneName;
   }
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.amplifyUI = AmplifyUI;
   }
 
@@ -132,7 +129,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   progressCallback = (progress) => {
     const percentage = progress * 100;
     this.loadPercentage = percentage;
-  };
+  }
 
   async loadAndStartScene() {
     this.loading = true;

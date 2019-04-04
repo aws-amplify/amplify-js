@@ -97,7 +97,7 @@ export class PhotoPickerComponentCore {
   @Output()
   uploaded: EventEmitter<Object> = new EventEmitter<Object>();
 
-  constructor( private amplify: AmplifyService ) {}
+  constructor(protected amplify: AmplifyService ) {}
 
   pick(evt) {
     const file = evt.target.files[0];

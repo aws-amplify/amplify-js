@@ -28,16 +28,19 @@ const template = `
         (click)="onSignOut()"
       >{{ this.amplifyService.i18n().get('Sign Out') }}</ion-button>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-greetings-ionic',
-  template: template
+  template
 })
 export class GreetingComponentIonic extends GreetingComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
+<<<<<<< HEAD
 
+=======
+>>>>>>> linting and binding amplifyservice in constructor
   }
 }

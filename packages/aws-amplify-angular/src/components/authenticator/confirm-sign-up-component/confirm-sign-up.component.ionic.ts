@@ -23,8 +23,15 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Confirm your sign up code') }}</div>
     <ion-list>
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
         <ion-input type="text"
+=======
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input type="text" 
+>>>>>>> linting and binding amplifyservice in constructor
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
           [value]="username"
@@ -32,8 +39,15 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
         <ion-input
+=======
+        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Code *
+        </ion-label>
+        <ion-input 
+>>>>>>> linting and binding amplifyservice in constructor
           #code
           type="text"
           class="amplify-form-input"
@@ -49,9 +63,23 @@ const template = `
           (click)="onConfirm()"
         >{{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
+<<<<<<< HEAD
     <div class="amplify-form-row">
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onResend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
+=======
+    <div class="amplify-form-cell-left">
+      <div class="amplify-form-signup">
+        Have an account?
+        <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
+      </div>
+    </div>
+    <div class="amplify-form-cell-left">
+      <div class="amplify-form-signup">
+        Lost your code?
+        <a class="amplify-form-link" (click)="onResend()">Resend</a>
+      </div>
+>>>>>>> linting and binding amplifyservice in constructor
     </div>
   </div>
 </div>
@@ -73,9 +101,7 @@ const template = `
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
-
-
 }

@@ -38,9 +38,7 @@ const template =  `
 })
 export class S3AlbumComponentIonic extends S3AlbumComponentCore {
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
     
   }

@@ -23,8 +23,15 @@ const template = `
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
     <ion-list lines="none">
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label class="amplify-input-label" for="username" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
           <ion-input type="text"
+=======
+        <ion-label class="amplify-input-label" for="username" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input type="text" 
+>>>>>>> linting and binding amplifyservice in constructor
           #username
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
@@ -32,8 +39,15 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label class="amplify-input-label" for="password" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
         <ion-input
+=======
+        <ion-label class="amplify-input-label" for="password" position="stacked">
+          Password *
+        </ion-label>
+        <ion-input 
+>>>>>>> linting and binding amplifyservice in constructor
           #password
           type="password"
           class="amplify-form-input"
@@ -51,8 +65,18 @@ const template = `
       </div>
 
       <div class="amplify-form-row">
+<<<<<<< HEAD
         <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ this.amplifyService.i18n().get('Create account') }}</a></div>
         <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">{{ this.amplifyService.i18n().get('Reset Password') }}</a></div>
+=======
+        <div class="amplify-form-signup">
+          No account?
+          <a class="amplify-form-link" (click)="onSignUp()">Create account</a>
+        </div>
+        <div class="amplify-form-signup">
+          <a class="amplify-form-link" (click)="onForgotPassword()">Reset Password</a>
+        </div>
+>>>>>>> linting and binding amplifyservice in constructor
       </div>
 
     </div>
@@ -65,14 +89,12 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template: template
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 

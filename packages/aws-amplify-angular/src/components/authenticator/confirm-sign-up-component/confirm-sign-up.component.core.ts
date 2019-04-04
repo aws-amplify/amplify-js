@@ -76,11 +76,11 @@ const template = `
 </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-core',
-  template: template
+  template
 })
 
 export class ConfirmSignUpComponentCore {
@@ -89,11 +89,8 @@ export class ConfirmSignUpComponentCore {
   username: string;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-  }
+  constructor(protected amplifyService: AmplifyService) {}
 
   @Input()
   set data(data: any) {

@@ -13,12 +13,20 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { ChatBotClass } from './chatbot.class';
-import { ChatbotComponentIonic } from './chatbot.component.ionic'
+import { ChatbotComponentIonic } from './chatbot.component.ionic';
 import { ChatbotComponentCore } from './chatbot.component.core';
 
 @Component({
@@ -60,20 +68,23 @@ export class ChatBotComponent implements OnInit, OnDestroy {
       voiceConfig: this.voiceConfig,
       voiceEnabled: this.voiceEnabled,
       textEnabled: this.textEnabled
-    }
+    };
 
-    let interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ChatbotComponentIonic, interactionParams) : new ComponentMount(ChatbotComponentCore, interactionParams);
+    const interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(ChatbotComponentIonic, interactionParams) :
+    new ComponentMount(ChatbotComponentCore, interactionParams);
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(interactionComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(interactionComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<ChatBotClass>componentRef.instance).data = interactionComponent.data;
 
     componentRef.instance.complete.subscribe((e) => {
       this.complete.emit(e);
-    })
+    });
   }
 }

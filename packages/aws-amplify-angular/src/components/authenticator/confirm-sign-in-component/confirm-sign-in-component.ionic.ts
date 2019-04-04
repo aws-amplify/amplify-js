@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
-import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core'
+import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
@@ -8,8 +8,15 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Confirm your sign in code') }}</div>
     <ion-list>
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
         <ion-input
+=======
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          Code *
+        </ion-label>
+        <ion-input 
+>>>>>>> linting and binding amplifyservice in constructor
           #code
           type="text"
           class="amplify-form-input"
@@ -37,20 +44,19 @@ const template = `
   </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-in-ionic',
-  template: template
+  template
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService)
+  constructor(protected amplifyService: AmplifyService) {
+    super(amplifyService);
   }
 }

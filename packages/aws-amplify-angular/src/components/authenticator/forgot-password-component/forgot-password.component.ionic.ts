@@ -21,6 +21,7 @@ import { includes } from '../common';
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
+<<<<<<< HEAD
   <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
   <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code to reset your password') }}</div>
 
@@ -29,6 +30,19 @@ const template = `
     <ion-item lines="none" *ngIf="!code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
       <ion-input type="text"
+=======
+  <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
+  <div class="amplify-form-text" *ngIf="!code_sent">
+    You will receive a verification code to reset your password
+  </div>
+  <ion-list>
+
+    <ion-item lines="none" *ngIf="!code_sent">
+      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+        Username *
+      </ion-label>
+      <ion-input type="text" 
+>>>>>>> linting and binding amplifyservice in constructor
         class="amplify-form-input"
         (keyup)="setUsername($event.target.value)"
         [value]="username"
@@ -36,8 +50,15 @@ const template = `
     </ion-item>
 
     <ion-item lines="none" *ngIf="code_sent">
+<<<<<<< HEAD
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
       <ion-input
+=======
+      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+        Code *
+      </ion-label>
+      <ion-input 
+>>>>>>> linting and binding amplifyservice in constructor
         #code
         type="text"
         class="amplify-form-input"
@@ -46,8 +67,15 @@ const template = `
     </ion-item>
 
     <ion-item lines="none" *ngIf="code_sent">
+<<<<<<< HEAD
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
       <ion-input
+=======
+      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+        Password *
+      </ion-label>
+      <ion-input 
+>>>>>>> linting and binding amplifyservice in constructor
         #password
         type="password"
         class="amplify-form-input"
@@ -69,8 +97,19 @@ const template = `
       >{{ this.amplifyService.i18n().get('Verify') }}</ion-button>
     </div>
     <div class="amplify-form-row">
+<<<<<<< HEAD
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Have an account?') }} <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a></div>
       <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('Lost your code?') }} <a class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend') }}</a></div>
+=======
+      <div class="amplify-form-signup">
+        Have an account? 
+        <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
+      </div>
+      <div class="amplify-form-signup">
+        Lost your code? 
+        <a class="amplify-form-link" (click)="onSend()">Resend</a>
+      </div>
+>>>>>>> linting and binding amplifyservice in constructor
     </div>
   </div>
   </div>
@@ -93,8 +132,18 @@ const template = `
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
+<<<<<<< HEAD
+=======
+  }
+
+  _setError(err) {
+    if (!err) {
+      this.errorMessage = null;
+      return;
+    }
+>>>>>>> linting and binding amplifyservice in constructor
 
   }
 }
