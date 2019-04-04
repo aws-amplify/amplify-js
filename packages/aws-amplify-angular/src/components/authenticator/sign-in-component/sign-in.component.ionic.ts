@@ -93,15 +93,4 @@ export class SignInComponentIonic extends SignInComponentCore {
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);    
   }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-
-    const errorMessage = err.message || err;
-    alert(errorMessage);
-    this.logger(errorMessage);
-  }
 }

@@ -120,7 +120,7 @@ export class SignUpComponentCore implements OnInit {
   local_phone_number: string;
   country_code: string = '1';
   countries: any[];
-  header = 'Create a new account';
+  header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
