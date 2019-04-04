@@ -30,3 +30,8 @@ export const getPKCE = () => {
   window.sessionStorage.removeItem('ouath_pkce_key');
   return ouath_pkce_key;
 };
+
+export const clearAll = () => {
+  window.sessionStorage.removeItem('ouath_pkce_key');
+  window.sessionStorage.removeItem('oauth_state');
+};

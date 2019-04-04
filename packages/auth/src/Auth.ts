@@ -60,6 +60,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
+import * as oAuthStorage from './OAuth/oauthStorage';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -187,6 +188,9 @@ export default class AuthClass {
                 config: cognitoAuthParams,
                 cognitoClientId: cognitoAuthParams.cognitoClientId
             });
+
+            // **NOTE** - Remove this in a future major release as it is a breaking change
+            this.handleAuthResponse();
         }
 
         dispatchAuthEvent(
@@ -1403,9 +1407,11 @@ export default class AuthClass {
         }
 
 
-        if (isFederatedSignInOptions(providerOrOptions) 
+        if (isFederatedSignInOptions(providerOrOptions)
             || isFederatedSignInOptionsCustom(providerOrOptions)
             || typeof providerOrOptions === 'undefined') {
+            
+            
 
             const options = providerOrOptions || { provider: CognitoHostedUIIdentityProvider.Cognito };
             const provider = isFederatedSignInOptions(options)
@@ -1462,6 +1468,13 @@ export default class AuthClass {
      * @param {String} URL - optional parameter for customers to pass in the response URL
      */
     public async handleAuthResponse(URL?: string) {
+        /* This code is to not break backwards compatability with previous
+           version of Cognito Auth SDK parsing URL in Auth.configure() */
+        try {
+            await this.currentAuthenticatedUser();
+            oAuthStorage.clearAll();
+            return;     // Exit if the user already logged in
+        } catch (err) { /* Do Nothing */}
 
         if (!this._config.userPoolId){
             throw new Error(`OAuth responses require a User Pool defined in config`);
@@ -1526,6 +1539,7 @@ export default class AuthClass {
                     err,
                     `A failure occurred when returning to the Cognito Hosted UI`
                 );
+                throw err;
             }
         }
 

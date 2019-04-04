@@ -59,9 +59,8 @@ export default class OAuth {
     this._urlOpener = config.urlOpener || launchUri;
     this._config = config;
     this._cognitoClientId = cognitoClientId;
-    this._scopes = Array.from(new Set<string>([].concat('aws.cognito.signin.user.admin', scopes)).values());
+    this._scopes = scopes;
   }
-
 
   public oauthSignIn(
     responseType = 'code',
@@ -179,29 +178,35 @@ export default class OAuth {
   }
 
   public async handleAuthResponse(currentUrl?: string) {
-    const urlParams = currentUrl? {
-      ...(parse(currentUrl).hash || '#').substr(1)
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k,v]) => (acc[k] = v, acc), {}),
-      ...(parse(currentUrl).query || '')
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k,v]) => (acc[k] = v, acc), {})
-    } as any : {};
-    const { error , error_description } = urlParams;
-    
-    if (error){
-      throw new Error(error_description);
-    }
-
-    this._validateState(urlParams);
-
-    logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
-    if (this._config.responseType === 'code') {
-      return this._handleCodeFlow(currentUrl);
-    } else {
-      return this._handleImplicitFlow(currentUrl);
+    try {
+      const urlParams = currentUrl? {
+        ...(parse(currentUrl).hash || '#').substr(1)
+          .split('&')
+          .map(entry => entry.split('='))
+          .reduce((acc, [k,v]) => (acc[k] = v, acc), {}),
+        ...(parse(currentUrl).query || '')
+          .split('&')
+          .map(entry => entry.split('='))
+          .reduce((acc, [k,v]) => (acc[k] = v, acc), {})
+      } as any : {};
+      const { error , error_description } = urlParams;
+      
+      if (error){
+        throw new Error(error_description);
+      }
+  
+      this._validateState(urlParams);
+  
+      logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
+      if (this._config.responseType === 'code') {
+        return this._handleCodeFlow(currentUrl);
+      } else {
+        return this._handleImplicitFlow(currentUrl);
+      }
+    } catch (err){
+      console.log('attempting to clear');
+      oAuthStorage.clearAll();
+      throw err;
     }
   }
 
@@ -262,8 +267,12 @@ export default class OAuth {
   private _generateRandom(size: number) {
     const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     const buffer = new Uint8Array(size);
-    for (let i = 0; i < size; i += 1) {
-      buffer[i] = (Math.random() * CHARSET.length) | 0;
+    if (typeof window !== 'undefined' && !!(window.crypto)) {
+      window.crypto.getRandomValues(buffer);
+    } else {
+      for (let i = 0; i < size; i += 1) {
+        buffer[i] = (Math.random() * CHARSET.length) | 0;
+      }
     }
     return this._bufferToString(buffer);
   }

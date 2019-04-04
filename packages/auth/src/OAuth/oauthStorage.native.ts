@@ -35,3 +35,8 @@ export const getPKCE = () => {
   obj.ouath_pkce_key = undefined;
   return ouath_pkce_key;
 };
+
+export const clearAll = () => {
+  obj.ouath_pkce_key = undefined;
+  obj.oauth_state = undefined;
+};
