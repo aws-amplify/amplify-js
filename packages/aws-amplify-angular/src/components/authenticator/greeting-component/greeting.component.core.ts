@@ -22,7 +22,7 @@ const template = `
     <div class="amplify-greeting-flex-spacer"></div>
     <a class="amplify-form-link amplify-greeting-sign-out"
       (click)="onSignOut()"
-    >Sign out</a>
+    >{{ this.amplifyService.i18n().get('Sign out') }}</a>
 </div>
 `;
 

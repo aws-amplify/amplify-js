@@ -21,36 +21,39 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container">
   <div class="amplify-form-body">
-  <div class="amplify-form-header">You are required to update your password</div>
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="password"> Password *</label>
-      <input #password
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
-        type="password"
-        placeholder="Password"
-      />
+  <div class="amplify-form-header">
+    {{ this.amplifyService.i18n().get('You are required to update your password') }}
+  </div>
+  <div class="amplify-form-row">
+    <label class="amplify-input-label" for="password">
+      {{ this.amplifyService.i18n().get('Password *') }}
+    </label>
+    <input #password
+      (keyup)="setPassword(password.value)"
+      (keyup.enter)="onSubmit()"
+      class="amplify-form-input"
+      type="password"
+      placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+    />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
-        >Back to Sign In</a>
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
           (click)="onSubmit()"
-        >Submit</button>
+        >{{ this.amplifyService.i18n().get('Submit') }}</button>
       </div>
     </div>
   </div>
-  
 </div>
 <div class="amplify-alert" *ngIf="errorMessage">
 <div class="amplify-alert-body">
   <span class="amplify-alert-icon">&#9888;</span>
-  <div class="amplify-alert-message">{{ errorMessage }}</div>
+  <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
   <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
 </div>
 </div>

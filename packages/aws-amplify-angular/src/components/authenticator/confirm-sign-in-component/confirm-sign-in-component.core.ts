@@ -21,44 +21,42 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-    <div class="amplify-form-header">Confirm Sign in</div>
-
+    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row">
-        <label class="amplify-input-label" for="code"> Confirmation Code *</label>
+        <label class="amplify-input-label" for="code">
+          {{ this.amplifyService.i18n().get('Confirmation Code *') }
+        }</label>
         <input #code
           (change)="setCode(code.value)"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
           class="amplify-form-input"
           type="text"
-          placeholder="Enter your Code"
+          placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
         />
       </div>
-
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
+            <a class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            </a>
           </div>
         </div>
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
-            (click)="onConfirm()">Confirm</button>
+            (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
-
       </div>
   </div>
-
-
-<div class="amplify-alert" *ngIf="errorMessage">
-  <div class="amplify-alert-body">
-    <span class="amplify-alert-icon">&#9888;</span>
-    <div class="amplify-alert-message">{{ errorMessage }}</div>
-    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
-</div>
 </div>
 `;
 

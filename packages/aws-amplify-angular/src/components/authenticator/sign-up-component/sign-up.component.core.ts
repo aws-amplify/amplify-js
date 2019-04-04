@@ -19,24 +19,22 @@ import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
-
-
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">{{this.header}}</div>
+      <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
+            {{ this.amplifyService.i18n().get(field.label) }}
             <span *ngIf="field.required">*</span>
           </label>
           <input #{{field.key}}
             class="amplify-form-input"
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
-            placeholder={{field.label}}
+            [placeholder]="this.amplifyService.i18n().get(field.label)"
             [(ngModel)]="user[field.key]" name="field.key" />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
               {{passwordPolicy}}
@@ -44,25 +42,25 @@ const template = `
         </div>
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
+            {{ this.amplifyService.i18n().get(field.label) }}
             <span *ngIf="field.required">*</span>
           </label>
           <div class="amplify-input-group">
             <div class="amplify-input-group-item">
               <select #countryCode
-                name="countryCode" 
+                name="countryCode"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country" 
+                class="amplify-select-phone-country"
                 [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"  
-                  value={{country.value}}>{{country.label}} 
+                <option *ngFor="let country of countries"
+                  value={{country.value}}>{{country.label}}
                 </option>
               </select>
             </div>
             <div class="amplify-input-group-item">
-              <input 
+              <input
                 class="amplify-form-input"
-                placeholder={{field.label}}
+                [placeholder]="this.amplifyService.i18n().get(field.label)"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
@@ -75,13 +73,16 @@ const template = `
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
-            Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
+            {{ this.amplifyService.i18n().get('Have an account?') }}
+            <a class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Sign in') }}
+            </a>
           </div>
         </div>
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          >Sign Up</button>
+          >{{ this.amplifyService.i18n().get('Sign Up') }}</button>
         </div>
       </div>
     </div>
@@ -89,13 +90,12 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
 </div>
 `;
-
 
 export class SignUpField{
   label: string;
