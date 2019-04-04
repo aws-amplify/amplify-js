@@ -105,7 +105,7 @@ export class HubClass {
         // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
             logger.warn(`WARNING onHubCapsule is Deprecated. Please pass in a callback.`);
-            cb = callback.onHubCapsule;
+            cb = callback.onHubCapsule.bind(callback);
         } else if (typeof callback !== 'function') {
             throw new Error('No callback supplied to Hub');
         } else {
