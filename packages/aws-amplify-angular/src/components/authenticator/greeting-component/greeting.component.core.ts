@@ -43,14 +43,11 @@ export class GreetingComponentCore implements OnInit {
   @Input()
   authState: AuthState;
 
-<<<<<<< HEAD
-=======
   ngOnInit() {
     if (!this.amplifyService.auth()){
       this.logger.warn('Auth module not registered on AmplifyService provider');
     }
   }
->>>>>>> added logging of missing modules; updated unit tests
 
   subscribe() {
     this.amplifyService.authStateChange$

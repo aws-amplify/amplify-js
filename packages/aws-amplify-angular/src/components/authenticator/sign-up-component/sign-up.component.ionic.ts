@@ -44,10 +44,6 @@ const template = `
           (keyup)="setProp($event.target)"
           name={{field.key}}
         ></ion-input>
-<<<<<<< HEAD
-
-=======
->>>>>>> added logging of missing modules; updated unit tests
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <ion-grid class="amplify-ionic-grid-padding-left">
             <ion-row>
@@ -72,12 +68,8 @@ const template = `
                   </ion-select-option>
                 </ion-select>
               </ion-col>
-<<<<<<< HEAD
 
               <ion-col size="6">
-=======
-              <ion-col col-6>
->>>>>>> added logging of missing modules; updated unit tests
                 <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
                 <ion-input
                   #phone_number

@@ -24,15 +24,8 @@ const template = `
     <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
     <ion-list>
       <ion-item lines="none">
-<<<<<<< HEAD
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password') }}</ion-label>
         <ion-input
-=======
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
-          Password
-        </ion-label>
-        <ion-input 
->>>>>>> linting and binding amplifyservice in constructor
           #password
           type="password"
           class="amplify-form-input"
@@ -77,9 +70,5 @@ export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponen
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-<<<<<<< HEAD
-
-=======
->>>>>>> added logging of missing modules; updated unit tests
   }
 }

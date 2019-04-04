@@ -39,9 +39,5 @@ export class GreetingComponentIonic extends GreetingComponentCore {
 
   constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
-<<<<<<< HEAD
-
-=======
->>>>>>> linting and binding amplifyservice in constructor
   }
 }

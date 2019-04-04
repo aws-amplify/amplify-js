@@ -61,14 +61,7 @@ const template = `
         </div>
 
         <div class="amplify-form-cell-left">
-<<<<<<< HEAD
           <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ this.amplifyService.i18n().get('Create account') }}</a></div>
-=======
-          <div class="amplify-form-signup">
-            No account?
-            <a class="amplify-form-link" (click)="onSignUp()">Create account</a>
-          </div>
->>>>>>> linting and binding amplifyservice in constructor
         </div>
       </div>
     </div>
