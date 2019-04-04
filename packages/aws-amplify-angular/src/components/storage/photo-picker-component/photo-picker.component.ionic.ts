@@ -13,9 +13,9 @@
  * and limitations under the License.
  */
 // tslint:enable
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
-import { AmplifyService} from '../../../providers/amplify.service';
+import { AmplifyService } from '../../../providers/amplify.service';
 import { PhotoPickerComponentCore } from './photo-picker.component.core';
 
 
@@ -60,7 +60,7 @@ const template = `
 })
 export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
     
   }

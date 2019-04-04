@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
@@ -111,7 +111,7 @@ export class ForgotPasswordComponentCore implements OnInit {
   code_sent = false;
   protected logger: any;
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ForgotPasswordComponent');
   }
 

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
@@ -54,7 +54,7 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   code: string;
   errorMessage: string;
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

@@ -16,7 +16,7 @@
   import { Injectable, Optional, Inject } from '@angular/core';
   import { Subject } from 'rxjs/Subject';
   import { Observable } from 'rxjs/Observable';
-  import Amplify, { Logger } from '@aws-amplify/core';
+  import Amplify, { Logger, I18n } from '@aws-amplify/core';
   import { AuthState } from './auth.state';
   import { authDecorator } from './auth.decorator';
   
@@ -56,7 +56,7 @@
       this._interactions = source.Interactions;
       this._logger = Logger;
       this._xr = source.XR;
-      this._i18n = source.i18n;
+      this._i18n = I18n;
     }
 
     auth(): any { return this._auth; }

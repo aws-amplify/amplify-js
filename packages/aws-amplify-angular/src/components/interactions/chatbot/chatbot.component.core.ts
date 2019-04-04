@@ -19,7 +19,8 @@ import {
 	Output,
 	EventEmitter,
 	OnInit,
-	ChangeDetectorRef
+	ChangeDetectorRef,
+	Inject
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { isUndefined } from 'util';
@@ -125,7 +126,7 @@ export class ChatbotComponentCore implements OnInit  {
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
 
-	constructor(ref: ChangeDetectorRef, protected amplifyService: AmplifyService) {
+	constructor(ref: ChangeDetectorRef, @Inject(AmplifyService) protected amplifyService: AmplifyService) {
 		this.ref = ref;
 		this.continueConversation = false;
 		this.logger = this.amplifyService.logger('ChatbotComponent');

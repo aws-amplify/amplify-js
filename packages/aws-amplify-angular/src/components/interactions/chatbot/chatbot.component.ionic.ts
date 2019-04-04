@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef, Inject } from '@angular/core';
 import { ChatbotComponentCore } from './chatbot.component.core';
 import { AmplifyService } from '../../../providers/amplify.service';
 
@@ -112,7 +112,10 @@ export class ChatbotComponentIonic extends ChatbotComponentCore {
 	
 	inputValue;
 	
-  constructor(ref: ChangeDetectorRef, protected amplifyService: AmplifyService) {
+  constructor(
+		ref: ChangeDetectorRef, 
+		@Inject(AmplifyService) 
+		protected amplifyService: AmplifyService) {
     super(ref, amplifyService);    
   }
 

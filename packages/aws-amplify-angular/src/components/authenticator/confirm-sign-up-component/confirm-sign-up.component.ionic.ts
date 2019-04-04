@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
@@ -90,7 +90,7 @@ const template = `
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

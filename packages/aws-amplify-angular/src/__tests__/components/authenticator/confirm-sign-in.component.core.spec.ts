@@ -31,14 +31,7 @@ describe('ConfirmSignInComponentCore: ', () => {
         ConfirmSignInComponentCore
       ],
       providers: [
-        {
-          provide: AmplifyService,
-          useFactory: () => {
-            return AmplifyModules({
-              ...authModule
-            });
-          }
-        }
+        AmplifyService
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(ConfirmSignInComponentCore);

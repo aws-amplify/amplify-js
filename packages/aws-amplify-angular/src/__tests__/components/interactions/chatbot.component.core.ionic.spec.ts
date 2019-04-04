@@ -7,6 +7,8 @@ import {
 import { AmplifyService } from '../../../providers/amplify.service';
 import { ChatbotComponentIonic } 
 from '../../../components/interactions/chatbot/chatbot.component.ionic';
+import { interactionsModule } from '../../../__mocks__/mock_module';
+
 
 
 describe('ChatbotComponentIonic: ', () => {
@@ -14,12 +16,10 @@ describe('ChatbotComponentIonic: ', () => {
   let component: ChatbotComponentIonic;
   let service: AmplifyService;
   let ref: ChangeDetectorRef;
-  const modules = {
-    Interactions: {}
-  };
+
 
   beforeEach(() => { 
-    service = new AmplifyService(modules);
+    service = new AmplifyService(interactionsModule);
     component = new ChatbotComponentIonic(ref, service);
   });
 
