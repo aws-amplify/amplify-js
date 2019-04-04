@@ -13,33 +13,20 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit } from '@angular/core';
-import { AmplifyService } from '../../../providers/amplify.service';
-import { AuthState } from '../../../providers/auth.state';
+import { Component, Input } from '@angular/core';
+import { AmplifyService, AuthState } from '../../../providers';
+
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-<<<<<<< HEAD
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
     <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code') }}</div>
     <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
 
-=======
-    <div class="amplify-form-header">Reset your password</div>
-    <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code</div>
-    <div class="amplify-form-text" *ngIf="code_sent">
-      Enter the code you received and set a new password
-    </div>
-<<<<<<< HEAD
->>>>>>> linting and binding amplifyservice in constructor
       <div class="amplify-form-row" *ngIf="!code_sent">
       <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-=======
-    <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> Username *</label>
->>>>>>> added logging of missing modules; updated unit tests
         <input #username
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
@@ -67,33 +54,30 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Password') }}"
         />
       </div>
+
       <div class="amplify-form-actions">
+
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             *ngIf="!code_sent"
-<<<<<<< HEAD
             (click)="onSend()">{{ this.amplifyService.i18n().get('Submit') }}</button>
 
-=======
-            (click)="onSend()">Submit</button>
->>>>>>> added logging of missing modules; updated unit tests
           <button class="amplify-form-button"
             *ngIf="code_sent"
             (click)="onSubmit()">{{ this.amplifyService.i18n().get('Verify') }}</button>
         </div>
+
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
             <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend Code') }}</a>
             <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
           </div>
         </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> added logging of missing modules; updated unit tests
       </div>
     </div>
   </div>
+
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -101,6 +85,7 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
+
 </div>
 `;
 
@@ -108,18 +93,22 @@ const template = `
   selector: 'amplify-auth-forgot-password-core',
   template
 })
-export class ForgotPasswordComponentCore implements OnInit {
+export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
+
   username: string;
   code: string;
   password: string;
-  errorMessage: string;
-  code_sent = false;
-  protected logger: any;
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('ForgotPasswordComponent');
+  errorMessage: string;
+
+  code_sent = false;
+
+  amplifyService: AmplifyService;
+
+  constructor(amplifyService: AmplifyService) {
+    this.amplifyService = amplifyService;
   }
 
   @Input()
@@ -136,12 +125,6 @@ export class ForgotPasswordComponentCore implements OnInit {
     this._show = authState.state === 'forgotPassword';
 
     this.username = authState.user? authState.user.username || '' : '';
-  }
-
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      this.logger.warn('Auth module not registered on AmplifyService provider');
-    }
   }
 
   setUsername(username: string) {
