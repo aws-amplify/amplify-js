@@ -21,16 +21,20 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container">
   <div class="amplify-form-body">
-  <div class="amplify-form-header">{{ this.amplifyService.i18n().get('You are required to update your password') }}</div>
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="password"> {{ this.amplifyService.i18n().get('Password *') }}</label>
-      <input #password
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
-        type="password"
-        placeholder="{{ this.amplifyService.i18n().get('Password') }}"
-      />
+  <div class="amplify-form-header">
+    {{ this.amplifyService.i18n().get('You are required to update your password') }}
+  </div>
+  <div class="amplify-form-row">
+    <label class="amplify-input-label" for="password">
+      {{ this.amplifyService.i18n().get('Password *') }}
+    </label>
+    <input #password
+      (keyup)="setPassword(password.value)"
+      (keyup.enter)="onSubmit()"
+      class="amplify-form-input"
+      type="password"
+      placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+    />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">

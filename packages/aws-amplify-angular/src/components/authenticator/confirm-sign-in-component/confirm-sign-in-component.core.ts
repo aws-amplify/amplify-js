@@ -24,7 +24,9 @@ const template = `
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
 
       <div class="amplify-form-row">
-        <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
+        <label class="amplify-input-label" for="code">
+          {{ this.amplifyService.i18n().get('Confirmation Code *') }}
+        </label>
         <input #code
           (change)="setCode(code.value)"
           (keyup)="setCode(code.value)"
@@ -38,7 +40,9 @@ const template = `
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
+            <a class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            </a>
           </div>
         </div>
 

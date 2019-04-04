@@ -22,9 +22,13 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
+      <div class="amplify-form-header">
+        {{ this.amplifyService.i18n().get('Sign in to your account') }}
+      </div>
       <div class="amplify-amplify-form-row amplify-signin-username">
-        <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+        <label class="amplify-input-label" for="amplifyUsername">
+          {{ this.amplifyService.i18n().get('Username *') }}
+        </label>
         <input
           #amplifyUsername
           (keyup)="setUsername($event.target.value)"
@@ -37,7 +41,9 @@ const template = `
       </div>
 
       <div class="amplify-form-row amplify-signin-password">
-        <label class="amplify-input-label" for="password">{{ this.amplifyService.i18n().get('Password *') }}</label>
+        <label class="amplify-input-label" for="password">
+          {{ this.amplifyService.i18n().get('Password *') }}
+        </label>
         <input #password
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
@@ -61,7 +67,12 @@ const template = `
         </div>
 
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ this.amplifyService.i18n().get('Create account') }}</a></div>
+          <div class="amplify-form-signup">
+            {{ this.amplifyService.i18n().get('No account?') }} 
+            <a class="amplify-form-link" (click)="onSignUp()">
+            {{ this.amplifyService.i18n().get('Create account') }}
+            </a>
+          </div>
         </div>
       </div>
     </div>

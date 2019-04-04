@@ -21,10 +21,14 @@ import { RequireNewPasswordComponentCore } from './require-new-password.componen
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
+    <div class="amplify-form-header amplify-form-header-ionic">
+      {{ this.amplifyService.i18n().get('Reset your password') }}
+    </div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Password') }}</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          {{ this.amplifyService.i18n().get('Password') }}
+        </ion-label>
         <ion-input
           #password
           type="password"

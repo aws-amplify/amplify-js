@@ -96,11 +96,15 @@ const template = `
       <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
-          <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Sign In') }}</a>
+          <a class="amplify-form-link" (click)="onSignIn()">
+            {{ this.amplifyService.i18n().get('Sign In') }}
+          </a>
         </div>
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have a code?') }}
-          <a class="amplify-form-link" (click)="onConfirmSignUp()">{{ this.amplifyService.i18n().get('Confirm') }}</a>
+          <a class="amplify-form-link" (click)="onConfirmSignUp()">
+            {{ this.amplifyService.i18n().get('Confirm') }}
+          </a>
         </div>
       </div>
     </div>

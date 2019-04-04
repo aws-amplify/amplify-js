@@ -21,38 +21,49 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Reset your password') }}</div>
-    <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code') }}</div>
-    <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
-
-      <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-        <input #username
-          (keyup)="setUsername($event.target.value)"
-          class="amplify-form-input"
-          type="text"
-          placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-          [value]="username"
-        />
+    <div class="amplify-form-header">
+      {{ this.amplifyService.i18n().get('Reset your password') }}
+    </div>
+    <div class="amplify-form-text" *ngIf="!code_sent">
+      {{ this.amplifyService.i18n().get('You will receive a verification code') }}
+    </div>
+    <div class="amplify-form-text" *ngIf="code_sent">
+      {{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}
+    </div>
+    <div class="amplify-form-row" *ngIf="!code_sent">
+      <label class="amplify-input-label" for="username">
+        {{ this.amplifyService.i18n().get('Username *') }}
+      </label>
+      <input #username
+        (keyup)="setUsername($event.target.value)"
+        class="amplify-form-input"
+        type="text"
+        placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+        [value]="username"
+      />
+    </div>
+      <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="code">
+        {{ this.amplifyService.i18n().get('Confirmation Code *') }}
+      </label>
+      <input #code
+        (keyup)="setCode(code.value)"
+        class="amplify-form-input"
+        type="text"
+        placeholder="{{ this.amplifyService.i18n().get('Enter code') }}"
+      />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
-      <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
-        <input #code
-          (keyup)="setCode(code.value)"
-          class="amplify-form-input"
-          type="text"
-          placeholder="{{ this.amplifyService.i18n().get('Enter code') }}"
-        />
-      </div>
-      <div class="amplify-form-row" *ngIf="code_sent">
-      <label class="amplify-input-label" for="password"> {{ this.amplifyService.i18n().get('New Password *') }}</label>
-        <input #password
-          (keyup)="setPassword(password.value)"
-          (keyup.enter)="onSubmit()"
-          class="amplify-form-input"
-          type="password"
-          placeholder="{{ this.amplifyService.i18n().get('Password') }}"
-        />
+      <label class="amplify-input-label" for="password">
+        {{ this.amplifyService.i18n().get('New Password *') }}
+      </label>
+      <input #password
+        (keyup)="setPassword(password.value)"
+        (keyup.enter)="onSubmit()"
+        class="amplify-form-input"
+        type="password"
+        placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+      />
       </div>
 
       <div class="amplify-form-actions">
@@ -69,8 +80,12 @@ const template = `
 
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">{{ this.amplifyService.i18n().get('Resend Code') }}</a>
-            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
+            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">
+              {{ this.amplifyService.i18n().get('Resend Code') }}
+            </a>
+            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            </a>
           </div>
         </div>
 

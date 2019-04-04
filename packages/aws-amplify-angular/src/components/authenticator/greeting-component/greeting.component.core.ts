@@ -59,7 +59,8 @@ export class GreetingComponentCore implements OnInit {
     this.signedIn = authState.state === 'signedIn';
 
     this.greeting = this.signedIn
-      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', authState.user.username)
+      ? this.amplifyService.i18n()
+      .get("Hello, {{username}}").replace('{{username}}', authState.user.username)
       : "";
   }
 
