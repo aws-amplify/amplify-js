@@ -128,6 +128,10 @@ export default class AuthClass {
                 this._storage = new StorageHelper().getStorage();
             }
         } else {
+            if (JS.isEmpty(this._config.storage)) {
+                logger.error('The storage in the Auth config should not be empty!');
+                throw new Error('Empty storage object');
+            }
             this._storage = this._config.storage;
         }
 
