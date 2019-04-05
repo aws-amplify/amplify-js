@@ -204,7 +204,7 @@ export default class AnalyticsClass {
         if (!this.isAnalyticsConfigured()) {
             const errMsg = 'Analytics has not been configured';
             logger.debug(errMsg);
-            return Promise.reject(errMsg);
+            return Promise.reject(new Error(errMsg));
         }
 
         let params = null;
@@ -234,7 +234,7 @@ export default class AnalyticsClass {
         if (!this.isAnalyticsConfigured()) {
             const errMsg = 'Analytics has not been configured';
             logger.debug(errMsg);
-            return Promise.reject(errMsg);
+            return Promise.reject(new Error(errMsg));
         }
 
         if (this._disabled) {

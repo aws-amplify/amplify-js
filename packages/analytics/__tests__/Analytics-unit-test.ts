@@ -74,8 +74,9 @@ describe("Analytics test", () => {
             try {
                 await analytics.startSession();
             } catch (e) {
-                expect(e).toBe('Analytics has not been configured');
+                expect(e.message).toBe('Analytics has not been configured');
             }
+            expect.assertions(1);
         });
     });
 
@@ -95,8 +96,9 @@ describe("Analytics test", () => {
             try {
                 await analytics.stopSession();
             } catch (e) {
-                expect(e).toBe('Analytics has not been configured');
+                expect(e.message).toBe('Analytics has not been configured');
             }
+            expect.assertions(1);
         });
     });
 
@@ -120,8 +122,9 @@ describe("Analytics test", () => {
             try {
                 await analytics.record({});
             } catch (e) {
-                expect(e).toBe('Analytics has not been configured');
+                expect(e.message).toBe('Analytics has not been configured');
             }
+            expect.assertions(1);
         });
     });
 
@@ -143,8 +146,9 @@ describe("Analytics test", () => {
             try {
                 await analytics.updateEndpoint({});
             } catch (e) {
-                expect(e).toBe('Analytics has not been configured');
+                expect(e.message).toBe('Analytics has not been configured');
             }
+            expect.assertions(1);
         });
     });
 
