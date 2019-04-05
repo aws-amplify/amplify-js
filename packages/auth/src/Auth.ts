@@ -1515,6 +1515,11 @@ export default class AuthClass {
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in`
                 );
+                dispatchAuthEvent(
+                    'cognitoHostedUI', 
+                    currentUser,
+                    `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
+                );
                 
                 // This calls cacheTokens() in Cognito SDK
                 currentUser.setSignInUserSession(session);
