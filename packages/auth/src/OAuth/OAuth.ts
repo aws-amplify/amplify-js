@@ -132,13 +132,16 @@ export default class OAuth {
 
     logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
 
+    const body = Object.entries(oAuthTokenBody)
+      .map(([k, v]) =>`${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&');
+
     const { access_token, refresh_token, id_token, error } = await (await fetch(oAuthTokenEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams(Object.entries(oAuthTokenBody).map(([k, v]) =>
-          `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&'))
+        body: typeof URLSearchParams !== 'undefined' ? new URLSearchParams(body) : body
       }) as any).json();
 
       if (error) {
@@ -227,7 +230,7 @@ export default class OAuth {
 
     oAuthLogoutEndpoint += Object.entries({
       client_id,
-      logout_uri: signout_uri
+      logout_uri: encodeURIComponent(signout_uri)
     }).map(([k, v]) => `${k}=${v}`).join('&');
 
     dispatchAuthEvent(
@@ -243,7 +246,7 @@ export default class OAuth {
   private _generateState(length: number) {
     let result = '';
     let i = length;
-    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._~';
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
   }
