@@ -128,7 +128,6 @@ export default class SignIn extends AuthPiece {
                             theme={theme}
                             key="username"
                             name="username"
-                            data-id="amplify-username"
                             onChange={this.handleInputChange}
                         />
                     </FormField>
@@ -140,7 +139,6 @@ export default class SignIn extends AuthPiece {
                             key="password"
                             type="password"
                             name="password"
-                            data-id="amplify-password"
                             onChange={this.handleInputChange}
                         />
                         {
