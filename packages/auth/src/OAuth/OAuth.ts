@@ -90,7 +90,7 @@ export default class OAuth {
 
     const URL = `https://${domain}/oauth2/authorize?${queryString}`;
     logger.debug(`Redirecting to ${URL}`);
-    this._urlOpener(URL);
+    this._urlOpener(URL, redirectSignIn);
   }
 
   private async _handleCodeFlow(currentUrl: string) {
