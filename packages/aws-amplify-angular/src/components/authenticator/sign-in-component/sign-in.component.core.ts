@@ -129,7 +129,7 @@ export class SignInComponentCore {
   }
 
   onForgotPassword() {
-    const user = this.username? { username: this.username } : null;
+    const user = this.username ? { username: this.username } : null;
     this.amplifyService.setAuthState({ state: 'forgotPassword', user: user });
   }
 

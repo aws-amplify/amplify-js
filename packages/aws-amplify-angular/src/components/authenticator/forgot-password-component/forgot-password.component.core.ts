@@ -26,12 +26,13 @@ const template = `
     <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
 
       <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="username"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-        <input #username
+      <label class="amplify-input-label" for="usernameinput"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+        <input #usernameinput
           (keyup)="setUsername($event.target.value)"
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+          [value]="username"
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
@@ -115,7 +116,7 @@ export class ForgotPasswordComponentCore {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
 
-    this.username = data.authState.user ? data.authState.user.username || '' : '';
+    this.username = data.authState.user && data.authState.user.username ? data.authState.user.username : '';
   }
 
   @Input()
@@ -123,7 +124,7 @@ export class ForgotPasswordComponentCore {
     this._authState = authState;
     this._show = authState.state === 'forgotPassword';
 
-    this.username = authState.user? authState.user.username || '' : '';
+    this.username = authState.user && authState.user.username ? authState.user.username : '';
   }
 
   setUsername(username: string) {
