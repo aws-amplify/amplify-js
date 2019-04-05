@@ -32,7 +32,6 @@ const template = `
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-          [value]="username"
         />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
@@ -116,7 +115,7 @@ export class ForgotPasswordComponentCore {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
 
-    this.username = data.authState.user? data.authState.user.username || '' : '';
+    this.username = data.authState.user ? data.authState.user.username || '' : '';
   }
 
   @Input()
