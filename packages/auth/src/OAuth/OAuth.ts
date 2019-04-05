@@ -41,7 +41,6 @@ const logger = new Logger('OAuth');
 
 export default class OAuth {
 
-
   private _urlOpener;
   private _config;
   private _cognitoClientId;
@@ -178,48 +177,41 @@ export default class OAuth {
   }
 
   public async handleAuthResponse(currentUrl?: string) {
-    try {
-      const urlParams = currentUrl? {
-        ...(parse(currentUrl).hash || '#').substr(1)
-          .split('&')
-          .map(entry => entry.split('='))
-          .reduce((acc, [k,v]) => (acc[k] = v, acc), {}),
-        ...(parse(currentUrl).query || '')
-          .split('&')
-          .map(entry => entry.split('='))
-          .reduce((acc, [k,v]) => (acc[k] = v, acc), {})
-      } as any : {};
-      const { error , error_description } = urlParams;
-      
-      if (error){
-        throw new Error(error_description);
-      }
-  
-      this._validateState(urlParams);
-  
-      logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
-      if (this._config.responseType === 'code') {
-        return this._handleCodeFlow(currentUrl);
-      } else {
-        return this._handleImplicitFlow(currentUrl);
-      }
-    } catch (err){
-      console.log('attempting to clear');
-      oAuthStorage.clearAll();
-      throw err;
+    const urlParams = currentUrl ? {
+      ...(parse(currentUrl).hash || '#').substr(1)
+        .split('&')
+        .map(entry => entry.split('='))
+        .reduce((acc, [k, v]) => (acc[k] = v, acc), {}),
+      ...(parse(currentUrl).query || '')
+        .split('&')
+        .map(entry => entry.split('='))
+        .reduce((acc, [k, v]) => (acc[k] = v, acc), {})
+    } as any : {};
+    const { error, error_description } = urlParams;
+
+    if (error) {
+      throw new Error(error_description);
+    }
+
+    this._validateState(urlParams);
+
+    logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
+    if (this._config.responseType === 'code') {
+      return this._handleCodeFlow(currentUrl);
+    } else {
+      return this._handleImplicitFlow(currentUrl);
     }
   }
 
-  private _validateState(urlParams: any){
+  private _validateState(urlParams: any) {
     if (!urlParams) { return; }
 
     const savedState = oAuthStorage.getState();
     const { state: returnedState } = urlParams;
-    
-    if (savedState !== returnedState){
+
+    if (savedState !== returnedState) {
       throw new Error('Invalid state in OAuth flow');
     }
-
   }
 
   public async signOut() {

@@ -33,10 +33,6 @@ export default function withOAuth(Comp, options) {
             this.signIn = this.signIn.bind(this);
         }
 
-        componentDidMount(){
-            Auth.handleAuthResponse();
-        }
-
         signIn(provider) {
             Auth.federatedSignIn(
                 provider
@@ -56,7 +52,7 @@ export default function withOAuth(Comp, options) {
 const Button = (props) => (
     <SignInButton
         id={oAuthSignInButton}
-        onClick={props.OAuthSignIn}
+        onClick={() => props.OAuthSignIn()}
         theme={props.theme || AmplifyTheme}
         variant={'oAuthSignInButton'}
     >

@@ -26,7 +26,8 @@ import {
     isFederatedSignInOptionsCustom,
     FederatedSignInOptionsCustom,
     LegacyProvider,
-    FederatedSignInOptions
+    FederatedSignInOptions,
+    AwsCognitoOAuthOpts
 } from './types';
 
 import {
@@ -58,9 +59,10 @@ import {
     CognitoRefreshToken,
     CognitoAccessToken
 } from 'amazon-cognito-identity-js';
+
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
-import * as oAuthStorage from './OAuth/oauthStorage';
+import { default as urlListener } from './urlListener';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -190,7 +192,9 @@ export default class AuthClass {
             });
 
             // **NOTE** - Remove this in a future major release as it is a breaking change
-            this.handleAuthResponse();
+            urlListener(({ url }) => {
+                this.handleAuthResponse(url);
+            });
         }
 
         dispatchAuthEvent(
@@ -1406,13 +1410,10 @@ export default class AuthClass {
             }
         }
 
-
         if (isFederatedSignInOptions(providerOrOptions)
             || isFederatedSignInOptionsCustom(providerOrOptions)
             || typeof providerOrOptions === 'undefined') {
             
-            
-
             const options = providerOrOptions || { provider: CognitoHostedUIIdentityProvider.Cognito };
             const provider = isFederatedSignInOptions(options)
                 ? options.provider
@@ -1468,13 +1469,6 @@ export default class AuthClass {
      * @param {String} URL - optional parameter for customers to pass in the response URL
      */
     public async handleAuthResponse(URL?: string) {
-        /* This code is to not break backwards compatability with previous
-           version of Cognito Auth SDK parsing URL in Auth.configure() */
-        try {
-            await this.currentAuthenticatedUser();
-            oAuthStorage.clearAll();
-            return;     // Exit if the user already logged in
-        } catch (err) { /* Do Nothing */}
 
         if (!this._config.userPoolId){
             throw new Error(`OAuth responses require a User Pool defined in config`);
@@ -1525,6 +1519,8 @@ export default class AuthClass {
                 // This calls cacheTokens() in Cognito SDK
                 currentUser.setSignInUserSession(session);
                 //#endregion
+
+                window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
                 
                 return credentials;
             } catch (err) {
