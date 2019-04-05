@@ -25,6 +25,12 @@ declare module "amazon-cognito-identity-js" {
         ValidationData?: {[key: string]: any}
     }
 
+    export interface CodeDeliveryDetails {
+        AttributeName: string,
+        DeliveryMedium: string,
+        Destination: string
+    } 
+
     export class AuthenticationDetails {
         constructor(data: IAuthenticationDetailsData);
 
@@ -138,6 +144,7 @@ declare module "amazon-cognito-identity-js" {
         user: CognitoUser;
         userConfirmed: boolean;
         userSub: string;
+        codeDeliveryDetails: CodeDeliveryDetails
     }
 
     export interface ICognitoUserPoolData {
