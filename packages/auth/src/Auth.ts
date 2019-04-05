@@ -1513,7 +1513,7 @@ export default class AuthClass {
                 dispatchAuthEvent(
                     'signIn', 
                     currentUser,
-                    `A user ${currentUser.getUsername} has been signed in`
+                    `A user ${currentUser.getUsername()} has been signed in`
                 );
                 
                 // This calls cacheTokens() in Cognito SDK

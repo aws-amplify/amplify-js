@@ -33,7 +33,6 @@ describe('withOAuth test', () => {
             };
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            const spyon2 = jest.spyOn(Auth, 'handleAuthResponse');
             
             const Comp = withOAuth(MockComp);
             const wrapper = mount(<Comp/>);
@@ -42,9 +41,7 @@ describe('withOAuth test', () => {
             comp.signIn();
 
             expect(spyon).toBeCalledWith(undefined);
-            expect(spyon2).toBeCalled();
             spyon.mockClear();
-            spyon2.mockClear();
         });
 
         test('Passing in a social provider', () => {
@@ -55,7 +52,6 @@ describe('withOAuth test', () => {
             };
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            const spyon2 = jest.spyOn(Auth, 'handleAuthResponse');
             
             const Comp = withOAuth(MockComp);
             const wrapper = mount(<Comp/>);
@@ -64,9 +60,7 @@ describe('withOAuth test', () => {
             comp.signIn('Facebook');
 
             expect(spyon).toBeCalledWith({"provider": "Facebook"});
-            expect(spyon2).toBeCalled();
             spyon.mockClear();
-            spyon2.mockClear();
         });
     });
 });

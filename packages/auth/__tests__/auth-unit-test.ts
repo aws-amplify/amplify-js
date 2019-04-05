@@ -2045,15 +2045,15 @@ describe('auth unit test', () => {
         
             const auth = new Auth(options);
 
-            const spyon = jest.spyOn(OAuth.prototype, 'handleAuthResponse').mockImplementationOnce(() => {
-                return { 
-                    accessToken: 'xxx', 
-                    idToken: 'xxx', 
-                    refreshToken:'xxx' 
-                };
-            });
-
-            const spyon2 = jest.spyOn(Credentials, 'set');
+            const handleAuthResponseSpy = jest.spyOn(OAuth.prototype, 'handleAuthResponse')
+                .mockReturnValueOnce({ idToken: '' });
+            jest.spyOn(CognitoUserSession.prototype, 'getIdToken').mockReturnValueOnce({ decodePayload: () => ({}) });
+            jest.spyOn(Credentials, 'set').mockImplementationOnce(c => c);
+            (auth as any).createCognitoUser = jest.fn(() => ({
+                getUsername: jest.fn(),
+                setSignInUserSession: jest.fn()
+            }));
+            const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockReturnThis();
 
             const code = 'XXXX-YYY-ZZZ';
             const state = 'STATEABC';
@@ -2062,10 +2062,9 @@ describe('auth unit test', () => {
             (oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
             await auth.handleAuthResponse(url);
 
-            expect(spyon).toBeCalledWith(url);
-            spyon.mockClear();
-            expect(spyon2).toBeCalled();
-            spyon2.mockClear();
+            expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+            expect(replaceStateSpy)
+                .toHaveBeenCalledWith({}, null, (options.oauth as AwsCognitoOAuthOpts).redirectSignIn);
         });
 
         test('User Pools Implicit Flow', async () => {
@@ -2084,32 +2083,25 @@ describe('auth unit test', () => {
 
             const auth = new Auth(options);
 
-            jest.spyOn(CognitoUser.prototype, 'getSession')
-            .mockImplementation((callback) => {
-                return callback(null, session);
-            });
-
-            jest.spyOn(CognitoUserSession.prototype, 'getAccessToken')
-                .mockImplementationOnce(() => {
-                    return new CognitoAccessToken({AccessToken: 'accessToken'});
-            });
-
-            jest.spyOn(CognitoAccessToken.prototype, 'decodePayload')
-                .mockImplementation(() => {
-                    return { 'cognito:username': 'testuser' };
-            });
-
-            const spyon = jest.spyOn(OAuth.prototype, 'handleAuthResponse');
+            const handleAuthResponseSpy = jest.spyOn(OAuth.prototype, 'handleAuthResponse')
+                .mockReturnValueOnce({ idToken: '' });
+            jest.spyOn(CognitoUserSession.prototype, 'getIdToken').mockReturnValueOnce({ decodePayload: () => ({}) });
+            jest.spyOn(Credentials, 'set').mockImplementationOnce(c => c);
+            (auth as any).createCognitoUser = jest.fn(() => ({
+                getUsername: jest.fn(),
+                setSignInUserSession: jest.fn()
+            }));
+            const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockReturnThis();
 
             const token = 'XXXX.YYY.ZZZ';
             const state = 'STATEABC';
             const url = `${(options.oauth as AwsCognitoOAuthOpts).redirectSignIn}#access_token=${token}&state=${state}`;
             
-            (oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
             await auth.handleAuthResponse(url);
 
-            expect(spyon).toBeCalledWith(url);
-            spyon.mockClear();
+            expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+            expect(replaceStateSpy)
+                .toHaveBeenCalledWith({}, null, (options.oauth as AwsCognitoOAuthOpts).redirectSignIn);
         });
 
         test('No User Pools', async () => {
@@ -2146,35 +2138,23 @@ describe('auth unit test', () => {
 
             const auth = new Auth(options);
 
-            const spyon = jest.spyOn(OAuth.prototype, 'handleAuthResponse').mockImplementationOnce(() => {
-                return { 
-                    accessToken: 'xxx', 
-                    idToken: 'xxx.yyy.zzz', 
-                    refreshToken:'xxx' 
-                };
-            });
-            const spyon2 = jest.spyOn(Credentials, 'set');
-
-            
-            jest.spyOn(CognitoUserSession.prototype, 'getIdToken')
-            .mockImplementation((callback) => {
-                return callback(null, session.getIdToken());
-            });
-
-            jest.spyOn(idToken, 'decodePayload')
-                .mockImplementation(() => {
-                    return { 'cognito:username': 'testuser' };
-            });
+            const handleAuthResponseSpy = jest.spyOn(OAuth.prototype, 'handleAuthResponse')
+                .mockReturnValueOnce({ idToken: '' });
+            jest.spyOn(CognitoUserSession.prototype, 'getIdToken').mockReturnValueOnce({ decodePayload: () => ({}) });
+            jest.spyOn(Credentials, 'set').mockImplementationOnce(c => c);
+            (auth as any).createCognitoUser = jest.fn(() => ({
+                getUsername: jest.fn(),
+                setSignInUserSession: jest.fn()
+            }));
+            const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockReturnThis();
 
             const code = 'XXXX-YYY-ZZZ';
             const url = `${(options.oauth as AwsCognitoOAuthOpts).redirectSignIn}?code=${code}`;
             await auth.handleAuthResponse(url);
 
-
-            expect(spyon).toBeCalledWith(url);
-            spyon.mockClear();
-            expect(spyon2).toBeCalled();
-            spyon2.mockClear();
+            expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+            expect(replaceStateSpy)
+                .toHaveBeenCalledWith({}, null, (options.oauth as AwsCognitoOAuthOpts).redirectSignIn);
         });
     });
 
