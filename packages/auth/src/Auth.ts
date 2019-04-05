@@ -1520,7 +1520,9 @@ export default class AuthClass {
                 currentUser.setSignInUserSession(session);
                 //#endregion
 
-                window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
+                if (window && typeof window.history !== 'undefined') {
+                    window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
+                }
                 
                 return credentials;
             } catch (err) {
