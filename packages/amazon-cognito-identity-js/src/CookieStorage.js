@@ -16,7 +16,7 @@ export default class CookieStorage {
     if (data.domain) {
       this.domain = data.domain;
     } else {
-      throw new Error('The domain of cookieStorage should not be undefined.');
+      throw new Error('The domain of cookieStorage can not be undefined.');
     }
     if (data.path) {
       this.path = data.path;
