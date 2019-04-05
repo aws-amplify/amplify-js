@@ -89,7 +89,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
-                        />;
+                        />
                     </React.Fragment>
                 );
             }

@@ -6,7 +6,9 @@ import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import { Signer, Credentials } from '@aws-amplify/core';
+import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
+import * as Observable from 'zen-observable';
 
 jest.mock('axios');
 
@@ -265,20 +267,15 @@ describe('API test', () => {
             spyonCache.mockClear();
         });
 
-        test.skip('happy-case-subscription', (done) => {
-            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
-            
-            // TODO: This mock doesnt work on jest
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementation((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+        test('happy-case-subscription', async (done) => {
+            jest.spyOn(RestClient.prototype, 'post')
+                .mockImplementation(async (url, init) => ({
+                    extensions: {
+                        subscription: {
+                            newSubscriptions: {}
+                        }
+                    }
+                }));
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -292,48 +289,27 @@ describe('API test', () => {
                 aws_appsync_authenticationType: 'API_KEY',
                 aws_appsync_apiKey: apiKey
             });
-            const pubsub = new PubSub(config);
+
+            PubSub.subscribe = jest.fn(() => Observable.of({}));
 
             const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
                 subscribeToEventComments(eventId: $eventId) {
-                  eventId
-                  commentId
-                  content
+                    eventId
+                    commentId
+                    content
                 }
-              }`;
+            }`;
 
             const doc = parse(SubscribeToEventComments);
             const query = print(doc);
 
-            const headers = {
-                Authorization: null,
-                'X-Api-Key': apiKey
-            };
-
-            const body = {
-                query,
-                variables,
-            };
-
-            const init = {
-                headers,
-                body,
-                signerServiceInfo: {
-                    service: 'appsync',
-                    region,
-                }
-            };
-
-            const observable = api.graphql(graphqlOperation(SubscribeToEventComments, variables)).subscribe({
+            const observable = api.graphql(graphqlOperation(query, variables)).subscribe({
                 next: () => {
                     done();
                 }
             });
 
-            pubsub.publish('topic1', 'my message');
-
             expect(observable).not.toBe(undefined);
-            expect(spyon).toBeCalled();
         });
 
         test('happy case mutation', async () => {
@@ -424,6 +400,28 @@ describe('API test', () => {
                 endpoints: aws_cloud_logic_custom,
                 header: {},
                 region: 'region'
+            });
+        });
+
+        test('with API options', () => {
+            const api = new API({});
+
+            const options = {
+                API: {
+                    aws_project_region: 'api-region',
+                },
+                aws_project_region: 'region',
+                aws_appsync_region: 'appsync-region',
+                aws_cloud_logic_custom
+            }
+
+            expect(api.configure(options)).toEqual({
+                aws_cloud_logic_custom,
+                aws_project_region: 'api-region',
+                aws_appsync_region: 'appsync-region',
+                endpoints: aws_cloud_logic_custom,
+                header: {},
+                region: 'api-region'
             });
         });
     });

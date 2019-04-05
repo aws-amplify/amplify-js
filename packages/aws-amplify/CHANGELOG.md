@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.24"></a>
+## [1.1.24](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.24-unstable.1...aws-amplify@1.1.24) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.24-unstable.1"></a>
+## [1.1.24-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.24-unstable.0...aws-amplify@1.1.24-unstable.1) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.24-unstable.0"></a>
+## [1.1.24-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23...aws-amplify@1.1.24-unstable.0) (2019-04-02)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23"></a>
+## [1.1.23](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.11...aws-amplify@1.1.23) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.11"></a>
+## [1.1.23-unstable.11](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.10...aws-amplify@1.1.23-unstable.11) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.10"></a>
+## [1.1.23-unstable.10](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.9...aws-amplify@1.1.23-unstable.10) (2019-03-25)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.9"></a>
+## [1.1.23-unstable.9](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.8...aws-amplify@1.1.23-unstable.9) (2019-03-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.8"></a>
+## [1.1.23-unstable.8](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.7...aws-amplify@1.1.23-unstable.8) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.7"></a>
+## [1.1.23-unstable.7](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.6...aws-amplify@1.1.23-unstable.7) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.6"></a>
+## [1.1.23-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.5...aws-amplify@1.1.23-unstable.6) (2019-03-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.23-unstable.5"></a>
+## [1.1.23-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.4...aws-amplify@1.1.23-unstable.5) (2019-03-20)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="1.1.23-unstable.4"></a>
 ## [1.1.23-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.23-unstable.3...aws-amplify@1.1.23-unstable.4) (2019-03-19)
 

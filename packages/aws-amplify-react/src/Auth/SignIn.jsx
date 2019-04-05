@@ -67,7 +67,7 @@ export default class SignIn extends AuthPiece {
         // avoid submitting the form
         event.preventDefault();
         
-        const { username, password } = this.inputs;
+        const { username='', password } = this.inputs;
         if (!Auth || typeof Auth.signIn !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -109,16 +109,17 @@ export default class SignIn extends AuthPiece {
         const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
         return (
             <FormSection theme={theme}>
-                <form onSubmit={this.signIn}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
-                <SectionBody theme={theme}>
-                    <FederatedButtons
+                <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
                         onAuthEvent={onAuthEvent}
                     />
+                <form onSubmit={this.signIn}>
+                <SectionBody theme={theme}>
+                    
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                         <Input
