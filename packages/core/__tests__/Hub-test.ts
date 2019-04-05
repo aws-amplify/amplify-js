@@ -8,8 +8,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'User singout has taken place'
       },
@@ -22,19 +22,32 @@ describe('Hub', () => {
 
   test('Legacy config', () => {
 
-    const listener = {
-      onHubCapsule: jest.fn((capsule) => {
-        const { channel, payload, source } = capsule;
+    class MyClass {
+      constructor() {
+        Hub.listen('auth', this, 'MyListener');
+      }
+
+      // Default handler for listening events
+      onHubCapsule = jest.fn(function (capsule) {
+        const { channel, payload } = capsule;
+        if (channel === 'auth') { this.onAuthEvent(payload); }
       })
-    };
+
+      onAuthEvent = jest.fn(function (payload) {
+        // ... your implementation
+      })
+    }
+
+    const listener = new MyClass();
+
     const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 
     Hub.listen('auth', listener);
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'User singout has taken place'
       },
@@ -43,6 +56,8 @@ describe('Hub', () => {
     );
 
     expect(listener.onHubCapsule).toHaveBeenCalled();
+    expect(listener.onAuthEvent).toHaveBeenCalled();
+
     expect(loggerSpy).toHaveBeenCalledWith(
       'WARN',
       'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
@@ -58,8 +73,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'User singout has taken place'
       },
@@ -80,8 +95,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'A user sign out event has taken place.'
       },
@@ -91,12 +106,12 @@ describe('Hub', () => {
 
     expect(listener).toHaveBeenCalledWith({
       "channel": "auth", "payload":
-        { 
-          data: "the user has been signed out", 
-          event: "signOut",
-          message: 'A user sign out event has taken place.'
-        },
-        patternInfo: [],
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [],
       "source": "Auth"
     });
   });
@@ -108,8 +123,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'A user sign out event has taken place.'
       },
@@ -119,12 +134,12 @@ describe('Hub', () => {
 
     expect(listener).toHaveBeenCalledWith({
       "channel": "auth", "payload":
-        { 
-          data: "the user has been signed out", 
-          event: "signOut",
-          message: 'A user sign out event has taken place.'
-        },
-        patternInfo: [" sign out event has taken place."],
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [" sign out event has taken place."],
       "source": "Auth"
     });
   });
@@ -136,8 +151,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'A user sign out event has taken place.'
       },
@@ -147,12 +162,12 @@ describe('Hub', () => {
 
     expect(listener).toHaveBeenCalledWith({
       "channel": "auth", "payload":
-        { 
-          data: "the user has been signed out", 
-          event: "signOut",
-          message: 'A user sign out event has taken place.'
-        },
-        patternInfo: ["sign", "out", "event has taken place."],
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: ["sign", "out", "event has taken place."],
       "source": "Auth"
     });
   });
@@ -164,8 +179,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'A user sign out event has taken place.'
       },
@@ -175,12 +190,12 @@ describe('Hub', () => {
 
     expect(listener).toHaveBeenCalledWith({
       "channel": "auth", "payload":
-        { 
-          data: "the user has been signed out", 
-          event: "signOut",
-          message: 'A user sign out event has taken place.'
-        },
-        patternInfo: [],
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [],
       "source": "Auth"
     });
   });
@@ -193,7 +208,7 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
+      {
         event: 'signOut',
         message: null
       },
@@ -215,8 +230,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut', 
+      {
+        event: 'signOut',
         data: 'the user has been signed out',
         message: 'User singout has taken place'
       },
@@ -232,8 +247,8 @@ describe('Hub', () => {
 
     Hub.dispatch(
       'auth',
-      { 
-        event: 'signOut2', 
+      {
+        event: 'signOut2',
         data: 'the user has been signed out',
         message: 'User singout has taken place'
       },
