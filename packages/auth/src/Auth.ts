@@ -106,6 +106,21 @@ export default class AuthClass {
         } else {
             logger.warn('No AWS.config');
         }
+
+        Hub.listen('auth', ({ payload }) => {
+            const { event } = payload;
+            switch(event){
+                case 'signIn':
+                  this._storage.setItem('amplify-react-signin-with-hostedUI', 'false');
+                  break;
+                case 'signOut':
+                  this._storage.removeItem('amplify-react-signin-with-hostedUI');
+                  break;
+                case 'cognitoHostedUI':
+                  this._storage.setItem('amplify-react-signin-with-hostedUI', 'true');
+                  break;
+            }
+        });
     }
 
     public getModuleName() {
@@ -1180,6 +1195,9 @@ export default class AuthClass {
     }
 
     private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
+        const isSignedInHostedUI = this._oAuthHandler 
+            && this._storage.getItem('amplify-react-signin-with-hostedUI') === 'true';
+
         return new Promise((res, rej) => {
             if (opts && opts.global) {
                 logger.debug('user global sign out', user);
@@ -1193,7 +1211,7 @@ export default class AuthClass {
                     user.globalSignOut({
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
-                            if (this._oAuthHandler) {
+                            if (isSignedInHostedUI) {
                                 this._oAuthHandler.signOut();
                             }
                             return res();
@@ -1207,7 +1225,7 @@ export default class AuthClass {
             } else {
                 logger.debug('user sign out', user);
                 user.signOut();
-                if (this._oAuthHandler) {
+                if (isSignedInHostedUI) {
                     this._oAuthHandler.signOut();
                 }
                 return res();
@@ -1490,7 +1508,6 @@ export default class AuthClass {
 
         if (hasCodeOrError || hasTokenOrError) {
             try {
-                this.userPool.getCurrentUser();
                 
                 const { accessToken, idToken, refreshToken } = await this._oAuthHandler.handleAuthResponse(currentUrl);
                 const session = new CognitoUserSession({
