@@ -208,7 +208,7 @@ export default class AuthClass {
 
             // **NOTE** - Remove this in a future major release as it is a breaking change
             urlListener(({ url }) => {
-                this.handleAuthResponse(url);
+                this._handleAuthResponse(url);
             });
         }
 
@@ -1486,7 +1486,7 @@ export default class AuthClass {
      * Used to complete the OAuth flow with or without the Cognito Hosted UI
      * @param {String} URL - optional parameter for customers to pass in the response URL
      */
-    public async handleAuthResponse(URL?: string) {
+    private async _handleAuthResponse(URL?: string) {
 
         if (!this._config.userPoolId){
             throw new Error(`OAuth responses require a User Pool defined in config`);

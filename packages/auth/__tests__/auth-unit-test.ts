@@ -2060,7 +2060,7 @@ describe('auth unit test', () => {
             const url = `${(options.oauth as AwsCognitoOAuthOpts).redirectSignIn}?code=${code}&state=${state}`;
 
             (oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
-            await auth.handleAuthResponse(url);
+            await (auth as any)._handleAuthResponse(url);
 
             expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
             expect(replaceStateSpy)
@@ -2097,7 +2097,7 @@ describe('auth unit test', () => {
             const state = 'STATEABC';
             const url = `${(options.oauth as AwsCognitoOAuthOpts).redirectSignIn}#access_token=${token}&state=${state}`;
             
-            await auth.handleAuthResponse(url);
+            await (auth as any)._handleAuthResponse(url);
 
             expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
             expect(replaceStateSpy)
@@ -2114,7 +2114,7 @@ describe('auth unit test', () => {
 
             let error;
             try {
-                await auth.handleAuthResponse(' ');
+                await (auth as any)._handleAuthResponse(' ');
             }catch(e){
                 error = e;
             }
@@ -2150,7 +2150,7 @@ describe('auth unit test', () => {
 
             const code = 'XXXX-YYY-ZZZ';
             const url = `${(options.oauth as AwsCognitoOAuthOpts).redirectSignIn}?code=${code}`;
-            await auth.handleAuthResponse(url);
+            await (auth as any)._handleAuthResponse(url);
 
             expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
             expect(replaceStateSpy)
