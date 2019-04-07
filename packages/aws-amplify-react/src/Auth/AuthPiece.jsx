@@ -39,11 +39,13 @@ export default class AuthPiece extends React.Component {
         this.getUsername = this.getUsername.bind(this);
     }
 
-    getUsername() {
+    getUsernameFromInput() {
         const usernameAttributes = this.props.usernameAttributes || [];
         if (usernameAttributes === UsernameAttributes.EMAIL) {
+            // Email as Username
             return this.inputs.email;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+            // Phone number as Username
             return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
         } else {
             return this.inputs.username;

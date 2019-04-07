@@ -189,9 +189,7 @@ export default class SignUp extends AuthPiece {
         const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
-            attributes: {
-                
-            }
+            attributes: {}
         };
 
         const inputKeys = Object.keys(this.inputs);
@@ -208,12 +206,18 @@ export default class SignUp extends AuthPiece {
                     attributeValue = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
                     signup_info.attributes['phone_number'] = attributeValue;
                 }
+            }
+        });
 
-                if (this.signUpFields.find(e => 
-                        e.signUpWith &&
-                        e.key === (key === 'phone_line_number'? 'phone_number' : key)
-                    ))
-                    { signup_info.username = attributeValue; }
+        const signUpWithShowedUp = false;
+        this.signUpFields.forEach(field => {
+            if (field.signUpWith) {
+                if (signUpWithShowedUp) {
+                    throw new Error('Only one sign up field can be marked as signUpWith!');
+                }
+                logger.debug(`Changing the username to the value of ${field.key}`);
+                signup_info.attributes['username'] = signup_info.attributes[field.key];
+                signUpWithShowedUp = true;
             }
         });
         
