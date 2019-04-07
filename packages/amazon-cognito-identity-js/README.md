@@ -444,6 +444,18 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 **Use case 12.** Starting and completing a forgot password flow for an unauthenticated user.
 
+For example: 
+```html
+<body>
+    <label for="#code">Code: </label>
+    <input id="code"></input>
+    </br>
+    <label for="#new_password">New Password: </label>
+    <input id="new_password" type="password"></input>
+    <br/>
+</body>
+```
+
 ```javascript
     cognitoUser.forgotPassword({
         onSuccess: function (data) {
@@ -456,8 +468,8 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
         //Optional automatic callback
         inputVerificationCode: function(data) {
             console.log('Code sent to: ' + data);
-            var verificationCode = prompt('Please input verification code ' ,'');
-            var newPassword = prompt('Enter new password ' ,'');
+            var code = document.getElementById('code').value;
+            var newPassword = document.getElementById('new_password').value;
             cognitoUser.confirmPassword(verificationCode, newPassword, {
                 onSuccess() {
                     console.log('Password confirmed!');
