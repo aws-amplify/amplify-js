@@ -50,36 +50,27 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-        this.disabled = this.disabled.bind(this);
-
-        const signUpWith = this.props.usernameAttributes || [];
-
-        if (signUpWith === 'email') {
-            this.defaultSignUpFields = signUpWithEmailFields;
-        } else if (signUpWith === 'phone_number') {
-            this.defaultSignUpFields = signUpWithPhoneNumberFields;
-        } else {
-            this.defaultSignUpFields = signUpWithUsernameFields;
-        }
-
         this.needPrefix = this.needPrefix.bind(this);
         this.header = (this.props &&
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
+        
+        const { usernameAttributes=[] }= this.props;
+        if (usernameAttributes === 'email') {
+            this.defaultSignUpFields = signUpWithEmailFields;
+        } else if (usernameAttributes === 'phone_number') {
+            this.defaultSignUpFields = signUpWithPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
+        }
     }
 
-    validate() {
-        const invalids = [];
-        this.signUpFields.map((el) => {
-            if (el.required && !this.state[el.key]) {
-                el.invalid = true;
-                invalids.push(el.label);
-            } else {
-                el.invalid = false;
-            }        
-        });
-        return invalids;
-      }
+    isValid() {
+        for (const el in this.signUpFields) {
+            if (el.required && !this.state[el.key]) return false;
+        }    
+        return true;
+    }
 
     sortFields() {
 
@@ -163,23 +154,7 @@ export default class SignUp extends AuthPiece {
         this.props.signUpConfig.signUpFields.length > 0
     }
 
-    disabled() {
-        const signUpWith = this.props.usernameAttributes || [];
-
-        if (signUpWith === 'email') {
-            return !this.state.email || !this.state.password
-        } else if (signUpWith === 'phone_number') {
-            return !this.state.phone_number || !this.state.password
-        } else {
-            return !this.state.username || !this.state.password
-        }
-    }
-
     signUp() {
-        const validation = this.validate();
-        if (validation && validation.length > 0) {
-          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
-        }
         if (!Auth || typeof Auth.signUp !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -202,14 +177,18 @@ export default class SignUp extends AuthPiece {
                   signup_info.attributes[newKey] = inputVals[index];
                 }
             }
+        });
 
-            if (this.signUpFields.find(e =>
-                e.signUpWith &&
-                e.key === key
-            ))
-                { 
-                    signup_info.username = inputVals[index]; 
+        const signUpWithShowedUp = false;
+        this.signUpFields.forEach(field => {
+            if (field.signUpWith) {
+                if (signUpWithShowedUp) {
+                    throw new Error('Only one sign up field can be marked as signUpWith!');
                 }
+                logger.debug(`Changing the username to the value of ${field.key}`);
+                signup_info.attributes['username'] = signup_info.attributes[field.key];
+                signUpWithShowedUp = true;
+            }
         });
 
         logger.debug('Signing up with', signup_info);
@@ -264,7 +243,7 @@ export default class SignUp extends AuthPiece {
                             text={I18n.get('Sign Up').toUpperCase()}
                             theme={theme}
                             onPress={this.signUp}
-                            disabled={this.disabled()}
+                            disabled={!this.isValid}
                         />
                     </View>
                     <View style={theme.sectionFooter}>

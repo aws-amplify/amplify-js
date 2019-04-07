@@ -42,8 +42,8 @@ export default class AuthPiece extends React.Component {
         this.renderUsernameField = this.renderUsernameField.bind(this);
     }
 
-    getUsername() {
-        const usernameAttributes = this.props.usernameAttributes || [];
+    getUsernameFromInput() {
+        const { usernameAttributes = [] } = this.props;
         if (usernameAttributes === 'email') {
             return this.state.email;
         } else if (usernameAttributes === 'phone_number') {
@@ -54,7 +54,7 @@ export default class AuthPiece extends React.Component {
     }
 
     renderUsernameField(theme) {
-        const usernameAttributes = this.props.usernameAttributes || [];
+        const { usernameAttributes = [] } = this.props;
         if (usernameAttributes === 'email') {
             return (
                 <FormField

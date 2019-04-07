@@ -53,9 +53,11 @@ export default class SignUp extends AuthPiece {
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
-
-        const usernameAttributes = this.props.usernameAttributes || [];
-
+        this.header = (this.props && 
+            this.props.signUpConfig && 
+            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
+            
+        const { usernameAttributes=[] } = this.props;
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             this.defaultSignUpFields = signUpWithEmailFields;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
@@ -63,10 +65,6 @@ export default class SignUp extends AuthPiece {
         } else {
             this.defaultSignUpFields = signUpWithUsernameFields;
         }
-        
-        this.header = (this.props && 
-            this.props.signUpConfig && 
-            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
     validate() {

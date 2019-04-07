@@ -47,23 +47,10 @@ export default class SignIn extends AuthPiece {
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
-        this.disabled = this.disabled.bind(this);
-    }
-
-    disabled() {
-        const usernameAttributes = this.props.usernameAttributes || [];
-
-        if (usernameAttributes === 'email') {
-            return !this.state.email || !this.state.password
-        } else if (usernameAttributes === 'phone_number') {
-            return !this.state.phone_number || !this.state.password
-        } else {
-            return !this.state.username || !this.state.password
-        }
     }
 
     signIn() {
-        const username = this.getUsername();
+        const username = this.getUsernameFromInput() || '';
         const { password } = this.state;
         logger.debug('Sign In for ' + username);
         Auth.signIn(username, password)
@@ -101,7 +88,7 @@ export default class SignIn extends AuthPiece {
                             text={I18n.get('Sign In').toUpperCase()}
                             theme={theme}
                             onPress={this.signIn}
-                            disabled={this.disabled()}
+                            disabled={!this.getUsernameFromInput() && this.state.password}
                         />
                     </View>
                     <View style={theme.sectionFooter}>

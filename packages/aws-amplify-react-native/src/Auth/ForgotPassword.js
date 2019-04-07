@@ -42,19 +42,6 @@ export default class ForgotPassword extends AuthPiece {
 
         this.send = this.send.bind(this);
         this.submit = this.submit.bind(this);
-        this.disabled = this.disabled.bind(this);
-    }
-
-    disabled() {
-        const signUpWith = this.props.usernameAttributes || [];
-
-        if (signUpWith === 'email') {
-            return !this.state.email || !this.state.password
-        } else if (signUpWith === 'phone_number') {
-            return !this.state.phone_number || !this.state.password
-        } else {
-            return !this.state.username || !this.state.password
-        }
     }
 
     send() {
@@ -90,7 +77,7 @@ export default class ForgotPassword extends AuthPiece {
                     text={I18n.get('Send').toUpperCase()}
                     theme={theme}
                     onPress={this.send}
-                    disabled={!this.state.username}
+                    disabled={!this.getUsernameFromInput()}
                 />
             </View>
         )
@@ -118,7 +105,7 @@ export default class ForgotPassword extends AuthPiece {
                     text={I18n.get('Submit')}
                     theme={theme}
                     onPress={this.submit}
-                    disabled={!this.state.username}
+                    disabled={!(this.state.code && this.state.password)}
                 />
             </View>
         )

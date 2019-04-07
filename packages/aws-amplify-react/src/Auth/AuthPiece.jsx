@@ -40,20 +40,22 @@ export default class AuthPiece extends React.Component {
     }
 
     getUsernameFromInput() {
-        const usernameAttributes = this.props.usernameAttributes || [];
+        const { usernameAttributes = [] } = this.props;
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             // Email as Username
             return this.inputs.email;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             // Phone number as Username
-            return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+            if (!this.inputs.phone_line_number 
+                || this.inputs.phone_line_number.length === 0) return '';
+            else return `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
         } else {
             return this.inputs.username;
         }
     }
 
     renderUsernameField(theme) {
-        const usernameAttributes = this.props.usernameAttributes || [];
+        const { usernameAttributes = [] } = this.props;
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             return (
                 <FormField theme={theme}>           
