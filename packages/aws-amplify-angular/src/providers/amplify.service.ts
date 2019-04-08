@@ -43,9 +43,7 @@
 
       const source = modules || Amplify;
 
-      if (source.Auth) {
-        authDecorator(this._authState, source.Auth);
-      }
+      authDecorator(this._authState, source.Auth);
 
       this._auth = source.Auth;
       this._analytics = source.Analytics;
@@ -54,9 +52,11 @@
       this._cache = source.Cache;
       this._pubsub = source.PubSub;
       this._interactions = source.Interactions;
-      this._logger = Logger;
       this._xr = source.XR;
+
+      // i18n and logger instantiated by default (do not change)
       this._i18n = I18n;
+      this._logger = Logger;
     }
 
     auth(): any { return this._auth; }

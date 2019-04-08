@@ -26,7 +26,6 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignInClass } from './confirm-sign-in.class';
 import { ConfirmSignInComponentIonic } from './confirm-sign-in-component.ionic';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
-import { String } from 'aws-sdk/clients/route53domains';
 import { AuthState } from '../../../providers';
 
 
