@@ -116,7 +116,7 @@ export class ForgotPasswordComponentCore {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
 
-    this.username = data.authState.user && data.authState.user.username ? data.authState.user.username : '';
+    this.username = (data.authState.user && data.authState.user.username) ? data.authState.user.username : '';
   }
 
   @Input()
