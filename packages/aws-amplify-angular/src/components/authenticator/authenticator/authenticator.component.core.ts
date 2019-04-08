@@ -88,9 +88,8 @@ export class AuthenticatorComponentCore {
     if (data.hide) {
       this.hide = data.hide;
     }
-    if (data.usernameAttributes) {
-      this._usernameAttributes = data.usernameAttributes;
-    }
+
+    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes;
   }
 
   @Input()

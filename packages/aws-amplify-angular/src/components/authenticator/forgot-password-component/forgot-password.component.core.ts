@@ -17,6 +17,7 @@ import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { UsernameAttributes } from '../types';
 import { countrylist, country }  from '../../../assets/countries';
+import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } from '../angular-templates';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -26,58 +27,16 @@ const template = `
     <div class="amplify-form-text" *ngIf="!code_sent">{{ this.amplifyService.i18n().get('You will receive a verification code') }}</div>
     <div class="amplify-form-text" *ngIf="code_sent">{{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}</div>
     <div class="amplify-form-row" *ngIf="!code_sent">
-      <div *ngIf="this._usernameAttributes === 'email'">
-          <label class="amplify-input-label" for="signInEmail"> {{ this.amplifyService.i18n().get('Email') }} *</label>
-          <input
-            #signInEmail
-            class="amplify-form-input"
-            type="text"
-            required
-            placeholder="{{ this.amplifyService.i18n().get('Enter your email') }}"
-            [(ngModel)]="email"
-          />
-        </div>
-        <div *ngIf="this._usernameAttributes === 'phone_number'">
-          <label class="amplify-input-label" for="signInLocalPhoneNumber">
-            {{ this.amplifyService.i18n().get("Phone Number") }} *
-          </label>
-
-          <div class="amplify-input-group">
-            <div class="amplify-input-group-item">
-              <select 
-                #signInCountryCode
-                name="countryCode"
-                class="amplify-select-phone-country"
-                [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"
-                  value={{country.value}}>{{country.label}}
-                </option>
-              </select>
-            </div>
-            <div class="amplify-input-group-item">
-              <input
-                #signInLocalPhoneNumber
-                class="amplify-form-input"
-                [placeholder]="this.amplifyService.i18n().get('Enter your phone number')"
-                [(ngModel)]="local_phone_number"
-                name="local_phone_number"
-                type="text"
-              />
-            </div>
-          </div>
-        </div>
-        <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">
-          <label class="amplify-input-label" for="signInUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-          <input
-            #signInUsername
-            class="amplify-form-input"
-            type="text"
-            required
-            placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-            [(ngModel)]="username"
-          />
-        </div>
-      </div>
+      <div *ngIf="this._usernameAttributes === 'email'">` + 
+        emailFieldTemplate +   
+      `</div>
+      <div *ngIf="this._usernameAttributes === 'phone_number'">` +
+        phoneNumberFieldTemplate +     
+      `</div>
+      <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
+         usernameFieldTemplate +
+      `</div>
+    </div>
       <div class="amplify-form-row" *ngIf="code_sent">
       <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
         <input #code
@@ -185,14 +144,6 @@ export class ForgotPasswordComponentCore {
     this._usernameAttributes = usernameAttributes;
   }
 
-  setUsername(username: string) {
-    this.username = username;
-
-    if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-        this.username = `+${this.country_code}${this.local_phone_number}`;
-    }
-  }
-
   setCode(code: string) {
     this.code = code;
   }
@@ -201,12 +152,23 @@ export class ForgotPasswordComponentCore {
     this.password = password;
   }
 
+  getforgotPwUsername() {
+    if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+        return this.email;
+    } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+       return `+${this.country_code}${this.local_phone_number}`;
+    } else {
+      return  this.username;
+    }
+  }
+
   onSend() {
-    if (!this.username) {
+    let forgotPwUsername = this.getforgotPwUsername();
+    if (!forgotPwUsername) {
       this.errorMessage = "Username cannot be empty";
       return;
     }
-    this.amplifyService.auth().forgotPassword(this.username)
+    this.amplifyService.auth().forgotPassword(forgotPwUsername)
       .then(() => {
         this.code_sent = true;
       })
@@ -219,7 +181,7 @@ export class ForgotPasswordComponentCore {
   onSubmit() {
     this.amplifyService.auth()
       .forgotPasswordSubmit(
-        this.username,
+        this.getforgotPwUsername(),
         this.code,
         this.password
       )

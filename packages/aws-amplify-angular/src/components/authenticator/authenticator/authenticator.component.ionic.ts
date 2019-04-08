@@ -24,12 +24,14 @@ const template = `
 <amplify-auth-sign-in-ionic
   *ngIf="!shouldHide('SignIn')"
   [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
 ></amplify-auth-sign-in-ionic>
 
 <amplify-auth-sign-up-ionic
   *ngIf="!shouldHide('SignUp')"
   [authState]="authState"
   [signUpConfig]="_signUpConfig"
+  [usernameAttributes]="_usernameAttributes"
 ></amplify-auth-sign-up-ionic>
 
 <amplify-auth-confirm-sign-up-ionic
@@ -45,6 +47,7 @@ const template = `
 <amplify-auth-forgot-password-ionic
 *ngIf="!shouldHide('ForgotPassword')"
 [authState]="authState"
+[usernameAttributes]="_usernameAttributes"
 ></amplify-auth-forgot-password-ionic>
 
 <amplify-auth-greetings-ionic

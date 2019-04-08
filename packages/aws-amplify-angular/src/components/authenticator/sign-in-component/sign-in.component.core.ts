@@ -18,6 +18,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { includes } from '../common';
 import { UsernameAttributes } from '../types';
 import { countrylist, country }  from '../../../assets/countries';
+import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } from '../angular-templates';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -25,68 +26,25 @@ const template = `
     <div class="amplify-form-body">
       <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
       <div class="amplify-amplify-form-row amplify-signin-username">
-        <div *ngIf="this._usernameAttributes === 'email'">
-          <label class="amplify-input-label" for="signInEmail"> {{ this.amplifyService.i18n().get('Email') }} *</label>
-          <input
-            #signInEmail
-            class="amplify-form-input"
-            type="text"
-            required
-            placeholder="{{ this.amplifyService.i18n().get('Enter your email') }}"
-            [(ngModel)]="email"
-          />
-        </div>
-        <div *ngIf="this._usernameAttributes === 'phone_number'">
-          <label class="amplify-input-label" for="signInLocalPhoneNumber">
-            {{ this.amplifyService.i18n().get("Phone Number") }} *
-          </label>
-
-          <div class="amplify-input-group">
-            <div class="amplify-input-group-item">
-              <select 
-                #signInCountryCode
-                name="countryCode"
-                class="amplify-select-phone-country"
-                [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"
-                  value={{country.value}}>{{country.label}}
-                </option>
-              </select>
-            </div>
-            <div class="amplify-input-group-item">
-              <input
-                #signInLocalPhoneNumber
-                class="amplify-form-input"
-                [placeholder]="this.amplifyService.i18n().get('Enter your phone number')"
-                [(ngModel)]="local_phone_number"
-                name="local_phone_number"
-                type="text"
-              />
-            </div>
-          </div>
-        </div>
-        <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">
-          <label class="amplify-input-label" for="signInUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
-          <input
-            #signInUsername
-            class="amplify-form-input"
-            type="text"
-            required
-            placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-            [(ngModel)]="username"
-          />
-        </div>
+        <div *ngIf="this._usernameAttributes === 'email'">` + 
+          emailFieldTemplate + 
+        `</div>
+        <div *ngIf="this._usernameAttributes === 'phone_number'">` +
+          phoneNumberFieldTemplate +  
+        `</div>
+        <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
+          usernameFieldTemplate +
+        `</div>
       </div>
-
       <div class="amplify-form-row amplify-signin-password">
-        <label class="amplify-input-label" for="password">{{ this.amplifyService.i18n().get('Password *') }}</label>
-        <input #amplifyPassword
+        <label class="amplify-input-label" for="passwordField">{{ this.amplifyService.i18n().get('Password *') }}</label>
+        <input #passwordField
+          (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
           class="amplify-form-input"
           type="password"
           required
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
-          [(ngModel)]="password"
         />
         <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Forgot Password?') }}
         <a class="amplify-form-link"
@@ -160,6 +118,10 @@ export class SignInComponentCore {
   @Input()
   set usernameAttributes(usernameAttributes: string | Array<string>) {
     this._usernameAttributes = usernameAttributes;
+  }
+
+  setPassword(password: string) {
+    this.password = password;
   }
 
   onSignIn() {

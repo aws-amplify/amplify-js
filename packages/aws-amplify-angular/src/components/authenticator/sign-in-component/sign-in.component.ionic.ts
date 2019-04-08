@@ -16,6 +16,7 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
+import {usernameFieldTemplate, emailFieldTemplate, phoneNumberFieldTemplate} from '../ionic-templates';
 
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
@@ -23,12 +24,15 @@ const template = `
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
     <ion-list lines="none">
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
-          <ion-input type="text"
-          #username
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-        ></ion-input>
+      <div *ngIf="this._usernameAttributes === 'email'">` +
+        emailFieldTemplate + 
+      `</div>
+      <div *ngIf="this._usernameAttributes === 'phone_number'">` +
+        phoneNumberFieldTemplate +
+      `</div>
+      <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
+        usernameFieldTemplate + 
+      `</div>
       </ion-item>
 
       <ion-item lines="none">
@@ -78,5 +82,21 @@ export class SignInComponentIonic extends SignInComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
+  }
+
+  onCodeChange(val) {
+    this.country_code = val;
+  }
+
+  onNumberChange(val) {
+    this.local_phone_number = val;
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+  }
+
+  setEmail(email: string) {
+    this.email = email;
   }
 }

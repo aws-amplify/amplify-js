@@ -17,6 +17,7 @@ import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
+import {usernameFieldTemplate, emailFieldTemplate, phoneNumberFieldTemplate} from '../ionic-templates';
 
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
@@ -27,12 +28,15 @@ const template = `
   <ion-list>
 
     <ion-item lines="none" *ngIf="!code_sent">
-      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
-      <ion-input type="text"
-        class="amplify-form-input"
-        (keyup)="setUsername($event.target.value)"
-        [value]="username"
-      ></ion-input>
+     <div *ngIf="this._usernameAttributes === 'email'">` +
+        emailFieldTemplate + 
+      `</div>
+      <div *ngIf="this._usernameAttributes === 'phone_number'">` +
+        phoneNumberFieldTemplate +
+      `</div>
+      <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
+        usernameFieldTemplate + 
+      `</div>
     </ion-item>
 
     <ion-item lines="none" *ngIf="code_sent">
@@ -91,10 +95,23 @@ const template = `
   template
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
-
-
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
+  }
 
+  onCodeChange(val) {
+    this.country_code = val;
+  }
+
+  onNumberChange(val) {
+    this.local_phone_number = val;
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+  }
+
+  setEmail(email: string) {
+    this.email = email;
   }
 }
