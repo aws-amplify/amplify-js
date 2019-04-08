@@ -124,7 +124,7 @@ export class ForgotPasswordComponentCore {
     this._authState = authState;
     this._show = authState.state === 'forgotPassword';
 
-    this.username = authState.user && authState.user.username ? authState.user.username : '';
+    this.username = (authState.user && authState.user.username) ? authState.user.username : '';
   }
 
   setUsername(username: string) {
