@@ -62,7 +62,7 @@ const template = `
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
-          (click)="onConfirm()">S{{ this.amplifyService.i18n().get('Confirm') }}</button>
+          (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
       </div>
     </div>
   </div>
