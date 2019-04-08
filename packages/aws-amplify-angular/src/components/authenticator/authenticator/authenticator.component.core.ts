@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnInit } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
@@ -61,15 +61,17 @@ const template = `
   selector: 'amplify-authenticator-core',
   template
 })
-export class AuthenticatorComponentCore {
+export class AuthenticatorComponentCore implements OnInit {
   authState: AuthState = {
-    state: 'signIn',
+    state: 'loading...',
     user: null
   };
   _signUpConfig: any = {};
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.subscribe();
+  constructor(protected amplifyService: AmplifyService) {}
+
+  async ngOnInit() {
+    await this.subscribe();
   }
 
   @Input()
