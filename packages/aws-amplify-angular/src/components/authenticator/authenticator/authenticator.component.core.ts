@@ -63,15 +63,26 @@ const template = `
 })
 export class AuthenticatorComponentCore implements OnInit {
   authState: AuthState = {
-    state: 'loading...',
+    state: 'loading',
     user: null
   };
   _signUpConfig: any = {};
+  constructor(protected amplifyService: AmplifyService) {
+    this.subscribe();
+  }
 
-  constructor(protected amplifyService: AmplifyService) {}
-
-  async ngOnInit() {
-    await this.subscribe();
+  ngOnInit() {
+    const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
+    .then((user) => {
+      if (this.authState.state === 'loading' && user) {
+        this.amplifyService.setAuthState({ state: 'signedIn', user });
+      }
+    })
+    .catch((e) => {
+      if (this.authState.state === 'loading') {
+        this.amplifyService.setAuthState({ state: 'signIn', user: null });
+      }
+    });
   }
 
   @Input()
