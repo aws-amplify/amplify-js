@@ -83,7 +83,7 @@ export class RequireNewPasswordComponentCore implements OnInit {
 
   ngOnInit() {
     if (!this.amplifyService.auth()){
-      this.logger.warn('Auth module not registered on AmplifyService provider');
+      throw new Error('Auth module not registered on AmplifyService provider');
     }
   }
 

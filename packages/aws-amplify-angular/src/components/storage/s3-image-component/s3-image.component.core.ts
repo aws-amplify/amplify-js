@@ -61,7 +61,7 @@ export class S3ImageComponentCore implements OnInit {
   ngOnInit() {
     if (!this._path) { return; }
     if (!this.amplifyService.storage()){
-      this.logger.warn('Storage module not registered on AmplifyService provider');
+      throw new Error('Storage module not registered on AmplifyService provider');
     }
     this.getImage(this._path, this._options);
   }

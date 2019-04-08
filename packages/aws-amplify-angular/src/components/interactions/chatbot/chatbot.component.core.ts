@@ -179,7 +179,7 @@ export class ChatbotComponentCore implements OnInit  {
 
 	ngOnInit() {
     if (!this.amplifyService.interactions()){
-      this.logger.warn('Interactions module not registered on AmplifyService provider');
+      throw new Error('Interactions module not registered on AmplifyService provider');
     }
   }
 

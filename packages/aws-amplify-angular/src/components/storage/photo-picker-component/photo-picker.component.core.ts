@@ -104,7 +104,7 @@ export class PhotoPickerComponentCore implements OnInit {
 
   ngOnInit() {
     if (!this.amplifyService.storage()){
-      this.logger.warn('Storage module not registered on AmplifyService provider');
+      throw new Error('Storage module not registered on AmplifyService provider');
     }
   }
 

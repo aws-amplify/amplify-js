@@ -115,7 +115,13 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
 
+    if (!this.amplifyService.xr()){
+      throw new Error('XR module not registered on AmplifyService provider');
+    }
+
     this.loadAndStartScene();
+
+
   }
 
   ngOnDestroy() {

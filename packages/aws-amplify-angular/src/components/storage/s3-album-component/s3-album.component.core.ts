@@ -49,7 +49,7 @@ export class S3AlbumComponentCore implements OnInit {
 
   ngOnInit() {
     if (!this.amplifyService.storage()){
-      this.logger.warn('Storage module not registered on AmplifyService provider');
+      throw new Error('Storage module not registered on AmplifyService provider');
     }
     this.getList(this._path, this._options);
   }

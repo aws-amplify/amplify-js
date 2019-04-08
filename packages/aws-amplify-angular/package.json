@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.0",
+  "version": "3.0.00",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -66,7 +66,7 @@
     "zone.js": "^0.8.26"
   },
   "peerDependencies": {
-    "aws-amplify": "^1.x"
+    "@aws-amplify/core": "^1.x"
   },
   "dependencies": {
     "@aws-amplify/ui": "^1.0.18",

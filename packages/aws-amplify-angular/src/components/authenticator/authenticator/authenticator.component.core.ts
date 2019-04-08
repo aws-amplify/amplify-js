@@ -72,17 +72,21 @@ export class AuthenticatorComponentCore implements OnInit {
   }
 
   ngOnInit() {
-    const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
-    .then((user) => {
-      if (this.authState.state === 'loading' && user) {
-        this.amplifyService.setAuthState({ state: 'signedIn', user });
-      }
-    })
-    .catch((e) => {
-      if (this.authState.state === 'loading') {
-        this.amplifyService.setAuthState({ state: 'signIn', user: null });
-      }
-    });
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    } else {
+      const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
+      .then((user) => {
+        if (this.authState.state === 'loading' && user) {
+          this.amplifyService.setAuthState({ state: 'signedIn', user });
+        }
+      })
+      .catch((e) => {
+        if (this.authState.state === 'loading') {
+          this.amplifyService.setAuthState({ state: 'signIn', user: null });
+        }
+      });  
+    }
   }
 
   @Input()

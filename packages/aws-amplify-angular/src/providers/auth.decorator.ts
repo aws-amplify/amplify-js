@@ -6,6 +6,9 @@ import * as _ from 'lodash';
 const logger = new Logger('AuthDecorator');
 
 function check(authState: Subject<AuthState>, Auth) {
+  if (!Auth) {
+    throw new Error('Auth module not registered on AmplifyService provider');
+  }
   // check for current authenticated user to init authState
   Auth.currentAuthenticatedUser()
     .then(user => {
@@ -35,6 +38,9 @@ function listen(authState: Subject<AuthState>) {
 }
 
 function decorateSignIn(authState: Subject<AuthState>, Auth) {
+  if (!Auth) {
+    throw new Error('Auth module not registered on AmplifyService provider');
+  }
   const _signIn = Auth.signIn;
   Auth.signIn = (
     username: string,
@@ -71,6 +77,9 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateSignOut(authState: Subject<AuthState>, Auth) {
+  if (!Auth) {
+    throw new Error('Auth module not registered on AmplifyService provider');
+  }
   const _signOut = Auth.signOut;
   Auth.signOut = (): Promise<any> => {
     return _signOut.call(Amplify.Auth)
@@ -87,6 +96,9 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateSignUp(authState: Subject<AuthState>, Auth) {
+  if (!Auth) {
+    throw new Error('Auth module not registered on AmplifyService provider');
+  }
   const _signUp = Auth.signUp;
   Auth.signUp = (
     username: string,
@@ -108,6 +120,9 @@ function decorateSignUp(authState: Subject<AuthState>, Auth) {
 }
 
 function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
+  if (!Auth) {
+    throw new Error('Auth module not registered on AmplifyService provider');
+  }
   const _confirmSignUp = Auth.confirmSignUp;
   Auth.confirmSignUp = (
     username: string,
