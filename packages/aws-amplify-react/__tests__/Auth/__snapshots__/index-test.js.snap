@@ -27,6 +27,5 @@ exports[`hoc tests withAuthenticator test when signed in 1`] = `
     authState="signedIn"
     onStateChange={[Function]}
   />
-  ;
 </Fragment>
 `;
