@@ -109,16 +109,16 @@ export default class AuthClass {
 
         Hub.listen('auth', ({ payload }) => {
             const { event } = payload;
-            switch(event){
+            switch (event) {
                 case 'signIn':
-                  this._storage.setItem('amplify-react-signin-with-hostedUI', 'false');
-                  break;
+                    this._storage.setItem('amplify-signin-with-hostedUI', 'false');
+                    break;
                 case 'signOut':
-                  this._storage.removeItem('amplify-react-signin-with-hostedUI');
-                  break;
+                    this._storage.removeItem('amplify-signin-with-hostedUI');
+                    break;
                 case 'cognitoHostedUI':
-                  this._storage.setItem('amplify-react-signin-with-hostedUI', 'true');
-                  break;
+                    this._storage.setItem('amplify-signin-with-hostedUI', 'true');
+                    break;
             }
         });
     }
@@ -1195,8 +1195,15 @@ export default class AuthClass {
     }
 
     private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
+        try {
+            await this._storageSync;
+        } catch (e) {
+            logger.debug('Failed to sync cache info into memory', e);
+            throw e;
+        }
+
         const isSignedInHostedUI = this._oAuthHandler 
-            && this._storage.getItem('amplify-react-signin-with-hostedUI') === 'true';
+            && this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
         return new Promise((res, rej) => {
             if (opts && opts.global) {
