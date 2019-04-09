@@ -1,10 +1,5 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-<<<<<<< Updated upstream
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { SignUpComponentIonic } from '../../../components/authenticator/sign-up-component/sign-up.component.ionic'
-=======
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -14,7 +9,6 @@ import { FormsModule } from '@angular/forms';
 import { authModule } from '../../../__mocks__/mock_module';
 import { SignUpComponentIonic }
 from '../../../components/authenticator/sign-up-component/sign-up.component.ionic';
->>>>>>> Stashed changes
 
 
 describe('SignUpComponentCore: ', () => {
