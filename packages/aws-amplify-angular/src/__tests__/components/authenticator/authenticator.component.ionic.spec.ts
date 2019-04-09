@@ -3,36 +3,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
+import Amplify from 'aws-amplify';
 import { AuthenticatorIonicComponent } from '../../../components/authenticator/authenticator/authenticator.component.ionic'
 
 
 describe('AuthenticatorIonicComponent: ', () => {
 
   let component: AuthenticatorIonicComponent;
-  let fixtureComponent: AuthenticatorIonicComponent;
   let service: AmplifyService;
-  let fixture;
 
   beforeEach(() => { 
-    service = new AmplifyService(authModule);
+    service = new AmplifyService(Amplify);
     component = new AuthenticatorIonicComponent(service);
-    TestBed.configureTestingModule({
-      declarations: [
-        AuthenticatorIonicComponent
-      ],
-      providers: [
-        {
-          provide: AmplifyService,
-          useFactory: () => {
-            return AmplifyModules({
-              ...authModule
-            });
-          }
-        }
-      ],
-    }).compileComponents();
-    fixture = TestBed.createComponent(AuthenticatorIonicComponent);
-    fixtureComponent = fixture.componentInstance;
   });
 
   afterEach(() => {
