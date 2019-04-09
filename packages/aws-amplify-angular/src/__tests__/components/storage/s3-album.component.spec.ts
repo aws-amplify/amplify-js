@@ -11,7 +11,7 @@ describe('PhotoPickerComponentCore: ', () => {
   let service: AmplifyService;
 
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(Amplify);
     component = new S3AlbumComponentCore(service);
   });
 
