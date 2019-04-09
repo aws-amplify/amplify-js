@@ -66,10 +66,8 @@
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
   },
-  "peerDependencies": {
-    "aws-amplify": "^1.x"
-  },
   "dependencies": {
+    "@aws-amplify/ui": "^1.0.18",
     "@types/lodash": "^4.14.106"
   }
 }
