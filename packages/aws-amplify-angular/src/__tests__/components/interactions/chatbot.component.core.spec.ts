@@ -7,7 +7,7 @@ import {
 import { AmplifyService } from '../../../providers/amplify.service';
 import { ChatbotComponentCore } 
 from '../../../components/interactions/chatbot/chatbot.component.core';
-import { interactionsModule } from '../../../__mocks__/mock_module';
+import Amplify from 'aws-amplify';
 
 
 
@@ -19,7 +19,7 @@ describe('ChatbotComponentIonic: ', () => {
 
 
   beforeEach(() => { 
-    service = new AmplifyService(interactionsModule);
+    service = new AmplifyService(Amplify);
     component = new ChatbotComponentCore(ref, service);
   });
 
