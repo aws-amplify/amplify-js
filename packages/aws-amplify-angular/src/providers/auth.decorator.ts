@@ -132,7 +132,6 @@ export function authDecorator(authState: Subject<AuthState>) {
   check(authState);
 
   listen(authState);
-
   decorateSignIn(authState);
   decorateSignOut(authState);
   decorateSignUp(authState);
