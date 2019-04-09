@@ -128,16 +128,9 @@ function decorateConfirmSignUp(authState: Subject<AuthState>) {
   };
 }
 
-<<<<<<< Updated upstream
 export function authDecorator(authState: Subject<AuthState>) {
   check(authState);
-=======
-export function authDecorator(authState: Subject<AuthState>, authModule) {
-  // if (!authModule) {
-  //   throw new Error('Auth module not registered on AmplifyService provider');
-  // }
-  check(authState, authModule);
->>>>>>> Stashed changes
+
   listen(authState);
 
   decorateSignIn(authState);
