@@ -212,6 +212,7 @@ export default class OAuth {
     const savedState = oAuthStorage.getState();
     const { state: returnedState } = urlParams;
 
+    // This is because savedState only exists if the flow was initiated by Amplify
     if (savedState && savedState !== returnedState) {
       throw new Error('Invalid state in OAuth flow');
     }
