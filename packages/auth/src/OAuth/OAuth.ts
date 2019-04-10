@@ -127,7 +127,7 @@ export default class OAuth {
       code,
       client_id,
       redirect_uri,
-      code_verifier
+      ...(code_verifier ? { code_verifier } : {})
     };
 
     logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
@@ -212,7 +212,7 @@ export default class OAuth {
     const savedState = oAuthStorage.getState();
     const { state: returnedState } = urlParams;
 
-    if (savedState !== returnedState) {
+    if (savedState && savedState !== returnedState) {
       throw new Error('Invalid state in OAuth flow');
     }
   }
