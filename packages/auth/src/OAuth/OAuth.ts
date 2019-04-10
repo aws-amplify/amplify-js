@@ -66,7 +66,7 @@ export default class OAuth {
     domain: string,
     redirectSignIn: string,
     clientId: string,
-    provider: CognitoHostedUIIdentityProvider | string) {
+    provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito) {
 
     const state = this._generateState(32);
     oAuthStorage.setState(state);
