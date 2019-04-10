@@ -24,6 +24,7 @@ import ForgotPassword from './ForgotPassword.vue';
 import Authenticator from './Authenticator.vue';
 import SetMfa from './SetMFA.vue';
 import RequireNewPassword from './RequireNewPassword.vue';
+import UsernameField from './UsernameField';
 
 
 Vue.component('amplify-authenticator', Authenticator);
@@ -35,6 +36,7 @@ Vue.component('amplify-confirm-sign-in', ConfirmSignIn);
 Vue.component('amplify-forgot-password', ForgotPassword);
 Vue.component('amplify-set-mfa', SetMfa);
 Vue.component('amplify-require-new-password', RequireNewPassword);
+Vue.component('amplify-username-field', UsernameField);
 
 
 export {

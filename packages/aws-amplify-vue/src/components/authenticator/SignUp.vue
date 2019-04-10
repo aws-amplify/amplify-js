@@ -64,7 +64,7 @@ import Vue2Filters from 'vue2-filters'
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
-import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
+// import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
 
 Vue.use(Vue2Filters)
 
@@ -160,15 +160,6 @@ export default {
             displayOrder: 4
           }
         ]
-      }
-
-      if (this.signUpConfig && this.signUpConfig.signUpWith) {
-        const signUpWith = this.signUpConfig.signUpWith;
-        if (signUpWith === 'Email') {
-          defaults.signUpFields = signUpWithEmailFields;
-        } else if (signUpWith = 'Phone Number') {
-          defaults.signUpFields = signUpWithPhoneNumberFields;
-        }
       }
 
       // sets value in country code dropdown if defaultCountryCode value is present in props 
