@@ -12,7 +12,7 @@
  */
 
 <template>
-    <div>
+    <div v-bind:class="amplifyUI.formField">
         <div v-if="shouldRenderUsernameField">
             <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
             <input 
@@ -67,19 +67,13 @@ import countries from '../../assets/countries';
 
 export default {
     name: 'UsernameField',
-    props: ['usernameFieldConfig','usernameAttributes'],
+    props: ['usernameAttributes'],
     data() {
-        const { 
-            username='', 
-            email='', 
-            countryCode='1', 
-            local_phone_number='' 
-            } = this.usernameFieldConfig || {};
         return {
-            username,
-            email,
-            countryCode,
-            local_phone_number,
+            username: '',
+            email: '',
+            countryCode: '1',
+            local_phone_number: '',
             country: 'USA (+1)',
             countries,
             amplifyUI: AmplifyUI,

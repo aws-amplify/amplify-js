@@ -15,13 +15,10 @@
   <div v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField">
-        <amplify-username-field 
-          v-bind:usernameAttributes="usernameAttributes" 
-          v-bind:usernameFieldConfig="usernameFieldConfig"
-          v-on:username-field-changed="usernameFieldChanged">
-        </amplify-username-field>
-      </div>
+      <amplify-username-field 
+        v-bind:usernameAttributes="usernameAttributes" 
+        v-on:username-field-changed="usernameFieldChanged">
+      </amplify-username-field>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
         <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" />
@@ -68,16 +65,9 @@ export default {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign In Account'),
         username: '',
-        email: '',
         isSignUpDisplayed: true,
-        countryCode: '1',
-        local_phone_number: '',
       }
       return Object.assign(defaults, this.signInConfig || {})
-    },
-    usernameFieldConfig() {
-      const { header, isSignUpDisplayed, ...restOptions } = this.options;
-      return restOptions || {};
     },
   },
   mounted() {
@@ -127,7 +117,7 @@ export default {
       } else if (usernameField === 'email') {
         this.signInUsername = email;
       } else if (usernameField === 'phone_number') {
-        this.signInUsername = `${countryCode}${local_phone_number.replace(/[-()]/g, '')}`
+        this.signInUsername = `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`
       }
     },
   }
