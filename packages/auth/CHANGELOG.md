@@ -3,6 +3,300 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.21"></a>
+## [1.2.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.21-unstable.1...@aws-amplify/auth@1.2.21) (2019-04-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.21-unstable.1"></a>
+## [1.2.21-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.21-unstable.0...@aws-amplify/auth@1.2.21-unstable.1) (2019-04-08)
+
+
+### Features
+
+* **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
+
+
+
+
+<a name="1.2.21-unstable.0"></a>
+## [1.2.21-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.20...@aws-amplify/auth@1.2.21-unstable.0) (2019-04-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.20"></a>
+## [1.2.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.20-unstable.1...@aws-amplify/auth@1.2.20) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.20-unstable.1"></a>
+## [1.2.20-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.20-unstable.0...@aws-amplify/auth@1.2.20-unstable.1) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.20-unstable.0"></a>
+## [1.2.20-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19...@aws-amplify/auth@1.2.20-unstable.0) (2019-04-02)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.19"></a>
+## [1.2.19](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.5...@aws-amplify/auth@1.2.19) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.19-unstable.5"></a>
+## [1.2.19-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.4...@aws-amplify/auth@1.2.19-unstable.5) (2019-03-28)
+
+
+### Features
+
+* **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
+
+
+
+
+<a name="1.2.19-unstable.4"></a>
+## [1.2.19-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.3...@aws-amplify/auth@1.2.19-unstable.4) (2019-03-24)
+
+
+### Bug Fixes
+
+* **auth:** Remove react-native related peerDependencies ([#2871](https://github.com/aws/aws-amplify/issues/2871)) ([72f3d94](https://github.com/aws/aws-amplify/commit/72f3d94))
+
+
+
+
+<a name="1.2.19-unstable.3"></a>
+## [1.2.19-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.2...@aws-amplify/auth@1.2.19-unstable.3) (2019-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** get the user attributes after signing in ([c024263](https://github.com/aws/aws-amplify/commit/c024263))
+
+
+
+
+<a name="1.2.19-unstable.2"></a>
+## [1.2.19-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.1...@aws-amplify/auth@1.2.19-unstable.2) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.19-unstable.1"></a>
+## [1.2.19-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.19-unstable.0...@aws-amplify/auth@1.2.19-unstable.1) (2019-03-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** check if has the right scope to send the request GetUserData ([20bd92b](https://github.com/aws/aws-amplify/commit/20bd92b))
+
+
+
+
+<a name="1.2.19-unstable.0"></a>
+## [1.2.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.18...@aws-amplify/auth@1.2.19-unstable.0) (2019-03-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.18"></a>
+## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.18-unstable.1...@aws-amplify/auth@1.2.18) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.18-unstable.1"></a>
+## [1.2.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.18-unstable.0...@aws-amplify/auth@1.2.18-unstable.1) (2019-03-06)
+
+
+### Bug Fixes
+
+* **auth:** Split urlListener into web/react-native ([b33fee0](https://github.com/aws/aws-amplify/commit/b33fee0)), closes [#2808](https://github.com/aws/aws-amplify/issues/2808)
+
+
+
+
+<a name="1.2.18-unstable.0"></a>
+## [1.2.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.17...@aws-amplify/auth@1.2.18-unstable.0) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.17"></a>
+## [1.2.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16...@aws-amplify/auth@1.2.17) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16"></a>
+## [1.2.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.8...@aws-amplify/auth@1.2.16) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.8"></a>
+## [1.2.16-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.7...@aws-amplify/auth@1.2.16-unstable.8) (2019-03-04)
+
+
+### Features
+
+* **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+
+
+
+
+<a name="1.2.16-unstable.7"></a>
+## [1.2.16-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.6...@aws-amplify/auth@1.2.16-unstable.7) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.6"></a>
+## [1.2.16-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.5...@aws-amplify/auth@1.2.16-unstable.6) (2019-03-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.5"></a>
+## [1.2.16-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.4...@aws-amplify/auth@1.2.16-unstable.5) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.4"></a>
+## [1.2.16-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.3...@aws-amplify/auth@1.2.16-unstable.4) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.3"></a>
+## [1.2.16-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.2...@aws-amplify/auth@1.2.16-unstable.3) (2019-01-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.2"></a>
+## [1.2.16-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.1...@aws-amplify/auth@1.2.16-unstable.2) (2019-01-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.1"></a>
+## [1.2.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.16-unstable.0...@aws-amplify/auth@1.2.16-unstable.1) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.16-unstable.0"></a>
+## [1.2.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.15...@aws-amplify/auth@1.2.16-unstable.0) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.15"></a>
+## [1.2.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.15-unstable.0...@aws-amplify/auth@1.2.15) (2019-01-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** wait for cached data loaded into memory before calling getItem ([5fc6d77](https://github.com/aws/aws-amplify/commit/5fc6d77))
+
+
+
+
+<a name="1.2.15-unstable.0"></a>
+## [1.2.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14...@aws-amplify/auth@1.2.15-unstable.0) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.14"></a>
+## [1.2.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14-unstable.2...@aws-amplify/auth@1.2.14) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.14-unstable.2"></a>
+## [1.2.14-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14-unstable.1...@aws-amplify/auth@1.2.14-unstable.2) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.14-unstable.1"></a>
+## [1.2.14-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.14-unstable.0...@aws-amplify/auth@1.2.14-unstable.1) (2018-12-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** typo ([2f411ad](https://github.com/aws/aws-amplify/commit/2f411ad))
+
+
+
+
+<a name="1.2.14-unstable.0"></a>
+## [1.2.14-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.13...@aws-amplify/auth@1.2.14-unstable.0) (2018-12-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** put warning message in the federatedSignIn method ([9fff76a](https://github.com/aws/aws-amplify/commit/9fff76a))
+
+
+
+
 <a name="1.2.13"></a>
 ## [1.2.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.13-unstable.3...@aws-amplify/auth@1.2.13) (2018-12-13)
 

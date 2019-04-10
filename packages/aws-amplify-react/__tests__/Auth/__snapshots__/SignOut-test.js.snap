@@ -1,8 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SignOut normal case render correctly with authState signedIn 1`] = `""`;
+exports[`SignOut normal case render correctly with authState signedIn 1`] = `
+<Component
+  onClick={[Function]}
+  theme="theme"
+>
+  Sign Out
+</Component>
+`;
 
-exports[`SignOut normal case render correctly with empty hide 1`] = `""`;
+exports[`SignOut normal case render correctly with empty hide 1`] = `
+<Component
+  onClick={[Function]}
+  theme="theme"
+>
+  Sign Out
+</Component>
+`;
 
 exports[`SignOut normal case render correctly with hide 1`] = `""`;
 

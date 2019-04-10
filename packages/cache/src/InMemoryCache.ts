@@ -80,7 +80,7 @@ export class InMemoryCache extends StorageCache implements ICache {
     }
 
     /**
-     * check wether item is expired
+     * check whether item is expired
      * 
      * @param key - the key of the item
      * 

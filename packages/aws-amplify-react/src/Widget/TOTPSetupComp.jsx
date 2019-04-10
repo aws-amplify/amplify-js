@@ -71,13 +71,14 @@ export default class TOTPSetupComp extends Component {
     setup() {
         this.setState({setupMessage: null});
         const user = this.props.authData;
+        const issuer = encodeURI(I18n.get('AWSCognito'));
         if (!Auth || typeof Auth.setupTOTP !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
         Auth.setupTOTP(user).then((data) => {
             logger.debug('secret key', data);
-            const code = "otpauth://totp/AWSCognito:"+ user.username + "?secret=" + data + "&issuer=AWSCognito";
+            const code = "otpauth://totp/" + issuer + ":" + user.username + "?secret=" + data + "&issuer=" + issuer;
             this.setState({code});
         }).catch((err) => logger.debug('totp setup failed', err));
     }

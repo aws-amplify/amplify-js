@@ -27,7 +27,12 @@ depending on your project setup and experience with modern JavaScript build tool
 
 * Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill.
+**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
+
+```javascript
+global.fetch = require('node-fetch');
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+```
 
 Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
@@ -273,6 +278,9 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
 
 ```javascript
+
+    import * as AWS from 'aws-sdk/global';
+    
     var authenticationData = {
         Username : 'username',
         Password : 'password',
@@ -436,6 +444,18 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 **Use case 12.** Starting and completing a forgot password flow for an unauthenticated user.
 
+For example: 
+```html
+<body>
+    <label for="#code">Code: </label>
+    <input id="code"></input>
+    </br>
+    <label for="#new_password">New Password: </label>
+    <input id="new_password" type="password"></input>
+    <br/>
+</body>
+```
+
 ```javascript
     cognitoUser.forgotPassword({
         onSuccess: function (data) {
@@ -448,8 +468,8 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
         //Optional automatic callback
         inputVerificationCode: function(data) {
             console.log('Code sent to: ' + data);
-            var verificationCode = prompt('Please input verification code ' ,'');
-            var newPassword = prompt('Enter new password ' ,'');
+            var code = document.getElementById('code').value;
+            var newPassword = document.getElementById('new_password').value;
             cognitoUser.confirmPassword(verificationCode, newPassword, {
                 onSuccess() {
                     console.log('Password confirmed!');
@@ -559,6 +579,9 @@ In React Native, loading the persisted current user information requires an extr
         cognitoUser.getSession(function(err, result) {
             if (result) {
                 console.log('You are now logged in.');
+                
+                //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+                AWS.config.region = '<region>';
 
                 // Add the User's Id Token to the Cognito credentials login map.
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
