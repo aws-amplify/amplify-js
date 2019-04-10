@@ -118,6 +118,7 @@ export default class ConfirmSignIn extends AuthPiece {
 +                            </Link>
 +                        </SectionFooterSecondaryContent>
 +                    </SectionFooter>
+                </form>
             </FormSection>
         );
     }
