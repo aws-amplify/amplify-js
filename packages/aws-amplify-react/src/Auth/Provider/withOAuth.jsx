@@ -22,23 +22,16 @@ import {
     SignInButton, 
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-import Constants from '../common/constants';
 
-const logger = new Logger('withOAuth');
-
-export default function withOAuth(Comp, options) {
+export default function withOAuth(Comp) {
     return class extends Component {
         constructor(props) {
             super(props);
             this.signIn = this.signIn.bind(this);
         }
 
-        signIn(provider) {
-            Auth.federatedSignIn(
-                provider
-                  ?{provider}
-                  :undefined
-            );
+        signIn(_e, provider) {
+            Auth.federatedSignIn({ provider });
         }
 
         render() {

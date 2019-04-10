@@ -66,7 +66,7 @@ export default class OAuth {
     domain: string,
     redirectSignIn: string,
     clientId: string,
-    provider: CognitoHostedUIIdentityProvider | string) {
+    provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito) {
 
     const state = this._generateState(32);
     oAuthStorage.setState(state);
@@ -127,7 +127,7 @@ export default class OAuth {
       code,
       client_id,
       redirect_uri,
-      code_verifier
+      ...(code_verifier ? { code_verifier } : {})
     };
 
     logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
@@ -212,7 +212,8 @@ export default class OAuth {
     const savedState = oAuthStorage.getState();
     const { state: returnedState } = urlParams;
 
-    if (savedState !== returnedState) {
+    // This is because savedState only exists if the flow was initiated by Amplify
+    if (savedState && savedState !== returnedState) {
       throw new Error('Invalid state in OAuth flow');
     }
   }
