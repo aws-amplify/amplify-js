@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.0...aws-amplify-angular@3.0.1) (2019-04-11)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** preparing release ([84f261a](https://github.com/aws-amplify/amplify-js/commit/84f261a))
+
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.0-unstable.2...aws-amplify-angular@3.0.0) (2019-04-11)
 
