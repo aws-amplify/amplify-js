@@ -232,7 +232,7 @@ export class SignUpComponentCore implements OnInit {
       return el.key === 'phone_number';
     });
     if (phoneNumberRequested) {
-      this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+      this.user.phone_number = `+${this.country_code}${this.local_phone_number.replace(/()-/g,'')}`;
     }
 
     // create user key and value arrays
@@ -247,12 +247,18 @@ export class SignUpComponentCore implements OnInit {
         const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
         this.user.attributes[newKey] = userValues[index];
       }
-      
-      if (this.signUpFields.find(e => 
-            e.signUpWith &&
-            e.key === key)
-        )
-        { this.user.username = userValues[index]; }
+    });
+
+    let signUpWithShowedUp = false;
+    this.signUpFields.forEach(field => {
+      if (field.signUpWith) {
+        if (signUpWithShowedUp) {
+            throw new Error('Only one sign up field can be marked as signUpWith!');
+        }
+        this.amplifyService.logger(`Changing the username to the value of ${field.key}`, 'DEBUG');
+        this.user.username = this.user.attributes[field.key];
+        signUpWithShowedUp = true;
+      }
     });
 
     this.amplifyService.auth()

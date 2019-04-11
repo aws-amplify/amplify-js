@@ -38,7 +38,7 @@ export default class AuthPiece extends React.Component {
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
 
-        this.getUsername = this.getUsername.bind(this);
+        this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
         this.renderUsernameField = this.renderUsernameField.bind(this);
     }
 
@@ -71,7 +71,7 @@ export default class AuthPiece extends React.Component {
                     theme={theme}
                     key = {'phone_number'}
                     onChangeText={(text) => this.setState({ phone_number: text })}
-                    label={I18n.get('phone_number')}
+                    label={I18n.get('Phone Number')}
                     placeholder={I18n.get('Enter your phone number')}
                     keyboardType="phone-pad"
                     required={true}

@@ -194,27 +194,24 @@ export default class SignUp extends AuthPiece {
         const inputVals = Object.values(this.inputs);
 
         inputKeys.forEach((key, index) => {
-            let attributeValue;
             if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
                 if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                     const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                    attributeValue = inputVals[index];
-                    signup_info.attributes[newKey] = attributeValue;
+                    signup_info.attributes[newKey] = inputVals[index];
                 } else if (inputVals[index]) {
-                    attributeValue = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
-                    signup_info.attributes['phone_number'] = attributeValue;
+                    signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
                 }
             }
         });
 
-        const signUpWithShowedUp = false;
+        let signUpWithShowedUp = false;
         this.signUpFields.forEach(field => {
             if (field.signUpWith) {
                 if (signUpWithShowedUp) {
                     throw new Error('Only one sign up field can be marked as signUpWith!');
                 }
                 logger.debug(`Changing the username to the value of ${field.key}`);
-                signup_info.attributes['username'] = signup_info.attributes[field.key];
+                signup_info.username = signup_info.attributes[field.key];
                 signUpWithShowedUp = true;
             }
         });

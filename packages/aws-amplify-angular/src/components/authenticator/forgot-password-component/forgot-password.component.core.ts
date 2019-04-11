@@ -135,7 +135,7 @@ export class ForgotPasswordComponentCore {
 
     this.username = authState.user? authState.user.username || '' : '';
     this.email = authState.user? authState.user.email || '' : '';
-    this.country_code = authState.user? authState.user.country_code || '' : '';
+    this.country_code = authState.user? authState.user.country_code || '' : '1';
     this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
   }
 
@@ -156,7 +156,7 @@ export class ForgotPasswordComponentCore {
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
         return this.email;
     } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-       return `+${this.country_code}${this.local_phone_number}`;
+       return `+${this.country_code}${this.local_phone_number.replace(/()-/g, '')}`;
     } else {
       return  this.username;
     }

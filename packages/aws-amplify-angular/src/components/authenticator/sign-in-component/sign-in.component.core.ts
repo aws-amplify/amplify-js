@@ -39,7 +39,7 @@ const template = `
       <div class="amplify-form-row amplify-signin-password">
         <label class="amplify-input-label" for="passwordField">{{ this.amplifyService.i18n().get('Password *') }}</label>
         <input #passwordField
-          (keyup)="setPassword(password.value)"
+          (keyup)="setPassword(passwordField.value)"
           (keyup.enter)="onSignIn()"
           class="amplify-form-input"
           type="password"
@@ -129,7 +129,7 @@ export class SignInComponentCore {
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
         signInUsername = this.email;
     } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-       signInUsername = `+${this.country_code}${this.local_phone_number}`;
+       signInUsername = `+${this.country_code}${this.local_phone_number.replace(/()-/g, '')}`;
     } else {
       signInUsername = this.username;
     }

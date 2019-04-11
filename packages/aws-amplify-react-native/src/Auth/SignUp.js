@@ -179,14 +179,14 @@ export default class SignUp extends AuthPiece {
             }
         });
 
-        const signUpWithShowedUp = false;
+        let signUpWithShowedUp = false;
         this.signUpFields.forEach(field => {
             if (field.signUpWith) {
                 if (signUpWithShowedUp) {
                     throw new Error('Only one sign up field can be marked as signUpWith!');
                 }
                 logger.debug(`Changing the username to the value of ${field.key}`);
-                signup_info.attributes['username'] = signup_info.attributes[field.key];
+                signup_info.username = signup_info.attributes[field.key];
                 signUpWithShowedUp = true;
             }
         });

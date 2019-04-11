@@ -45,7 +45,7 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     send() {
-        const username = this.getUsername();
+        const username = this.getUsernameFromInput();
         if (!username) {
             this.error('Username cannot be empty');
             return;
@@ -60,7 +60,7 @@ export default class ForgotPassword extends AuthPiece {
 
     submit() {
         const { code, password } = this.state;
-        const username = this.getUsername();
+        const username = this.getUsernameFromInput();
         Auth.forgotPasswordSubmit(username, code, password)
             .then(data => {
                 logger.debug(data);
