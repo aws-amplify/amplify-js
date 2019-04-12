@@ -15,6 +15,7 @@
 
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
+import { UsernameAttributes } from '../types';
 
 const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
@@ -33,7 +34,7 @@ const template = `
 export class GreetingComponentCore {
   signedIn: boolean;
   greeting: string;
-
+  _usernameAttributes: string | Array<string> = [];
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -44,6 +45,10 @@ export class GreetingComponentCore {
   @Input()
   authState: AuthState;
 
+  @Input()
+  set usernameAttributes(usernameAttributes: string | Array<string>) {
+    this._usernameAttributes = usernameAttributes;
+  }
 
   subscribe() {
     this.amplifyService.authStateChange$
@@ -54,8 +59,19 @@ export class GreetingComponentCore {
     this.authState = authState;
     this.signedIn = authState.state === 'signedIn';
 
+    let username = "";
+    if (authState.user) {
+      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+        username = authState.user.attributes? authState.user.attributes.email : authState.user.username;
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        username = authState.user.attributes? authState.user.attributes.phone_number : authState.user.username;
+      } else {
+        username = authState.user.username;
+      }
+    }
+    
     this.greeting = this.signedIn
-      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', authState.user.username)
+      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', username)
       : "";
   }
 

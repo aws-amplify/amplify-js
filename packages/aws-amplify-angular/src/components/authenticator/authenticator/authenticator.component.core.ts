@@ -50,6 +50,7 @@ const template = `
     <amplify-auth-greetings-core
     *ngIf="!shouldHide('Greetings')"
     [authState]="authState"
+    [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-greetings-core>
 
      <amplify-auth-require-new-password-core

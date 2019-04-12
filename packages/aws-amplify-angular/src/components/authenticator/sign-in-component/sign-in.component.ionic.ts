@@ -23,18 +23,15 @@ const template = `
   <div class="amplify-form-body">
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
     <ion-list lines="none">
-      <ion-item lines="none">
-      <div *ngIf="this._usernameAttributes === 'email'">` +
+      <ion-item lines="none" *ngIf="this._usernameAttributes === 'email'">` +
         emailFieldTemplate + 
-      `</div>
-      <div *ngIf="this._usernameAttributes === 'phone_number'">` +
-        phoneNumberFieldTemplate +
-      `</div>
-      <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
+      `</ion-item>
+      <ion-item lines="none" *ngIf="this._usernameAttributes === 'phone_number'">` +
+        phoneNumberFieldTemplate + 
+      `</ion-item>
+      <ion-item lines="none" *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` +
         usernameFieldTemplate + 
-      `</div>
-      </ion-item>
-
+      `</ion-item>
       <ion-item lines="none">
         <ion-label class="amplify-input-label" for="password" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
         <ion-input

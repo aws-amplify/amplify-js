@@ -20,6 +20,8 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
 import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
+import { UsernameAttributes } from './common/types';
+
 
 const logger = new Logger('Greetings');
 
@@ -84,13 +86,23 @@ export default class Greetings extends AuthPiece {
         const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
-        const nameFromAttr = user.attributes? 
-            (user.attributes.name || 
-            (user.attributes.given_name? 
-                (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
-            : undefined;
+        const { usernameAttributes = [] } = this.props;
+        let name = '';
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
+            // Email as Username
+            name = user.attributes? user.attributes.email : user.username;
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+            // Phone number as Username
+            name = user.attributes? user.attributes.phone_number : user.username;
+        } else {
+            const nameFromAttr = user.attributes? 
+                (user.attributes.name || 
+                (user.attributes.given_name? 
+                    (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
+                : undefined;
+            name = nameFromAttr || user.name || user.username;
+        }
 
-        const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         const { federated } = this.props;
 

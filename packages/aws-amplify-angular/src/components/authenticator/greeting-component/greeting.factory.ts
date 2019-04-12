@@ -33,6 +33,7 @@ import { AuthState } from '../../../providers';
 export class GreetingComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() usernameAttributes: string | Array<string> = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -45,7 +46,9 @@ export class GreetingComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: this.authState}) : new ComponentMount(GreetingComponentCore, {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? 
+      new ComponentMount(GreetingComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes}) : 
+      new ComponentMount(GreetingComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

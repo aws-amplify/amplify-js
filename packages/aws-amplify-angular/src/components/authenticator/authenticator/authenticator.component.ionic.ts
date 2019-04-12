@@ -53,6 +53,7 @@ const template = `
 <amplify-auth-greetings-ionic
 *ngIf="!shouldHide('Greetings')"
 [authState]="authState"
+[usernameAttributes]="_usernameAttributes"
 ></amplify-auth-greetings-ionic>
 
  <amplify-auth-require-new-password-ionic

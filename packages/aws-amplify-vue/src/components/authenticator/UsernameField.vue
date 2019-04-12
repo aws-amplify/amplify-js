@@ -46,6 +46,7 @@
                 </select>
                 <input
                     v-model="local_phone_number"
+                    v-bind:class="amplifyUI.input"
                     :placeholder="$Amplify.I18n.get('Enter your phone number')"
                     autofocus v-on:keyup="$emit(
                         'username-field-changed', 
