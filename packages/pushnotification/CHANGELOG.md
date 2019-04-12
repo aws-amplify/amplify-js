@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.26-unstable.0"></a>
+## [1.0.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.25...@aws-amplify/pushnotification@1.0.26-unstable.0) (2019-04-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** fetch and cache the token if not in local ([8ba2e7f](https://github.com/aws/aws-amplify/commit/8ba2e7f))
+
+
+
+
 <a name="1.0.25"></a>
 ## [1.0.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.25-unstable.1...@aws-amplify/pushnotification@1.0.25) (2019-04-04)
 
