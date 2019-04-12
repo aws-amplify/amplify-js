@@ -105,7 +105,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
         .catch(err => this.setError(err));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
   }
 }

@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.10"></a>
+## [2.1.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.10-unstable.0...aws-amplify-react-native@2.1.10) (2019-04-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.10-unstable.0"></a>
+## [2.1.10-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.9...aws-amplify-react-native@2.1.10-unstable.0) (2019-04-08)
+
+
+### Features
+
+* **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
+
+
+
+
+<a name="2.1.9"></a>
+## [2.1.9](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.9-unstable.0...aws-amplify-react-native@2.1.9) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.9-unstable.0"></a>
+## [2.1.9-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.8...aws-amplify-react-native@2.1.9-unstable.0) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 <a name="2.1.8"></a>
 ## [2.1.8](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.8-unstable.2...aws-amplify-react-native@2.1.8) (2019-03-04)
 
