@@ -680,7 +680,11 @@ In React Native, loading the persisted current user information requires an extr
 **Use case 23.** Authenticate a user and set new password for a user that was created using AdminCreateUser API.
 
 ```javascript
-
+    
+    var cognitoUser, sessionUserAttributes; // global variables to handle completeNewPasswordChallenge flow
+    
+    // ...
+    
     cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: function (result) {
             // User authentication was successful
@@ -703,11 +707,17 @@ In React Native, loading the persisted current user information requires an extr
 
             // the api doesn't accept this field back
             delete userAttributes.email_verified;
-
-            // Get these details and call
-            cognitoUser.completeNewPasswordChallenge(newPassword, userAttributes, this);
+            
+            // store userAttributes on global variable
+            sessionUserAttributes = userAttributes;
         }
     });
+    
+    // ... handle new password flow on your app
+    handleNewPassword(newPassword) {
+      cognitoUser.completeNewPasswordChallenge(newPassword, sessionUserAttributes);
+    }
+    
 ```
 **Use case 24.** Retrieve the MFA Options for the user in case MFA is optional.
 
