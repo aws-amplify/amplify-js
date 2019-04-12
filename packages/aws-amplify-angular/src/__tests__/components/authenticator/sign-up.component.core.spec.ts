@@ -1,11 +1,17 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-// tslint:disable
 import { By } from '@angular/platform-browser';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { SignUpComponentCore, SignUpField } from '../../../components/authenticator/sign-up-component/sign-up.component.core'
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
+import { 
+  SignUpComponentCore,
+  SignUpField 
+} from '../../../components/authenticator/sign-up-component/sign-up.component.core';
 import Amplify from 'aws-amplify';
 // tslint:enable
 
@@ -15,7 +21,7 @@ describe('SignUpComponentCore (basics): ', () => {
   let service: AmplifyService;
 
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(Amplify);
     component = new SignUpComponentCore(service);
   });
 
@@ -55,18 +61,36 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 
   let component: SignUpComponentCore;
   let fixture: ComponentFixture<SignUpComponentCore>; 
+  let service;
+  let fixtureComponent: SignUpComponentCore;
   let amplifyService: AmplifyService;
+  let onSignUpSpy;
+  let signUpSpy;
+  let onSignInSpy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SignUpComponentCore],
-      providers: [AmplifyService],
+      providers: [
+        {
+          provide: AmplifyService,
+          useFactory: () => {
+            return AmplifyModules({
+              ...authModule
+            });
+          }
+        }
+      ],
       imports: [FormsModule]
-    });
-
+    }).compileComponents();
+    service = new AmplifyService(authModule);
     fixture = TestBed.createComponent(SignUpComponentCore); 
+    fixtureComponent = fixture.componentInstance;
     component = fixture.componentInstance; 
     amplifyService = TestBed.get(AmplifyService); 
+    onSignUpSpy = jest.spyOn(fixtureComponent, 'onSignUp');
+    signUpSpy = jest.spyOn(service.auth(), 'signUp');
+    onSignInSpy = jest.spyOn(fixtureComponent, 'onSignIn');
   });
 
   afterEach(() => {
@@ -169,6 +193,52 @@ describe('SignUpComponentCore (methods and UI): ', () => {
       expect(component.signUpFields[5].key).toBe('testkey1');  
       expect(component.signUpFields[4].key).toBe('testkey2');  
     });
+  });
+
+  it('...should not display if _show is not set', () => {
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeFalsy();
+  });
+
+  it('...should display if _show is set', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
+    expect(rootEl).toBeTruthy();
+  });
+
+  // tslint:disable:max-line-length
+  it('...should call onSignUp when button is clicked (but signUp will not be called if validation does not pass)', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('button');
+    button.click();
+    expect(onSignUpSpy).toHaveBeenCalled();
+    expect(signUpSpy).not.toHaveBeenCalled();
+  });
+
+  it('...should call onSignUp when button is clicked and signUp will be called since validation passes', () => {
+    fixtureComponent._show = true;
+    fixtureComponent.user = {
+      username: 'testusername',
+      password: 'testpassword',
+      email: 'testemail'
+    };
+    fixtureComponent.country_code = '1';
+    fixtureComponent.local_phone_number ='123';
+    fixture.detectChanges();
+    const button = fixture.debugElement.nativeElement.querySelector('button');
+    button.click();
+    expect(onSignUpSpy).toHaveBeenCalled();
+    expect(signUpSpy).toHaveBeenCalled();
+  });
+
+  it('...should call onSignIn when "amplify-form-link" is clicked', () => {
+    fixtureComponent._show = true;
+    fixture.detectChanges();
+    const a = fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
+    a.click();
+    expect(onSignInSpy).toHaveBeenCalled();
   });
 });
 

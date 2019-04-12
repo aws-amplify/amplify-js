@@ -13,12 +13,20 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { S3ImageClass } from './s3-image.class';
-import { S3ImageComponentIonic } from './s3-image.component.ionic'
+import { S3ImageComponentIonic } from './s3-image.component.ionic';
 import { S3ImageComponentCore } from './s3-image.component.core';
 
 @Component({
@@ -47,18 +55,21 @@ export class S3ImageComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let imageComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{path:this.path, options: this.options}) : new ComponentMount(S3ImageComponentCore, {path: this.path, options: this.options});
+    const imageComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(S3ImageComponentIonic,{path:this.path, options: this.options}) :
+    new ComponentMount(S3ImageComponentCore, {path: this.path, options: this.options});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(imageComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(imageComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<S3ImageClass>componentRef.instance).data = imageComponent.data;
 
     componentRef.instance.selected.subscribe((e) => {
       this.selected.emit(e);
-    })
+    });
   }
 }
