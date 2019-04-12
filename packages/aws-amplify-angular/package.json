@@ -68,6 +68,6 @@
   "dependencies": {
     "@aws-amplify/ui": "1.0.19-unstable.0",
     "@types/lodash": "^4.14.106",
-    "rxjs-compat": "^6.0.0"
+    "rxjs-compat": "^6.2.1"
   }
 }
