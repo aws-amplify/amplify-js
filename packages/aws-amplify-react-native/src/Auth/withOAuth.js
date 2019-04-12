@@ -24,7 +24,7 @@ export default (Comp) => {
     return class WithOAuth extends React.Component {
         constructor(props) {
             super(props);
-
+            this._isMounted = false;
             const config = this._getOAuthConfig();
 
             const {
@@ -49,15 +49,19 @@ export default (Comp) => {
         }
 
         componentDidMount() {
+            this._isMounted = true;
             Auth.currentAuthenticatedUser().then(user => {
                 this.setState({ user })
             }).catch(error => {
                 logger.debug(error);
-
-                this.setState({ user: null });
+                if (this.this._isMounted) {
+                    this.setState({ user: null });
+                }
             });
         }
-
+        componentWillUnmount() {
+            this._isMounted = false;
+        }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
             const { channel, payload } = capsule;
