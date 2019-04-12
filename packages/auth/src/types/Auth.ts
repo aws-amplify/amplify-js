@@ -63,12 +63,14 @@ export type FederatedSignInOptionsCustom = {
     customProvider: string
 };
 
-export function isFederatedSignInOptions(obj:any): obj is FederatedSignInOptions  {
-    return obj && typeof(obj as FederatedSignInOptions).provider !== 'undefined';
+export function isFederatedSignInOptions(obj: any): obj is FederatedSignInOptions  {
+    const key: keyof FederatedSignInOptions = 'provider';
+    return obj && obj.hasOwnProperty(key);
 }
 
 export function isFederatedSignInOptionsCustom(obj:any): obj is FederatedSignInOptionsCustom  {
-    return obj && typeof(obj as FederatedSignInOptionsCustom).customProvider !== 'undefined';
+    const key: keyof FederatedSignInOptionsCustom = 'customProvider';
+    return obj && obj.hasOwnProperty(key);
 }
 
 /**

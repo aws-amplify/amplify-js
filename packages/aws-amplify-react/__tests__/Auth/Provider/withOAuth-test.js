@@ -40,7 +40,7 @@ describe('withOAuth test', () => {
 
             comp.signIn();
 
-            expect(spyon).toBeCalledWith(undefined);
+            expect(spyon).toBeCalledWith({ provider: undefined });
             spyon.mockClear();
         });
 
@@ -57,7 +57,7 @@ describe('withOAuth test', () => {
             const wrapper = mount(<Comp/>);
             const comp = wrapper.instance();
 
-            comp.signIn('Facebook');
+            comp.signIn(expect.anything(), 'Facebook');
 
             expect(spyon).toBeCalledWith({"provider": "Facebook"});
             spyon.mockClear();
