@@ -53,10 +53,8 @@ export default (Comp) => {
             Auth.currentAuthenticatedUser().then(user => {
                 this.setState({ user })
             }).catch(error => {
-                logger.debug(error);
-                if (this.this._isMounted) {
-                    this.setState({ user: null });
-                }
+                logger.debug(error)；
+                this.setState({ user: null });
             });
         }
         componentWillUnmount() {
@@ -72,8 +70,9 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-
-                            this.setState({ user, error: null });
+                             if (this._isMounted) {
+                                 this.setState({ user, error: null });
+                             }
                         });
                         break;
                     }
