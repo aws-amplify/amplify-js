@@ -68,7 +68,7 @@ export default function withAuth0(Comp, options?) {
         initialize() {
             // @ts-ignore
             const { oauth = {} } = Auth.configure();
-            const config = this.props.auth0 || options || oauth.auth0;
+            const config = this.props.auth0 || options || oauth['auth0'];
             const { onError, onStateChange, authState, onAuthEvent } = this.props;
             if (!config) {
                 logger.debug('Auth0 is not configured');

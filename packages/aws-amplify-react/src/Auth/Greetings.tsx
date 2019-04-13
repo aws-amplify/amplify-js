@@ -129,7 +129,7 @@ export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsStat
         const facebookAppId = facebook_app_id || config.facebookClientId;
         // @ts-ignore
         const amazonClientId = amazon_client_id || config.amazonClientId;
-        const auth0_config = auth0 || oauth.auth0;
+        const auth0_config = auth0 || oauth['auth0'];
 
         // @ts-ignore
         if (googleClientId) SignOut = withGoogle(SignOut);

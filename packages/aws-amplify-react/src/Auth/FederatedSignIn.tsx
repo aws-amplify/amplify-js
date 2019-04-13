@@ -66,7 +66,9 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
     OAuth(oauth_config: any) {
         if (!oauth_config) { return null;}
         const { theme, onStateChange } = this.props;
+        // @ts-ignore
         return <OAuthButton
+                // @ts-ignore
                 label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
@@ -98,12 +100,12 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
         // backward compatibility
         if (oauth['domain']) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
-        } else if (oauth.awsCognito) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        } else if (oauth['awsCognito']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth['awsCognito']);
         }
 
-        if (oauth.auth0) {
-            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
+        if (oauth['auth0']) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth['auth0']);
         }
 
         if (JS.isEmpty(federated)) { return null; }
@@ -147,12 +149,12 @@ export default class FederatedSignIn extends Component<any, any> {
         // backward compatibility
         if (oauth['domain']) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
-        } else if (oauth.awsCognito) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        } else if (oauth['awsCognito']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth['awsCognito']);
         }
 
-        if (oauth.auth0) {
-            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
+        if (oauth['auth0']) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth['auth0']);
         }
 
         if (!federated) {
