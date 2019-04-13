@@ -13,12 +13,19 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy 
+} from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { AuthClass } from './authenticator.class';
-import { AuthenticatorIonicComponent } from './authenticator.component.ionic'
+import { AuthenticatorIonicComponent } from './authenticator.component.ionic';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 @Component({
@@ -45,14 +52,23 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide, signUpConfig: this.signUpConfig}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide, signUpConfig: this.signUpConfig});
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(
+      AuthenticatorIonicComponent,
+      { hide: this.hide, signUpConfig: this.signUpConfig }
+    ):
+    new ComponentMount(
+      AuthenticatorComponentCore,
+      { hide: this.hide, signUpConfig: this.signUpConfig }
+    );
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<AuthClass>componentRef.instance).data = authComponent.data;
   }
 }
