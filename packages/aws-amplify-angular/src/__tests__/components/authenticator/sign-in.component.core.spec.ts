@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -39,6 +40,7 @@ describe('SignInComponentCore: ', () => {
           }
         }
       ],
+      imports: [FormsModule]
     }).compileComponents();
     fixture = TestBed.createComponent(SignInComponentCore);
     fixtureComponent = fixture.componentInstance;

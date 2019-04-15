@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -38,6 +39,7 @@ describe('ForgotPasswordComponentCore: ', () => {
           }
         }
       ],
+      imports: [FormsModule]
     }).compileComponents();
     fixture = TestBed.createComponent(ForgotPasswordComponentCore);
     fixtureComponent = fixture.componentInstance;

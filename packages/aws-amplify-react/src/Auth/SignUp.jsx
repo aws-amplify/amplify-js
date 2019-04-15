@@ -57,7 +57,7 @@ export default class SignUp extends AuthPiece {
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
             
-        const { usernameAttributes=[] } = this.props;
+        const { usernameAttributes=[] } = this.props || {};
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             this.defaultSignUpFields = signUpWithEmailFields;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {

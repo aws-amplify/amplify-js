@@ -48,6 +48,10 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import Vue from 'vue';
+import UsernameField from './UsernameField';
+
+Vue.component('amplify-username-field', UsernameField);
 
 export default {
   name: 'ForgotPassword',
