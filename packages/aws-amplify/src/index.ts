@@ -24,6 +24,8 @@ import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
+import ML from '@aws-amplify/ml';
+
 import Amplify, {
     ConsoleLogger as Logger,
     Hub,
@@ -48,6 +50,7 @@ Amplify.ServiceWorker = ServiceWorker;
 Amplify.Interactions = Interactions;
 Amplify.UI = UI;
 Amplify.XR = XR;
+Amplify.ML = ML;
 
 export { 
     Auth, 
@@ -65,7 +68,8 @@ export {
     ServiceWorker, 
     Interactions,
     UI,
-    XR
+    XR,
+    ML
 };
 
 export { 

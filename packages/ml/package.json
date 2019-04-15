@@ -1,18 +1,20 @@
 {
-  "name": "aws-amplify",
-  "version": "1.1.25",
-  "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
+  "name": "@aws-amplify/ml",
+  "version": "0.1.0",
+  "description": "Machine learning category of aws-amplify",
   "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage --maxWorkers 2",
-    "build-with-test": "npm run clean && npm test && tsc && webpack -p",
-    "build": "npm run clean && tsc && webpack -p",
+    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "build-with-test": "npm run clean && npm test && tsc && webpack",
+    "build": "npm run clean && tsc && webpack",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
-    "lint": "tslint 'src/**/*.ts'",
-    "generate-docs-local": "typedoc --out docs src",
-    "generate-docs-root": "typedoc --out ../../docs src"
+    "lint": "tslint 'src/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "devDependencies": {
+    "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
     "awesome-typescript-loader": "^3.2.2",
     "babel-loader": "^7.1.2",
@@ -47,16 +50,33 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/analytics": "^1.2.14",
-    "@aws-amplify/api": "^1.0.32",
-    "@aws-amplify/auth": "^1.2.21",
-    "@aws-amplify/cache": "^1.0.25",
-    "@aws-amplify/core": "^1.0.25",
-    "@aws-amplify/interactions": "^1.0.28",
-    "@aws-amplify/pubsub": "^1.0.26",
-    "@aws-amplify/storage": "^1.0.28",
-    "@aws-amplify/ui": "^1.0.18",
-    "@aws-amplify/xr": "^0.1.15",
-    "@aws-amplify/ml": "^0.1.0"
+    "@aws-amplify/core": "^1.0.25"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "mapCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
