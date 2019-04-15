@@ -61,4 +61,11 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
             applicationContext.registerReceiver(receiver, intentFilter);
         }
     }
+
+    @ReactMethod
+    public void getToken(Callback callback) {
+        String token =  FirebaseInstanceId.getInstance().getToken();
+        Log.i(LOG_TAG, "getting token" + token);
+        callback.invoke(token);
+    }
 }

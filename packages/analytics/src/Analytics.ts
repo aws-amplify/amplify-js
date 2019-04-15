@@ -25,8 +25,11 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
-    Hub.dispatch('analytics', { event, data, message }, 'Analytics', Symbol.for('amplify_default'));
+    Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const trackers = {
@@ -198,6 +201,12 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async record(event: string | object, provider? , metrics?: EventMetrics) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         let params = null;
         // this is just for compatibility, going to be deprecated
         if (typeof event === 'string') {
@@ -222,6 +231,12 @@ export default class AnalyticsClass {
     }
 
     private _sendEvent(params) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
@@ -255,5 +270,9 @@ export default class AnalyticsClass {
         } else {
             tracker.configure(opts);
         }
+    }
+
+    private isAnalyticsConfigured() {
+        return this._config && Object.entries(this._config).length > 0;
     }
 }

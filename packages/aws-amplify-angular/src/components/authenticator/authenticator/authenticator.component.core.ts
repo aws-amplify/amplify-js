@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnInit } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
@@ -64,18 +64,34 @@ const template = `
   selector: 'amplify-authenticator-core',
   template
 })
-export class AuthenticatorComponentCore {
+export class AuthenticatorComponentCore implements OnInit {
   authState: AuthState = {
-    state: 'signIn',
+    state: 'loading',
     user: null
   };
   _signUpConfig: any = {};
   _usernameAttributes: string | Array<string> = [];
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    } else {
+      const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
+      .then((user) => {
+        if (this.authState.state === 'loading' && user) {
+          this.amplifyService.setAuthState({ state: 'signedIn', user });
+        }
+      })
+      .catch((e) => {
+        if (this.authState.state === 'loading') {
+          this.amplifyService.setAuthState({ state: 'signIn', user: null });
+        }
+      });  
+    }
   }
 
   @Input()
@@ -105,13 +121,15 @@ export class AuthenticatorComponentCore {
 
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
+    .subscribe(
+      state => {
         this.authState = state;
-      }, () => {
+      },
+      () => {
         this.authState = {
           'state': 'signIn',
           'user': null
-        }
+        };
       });
   }
 

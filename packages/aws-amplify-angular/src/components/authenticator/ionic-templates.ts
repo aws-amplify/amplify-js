@@ -1,5 +1,5 @@
 export const emailFieldTemplate = `
-    <ion-label class="amplify-input-label" for="emailField" position="stacked">{{ this.amplifyService.i18n().get('Email *') }}</ion-label>
+    <ion-label class="amplify-input-label amplify-input-label-ionic" for="emailField" position="stacked">{{ this.amplifyService.i18n().get('Email *') }}</ion-label>
     <ion-input type="text"
         #emailField
         class="amplify-form-input"
@@ -43,7 +43,7 @@ export const phoneNumberFieldTemplate = `
     </ion-grid>`;
 
 export const usernameFieldTemplate = `
-    <ion-label class="amplify-input-label" for="usernameField" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
+    <ion-label class="amplify-input-label amplify-input-label-ionic" for="usernameField" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
         <ion-input type="text"
         #usernameField
         class="amplify-form-input"

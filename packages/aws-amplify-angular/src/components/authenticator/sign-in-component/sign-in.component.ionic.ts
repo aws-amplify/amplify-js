@@ -13,15 +13,18 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
 import {usernameFieldTemplate, emailFieldTemplate, phoneNumberFieldTemplate} from '../ionic-templates';
 
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Sign in to your account') }}</div>
+    <div class="amplify-form-header">
+      {{ this.amplifyService.i18n().get('Sign in to your account') }}
+    </div>
     <ion-list lines="none">
       <ion-item lines="none" *ngIf="this._usernameAttributes === 'email'">` +
         emailFieldTemplate + 
@@ -33,7 +36,9 @@ const template = `
         usernameFieldTemplate + 
       `</ion-item>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="password" position="stacked">{{ this.amplifyService.i18n().get('Password *') }}</ion-label>
+        <ion-label class="amplify-input-label" for="password" position="stacked">
+          {{ this.amplifyService.i18n().get('Password *') }}
+        </ion-label>
         <ion-input
           #password
           type="password"
@@ -52,8 +57,17 @@ const template = `
       </div>
 
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">{{ this.amplifyService.i18n().get('No account?') }} <a class="amplify-form-link" (click)="onSignUp()">{{ this.amplifyService.i18n().get('Create account') }}</a></div>
-        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">{{ this.amplifyService.i18n().get('Reset Password') }}</a></div>
+        <div class="amplify-form-signup">
+          {{ this.amplifyService.i18n().get('No account?') }}
+          <a class="amplify-form-link" (click)="onSignUp()">
+            {{ this.amplifyService.i18n().get('Create account') }}
+          </a>
+        </div>
+        <div class="amplify-form-signup">
+          <a class="amplify-form-link" (click)="onForgotPassword()">
+            {{ this.amplifyService.i18n().get('Reset Password') }}
+          </a>
+        </div>
       </div>
 
     </div>
@@ -66,19 +80,17 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template: template
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    super(amplifyService);    
   }
 
   onCodeChange(val) {

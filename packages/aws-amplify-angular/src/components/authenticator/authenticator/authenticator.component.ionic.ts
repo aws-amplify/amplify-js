@@ -69,10 +69,7 @@ const template = `
 })
 export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
-    
   }
 }
