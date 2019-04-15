@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-export default dict = {
+export default {
     'fr': {
         'Loading...': "S'il vous plaît, attendez",
         'Sign In': "Se connecter",
