@@ -245,4 +245,22 @@ describe('JS test', () => {
             });
         })
     });
+
+    describe('isStrictObject test', () => {
+        test('return true if the object is strict', () => {
+            expect(JS.isStrictObject({a: '1'})).toBeTruthy();
+        });
+
+        test('return false if the object is null or array', () => {
+            expect(JS.isStrictObject(null)).toBeFalsy();
+            expect(JS.isStrictObject([])).toBeFalsy();
+        });
+
+        test('return false if the input is undefined, number, boolean or string', () => {
+            expect(JS.isStrictObject(undefined)).toBeFalsy();
+            expect(JS.isStrictObject(1)).toBeFalsy();
+            expect(JS.isStrictObject(false)).toBeFalsy();
+            expect(JS.isStrictObject('string')).toBeFalsy();
+        });
+    });
 });
