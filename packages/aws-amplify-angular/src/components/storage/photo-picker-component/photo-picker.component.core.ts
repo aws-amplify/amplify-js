@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 
 const template = `
@@ -55,7 +55,7 @@ const template = `
   selector: 'amplify-photo-picker-core',
   template
 })
-export class PhotoPickerComponentCore {
+export class PhotoPickerComponentCore implements OnInit {
   photoUrl: string;
   hasPhoto: boolean = false;
   uploading: boolean = false;
@@ -63,6 +63,11 @@ export class PhotoPickerComponentCore {
   s3ImagePath: string = "";
   _storageOptions: any = {};
   errorMessage: string;
+  protected logger: any;
+
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('PhotoPickerComponent');
+  }
   
   @Input()
   set url(url: string) {
@@ -97,7 +102,11 @@ export class PhotoPickerComponentCore {
   @Output()
   uploaded: EventEmitter<Object> = new EventEmitter<Object>();
 
-  constructor( private amplify: AmplifyService ) {}
+  ngOnInit() {
+    if (!this.amplifyService.storage()){
+      throw new Error('Storage module not registered on AmplifyService provider');
+    }
+  }
 
   pick(evt) {
     const file = evt.target.files[0];
@@ -124,7 +133,7 @@ export class PhotoPickerComponentCore {
 
   uploadFile() {
   	this.uploading = true;
-  	this.amplify.storage().put( 
+  	this.amplifyService.storage().put( 
   			this.s3ImagePath, 
   			this.s3ImageFile, this._storageOptions)
 		.then ( result => {
