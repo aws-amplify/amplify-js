@@ -100,10 +100,10 @@ export default class StorageClass {
         if (!config) return this._config;
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const { bucket, region, level, track } = amplifyConfig.Storage as any;
-        // Update DEFAULT_PROVIDER with defined attributes bucket, region, level, track if exists 
+        const { bucket, region, level, track, customPrefix } = amplifyConfig.Storage as any;
+        // Update DEFAULT_PROVIDER with defined attributes bucket, region, level, track, customPrefix if exists 
         // on amplifyConfig.Storage, backwards compatible issue 
-        if ((bucket || region || level || track) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
+        if ((bucket || region || level || track || customPrefix) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
             amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
         }
         if (bucket) {
@@ -121,6 +121,10 @@ export default class StorageClass {
         if (track) {
             amplifyConfig.Storage[DEFAULT_PROVIDER].track = track;
             delete amplifyConfig.Storage['track'];
+        }
+        if (customPrefix) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].customPrefix = customPrefix;
+            delete amplifyConfig.Storage['customPrefix'];
         }
 
         // only update new values for each provider
