@@ -265,9 +265,10 @@ export default class APIClass {
 
     private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
+            aws_appsync_authenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
+        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || "AWS_IAM";
         let headers = {};
 
         switch (authenticationType) {
@@ -326,7 +327,7 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
 
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
@@ -336,15 +337,15 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables });
+                return this._graphql({ query, variables, authMode });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables });
+                return this._graphqlSubscribe({ query, variables, authMode });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -359,9 +360,9 @@ export default class APIClass {
         } = this._options;
 
         const headers = {
-            ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
+            ...(!customGraphqlEndpoint && await this._headerBasedAuth(authMode)),
             ...(customGraphqlEndpoint &&
-                (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
+                (customEndpointRegion ? await this._headerBasedAuth(authMode) : { Authorization: null })
             ),
             ...additionalHeaders,
             ... await graphql_headers({ query, variables }),
@@ -415,7 +416,7 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -435,7 +436,7 @@ export default class APIClass {
                         const {
                             extensions: { subscription },
 
-                        } = await this._graphql({ query, variables }, additionalheaders);
+                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
 
                         const { newSubscriptions } = subscription;
 
