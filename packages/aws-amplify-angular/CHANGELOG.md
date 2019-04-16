@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.2-unstable.4"></a>
+## [3.0.2-unstable.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.2-unstable.3...aws-amplify-angular@3.0.2-unstable.4) (2019-04-16)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** clears error message on state change ([b19de01](https://github.com/aws-amplify/amplify-js/commit/b19de01))
+
+
+
+
 <a name="3.0.2-unstable.3"></a>
 ## [3.0.2-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.2-unstable.2...aws-amplify-angular@3.0.2-unstable.3) (2019-04-15)
 
