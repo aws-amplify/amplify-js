@@ -261,6 +261,10 @@ describe('JS test', () => {
             expect(JS.isStrictObject(1)).toBeFalsy();
             expect(JS.isStrictObject(false)).toBeFalsy();
             expect(JS.isStrictObject('string')).toBeFalsy();
+            expect(JS.isStrictObject(new Number(1))).toBeFalsy();
+            expect(JS.isStrictObject(new Boolean(true))).toBeFalsy();
+            expect(JS.isStrictObject(new String('string'))).toBeFalsy();
+            expect(JS.isStrictObject(function(){})).toBeFalsy();
         });
     });
 });

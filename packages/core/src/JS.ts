@@ -221,10 +221,16 @@ export default class JS {
 
     /**
      * Return true if the object is a strict object
-     * which means it's neither array or null
+     * which means it's not Array, Function, Number, String, Boolean or Null
      * @param obj the Object
      */
-    static isStrictObject(obj) {
-        return ((obj instanceof Object) && !(obj instanceof Array));
+    static isStrictObject(obj) { 
+        return ((obj instanceof Object) && 
+            !(obj instanceof Array) &&
+            !(obj instanceof Function) &&
+            !(obj instanceof Number) &&
+            !(obj instanceof String) &&
+            !(obj instanceof Boolean)
+        );
     }
 }
