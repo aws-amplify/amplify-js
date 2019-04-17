@@ -107,17 +107,20 @@ export default class Authenticator extends React.Component {
         }
     }
 
-    checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                logger.debug('verified user attributes', data);
-                if (!JS.isEmpty(data.verified)) {
-                    this.handleStateChange('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.handleStateChange('verifyContact', user);
-                }
-            });
+    async checkContact(user) {
+        try {
+            const data = await Auth.verifiedContact(user);
+            logger.debug('verified user attributes', data);
+            if (!JS.isEmpty(data.verified)) {
+                this.handleStateChange('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.handleStateChange('verifyContact', user);
+            }
+        } catch (e) {
+            logger.warn('Failed to verify contact', e);
+            this.handleStateChange('signedIn', user);
+        }
     }
 
     checkUser() {
