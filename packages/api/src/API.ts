@@ -16,6 +16,7 @@ import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { v4 as uuid } from 'uuid';
@@ -273,6 +274,9 @@ export default class APIClass {
 
         switch (authenticationType) {
             case 'API_KEY':
+                if (!apiKey) {
+                    throw new Error('No api-key configured');
+                }
                 headers = {
                     Authorization: null,
                     'X-Api-Key': apiKey
@@ -291,14 +295,10 @@ export default class APIClass {
                 };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
-                if (Amplify.Auth && typeof Amplify.Auth.currentSession === 'function') {
-                    const session = await Amplify.Auth.currentSession();
-                    headers = {
-                        Authorization: session.getAccessToken().getJwtToken()
-                    };
-                } else {
-                    throw new Error('No Auth module registered in Amplify');
-                }
+                const session = await Auth.currentSession();
+                headers = {
+                    Authorization: session.getAccessToken().getJwtToken()
+                };
                 break;
             default:
                 headers = {
@@ -424,8 +424,9 @@ export default class APIClass {
 
                 (async () => {
                     const {
-                        aws_appsync_authenticationType: authenticationType,
+                        aws_appsync_authenticationType,
                     } = this._options;
+                    const authenticationType = authMode || aws_appsync_authenticationType;
                     const additionalheaders = {
                         ...(authenticationType === 'API_KEY' ? {
                             'x-amz-subscriber-id': this.clientIdentifier
