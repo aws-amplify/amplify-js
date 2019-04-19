@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.26-unstable.1"></a>
+## [1.0.26-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.26-unstable.0...@aws-amplify/core@1.0.26-unstable.1) (2019-04-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** directly return if input is null for function transferKeyToUpperCase/transferKeyToLowerCase ([1600cfb](https://github.com/aws/aws-amplify/commit/1600cfb))
+
+
+
+
+<a name="1.0.26-unstable.0"></a>
+## [1.0.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.25...@aws-amplify/core@1.0.26-unstable.0) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/core
+
 <a name="1.0.25"></a>
 ## [1.0.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.25-unstable.1...@aws-amplify/core@1.0.25) (2019-04-04)
 

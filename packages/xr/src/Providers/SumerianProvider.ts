@@ -128,7 +128,9 @@ export class SumerianProvider extends AbstractXRProvider {
       };
       
       const serviceInfo = { region: sceneRegion, service: SUMERIAN_SERVICE_NAME };
-      url = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
+      const request = Signer.sign({ method: "GET", url: sceneUrl }, accessInfo, serviceInfo);
+      fetchOptions.headers = {...fetchOptions.headers, ...request.headers};
+      url = request.url;
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
     }
