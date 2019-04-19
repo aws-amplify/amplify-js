@@ -666,9 +666,21 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('Set user mfa preference error', err);
                     return rej(err);
-
                 }
                 logger.debug('Set user mfa success', result);
+                logger.debug('Caching the latest user data into local');
+                // cache the latest result into user data
+                user.getUserData(
+                    (err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            return rej(err);
+                        } else {
+                            return res(result);
+                        }
+                    },
+                    {bypassCache: true}
+                );
                 return res(result);
             });
         });
