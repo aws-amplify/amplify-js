@@ -13,7 +13,11 @@ export default class CookieStorage {
    * @param {boolean} data.secure Cookie secure flag (default: true)
    */
   constructor(data) {
-    this.domain = data.domain;
+    if (data.domain) {
+      this.domain = data.domain;
+    } else {
+      throw new Error('The domain of cookieStorage can not be undefined.');
+    }
     if (data.path) {
       this.path = data.path;
     } else {
