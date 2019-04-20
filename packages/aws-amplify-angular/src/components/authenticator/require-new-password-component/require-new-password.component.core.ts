@@ -101,12 +101,14 @@ export class RequireNewPasswordComponentCore implements OnInit {
         requiredAttributes
       )
       .then(() => {
+        this.onAlertClose();
         this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
