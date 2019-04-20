@@ -53,12 +53,13 @@ export default (Comp) => {
             Auth.currentAuthenticatedUser().then(user => {
                 this.setState({ user })
             }).catch(error => {
-                logger.debug(error)；
+                logger.debug(error);
                 this.setState({ user: null });
             });
         }
         componentWillUnmount() {
             this._isMounted = false;
+            return;
         }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
@@ -70,9 +71,7 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-                             if (this._isMounted) {
-                                 this.setState({ user, error: null });
-                             }
+                            this.setState({ user, error: null });
                         });
                         break;
                     }
