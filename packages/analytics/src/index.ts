@@ -127,7 +127,7 @@ const sendEvents = () => {
     Analytics.autoTrack('session', {
         enable: config['autoSessionRecord']
     });
-}
+};
 
 Hub.listen('auth', listener);
 Hub.listen('storage', listener);
