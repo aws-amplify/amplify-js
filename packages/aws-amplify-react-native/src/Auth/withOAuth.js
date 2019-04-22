@@ -63,6 +63,7 @@ export default (Comp) => {
         }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
+            if (!this._isMounted) return;
             const { channel, payload } = capsule;
 
             if (channel === 'auth') {
