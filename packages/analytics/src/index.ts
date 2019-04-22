@@ -96,16 +96,7 @@ const authEvent = (payload) => {
         case 'configured':
             authConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: (Analytics.configure())['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
     }
@@ -119,20 +110,24 @@ const analyticsEvent = (payload) => {
          case 'pinpointProvider_configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: config['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
      }
 };
+
+const sendEvents = () => {
+    const config = Analytics.configure();
+    if (!endpointUpdated && config['autoSessionRecord']) {
+        Analytics.updateEndpoint({ immediate: true }).catch(e => {
+            logger.debug('Failed to update the endpoint', e);
+        });
+        endpointUpdated = true;
+    }
+    Analytics.autoTrack('session', {
+        enable: config['autoSessionRecord']
+    });
+}
 
 Hub.listen('auth', listener);
 Hub.listen('storage', listener);
