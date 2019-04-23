@@ -56,8 +56,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private _sessionStartTimestamp;
     private _buffer;
     private _clientInfo;
-
     private _timer;
+    private _endpointGenerating = true;
 
     constructor(config?) {
         this._buffer = [];
@@ -81,6 +81,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 for (let i = 0; i < size; i += 1) {
                     const { params, handlers } = this._buffer.shift();
                     that._send(params, handlers);
+                    // If this is the first request sent by Analytics module, we should stop sending remaining requests
+                    // to prevent race condition of updating one endpoint when it's being created in the backend
+                    if (this._endpointGenerating) break;
                 }
             },
             flushInterval
@@ -181,7 +184,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-        // temporary solution, will refactor in the future
         if (params.event.immediate) {
             return this._send(params, handlers);
         } else {
@@ -299,6 +301,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 const statusCode = EventsItemResponse[eventId]['StatusCode'];
                 const message = EventsItemResponse[eventId]['Message'];
                 if ( ACCEPTED_CODES.find(c => c === statusCode)) {
+                    this._endpointGenerating = false;
                     logger.debug('record event success. ', data);
                     return handlers.resolve(data);
                 } else {
@@ -372,6 +375,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 return handlers.reject(err);
             } else {
                 logger.debug('updateEndpoint success', data);
+                this._endpointGenerating = false;
                 return handlers.resolve(data);
             }
         });
