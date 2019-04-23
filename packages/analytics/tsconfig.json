@@ -9,7 +9,8 @@
             "es2015",
             "dom",
             "esnext.asynciterable",
-            "es2017.object"
+            "es2017.object",
+            "es2018.promise"
         ],
         "sourceMap": true,
         "module": "commonjs",
