@@ -12,20 +12,20 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" data-test="confirm-sign-in-section">
+    <div v-bind:class="amplifyUI.sectionHeader" data-test="confirm-sign-in-header-section">{{options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" data-test="confirm-sign-in-body-section">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" data-test="confirm-sign-in-code-input" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code">{{$Amplify.I18n.get('Confirm')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code" data-test="confirm-sign-in-confirm-button">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="confirm-sign-in-back-to-sign-in-link">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
       </span>
     </div>
     <div class="error" v-if="error">

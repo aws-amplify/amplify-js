@@ -12,31 +12,31 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" data-test="forgot-password-section">
+    <div v-bind:class="amplifyUI.sectionHeader" data-test="forgot-password-header-section">{{options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" data-test="forgot-password-body-section">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus data-test="forgot-password-username-input" />
       </div>
       <div v-bind:class="amplifyUI.formField" v-if="sent">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" autofocus data-test="forgot-password-code-input" />
       </div>
       <div v-bind:class="amplifyUI.formField" v-if="sent">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus data-test="forgot-password-new-password-input" />
       </div>
     </div>
 
-  <div v-bind:class="amplifyUI.sectionFooter">
+  <div v-bind:class="amplifyUI.sectionFooter" data-test="forgot-password-section-footer">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!username">{{$Amplify.I18n.get('Send Code')}}</button>
-        <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!username">{{$Amplify.I18n.get('Submit')}}</button>
+        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!username" data-test="forgot-password-send-code-button">{{$Amplify.I18n.get('Send Code')}}</button>
+        <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!username" data-test="forgot-password-submit-button">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
-        <a v-if="sent" v-bind:class="amplifyUI.a" v-on:click="submit">{{$Amplify.I18n.get('Resend Code')}}</a>
+        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="forgot-password-back-to-sign-in-link">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-if="sent" v-bind:class="amplifyUI.a" v-on:click="submit" data-test="forgot-password-resend-code-link">{{$Amplify.I18n.get('Resend Code')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">

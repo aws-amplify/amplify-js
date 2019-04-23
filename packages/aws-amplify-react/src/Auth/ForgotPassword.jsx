@@ -125,22 +125,22 @@ export default class ForgotPassword extends AuthPiece {
         if (hide && hide.includes(ForgotPassword)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Reset your password')}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test="forgot-password-section">
+                <SectionHeader theme={theme} data-test="forgot-password-header-section">{I18n.get('Reset your password')}</SectionHeader>
+                <SectionBody theme={theme} data-test="forgot-password-body-section">
                     { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
                         { this.state.delivery || authData.username ? 
-                            <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
-                            <Button theme={theme} onClick={this.send}>{I18n.get('Send Code')}</Button>
+                            <Button theme={theme} onClick={this.submit} data-test="forgot-password-submit-button">{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.send} data-test="forgot-password-send-code-button">{I18n.get('Send Code')}</Button>
                         }
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         { this.state.delivery || authData.username ?
-                            <Link theme={theme} onClick={this.send}>{I18n.get('Resend Code')}</Link> :
-                            <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            <Link theme={theme} onClick={this.send} data-test="forgot-password-resend-code-link">{I18n.get('Resend Code')}</Link> :
+                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="forgot-password-back-to-sign-in-link">
                                 {I18n.get('Back to Sign In')}
                             </Link>
                         }

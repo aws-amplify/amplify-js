@@ -209,9 +209,9 @@ export default class SignUp extends AuthPiece {
         }
         this.sortFields();
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test="sign-up-section">
+                <SectionHeader theme={theme} data-test="sign-up-header-section">{I18n.get(this.header)}</SectionHeader>
+                <SectionBody theme={theme} data-test="sign-up-body-section">
                     {
                         this.signUpFields.map((field) => {
                             return field.key !== 'phone_number' ? (
@@ -233,6 +233,7 @@ export default class SignUp extends AuthPiece {
                                         name={field.key}
                                         key={field.key}
                                         onChange={this.handleInputChange}
+                                        data-test="sign-up-non-phone-number-input"
                                     />
                                 </FormField>
                             ) : (
@@ -244,7 +245,9 @@ export default class SignUp extends AuthPiece {
                                     }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}>
+                                        onChange={this.handleInputChange}
+                                        data-test="sign-up-dial-code-select"
+                                        >
                                             {countryDialCodes.map(dialCode =>
                                                 <option key={dialCode} value={dialCode}>
                                                     {dialCode}
@@ -259,6 +262,7 @@ export default class SignUp extends AuthPiece {
                                             key="phone_line_number"
                                             name="phone_line_number"
                                             onChange={this.handleInputChange}
+                                            data-test="sign-up-phone-number-input"
                                         />
                                     </SelectInput>
                                 </FormField>
@@ -266,15 +270,15 @@ export default class SignUp extends AuthPiece {
                         })
                     }
                 </SectionBody>
-                <SectionFooter theme={theme}>
+                <SectionFooter theme={theme} data-test="sign-up-footer-section">
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme}>
+                        <Button onClick={this.signUp} theme={theme} data-test="sign-up-create-account-button">
                             {I18n.get('Create Account')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="sign-up-sign-in-link">
                             {I18n.get('Sign in')}
                         </Link>
                     </SectionFooterSecondaryContent>

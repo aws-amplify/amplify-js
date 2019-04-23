@@ -19,9 +19,9 @@ import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container">
-  <div class="amplify-form-body">
-  <div class="amplify-form-header">
+<div class="amplify-form-container" data-test="require-new-password-section">
+  <div class="amplify-form-body" data-test="require-new-password-body-section">
+  <div class="amplify-form-header" data-test="require-new-password-header-section">
     {{ this.amplifyService.i18n().get('You are required to update your password') }}
   </div>
   <div class="amplify-form-row">
@@ -34,17 +34,20 @@ const template = `
       class="amplify-form-input"
       type="password"
       placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+      data-test="require-new-password-new-password-input"
     />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
+          data-test="require-new-password-back-to-sign-in-link"
         >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
           (click)="onSubmit()"
+          data-test="require-new-password-submit-button"
         >{{ this.amplifyService.i18n().get('Submit') }}</button>
       </div>
     </div>

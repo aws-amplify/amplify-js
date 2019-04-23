@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
  <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" data-test="require-new-password-section">
+    <div v-bind:class="amplifyUI.sectionHeader" data-test="require-new-password-header-section">{{options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" data-test="require-new-password-body-section">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus data-test="require-new-password-new-password-input" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.formField" 
@@ -31,12 +31,12 @@
         :placeholder="attribute.charAt(0).toUpperCase() + attribute.slice(1)"
       />
     </div>
-  <div v-bind:class="amplifyUI.sectionFooter">
+  <div v-bind:class="amplifyUI.sectionFooter" data-test="require-new-password-footer-section">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password">{{$Amplify.I18n.get('Submit')}}</button>
+        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password" data-test="require-new-password-submit-button">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="require-new-password-back-to-sign-in-link">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
