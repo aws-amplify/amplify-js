@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.11-unstable.0"></a>
+## [2.1.11-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.10...aws-amplify-react-native@2.1.11-unstable.0) (2019-04-17)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** catch the error when verifying contact ([f8c9972](https://github.com/aws/aws-amplify/commit/f8c9972))
+
+
+
+
 <a name="2.1.10"></a>
 ## [2.1.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.10-unstable.0...aws-amplify-react-native@2.1.10) (2019-04-09)
 

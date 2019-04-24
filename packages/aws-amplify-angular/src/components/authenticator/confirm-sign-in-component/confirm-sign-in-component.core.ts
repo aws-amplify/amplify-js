@@ -108,12 +108,14 @@ export class ConfirmSignInComponentCore implements OnInit {
         mfaType
       )
       .then(() => {
+        this.onAlertClose();
         this.amplifyService.setAuthState({ state: 'signedIn', user });
       })
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

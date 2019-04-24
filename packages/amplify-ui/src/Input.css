@@ -25,6 +25,10 @@
   margin-bottom: 8px;
 }
 
+.label {
+  color: var(--input-color);
+}
+
 .radio {
   margin-right: 18px;
   vertical-align: bottom;
