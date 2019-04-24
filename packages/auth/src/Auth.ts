@@ -676,7 +676,6 @@ export default class AuthClass {
                     },
                     {bypassCache: true}
                 );
-                return res(result);
             });
         });
     }
