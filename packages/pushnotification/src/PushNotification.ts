@@ -27,6 +27,7 @@ export default class PushNotification {
     private _currentState;
     private _androidInitialized;
     private _iosInitialized;
+    private _deviceTokenKey;
 
     constructor(config) {
         if (config) {
@@ -35,9 +36,9 @@ export default class PushNotification {
             this._config = {};
         }
         this.handlers = [];
-        this.updateEndpoint = this.updateEndpoint.bind(this);
-        this.handleCampaignPush = this.handleCampaignPush.bind(this);
-        this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
+        this._updateEndpointWithDeviceToken = this._updateEndpointWithDeviceToken.bind(this);
+        this._handleCampaignPush = this._handleCampaignPush.bind(this);
+        this._handleCampaignOpened = this._handleCampaignOpened.bind(this);
         this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
         this._currentState = AppState.currentState;
         this._androidInitialized = false;
@@ -48,11 +49,11 @@ export default class PushNotification {
         }
     }
 
-    getModuleName() {
+    public getModuleName() {
         return "Pushnotification";
     }
 
-    configure(config) {
+    public configure(config) {
         let conf = config ? config.PushNotification || config : {};
 
         if (conf['aws_mobile_analytics_app_id']) {
@@ -62,92 +63,113 @@ export default class PushNotification {
         }
 
         this._config = Object.assign({}, this._config, conf);
+        this._deviceTokenKey = `push_token${this._config.appId}`;
 
         if (Platform.OS === 'android' && !this._androidInitialized) {
-            this.initializeAndroid();
+            this._initializeAndroid();
             this._androidInitialized = true;
         }
         else if (Platform.OS === 'ios' && !this._iosInitialized) {
-            this.initializeIOS();
+            this._initializeIOS();
             this._iosInitialized = true;
         }
     }
 
-    onNotification(handler) {
+    public onNotification(handler) {
         if (typeof handler === 'function') {
             // check platform
             if (Platform.OS === 'ios') {
-                this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, handler);
+                this._addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, handler);
             } else {
-                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, handler);
+                this._addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, handler);
             }
         }
     }
 
-    onNotificationOpened(handler) {
+    public onNotificationOpened(handler) {
         if (typeof handler === 'function') {
             // check platform
             if (Platform.OS === 'android') {
-                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
+                this._addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
             }
         }
     }
 
-    onRegister(handler) {
+    public onRegister(handler) {
         if (typeof handler === 'function') {
             // check platform
             if (Platform.OS === 'ios') {
-                this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, handler);
+                this._addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, handler);
             } else {
-                this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, handler);
+                this._addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, handler);
             }
         }
     }
 
-    async initializeAndroid() {
-        this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this.handleCampaignOpened);
-        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
+    private async _initializeAndroid() {
+        this._addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this._handleTokenReceived);
+        this._addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this._handleCampaignOpened);
+        this._addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this._handleCampaignPush);
         RNPushNotification.initialize();
 
-        // check if the token is cached properly
-        if (!(await this._registerTokenCached())) {
-            const { appId } = this._config;
-            const cacheKey = 'push_token' + appId;
-            RNPushNotification.getToken((token) => {
-                logger.debug('Get the token from Firebase Service', token);
-                // resend the token in case it's missing in the Pinpoint service
-                // the token will also be cached locally
-                this.updateEndpoint(token);
-            });
+        try {
+            let token = await this._getCachedDeviceToken();
+            if (!token) {
+                logger.debug('Getting the token from Firebase Service');
+                token = await RNPushNotification.getToken();
+                await this._cacheDeviceToken(token);
+            }
+            await this._updateEndpointWithDeviceToken(token);
+        } catch (e) {
+            logger.error(e);
         }
     }
 
-    async _registerTokenCached(): Promise<boolean> {
-        const { appId } = this._config;
-        const cacheKey = 'push_token' + appId;
-        return AsyncStorage.getItem(cacheKey).then((lastToken) => {
-            if (lastToken) return true;
-            else return false;
-        });
+    private async _getCachedDeviceToken() {
+        logger.debug('Getting the cached device token');
+        return await AsyncStorage.getItem(this._deviceTokenKey);
     }
 
-    initializeIOS() {
+    private async _handleTokenReceived(token) {
+        try {
+            await this._cacheDeviceToken(token);
+            await this._updateEndpointWithDeviceToken(token);
+        } catch (e) {
+            logger.error(e);
+        }
+    }
+
+    private async _cacheDeviceToken(token) {
+        if (!token) {
+            logger.error('no device token recieved on register');
+            return;
+        }
+        logger.debug('Caching the device token', token);
+        await AsyncStorage.setItem(this._deviceTokenKey, token);
+    }
+
+    private async _initializeIOS() {
         PushNotificationIOS.requestPermissions({
             alert: true,
             badge: true,
             sound: true
         });
-        this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
+        this._addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this._handleTokenReceived);
+        this._addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this._handleCampaignPush);
+        try {
+            const token = await this._getCachedDeviceToken();
+            if (token) await this._updateEndpointWithDeviceToken(token);
+        } catch (e) {
+            logger.error(e);
+        }
     }
 
-    _checkIfOpenedByCampaign(nextAppState) {
+    private _checkIfOpenedByCampaign(nextAppState) {
         // the app is turned from background to foreground	            
         if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
             PushNotificationIOS.getInitialNotification().then(data => {
                 if (data) {
-                    this.handleCampaignOpened(data);
+                    this._handleCampaignOpened(data);
                 }
             }).catch(e => {
                 logger.debug('Failed to get the initial notification.', e);
@@ -156,11 +178,11 @@ export default class PushNotification {
         this._currentState = nextAppState;
     }
 
-    handleCampaignPush(rawMessage) {
+    private _handleCampaignPush(rawMessage) {
         let message = rawMessage;
         let campaign = null;
         if (Platform.OS === 'ios') {
-            message = this.parseMessageFromIOS(rawMessage);
+            message = this._parseMessageFromIOS(rawMessage);
             campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign : null;
         } else if (Platform.OS === 'android') {
             const { data } = rawMessage;
@@ -196,11 +218,11 @@ export default class PushNotification {
         }
     }
 
-    handleCampaignOpened(rawMessage) {
+    private _handleCampaignOpened(rawMessage) {
         logger.debug('handleCampaignOpened, raw data', rawMessage);
         let campaign = null;
         if (Platform.OS === 'ios') {
-            const message = this.parseMessageFromIOS(rawMessage);
+            const message = this._parseMessageFromIOS(rawMessage);
             campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign : null;
         } else if (Platform.OS === 'android') {
             const data = rawMessage;
@@ -235,46 +257,27 @@ export default class PushNotification {
         }
     }
 
-    updateEndpoint(token) {
-        if (!token) {
-            logger.debug('no device token recieved on register');
-            return;
+    private async _updateEndpointWithDeviceToken(token) {
+        logger.debug('Updating endpoint in push notification with device token', token);
+        
+        if (Amplify.Analytics && typeof Amplify.Analytics.updateEndpoint !== 'function') {
+            throw (new Error('Analytics module is not registered into Amplify'));
         }
 
-        const { appId } = this._config;
-        const cacheKey = 'push_token' + appId;
-        logger.debug('update endpoint in push notification', token);
-        AsyncStorage.getItem(cacheKey).then((lastToken) => {
-            if (!lastToken || lastToken !== token) {
-                logger.debug('refresh the device token with', token);
-                const config = {
-                    Address: token,
-                    OptOut: 'NONE'
-                };
-                if (Amplify.Analytics && typeof Amplify.Analytics.updateEndpoint === 'function') {
-                    Amplify.Analytics.updateEndpoint(config).then((data) => {
-                        logger.debug('update endpoint success, setting token into cache');
-                        AsyncStorage.setItem(cacheKey, token);
-                    }).catch(e => {
-                        // ........
-                        logger.debug('update endpoint failed', e);
-                    });
-                } else {
-                    logger.debug('Analytics module is not registered into Amplify');
-                }
-            }
-        }).catch(e => {
-            logger.debug('set device token in cache failed', e);
-        });
+        const config = {
+            Address: token,
+            OptOut: 'NONE'
+        };
+        await Amplify.Analytics.updateEndpoint(config);
     }
 
     // only for android
-    addEventListenerForAndroid(event, handler) {
+    private _addEventListenerForAndroid(event, handler) {
         const that = this;
         const listener = DeviceEventEmitter.addListener(event, (data) => {
             // for on notification
             if (event === REMOTE_NOTIFICATION_RECEIVED) {
-                handler(that.parseMessagefromAndroid(data));
+                handler(that._parseMessagefromAndroid(data));
                 return;
             }
             if (event === REMOTE_TOKEN_RECEIVED) {
@@ -283,13 +286,13 @@ export default class PushNotification {
                 return;
             }
             if (event === REMOTE_NOTIFICATION_OPENED) {
-                handler(that.parseMessagefromAndroid(data, 'opened'));
+                handler(that._parseMessagefromAndroid(data, 'opened'));
                 return;
             }
         });
     }
 
-    addEventListenerForIOS(event, handler) {
+    private _addEventListenerForIOS(event, handler) {
         const that = this;
         if (event === REMOTE_TOKEN_RECEIVED) {
             PushNotificationIOS.addEventListener('register', (data) => {
@@ -301,7 +304,7 @@ export default class PushNotification {
         }
     }
 
-    parseMessagefromAndroid(message, from?) {
+    private _parseMessagefromAndroid(message, from?) {
         let dataObj = null;
         try {
             dataObj = message.dataJSON ? JSON.parse(message.dataJSON) : null;
@@ -332,7 +335,7 @@ export default class PushNotification {
         return ret;
     }
 
-    parseMessageFromIOS(message) {
+    private _parseMessageFromIOS(message) {
         const _data = message && message._data ? message._data : null;
         const _alert = message && message._alert ? message._alert : {};
 
@@ -351,6 +354,4 @@ export default class PushNotification {
         };
         return ret;
     }
-
-
 }
