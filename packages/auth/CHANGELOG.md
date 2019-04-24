@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.23-unstable.5"></a>
+## [1.2.23-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.4...@aws-amplify/auth@1.2.23-unstable.5) (2019-04-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Always bypass the cache on setPreferredMFA method ([3b28c98](https://github.com/aws/aws-amplify/commit/3b28c98))
+
+
+### Features
+
+* **@aws-amplify/auth:** Allow bypassing cache on setPreferredMFA and getPreferredMFA methods ([83a8ccf](https://github.com/aws/aws-amplify/commit/83a8ccf))
+
+
+
+
 <a name="1.2.23-unstable.4"></a>
 ## [1.2.23-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.3...@aws-amplify/auth@1.2.23-unstable.4) (2019-04-24)
 
