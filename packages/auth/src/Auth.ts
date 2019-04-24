@@ -111,13 +111,13 @@ export default class AuthClass {
             const { event } = payload;
             switch (event) {
                 case 'signIn':
-                    this._storage.setItem('amplify-signin-with-hostedUI', 'false');
+                    this._storage.setItem('amplify-signin-with-hostedUI', false);
                     break;
                 case 'signOut':
                     this._storage.removeItem('amplify-signin-with-hostedUI');
                     break;
                 case 'cognitoHostedUI':
-                    this._storage.setItem('amplify-signin-with-hostedUI', 'true');
+                    this._storage.setItem('amplify-signin-with-hostedUI', true);
                     break;
             }
         });
@@ -1207,7 +1207,7 @@ export default class AuthClass {
         }
 
         const isSignedInHostedUI = this._oAuthHandler 
-            && this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+            && this._storage.getItem('amplify-signin-with-hostedUI');
 
         return new Promise((res, rej) => {
             if (opts && opts.global) {
