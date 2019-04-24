@@ -359,10 +359,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                             `with the Action: "mobiletargeting:GetUserEndpoints" ` +
                             `in order to get endpoints info of the user`);
                     }).finally(() => {
-                        return handlers.reject(err);
+                        this._retry(params, handlers);
                     });
                 }
-                return handlers.reject(err);
+                else return handlers.reject(err);
             } else {
                 logger.debug('updateEndpoint success', data);
                 this._endpointGenerating = false;
