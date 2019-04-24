@@ -353,13 +353,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     this._removeUnusedEndpoints(appId, request.User.UserId)
                     .then(() => {
                         logger.debug('Remove the unused endpoints successfully');
+                        this._retry(params, handlers);
                     }).catch(e => {
                         logger.warn(`Failed to remove unused endpoints with error: ${e}`);
                         logger.warn(`Please ensure you have updated your Pinpoint IAM Policy ` +
                             `with the Action: "mobiletargeting:GetUserEndpoints" ` +
                             `in order to get endpoints info of the user`);
-                    }).finally(() => {
-                        this._retry(params, handlers);
+                        return handlers.reject(err);
                     });
                 }
                 else return handlers.reject(err);
