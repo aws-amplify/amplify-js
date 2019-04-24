@@ -279,18 +279,7 @@ describe('API test', () => {
 
             Cache.configure(cache_config);
 
-            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return {
-                    token: 'id_token'
-                }
-            });
-
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -346,26 +335,16 @@ describe('API test', () => {
 
             expect(spyon).toBeCalledWith(url, init);
 
-            spyonCache.mockClear();
-
         });
         test('multi-auth default case api-key, using AWS_IAM as auth mode', async () => {
             expect.assertions(1);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
+            jest.spyOn(Credentials, 'get').mockReturnValue(Promise.resolve('cred'));
+
             jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
                 callback(null);
             })
 
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -398,9 +377,7 @@ describe('API test', () => {
             const doc = parse(GetEvent);
             const query = print(doc);
 
-            const headers = {
-
-            };
+            const headers = {};
 
             const body = {
                 query,
@@ -433,18 +410,9 @@ describe('API test', () => {
 
             Cache.configure(cache_config);
 
-            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return {
-                    token: 'oidc_token'
-                }
-            });
+            jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'oidc_token' });
 
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -498,8 +466,6 @@ describe('API test', () => {
             await api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT });
 
             expect(spyon).toBeCalledWith(url, init);
-
-            spyonCache.mockClear();
         });
         test('multi-auth using OIDC as auth mode, but no federatedSign', async () => {
             expect.assertions(1);
@@ -515,16 +481,7 @@ describe('API test', () => {
 
             Cache.configure(cache_config);
 
-            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return null;
-            });
-
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            jest.spyOn(Cache, 'getItem').mockReturnValue(null);
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -554,34 +511,10 @@ describe('API test', () => {
                   }
                 }`;
 
-            const doc = parse(GetEvent);
-            const query = print(doc);
-
-            const headers = {
-                Authorization: 'oidc_token'
-            };
-
-            const body = {
-                query,
-                variables,
-            };
-
-            const init = {
-                headers,
-                body,
-                signerServiceInfo: {
-                    service: 'appsync',
-                    region,
-                }
-            };
-            try {
-                await api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT });
-            } catch (err) {
-                expect(err).toEqual(new Error("No federated jwt"));
-            }
+            expect(api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT }))
+                .rejects.toThrowError("No federated jwt");
 
 
-            spyonCache.mockClear();
         });
         test('multi-auth using CUP as auth mode, but no userpool', async () => {
             expect.assertions(1);
@@ -614,11 +547,9 @@ describe('API test', () => {
                   }
                 }`;
 
-            try {
-                await api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS });
-            } catch (err) {
-                expect(err).toEqual("No userPool");
-            }
+            expect(api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS }))
+                .rejects.toThrowError("No userPool");
+
         });
 
         test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
@@ -635,11 +566,6 @@ describe('API test', () => {
 
             Cache.configure(cache_config);
 
-            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return {
-                    token: 'id_token'
-                }
-            });
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -667,46 +593,16 @@ describe('API test', () => {
                   }
                 }`;
 
-            const doc = parse(GetEvent);
-            const query = print(doc);
 
-            const headers = {
-                Authorization: null,
-                'X-Api-Key': 'secret-api-key'
-            };
-
-            const body = {
-                query,
-                variables,
-            };
-
-            try {
-                await api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.API_KEY });
-            } catch (err) {
-                expect(err).toEqual(new Error("No api-key configured"));
-            }
+            expect(api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.API_KEY }))
+                .rejects.toThrowError("No api-key configured");
 
 
-            spyonCache.mockClear();
         });
         test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
             expect.assertions(1);
 
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
-            jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
-                callback(null);
-            })
-
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            jest.spyOn(Credentials, 'get').mockReturnValue(Promise.reject());
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -736,46 +632,19 @@ describe('API test', () => {
                   }
                 }`;
 
-            const doc = parse(GetEvent);
-            const query = print(doc);
-
-            const headers = {
-
-            };
-
-            const body = {
-                query,
-                variables,
-            };
-
-            const init = {
-                headers,
-                body,
-                signerServiceInfo: {
-                    service: 'appsync',
-                    region,
-                }
-            };
-
-            await api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.AWS_IAM });
-
-            expect(spyon).toBeCalledWith(url, init);
+            expect(api.graphql({ query: GetEvent, variables, authMode: GRAPHQL_AUTH_MODE.AWS_IAM }))
+                .rejects.toThrowError("No credentials");
         });
 
         test('multi-auth default case api-key, using CUP as auth mode', async () => {
             expect.assertions(1);
-            const spyon = jest.spyOn(RestClient.prototype, 'post')
-                .mockImplementationOnce((url, init) => {
-                    return new Promise((res, rej) => {
-                        res({})
-                    });
-                });
+            const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
-            jest.spyOn(Auth, 'currentSession').mockImplementationOnce(() => ({
+            jest.spyOn(Auth, 'currentSession').mockReturnValue({
                 getAccessToken: () => ({
                     getJwtToken: () => ("Secret-Token")
                 })
-            }));
+            });
 
             const api = new API(config);
             const url = 'https://appsync.amazonaws.com',
@@ -854,11 +723,7 @@ describe('API test', () => {
 
             Cache.configure(cache_config);
 
-            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return {
-                    token: 'id_token'
-                }
-            });
+            jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
 
             const spyon_Graphql = jest.spyOn(API.prototype, '_graphql');
 
@@ -893,8 +758,6 @@ describe('API test', () => {
             expect(spyon_Graphql).toBeCalledWith(expect.objectContaining({
                 authMode: "OPENID_CONNECT"
             }), {});
-
-            spyonCache.mockClear();
 
         })
 
