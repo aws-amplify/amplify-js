@@ -158,8 +158,10 @@ export class SignUpComponentCore implements OnInit {
       
       if (this._usernameAttributes === UsernameAttributes.EMAIL) {
           this.signUpFields = signUpWithEmailFields;
+          this.defaultSignUpFields = signUpWithEmailFields;
       } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
           this.signUpFields = signUpWithPhoneNumberFields;
+          this.defaultSignUpFields = signUpWithPhoneNumberFields;
       }
 
       if (this._signUpConfig.passwordPolicy) {
@@ -172,10 +174,12 @@ export class SignUpComponentCore implements OnInit {
   set usernameAttributes(usernameAttributes: string | Array<string>) {
     this._usernameAttributes = usernameAttributes;
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
-          this.signUpFields = signUpWithEmailFields;
-      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-          this.signUpFields = signUpWithPhoneNumberFields;
-      }
+        this.signUpFields = signUpWithEmailFields;
+        this.defaultSignUpFields = signUpWithEmailFields;
+    } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        this.signUpFields = signUpWithPhoneNumberFields;
+        this.defaultSignUpFields = signUpWithPhoneNumberFields;
+    }
   }
 
   @Input()
