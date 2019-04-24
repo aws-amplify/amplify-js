@@ -296,19 +296,29 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 return handlers.reject(err);
             }
             else {
-                const { EventsResponse : { Results } } = data;
-                const { EventsItemResponse } = Results[endpointId];
-                const statusCode = EventsItemResponse[eventId]['StatusCode'];
-                const message = EventsItemResponse[eventId]['Message'];
-                if ( ACCEPTED_CODES.find(c => c === statusCode)) {
+                const { 
+                    EventsResponse : { 
+                        Results : { 
+                            [endpointId] : { 
+                                EventsItemResponse: {
+                                    [eventId]: {
+                                        StatusCode,
+                                        Message
+                                    }
+                                }
+                            } 
+                        } 
+                    } 
+                } = data;
+                if ( ACCEPTED_CODES.find(c => c === StatusCode)) {
                     this._endpointGenerating = false;
                     logger.debug('record event success. ', data);
                     return handlers.resolve(data);
                 } else {
-                    if (RETRYABLE_CODES.find(c => c === statusCode)) {
+                    if (RETRYABLE_CODES.find(c => c === StatusCode)) {
                         this._retry(params, handlers);
                     } else {
-                        logger.error(`Event ${eventId} is not accepted, the error is ${message}`);
+                        logger.error(`Event ${eventId} is not accepted, the error is ${Message}`);
                         return handlers.reject(data);
                     }
                 }
