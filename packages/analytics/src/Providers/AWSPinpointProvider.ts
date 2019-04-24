@@ -105,26 +105,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         }
     }
 
-    private async _sendFromBuffer(params, handlers) {
-        // const { event, config } = params;
-
-        // const { appId, region, resendLimit } = config;
-
-        // switch (event.name) {
-        //     case '_session.start':
-        //         return this._startSession(params, handlers);
-        //     case '_session.stop':
-        //         return this._stopSession(params, handlers);
-
-        //     case '_update_endpoint':
-        //         return this._updateEndpoint(params, handlers);
-        //     default:
-        //         return this._recordCustomEvent(params, handlers);
-        // }
-
-       
-    }
-
     /**
      * get the category of the plugin
      */
