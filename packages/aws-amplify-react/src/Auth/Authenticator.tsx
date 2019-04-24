@@ -87,7 +87,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         // the app is redirected back from Hosted UI or not
         const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
         localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        if (!byHostedUI) this.checkUser();
+        if (byHostedUI !== 'true') this.checkUser();
     }
 
     componentWillUnmount() {
