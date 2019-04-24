@@ -55,8 +55,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private _sessionStartTimestamp;
     private _buffer;
     private _clientInfo;
-
     private _timer;
+    private _endpointGenerating = true;
 
     constructor(config?) {
         this._buffer = [];
@@ -80,6 +80,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
+                    // If this is the first request sent by Analytics module, we should stop sending remaining requests
+                    // to prevent race condition of updating one endpoint when it's being created in the backend
+                    if (this._endpointGenerating) break;
                 }
             },
             flushInterval
@@ -196,7 +199,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-        // temporary solution, will refactor in the future
         if (params.event.immediate) {
             return this._send(params);
         } else {
@@ -311,6 +313,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     res(false);
                 }
                 else {
+                    this._endpointGenerating = false;
                     logger.debug('record event success. ', data);
                     res(true);
                 }
@@ -387,6 +390,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                         this._removeUnusedEndpoints(appId, request.User.UserId)
                         .then(() => {
                             logger.debug('Remove the unused endpoints successfully');
+                            this._endpointGenerating = false;
                             return res(false);
                         }).catch(e => {
                             logger.warn(`Failed to remove unused endpoints with error: ${e}`);
@@ -398,6 +402,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                     }
                     return res(false);
                 } else {
+                    this._endpointGenerating = false;
                     logger.debug('updateEndpoint success', data);
                     return res(true);
                 }
