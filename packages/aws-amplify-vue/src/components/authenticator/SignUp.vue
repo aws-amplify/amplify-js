@@ -219,7 +219,7 @@ export default {
               if (data.userConfirmed === false){
                 return AmplifyEventBus.$emit('authState', 'confirmSignUp');
               }
-              return AmplifyEventBus.$emit('authState', 'signedOut')
+              return AmplifyEventBus.$emit('authState', 'signIn')
             })
             .catch(e => this.setError(e));
 
@@ -239,7 +239,7 @@ export default {
       return invalids.length < 1;
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
     clear(field) {
       if (field && field.invalid && field.value) {

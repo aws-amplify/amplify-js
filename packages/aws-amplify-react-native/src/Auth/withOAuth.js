@@ -35,7 +35,6 @@ export default (Comp) => {
 
             this.hostedUISignIn = this.hostedUISignIn.bind(this);
             this.signOut = this.signOut.bind(this);
-            this._getOAuthUrl = this._getOAuthUrl.bind(this);
             this.urlOpener = this.urlOpener.bind(this);
 
             this.state = {
@@ -45,26 +44,17 @@ export default (Comp) => {
 
             listeners.forEach(listener => Hub.remove('auth', listener));
             listeners = [this];
-            Hub.listen('auth', this);
+            this.onHubCapsule = this.onHubCapsule.bind(this);
+            Hub.listen('auth', this.onHubCapsule);
         }
 
         componentDidMount() {
-            Linking.getInitialURL().then(url => {
-                const config = Auth.configure();
-
-                if (url && config) {
-                    Auth.configure(config);
-                }
+            Auth.currentAuthenticatedUser().then(user => {
+                this.setState({ user })
             }).catch(error => {
-                logger.debug('componentDidMount [Linking.getInitialURL]', error);
-            }).then(() => {
-                Auth.currentAuthenticatedUser().then(user => {
-                    this.setState({ user })
-                }).catch(error => {
-                    logger.debug(error);
+                logger.debug(error);
 
-                    this.setState({ user: null });
-                });
+                this.setState({ user: null });
             });
         }
 
@@ -114,37 +104,8 @@ export default (Comp) => {
             return config;
         }
 
-        _getOAuthUrl(provider = CognitoHostedUIIdentityProvider.Cognito) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                domain,
-                redirectSignIn,
-                responseType
-            } = config;
-
-            const options = config.options || {};
-            const url = `https://${domain}/authorize?${
-                Object.entries({
-                    redirect_uri: redirectSignIn,
-                    response_type: responseType,
-                    client_id: options.ClientId || Auth.configure().userPoolWebClientId,
-                    identity_provider: provider,
-                }).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
-
-            return Promise.resolve(url);
-        }
-
         hostedUISignIn(provider) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                redirectSignIn,
-            } = config;
-
-            return this._getOAuthUrl(provider).then(url => this.urlOpener(url, redirectSignIn));
+            Auth.federatedSignIn({ provider });
         }
 
         signOut() {
@@ -156,7 +117,6 @@ export default (Comp) => {
             const { oauth_config: _, ...otherProps } = this.props;
 
             const oAuthProps = {
-                getOAuthUrl: this._getOAuthUrl,
                 oAuthUser,
                 oAuthError,
                 hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),

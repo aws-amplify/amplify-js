@@ -1,14 +1,19 @@
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core'
+import { Component, Input, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">{{ this.amplifyService.i18n().get('Confirm your sign in code') }}</div>
+    <div class="amplify-form-header amplify-form-header-ionic">
+      {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
+    </div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">{{ this.amplifyService.i18n().get('Code *') }}</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          {{ this.amplifyService.i18n().get('Code *') }}
+        </ion-label>
         <ion-input
           #code
           type="text"
@@ -37,20 +42,19 @@ const template = `
   </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-in-ionic',
-  template: template
+  template
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService)
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    super(amplifyService);
   }
 }

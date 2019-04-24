@@ -47,7 +47,7 @@ export default class Authenticator extends Component {
 
         this._initialAuthState = this.props.authState || 'signIn';
         this.state = { authState: 'loading' };
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
@@ -63,7 +63,7 @@ export default class Authenticator extends Component {
         // the app is redirected back from Hosted UI or not
         const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
         localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        if (!byHostedUI) this.checkUser();
+        if (byHostedUI !== 'true') this.checkUser();
     }
 
     componentWillUnmount() {

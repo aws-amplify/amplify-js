@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
@@ -22,9 +22,10 @@ const template = `
 <div class="amplify-form-container">
   <div class="amplify-form-body">
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
-
     <div class="amplify-form-row">
-      <label class="amplify-input-label" for="amplifyUsername"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+      <label class="amplify-input-label" for="amplifyUsername">
+        {{ this.amplifyService.i18n().get('Username *') }}
+      </label>
       <input
         #amplifyUsername
         class="amplify-form-input"
@@ -35,7 +36,9 @@ const template = `
       />
     </div>
     <div class="amplify-form-row">
-      <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
+      <label class="amplify-input-label" for="code">
+        {{ this.amplifyService.i18n().get('Confirmation Code *') }}
+      </label>
       <input #code
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
@@ -49,24 +52,21 @@ const template = `
             (click)="onResend()"
           >{{ this.amplifyService.i18n().get('Resend Code') }}</a></span>
     </div>
-
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <div class="amplify-form-actions-left">
-          <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
+          <a class="amplify-form-link" (click)="onSignIn()">
+            {{ this.amplifyService.i18n().get('Back to Sign in') }}
+          </a>
         </div>
       </div>
-
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
-          (click)="onConfirm()">S{{ this.amplifyService.i18n().get('Confirm') }}</button>
+          (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
       </div>
     </div>
-
   </div>
-
 </div>
-
 <div class="amplify-alert" *ngIf="errorMessage">
   <div class="amplify-alert-body">
     <span class="amplify-alert-icon">&#9888;</span>
@@ -74,25 +74,24 @@ const template = `
     <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
   </div>
 </div>
-
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-core',
-  template: template
+  template
 })
 
-export class ConfirmSignUpComponentCore {
+export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   username: string;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
   }
 
   @Input()
@@ -111,6 +110,12 @@ export class ConfirmSignUpComponentCore {
     this.username = authState.user? authState.user.username || '' : '';
   }
 
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    }
+  }
+
   setUsername(username: string) {
     this.username = username;
   }
@@ -125,17 +130,18 @@ export class ConfirmSignUpComponentCore {
         this.username,
         this.code
       )
-      .then(() => console.log('confirm success'))
+      .then(() => this.logger.info('confirm success'))
       .catch(err => this._setError(err));
   }
 
   onResend() {
     this.amplifyService.auth().resendSignUp(this.username)
-      .then(() => console.log('code resent'))
+      .then(() => this.logger.info('code resent'))
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

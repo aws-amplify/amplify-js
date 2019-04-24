@@ -14,7 +14,7 @@
 // tslint:enable
 
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
 import { S3ImageComponentCore } from './s3-image.component.core';
 
 const template = `
@@ -31,9 +31,7 @@ const template = `
 })
 export class S3ImageComponentIonic extends S3ImageComponentCore {
 
-  amplifyService: AmplifyService;
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
     
   }
