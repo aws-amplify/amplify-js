@@ -47,11 +47,11 @@
     </div>
     <div v-bind:class="amplifyUI.sectionFooter" data-test="sign-up-footer-section">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp" data-test="sign-up-create-account-button">{{$Amplify.I18n.get('Create account')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp" data-test="sign-up-create-account-button">{{$Amplify.I18n.get('Create Account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="sign-up-sign-in-link">{{$Amplify.I18n.get('Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="sign-up-sign-in-link">{{$Amplify.I18n.get('Sign in')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -85,7 +85,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: this.$Amplify.I18n.get('Sign Up Account'),
+        header: this.$Amplify.I18n.get('Create a new account'),
         signUpFields: [
           {
             label: this.$Amplify.I18n.get('Username'),

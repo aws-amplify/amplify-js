@@ -27,7 +27,7 @@ const template = `
         size="small"
         *ngIf="signedIn"
         (click)="onSignOut()"
-        data-test="greeting-sign-out-button"
+        data-test="sign-out-button"
       >{{ this.amplifyService.i18n().get('Sign Out') }}</ion-button>
 </div>
 `;

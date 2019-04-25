@@ -27,10 +27,7 @@ const template = `
   data-test="sign-up-section"
   >
   <div class="amplify-form-body" data-test="sign-up-body-section">
-    <div
-    class="amplify-form-header"
-    data-test="sign-up-header-section"
-    >
+    <div class="amplify-form-header" data-test="sign-up-header-section">
       {{ this.amplifyService.i18n().get(this.header) }}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
@@ -101,8 +98,8 @@ const template = `
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
-          data-test="sign-up-sign-up-button"
-        >{{ this.amplifyService.i18n().get('Sign Up') }}</ion-button>
+          data-test="sign-up-create-account-button"
+        >{{ this.amplifyService.i18n().get('Create Account') }}</ion-button>
       </div>
       <div class="amplify-form-row">
         <div class="amplify-form-signup">

@@ -137,7 +137,7 @@ export default class SignOut extends AuthPiece {
             <NavButton
                 theme={theme}
                 onClick={this.signOut}
-                data-test="sign-out-sign-out-button"
+                data-test="sign-out-button"
             >
                 {I18n.get('Sign Out')}
             </NavButton>

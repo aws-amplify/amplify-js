@@ -25,7 +25,7 @@ const template = `
     <div class="amplify-form-body" data-test="sign-up-body-section">
       <div
         class="amplify-form-header"
-        data-test="sign-up-section-header"
+        data-test="sign-up-header-section"
         >{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
@@ -89,8 +89,8 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          data-test="sign-up-sign-up-button"
-          >{{ this.amplifyService.i18n().get('Sign Up') }}</button>
+          data-test="sign-up-create-account-button"
+          >{{ this.amplifyService.i18n().get('Create Account') }}</button>
         </div>
       </div>
     </div>

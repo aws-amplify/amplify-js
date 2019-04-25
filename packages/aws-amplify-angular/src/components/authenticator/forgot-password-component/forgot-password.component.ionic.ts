@@ -25,10 +25,10 @@ const template = `
   *ngIf="_show"
   data-test="forgot-password-section"
   >
-  <div class="amplify-form-body" data-test="forgot-password-section-body">
+  <div class="amplify-form-body" data-test="forgot-password-body-section">
   <div
     class="amplify-form-header amplify-form-header-ionic"
-    data-test="forgot-password-section-header"
+    data-test="forgot-password-header-section"
     >
     {{ this.amplifyService.i18n().get('Reset your password') }}
   </div>
@@ -45,7 +45,7 @@ const template = `
         class="amplify-form-input"
         (keyup)="setUsername($event.target.value)"
         [value]="username"
-        data-test="forgot-password-input-username"
+        data-test="forgot-password-username-input"
       ></ion-input>
     </ion-item>
 
@@ -58,7 +58,7 @@ const template = `
         type="text"
         class="amplify-form-input"
         (keyup)="setCode(code.value)"
-        data-test="forgot-password-input-code"
+        data-test="forgot-password-code-input"
       ></ion-input>
     </ion-item>
     <ion-item lines="none" *ngIf="code_sent">
@@ -71,7 +71,7 @@ const template = `
         class="amplify-form-input"
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
-        data-test="forgot-password-input-new-password"
+        data-test="forgot-password-new-password-input"
       ></ion-input>
     </ion-item>
   </ion-list>
@@ -80,7 +80,7 @@ const template = `
       <ion-button expand="block" color="primary"
         (click)="onSend()"
         *ngIf="!code_sent"
-        data-test="forgot-password-button-submit"
+        data-test="forgot-password-submit-button"
       >
         {{ this.amplifyService.i18n().get('Submit') }}</ion-button>
       <ion-button expand="block" color="primary"
@@ -100,7 +100,7 @@ const template = `
         <a
           class="amplify-form-link"
           (click)="onSend()"
-          data-test="forgot-password-link-resend-code"
+          data-test="forgot-password-resend-code-link"
           >
           {{ this.amplifyService.i18n().get('Resend') }}
         </a>

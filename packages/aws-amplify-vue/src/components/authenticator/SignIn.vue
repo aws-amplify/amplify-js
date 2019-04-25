@@ -24,7 +24,7 @@
         <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" data-test="sign-in-password-input" />
         <div v-bind:class="amplifyUI.hint">
           {{$Amplify.I18n.get('Forget your password? ')}}
-          <a v-bind:class="amplifyUI.a" v-on:click="forgot" data-test="sign-in-reset-password-link">{{$Amplify.I18n.get('Reset password')}}</a>
+          <a v-bind:class="amplifyUI.a" v-on:click="forgot" data-test="sign-in-forgot-password-link">{{$Amplify.I18n.get('Reset password')}}</a>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
         <a v-bind:class="amplifyUI.a" v-on:click="signUp" data-test="sign-in-create-account-link">{{$Amplify.I18n.get('Create account')}}</a>
       </span>
     </div>
-    <div class="error" v-if="error">
+    <div class="error" v-if="error" data-test="authenticator-error">
       {{ error }}
     </div>
   </div>
@@ -62,7 +62,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: this.$Amplify.I18n.get('Sign In Account'),
+        header: this.$Amplify.I18n.get('Sign in to your account'),
         username: '',
         isSignUpDisplayed: true
       }

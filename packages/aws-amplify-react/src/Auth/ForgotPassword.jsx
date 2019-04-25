@@ -90,6 +90,7 @@ export default class ForgotPassword extends AuthPiece {
                         key="username"
                         name="username"
                         onChange={this.handleInputChange}
+                        data-test="forgot-password-username-input"
                     />
                 </FormField>
             </div>
