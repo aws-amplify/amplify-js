@@ -119,7 +119,7 @@ export default class PushNotification {
                 token = await RNPushNotification.getToken();
                 await this._cacheDeviceToken(token);
             }
-            await this._updateEndpointWithDeviceToken(token);
+            await this._updateEndpointWithDeviceToken({ address: token });
         } catch (e) {
             logger.error(e);
         }
@@ -133,7 +133,7 @@ export default class PushNotification {
     private async _handleTokenReceived(token) {
         try {
             await this._cacheDeviceToken(token);
-            await this._updateEndpointWithDeviceToken(token);
+            await this._updateEndpointWithDeviceToken({ address: token, optOut: 'NONE'});
         } catch (e) {
             logger.error(e);
         }
@@ -158,7 +158,7 @@ export default class PushNotification {
         this._addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this._handleCampaignPush);
         try {
             const token = await this._getCachedDeviceToken();
-            if (token) await this._updateEndpointWithDeviceToken(token);
+            if (token) await this._updateEndpointWithDeviceToken({ address: token });
         } catch (e) {
             logger.error(e);
         }
@@ -257,18 +257,14 @@ export default class PushNotification {
         }
     }
 
-    private async _updateEndpointWithDeviceToken(token) {
-        logger.debug('Updating endpoint in push notification with device token', token);
+    private async _updateEndpointWithDeviceToken(params) {
+        logger.debug('Updating endpoint in push notification with device token', params.token);
         
         if (Amplify.Analytics && typeof Amplify.Analytics.updateEndpoint !== 'function') {
             throw (new Error('Analytics module is not registered into Amplify'));
         }
 
-        const config = {
-            Address: token,
-            OptOut: 'NONE'
-        };
-        await Amplify.Analytics.updateEndpoint(config);
+        await Amplify.Analytics.updateEndpoint(params);
     }
 
     // only for android
