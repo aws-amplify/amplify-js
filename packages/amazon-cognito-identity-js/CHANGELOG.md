@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.12-unstable.3"></a>
+## [3.0.12-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.2...amazon-cognito-identity-js@3.0.12-unstable.3) (2019-04-26)
+
+
+### Features
+
+* **@aws-amplify/amazon-cognito-identity-js:** for signUp, returns CodeDeliveryDetails from response ([7728e11](https://github.com/aws/aws-amplify/commit/7728e11))
+
+
+
+
 <a name="3.0.12-unstable.2"></a>
 ## [3.0.12-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.1...amazon-cognito-identity-js@3.0.12-unstable.2) (2019-04-16)
 
