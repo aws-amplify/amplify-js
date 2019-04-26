@@ -74,7 +74,7 @@ export default class PushNotification {
             this._androidInitialized = true;
         }
         else if (Platform.OS === 'ios' && !this._iosInitialized) {
-            this.initializeIOS(this._config.requestIOSPermissions);
+            this.initializeIOS();
             this._iosInitialized = true;
         }
     }
@@ -138,16 +138,12 @@ export default class PushNotification {
         });
     }
 
-    requestIOSPermissions() {
-        PushNotificationIOS.requestPermissions({
-            alert: true,
-            badge: true,
-            sound: true
-        });
+    requestIOSPermissions(options = { alert: true, badge: true, sound: true }) {
+        PushNotificationIOS.requestPermissions(options);
     }
 
-    initializeIOS(requestPermissions: boolean = true) {
-        if (requestPermissions) {
+    initializeIOS() {
+        if (this._config.requestIOSPermissions) {
             this.requestIOSPermissions();
         }
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
