@@ -4,6 +4,12 @@ declare module "amazon-cognito-identity-js" {
 
     export type NodeCallback<E,T> = (err?: E, result?: T) => void;
 
+    export interface CodeDeliveryDetails {
+        AttributeName: string,
+        DeliveryMedium: string,
+        Destination: string
+    } 
+
     export interface IMfaSettings {
         PreferredMfa: boolean,
         Enabled: boolean
@@ -144,6 +150,7 @@ declare module "amazon-cognito-identity-js" {
         user: CognitoUser;
         userConfirmed: boolean;
         userSub: string;
+        codeDeliveryDetails: CodeDeliveryDetails
     }
 
     export interface ICognitoUserPoolData {
