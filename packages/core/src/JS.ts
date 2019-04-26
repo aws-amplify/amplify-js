@@ -168,8 +168,7 @@ export default class JS {
      * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
      */
     static transferKeyToLowerCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
-        if (typeof obj !== 'object'  || Array.isArray(obj)) return obj;
-
+       if (!JS.isStrictObject(obj)) return obj;
         const ret = {};
 
         for (const key in obj) {
@@ -198,8 +197,7 @@ export default class JS {
      * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
      */
     static transferKeyToUpperCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
-        if (typeof obj !== 'object'  || Array.isArray(obj)) return obj;
-
+        if (!JS.isStrictObject(obj)) return obj;
         const ret = {};
 
         for (const key in obj) {
@@ -219,5 +217,20 @@ export default class JS {
         }
         
         return ret;
+    }
+
+    /**
+     * Return true if the object is a strict object
+     * which means it's not Array, Function, Number, String, Boolean or Null
+     * @param obj the Object
+     */
+    static isStrictObject(obj) { 
+        return ((obj instanceof Object) && 
+            !(obj instanceof Array) &&
+            !(obj instanceof Function) &&
+            !(obj instanceof Number) &&
+            !(obj instanceof String) &&
+            !(obj instanceof Boolean)
+        );
     }
 }

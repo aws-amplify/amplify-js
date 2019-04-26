@@ -87,9 +87,8 @@ const template = `
 })
 export class SumerianSceneComponentIonic extends SumerianSceneComponentCore {
   amplifyUI: AmplifyUI;
-  amplifyService: AmplifyService;
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(protected amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

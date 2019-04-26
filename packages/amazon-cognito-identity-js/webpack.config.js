@@ -31,7 +31,8 @@ var config = {
     filename: '[name].js',
     path: __dirname + '/dist',
     libraryTarget: 'umd',
-    library: 'AmazonCognitoIdentity'
+    library: 'AmazonCognitoIdentity',
+    devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
