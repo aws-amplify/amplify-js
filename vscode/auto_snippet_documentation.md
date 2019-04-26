@@ -1135,7 +1135,7 @@ function refreshToken() {
     // refresh the token here and get the new token info
     // ......
 
-    return new Promise(res, rej => {
+    return new Promise((res, rej) => {
         const data = {
             token, // the token from the provider
             expires_at, // the timestamp for the expiration

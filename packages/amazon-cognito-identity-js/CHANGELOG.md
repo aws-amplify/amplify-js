@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.12-unstable.3"></a>
+## [3.0.12-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.2...amazon-cognito-identity-js@3.0.12-unstable.3) (2019-04-26)
+
+
+### Features
+
+* **@aws-amplify/amazon-cognito-identity-js:** for signUp, returns CodeDeliveryDetails from response ([7728e11](https://github.com/aws/aws-amplify/commit/7728e11))
+
+
+
+
+<a name="3.0.12-unstable.2"></a>
+## [3.0.12-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.1...amazon-cognito-identity-js@3.0.12-unstable.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
+
+
+
+
+<a name="3.0.12-unstable.1"></a>
+## [3.0.12-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.0...amazon-cognito-identity-js@3.0.12-unstable.1) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.12-unstable.0"></a>
+## [3.0.12-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.11...amazon-cognito-identity-js@3.0.12-unstable.0) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.11"></a>
+## [3.0.11](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.11-unstable.0...amazon-cognito-identity-js@3.0.11) (2019-04-09)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.11-unstable.0"></a>
+## [3.0.11-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.10...amazon-cognito-identity-js@3.0.11-unstable.0) (2019-04-07)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.10"></a>
+## [3.0.10](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.10-unstable.0...amazon-cognito-identity-js@3.0.10) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.10-unstable.0"></a>
+## [3.0.10-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.9...amazon-cognito-identity-js@3.0.10-unstable.0) (2019-03-18)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.9"></a>
+## [3.0.9](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.9-unstable.0...amazon-cognito-identity-js@3.0.9) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.9-unstable.0"></a>
+## [3.0.9-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8...amazon-cognito-identity-js@3.0.9-unstable.0) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8"></a>
+## [3.0.8](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.4...amazon-cognito-identity-js@3.0.8) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.4"></a>
+## [3.0.8-unstable.4](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.3...amazon-cognito-identity-js@3.0.8-unstable.4) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.3"></a>
+## [3.0.8-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.2...amazon-cognito-identity-js@3.0.8-unstable.3) (2019-03-01)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+<a name="3.0.8-unstable.2"></a>
+## [3.0.8-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.1...amazon-cognito-identity-js@3.0.8-unstable.2) (2019-02-27)
+
+
+### Bug Fixes
+
+* **build:** Prevent tree-shaking of crypto-js/lib-typedarrays ([#2718](https://github.com/aws/aws-amplify/issues/2718)) ([3134a64](https://github.com/aws/aws-amplify/commit/3134a64)), closes [#1181](https://github.com/aws/aws-amplify/issues/1181)
+
+
+
+
 <a name="3.0.8-unstable.1"></a>
 ## [3.0.8-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.8-unstable.0...amazon-cognito-identity-js@3.0.8-unstable.1) (2019-01-21)
 
