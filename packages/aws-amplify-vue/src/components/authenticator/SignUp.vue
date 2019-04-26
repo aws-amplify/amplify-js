@@ -128,8 +128,8 @@ export default {
 
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        // if hideDefaults is not present on props...
-        if (!this.signUpConfig.hideDefaults) {
+        // if hideAllDefaults and hideDefaults are not present on props...
+        if (!this.signUpConfig.hideAllDefaults && !this.signUpConfig.hideDefaults) {
           // ...add default fields to signUpField array unless user has passed in custom field with matching key
           defaults.signUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
