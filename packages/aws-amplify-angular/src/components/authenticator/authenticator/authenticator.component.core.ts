@@ -21,6 +21,7 @@ const template = `
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core

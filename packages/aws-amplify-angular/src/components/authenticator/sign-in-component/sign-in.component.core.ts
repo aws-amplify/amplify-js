@@ -51,7 +51,7 @@ const template = `
           required
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
         />
-        <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Forgot Password?') }}
+        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">{{ this.amplifyService.i18n().get('Forgot Password?') }}
         <a class="amplify-form-link"
             (click)="onForgotPassword()"
           >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
@@ -63,7 +63,7 @@ const template = `
           >{{ this.amplifyService.i18n().get('Sign In') }}</button>
         </div>
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">
+          <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
             {{ this.amplifyService.i18n().get('No account?') }}
             <a class="amplify-form-link" (click)="onSignUp()">
               {{ this.amplifyService.i18n().get('Create account') }}
@@ -105,6 +105,9 @@ export class SignInComponentCore implements OnInit {
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
   }
+
+  @Input()
+  hide: string[] = [];
 
   ngOnInit() {
     if (!this.amplifyService.auth()){
@@ -159,5 +162,10 @@ export class SignInComponentCore implements OnInit {
     }
     this.errorMessage = err.message || err;
     this.logger.error(this.errorMessage);
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 }
