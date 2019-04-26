@@ -20,8 +20,13 @@ describe('RequireNewPasswordComponentCore: ', () => {
   let completeNewPasswordSpy;
   let onSignInSpy;
 
+<<<<<<< HEAD
   beforeEach(() => { 
     service = new AmplifyService(authModule);
+=======
+  beforeEach(() => {
+    service = new AmplifyService();
+>>>>>>> 90760f9f574bb1f552341ae2aa3810b9b960031c
     component = new RequireNewPasswordComponentIonic(service);
     TestBed.configureTestingModule({
       declarations: [
@@ -51,7 +56,6 @@ describe('RequireNewPasswordComponentCore: ', () => {
     component = null;
   });
 
-
   it('...should be created', () => {
     expect(component).toBeTruthy();
   });
@@ -71,6 +75,7 @@ describe('RequireNewPasswordComponentCore: ', () => {
   it('...should have a _setError method', () => {
     expect(component._setError).toBeTruthy();
   });
+<<<<<<< HEAD
 
   it('...should not display if _show is not set', () => {
     const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-authenticator-ionic');
@@ -115,3 +120,6 @@ describe('RequireNewPasswordComponentCore: ', () => {
   });
 
 });
+=======
+});
+>>>>>>> 90760f9f574bb1f552341ae2aa3810b9b960031c

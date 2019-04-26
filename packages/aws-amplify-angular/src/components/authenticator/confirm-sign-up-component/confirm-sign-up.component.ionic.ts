@@ -86,7 +86,7 @@ const template = `
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up-ionic',
-  template
+  template: template
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
 

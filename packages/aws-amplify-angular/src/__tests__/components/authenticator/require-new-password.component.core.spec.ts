@@ -50,7 +50,6 @@ describe('RequireNewPasswordComponentCore: ', () => {
     component = null;
   });
 
-
   it('...should be created', () => {
     expect(component).toBeTruthy();
   });
@@ -70,6 +69,7 @@ describe('RequireNewPasswordComponentCore: ', () => {
   it('...should have a _setError method', () => {
     expect(component._setError).toBeTruthy();
   });
+<<<<<<< HEAD
 
   it('...should not display if _show is not set', () => {
     const rootEl = fixture.debugElement.nativeElement.querySelector('.amplify-container');
@@ -105,3 +105,6 @@ describe('RequireNewPasswordComponentCore: ', () => {
   });
 
 });
+=======
+});
+>>>>>>> 90760f9f574bb1f552341ae2aa3810b9b960031c

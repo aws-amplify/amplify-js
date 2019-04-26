@@ -46,6 +46,7 @@ describe('SignUpComponentCore (basics): ', () => {
   it('...should have an onSignUp method', () => {
     expect(component.onSignUp).toBeTruthy();
   });
+<<<<<<< HEAD
 
   it('...should have an sortFields method', () => {
     expect(component.sortFields).toBeTruthy();
@@ -242,3 +243,6 @@ describe('SignUpComponentCore (methods and UI): ', () => {
   });
 });
 
+=======
+});
+>>>>>>> 90760f9f574bb1f552341ae2aa3810b9b960031c

@@ -50,7 +50,6 @@ describe('ConfirmSignUpComponentCore: ', () => {
     fixtureComponent = null;
   });
 
-
   it('...should be created', () => {
     expect(component).toBeTruthy();
   });
@@ -61,11 +60,11 @@ describe('ConfirmSignUpComponentCore: ', () => {
 
   it('...should have an onResend method', () => {
     expect(component.onResend).toBeTruthy();
-  }); 
+  });
 
   it('...should have an onSignIn method', () => {
     expect(component.onSignIn).toBeTruthy();
-  }); 
+  });
 
   it('...should have an setCode method', () => {
     expect(component.setCode).toBeTruthy();
