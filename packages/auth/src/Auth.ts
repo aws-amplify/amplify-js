@@ -1244,9 +1244,10 @@ export default class AuthClass {
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
                             if (isSignedInHostedUI) {
-                                this._oAuthHandler.signOut();
+                                return this._oAuthHandler.signOut().then(() => res());
+                            } else {
+                                return res();
                             }
-                            return res();
                         },
                         onFailure: (err) => {
                             logger.debug('global sign out failed', err);
@@ -1258,9 +1259,10 @@ export default class AuthClass {
                 logger.debug('user sign out', user);
                 user.signOut();
                 if (isSignedInHostedUI) {
-                    this._oAuthHandler.signOut();
+                    return this._oAuthHandler.signOut().then(() => res());
+                } else {
+                    return res();
                 }
-                return res();
             }
         });
     }
