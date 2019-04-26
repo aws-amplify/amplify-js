@@ -1,5 +1,5 @@
 
-const Paho = jest.genMockFromModule('paho-mqtt');
+import * as Paho from '../src/vendor/paho-mqtt';
 
 Paho.Client = jest.fn().mockImplementation((host, port, path, clientId) => {
     var client = {}

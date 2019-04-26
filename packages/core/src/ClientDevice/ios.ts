@@ -39,6 +39,7 @@ function dimToMake(dim) {
     if (width === 375 && height === 667) { return { make: 'iPhone', model: 'iPhone 6/7/8' }; }
     if (width === 414 && height === 736) { return { make: 'iPhone', model: 'iPhone 6/7/8 plus' }; }
     if (width === 375 && height === 812) { return { make: 'iPhone', model: 'iPhone X' }; }
+    if (width === 414 && height === 896) { return { make: 'iPhone', model: 'iPhone XR' }; }
     if (width === 768 && height === 1024) { return { make: 'iPad', model: 'iPad Mini/Air' }; }
     if (width === 834 && height === 1112) { return { make: 'iPad', model: 'iPad Pro' }; }
     if (width === 1024 && height === 1366) { return { make: 'iPad', model: 'iPad Pro' }; }

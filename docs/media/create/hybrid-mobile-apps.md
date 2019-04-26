@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Hybrid Mobile apps with AWS Amplify
+# Hybrid Mobile apps with AWS Amplify
 
 #### AWS Amplify helps web developers to build cloud-powered hybrid mobile apps quickly.
 
@@ -47,36 +47,34 @@ In this example, AWS Amplify Storage category already knows about the authentica
 
 #### CLI support
 
-AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify add api
 ```
 
-AWS Mobile CLI creates the necessary folder structure and generates JavaScript files for your app's backend logic:
+Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend logic:
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
 After working with your backend code, deploying your app backend is very simple with CLI:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
-#### Manage your Backend with AWS Mobile Hub
+#### Manage your Backend with Amplify CLI
 
-If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify by setting up resource credentials in your app's configuration.
+If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify by setting up resource credentials in your app's configuration. 
 
-Otherwise, AWS Mobile Hub is a great tool for creating AWS resources, related user roles, and security policies.
+Otherwise, AWS Amplify CLI is a great tool for creating AWS resources, related user roles, and security policies.
 
 Mix and match building blocks for app's backend, and start working with cloud operations like Authorization, Storage and Cloud API.
-
-![Services](../images/mobile_hub_services.png?raw=true "Services")
 
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
 ```bash
-awsmobile pull
+amplify push
 ```
 
 #### Use your Favorite Frontend Library
@@ -117,5 +115,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building now!
 
-Start building your hybrid mobile app with AWS Amplify by visiting our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=hybrid-mobile-apps&utm_campaign=build-pages).
+Start building your hybrid mobile app with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?utm_source=hybrid-mobile-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

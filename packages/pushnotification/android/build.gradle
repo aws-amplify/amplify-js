@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.google.gms:google-services:3.1.1'
+        classpath 'com.google.gms:google-services:3.2.0'
     }
 }
 
@@ -22,12 +22,12 @@ allprojects {
 apply plugin: "com.android.library"
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -51,11 +51,4 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:12.0.1'
     compile 'com.google.firebase:firebase-core:12.0.1'
     compile 'com.firebase:firebase-jobdispatcher:0.6.0'
-
-    compile('com.amazonaws:aws-android-sdk-auth-core:2.6.+@aar') {
-        transitive = false;
-    }
-    compile('com.amazonaws:aws-android-sdk-mobile-client:2.6.+@aar') {
-        transitive = false;
-    }
 }

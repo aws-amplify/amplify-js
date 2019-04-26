@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 // import '../Common/Polyfills';
-import { Client } from 'paho-mqtt';
 import * as Observable from 'zen-observable';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';

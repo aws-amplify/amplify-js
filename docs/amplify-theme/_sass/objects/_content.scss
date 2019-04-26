@@ -10,8 +10,10 @@
 }
 
 .language-terminal {
-	font-size:13px;
-	line-height: 15px;
+	.go {
+		font-size:13px;
+		line-height: 13px;
+	}
 }
 
 .next-link, .tab-link.current {
@@ -79,24 +81,24 @@
 	}
 }
 
-.site-search {
+// .site-search {
 
-	#search-input {
-		vertical-align: middle !important;
-		border-radius: 20px;
-		border-width: 1px;
-		border-style:solid;
-		border-color:#d8d8d8;
-		padding:4px;
-		font-size: 16px;
-		padding-left:0px;
-		margin-top:-4px;
-		border: none;
-		outline: none;
-		cursor: pointer;
-		line-height: 30px;
-	}
-}
+// 	#search-input {
+// 		vertical-align: middle !important;
+// 		border-radius: 20px;
+// 		border-width: 1px;
+// 		border-style:solid;
+// 		border-color:#d8d8d8;
+// 		padding:4px;
+// 		font-size: 16px;
+// 		padding-left:0px;
+// 		margin-top:-4px;
+// 		border: none;
+// 		outline: none;
+// 		cursor: pointer;
+// 		line-height: 30px;
+// 	}
+// }
 
  
 .gitter-chat-embed {
@@ -122,7 +124,7 @@
 	color:black;
 	text-align: center;
 	margin-top: -3px;
-	opacity: 0.94;
+	//opacity: 0.94;
 	font-size: 16px;
 	padding-top: 5px;
 

@@ -15,12 +15,16 @@ package com.amazonaws.amplify.pushnotification;
 
 import android.util.Log;
 import android.os.Bundle;
+import android.app.Application;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Callback;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -28,12 +32,16 @@ import com.facebook.react.ReactInstanceManager;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
+import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver;
 
 public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "RNPushNotificationModule";
+    private boolean receiverRegistered;
 
     public RNPushNotificationModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        Log.i(LOG_TAG, "constructing RNPushNotificationModule");
+        this.receiverRegistered = false;
     }
 
     @Override
@@ -45,15 +53,20 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     public void initialize() {
         ReactApplicationContext context = getReactApplicationContext();
         Log.i(LOG_TAG, "initializing RNPushNotificationModule");
+        if (!this.receiverRegistered) {
+            this.receiverRegistered = true;
+            Log.i(LOG_TAG, "registering receiver");
+            Application applicationContext = (Application) context.getApplicationContext();
+            RNPushNotificationBroadcastReceiver receiver = new RNPushNotificationBroadcastReceiver();
+            IntentFilter intentFilter = new IntentFilter("com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED");
+            applicationContext.registerReceiver(receiver, intentFilter);
+        }
+    }
 
-        // get the device token
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-
-        // send the token to device emitter
-        // on register
-        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
-        Bundle bundle = new Bundle();
-        bundle.putString("refreshToken", refreshedToken);
-        jsDelivery.emitTokenReceived(bundle);
+    @ReactMethod
+    public void getToken(Callback callback) {
+        String token =  FirebaseInstanceId.getInstance().getToken();
+        Log.i(LOG_TAG, "getting token" + token);
+        callback.invoke(token);
     }
 }

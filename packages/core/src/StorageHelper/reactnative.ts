@@ -17,7 +17,7 @@ let dataMemory = {};
 
 /** @class */
 class MemoryStorage {
-
+    static syncPromise = null;
     /**
      * This is used to set a specific item in storage
      * @param {string} key - the key for the item
@@ -64,22 +64,25 @@ class MemoryStorage {
     * @returns {void}
     */
     static sync() {
-        return new Promise((res, rej) => {
-            AsyncStorage.getAllKeys((errKeys, keys) => {
-                if (errKeys) rej(errKeys);
-                const memoryKeys = keys.filter((key) => key.startsWith(MEMORY_KEY_PREFIX));
-                AsyncStorage.multiGet(memoryKeys, (err, stores) => {
-                    if (err) rej(err);
-                    stores.map((result, index, store) => {
-                        const key = store[index][0];
-                        const value = store[index][1];
-                        const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
-                        dataMemory[memoryKey] = value;
+        if (!MemoryStorage.syncPromise) {
+            MemoryStorage.syncPromise =  new Promise((res, rej) => {
+                AsyncStorage.getAllKeys((errKeys, keys) => {
+                    if (errKeys) rej(errKeys);
+                    const memoryKeys = keys.filter((key) => key.startsWith(MEMORY_KEY_PREFIX));
+                    AsyncStorage.multiGet(memoryKeys, (err, stores) => {
+                        if (err) rej(err);
+                        stores.map((result, index, store) => {
+                            const key = store[index][0];
+                            const value = store[index][1];
+                            const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
+                            dataMemory[memoryKey] = value;
+                        });
+                        res();
                     });
-                    res();
                 });
             });
-        });
+        }
+        return MemoryStorage.syncPromise;
     }
 }
 

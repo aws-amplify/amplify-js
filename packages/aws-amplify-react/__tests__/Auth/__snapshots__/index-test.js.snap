@@ -4,7 +4,9 @@ exports[`AuthenticatorWrapper test render test render correctly 1`] = `
 <div>
   <Authenticator
     onStateChange={[Function]}
-  />
+  >
+    <Component />
+  </Authenticator>
 </div>
 `;
 
@@ -13,15 +15,17 @@ exports[`hoc tests withAuthenticator test when not signed in 1`] = `
   amplifyConfig="amplifyConfig"
   hideDefault={false}
   onStateChange={[Function]}
+  signUpConfig={Object {}}
+  theme={null}
 />
 `;
 
 exports[`hoc tests withAuthenticator test when signed in 1`] = `
-<div>
-  <MockComp
+<Fragment>
+  <class_1
     authData={null}
     authState="signedIn"
     onStateChange={[Function]}
   />
-</div>
+</Fragment>
 `;

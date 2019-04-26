@@ -17,7 +17,8 @@
         "allowJs": false,
         "declaration": true,
         "typeRoots": [ "./node_modules/@types" ],
-        "types": [ "node" ]
+        // temporary fix
+        "types": ["node", "lodash"]
     },
     "include": [
         "src/**/*"

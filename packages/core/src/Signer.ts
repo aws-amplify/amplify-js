@@ -19,6 +19,7 @@ const logger = new Logger('Signer'),
     crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
+const IOT_SERVICE_NAME = 'iotdevicegateway';
 
 const encrypt = function(key, src, encoding?) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
@@ -27,6 +28,37 @@ const encrypt = function(key, src, encoding?) {
 const hash = function(src) {
     const arg = src || '';
     return crypto.createHash('sha256').update(arg, 'utf8').digest('hex');
+};
+
+/**
+ * @private
+ * RFC 3986 compliant version of encodeURIComponent
+ */
+const escape_RFC3986 = function(component) {
+    return component.replace(/[!'()*]/g, function(c) {
+        return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+    });
+};
+
+/**
+ * @private
+ * Create canonical query string
+ *
+*/
+const canonical_query = function(query) {
+    if (!query || query.length === 0) { return ''; }
+
+    return query.split('&')
+        .map(e => {
+            const key_val = e.split('=');
+
+            if(key_val.length === 1) {
+                return e;
+            } else {
+                const reencoded_val = escape_RFC3986(key_val[1]);
+                return key_val[0] + '=' + reencoded_val;
+            }
+        }).sort((a, b) => a < b ? -1 : 1).join('&');
 };
 
 /**
@@ -73,7 +105,7 @@ const signed_headers = function(headers) {
 /**
 * @private
 * Create canonical request
-* Refer to 
+* Refer to
 * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
 *
 <pre>
@@ -88,14 +120,11 @@ CanonicalRequest =
 */
 const canonical_request = function(request) {
     const url_info = url.parse(request.url);
-    const sorted_query = url_info.query
-        ? url_info.query.split('&').sort((a, b) => a < b ? -1 : 1).join('&')
-        : '';
 
     return [
         request.method || '/',
         encodeURIComponent(url_info.pathname).replace(/%2F/ig, '/'),
-        sorted_query,
+        canonical_query(url_info.query),
         canonical_headers(request.headers),
         signed_headers(request.headers),
         hash(request.data)
@@ -131,7 +160,7 @@ const credential_scope = function(d_str, region, service) {
 /**
 * @private
 * Create a string to sign
-* Refer to 
+* Refer to
 * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
 *
 <pre>
@@ -154,7 +183,7 @@ const string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
 /**
 * @private
 * Create signing key
-* Refer to 
+* Refer to
 * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
 *
 <pre>
@@ -183,7 +212,7 @@ const get_signature = function(signing_key, str_to_sign) {
 /**
 * @private
 * Create authorization header
-* Refer to 
+* Refer to
 * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
 */
 const get_authorization_header = function(algorithm, access_key, scope, signed_headers, signature) {
@@ -299,11 +328,15 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         service
     );
 
+    // IoT service does not allow the session token in the canonical request
+    // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+    const sessionTokenRequired = accessInfo.session_token && service !== IOT_SERVICE_NAME;
     const queryParams = {
         'X-Amz-Algorithm': DEFAULT_ALGORITHM,
         'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
         'X-Amz-Date': now.substr(0, 16),
-        ...(expiration && { 'X-Amz-Expires': `${expiration}` }),
+        ...(sessionTokenRequired ? { 'X-Amz-Security-Token': `${accessInfo.session_token}` } : {}),
+        ...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
         'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
     };
 

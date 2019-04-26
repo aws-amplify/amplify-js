@@ -12,6 +12,7 @@
  */
 
 import StorageClass from './Storage';
+import { StorageProvider } from './types';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -21,16 +22,22 @@ let _instance: StorageClass = null;
 
 if (!_instance) {
     logger.debug('Create Storage Instance');
-    _instance = new StorageClass(null);
-    _instance.vault = new StorageClass({ level: 'private' });
-
+    _instance = new StorageClass();
+    _instance.vault = new StorageClass();
+    
     const old_configure = _instance.configure;
     _instance.configure = (options) => {
-        logger.debug('configure called');
-        old_configure.call(_instance, options);
+        logger.debug('storage configure called');
+        const vaultConfig = old_configure.call(_instance, options);
 
-        const vault_options = Object.assign({}, options, { level: 'private' });
-        _instance.vault.configure(vault_options);
+        // set level private for each provider for the vault
+        Object.keys(vaultConfig).forEach((providerName) => {
+            if (typeof vaultConfig[providerName] !== 'string') {
+                vaultConfig[providerName] = { ...vaultConfig[providerName], level: "private" };
+            }
+        });
+        logger.debug('storage vault configure called');
+        _instance.vault.configure(vaultConfig);
     };
 }
 
@@ -39,3 +46,5 @@ Amplify.register(Storage);
 
 export default Storage;
 export { StorageClass };
+export { StorageProvider };
+export * from './Providers';

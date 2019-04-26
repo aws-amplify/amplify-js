@@ -147,4 +147,90 @@ export default class JS {
 
         return result;
     }
+
+    static browserOrNode() {
+        const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+        const isNode =
+            typeof process !== 'undefined' &&
+            process.versions != null &&
+            process.versions.node != null;
+
+        return {
+            isBrowser,
+            isNode
+        };
+    }
+
+    /**
+     * transfer the first letter of the keys to lowercase
+     * @param {Object} obj - the object need to be transferred
+     * @param {Array} whiteListForItself - whitelist itself from being transferred
+     * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+     */
+    static transferKeyToLowerCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
+       if (!JS.isStrictObject(obj)) return obj;
+        const ret = {};
+
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                const transferedKey = whiteListForItself.includes(key)? 
+                    key : key[0].toLowerCase() + key.slice(1);
+
+                ret[transferedKey] = whiteListForChildren.includes(key)?
+                    obj[key] 
+                    : 
+                    JS.transferKeyToLowerCase(
+                        obj[key], 
+                        whiteListForItself, 
+                        whiteListForChildren
+                    );
+            }
+        }
+        
+        return ret;
+    }
+
+    /**
+     * transfer the first letter of the keys to lowercase
+     * @param {Object} obj - the object need to be transferred
+     * @param {Array} whiteListForItself - whitelist itself from being transferred
+     * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+     */
+    static transferKeyToUpperCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
+        if (!JS.isStrictObject(obj)) return obj;
+        const ret = {};
+
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                const transferedKey = whiteListForItself.includes(key)? 
+                    key : key[0].toUpperCase() + key.slice(1);
+
+                ret[transferedKey] = whiteListForChildren.includes(key)?
+                    obj[key] 
+                    : 
+                    JS.transferKeyToUpperCase(
+                        obj[key], 
+                        whiteListForItself, 
+                        whiteListForChildren
+                    );
+            }
+        }
+        
+        return ret;
+    }
+
+    /**
+     * Return true if the object is a strict object
+     * which means it's not Array, Function, Number, String, Boolean or Null
+     * @param obj the Object
+     */
+    static isStrictObject(obj) { 
+        return ((obj instanceof Object) && 
+            !(obj instanceof Array) &&
+            !(obj instanceof Function) &&
+            !(obj instanceof Number) &&
+            !(obj instanceof String) &&
+            !(obj instanceof Boolean)
+        );
+    }
 }

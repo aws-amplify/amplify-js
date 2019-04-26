@@ -312,7 +312,7 @@ class AsyncStorageCache extends StorageCache implements ICache {
    * @return {Promise} - return a promise resolves to be the value of the item
    */
   async getItem(key, options) {
-    console.log(`Get item: key is ${key} with options ${options}`);
+    logger.debug(`Get item: key is ${key} with options ${options}`);
     let ret = null;
     const prefixedKey = this.config.keyPrefix + key;
 

@@ -49,8 +49,10 @@ jobs:
       - run: yarn run test --scope @aws-amplify/interactions
       - run: yarn run test --scope @aws-amplify/pubsub
       - run: yarn run test --scope @aws-amplify/storage
+      - run: yarn run test --scope @aws-amplify/xr
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run test --scope aws-amplify-angular
+      - run: yarn run test --scope aws-amplify-vue
   integration_test_auth:
     <<: *defaults
     steps:
@@ -68,30 +70,22 @@ jobs:
           command: |
             cd packages/aws-amplify-react
             yarn link
-      - run:
-          name: "Install awsmobile cli"
-          command: |
-            echo 'export PATH=$(yarn global bin):$PATH' >> $BASH_ENV
-            source $BASH_ENV
-            yarn global add awsmobile-cli
       - run: 
           name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
           command: |
             mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            echo $AUTH_CLONE_URL
+            cd ~
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
             yarn
-            awsmobile configure aws $IAM_ACCESS_KEY $IAM_SECRET_KEY $CLI_REGION
-            awsmobile init --yes $AUTH_MOBILE_HUB_PROJECT_ID
             yarn link aws-amplify
             yarn link aws-amplify-react
+            echo $AWS_EXPORTS_AUTH > src/aws-exports.js
       - run:
           name: "Start Auth test server in background"
           command: |
-            cd aws-amplify-cypress-auth
+            cd ~/aws-amplify-cypress-auth
             yarn start
           background: true
       - run:
@@ -99,9 +93,9 @@ jobs:
           command: |
             yarn cypress --scope aws-amplify-react
       - store_artifacts:
-          path: cypress/videos
+          path: /root/app/packages/aws-amplify-react/cypress/videos
       - store_artifacts:
-          path: cypress/screenshots
+          path: /root/app/packages/aws-amplify-react/cypress/screenshots
   deploy:
     <<: *defaults
     steps:
@@ -116,6 +110,7 @@ jobs:
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              npm whoami
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               yarn run publish:$CIRCLE_BRANCH
@@ -145,5 +140,6 @@ workflows:
               only:
                 - release
                 - master
+                - beta
           requires:
             - unit_test

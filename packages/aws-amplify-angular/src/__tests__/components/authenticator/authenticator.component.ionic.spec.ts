@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
+import { AmplifyService, AmplifyModules } from '../../../providers';
+import { authModule } from '../../../__mocks__/mock_module';
+import Amplify from 'aws-amplify';
 import { AuthenticatorIonicComponent } from '../../../components/authenticator/authenticator/authenticator.component.ionic'
 
 
@@ -11,7 +13,7 @@ describe('AuthenticatorIonicComponent: ', () => {
   let service: AmplifyService;
 
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(Amplify);
     component = new AuthenticatorIonicComponent(service);
   });
 

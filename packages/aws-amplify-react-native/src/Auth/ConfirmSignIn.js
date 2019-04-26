@@ -14,36 +14,25 @@
 import React from 'react';
 import { 
     View, 
-    Text, 
-    TextInput, 
-    Button 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
     I18n,
-    Logger
+    Logger,
+    JS
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
-import { 
-    ConfirmationCode, 
+import {
+    AmplifyButton,
+    FormField, 
     LinkCell, 
     Header, 
     ErrorRow 
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Back to Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
+const logger = new Logger('ConfirmSignIn');
 
 export default class ConfirmSignIn extends AuthPiece {
     constructor(props) {
@@ -56,6 +45,7 @@ export default class ConfirmSignIn extends AuthPiece {
         }
 
         this.confirm = this.confirm.bind(this);
+        this.checkContact = this.checkContact.bind(this);
     }
 
     confirm() {
@@ -63,28 +53,38 @@ export default class ConfirmSignIn extends AuthPiece {
         const { code } = this.state;
         logger.debug('Confirm Sign In for ' + user.username);
         Auth.confirmSignIn(user, code)
-            .then(data => this.changeState('signedIn'))
+            .then(data => this.checkContact(user))
             .catch(err => this.error(err));
     }
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
-                <View style={theme.sectionBody}>
-                    <ConfirmationCode
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ code: text })}
-                    />
-                    <Button
-                        title={I18n.get('Confirm')}
-                        onPress={this.confirm}
-                        disabled={!this.state.code}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
+                    <View style={theme.sectionBody}>
+                        <FormField
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ code: text })}
+                            label={I18n.get('Confirmation Code')}
+                            placeholder={I18n.get('Enter your confirmation code')}
+                            required={true}
+                        />
+                        <AmplifyButton
+                            theme={theme}
+                            text={I18n.get('Confirm')}
+                            onPress={this.confirm}
+                            disabled={!this.state.code}
+                        />
+                    </View>
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </LinkCell>
+                    </View>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState}/>
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

@@ -1,3 +1,9 @@
+jest.mock('../src/vendor/dom-utils', () => {
+    return {
+       delegate: jest.fn()
+    }
+});
+
 import { AWS, ClientDevice, Parser, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
 import { default as Analytics } from "../src/Analytics";
@@ -57,12 +63,21 @@ describe("Analytics test", () => {
             const analytics = new Analytics();
             const provider = new AWSAnalyticsProvider();
             analytics.addPluggable(provider);
+            analytics.configure({mock: "value"});
 
             await analytics.startSession();
             expect(record_spyon).toBeCalled();
         });
+        test('analytics not configured', async () => {
+            const analytics = new Analytics();
 
-
+            try {
+                await analytics.startSession();
+            } catch (e) {
+                expect(e.message).toBe('Analytics has not been configured');
+            }
+            expect.assertions(1);
+        });
     });
 
     describe('stopSession test', () => {
@@ -70,9 +85,20 @@ describe("Analytics test", () => {
             const analytics = new Analytics();
             const provider = new AWSAnalyticsProvider();
             analytics.addPluggable(provider);
+            analytics.configure({mock: "value"});
 
             await analytics.stopSession();
             expect(record_spyon).toBeCalled();
+        });
+        test('analytics not configured', async () => {
+            const analytics = new Analytics();
+
+            try {
+                await analytics.stopSession();
+            } catch (e) {
+                expect(e.message).toBe('Analytics has not been configured');
+            }
+            expect.assertions(1);
         });
     });
 
@@ -81,6 +107,7 @@ describe("Analytics test", () => {
             const analytics = new Analytics();
             const provider = new AWSAnalyticsProvider();
             analytics.addPluggable(provider);
+            analytics.configure({mock: "value"});
 
             await analytics.record({
                 name: 'event',
@@ -89,6 +116,16 @@ describe("Analytics test", () => {
             });
             expect(record_spyon).toBeCalled();
         });
+        test('analytics not configured', async () => {
+            const analytics = new Analytics();
+
+            try {
+                await analytics.record({});
+            } catch (e) {
+                expect(e.message).toBe('Analytics has not been configured');
+            }
+            expect.assertions(1);
+        });
     });
 
     describe('updateEndpoint test', () => {
@@ -96,11 +133,22 @@ describe("Analytics test", () => {
             const analytics = new Analytics();
             const provider = new AWSAnalyticsProvider();
             analytics.addPluggable(provider);
+            analytics.configure({mock: "value"});
 
             await analytics.updateEndpoint({
                 UserId: 'id'
             });
             expect(record_spyon).toBeCalled();
+        });
+        test('analytics not configured', async () => {
+            const analytics = new Analytics();
+
+            try {
+                await analytics.updateEndpoint({});
+            } catch (e) {
+                expect(e.message).toBe('Analytics has not been configured');
+            }
+            expect.assertions(1);
         });
     });
 

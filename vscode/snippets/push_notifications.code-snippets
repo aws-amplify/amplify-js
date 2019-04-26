@@ -1,7 +1,7 @@
 {
     "Push Notifications Configuration": {
         "prefix": "PushNotification.configure",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "PushNotification.configure({",
                 "\t// ...",
@@ -14,7 +14,7 @@
     },
     "Push Notifications onNotification": {
         "prefix": "PushNotification.onNotification",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// get the notification data",
             "PushNotification.onNotification((notification) => {",
@@ -27,7 +27,7 @@
     },
     "Push Notifications onRegister": {
         "prefix": "PushNotification.onRegister",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "// get the registration token",
             "PushNotification.onRegister((token) => {",
@@ -37,21 +37,21 @@
     },
     "FetchResult": {
         "prefix": "FetchResult",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "FetchResult"
         ]
     },
     "onRegister": {
         "prefix": "onRegister",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "onRegister"
         ]
     },
     "onNotification": {
         "prefix": "onNotification",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "onNotification"
         ]

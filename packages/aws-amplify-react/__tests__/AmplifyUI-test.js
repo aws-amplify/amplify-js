@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as UI from '../src/AmplifyUI';
 
 describe('AmplifyUi test', () => {

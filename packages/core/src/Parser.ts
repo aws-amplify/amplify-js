@@ -18,7 +18,7 @@ export default class Parser {
         }
 
         // Auth
-        if (config['aws_cognito_identity_pool_id']) {
+        if (config['aws_cognito_identity_pool_id'] || config['aws_user_pools_id']) {
             const Auth = {
                 userPoolId: config['aws_user_pools_id'],
                 userPoolWebClientId: config['aws_user_pools_web_client_id'],
@@ -29,8 +29,21 @@ export default class Parser {
             amplifyConfig.Auth = Auth;
         }
 
+        // Storage
+        let storageConfig;
+        if (config['aws_user_files_s3_bucket']) {
+            storageConfig = {
+                AWSS3: {
+                    bucket: config['aws_user_files_s3_bucket'],
+                    region: config['aws_user_files_s3_bucket_region']
+                }
+            };
+        } else {
+            storageConfig = config ? config.Storage || config : {};
+        } 
         amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
+        amplifyConfig.Storage = Object.assign({}, storageConfig);
         logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
         return amplifyConfig;
     }

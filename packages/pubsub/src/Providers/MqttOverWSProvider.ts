@@ -10,11 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Client, Message } from 'paho-mqtt';
+import * as Paho from '../vendor/paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
-
-(<any>global).Paho = (<any>global).Paho || { MQTT: { Client, Message } };
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { ProvidertOptions } from '../types';
@@ -22,7 +20,21 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
-export interface MqttProvidertOptions {
+export function mqttTopicMatch(filter: string, topic: string) {
+    const filterArray = filter.split('/');
+    const length = filterArray.length;
+    const topicArray = topic.split('/');
+
+    for (let i = 0; i < length; ++i) {
+        const left = filterArray[i];
+        const right = topicArray[i];
+        if (left === '#') return topicArray.length >= length;
+        if (left !== '+' && left !== right) return false;
+    }
+    return length === topicArray.length;
+}
+
+export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
 }
@@ -30,7 +42,7 @@ export interface MqttProvidertOptions {
 class ClientsQueue {
     private promises: Map<string, Promise<any>> = new Map();
 
-    async get(clientId: string, clientFactory: (string) => Promise<Client>) {
+    async get(clientId: string, clientFactory: (string) => Promise<any>) {
         let promise = this.promises.get(clientId);
         if (promise) {
             return promise;
@@ -43,14 +55,18 @@ class ClientsQueue {
         return promise;
     }
 
+    get allClients() { return Array.from(this.promises.keys()); }
+
     remove(clientId) {
         this.promises.delete(clientId);
     }
 }
 
+const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
+
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 
-    private clientsQueue = new ClientsQueue();
+    private _clientsQueue = new ClientsQueue();
 
     constructor(options: MqttProvidertOptions = {}) {
         super({ ...options, clientId: options.clientId || uuid(), });
@@ -60,17 +76,29 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected get endpoint() { return this.options.aws_pubsub_endpoint; }
 
+    protected get clientsQueue() { return this._clientsQueue; }
+
+    protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
+
     getProviderName() { return 'MqttOverWSProvider'; }
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Client> {
+    public onDisconnect({ clientId, errorCode, ...args }) {
+        if (errorCode !== 0) {
+            logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+        }
+    }
+
+    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
         logger.debug('Creating new MQTT client', clientId);
 
-        const client = new Client(url, clientId);
-        // client.trace = (...args) => logger.debug(clientId, ...args);
+        const client = new Paho.Client(url, clientId);
+        // client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
         client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
             this._onMessage(topic, msg);
         };
-        client.onConnectionLost = logger.info.bind(logger);
+        client.onConnectionLost = ({ errorCode, ...args }) => {
+            this.onDisconnect({ clientId, errorCode, ...args });
+        };
 
         await new Promise((resolve, reject) => {
             client.connect({
@@ -84,21 +112,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         return client;
     }
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<Client> {
+    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<any> {
         return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
     }
 
     protected async disconnect(clientId: string): Promise<void> {
         const client = await this.clientsQueue.get(clientId, () => null);
 
-        if (client) {
+        if (client && client.isConnected()) {
             client.disconnect();
-            this.clientsQueue.remove(clientId);
         }
+        this.clientsQueue.remove(clientId);
     }
 
     async publish(topics: string[] | string, msg: any) {
-        const targetTopics = ([] as [string]).concat(topics);
+        const targetTopics = ([] as string[]).concat(topics);
         const message = JSON.stringify(msg);
 
         const url = await this.endpoint;
@@ -109,21 +137,32 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         targetTopics.forEach(topic => client.send(topic, message));
     }
 
-    private _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
+    protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
-            const observersForTopic = this._topicObservers.get(topic) || new Set();
+            const matchedTopicObservers = [];
+            this._topicObservers.forEach((observerForTopic, observerTopic) => {
+                if (mqttTopicMatch(observerTopic, topic)) {
+                    matchedTopicObservers.push(observerForTopic);
+                }
+            });
             const parsedMessage = JSON.parse(msg);
 
-            observersForTopic.forEach(observer => observer.next(parsedMessage));
+            if (typeof parsedMessage === 'object') {
+                parsedMessage[topicSymbol] = topic;
+            }
+
+            matchedTopicObservers.forEach(observersForTopic =>{
+                observersForTopic.forEach(observer => observer.next(parsedMessage));
+            });
         } catch (error) {
             logger.warn('Error handling message', error, msg);
         }
     }
 
     subscribe(topics: string[] | string, options: MqttProvidertOptions = {}): Observable<any> {
-        const targetTopics = ([] as [string]).concat(topics);
+        const targetTopics = ([] as string[]).concat(topics);
         logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
         return new Observable(observer => {
@@ -140,8 +179,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                 observersForTopic.add(observer);
             });
 
-            let client: Client;
-            const { clientId = this.clientId} = options;
+            let client: Paho.Client;
+            const { clientId = this.clientId } = options;
 
             (async () => {
                 const {
@@ -157,7 +196,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
                 if (client) {
                     targetTopics.forEach(topic => {
-                        client.unsubscribe(topic);
+                        if (client.isConnected()) {
+                            client.unsubscribe(topic);
+                        }
 
                         const observersForTopic = this._topicObservers.get(topic) ||
                             (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
