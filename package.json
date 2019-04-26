@@ -15,8 +15,8 @@
     "format": "lerna run -- format",
     "lint": "lerna run -- lint",
     "link": "lerna exec yarn link",
-    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
-    "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
+    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]' --exact",
+    "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --exact",
     "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
   "pre-commit": [
@@ -41,7 +41,7 @@
     "@types/node": "^8.9.5",
     "codecov": "^1.0.1",
     "compression-webpack-plugin": "^1.1.3",
-    "cypress": "^3.0.1",
+    "cypress": "^3.2.0",
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "lerna": "2.11.0",

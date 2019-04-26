@@ -15,26 +15,26 @@
   <div v-bind:class="amplifyUI.formSection">
     <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
-      <div v-bind:class="amplifyUI.formField" 
-          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')" 
-          :signUpField="signUpField" 
+      <div v-bind:class="amplifyUI.formField"
+          v-for="signUpField in this.orderedSignUpFields"
+          :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
         <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
-        <input 
-            v-if="signUpField.key !== 'phone_number'" 
-            :type = "signUpField.type" 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
-            v-model="signUpField.value" 
+        <input
+            v-if="signUpField.key !== 'phone_number'"
+            :type = "signUpField.type"
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
+            v-model="signUpField.value"
             :placeholder="signUpField.label"
-            v-on:change="clear(signUpField)" 
+            v-on:change="clear(signUpField)"
           />
         <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
           <select v-model="country">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
-          <input 
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
+          <input
+            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
             v-model="signUpField.value"
             type="number"
             :placeholder="signUpField.label"
@@ -61,6 +61,7 @@
 <script>
 import Vue from 'vue';
 import Vue2Filters from 'vue2-filters'
+import orderBy from 'lodash.orderby';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
@@ -89,7 +90,7 @@ export default {
             label: this.$Amplify.I18n.get('Username'),
             key: 'username',
             required: true,
-            type: 'string',
+            type: 'text',
             displayOrder: 1,
           },
           {
@@ -103,7 +104,7 @@ export default {
             label: this.$Amplify.I18n.get('Email'),
             key: 'email',
             required: true,
-            type: 'string',
+            type: 'text',
             displayOrder: 3
           },
           {
@@ -128,8 +129,8 @@ export default {
 
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        // if hideDefaults is not present on props...
-        if (!this.signUpConfig.hideDefaults) {
+        // if hideAllDefaults and hideDefaults are not present on props...
+        if (!this.signUpConfig.hideAllDefaults && !this.signUpConfig.hideDefaults) {
           // ...add default fields to signUpField array unless user has passed in custom field with matching key
           defaults.signUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
@@ -174,14 +175,17 @@ export default {
       }
       
       return Object.assign(defaults, this.signUpConfig || {})
+    },
+    orderedSignUpFields: function () {
+      return orderBy(this.options.signUpFields, 'displayOrder', 'name')
     }
   },
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
   watch: {
-    /* 
-    this operation is in place to avoid making country.value the select box 
+    /*
+    this operation is in place to avoid making country.value the select box
     bound key, which results in a duplicate key error in console
     */
     country: function() {
@@ -219,7 +223,7 @@ export default {
               if (data.userConfirmed === false){
                 return AmplifyEventBus.$emit('authState', 'confirmSignUp');
               }
-              return AmplifyEventBus.$emit('authState', 'signedOut')
+              return AmplifyEventBus.$emit('authState', 'signIn')
             })
             .catch(e => this.setError(e));
 
@@ -239,7 +243,7 @@ export default {
       return invalids.length < 1;
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
     clear(field) {
       if (field && field.invalid && field.value) {
@@ -248,7 +252,7 @@ export default {
     },
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error) 
+      this.logger.error(this.error)
     },
 
     // determines whether or not key needs to be prepended with 'custom:' for Cognito User Pool custom attributes.

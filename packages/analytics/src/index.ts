@@ -41,7 +41,7 @@ export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
 
-Analytics.onHubCapsule = (capsule) => {
+const listener = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
@@ -61,7 +61,7 @@ Analytics.onHubCapsule = (capsule) => {
 };
 
 const storageEvent = (payload) => {
-    const { attrs, metrics } = payload;
+    const { data: { attrs, metrics }} = payload;
     if (!attrs) return;
 
     Analytics.record({
@@ -96,16 +96,7 @@ const authEvent = (payload) => {
         case 'configured':
             authConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: (Analytics.configure())['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
     }
@@ -119,21 +110,25 @@ const analyticsEvent = (payload) => {
          case 'pinpointProvider_configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: config['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
      }
 };
 
-Hub.listen('auth', Analytics);
-Hub.listen('storage', Analytics);
-Hub.listen('analytics', Analytics);
+const sendEvents = () => {
+    const config = Analytics.configure();
+    if (!endpointUpdated && config['autoSessionRecord']) {
+        Analytics.updateEndpoint({ immediate: true }).catch(e => {
+            logger.debug('Failed to update the endpoint', e);
+        });
+        endpointUpdated = true;
+    }
+    Analytics.autoTrack('session', {
+        enable: config['autoSessionRecord']
+    });
+};
+
+Hub.listen('auth', listener);
+Hub.listen('storage', listener);
+Hub.listen('analytics', listener);
