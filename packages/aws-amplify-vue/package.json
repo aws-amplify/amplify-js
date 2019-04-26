@@ -13,6 +13,7 @@
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i"
   },
   "dependencies": {
+    "lodash.orderby": "^4.6.0",
     "qrcode.vue": "^1.6.0",
     "vue": "^2.5.17",
     "vue2-filters": "^0.3.0"
