@@ -1,0 +1,3 @@
+export const photoPickerButton: string;
+export const photoPlaceholder: string;
+export const photoPlaceholderIcon: string;

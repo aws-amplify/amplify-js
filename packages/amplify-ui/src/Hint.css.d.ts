@@ -1,0 +1,1 @@
+export const hint: string;
