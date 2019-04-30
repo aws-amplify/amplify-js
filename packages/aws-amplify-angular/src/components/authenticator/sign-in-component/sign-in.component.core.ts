@@ -182,11 +182,13 @@ export class SignInComponentCore implements OnInit {
 
   onForgotPassword() {
     const user = this.getUserObj();
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'forgotPassword', user });
   }
 
   onSignUp() {
     const user = this.getUserObj();
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signUp', user });
   }
 

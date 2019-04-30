@@ -267,6 +267,7 @@ export class SignUpComponentCore implements OnInit {
       .then((user) => {
         const username = this.user.username;
         this.user = {};
+        this.onAlertClose();
         this.amplifyService
         .setAuthState({ state: 'confirmSignUp', user: { 'username': username} });
       })
@@ -274,6 +275,7 @@ export class SignUpComponentCore implements OnInit {
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
@@ -288,6 +290,7 @@ export class SignUpComponentCore implements OnInit {
   }
 
   onConfirmSignUp() {
+    this.onAlertClose();
     this.amplifyService
       .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } });
   }

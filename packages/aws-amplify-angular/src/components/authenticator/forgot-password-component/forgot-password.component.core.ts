@@ -130,7 +130,9 @@ export class ForgotPasswordComponentCore implements OnInit {
     this._show = data.authState.state === 'forgotPassword';
     this._usernameAttributes = data.usernameAttributes;
 
-    this.username = (data.authState.user && data.authState.user.username) ? data.authState.user.username : '';
+    this.username = (data.authState.user &&
+       data.authState.user.username) ?
+       data.authState.user.username : '';
   }
 
   @Input()
@@ -198,12 +200,14 @@ export class ForgotPasswordComponentCore implements OnInit {
       )
       .then(() => {
         const user = { username: this.username };
+        this.onAlertClose();
         this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

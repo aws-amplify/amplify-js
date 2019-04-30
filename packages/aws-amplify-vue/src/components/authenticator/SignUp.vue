@@ -16,7 +16,7 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField"
-          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')"
+          v-for="signUpField in this.orderedSignUpFields"
           :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
@@ -60,6 +60,7 @@
 <script>
 import Vue from 'vue';
 import Vue2Filters from 'vue2-filters'
+import orderBy from 'lodash.orderby';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
@@ -110,8 +111,8 @@ export default {
 
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        // if hideDefaults is not present on props...
-        if (!this.signUpConfig.hideDefaults || !this.signUpConfig.hideAllDefaults) {
+        // if hideAllDefaults and hideDefaults are not present on props...
+        if (!this.signUpConfig.hideAllDefaults && !this.signUpConfig.hideDefaults) {
           // ...add default fields to signUpField array unless user has passed in custom field with matching key
           this.defaultSignUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
@@ -155,7 +156,10 @@ export default {
         });
       }
       
-      return Object.assign({header, signUpFields: this.defaultSignUpFields}, this.signUpConfig || {})
+      return Object.assign({header, signUpFields: this.defaultSignUpFields}, this.signUpConfig || {});
+    },
+    orderedSignUpFields: function () {
+      return orderBy(this.options.signUpFields, 'displayOrder', 'name')
     }
   },
   mounted() {
