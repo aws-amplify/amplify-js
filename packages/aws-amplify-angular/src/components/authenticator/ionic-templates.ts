@@ -5,6 +5,7 @@ export const emailFieldTemplate = `
         class="amplify-form-input"
         (keyup)="setEmail($event.target.value)"
         [value]="email"
+        data-test="email-input"
     ></ion-input>`;
 
 export const phoneNumberFieldTemplate = `
@@ -20,7 +21,8 @@ export const phoneNumberFieldTemplate = `
             name="countryCode"
             class="amplify-select-phone-country"
             [value]="country_code"
-            (ionChange)="onCodeChange($event.target.value)">
+            (ionChange)="onCodeChange($event.target.value)"
+            data-test="dial-code-select">
             <ion-select-option *ngFor="let country of countries"
             value={{country.value}}>
                 {{country.label}}
@@ -37,6 +39,7 @@ export const phoneNumberFieldTemplate = `
             [placeholder]="this.amplifyService.i18n().get('Enter your phone number')"
             (ionChange)="onNumberChange($event.target.value)"
             name="local_phone_number"
+            data-test="phone-number-input"
             ></ion-input>
         </ion-col>
         </ion-row>
@@ -49,4 +52,5 @@ export const usernameFieldTemplate = `
         class="amplify-form-input"
         (keyup)="setUsername($event.target.value)"
         [value]="username"
+        data-test="username-input"
     ></ion-input>`;

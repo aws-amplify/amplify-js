@@ -67,6 +67,7 @@ export default class AuthPiece extends React.Component {
                         key="email"
                         name="email"
                         onChange={this.handleInputChange}
+                        data-test="email-input"
                     />
                 </FormField>
             );
@@ -76,7 +77,8 @@ export default class AuthPiece extends React.Component {
                     <InputLabel theme={theme}>{I18n.get('Phone number')} *</InputLabel>
                     <SelectInput theme={theme}>
                         <select name="dial_code" defaultValue={"+1"} 
-                        onChange={this.handleInputChange}>
+                        onChange={this.handleInputChange}
+                        data-test="dial-code-select">
                             {countryDialCodes.map(dialCode =>
                                 <option key={dialCode} value={dialCode}>
                                     {dialCode}
@@ -91,6 +93,7 @@ export default class AuthPiece extends React.Component {
                             key="phone_line_number"
                             name="phone_line_number"
                             onChange={this.handleInputChange}
+                            data-test="phone-number-input"
                         />
                     </SelectInput>
                 </FormField>
@@ -106,6 +109,7 @@ export default class AuthPiece extends React.Component {
                         key="username"
                         name="username"
                         onChange={this.handleInputChange}
+                        data-test="username-input"
                     />
                 </FormField>
             );

@@ -20,6 +20,7 @@
                 v-model="username" 
                 :placeholder="$Amplify.I18n.get('Enter your username')" 
                 autofocus v-on:keyup="$emit('username-field-changed', {usernameField: 'username', username})" 
+                data-test="username-input"
             />
         </div>
         <div v-if="shouldRenderEmailField">
@@ -29,6 +30,7 @@
                 v-model="email" 
                 :placeholder="$Amplify.I18n.get('Enter your email')" 
                 autofocus v-on:keyup="$emit('username-field-changed', {usernameField: 'email', email})" 
+                data-test="email-input"
             />
         </div>
         <div v-if="shouldRenderPhoneNumberField">
@@ -41,7 +43,8 @@
                             countryCode: countries.find(c => c.label === country).value,
                             local_phone_number
                         }
-                    )">
+                    )"
+                    data-test="dial-code-select">
                     <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
                 </select>
                 <input
@@ -56,6 +59,7 @@
                             local_phone_number
                         }
                     )" 
+                    data-test="phone-number-input"
                 />
             </div>
         </div>
