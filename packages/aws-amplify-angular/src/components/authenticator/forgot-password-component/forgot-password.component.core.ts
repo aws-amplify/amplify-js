@@ -19,9 +19,9 @@ import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-    <div class="amplify-form-header">
+  <div class="amplify-form-container" data-test="forgot-password-section">
+    <div class="amplify-form-body" data-test="forgot-password-body-section">
+    <div class="amplify-form-header" data-test="forgot-password-header-section">
       {{ this.amplifyService.i18n().get('Reset your password') }}
     </div>
     <div class="amplify-form-text" *ngIf="!code_sent">
@@ -40,6 +40,7 @@ const template = `
         type="text"
         placeholder="{{ this.amplifyService.i18n().get('Username') }}"
         [value]="username"
+        data-test="forgot-password-username-input"
       />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
@@ -51,6 +52,7 @@ const template = `
         class="amplify-form-input"
         type="text"
         placeholder="{{ this.amplifyService.i18n().get('Enter code') }}"
+        data-test="forgot-password-code-input"
       />
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
@@ -63,23 +65,40 @@ const template = `
         class="amplify-form-input"
         type="password"
         placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+        data-test="forgot-password-new-password-input"
       />
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             *ngIf="!code_sent"
-            (click)="onSend()">{{ this.amplifyService.i18n().get('Submit') }}</button>
+            (click)="onSend()"
+            data-test="forgot-password-send-code-button"
+            >
+              {{ this.amplifyService.i18n().get('Submit') }}</button>
           <button class="amplify-form-button"
             *ngIf="code_sent"
-            (click)="onSubmit()">{{ this.amplifyService.i18n().get('Verify') }}</button>
+            (click)="onSubmit()"
+            data-test="forgot-password-submit-button"
+            >
+              {{ this.amplifyService.i18n().get('Verify') }}</button>
         </div>
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">
+            <a
+              *ngIf="code_sent"
+              class="amplify-form-link"
+              (click)="onSend()"
+              data-test="forgot-password-resend-code-link"
+              >
               {{ this.amplifyService.i18n().get('Resend Code') }}
             </a>
-            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">
+            <a
+              *ngIf="!code_sent"
+              class="amplify-form-link"
+              (click)="onSignIn()"
+              data-test="forgot-password-back-to-sign-in-link"
+              >
               {{ this.amplifyService.i18n().get('Back to Sign in') }}
             </a>
           </div>

@@ -71,11 +71,11 @@ export default class ConfirmSignUp extends AuthPiece {
         if (hide && hide.includes(ConfirmSignUp)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>
+            <FormSection theme={theme} data-test="confirm-sign-up-section">
+                <SectionHeader theme={theme} data-test="confirm-sign-up-header-section">
                     {I18n.get('Confirm Sign Up')}
                 </SectionHeader>
-                <SectionBody theme={theme}>
+                <SectionBody theme={theme} data-test="confirm-sign-up-body-section">
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
                         <Input
@@ -86,6 +86,7 @@ export default class ConfirmSignUp extends AuthPiece {
                             onChange={this.handleInputChange}
                             disabled={username}
                             value={username ? username : ""}
+                            data-test="confirm-sign-up-username-input"
                         />
                     </FormField>
 
@@ -99,10 +100,11 @@ export default class ConfirmSignUp extends AuthPiece {
                             name="code"
                             autoComplete="off"
                             onChange={this.handleInputChange}
+                            data-test="confirm-sign-up-confirmation-code-input"
                         />
                         <Hint theme={theme}>
                             {I18n.get('Lost your code? ')}
-                            <Link theme={theme} onClick={this.resend}>
+                            <Link theme={theme} onClick={this.resend} data-test="confirm-sign-up-resend-code-link">
                                 {I18n.get('Resend Code')}
                             </Link>
                         </Hint>
@@ -110,12 +112,12 @@ export default class ConfirmSignUp extends AuthPiece {
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button theme={theme} onClick={this.confirm}>
+                        <Button theme={theme} onClick={this.confirm} data-test="confirm-sign-up-confirm-button">
                             {I18n.get('Confirm')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="confirm-sign-up-back-to-sign-in-link">
                             {I18n.get('Back to Sign In')}
                         </Link>
                     </SectionFooterSecondaryContent>

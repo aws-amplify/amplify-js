@@ -12,10 +12,10 @@
  */
 
 <template>
-  <div> 
+  <div data-test="sign-out-section"> 
    <div v-bind:class="amplifyUI.formField">
       <div v-bind:class="amplifyUI.inputLabel">{{options.msg}}</div>
-      <button v-bind:class="amplifyUI.button" v-on:click="signOut">{{options.signOutButton}}</button>
+      <button v-bind:class="amplifyUI.button" v-on:click="signOut" data-test="sign-out-button">{{options.signOutButton}}</button>
     </div>      
     <div class="error" v-if="error">
       {{ error }}

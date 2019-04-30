@@ -154,13 +154,14 @@ export default class FederatedSignIn extends Component {
         logger.debug('federated Config is', federated);
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <FormSection theme={theme}>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test="federated-sign-in-section">
+                <SectionBody theme={theme} data-test="federated-sign-in-body-section">
                     <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
+                        data-test="federated-sign-in-buttons"
                     />
                 </SectionBody>
             </FormSection>

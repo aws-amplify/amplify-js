@@ -135,22 +135,22 @@ export default class VerifyContact extends AuthPiece {
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>
+            <FormSection theme={theme} data-test="verify-contact-section">
+                <SectionHeader theme={theme} data-test="verify-contact-header-section">
                     {I18n.get('Account recovery requires verified contact information')}
                 </SectionHeader>
-                <SectionBody theme={theme}>
+                <SectionBody theme={theme} data-test="verify-contact-body-section">
                     { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
                         { this.state.verifyAttr ?
-                            <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
-                            <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
+                            <Button theme={theme} onClick={this.submit} data-test="verify-contact-submit-button">{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.verify} data-test="verify-contact-verify-button">{I18n.get('Verify')}</Button>
                         }
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
+                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)} data-test="verify-contact-skip-link">
                             {I18n.get('Skip')}
                         </Link>
                     </SectionFooterSecondaryContent>

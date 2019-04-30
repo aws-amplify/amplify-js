@@ -21,9 +21,12 @@ import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-      <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
+  <div class="amplify-form-container" data-test="sign-up-section">
+    <div class="amplify-form-body" data-test="sign-up-body-section">
+      <div
+        class="amplify-form-header"
+        data-test="sign-up-header-section"
+        >{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
@@ -35,7 +38,10 @@ const template = `
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
             [placeholder]="this.amplifyService.i18n().get(field.label)"
-            [(ngModel)]="user[field.key]" name="field.key" />
+            [(ngModel)]="user[field.key]"
+            name="field.key"
+            data-test="sign-up-non-phone-number-input"
+            />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
               {{passwordPolicy}}
             </div>
@@ -65,6 +71,7 @@ const template = `
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
                 type={{field.type}}
+                data-test="sign-up-phone-number-input"
               />
             </div>
           </div>
@@ -74,7 +81,7 @@ const template = `
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
-            <a class="amplify-form-link" (click)="onSignIn()">
+            <a class="amplify-form-link" (click)="onSignIn()" data-test="sign-up-sign-in-link">
               {{ this.amplifyService.i18n().get('Sign in') }}
             </a>
           </div>
@@ -82,7 +89,8 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          >{{ this.amplifyService.i18n().get('Sign Up') }}</button>
+          data-test="sign-up-create-account-button"
+          >{{ this.amplifyService.i18n().get('Create Account') }}</button>
         </div>
       </div>
     </div>

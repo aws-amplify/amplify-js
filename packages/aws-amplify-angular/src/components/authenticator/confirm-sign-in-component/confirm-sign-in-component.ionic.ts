@@ -4,10 +4,13 @@ import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">
-      {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
+<div class="amplify-form-container" *ngIf="_show" data-test="confirm-sign-in-section">
+  <div class="amplify-form-body" data-test="confirm-sign-in-body-section">
+    <div
+      class="amplify-form-header amplify-form-header-ionic"
+      data-test="confirm-sign-in-header-section"
+      >
+        {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
     </div>
     <ion-list>
       <ion-item lines="none">
@@ -20,6 +23,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
+          data-test="confirm-sign-in-code-input"
         ></ion-input>
       </ion-item>
     </ion-list>
@@ -28,6 +32,7 @@ const template = `
       <div>
         <ion-button expand="block" color="primary"
           (click)="onConfirm()"
+          data-test="confirm-sign-in-confirm-button"
         >{{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
     </div>

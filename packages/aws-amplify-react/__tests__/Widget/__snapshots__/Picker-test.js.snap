@@ -19,6 +19,7 @@ exports[`Picker test render test render correcly 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},

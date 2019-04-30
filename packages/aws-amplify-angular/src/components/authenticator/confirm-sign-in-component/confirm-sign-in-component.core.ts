@@ -19,9 +19,12 @@ import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
+  <div class="amplify-form-container" data-test="confirm-sign-in-section">
+    <div class="amplify-form-body" data-test="confirm-sign-in-body-section">
+    <div
+      class="amplify-form-header"
+      data-test="confirm-sign-in-header-section"
+      >{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}
@@ -33,19 +36,28 @@ const template = `
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
+          data-test="confirm-sign-in-code-input"
         />
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">
-              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            <a 
+              class="amplify-form-link"
+              (click)="onSignIn()"
+              data-test="confirm-sign-in-back-to-sign-in-link"
+              >
+                {{ this.amplifyService.i18n().get('Back to Sign in') }}
             </a>
           </div>
         </div>
         <div class="amplify-form-cell-right">
-          <button class="amplify-form-button"
-            (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
+          <button
+            class="amplify-form-button"
+            data-test="confirm-sign-in-confirm-button"
+            (click)="onConfirm()"
+            >
+              {{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
       </div>

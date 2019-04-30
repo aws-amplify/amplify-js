@@ -58,7 +58,7 @@ export default class TOTPSetup extends AuthPiece {
         if (hide && hide.includes(TOTPSetup)) { return null; }
 
         return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
+            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} data-test="totp-setup-component" />
         );
     }
 }

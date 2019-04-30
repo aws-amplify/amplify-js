@@ -12,9 +12,9 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" data-test="sign-up-section">
+    <div v-bind:class="amplifyUI.sectionHeader" data-test="sign-up-header-section">{{this.options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" data-test="sign-up-body-section">
       <div v-bind:class="amplifyUI.formField"
           v-for="signUpField in this.orderedSignUpFields"
           :signUpField="signUpField.key"
@@ -28,9 +28,10 @@
             v-model="signUpField.value"
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)"
+            data-test="sign-up-non-phone-number-input"
           />
         <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
-          <select v-model="country">
+          <select v-model="country" data-test="sign-up-dial-code-select">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
           <input
@@ -39,17 +40,18 @@
             type="number"
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)"
+            data-test="sign-up-phone-number-input"
           />
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
+    <div v-bind:class="amplifyUI.sectionFooter" data-test="sign-up-footer-section">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp" data-test="sign-up-create-account-button">{{$Amplify.I18n.get('Create Account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" data-test="sign-up-sign-in-link">{{$Amplify.I18n.get('Sign in')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -84,7 +86,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: this.$Amplify.I18n.get('Sign Up Account'),
+        header: this.$Amplify.I18n.get('Create a new account'),
         signUpFields: [
           {
             label: this.$Amplify.I18n.get('Username'),

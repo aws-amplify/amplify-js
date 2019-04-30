@@ -20,14 +20,17 @@ exports[`VerifyContent test render test render null with denied states 8`] = `""
 
 exports[`VerifyContent test render test render submitView if verifyAttr is set 1`] = `
 <Component
+  data-test="verify-contact-section"
   theme="theme"
 >
   <Component
+    data-test="verify-contact-header-section"
     theme="theme"
   >
     Account recovery requires verified contact information
   </Component>
   <Component
+    data-test="verify-contact-body-section"
     theme="theme"
   >
     <div>
@@ -48,6 +51,7 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
       theme="theme"
     >
       <Component
+        data-test="verify-contact-submit-button"
         onClick={[Function]}
         theme="theme"
       >
@@ -58,6 +62,7 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
       theme="theme"
     >
       <Component
+        data-test="verify-contact-skip-link"
         onClick={[Function]}
         theme="theme"
       >
@@ -70,14 +75,17 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
 
 exports[`VerifyContent test render test render verifyView with empty authData 1`] = `
 <Component
+  data-test="verify-contact-section"
   theme="theme"
 >
   <Component
+    data-test="verify-contact-header-section"
     theme="theme"
   >
     Account recovery requires verified contact information
   </Component>
   <Component
+    data-test="verify-contact-body-section"
     theme="theme"
   />
   <Component
@@ -87,6 +95,7 @@ exports[`VerifyContent test render test render verifyView with empty authData 1`
       theme="theme"
     >
       <Component
+        data-test="verify-contact-verify-button"
         onClick={[Function]}
         theme="theme"
       >
@@ -97,6 +106,7 @@ exports[`VerifyContent test render test render verifyView with empty authData 1`
       theme="theme"
     >
       <Component
+        data-test="verify-contact-skip-link"
         onClick={[Function]}
         theme="theme"
       >
@@ -109,14 +119,17 @@ exports[`VerifyContent test render test render verifyView with empty authData 1`
 
 exports[`VerifyContent test render test render verifyView without phone_number and email 1`] = `
 <Component
+  data-test="verify-contact-section"
   theme="theme"
 >
   <Component
+    data-test="verify-contact-header-section"
     theme="theme"
   >
     Account recovery requires verified contact information
   </Component>
   <Component
+    data-test="verify-contact-body-section"
     theme="theme"
   >
     <div />
@@ -128,6 +141,7 @@ exports[`VerifyContent test render test render verifyView without phone_number a
       theme="theme"
     >
       <Component
+        data-test="verify-contact-verify-button"
         onClick={[Function]}
         theme="theme"
       >
@@ -138,6 +152,7 @@ exports[`VerifyContent test render test render verifyView without phone_number a
       theme="theme"
     >
       <Component
+        data-test="verify-contact-skip-link"
         onClick={[Function]}
         theme="theme"
       >
@@ -150,14 +165,17 @@ exports[`VerifyContent test render test render verifyView without phone_number a
 
 exports[`VerifyContent test render test render with accepted states 1`] = `
 <Component
+  data-test="verify-contact-section"
   theme="theme"
 >
   <Component
+    data-test="verify-contact-header-section"
     theme="theme"
   >
     Account recovery requires verified contact information
   </Component>
   <Component
+    data-test="verify-contact-body-section"
     theme="theme"
   >
     <div>
@@ -186,6 +204,7 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
       theme="theme"
     >
       <Component
+        data-test="verify-contact-verify-button"
         onClick={[Function]}
         theme="theme"
       >
@@ -196,6 +215,7 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
       theme="theme"
     >
       <Component
+        data-test="verify-contact-skip-link"
         onClick={[Function]}
         theme="theme"
       >

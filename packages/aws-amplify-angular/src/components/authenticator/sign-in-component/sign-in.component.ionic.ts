@@ -19,9 +19,13 @@ import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
-<div class="amplify-authenticator" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">
+<div
+  class="amplify-authenticator"
+  *ngIf="_show"
+  data-test="sign-in-section"
+  >
+  <div class="amplify-form-body" data-test="sign-in-body-section">
+    <div class="amplify-form-header" data-test="sign-in-header-section">
       {{ this.amplifyService.i18n().get('Sign in to your account') }}
     </div>
     <ion-list lines="none">
@@ -33,6 +37,7 @@ const template = `
           #username
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
+          data-test="sign-in-username-input"
         ></ion-input>
       </ion-item>
 
@@ -46,6 +51,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
+          data-test="sign-in-password-input"
         ></ion-input>
       </ion-item>
     </ion-list>
@@ -54,18 +60,27 @@ const template = `
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"
+          data-test="sign-in-sign-in-button"
           >{{ this.amplifyService.i18n().get('Sign In') }}</ion-button>
       </div>
 
       <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('No account?') }}
-          <a class="amplify-form-link" (click)="onSignUp()">
+          <a
+            class="amplify-form-link"
+            (click)="onSignUp()"
+            data-test="sign-in-create-account-link"
+            >
             {{ this.amplifyService.i18n().get('Create account') }}
           </a>
         </div>
         <div class="amplify-form-signup">
-          <a class="amplify-form-link" (click)="onForgotPassword()">
+          <a
+            class="amplify-form-link"
+            (click)="onForgotPassword()"
+            data-test="sign-in-forgot-password-link"
+            >
             {{ this.amplifyService.i18n().get('Reset Password') }}
           </a>
         </div>

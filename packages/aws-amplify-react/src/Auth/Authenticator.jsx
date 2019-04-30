@@ -229,7 +229,7 @@ export default class Authenticator extends Component {
         return (
             <Wrapper theme={theme}>
                 {this.state.showToast && 
-                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})} data-test="authenticator-error">
                         { I18n.get(error) }
                     </Toast>
                 }

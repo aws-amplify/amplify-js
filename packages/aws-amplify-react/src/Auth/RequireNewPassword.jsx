@@ -89,9 +89,9 @@ export default class RequireNewPassword extends AuthPiece {
         const { requiredAttributes } = user.challengeParam;
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test="require-new-password-section">
+                <SectionHeader theme={theme} data-test="require-new-password-header-section">{I18n.get('Change Password')}</SectionHeader>
+                <SectionBody theme={theme} data-test="require-new-password-body-section">
                     <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
@@ -100,6 +100,7 @@ export default class RequireNewPassword extends AuthPiece {
                         name="password"
                         type="password"
                         onChange={this.handleInputChange}
+                        data-test="require-new-password-new-password-input"
                     />
 
                     {requiredAttributes
@@ -122,7 +123,11 @@ export default class RequireNewPassword extends AuthPiece {
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link
+                            theme={theme}
+                            onClick={() => this.changeState('signIn')}
+                            data-test="require-new-password-back-to-sign-in-link"
+                            >
                             {I18n.get('Back to Sign In')}
                         </Link>
                     </SectionFooterSecondaryContent>

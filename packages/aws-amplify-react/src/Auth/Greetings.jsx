@@ -76,7 +76,7 @@ export default class Greetings extends AuthPiece {
         }
     }
 
-    inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
+    inGreeting(name) { return `${I18n.get('Hello')}, ${name}`; }
     outGreeting() { return ''; }
 
 
@@ -142,9 +142,9 @@ export default class Greetings extends AuthPiece {
         if (!greeting) { return null; }
 
         return (
-            <NavBar theme={theme}>
-                <Nav theme={theme}>
-                    <NavRight theme={theme}>
+            <NavBar theme={theme} data-test="greetings-nav-bar">
+                <Nav theme={theme} data-test="greetings-nav">
+                    <NavRight theme={theme} data-test="greetings-nav-right">
                         {greeting}
                     </NavRight>
                 </Nav>
