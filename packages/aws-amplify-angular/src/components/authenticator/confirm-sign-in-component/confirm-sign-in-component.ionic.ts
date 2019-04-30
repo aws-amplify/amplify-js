@@ -5,10 +5,10 @@ import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show" data-test="confirm-sign-in-section">
-  <div class="amplify-form-body" data-test="confirm-sign-in-section-body">
+  <div class="amplify-form-body" data-test="confirm-sign-in-body-section">
     <div
       class="amplify-form-header amplify-form-header-ionic"
-      data-test="confirm-sign-in-section-header"
+      data-test="confirm-sign-in-header-section"
       >
         {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
     </div>
@@ -23,7 +23,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
-          data-test="confirm-sign-in-input-code"
+          data-test="confirm-sign-in-code-input"
         ></ion-input>
       </ion-item>
     </ion-list>

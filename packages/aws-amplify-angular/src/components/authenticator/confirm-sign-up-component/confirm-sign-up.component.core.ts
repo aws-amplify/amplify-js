@@ -20,10 +20,10 @@ import { AuthState } from '../../../providers/auth.state';
 const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container" data-test="confirm-sign-up-section">
-  <div class="amplify-form-body" data-test="confirm-sign-up-section-body">
+  <div class="amplify-form-body" data-test="confirm-sign-up-body-section">
     <div
       class="amplify-form-header"
-      data-test="confirm-sign-up-section-header"
+      data-test="confirm-sign-up-header-section"
     >
       {{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
     <div class="amplify-form-row">
@@ -37,7 +37,7 @@ const template = `
         disabled
         placeholder="{{ this.amplifyService.i18n().get('Username') }}"
         [value]="username"
-        data-test="confirm-sign-up-input-username"
+        data-test="confirm-sign-up-username-input"
       />
     </div>
     <div class="amplify-form-row">
@@ -51,12 +51,12 @@ const template = `
         class="amplify-form-input"
         type="text"
         placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
-        data-test="confirm-sign-up-input-confirmation-code"
+        data-test="confirm-sign-up-confirmation-code-input"
       />
       <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Lost your code?') }}
         <a class="amplify-form-link"
             (click)="onResend()"
-            data-test="confirm-sign-up-link-resend-code"
+            data-test="confirm-sign-up-resend-code-link"
           >{{ this.amplifyService.i18n().get('Resend Code') }}</a></span>
     </div>
     <div class="amplify-form-actions">
@@ -65,7 +65,7 @@ const template = `
           <a
             class="amplify-form-link"
             (click)="onSignIn()"
-            data-test="confirm-sign-up-link-back-to-sign-in"
+            data-test="confirm-sign-up-back-to-sign-in-link"
             >
             {{ this.amplifyService.i18n().get('Back to Sign in') }}
           </a>
