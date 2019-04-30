@@ -20,6 +20,10 @@ const deniedStates = [
     'verifyContact'
 ];
 
+const fakeEvent = {
+    preventDefault: jest.fn()
+};
+
 describe('ConfirmSignIn', () => {
     describe('render test', () => {
         test('render correctly with Props confirmSignIn', () => {
@@ -110,7 +114,9 @@ describe('ConfirmSignIn', () => {
             };
 
             wrapper.find(Input).at(0).simulate('change', event_code);
-            await wrapper.find(Button).at(0).simulate('click');
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            
+            await Promise.resolve();
 
             expect.assertions(3);
             expect(spyon.mock.calls[0][0]).toBe('user');

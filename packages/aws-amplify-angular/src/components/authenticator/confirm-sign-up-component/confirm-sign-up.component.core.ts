@@ -155,6 +155,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

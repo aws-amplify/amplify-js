@@ -91,33 +91,35 @@ export default class ConfirmSignIn extends AuthPiece {
         return (
             <FormSection theme={theme} data-test="confirm-sign-in-section">
                 <SectionHeader theme={theme} data-test="confirm-sign-in-header-section">{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
-                <SectionBody theme={theme} data-test="confirm-sign-in-body-section">
-                    <FormField theme={theme}>
-                        <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
-                        <Input
-                            autoFocus
-                            placeholder={I18n.get('Code')}
-                            theme={theme}
-                            key="code"
-                            name="code"
-                            autoComplete="off"
-                            onChange={this.handleInputChange}
-                            data-test="confirm-sign-in-code-input"
-                        />
-                    </FormField>
-                </SectionBody>
-                <SectionFooter theme={theme}>
-                    <SectionFooterPrimaryContent theme={theme}>
-                        <Button theme={theme} onClick={this.confirm} data-test="confirm-sign-in-confirm-button">
-                            {I18n.get('Confirm')}
-                        </Button>
-                    </SectionFooterPrimaryContent>
-                    <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="confirm-sign-in-back-to-sign-in-link">
-                            {I18n.get('Back to Sign In')}
-                        </Link>
-                    </SectionFooterSecondaryContent>
-                </SectionFooter>
+                <form onSubmit={this.confirm} data-test="confirm-sign-in-body-section">
+                    <SectionBody theme={theme}>
+                        <FormField theme={theme}>
+                            <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
+                            <Input
+                                autoFocus
+                                placeholder={I18n.get('Code')}
+                                theme={theme}
+                                key="code"
+                                name="code"
+                                autoComplete="off"
+                                onChange={this.handleInputChange}
+                                data-test="confirm-sign-in-code-input"
+                            />
+                        </FormField>
+                    </SectionBody>
+                    <SectionFooter theme={theme}>
+                        <SectionFooterPrimaryContent theme={theme} data-test="confirm-sign-in-confirm-button">
+                            <Button theme={theme} type="submit">
+                                {I18n.get('Confirm')}
+                            </Button>
+                        </SectionFooterPrimaryContent>
+                        <SectionFooterSecondaryContent theme={theme}>
+                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="confirm-sign-in-back-to-sign-in-link">
+                                {I18n.get('Back to Sign In')}
+                            </Link>
+                        </SectionFooterSecondaryContent>
+                    </SectionFooter>
+                </form>
             </FormSection>
         );
     }
