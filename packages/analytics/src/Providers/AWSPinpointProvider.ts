@@ -290,12 +290,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                         } 
                     } 
                 } = data;
-                if ( ACCEPTED_CODES.find(c => c === StatusCode)) {
+                if ( ACCEPTED_CODES.includes(StatusCode)) {
                     this._endpointGenerating = false;
                     logger.debug('record event success. ', data);
                     return handlers.resolve(data);
                 } else {
-                    if (RETRYABLE_CODES.find(c => c === StatusCode)) {
+                    if (RETRYABLE_CODES.includes(StatusCode)) {
                         this._retry(params, handlers);
                     } else {
                         logger.error(`Event ${eventId} is not accepted, the error is ${Message}`);
@@ -308,6 +308,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     private _retry(params, handlers) {
         const { config : { resendLimit } } = params;
+        // For backward compatibility
         params.resendLimit = typeof params.resendLimit === 'number' ?
             params.resendLimit : resendLimit;
         if (params.resendLimit-- > 0) {
