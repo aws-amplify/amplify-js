@@ -59,7 +59,7 @@ export default class AuthPiece extends React.Component {
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             return (
                 <FormField theme={theme}>           
-                    <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
+                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <Input
                         autoFocus
                         placeholder={I18n.get('Enter your email')}
@@ -74,7 +74,7 @@ export default class AuthPiece extends React.Component {
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             return (
                 <FormField theme={theme} key="phone_number">
-                    <InputLabel theme={theme}>{I18n.get('Phone number')} *</InputLabel>
+                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <SelectInput theme={theme}>
                         <select name="dial_code" defaultValue={"+1"} 
                         onChange={this.handleInputChange}
@@ -101,7 +101,7 @@ export default class AuthPiece extends React.Component {
         } else {
             return (
                 <FormField theme={theme}>           
-                    <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
+                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <Input
                         autoFocus
                         placeholder={I18n.get('Enter your username')}
@@ -113,6 +113,23 @@ export default class AuthPiece extends React.Component {
                     />
                 </FormField>
             );
+        }
+    }
+
+    getUsernameLabel() {
+        const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
+            // Email as Username
+            return 'Email';
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+            // Phone number as Username
+            if (!this.inputs.phone_line_number 
+                || this.inputs.phone_line_number.length === 0) return '';
+            else return 'Phone Number';
+        } else if (usernameAttributes === UsernameAttributes.USERNAME) {
+            return 'Username';
+        } else {
+            return usernameAttributes;
         }
     }
 

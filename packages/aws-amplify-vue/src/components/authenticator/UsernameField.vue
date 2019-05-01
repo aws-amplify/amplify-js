@@ -14,11 +14,11 @@
 <template>
     <div v-bind:class="amplifyUI.formField">
         <div v-if="shouldRenderUsernameField">
-            <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
+            <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(getUsernameLabel())}} *</div>
             <input 
                 v-bind:class="amplifyUI.input" 
                 v-model="username" 
-                :placeholder="$Amplify.I18n.get('Enter your username')" 
+                :placeholder="$Amplify.I18n.get(`Enter your ${getUsernameLabel()}`)" 
                 autofocus v-on:keyup="$emit('username-field-changed', {usernameField: 'username', username})" 
                 data-test="username-input"
             />
@@ -83,6 +83,11 @@ export default {
             countries,
             amplifyUI: AmplifyUI,
             logger: {},
+            labelMap: {
+                email: 'Email',
+                phone_number: 'Phone Number',
+                username: 'Username'
+            },
         }
     },
     computed: {
@@ -109,6 +114,9 @@ export default {
         // this.logger = new this.$Amplify.Logger(this.$options.name);
     },
     methods: {
+        getUsernameLabel() {
+            return this.labelMap[this.usernameAttributes] || this.usernameAttributes;
+        }
     }
 }
 </script>

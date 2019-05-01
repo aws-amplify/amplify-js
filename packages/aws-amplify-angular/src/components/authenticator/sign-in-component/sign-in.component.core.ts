@@ -88,7 +88,8 @@ const template = `
 export class SignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  _usernameAttributes: string | Array<string> = [];
+  _usernameAttributes: string | Array<string> = 'username';
+  _labelMap;
   username: string;
   password: string;
   errorMessage: string;
@@ -101,6 +102,11 @@ export class SignInComponentCore implements OnInit {
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.logger = this.amplifyService.logger('SignInComponent');
+    this._labelMap = {
+      email: 'Email',
+      phone_number: 'Phone Number',
+      username: 'Username'
+    };
   }
 
   @Input()
@@ -199,5 +205,9 @@ export class SignInComponentCore implements OnInit {
     }
     this.errorMessage = err.message || err;
     this.logger.error(this.errorMessage);
+  }
+
+  getUsernameLabel() {
+    return this._labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

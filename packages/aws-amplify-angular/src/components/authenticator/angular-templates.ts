@@ -41,13 +41,13 @@ export const phoneNumberFieldTemplate =
     </div>`
 
 export const usernameFieldTemplate = 
-    `<label class="amplify-input-label" for="usernameField"> {{ this.amplifyService.i18n().get('Username *') }}</label>
+    `<label class="amplify-input-label" for="usernameField"> {{ this.amplifyService.i18n().get(getUsernameLabel()) }} *</label>
     <input
     #usernameField
     class="amplify-form-input"
     type="text"
     required
-    placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+    placeholder="{{ this.amplifyService.i18n().get(getUsernameLabel()) }}"
     [(ngModel)]="username"
     data-test="username-input"
     />`

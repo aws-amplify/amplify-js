@@ -37,6 +37,7 @@ const template = `
 <amplify-auth-confirm-sign-up-ionic
   *ngIf="!shouldHide('ConfirmSignUp')"
   [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
 ></amplify-auth-confirm-sign-up-ionic>
 
 <amplify-auth-confirm-sign-in-ionic

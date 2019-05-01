@@ -16,8 +16,8 @@
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(getUsernameLabel())}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get(getUsernameLabel())" autofocus />
       </div>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
@@ -49,14 +49,19 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'ConfirmSignUp',
-  props: ['confirmSignUpConfig'],
+  props: ['confirmSignUpConfig', 'usernameAttributes'],
   data () {
     return {
         code: '',
         error: '',
         logger: {},
-        amplifyUI: AmplifyUI
-    }
+        amplifyUI: AmplifyUI,
+        labelMap: {
+          email: 'Email',
+          phone_number: 'Phone Number',
+          username: 'Username'
+        },
+      }
   },
   computed: {
     options() {
@@ -95,6 +100,9 @@ export default {
     setError(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
+    },
+    getUsernameLabel() {
+      return this.labelMap[this.usernameAttributes] || this.usernameAttributes;
     }
   }
 }

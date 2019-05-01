@@ -62,6 +62,11 @@ export default {
         amplifyUI: AmplifyUI,
         logger: {},
         signInUsername: '',
+        labelMap: {
+          email: 'Email',
+          phone_number: 'Phone Number',
+          username: 'Username'
+        },
     }
   },
   computed: {

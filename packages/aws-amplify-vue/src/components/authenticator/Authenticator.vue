@@ -15,7 +15,7 @@
   <div>
     <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInConfig="options.signInConfig" v-bind:usernameAttributes="options.usernameAttributes"></amplify-sign-in>
     <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpConfig="options.signUpConfig" v-bind:usernameAttributes="options.usernameAttributes"></amplify-sign-up>
-    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig"></amplify-confirm-sign-up>
+    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig" v-bind:usernameAttributes="options.usernameAttributes"></amplify-confirm-sign-up>
     <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInConfig="options.confirmSignInConfig"></amplify-confirm-sign-in>
     <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig" v-bind:usernameAttributes="options.usernameAttributes"></amplify-forgot-password>
     <amplify-require-new-password v-if="displayMap.requireNewPassword" v-bind:requireNewPasswordConfig="options.requireNewPasswordConfig"></amplify-require-new-password>

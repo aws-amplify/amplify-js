@@ -46,7 +46,7 @@ export const phoneNumberFieldTemplate = `
     </ion-grid>`;
 
 export const usernameFieldTemplate = `
-    <ion-label class="amplify-input-label amplify-input-label-ionic" for="usernameField" position="stacked">{{ this.amplifyService.i18n().get('Username *') }}</ion-label>
+    <ion-label class="amplify-input-label amplify-input-label-ionic" for="usernameField" position="stacked">{{ this.amplifyService.i18n().get(getUsernameLabel()) }} *</ion-label>
         <ion-input type="text"
         #usernameField
         class="amplify-form-input"
