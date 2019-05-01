@@ -19,6 +19,7 @@ import {
     ConfirmSignUpOptions,
     SignOutOpts,
     CurrentUserOpts,
+    GetPreferredMFAOpts,
     SignInOpts,
     isUsernamePasswordOpts,
     isCognitoHostedOpts,
@@ -511,26 +512,31 @@ export default class AuthClass {
     /**
      * get preferred mfa method
      * @param {CognitoUser} user - the current cognito user
+     * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
      */
-    public getPreferredMFA(user: CognitoUser | any): Promise<string> {
+    public getPreferredMFA(user: CognitoUser | any, params?: GetPreferredMFAOpts): Promise<string> {
         const that = this;
         return new Promise((res, rej) => {
-            user.getUserData((err, data) => {
-                if (err) {
-                    logger.debug('getting preferred mfa failed', err);
-                    rej(err);
-                    return;
-                }
+            const bypassCache = params? params.bypassCache: false;
+            user.getUserData(
+                (err, data) => {
+                    if (err) {
+                        logger.debug('getting preferred mfa failed', err);
+                        rej(err);
+                        return;
+                    }
 
-                const mfaType = that._getMfaTypeFromUserData(data);
-                if (!mfaType) {
-                    rej('invalid MFA Type');
-                    return;
-                } else {
-                    res(mfaType);
-                    return;
-                }
-            });
+                    const mfaType = that._getMfaTypeFromUserData(data);
+                    if (!mfaType) {
+                        rej('invalid MFA Type');
+                        return;
+                    } else {
+                        res(mfaType);
+                        return;
+                    }
+                },
+                { bypassCache }
+            );
         });
     }
 
@@ -564,21 +570,25 @@ export default class AuthClass {
         return ret;
     }
 
-    private _getUserData(user) {
+    private _getUserData(user, params) {
         return new Promise((res, rej) => {
-            user.getUserData((err, data) => {
-                if (err) {
-                    logger.debug('getting user data failed', err);
-                    rej(err);
-                    return;
-                } else {
-                    res(data);
-                    return;
-                }
-            });
+            user.getUserData(
+                (err, data) => {
+                    if (err) {
+                        logger.debug('getting user data failed', err);
+                        rej(err);
+                        return;
+                    } else {
+                        res(data);
+                        return;
+                    }
+                },
+                params
+            );
         });
 
     }
+
     /**
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
@@ -586,7 +596,7 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public async setPreferredMFA(user: CognitoUser | any, mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'): Promise<string> {
-        const userData = await this._getUserData(user);
+        const userData = await this._getUserData(user, { bypassCache: true });
         let smsMfaSettings = null;
         let totpMfaSettings = null;
 
@@ -651,10 +661,21 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('Set user mfa preference error', err);
                     return rej(err);
-
                 }
                 logger.debug('Set user mfa success', result);
-                return res(result);
+                logger.debug('Caching the latest user data into local');
+                // cache the latest result into user data
+                user.getUserData(
+                    (err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            return rej(err);
+                        } else {
+                            return res(result);
+                        }
+                    },
+                    {bypassCache: true}
+                );
             });
         });
     }
@@ -989,7 +1010,7 @@ export default class AuthClass {
                             { bypassCache }
                         );
                     } else {
-                        logger.debug(`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` + 
+                        logger.debug(`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
                             `is not in the scopes of the access token`);
                         return res(user);
                     }
@@ -1223,9 +1244,10 @@ export default class AuthClass {
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
                             if (isSignedInHostedUI) {
-                                this._oAuthHandler.signOut();
+                                return this._oAuthHandler.signOut().then(() => res());
+                            } else {
+                                return res();
                             }
-                            return res();
                         },
                         onFailure: (err) => {
                             logger.debug('global sign out failed', err);
@@ -1237,9 +1259,10 @@ export default class AuthClass {
                 logger.debug('user sign out', user);
                 user.signOut();
                 if (isSignedInHostedUI) {
-                    this._oAuthHandler.signOut();
+                    return this._oAuthHandler.signOut().then(() => res());
+                } else {
+                    return res();
                 }
-                return res();
             }
         });
     }
