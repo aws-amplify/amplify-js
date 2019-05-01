@@ -121,7 +121,7 @@ export default class SignIn extends AuthPiece {
                     />
                 <form onSubmit={this.signIn}>
                 <SectionBody theme={theme}>
-                    {this.renderUsernameField(theme, usernameLabel)}
+                    {this.renderUsernameField(theme)}
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Password')} *</InputLabel>
                         <Input

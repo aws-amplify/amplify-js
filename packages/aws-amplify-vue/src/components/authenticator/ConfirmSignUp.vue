@@ -46,6 +46,7 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import { labelMap } from './common';
 
 export default {
   name: 'ConfirmSignUp',
@@ -56,11 +57,6 @@ export default {
         error: '',
         logger: {},
         amplifyUI: AmplifyUI,
-        labelMap: {
-          email: 'Email',
-          phone_number: 'Phone Number',
-          username: 'Username'
-        },
       }
   },
   computed: {
@@ -102,7 +98,7 @@ export default {
       this.logger.error(this.error);
     },
     getUsernameLabel() {
-      return this.labelMap[this.usernameAttributes] || this.usernameAttributes;
+      return labelMap[this.usernameAttributes] || this.usernameAttributes;
     }
   }
 }

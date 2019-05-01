@@ -16,6 +16,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { labelMap } from '../common';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -86,7 +87,6 @@ export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _usernameAttributes: string | Array<string> = 'username';
-  _labelMap;
   username: string;
   code: string;
   errorMessage: string;
@@ -94,11 +94,6 @@ export class ConfirmSignUpComponentCore implements OnInit {
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
-    this._labelMap = {
-      email: 'Email',
-      phone_number: 'Phone Number',
-      username: 'Username'
-    };
   }
 
   @Input()
@@ -171,6 +166,6 @@ export class ConfirmSignUpComponentCore implements OnInit {
   }
 
   getUsernameLabel() {
-    return this._labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

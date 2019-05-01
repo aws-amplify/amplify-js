@@ -69,6 +69,7 @@
 <script>
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import { labelMap } from './common';
 
 export default {
     name: 'UsernameField',
@@ -83,11 +84,6 @@ export default {
             countries,
             amplifyUI: AmplifyUI,
             logger: {},
-            labelMap: {
-                email: 'Email',
-                phone_number: 'Phone Number',
-                username: 'Username'
-            },
         }
     },
     computed: {
@@ -115,7 +111,7 @@ export default {
     },
     methods: {
         getUsernameLabel() {
-            return this.labelMap[this.usernameAttributes] || this.usernameAttributes;
+            return labelMap[this.usernameAttributes] || this.usernameAttributes;
         }
     }
 }

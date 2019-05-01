@@ -57,7 +57,7 @@ export default class SignUp extends AuthPiece {
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
             
-        const { usernameAttributes=[] } = this.props || {};
+        const { usernameAttributes=UsernameAttributes.USERNAME } = this.props || {};
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             this.defaultSignUpFields = signUpWithEmailFields;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
@@ -204,18 +204,20 @@ export default class SignUp extends AuthPiece {
             }
         });
 
-        let signUpWithShowedUp = false;
+        let labelCheck = false;
         this.signUpFields.forEach(field => {
-            if (field.signUpWith) {
-                if (signUpWithShowedUp) {
-                    throw new Error('Only one sign up field can be marked as signUpWith!');
-                }
-                logger.debug(`Changing the username to the value of ${field.key}`);
-                signup_info.username = signup_info.attributes[field.key];
-                signUpWithShowedUp = true;
+            if (field.label === this.getUsernameLabel()) {
+                logger.debug(`Changing the username to the value of ${field.label}`);
+                signup_info.username = signup_info.attributes[field.key] || signup_info.username;
+                labelCheck = true;
             }
         });
-        
+        if (!labelCheck && !signup_info.username) {
+            // if the customer customized the username field in the sign up form
+            // He needs to either set the key of that field to 'username'
+            // Or make the label of the field the same as the 'usernameAttributes'
+            throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+        } 
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
         })

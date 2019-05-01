@@ -29,6 +29,12 @@ import {
 
 const logger = new Logger('AuthPiece');
 
+const labelMap = {
+    email: 'Email',
+    phone_number: 'Phone Number',
+    username: 'Username'
+};
+
 export default class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
@@ -60,7 +66,7 @@ export default class AuthPiece extends React.Component {
                 <FormField
                     theme={theme}
                     onChangeText={(text) => this.setState({ email: text })}
-                    label={I18n.get(this.getUsernameLabel())}
+                    label={I18n.get('Email')}
                     placeholder={I18n.get('Enter your email')}
                     required={true}
                 />
@@ -71,7 +77,7 @@ export default class AuthPiece extends React.Component {
                     theme={theme}
                     key = {'phone_number'}
                     onChangeText={(text) => this.setState({ phone_number: text })}
-                    label={I18n.get(this.getUsernameLabel())}
+                    label={I18n.get('Phone Number')}
                     placeholder={I18n.get('Enter your phone number')}
                     keyboardType="phone-pad"
                     required={true}
@@ -92,19 +98,7 @@ export default class AuthPiece extends React.Component {
 
     getUsernameLabel() {
         const { usernameAttributes = 'username' } = this.props;
-        if (usernameAttributes === 'email') {
-            // Email as Username
-            return 'Email';
-        } else if (usernameAttributes === 'phone_number') {
-            // Phone number as Username
-            if (!this.inputs.phone_line_number 
-                || this.inputs.phone_line_number.length === 0) return '';
-            else return 'Phone Number';
-        } else if (usernameAttributes === 'username') {
-            return 'Username';
-        } else {
-            return usernameAttributes;
-        }
+        return labelMap[usernameAttributes] || usernameAttributes;
     }
 
     changeState(state, data) {

@@ -19,6 +19,7 @@ import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } f
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { labelMap } from '../common';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -107,7 +108,6 @@ export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _usernameAttributes: string | Array<string> = 'username';
-  _labelMap;
   username: string;
   code: string;
   password: string;
@@ -122,11 +122,6 @@ export class ForgotPasswordComponentCore implements OnInit {
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.logger = this.amplifyService.logger('ForgotPasswordComponent');
-    this._labelMap = {
-      email: 'Email',
-      phone_number: 'Phone Number',
-      username: 'Username'
-    };
   }
 
   @Input()
@@ -230,6 +225,6 @@ export class ForgotPasswordComponentCore implements OnInit {
   }
   
   getUsernameLabel() {
-    return this._labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

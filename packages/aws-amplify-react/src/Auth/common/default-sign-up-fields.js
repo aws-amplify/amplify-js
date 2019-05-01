@@ -39,8 +39,7 @@ export const signUpWithEmailFields = [
       required: true,
       placeholder: 'Email',
       type: 'email',
-      displayOrder: 1,
-      signUpWith: true
+      displayOrder: 1
   },
   {
       label: 'Password',
@@ -65,8 +64,7 @@ export const signUpWithPhoneNumberFields = [
       key: 'phone_number',
       placeholder: 'Phone Number',
       required: true,
-      displayOrder: 1,
-      signUpWith: true
+      displayOrder: 1
   },
   {
       label: 'Password',

@@ -65,6 +65,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
 import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
+import { labelMap } from './common';
 
 Vue.use(Vue2Filters)
 
@@ -198,18 +199,21 @@ export default {
         };
       });
 
-      let signUpWithShowedUp = false;
+      let labelCheck = false;
       this.options.signUpFields.forEach(field => {
-          if (field.signUpWith) {
-              if (signUpWithShowedUp) {
-                  throw new Error('Only one sign up field can be marked as signUpWith!');
-              }
-              this.logger.debug(`Changing the username to the value of ${field.key}`);
-              user.username = user.attributes[field.key];
-              signUpWithShowedUp = true;
+          if (field.label === this.getUsernameLabel()) {
+              this.logger.debug(`Changing the username to the value of ${field.label}`);
+              user.username = user.attributes[field.key] || user.username;
+              labelCheck = true;
           }
       });
-
+      if (!labelCheck && !user.username) {
+        // if the customer customized the username field in the sign up form
+        // He needs to either set the key of that field to 'username'
+        // Or make the label of the field the same as the 'usernameAttributes'
+        throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+      }
+        
       this.$Amplify.Auth.signUp(user)
             .then(data => {
               this.logger.info('sign up success');
@@ -258,6 +262,10 @@ export default {
           this.logger.warn('Custom prefix prepended to key but custom field flag is set to false');
       }
       return null;
+    },
+
+    getUsernameLabel: function() {
+      return labelMap[this.usernameAttributes] || this.usernameAttributes;
     },
   }
 }

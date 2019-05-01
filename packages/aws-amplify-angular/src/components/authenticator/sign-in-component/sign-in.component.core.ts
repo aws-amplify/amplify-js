@@ -16,7 +16,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { includes } from '../common';
+import { includes, labelMap } from '../common';
 import { UsernameAttributes } from '../types';
 import { countrylist, country }  from '../../../assets/countries';
 import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } from '../angular-templates';
@@ -89,7 +89,6 @@ export class SignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _usernameAttributes: string | Array<string> = 'username';
-  _labelMap;
   username: string;
   password: string;
   errorMessage: string;
@@ -102,11 +101,6 @@ export class SignInComponentCore implements OnInit {
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.logger = this.amplifyService.logger('SignInComponent');
-    this._labelMap = {
-      email: 'Email',
-      phone_number: 'Phone Number',
-      username: 'Username'
-    };
   }
 
   @Input()
@@ -208,6 +202,6 @@ export class SignInComponentCore implements OnInit {
   }
 
   getUsernameLabel() {
-    return this._labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

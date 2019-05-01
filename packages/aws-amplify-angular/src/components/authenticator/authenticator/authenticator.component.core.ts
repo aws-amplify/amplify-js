@@ -71,7 +71,7 @@ export class AuthenticatorComponentCore implements OnInit {
     user: null
   };
   _signUpConfig: any = {};
-  _usernameAttributes: string | Array<string> = [];
+  _usernameAttributes: string | Array<string> = 'username';
 
   constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
@@ -107,7 +107,7 @@ export class AuthenticatorComponentCore implements OnInit {
       this.hide = data.hide;
     }
 
-    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes;
+    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes || 'username';
   }
 
   @Input()
@@ -117,7 +117,7 @@ export class AuthenticatorComponentCore implements OnInit {
 
   @Input()
   set usernameAttributes(usernameAttributes: string | Array<string>) {
-    this._usernameAttributes = usernameAttributes;
+    this._usernameAttributes = usernameAttributes || 'username';
   }
 
   subscribe() {

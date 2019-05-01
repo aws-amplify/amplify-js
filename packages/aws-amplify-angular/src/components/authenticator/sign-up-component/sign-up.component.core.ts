@@ -19,6 +19,7 @@ import { UsernameAttributes } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
+import { labelMap } from '../common';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -250,17 +251,21 @@ export class SignUpComponentCore implements OnInit {
       }
     });
 
-    let signUpWithShowedUp = false;
+
+    let labelCheck = false;
     this.signUpFields.forEach(field => {
-      if (field.signUpWith) {
-        if (signUpWithShowedUp) {
-            throw new Error('Only one sign up field can be marked as signUpWith!');
+        if (field.label === this.getUsernameLabel()) {
+            this.amplifyService.logger(`Changing the username to the value of ${field.label}`, 'DEBUG');
+            this.user.username = this.user.attributes[field.key] || this.user.username;
+            labelCheck = true;
         }
-        this.amplifyService.logger(`Changing the username to the value of ${field.key}`, 'DEBUG');
-        this.user.username = this.user.attributes[field.key];
-        signUpWithShowedUp = true;
-      }
     });
+    if (!labelCheck && !this.user.username) {
+      // if the customer customized the username field in the sign up form
+      // He needs to either set the key of that field to 'username'
+      // Or make the label of the field the same as the 'usernameAttributes'
+      throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+    }
 
     this.amplifyService.auth()
       .signUp(this.user)
@@ -395,5 +400,9 @@ export class SignUpComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
+  }
+
+  getUsernameLabel() {
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

@@ -50,7 +50,7 @@ export default {
         forgotPasswordConfig: {},
         mfaConfig: {},
         requireNewPasswordConfig: {},
-        usernameAttributes: []
+        usernameAttributes: 'username'
       };
       return Object.assign(defaults, this.authConfig || {})
     }
