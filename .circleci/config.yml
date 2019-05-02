@@ -76,7 +76,7 @@ jobs:
             mkdir ~/.ssh
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             cd ~
-            git clone git@github.com:sammartinez/amplify-js-samples.git -yes
+            yes | git clone git@github.com:sammartinez/amplify-js-samples.git
             cd samples/react/auth/with-authenticator
             yarn
             yarn link aws-amplify
