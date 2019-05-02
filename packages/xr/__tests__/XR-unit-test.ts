@@ -41,7 +41,7 @@ describe('XR', () => {
     });
 
     describe('SumerianProvider', () => {
-        test('loadScene throws error on loadScene when no scenes are configured', async () => {
+        test('loadScene throws error when no scenes are configured', async () => {
             const xr = new XR({});
 
             // Mock dom
@@ -55,7 +55,7 @@ describe('XR', () => {
             }
         });
 
-        test('loadScene throws error on loadScene when dom element does not exist', async () => {
+        test('loadScene throws error when dom element does not exist', async () => {
             const xr = new XR({ scenes: { 'scene1': {} } });
 
             document.body.innerHTML = "";
@@ -68,7 +68,7 @@ describe('XR', () => {
             }
         });
 
-        test('loadScene throws error on loadScene when sceneName is not passed in', async () => {
+        test('loadScene throws error when sceneName is not passed in', async () => {
             const xr = new XR({ scenes: {} });
 
             // Mock dom
@@ -82,7 +82,7 @@ describe('XR', () => {
             }
         });
 
-        test('loadScene throws error on loadScene when scene is not configured', async () => {
+        test('loadScene throws error when scene is not configured', async () => {
             const xr = new XR({ scenes: {} });
 
             // Mock dom
@@ -92,6 +92,20 @@ describe('XR', () => {
                 await xr.loadScene('scene2', 'dom-element-id');
             } catch(e) {
                 expect(e.message).toEqual("Scene 'scene2' is not configured");
+                expect(e).toBeInstanceOf(Error);
+            }
+        });
+
+        test('loadScene throws error when region is not configured', async () => {
+            const xr = new XR({scenes:{scene2:{sceneConfig:{}}}});
+
+            // Mock dom
+            document.body.innerHTML = "<div id='dom-element-id'></div>";
+            expect.assertions(2);
+            try {
+                await xr.loadScene('scene2', 'dom-element-id');
+            } catch(e) {
+                expect(e.message).toEqual("No region configured for scene: scene2");
                 expect(e).toBeInstanceOf(Error);
             }
         });

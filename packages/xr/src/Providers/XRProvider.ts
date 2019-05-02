@@ -41,6 +41,7 @@ export abstract class AbstractXRProvider implements XRProvider {
     public abstract isSceneLoaded(sceneName: string);
     public abstract getSceneController(sceneName: string): any;
     public abstract isVRCapable(sceneName: string): boolean;
+    public abstract isVRPresentationActive(sceneName: string): boolean;
     public abstract start(sceneName: string): void;
     public abstract enterVR(sceneName: string): void;
     public abstract exitVR(sceneName: string): void;

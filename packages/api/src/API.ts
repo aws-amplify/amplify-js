@@ -54,7 +54,8 @@ export class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
@@ -104,7 +105,7 @@ export class APIClass {
             this._api = new RestClass(this._options);
             return true;
         } else {
-            return Promise.reject('API no configured');
+            return Promise.reject('API not configured');
         }
     }
 
@@ -126,7 +127,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.get(endpoint + path, init);
     }
@@ -149,7 +150,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
     }
@@ -172,7 +173,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
     }
@@ -195,7 +196,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.patch(endpoint + path, init);
     }
@@ -218,7 +219,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.del(endpoint + path, init);
     }
@@ -241,7 +242,7 @@ export class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.head(endpoint + path, init);
     }

@@ -372,7 +372,7 @@ describe('signUp with signUpConfig', () => {
         expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
     });
 
-    test('expect 5 fields to be present if hideDefaults is undefined', () => {
+    test('expect 5 fields to be present if hideAllDefaults is undefined', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -390,7 +390,7 @@ describe('signUp with signUpConfig', () => {
         expect(wrapper.find(Input).length).toEqual(5);
     });
 
-    test('expect 5 fields to be present if hideDefaults is false', () => {
+    test('expect 5 fields to be present if hideAllDefaults is false', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -409,7 +409,7 @@ describe('signUp with signUpConfig', () => {
         expect(wrapper.find(Input).length).toEqual(5);
     });
 
-    test('expect custom field to be the only field if hideDefaults is true', () => {
+    test('expect custom field to be the only field if hideAllDefaults is true', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,

@@ -4,7 +4,6 @@ coverage/**
 docs/**
 media/**
 node_modules/**
-src/**
 test_Setup/**
 .vscode/**
 .DS_Store

@@ -25,8 +25,11 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
-const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics');
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
+const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
+    Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const trackers = {
@@ -67,9 +70,8 @@ export default class AnalyticsClass {
      * @param {Object} config - Configuration of the Analytics
      */
     public configure(config?) {
-        logger.debug('configure Analytics');
         if (!config) return this._config;
-
+        logger.debug('configure Analytics', config);
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
@@ -79,11 +81,10 @@ export default class AnalyticsClass {
 
         this._pluggables.forEach((pluggable) => {
             // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
-                pluggable.configure(this._config);  
-            } else {
-                pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
+            const providerConfig = pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint'] ?
+                this._config : this._config[pluggable.getProviderName()];
+            
+            pluggable.configure({ disabled: this._config['disabled'], ...providerConfig} );
         });
 
         if (this._pluggables.length === 0) {
@@ -95,7 +96,11 @@ export default class AnalyticsClass {
             this._config['autoSessionRecord'] = true;
         }
 
-        dispatchAnalyticsEvent('configured', null);
+        dispatchAnalyticsEvent(
+            'configured', 
+            null,
+            `The Analytics category has been configured successfully`
+        );
         logger.debug('current configuration', this._config);
 
         
@@ -109,13 +114,11 @@ export default class AnalyticsClass {
     public addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            let config = {};
             // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
-                config = pluggable.configure(this._config);  
-            } else {
-                config = pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
+            const providerConfig = pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint'] ?
+                this._config : this._config[pluggable.getProviderName()];
+            const config = { disabled: this._config['disabled'], ...providerConfig };
+            pluggable.configure(config);
             return config;
         }
     }
@@ -173,18 +176,11 @@ export default class AnalyticsClass {
     }
 
     /**
-    * Receive a capsule from Hub
-    * @param {any} capsuak - The message from hub
-    */
-   public onHubCapsule(capsule: any): void {}
-
-
-    /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession(provider?: string) {
-        const params = { event: { name: '_session_start' },  provider };
+        const params = { event: { name: '_session.start' },  provider };
         return this._sendEvent(params);
     }
 
@@ -193,7 +189,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async stopSession(provider?: string) {
-        const params = { event: { name: '_session_stop' }, provider };
+        const params = { event: { name: '_session.stop' }, provider };
         return this._sendEvent(params);
     }
 
@@ -205,6 +201,12 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async record(event: string | object, provider? , metrics?: EventMetrics) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         let params = null;
         // this is just for compatibility, going to be deprecated
         if (typeof event === 'string') {
@@ -229,6 +231,12 @@ export default class AnalyticsClass {
     }
 
     private _sendEvent(params) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
@@ -262,5 +270,9 @@ export default class AnalyticsClass {
         } else {
             tracker.configure(opts);
         }
+    }
+
+    private isAnalyticsConfigured() {
+        return this._config && Object.entries(this._config).length > 0;
     }
 }

@@ -396,7 +396,8 @@ describe('S3Album test', () => {
             
             const props = {
                 path: 'path',
-                level: 'public'
+                level: 'public',
+                identityId: 'identityId'
             };
 
             const wrapper = shallow(<S3Album/>);
@@ -412,7 +413,7 @@ describe('S3Album test', () => {
 
             await s3Album.list();
 
-            expect(spyon3).toBeCalledWith('path', {level: 'public'});
+            expect(spyon3).toBeCalledWith('path', {level: 'public',identityId: 'identityId'});
 
             spyon.mockClear();
             spyon2.mockClear();

@@ -32,27 +32,34 @@ describe('withOAuth test', () => {
                 }
             };
 
-            const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
-                return {
-                    oauth: {
-                        awsCognito: {
-                            domain: 'domain',
-                            redirectSignIn: 'redirectUriSignIn',
-                            redirectSignOut: 'redirectUriSignOut',
-                            responseType: 'responseType'
-                        }
-                    },
-                    userPoolWebClientId: 'userPoolWebClientId'
-                };
-            });
+            const spyon = jest.spyOn(Auth, 'federatedSignIn');
+            
             const Comp = withOAuth(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = mount(<Comp/>);
             const comp = wrapper.instance();
 
             comp.signIn();
-            expect(mockFn).toBeCalledWith(
-                "https://domain/login?redirect_uri=redirectUriSignIn&response_type=responseType&client_id=userPoolWebClientId"
-            );
+
+            expect(spyon).toBeCalledWith({ provider: undefined });
+            spyon.mockClear();
+        });
+
+        test('Passing in a social provider', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const spyon = jest.spyOn(Auth, 'federatedSignIn');
+            
+            const Comp = withOAuth(MockComp);
+            const wrapper = mount(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signIn(expect.anything(), 'Facebook');
+
+            expect(spyon).toBeCalledWith({"provider": "Facebook"});
             spyon.mockClear();
         });
     });

@@ -15,18 +15,7 @@ import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import { Button, PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-React';
-
-const PickerPicker = {
-    position: 'relative'
-};
-
-// const PickerButton = {
-//     width: '10em',
-//     height: '3em',
-//     fontSize: '1.2em',
-//     textAlign: 'center'
-// }
+import { PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerInput = {
     width: '100%',
@@ -67,12 +56,6 @@ export class Picker extends React.Component {
         const accept = this.props.accept || '*/*';
 
         const theme = this.props.theme || AmplifyTheme;
-        // const pickerStyle = Object.assign(
-        //     {},
-        //     PickerPicker,
-        //     theme.pickerPicker
-        // );
-        // const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
         return (

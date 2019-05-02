@@ -84,12 +84,8 @@ import * as AmplifyUI from '@aws-amplify/ui';
     checkContact(user) {
       this.$Amplify.Auth.verifiedContact(user)
         .then(data => {
-          if (!JS.isEmpty(data.verified)) {
-            this.changeState('signedIn', user);
-          } else {
-            user = Object.assign(user, data);
-            this.changeState('verifyContact', user);
-          }
+          AmplifyEventBus.$emit('localUser', this.user)
+          AmplifyEventBus.$emit('authState', 'signedIn')
         })
         .catch((e) => this.setError(e))
     },
@@ -109,7 +105,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
         .catch(err => this.setError(err));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
   }
 }

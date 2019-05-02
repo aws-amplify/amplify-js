@@ -59,11 +59,10 @@ export class PhotoPicker extends React.Component {
         const { previewSrc } = this.state;
 
         const headerText = this.props.headerText || 'Photos';
-        const headerHint = this.props.headerHint || 'Add you photos by clicking below';
+        const headerHint = this.props.headerHint || 'Add your photos by clicking below';
         const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;
-        const containerStyle = Object.assign({}, Picker, theme.picker);
         const previewStyle = Object.assign(
             {},
             PickerPreview,

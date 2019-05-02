@@ -24,6 +24,7 @@ import { S3Text } from './S3Text';
 const logger = new Logger('Storage.S3Album');
 
 export class S3Album extends React.Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
 
@@ -32,14 +33,10 @@ export class S3Album extends React.Component {
         this.list = this.list.bind(this);
         this.marshal = this.marshal.bind(this);
 
-        const theme = this.props.theme || AmplifyTheme;
         this.state = {
-            theme,
             items: [],
-            ts: new Date().getTime()
+            ts: new Date().getTime(),
         };
-
-        Hub.listen('window', this, 'S3Album');
     }
 
     getKey(file) {
@@ -66,7 +63,6 @@ export class S3Album extends React.Component {
     }
 
     handlePick(data) {
-        const that = this;
         const { onPick, onLoad, onError, track, level } = this.props;
 
         if (onPick) { onPick(data); }
@@ -79,7 +75,7 @@ export class S3Album extends React.Component {
         }
 
         Storage.put(key, file, {
-            level: level? level: 'public',
+            level: level ? level : 'public',
             contentType: type,
             track
         })
@@ -98,7 +94,9 @@ export class S3Album extends React.Component {
                 logger.debug('handle pick error', err);
                 if (onError) { onError(err); }
             });
-        this.setState({ ts: new Date().getTime() });
+        if (this._isMounted) {
+            this.setState({ ts: new Date().getTime() });
+        }
     }
 
     handleClick(item) {
@@ -108,7 +106,9 @@ export class S3Album extends React.Component {
         if (!select) { return; }
 
         item.selected = !item.selected;
-        this.setState({ items: this.state.items.slice() });
+        if (this._isMounted) {
+            this.setState({ items: this.state.items.slice() });
+        }
 
         if (!onSelect) { return; }
 
@@ -116,13 +116,13 @@ export class S3Album extends React.Component {
         onSelect(item, selected_items);
     }
 
-    onHubCapsule(capsule) {
-        const theme = this.props.theme || AmplifyTheme;
-        this.setState({ theme: Object.assign({}, theme) });
+    componentDidMount() {
+        this._isMounted = true;
+        this.list();
     }
 
-    componentDidMount() {
-        this.list();
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -144,12 +144,12 @@ export class S3Album extends React.Component {
     }
 
     list() {
-        const { path, level, track } = this.props;
+        const { path, level, track, identityId } = this.props;
         logger.debug('Album path: ' + path);
         if (!Storage || typeof Storage.list !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
-        return Storage.list(path, { level: level? level : 'public', track })
+        return Storage.list(path, { level: level ? level : 'public', track, identityId })
             .then(data => {
                 logger.debug('album list', data);
                 this.marshal(data);
@@ -169,18 +169,20 @@ export class S3Album extends React.Component {
         list.forEach(item => {
             if (item.contentType) { return; }
             const isString = typeof contentType === 'string';
-            item.contentType = isString? contentType : contentType(item);
+            item.contentType = isString ? contentType : contentType(item);
             if (!item.contentType) { item.contentType = this.contentType(item); }
         });
 
         let items = this.filter(list);
         items = this.sort(items);
-        this.setState({ items });
+        if (this._isMounted) {
+            this.setState({ items });
+        }
     }
 
     filter(list) {
         const { filter } = this.props;
-        return filter? filter(list) : list;
+        return filter ? filter(list) : list;
     }
 
     sort(list) {
@@ -189,14 +191,14 @@ export class S3Album extends React.Component {
         if (typeof_sort === 'function') { return sort(list); }
 
         if (['string', 'undefined'].includes(typeof_sort)) {
-            const sort_str = sort? sort : 'lastModified';
+            const sort_str = sort ? sort : 'lastModified';
             const parts = sort_str.split(/\s+/);
             const field = parts[0];
-            let dir = parts.length > 1? parts[1] : '';
+            let dir = parts.length > 1 ? parts[1] : '';
             if (field === 'lastModified') {
-                dir = (dir === 'asc')? 'asc' : 'desc';
+                dir = (dir === 'asc') ? 'asc' : 'desc';
             } else {
-                dir = (dir === 'desc')? 'desc' : 'asc';
+                dir = (dir === 'desc') ? 'desc' : 'asc';
             }
             sortByField(list, field, dir);
 
@@ -208,7 +210,7 @@ export class S3Album extends React.Component {
     }
 
     render() {
-        const { picker, translateItem, level } = this.props;
+        const { picker, translateItem, level, identityId } = this.props;
         const { items, ts } = this.state;
 
         const pickerTitle = this.props.pickerTitle || 'Pick';
@@ -218,39 +220,41 @@ export class S3Album extends React.Component {
         const list = items.map(item => {
             const isText = item.contentType && isTextFile(item.contentType);
             return isText ? <S3Text
-                             key={item.key}
-                             textKey={item.key}
-                             theme={theme}
-                             style={theme.albumText}
-                             selected={item.selected}
-                             translate={translateItem}
-                             level={level}
-                             onClick={() => this.handleClick(item)}
-                           />
-                         : <S3Image
-                             key={item.key}
-                             imgKey={item.key}
-                             theme={theme}
-                             style={theme.albumPhoto}
-                             selected={item.selected}
-                             translate={translateItem}
-                             level={level}
-                             onClick={() => this.handleClick(item)}
-                           />;
+                key={item.key}
+                textKey={item.key}
+                theme={theme}
+                style={theme.albumText}
+                selected={item.selected}
+                translate={translateItem}
+                level={level}
+                identityId={identityId}
+                onClick={() => this.handleClick(item)}
+            />
+                : <S3Image
+                    key={item.key}
+                    imgKey={item.key}
+                    theme={theme}
+                    style={theme.albumPhoto}
+                    selected={item.selected}
+                    translate={translateItem}
+                    level={level}
+                    identityId={identityId}
+                    onClick={() => this.handleClick(item)}
+                />;
         });
         return (
             <div>
                 <div style={theme.album}>
                     {list}
                 </div>
-                { picker? <Picker
-                            key={ts}
-                            title={pickerTitle}
-                            accept="image/*, text/*"
-                            onPick={this.handlePick}
-                            theme={theme}
-                          />
-                        : null
+                {picker ? <Picker
+                    key={ts}
+                    title={pickerTitle}
+                    accept="image/*, text/*"
+                    onPick={this.handlePick}
+                    theme={theme}
+                />
+                    : null
                 }
             </div>
         );

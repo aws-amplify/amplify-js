@@ -18,7 +18,8 @@ import {
   S3Album,
   S3Image,
   SumerianScene,
-  RequireNewPassword
+  RequireNewPassword,
+  Connect
 } from './components';
 import AmplifyPlugin from './plugins/AmplifyPlugin';
 import AmplifyEventBus from './events/AmplifyEventBus';
@@ -39,7 +40,8 @@ export default {
     S3Album,
     S3Image,
     SumerianScene,
-    RequireNewPassword
+    RequireNewPassword,
+    Connect
   },
   AmplifyPlugin,
   AmplifyEventBus,

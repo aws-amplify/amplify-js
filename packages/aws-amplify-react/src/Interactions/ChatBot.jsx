@@ -325,7 +325,6 @@ export class ChatBot extends React.Component {
                         inputDisabled={this.state.inputDisabled}
                         micButtonDisabled={this.state.micButtonDisabled}
                         handleMicButton={this.micButtonHandler}
-                        micText={this.state.micText}
                         currentVoiceState={this.state.currentVoiceState}>
                     </ChatBotInputs>
                 </SectionFooter>

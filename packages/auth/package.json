@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.13",
+  "version": "1.2.23-unstable.7",
   "description": "Auth category of aws-amplify",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -15,6 +15,7 @@
     "build:cjs": "tsc -p tsconfig.es5.json && rollup -c",
     "build:esm": "tsc -p tsconfig.es2015.json",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build:watch": "npm run clean && tsc -p . --watch",
     "clean": "rimraf tsc-out dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
@@ -32,10 +33,10 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.20",
-    "@aws-amplify/core": "^1.0.20",
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^3.0.6"
+    "@aws-amplify/cache": "1.0.26-unstable.1",
+    "@aws-amplify/core": "1.0.26-unstable.1",
+    "amazon-cognito-identity-js": "3.0.12-unstable.3",
+    "crypto-js": "^3.1.9-1"
   },
   "jest": {
     "transform": {

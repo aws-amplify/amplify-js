@@ -14,53 +14,53 @@
 // tslint:enable
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-import { countrylist, country }  from '../../../assets/countries';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+import { countrylist, country } from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
-
-
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-      <div class="amplify-form-header">{{this.header}}</div>
-
+      <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
+            {{ this.amplifyService.i18n().get(field.label) }}
             <span *ngIf="field.required">*</span>
           </label>
           <input #{{field.key}}
             class="amplify-form-input"
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
-            placeholder={{field.label}}
+            [placeholder]="this.amplifyService.i18n().get(field.label)"
             [(ngModel)]="user[field.key]" name="field.key" />
+            <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
+              {{passwordPolicy}}
+            </div>
         </div>
         <div *ngIf="field.key === 'phone_number'">
           <label class="amplify-input-label">
-            {{field.label}} 
+            {{ this.amplifyService.i18n().get(field.label) }}
             <span *ngIf="field.required">*</span>
           </label>
-          
           <div class="amplify-input-group">
             <div class="amplify-input-group-item">
               <select #countryCode
-                name="countryCode" 
+                name="countryCode"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country" 
+                class="amplify-select-phone-country"
                 [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"  
-                  value={{country.value}}>{{country.label}} 
+                <option *ngFor="let country of countries"
+                  value={{country.value}}>{{country.label}}
                 </option>
               </select>
             </div>
             <div class="amplify-input-group-item">
-              <input 
+              <input
                 class="amplify-form-input"
-                placeholder={{field.label}}
+                [placeholder]="this.amplifyService.i18n().get(field.label)"
                 [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
@@ -71,36 +71,31 @@ const template = `
         </div>
       </div>
       <div class="amplify-form-actions">
-        
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
-            Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
+            {{ this.amplifyService.i18n().get('Have an account?') }}
+            <a class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Sign in') }}
+            </a>
           </div>
         </div>
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          >Sign Up</button>
+          >{{ this.amplifyService.i18n().get('Sign Up') }}</button>
         </div>
-
       </div>
-
     </div>
-
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
-
 
 export class SignUpField{
   label: string;
@@ -124,18 +119,18 @@ export class SignUpComponentCore implements OnInit {
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
-  countries: country[];
+  countries: any[];
   header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
-  amplifyService: AmplifyService;
   hiddenFields: any = [];
+  passwordPolicy: string;
+  protected logger: any;
 
-
-  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.countries = countrylist;
-    this.amplifyService = amplifyService;
+    this.logger = this.amplifyService.logger('SignUpComponent');
   }
 
   @Input()
@@ -155,6 +150,9 @@ export class SignUpComponentCore implements OnInit {
       }
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
+      }
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
     }
   }
@@ -181,10 +179,16 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
+      }
     }
   }
 
   ngOnInit() {
+    if (!this.amplifyService.auth()){
+      this.logger.warn('Auth module not registered on AmplifyService provider');
+    }
     this.sortFields();
   }
 
@@ -199,8 +203,13 @@ export class SignUpComponentCore implements OnInit {
     // create user attribute property
     this.user.attributes = {};
 
-    // format phone number
-    this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+    // format phone number if it is a signUpField
+    const phoneNumberRequested = this.signUpFields.find((el) => {
+      return el.key === 'phone_number';
+    });
+    if (phoneNumberRequested) {
+      this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+    }
 
     // create user key and value arrays
     const userKeys = Object.keys(this.user);
@@ -220,6 +229,7 @@ export class SignUpComponentCore implements OnInit {
       .then((user) => {
         const username = this.user.username;
         this.user = {};
+        this.onAlertClose();
         this.amplifyService
         .setAuthState({ state: 'confirmSignUp', user: { 'username': username} });
       })
@@ -227,6 +237,7 @@ export class SignUpComponentCore implements OnInit {
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
@@ -235,14 +246,13 @@ export class SignUpComponentCore implements OnInit {
     if (key.indexOf('custom:') !== 0) {
       return field.custom ;
     } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-      this.amplifyService.logger('SignUpComponent', 'WARN')
-      .log('Custom prefix prepended to key but custom field flag is set to false');
-      
+      this.logger.warn('Custom prefix prepended to key but custom field flag is set to false');
     }
     return null;
   }
 
   onConfirmSignUp() {
+    this.onAlertClose();
     this.amplifyService
       .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } });
   }
@@ -254,7 +264,7 @@ export class SignUpComponentCore implements OnInit {
         return !this.hiddenFields.includes(d.key);
       });
     }
-    
+
     if (this._signUpConfig &&
       this._signUpConfig.signUpFields &&
       this._signUpConfig.signUpFields.length > 0
@@ -272,7 +282,7 @@ export class SignUpComponentCore implements OnInit {
         });
       }
 
-      /* 
+      /*
         sort fields based on following rules:
         1. Fields with displayOrder are sorted before those without displayOrder
         2. Fields with conflicting displayOrder are sorted alphabetically by key
@@ -324,14 +334,14 @@ export class SignUpComponentCore implements OnInit {
       if (el.key !== 'phone_number') {
         if (el.required && !this.user[el.key]) {
           el.invalid = true;
-          invalids.push(el.label);
+          invalids.push(this.amplifyService.i18n().get(el.label));
         } else {
           el.invalid = false;
-        }        
+        }
       } else {
         if (el.required && (!this.country_code || !this.local_phone_number)) {
           el.invalid = true;
-          invalids.push(el.label);
+          invalids.push(this.amplifyService.i18n().get(el.label));
         } else {
           el.invalid = false;
         }

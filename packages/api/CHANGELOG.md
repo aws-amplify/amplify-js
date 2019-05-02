@@ -3,6 +3,369 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.34-unstable.7"></a>
+## [1.0.34-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.6...@aws-amplify/api@1.0.34-unstable.7) (2019-04-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.6"></a>
+## [1.0.34-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.5...@aws-amplify/api@1.0.34-unstable.6) (2019-04-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.5"></a>
+## [1.0.34-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.4...@aws-amplify/api@1.0.34-unstable.5) (2019-04-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.4"></a>
+## [1.0.34-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.3...@aws-amplify/api@1.0.34-unstable.4) (2019-04-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.3"></a>
+## [1.0.34-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.2...@aws-amplify/api@1.0.34-unstable.3) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.2"></a>
+## [1.0.34-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.1...@aws-amplify/api@1.0.34-unstable.2) (2019-04-16)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.1"></a>
+## [1.0.34-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.0...@aws-amplify/api@1.0.34-unstable.1) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.0"></a>
+## [1.0.34-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.33...@aws-amplify/api@1.0.34-unstable.0) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.33"></a>
+## [1.0.33](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.33-unstable.0...@aws-amplify/api@1.0.33) (2019-04-11)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.33-unstable.0"></a>
+## [1.0.33-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.32...@aws-amplify/api@1.0.33-unstable.0) (2019-04-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.32"></a>
+## [1.0.32](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.32-unstable.1...@aws-amplify/api@1.0.32) (2019-04-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.32-unstable.1"></a>
+## [1.0.32-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.32-unstable.0...@aws-amplify/api@1.0.32-unstable.1) (2019-04-08)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.32-unstable.0"></a>
+## [1.0.32-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.31...@aws-amplify/api@1.0.32-unstable.0) (2019-04-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.31"></a>
+## [1.0.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.31-unstable.1...@aws-amplify/api@1.0.31) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.31-unstable.1"></a>
+## [1.0.31-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.31-unstable.0...@aws-amplify/api@1.0.31-unstable.1) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.31-unstable.0"></a>
+## [1.0.31-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30...@aws-amplify/api@1.0.31-unstable.0) (2019-04-02)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30"></a>
+## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.7...@aws-amplify/api@1.0.30) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.7"></a>
+## [1.0.30-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.6...@aws-amplify/api@1.0.30-unstable.7) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.6"></a>
+## [1.0.30-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.5...@aws-amplify/api@1.0.30-unstable.6) (2019-03-25)
+
+
+### Bug Fixes
+
+* **api:** allow API options to be merged with root level options ([8965b36](https://github.com/aws/aws-amplify/commit/8965b36)), closes [#1302](https://github.com/aws/aws-amplify/issues/1302)
+
+
+
+
+<a name="1.0.30-unstable.5"></a>
+## [1.0.30-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.4...@aws-amplify/api@1.0.30-unstable.5) (2019-03-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.4"></a>
+## [1.0.30-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.3...@aws-amplify/api@1.0.30-unstable.4) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.3"></a>
+## [1.0.30-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.2...@aws-amplify/api@1.0.30-unstable.3) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.2"></a>
+## [1.0.30-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.1...@aws-amplify/api@1.0.30-unstable.2) (2019-03-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.1"></a>
+## [1.0.30-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.30-unstable.0...@aws-amplify/api@1.0.30-unstable.1) (2019-03-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.30-unstable.0"></a>
+## [1.0.30-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.29...@aws-amplify/api@1.0.30-unstable.0) (2019-03-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.29"></a>
+## [1.0.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.29-unstable.1...@aws-amplify/api@1.0.29) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.29-unstable.1"></a>
+## [1.0.29-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.29-unstable.0...@aws-amplify/api@1.0.29-unstable.1) (2019-03-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.29-unstable.0"></a>
+## [1.0.29-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.28...@aws-amplify/api@1.0.29-unstable.0) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.28"></a>
+## [1.0.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27...@aws-amplify/api@1.0.28) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27"></a>
+## [1.0.27](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.8...@aws-amplify/api@1.0.27) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.8"></a>
+## [1.0.27-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.7...@aws-amplify/api@1.0.27-unstable.8) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.7"></a>
+## [1.0.27-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.6...@aws-amplify/api@1.0.27-unstable.7) (2019-03-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.6"></a>
+## [1.0.27-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.5...@aws-amplify/api@1.0.27-unstable.6) (2019-03-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.5"></a>
+## [1.0.27-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.4...@aws-amplify/api@1.0.27-unstable.5) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.4"></a>
+## [1.0.27-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.3...@aws-amplify/api@1.0.27-unstable.4) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.3"></a>
+## [1.0.27-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.2...@aws-amplify/api@1.0.27-unstable.3) (2019-01-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.2"></a>
+## [1.0.27-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.1...@aws-amplify/api@1.0.27-unstable.2) (2019-01-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.1"></a>
+## [1.0.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.27-unstable.0...@aws-amplify/api@1.0.27-unstable.1) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.27-unstable.0"></a>
+## [1.0.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.26...@aws-amplify/api@1.0.27-unstable.0) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.26"></a>
+## [1.0.26](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.26-unstable.0...@aws-amplify/api@1.0.26) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.26-unstable.0"></a>
+## [1.0.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.25...@aws-amplify/api@1.0.26-unstable.0) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.25"></a>
+## [1.0.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.25-unstable.2...@aws-amplify/api@1.0.25) (2018-12-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.25-unstable.2"></a>
+## [1.0.25-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.25-unstable.1...@aws-amplify/api@1.0.25-unstable.2) (2018-12-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.25-unstable.1"></a>
+## [1.0.25-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.25-unstable.0...@aws-amplify/api@1.0.25-unstable.1) (2018-12-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.25-unstable.0"></a>
+## [1.0.25-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.24...@aws-amplify/api@1.0.25-unstable.0) (2018-12-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
 <a name="1.0.24"></a>
 ## [1.0.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.24-unstable.3...@aws-amplify/api@1.0.24) (2018-12-13)
 

@@ -34,7 +34,9 @@ import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
-export class Authenticator extends React.Component {
+export const EmptyContainer = ({ children }) => <>{children}</>;
+
+export class Authenticator extends Component {
     constructor(props) {
         super(props);
 
@@ -44,7 +46,7 @@ export class Authenticator extends React.Component {
 
         this._initialAuthState = this.props.authState || 'signIn';
         this.state = { authState: 'loading' };
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
@@ -60,7 +62,7 @@ export class Authenticator extends React.Component {
         // the app is redirected back from Hosted UI or not
         const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
         localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        if (!byHostedUI) this.checkUser();
+        if (byHostedUI !== 'true') this.checkUser();
     }
 
     componentWillUnmount() {
@@ -104,6 +106,12 @@ export class Authenticator extends React.Component {
                 case 'parsingUrl_failure':
                     this.handleStateChange('signIn', null);
                     break;
+                case 'signOut':
+                    this.handleStateChange('signIn', null);
+                    break;
+                case 'customGreetingSignOut':
+                    this.handleStateChange('signIn', null);
+                    break;
                 default:
                     break;
             }
@@ -120,7 +128,10 @@ export class Authenticator extends React.Component {
         } catch (e) {
             logger.debug('Failed to set the auth state into local storage', e);
         }
-        this.setState({ authState: state, authData: data, error: null, showToast: false });
+
+        if (this._isMounted) {
+            this.setState({ authState: state, authData: data, error: null, showToast: false });            
+        }
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
@@ -137,6 +148,10 @@ export class Authenticator extends React.Component {
         const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
+        // If container prop is undefined, default to AWS Amplify UI Container
+        // otherwise if truthy, use the supplied render prop
+        // otherwise if falsey, use EmptyContainer
+        const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
 
         let { hideDefault, hide = [], federated, signUpConfig } = this.props;
         if (hideDefault) {
@@ -153,7 +168,15 @@ export class Authenticator extends React.Component {
                 Loading
             ]);
         }
-        const props_children = this.props.children || [];
+
+        let props_children = [];
+        if (typeof this.props.children === 'object') {
+            if (Array.isArray(this.props.children)){
+                props_children = this.props.children;
+            } else {
+                props_children.push(this.props.children);
+            }
+        } 
 
         const default_children = [
             <Greetings federated={federated}/>,
@@ -203,14 +226,14 @@ export class Authenticator extends React.Component {
         const error = this.state.error;        
 
         return (
-            <Container theme={theme}>
+            <Wrapper theme={theme}>
                 {this.state.showToast && 
                     <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
                 }
                 {render_children}
-            </Container>
+            </Wrapper>
         );
     }
 }

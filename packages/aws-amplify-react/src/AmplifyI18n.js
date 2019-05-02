@@ -44,7 +44,21 @@ export const dict = {
         'Invalid password format': "format de mot de passe invalide",
         'Invalid phone number format':
 `Format de numéro de téléphone invalide.
-Veuillez utiliser un format de numéro de téléphone du +12345678900`
+Veuillez utiliser un format de numéro de téléphone du +12345678900`,
+        'Sign in to your account': "Connectez-vous à votre compte",
+        'Forget your password? ': "Mot de passe oublié ? ",
+        'Reset password': "Réinitialisez votre mot de passe",
+        'No account? ': "Pas de compte ? ",
+        'Create account': "Créer un compte",
+        'Create Account': "Créer un compte",
+        'Have an account? ': "Déjà un compte ? ",
+        'Sign in': "Se connecter",
+        'Create a new account': "Créer un nouveau compte",
+        'Reset your password': "Réinitialisez votre mot de passe",
+        'Enter your username': "Saisissez votre nom d'utilisateur",
+        'Enter your password': "Saisissez votre mot de passe",
+        'An account with the given email already exists.': "Un utilisateur avec cette adresse email existe déjà.",
+        'Username cannot be empty': "Le nom d'utilisateur doit être renseigné"
     },
 
     'es': {

@@ -1,5 +1,6 @@
 import { AmplifyService } from '../../../providers/amplify.service'
-import { SumerianSceneComponentIonic } from '../../../components/xr/sumerian-scene-component/sumerian-scene.component.ionic'
+import { SumerianSceneComponentIonic } from '../../../components/xr/sumerian-scene-component/sumerian-scene.component.ionic';
+import Amplify from 'aws-amplify'; 
 
 describe('SumerianSceneComponentIonic: ', () => {
 
@@ -8,7 +9,7 @@ describe('SumerianSceneComponentIonic: ', () => {
 
 
   beforeEach(() => { 
-    service = new AmplifyService();
+    service = new AmplifyService(Amplify);
     component = new SumerianSceneComponentIonic(service);
   });
 
@@ -22,7 +23,7 @@ describe('SumerianSceneComponentIonic: ', () => {
   });
 
   it('...should have a enterVR method', () => {
-    expect(component.enterVR).toBeTruthy();
+    expect(component.toggleVRPresentation).toBeTruthy();
   });
 
   it('...should have an loadAndStartScene method', () => {

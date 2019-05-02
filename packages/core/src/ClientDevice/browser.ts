@@ -13,7 +13,6 @@
 
 import { Hub } from '../Hub';
 import { ConsoleLogger as Logger } from '../Logger';
-import { browserOrNode } from '../JS';
 
 const logger = new Logger('ClientDevice_Browser');
 
@@ -87,23 +86,4 @@ function browserType(userAgent) {
     if (anyMatch) { return { type: anyMatch[1], version: anyMatch[2]}; }
 
     return { type: '', version: '' };
-}
-
-if (browserOrNode().isBrowser && typeof window.addEventListener === 'function') {
-    window.addEventListener('resize', function() {
-        Hub.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
-    });
-
-    window.addEventListener('scroll', function() {
-        const pos = { x: window.scrollX, y: window.scrollY };
-        Hub.dispatch('window', { event: 'scroll', data: pos }, 'DeviceInfo');
-    });
-
-    window.addEventListener('offline', function() {
-        Hub.dispatch('window', { event: 'offline' }, 'DeviceInfor');
-    });
-
-    window.addEventListener('online', function() {
-        Hub.dispatch('window', { event: 'online' }, 'DeviceInfor');
-    });
 }

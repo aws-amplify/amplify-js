@@ -141,6 +141,7 @@ export class CredentialsClass {
     }
 
     private async _setCredentialsForGuest() {
+        let attempted = false;
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
@@ -169,7 +170,34 @@ export class CredentialsClass {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'guest', false, null);
+        return this._loadCredentials(credentials, 'guest', false, null)
+        .then((res) => {
+            return res;
+         })
+        .catch(async (e) => {
+            // If identity id is deleted in the console, we make one attempt to recreate it
+            // and remove existing id from cache. 
+            if (e.code === 'ResourceNotFoundException' &&
+                e.message === `Identity '${identityId}' not found.`
+                && !attempted) {
+                attempted = true;
+                logger.debug('Failed to load guest credentials');
+                this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+                credentials.clearCachedId();
+                const newCredentials = new AWS.CognitoIdentityCredentials(
+                    {
+                        IdentityPoolId: identityPoolId,
+                        IdentityId: undefined
+                    },  
+                    {
+                        region
+                    }
+                );
+                return this._loadCredentials(newCredentials, 'guest', false, null);
+            } else {
+                return e;
+            }
+        });
     }
 
     private _setCredentialsFromAWS() {
@@ -177,7 +205,7 @@ export class CredentialsClass {
         logger.debug('setting credentials from aws');
         const that = this;
         if (credentials instanceof AWS.Credentials){
-            return this._loadCredentials(credentials, 'aws', undefined, null);
+            return Promise.resolve(credentials);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');

@@ -12,10 +12,10 @@
  */
 
 import * as React from 'react';
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { AuthPiece } from './AuthPiece';
-import { NavBar, Nav, NavRight, NavItem } from '../Amplify-UI/Amplify-UI-Components-React';
+import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import { SignOut } from './SignOut';
 import { withGoogle, withAmazon, withFacebook, withAuth0 } from './Provider';
@@ -25,14 +25,54 @@ const logger = new Logger('Greetings');
 export class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
+        this.state = {};
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        Hub.listen('auth', this.onHubCapsule);
+        this._validAuthStates = ['signedIn'];
+
     }
 
     componentDidMount() {
         this._isMounted = true;
+        this.findState();
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+    }
+
+    
+    findState(){
+        if (!this.props.authState && !this.props.authData) {
+            Auth.currentAuthenticatedUser()
+            .then(user => {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: user,
+                    stateFromStorage: true
+                })
+            })
+            .catch(err => logger.debug(err));
+        }
+    }
+
+    onHubCapsule(capsule) {
+        if (this._isMounted) {
+            const { channel, payload, source } = capsule;
+            if (channel === 'auth' && payload.event === 'signIn') {
+                this.setState({
+                    authState: 'signedIn',
+                    authData: payload.data
+                })
+                if  (!this.props.authState) {
+                    this.setState({stateFromStorage: true})
+                }
+            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
+                this.setState({
+                    authState: 'signIn'
+                });
+            } 
+        }
     }
 
     inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
@@ -40,7 +80,7 @@ export class Greetings extends AuthPiece {
 
 
     userGreetings(theme) {
-        const user = this.props.authData;
+        const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
         const nameFromAttr = user.attributes? 
@@ -77,12 +117,10 @@ export class Greetings extends AuthPiece {
         if (amazonClientId) SignOutComponent = withAmazon(SignOut);
         if (auth0_config) SignOutComponent = withAuth0(SignOut);
 
+        const stateAndProps = Object.assign({}, this.props, this.state);
+
         return <SignOutComponent
-            {...this.props} 
-            google_client_id={google_client_id} 
-            facebook_app_id={facebook_app_id} 
-            amazon_client_id={amazon_client_id}
-            auth0={auth0_config}
+            {...stateAndProps} 
             />;
     }
 
@@ -96,7 +134,7 @@ export class Greetings extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(Greetings)) { return null; }
 
-        const { authState } = this.props;
+        const authState  = this.props.authState || this.state.authState;
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;

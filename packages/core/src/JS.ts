@@ -168,8 +168,7 @@ export const browserOrNode = () => {
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToLowerCase = (obj, whiteListForItself = [], whiteListForChildren = []) => {
-    if (typeof obj !== 'object' || Array.isArray(obj)) return obj;
-
+    if (!isStrictObject(obj)) return obj;
     const ret = {};
 
     for (const key in obj) {
@@ -196,8 +195,7 @@ export const transferKeyToLowerCase = (obj, whiteListForItself = [], whiteListFo
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToUpperCase = (obj, whiteListForItself = [], whiteListForChildren = []) => {
-    if (typeof obj !== 'object' || Array.isArray(obj)) return obj;
-
+    if (!isStrictObject(obj)) return obj;
     const ret = {};
 
     for (const key in obj) {
@@ -212,9 +210,23 @@ export const transferKeyToUpperCase = (obj, whiteListForItself = [], whiteListFo
                 );
         }
     }
-
     return ret;
 };
+
+/**
+     * Return true if the object is a strict object
+     * which means it's not Array, Function, Number, String, Boolean or Null
+     * @param obj the Object
+     */
+export const isStrictObject = (obj) => { 
+        return ((obj instanceof Object) && 
+            !(obj instanceof Array) &&
+            !(obj instanceof Function) &&
+            !(obj instanceof Number) &&
+            !(obj instanceof String) &&
+            !(obj instanceof Boolean)
+        );
+    }
 
 /**
  * @deprecated use per-function imports
@@ -230,6 +242,7 @@ export class JS {
     static browserOrNode = browserOrNode;
     static transferKeyToLowerCase = transferKeyToLowerCase;
     static transferKeyToUpperCase = transferKeyToUpperCase;
+    static isStrictObject = isStrictObject;
 }
 
 /**

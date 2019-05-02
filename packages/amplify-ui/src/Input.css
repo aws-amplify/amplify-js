@@ -25,7 +25,17 @@
   margin-bottom: 8px;
 }
 
+.label {
+  color: var(--input-color);
+}
+
 .radio {
   margin-right: 18px;
   vertical-align: bottom;
+}
+
+@media only screen and (max-width: 599px) {
+  .input {
+    font-size: 16px;
+  }
 }

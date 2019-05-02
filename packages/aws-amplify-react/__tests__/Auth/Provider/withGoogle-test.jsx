@@ -142,6 +142,9 @@ describe('withGoogle test', () => {
                         getName() {
                             return 'name';
                         }
+                        getImageUrl() {
+                            return 'picture';
+                        }
                     };
                 }
             };
@@ -167,7 +170,7 @@ describe('withGoogle test', () => {
             expect(spyon).toBeCalledWith(
                 'google',
                 { expires_at: 0, token: 'id_token' },
-                { email: 'email', name: 'name' }
+                { email: 'email', name: 'name', picture: 'picture' }
             );
 
             spyon.mockClear();
@@ -198,6 +201,9 @@ describe('withGoogle test', () => {
                         getName() {
                             return 'name';
                         }
+                        getImageUrl() {
+                            return 'picture';
+                        }
                     };
                 }
             };
@@ -226,7 +232,7 @@ describe('withGoogle test', () => {
             expect(spyon).toBeCalledWith(
                 'google',
                 { expires_at: 0, token: 'id_token' },
-                { email: 'email', name: 'name' }
+                { email: 'email', name: 'name', picture: 'picture' }
             );
             expect(mockFn).toBeCalledWith('signedIn', 'user');
 
@@ -302,7 +308,8 @@ describe('withGoogle test', () => {
                             getBasicProfile() {
                                 return {
                                     getEmail() { return 'email'; },
-                                    getName() { return 'name'; }
+                                    getName() { return 'name'; },
+                                    getImageUrl() { return 'picture'; }
                                 };
                             }
                         };
