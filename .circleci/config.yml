@@ -71,27 +71,27 @@ jobs:
             cd packages/aws-amplify-react
             yarn link
       - run: 
-          name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+          name: "Clone samples package and link amplify packages"
           command: |
             mkdir ~/.ssh
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             cd ~
-            git clone $AUTH_CLONE_URL
-            cd aws-amplify-cypress-auth
+            git clone git@github.com:sammartinez/amplify-js-samples.git
+            cd samples/react/auth/with-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-react
             echo $AWS_EXPORTS_AUTH > src/aws-exports.js
       - run:
-          name: "Start Auth test server in background"
+          name: "Start React Auth Sample server in background"
           command: |
-            cd ~/aws-amplify-cypress-auth
+            cd ~/samples/react/auth/with-authenticator
             yarn start
           background: true
       - run:
           name: "Run cypress tests for aws-amplify-react"
           command: |
-            yarn cypress --scope aws-amplify-react
+            yarn cypress:open
       - store_artifacts:
           path: /root/app/packages/aws-amplify-react/cypress/videos
       - store_artifacts:
@@ -132,6 +132,7 @@ workflows:
               only:
                 - release
                 - master
+                -cypress-root
           requires:
             - build
       - deploy:
