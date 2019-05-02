@@ -132,7 +132,7 @@ workflows:
               only:
                 - release
                 - master
-                -cypress-root
+                - cypress-root
           requires:
             - build
       - deploy:
