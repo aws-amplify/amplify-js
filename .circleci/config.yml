@@ -78,12 +78,16 @@ jobs:
             cd ~
             git clone git@github.com:sammartinez/amplify-js-samples.git
             cd amplify-js-samples
+            ls
+            pwd
             yarn
             # yarn link aws-amplify
             # yarn link aws-amplify-react
       - run:
           name: "Start React Auth Sample server in background"
           command: |
+            ls
+            pwd
             cd amplify-js-samples/samples/react/auth/with-authenticator
             yarn
             yarn start
@@ -134,8 +138,8 @@ workflows:
                 - release
                 - master
                 - cypress-root
-          requires:
-            - build
+          # requires:
+          #   - build
       - deploy:
           filters:
             branches:
