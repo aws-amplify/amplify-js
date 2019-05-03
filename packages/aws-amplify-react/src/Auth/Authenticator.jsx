@@ -36,7 +36,7 @@ const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 export const EmptyContainer = ({ children }) => <>{children}</>;
 
-export class Authenticator extends Component {
+export class Authenticator extends React.Component {
     constructor(props) {
         super(props);
 
