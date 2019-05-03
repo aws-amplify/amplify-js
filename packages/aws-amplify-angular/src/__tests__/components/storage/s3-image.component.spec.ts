@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { 
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting 
+} from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service';
 import Amplify from 'aws-amplify';
-import { S3ImageComponentCore } from '../../../components/storage/s3-image-component/s3-image.component.core'
+import { S3ImageComponentCore } from 
+'../../../components/storage/s3-image-component/s3-image.component.core';
 
 
 describe('S3ImageComponentCore: ', () => {
