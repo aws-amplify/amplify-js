@@ -70,13 +70,10 @@ jobs:
           command: |
             cd packages/aws-amplify-react
             yarn link
-      - run:
-          name: Avoid hosts unknown error for github
-          command: mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - run: 
           name: "Clone samples package and link amplify packages"
           command: |
-            mkdir ~/.ssh
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             cd ~
             git clone git@github.com:sammartinez/amplify-js-samples.git
