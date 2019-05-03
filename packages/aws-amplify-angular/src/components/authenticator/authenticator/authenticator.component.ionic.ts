@@ -24,6 +24,7 @@ const template = `
 <amplify-auth-sign-in-ionic
   *ngIf="!shouldHide('SignIn')"
   [authState]="authState"
+  [hide]="hide"
 ></amplify-auth-sign-in-ionic>
 
 <amplify-auth-sign-up-ionic
