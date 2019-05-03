@@ -95,6 +95,8 @@ jobs:
       - run:
           name: "Run cypress tests for aws-amplify-react"
           command: |
+            ls
+            pwd
             cd amplify-js-samples
             yarn cypress:react
       - store_artifacts:
