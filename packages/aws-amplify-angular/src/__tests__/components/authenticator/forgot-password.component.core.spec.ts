@@ -53,7 +53,6 @@ describe('ForgotPasswordComponentCore: ', () => {
     component = null;
   });
 
-
   it('...should be created', () => {
     expect(component).toBeTruthy();
   });
@@ -61,7 +60,7 @@ describe('ForgotPasswordComponentCore: ', () => {
   it('...should have an onSend method', () => {
     expect(component.onSend).toBeTruthy();
   });
-  
+
   it('...should have an onSignIn method', () => {
     expect(component.onSignIn).toBeTruthy();
   });
