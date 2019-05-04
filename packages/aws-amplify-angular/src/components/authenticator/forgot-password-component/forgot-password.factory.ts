@@ -13,8 +13,14 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
@@ -33,6 +39,7 @@ import { AuthState } from '../../../providers';
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -46,10 +53,11 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ForgotPasswordComponentIonic,{authState: this.authState}) :
-    new ComponentMount(ForgotPasswordComponentCore, {authState: this.authState});
+    new ComponentMount(ForgotPasswordComponentIonic,{hide: this.hide, authState: this.authState}) :
+    new ComponentMount(ForgotPasswordComponentCore, {hide: this.hide, authState: this.authState});
 
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
     const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();

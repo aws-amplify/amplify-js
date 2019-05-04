@@ -24,7 +24,7 @@ export default (Comp) => {
     return class WithOAuth extends React.Component {
         constructor(props) {
             super(props);
-
+            this._isMounted = false;
             const config = this._getOAuthConfig();
 
             const {
@@ -35,7 +35,6 @@ export default (Comp) => {
 
             this.hostedUISignIn = this.hostedUISignIn.bind(this);
             this.signOut = this.signOut.bind(this);
-            this._getOAuthUrl = this._getOAuthUrl.bind(this);
             this.urlOpener = this.urlOpener.bind(this);
 
             this.state = {
@@ -50,27 +49,21 @@ export default (Comp) => {
         }
 
         componentDidMount() {
-            Linking.getInitialURL().then(url => {
-                const config = Auth.configure();
-
-                if (url && config) {
-                    Auth.configure(config);
-                }
+            this._isMounted = true;
+            Auth.currentAuthenticatedUser().then(user => {
+                this.setState({ user })
             }).catch(error => {
-                logger.debug('componentDidMount [Linking.getInitialURL]', error);
-            }).then(() => {
-                Auth.currentAuthenticatedUser().then(user => {
-                    this.setState({ user })
-                }).catch(error => {
-                    logger.debug(error);
-
-                    this.setState({ user: null });
-                });
+                logger.debug(error);
+                this.setState({ user: null });
             });
         }
-
+        componentWillUnmount() {
+            this._isMounted = false;
+            return;
+        }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
+            if (!this._isMounted) return;
             const { channel, payload } = capsule;
 
             if (channel === 'auth') {
@@ -79,7 +72,6 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-
                             this.setState({ user, error: null });
                         });
                         break;
@@ -115,37 +107,8 @@ export default (Comp) => {
             return config;
         }
 
-        _getOAuthUrl(provider = CognitoHostedUIIdentityProvider.Cognito) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                domain,
-                redirectSignIn,
-                responseType
-            } = config;
-
-            const options = config.options || {};
-            const url = `https://${domain}/authorize?${
-                Object.entries({
-                    redirect_uri: redirectSignIn,
-                    response_type: responseType,
-                    client_id: options.ClientId || Auth.configure().userPoolWebClientId,
-                    identity_provider: provider,
-                }).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
-
-            return Promise.resolve(url);
-        }
-
         hostedUISignIn(provider) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                redirectSignIn,
-            } = config;
-
-            return this._getOAuthUrl(provider).then(url => this.urlOpener(url, redirectSignIn));
+            Auth.federatedSignIn({ provider });
         }
 
         signOut() {
@@ -157,7 +120,6 @@ export default (Comp) => {
             const { oauth_config: _, ...otherProps } = this.props;
 
             const oAuthProps = {
-                getOAuthUrl: this._getOAuthUrl,
                 oAuthUser,
                 oAuthError,
                 hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),

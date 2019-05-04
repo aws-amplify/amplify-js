@@ -19,6 +19,9 @@ export default callback => {
         const url = window.location.href;
 
         callback({ url });
+    } else if (JS.browserOrNode().isNode) {
+        // continue building on ssr
+        () => {}; // noop
     } else {
         throw new Error('Not supported');
     }
