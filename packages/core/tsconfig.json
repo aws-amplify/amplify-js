@@ -21,7 +21,6 @@
         // temporary fix
         "types": ["node"]
     },
-    "files": ["./typings.d.ts", "./package.json"],
     "include": [
         "src/**/*"
     ]

@@ -17,7 +17,8 @@
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "clean": "rimraf tsc-out dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts'",
+    "test-node": "node ./build es5" 
   },
   "react-native": {
     "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
