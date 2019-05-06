@@ -6,6 +6,7 @@ import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import { Signer, Credentials } from '@aws-amplify/core';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
@@ -305,6 +306,9 @@ describe('API test', () => {
 
             const observable = api.graphql(graphqlOperation(query, variables)).subscribe({
                 next: () => {
+                    expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
+                    const subscribeOptions = PubSub.subscribe.mock.calls[0][1];
+                    expect(subscribeOptions.provider).toBe(INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER);
                     done();
                 }
             });
