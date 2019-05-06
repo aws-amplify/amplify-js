@@ -1,0 +1,41 @@
+{
+  "name": "@aws-amplify/ui-components",
+  "version": "0.0.1",
+  "description": "Stencil Component Starter",
+  "module": "dist/esm/index.js",
+  "main": "dist/index.js",
+  "unpkg": "dist/ionic.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "format": "eslint --fix --ext .js,.ts,.tsx .",
+    "pretest": "npm run lint",
+    "test": "stencil test --spec --e2e",
+    "test:watch": "stencil test --spec --e2e --watchAll",
+    "stencil": "stencil build --docs",
+    "stencil:watch": "stencil build --dev --watch",
+    "start": "stencil build --dev --watch --serve",
+    "build-with-test": "npm run clean && npm test && npm run stencil",
+    "build": "npm run clean && npm run stencil",
+    "build:watch": "npm run clean && npm run stencil:watch",
+    "clean": "rimraf dist .stencil"
+  },
+  "dependencies": {
+    "emotion": "^10.0.9"
+  },
+  "devDependencies": {
+    "@stencil/core": "~0.18.1",
+    "@stencil/state-tunnel": "^0.0.8",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "prettier": "^1.16.4"
+  },
+  "license": "MIT"
+}
