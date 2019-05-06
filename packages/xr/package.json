@@ -2,9 +2,9 @@
   "name": "@aws-amplify/xr",
   "version": "0.1.16-unstable.2",
   "description": "XR category of aws-amplify",
-  "main": "./tsc-out/cjs/index.js",
-  "module": "./tsc-out/esm/index.js",
-  "typings": "./tsc-out/esm/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./esm/index.js",
+  "typings": "./esm/index.d.ts",
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
@@ -12,9 +12,10 @@
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm test && npm run build",
-    "build": "npm run clean && tsc -p tsconfig.es5.json && tsc -p tsconfig.es2015.json",
+    "build:cjs": "node ./build es5 && node ./build rollup",
+    "build:esm": "node ./build es6",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "clean": "rimraf tsc-out dist",
-    "watch": "tsc --watch",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
