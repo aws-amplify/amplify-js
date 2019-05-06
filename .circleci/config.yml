@@ -88,7 +88,7 @@ jobs:
           command: |
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
             yarn
-            ls
+            pwd
             yarn start
           background: true
       - run:
