@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.16-unstable.3"></a>
+## [0.1.16-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.2...@aws-amplify/xr@0.1.16-unstable.3) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.16-unstable.2"></a>
+## [0.1.16-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.1...@aws-amplify/xr@0.1.16-unstable.2) (2019-04-19)
+
+
+### Features
+
+* **@aws-amplify/xr:** Changing signing logic in SumerianProvider to use Auth Headers instead of Query Params. This makes it easier for caching libraries like Workbox to cache requests which enable offline PWA Sumerian apps. ([3682b3b](https://github.com/aws/aws-amplify/commit/3682b3b))
+
+
+
+
+<a name="0.1.16-unstable.1"></a>
+## [0.1.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.0...@aws-amplify/xr@0.1.16-unstable.1) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.16-unstable.0"></a>
+## [0.1.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.15...@aws-amplify/xr@0.1.16-unstable.0) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.15"></a>
+## [0.1.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.15-unstable.1...@aws-amplify/xr@0.1.15) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.15-unstable.1"></a>
+## [0.1.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.15-unstable.0...@aws-amplify/xr@0.1.15-unstable.1) (2019-04-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.15-unstable.0"></a>
+## [0.1.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.14...@aws-amplify/xr@0.1.15-unstable.0) (2019-04-02)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.14"></a>
+## [0.1.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.14-unstable.1...@aws-amplify/xr@0.1.14) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.14-unstable.1"></a>
+## [0.1.14-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.14-unstable.0...@aws-amplify/xr@0.1.14-unstable.1) (2019-03-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.14-unstable.0"></a>
+## [0.1.14-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.13...@aws-amplify/xr@0.1.14-unstable.0) (2019-03-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
 <a name="0.1.13"></a>
 ## [0.1.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.13-unstable.4...@aws-amplify/xr@0.1.13) (2019-03-04)
 

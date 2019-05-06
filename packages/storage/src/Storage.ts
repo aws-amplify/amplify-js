@@ -61,12 +61,9 @@ export default class StorageClass {
         if (pluggable && pluggable.getCategory() === 'Storage') {
             this._pluggables.push(pluggable);
             let config = {};
-            // for backward compatibility
-            if (pluggable.getProviderName() === DEFAULT_PROVIDER && !this._config[DEFAULT_PROVIDER]) {
-                config = pluggable.configure(this._config);
-            } else {
-                config = pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
+            
+            config = pluggable.configure(this._config[pluggable.getProviderName()]);
+            
             return config;
         }
     }
@@ -77,7 +74,7 @@ export default class StorageClass {
      */
     public getPluggable(providerName: string) {
         const pluggable = this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
-        if(pluggable === undefined) {
+        if (pluggable === undefined) {
             logger.debug('No plugin found with providerName', providerName);
             return null;
         } else
@@ -88,8 +85,8 @@ export default class StorageClass {
      * Remove the plugin object
      * @param providerName - the name of the plugin
      */
-    public removePluggable(providerName:string) {
-        this._pluggables = this._pluggables.filter(pluggable=> pluggable.getProviderName() !== providerName);
+    public removePluggable(providerName: string) {
+        this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         return;
     }
 
@@ -101,17 +98,44 @@ export default class StorageClass {
     configure(config?) {
         logger.debug('configure Storage');
         if (!config) return this._config;
+
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Storage);
-        if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
+        const { bucket, region, level, track, customPrefix } = amplifyConfig.Storage as any;
+        // Update DEFAULT_PROVIDER with defined attributes bucket, region, level, track, customPrefix if exists 
+        // on amplifyConfig.Storage, backwards compatible issue 
+        if ((bucket || region || level || track || customPrefix) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
+        }
+        if (bucket) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].bucket = bucket;
+            delete amplifyConfig.Storage['bucket'];
+        }
+        if (region) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].region = region;
+            delete amplifyConfig.Storage['region'];
+        }
+        if (level) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].level = level;
+            delete amplifyConfig.Storage['level'];
+        }
+        if (track) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].track = track;
+            delete amplifyConfig.Storage['track'];
+        }
+        if (customPrefix) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].customPrefix = customPrefix;
+            delete amplifyConfig.Storage['customPrefix'];
+        }
+
+        // only update new values for each provider
+        Object.keys(amplifyConfig.Storage).forEach((providerName) => {
+            if (typeof amplifyConfig.Storage[providerName] !== 'string') {
+                this._config[providerName] = { ...this._config[providerName], ...amplifyConfig.Storage[providerName] };
+            }
+        });
 
         this._pluggables.forEach((pluggable) => {
-            // for backward compatibility
-            if (pluggable.getProviderName() === DEFAULT_PROVIDER && !this._config[DEFAULT_PROVIDER]) {
-                pluggable.configure(this._config);
-            } else {
-                pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
+            pluggable.configure(this._config[pluggable.getProviderName()]);
         });
 
         if (this._pluggables.length === 0) {
@@ -128,11 +152,11 @@ export default class StorageClass {
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to either a presigned url or the object
     */
-    public async get(key: string, config?): Promise<String|Object> {
+    public async get(key: string, config?): Promise<String | Object> {
 
         const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov === undefined) {
+        if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
@@ -147,14 +171,14 @@ export default class StorageClass {
      *  progressCallback: function }
      * @return - promise resolves to object on success
      */
-    public async put(key: string, object, config?):Promise<Object> {
+    public async put(key: string, object, config?): Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov === undefined) {
+        if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
-        return prov.put(key,object,config);
+        return prov.put(key, object, config);
     }
 
     /**
@@ -166,11 +190,11 @@ export default class StorageClass {
     public async remove(key: string, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov === undefined) {
+        if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
-        return prov.remove(key,config);
+        return prov.remove(key, config);
     }
 
     /**
@@ -182,10 +206,10 @@ export default class StorageClass {
     public async list(path, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
         const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if(prov === undefined) {
+        if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
         }
-        return prov.list(path,config);
+        return prov.list(path, config);
     }
 }
