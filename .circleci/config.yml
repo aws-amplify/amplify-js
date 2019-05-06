@@ -78,8 +78,6 @@ jobs:
             cd ~
             git clone git@github.com:sammartinez/amplify-js-samples.git
             cd amplify-js-samples
-            ls
-            pwd
             yarn
             cd samples/react/auth/with-authenticator
             yarn
@@ -89,14 +87,11 @@ jobs:
           name: "Start React Authenticator Sample server in background"
           command: |
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
-            # yarn
             yarn start
           background: true
       - run:
           name: "Run cypress tests for React Authenticator Sample"
           command: |
-            ls
-            pwd
             cd ../amplify-js-samples
             yarn cypress:react
       - store_artifacts:
