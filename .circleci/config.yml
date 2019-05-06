@@ -71,7 +71,7 @@ jobs:
             cd packages/aws-amplify-react
             yarn link
       - run: 
-          name: "Clone samples package and link amplify packages"
+          name: "Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages"
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
@@ -86,14 +86,14 @@ jobs:
             yarn link aws-amplify
             yarn link aws-amplify-react
       - run:
-          name: "Start React Auth Sample server in background"
+          name: "Start React Authenticator Sample server in background"
           command: |
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
             # yarn
             yarn start
           background: true
       - run:
-          name: "Run cypress tests for aws-amplify-react"
+          name: "Run cypress tests for React Authenticator Sample"
           command: |
             ls
             pwd
