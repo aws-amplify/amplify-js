@@ -58,18 +58,18 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      # - restore_cache:
-      #     key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      # - run:
-      #     name: "Link aws-amplify"
-      #     command: |
-      #       cd packages/aws-amplify
-      #       yarn link
-      # - run:
-      #     name: "Link aws-amplify-react"
-      #     command: |
-      #       cd packages/aws-amplify-react
-      #       yarn link
+      - restore_cache:
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link aws-amplify-react"
+          command: |
+            cd packages/aws-amplify-react
+            yarn link
       - run: 
           name: "Clone samples package and link amplify packages"
           command: |
@@ -83,8 +83,8 @@ jobs:
             yarn
             cd samples/react/auth/with-authenticator
             yarn
-            # yarn link aws-amplify
-            # yarn link aws-amplify-react
+            yarn link aws-amplify
+            yarn link aws-amplify-react
       - run:
           name: "Start React Auth Sample server in background"
           command: |
