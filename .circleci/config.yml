@@ -87,8 +87,8 @@ jobs:
           name: "Start React Auth Sample server in background"
           command: |
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
-            yarn && yarn start
-          background: true
+            yarn
+          # background: true
       - run:
           name: "Run cypress tests for aws-amplify-react"
           command: |
