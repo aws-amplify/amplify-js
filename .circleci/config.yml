@@ -140,8 +140,8 @@ workflows:
                 - release
                 - master
                 - cypress-root
-          # requires:
-          #   - build
+          requires:
+            - build
       - deploy:
           filters:
             branches:
