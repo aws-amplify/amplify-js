@@ -87,19 +87,18 @@ jobs:
           name: "Start React Auth Sample server in background"
           command: |
             pwd
-            ls root/
-            ls root/app
-            cd root/amplify-js-samples/samples/react/auth/with-authenticator
+            ls
+            cd app/amplify-js-samples/samples/react/auth/with-authenticator
             yarn
             yarn start
           background: true
-      - run:
-          name: "Run cypress tests for aws-amplify-react"
-          command: |
-            ls
-            pwd
-            cd root/amplify-js-samples
-            yarn cypress:react
+      # - run:
+      #     name: "Run cypress tests for aws-amplify-react"
+      #     command: |
+      #       ls
+      #       pwd
+      #       cd root/amplify-js-samples
+      #       yarn cypress:react
       - store_artifacts:
           path: /root/app/packages/aws-amplify-react/cypress/videos
       - store_artifacts:
