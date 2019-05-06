@@ -95,7 +95,7 @@ jobs:
           command: |
             ls
             pwd
-            cd root/amplify-js-samples
+            cd ../amplify-js-samples
             yarn cypress:react
       - store_artifacts:
           path: /root/app/packages/aws-amplify-react/cypress/videos
