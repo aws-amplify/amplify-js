@@ -81,13 +81,15 @@ jobs:
             ls
             pwd
             yarn
+            cd samples/react/auth/with-authenticator
+            yarn
             # yarn link aws-amplify
             # yarn link aws-amplify-react
       - run:
           name: "Start React Auth Sample server in background"
           command: |
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
-            yarn
+            # yarn
             yarn start
           background: true
       - run:
