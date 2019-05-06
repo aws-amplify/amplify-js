@@ -87,6 +87,8 @@ jobs:
           name: "Start React Auth Sample server in background"
           command: |
             pwd
+            ls root/
+            ls root/app
             cd root/amplify-js-samples/samples/react/auth/with-authenticator
             yarn
             yarn start
