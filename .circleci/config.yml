@@ -89,7 +89,7 @@ jobs:
             cd ../amplify-js-samples/samples/react/auth/with-authenticator
             yarn
             yarn start
-          # background: true
+          background: true
       - run:
           name: "Run cypress tests for aws-amplify-react"
           command: |
