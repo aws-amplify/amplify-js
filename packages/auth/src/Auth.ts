@@ -39,10 +39,8 @@ import {
     Credentials,
     StorageHelper,
     ICredentials,
-    parseMobileHubConfig,
-    isEmpty,
-    browserOrNode,
-    Platform
+    Parser,
+    isEmpty
 } from '@aws-amplify/core';
 import {
     CookieStorage,
@@ -132,7 +130,7 @@ export class AuthClass {
     configure(config) {
         if (!config) return this._config || {};
         logger.debug('configure Auth');
-        const conf = Object.assign({}, this._config, parseMobilehubConfig(config).Auth, config);
+        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
         const {
             userPoolId,

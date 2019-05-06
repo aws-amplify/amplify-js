@@ -226,7 +226,7 @@ export const isStrictObject = (obj) => {
             !(obj instanceof String) &&
             !(obj instanceof Boolean)
         );
-    }
+    };
 
 /**
  * @deprecated use per-function imports

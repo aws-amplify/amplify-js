@@ -45,7 +45,7 @@ describe('withOAuth test', () => {
         });
 
         test('Passing in a social provider', () => {
-            const MockComp = class extends Component {
+            const MockComp = class extends React.Component {
                 render() {
                     return <div />;
                 }
