@@ -65,7 +65,7 @@ const template = `
       </div>
 
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">
+        <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
           {{ this.amplifyService.i18n().get('No account?') }}
           <a
             class="amplify-form-link"

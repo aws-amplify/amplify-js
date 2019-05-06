@@ -78,7 +78,7 @@ const template = `
         </div>
       </div>
       <div class="amplify-form-actions">
-        <div class="amplify-form-cell-left">
+        <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
             <a class="amplify-form-link" (click)="onSignIn()" data-test="sign-up-sign-in-link">
@@ -165,6 +165,8 @@ export class SignUpComponentCore implements OnInit {
     }
   }
 
+  @Input() hide: string[] = [];
+
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
@@ -198,6 +200,12 @@ export class SignUpComponentCore implements OnInit {
       this.logger.warn('Auth module not registered on AmplifyService provider');
     }
     this.sortFields();
+  }
+
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 
   onSignUp() {
