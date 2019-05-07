@@ -249,6 +249,7 @@ describe('Storage', () => {
           expect(storage['_config']).toEqual({
             AWSS3: {
               bucket: 'bucket',
+              level: 'public',
               region: 'region'
             }
           });
