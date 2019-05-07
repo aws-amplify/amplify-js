@@ -19,7 +19,7 @@ import { UsernameAttributes } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
-import { labelMap } from '../common';
+import { labelMap, composePhoneNumber } from '../common';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -234,7 +234,7 @@ export class SignUpComponentCore implements OnInit {
       return el.key === 'phone_number';
     });
     if (phoneNumberRequested) {
-      this.user.phone_number = `+${this.country_code}${this.local_phone_number.replace(/()-/g,'')}`;
+      this.user.phone_number = composePhoneNumber(this.country_code, this.local_phone_number);
     }
 
     // create user key and value arrays

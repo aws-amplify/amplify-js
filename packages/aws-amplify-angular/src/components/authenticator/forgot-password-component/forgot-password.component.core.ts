@@ -19,7 +19,7 @@ import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } f
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { labelMap } from '../common';
+import { labelMap, composePhoneNumber } from '../common';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -169,7 +169,7 @@ export class ForgotPasswordComponentCore implements OnInit {
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
         return this.email;
     } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-       return `+${this.country_code}${this.local_phone_number.replace(/()-/g, '')}`;
+       return composePhoneNumber(this.country_code, this.local_phone_number);
     } else {
       return  this.username;
     }

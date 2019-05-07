@@ -16,7 +16,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { includes, labelMap } from '../common';
+import { includes, labelMap, composePhoneNumber } from '../common';
 import { UsernameAttributes } from '../types';
 import { countrylist, country }  from '../../../assets/countries';
 import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } from '../angular-templates';
@@ -142,7 +142,7 @@ export class SignInComponentCore implements OnInit {
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
         signInUsername = this.email;
     } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-       signInUsername = `+${this.country_code}${this.local_phone_number.replace(/()-/g, '')}`;
+       signInUsername = composePhoneNumber(this.country_code, this.local_phone_number);
     } else {
       signInUsername = this.username;
     }

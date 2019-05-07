@@ -50,6 +50,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import Vue from 'vue';
 import UsernameField from './UsernameField';
+import { composePhoneNumber } from './common';
 
 Vue.component('amplify-username-field', UsernameField);
 
@@ -109,7 +110,7 @@ export default {
       } else if (usernameField === 'email') {
         this.forgotPwUsername = email;
       } else if (usernameField === 'phone_number') {
-        this.forgotPwUsername = `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`
+        this.forgotPwUsername = composePhoneNumber(countryCode, local_phone_number);
       }
     },
   }

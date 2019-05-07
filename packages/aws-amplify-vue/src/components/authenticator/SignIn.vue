@@ -49,6 +49,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import Vue from 'vue';
 import UsernameField from './UsernameField';
+import { composePhoneNumber } from './common';
 
 Vue.component('amplify-username-field', UsernameField);
 
@@ -126,7 +127,7 @@ export default {
       } else if (usernameField === 'email') {
         this.signInUsername = email;
       } else if (usernameField === 'phone_number') {
-        this.signInUsername = `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`
+        this.signInUsername = composePhoneNumber(countryCode, local_phone_number);
       }
     },
   }

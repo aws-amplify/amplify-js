@@ -65,7 +65,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
 import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
-import { labelMap } from './common';
+import { labelMap, composePhoneNumber } from './common';
 
 Vue.use(Vue2Filters)
 
@@ -192,7 +192,7 @@ export default {
         } else if (e.key === 'password') {
           user.password = e.value
         } else if (e.key === 'phone_number' && e.value) {
-          user.attributes.phone_number = `+${this.countryCode}${e.value.replace(/-()/g, '')}`
+          user.attributes.phone_number = composePhoneNumber(this.countryCode, e.value);
         } else {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;

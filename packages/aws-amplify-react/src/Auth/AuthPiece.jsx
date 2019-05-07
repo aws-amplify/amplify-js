@@ -43,6 +43,11 @@ export default class AuthPiece extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.renderUsernameField = this.renderUsernameField.bind(this);
         this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
+        this.composePhoneNumber = this.composePhoneNumber.bind(this);
+    }
+
+    composePhoneNumber() {
+        return `${this.inputs.dial_code || '+1'}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
     }
 
     getUsernameFromInput() {
@@ -54,7 +59,7 @@ export default class AuthPiece extends React.Component {
             // Phone number as Username
             if (!this.inputs.phone_line_number 
                 || this.inputs.phone_line_number.length === 0) return '';
-            else return `${this.inputs.dial_code || '+1'}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+            else return this.composePhoneNumber();
         } else {
             return this.inputs.username;
         }

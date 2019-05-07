@@ -22,3 +22,7 @@ export const labelMap = {
   phone_number: 'Phone Number',
   username: 'Username'
 };
+
+export const composePhoneNumber = (countryCode, local_phone_number) => {
+    return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
+}

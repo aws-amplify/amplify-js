@@ -199,7 +199,7 @@ export default class SignUp extends AuthPiece {
                     const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                     signup_info.attributes[newKey] = inputVals[index];
                 } else if (inputVals[index]) {
-                    signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+                    signup_info.attributes['phone_number'] = this.composePhoneNumber();
                 }
             }
         });
