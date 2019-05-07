@@ -88,7 +88,7 @@ const template = `
 export class SignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  _usernameAttributes: string | Array<string> = 'username';
+  _usernameAttributes: string = 'username';
   username: string;
   password: string;
   errorMessage: string;
@@ -119,7 +119,7 @@ export class SignInComponentCore implements OnInit {
   }
 
   @Input()
-  set usernameAttributes(usernameAttributes: string | Array<string>) {
+  set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
   }
 

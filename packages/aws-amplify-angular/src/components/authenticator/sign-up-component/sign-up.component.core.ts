@@ -119,7 +119,7 @@ export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
-  _usernameAttributes: string | Array<string> = [];
+  _usernameAttributes: string = 'username';
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
@@ -172,7 +172,7 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set usernameAttributes(usernameAttributes: string | Array<string>) {
+  set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
     if (this._usernameAttributes === UsernameAttributes.EMAIL) {
         this.signUpFields = signUpWithEmailFields;

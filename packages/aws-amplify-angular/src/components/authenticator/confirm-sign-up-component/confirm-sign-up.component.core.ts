@@ -86,7 +86,7 @@ const template = `
 export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  _usernameAttributes: string | Array<string> = 'username';
+  _usernameAttributes: string = 'username';
   username: string;
   code: string;
   errorMessage: string;
@@ -113,7 +113,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set usernameAttributes(usernameAttributes: string | Array<string>) {
+  set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
   }
 

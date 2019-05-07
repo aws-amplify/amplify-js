@@ -107,7 +107,7 @@ const template = `
 export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  _usernameAttributes: string | Array<string> = 'username';
+  _usernameAttributes: string = 'username';
   username: string;
   code: string;
   password: string;
@@ -153,7 +153,7 @@ export class ForgotPasswordComponentCore implements OnInit {
   }
 
   @Input()
-  set usernameAttributes(usernameAttributes: string | Array<string>) {
+  set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
   }
 

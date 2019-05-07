@@ -40,7 +40,7 @@ import { AuthState } from '../../../providers';
 export class GreetingComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() usernameAttributes: string | Array<string> = [];
+  @Input() usernameAttributes: string = 'username';
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }

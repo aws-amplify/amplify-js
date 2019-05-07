@@ -34,7 +34,7 @@ const template = `
 export class GreetingComponentCore implements OnInit {
   signedIn: boolean;
   greeting: string;
-  _usernameAttributes: string | Array<string> = [];
+  _usernameAttributes: string = [];
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
@@ -46,7 +46,7 @@ export class GreetingComponentCore implements OnInit {
   authState: AuthState;
 
   @Input()
-  set usernameAttributes(usernameAttributes: string | Array<string>) {
+  set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
   }
   
