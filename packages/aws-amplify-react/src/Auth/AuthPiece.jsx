@@ -23,6 +23,7 @@ import {
     SelectInput
  } from '../Amplify-UI/Amplify-UI-Components-React';
 import { UsernameAttributes } from './common/types';
+import { PhoneField } from './PhoneField';
 
 const labelMap = {
   [UsernameAttributes.EMAIL]: 'Email',
@@ -38,16 +39,13 @@ export default class AuthPiece extends React.Component {
 
         this._isHidden = true;
         this._validAuthStates = [];
+        this.phone_number = '';
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.renderUsernameField = this.renderUsernameField.bind(this);
         this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
-        this.composePhoneNumber = this.composePhoneNumber.bind(this);
-    }
-
-    composePhoneNumber() {
-        return `${this.inputs.dial_code || '+1'}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+        this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
     }
 
     getUsernameFromInput() {
@@ -57,12 +55,14 @@ export default class AuthPiece extends React.Component {
             return this.inputs.email;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             // Phone number as Username
-            if (!this.inputs.phone_line_number 
-                || this.inputs.phone_line_number.length === 0) return '';
-            else return this.composePhoneNumber();
+            return this.phone_number;
         } else {
             return this.inputs.username;
         }
+    }
+
+    onPhoneNumberChanged(phone_number) {
+        this.phone_number = phone_number;
     }
 
     renderUsernameField(theme) {
@@ -84,30 +84,7 @@ export default class AuthPiece extends React.Component {
             );
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             return (
-                <FormField theme={theme} key="phone_number">
-                    <InputLabel theme={theme}>{I18n.get('Phone Number')} *</InputLabel>
-                    <SelectInput theme={theme}>
-                        <select name="dial_code" defaultValue={"+1"} 
-                        onChange={this.handleInputChange}
-                        data-test="dial-code-select">
-                            {countryDialCodes.map(dialCode =>
-                                <option key={dialCode} value={dialCode}>
-                                    {dialCode}
-                                </option>
-                            )}
-                        </select>
-                        <Input
-                            placeholder={I18n.get("Enter your phone number")}
-                            theme={theme}
-                            type="tel"
-                            id="phone_line_number"
-                            key="phone_line_number"
-                            name="phone_line_number"
-                            onChange={this.handleInputChange}
-                            data-test="phone-number-input"
-                        />
-                    </SelectInput>
-                </FormField>
+                <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
             );
         } else {
             return (

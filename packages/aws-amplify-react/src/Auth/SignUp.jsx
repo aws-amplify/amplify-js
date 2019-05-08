@@ -39,6 +39,7 @@ import signUpWithUsernameFields, {
  } from './common/default-sign-up-fields'
 import { UsernameAttributes } from './common/types';
 import { valid } from 'semver';
+import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
 
@@ -78,7 +79,7 @@ export default class SignUp extends AuthPiece {
               el.invalid = false;
             }        
           } else {
-            if (el.required && (!this.inputs.dial_code || !this.inputs.phone_line_number)) {
+            if (el.required && (!this.phone_number)) {
               el.invalid = true;
               invalids.push(el.label);
             } else {
@@ -198,12 +199,11 @@ export default class SignUp extends AuthPiece {
                 if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
                     const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                     signup_info.attributes[newKey] = inputVals[index];
-                } else if (inputVals[index]) {
-                    signup_info.attributes['phone_number'] = this.composePhoneNumber();
                 }
             }
         });
 
+        signup_info.attributes['phone_number'] = this.phone_number;
         let labelCheck = false;
         this.signUpFields.forEach(field => {
             if (field.label === this.getUsernameLabel()) {
@@ -259,32 +259,15 @@ export default class SignUp extends AuthPiece {
                                     />
                                 </FormField>
                             ) : (
-                                <FormField theme={theme} key="phone_number">
-                                    {
-                                        field.required ? 
-                                        <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
-                                        <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
-                                    }
-                                    <SelectInput theme={theme}>
-                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}>
-                                            {countryDialCodes.map(dialCode =>
-                                                <option key={dialCode} value={dialCode}>
-                                                    {dialCode}
-                                                </option>
-                                            )}
-                                        </select>
-                                        <Input
-                                            placeholder={I18n.get(field.placeholder)}
-                                            theme={theme}
-                                            type="tel"
-                                            id="phone_line_number"
-                                            key="phone_line_number"
-                                            name="phone_line_number"
-                                            onChange={this.handleInputChange}
-                                        />
-                                    </SelectInput>
-                                </FormField>
+                                <PhoneField 
+                                    theme={theme} 
+                                    required={field.required}
+                                    defaultDialCode={this.getDefaultDialCode()}
+                                    label={field.label}
+                                    placeholder={field.placeholder}
+                                    onChangeText={this.onPhoneNumberChanged}
+                                    key="phone_number"
+                                />
                             )
                         })
                     }
