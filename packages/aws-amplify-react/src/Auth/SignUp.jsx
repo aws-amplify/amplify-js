@@ -203,7 +203,8 @@ export default class SignUp extends AuthPiece {
             }
         });
 
-        signup_info.attributes['phone_number'] = this.phone_number;
+        if (this.phone_number) signup_info.attributes['phone_number'] = this.phone_number;
+        
         let labelCheck = false;
         this.signUpFields.forEach(field => {
             if (field.label === this.getUsernameLabel()) {

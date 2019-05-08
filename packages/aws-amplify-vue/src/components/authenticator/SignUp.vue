@@ -20,24 +20,22 @@
           :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(signUpField.label)}} {{signUpField.required ? '*': ''}}</div>
-        <input
-            v-if="signUpField.key !== 'phone_number'"
-            :type = "signUpField.type"
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
-            v-model="signUpField.value"
-            :placeholder="$Amplify.I18n.get(signUpField.label)"
-            v-on:change="clear(signUpField)"
-          />
-        <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
-          <select v-model="country">
-            <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
-          </select>
+        <div v-if="signUpField.key !== 'phone_number'">
+          <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(signUpField.label)}} {{signUpField.required ? '*': ''}}</div>
           <input
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
-            v-model="signUpField.value"
-            :placeholder="$Amplify.I18n.get(signUpField.label)"
-            v-on:change="clear(signUpField)"
+              :type = "signUpField.type"
+              v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
+              v-model="signUpField.value"
+              :placeholder="$Amplify.I18n.get(signUpField.label)"
+              v-on:change="clear(signUpField)"
+            />
+          </div>
+        <div v-if="signUpField.key === 'phone_number'">
+          <amplify-phone-field 
+            v-bind:required="signUpField.required"
+            v-bind:invalid="signUpField.invalid"
+            v-bind:placeholder="signUpField.placeholder"
+            v-on:phone-number-changed="phoneNumberChanged"
           />
         </div>
       </div>
@@ -66,8 +64,10 @@ import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
 import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
 import { labelMap, composePhoneNumber } from './common';
+import PhoneField from './PhoneField';
 
-Vue.use(Vue2Filters)
+Vue.use(Vue2Filters);
+Vue.component('amplify-phone-field', PhoneField);
 
 export default {
   name: 'SignUp',
@@ -81,13 +81,11 @@ export default {
     }
 
     return {
-      country: 'USA (+1)',
-      countryCode: '1',
-      countries,
       amplifyUI: AmplifyUI,
       error: '',
       logger: {},
       defaultSignUpFields,
+      phoneNumber: '',
     }
   },
   computed: {
@@ -166,15 +164,6 @@ export default {
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
-  watch: {
-    /*
-    this operation is in place to avoid making country.value the select box
-    bound key, which results in a duplicate key error in console
-    */
-    country: function() {
-      this.countryCode = this.countries.find(c => c.label === this.country).value
-    },
-  },
   methods: {
     signUp: function() {
       if (!this.validate()) {
@@ -192,7 +181,7 @@ export default {
         } else if (e.key === 'password') {
           user.password = e.value
         } else if (e.key === 'phone_number' && e.value) {
-          user.attributes.phone_number = composePhoneNumber(this.countryCode, e.value);
+          user.attributes.phone_number = e.value;
         } else {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;
@@ -267,6 +256,13 @@ export default {
     getUsernameLabel: function() {
       return labelMap[this.usernameAttributes] || this.usernameAttributes;
     },
+
+    phoneNumberChanged: function(data) {
+      const phoneNumberField = this.options.signUpFields.filter(
+         field => field.key === 'phone_number')[0];
+      this.clear(phoneNumberField);
+      phoneNumberField.value = composePhoneNumber(data.countryCode, data.local_phone_number);
+    }
   }
 }
 </script>

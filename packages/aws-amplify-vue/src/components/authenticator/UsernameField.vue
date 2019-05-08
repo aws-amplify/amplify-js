@@ -34,42 +34,23 @@
             />
         </div>
         <div v-if="shouldRenderPhoneNumberField">
-            <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Phone number')}} *</div>
-            <div v-bind:class="amplifyUI.selectInput">
-                <select v-model="country" v-on:change="$emit(
-                        'username-field-changed', 
-                        {
-                            usernameField: 'phone_number', 
-                            countryCode: countries.find(c => c.label === country).value,
-                            local_phone_number
-                        }
-                    )"
-                    data-test="dial-code-select">
-                    <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
-                </select>
-                <input
-                    v-model="local_phone_number"
-                    v-bind:class="amplifyUI.input"
-                    :placeholder="$Amplify.I18n.get('Enter your phone number')"
-                    autofocus v-on:keyup="$emit(
-                        'username-field-changed', 
-                        {
-                            usernameField: 'phone_number', 
-                            countryCode,
-                            local_phone_number
-                        }
-                    )" 
-                    data-test="phone-number-input"
-                />
-            </div>
+            <amplify-phone-field 
+                v-bind:required="phoneNumberRequired"
+                v-on:phone-number-changed="phoneNumberChanged"
+            />
         </div>
     </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
 import { labelMap } from './common';
+import PhoneField from './PhoneField';
+import { composePhoneNumber } from './common';
+
+Vue.component('amplify-phone-field', PhoneField);
 
 export default {
     name: 'UsernameField',
@@ -78,11 +59,8 @@ export default {
         return {
             username: '',
             email: '',
-            countryCode: '1',
-            local_phone_number: '',
-            country: 'USA (+1)',
-            countries,
             amplifyUI: AmplifyUI,
+            phoneNumberRequired: true,
             logger: {},
         }
     },
@@ -97,22 +75,18 @@ export default {
             return this.usernameAttributes === 'phone_number';
         },
     },
-    watch: {
-        /*
-        this operation is in place to avoid making country.value the select box
-        bound key, which results in a duplicate key error in console
-        */
-        country: function() {
-            this.countryCode = this.countries.find(c => c.label === this.country).value
-        },
-    },
     mounted() {
         // this.logger = new this.$Amplify.Logger(this.$options.name);
     },
     methods: {
         getUsernameLabel() {
             return labelMap[this.usernameAttributes] || this.usernameAttributes;
+        },
+        phoneNumberChanged(data) {
+            const phoneNumber = composePhoneNumber(data.countryCode, data.local_phone_number);
+            this.$emit('username-field-changed', {usernameField: 'phone_number', phoneNumber});
         }
+        
     }
 }
 </script>
