@@ -78,7 +78,11 @@ export default class Greetings extends AuthPiece {
         }
     }
 
-    inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
+    inGreeting(name) { 
+        const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
+        const prefix = usernameAttributes === UsernameAttributes.USERNAME? `${I18n.get('Hello')} ` : '';
+        return `${prefix}${name}`; 
+    }
     outGreeting() { return ''; }
 
 
@@ -86,7 +90,7 @@ export default class Greetings extends AuthPiece {
         const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
-        const { usernameAttributes = [] } = this.props;
+        const { usernameAttributes = 'username' } = this.props;
         let name = '';
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             // Email as Username

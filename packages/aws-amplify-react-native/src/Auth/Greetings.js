@@ -54,13 +54,15 @@ export default class Greetings extends AuthPiece {
             if (usernameAttributes === 'email') {
                 // Email as Username
                 name = user.attributes? user.attributes.email : user.username;
+                defaultMessage = `${name}`;
             } else if (usernameAttributes === 'phone_number') {
                 // Phone number as Username
                 name = user.attributes? user.attributes.phone_number : user.username;
+                defaultMessage = `${name}`;
             } else {
                 name = user.username || "unknown user";
+                defaultMessage = `${I18n.get('Hello')} ${name}`;
             }
-            defaultMessage = `${I18n.get('Hello')} ${name}`;
         }
 
         let message;
