@@ -73,7 +73,7 @@ export class ConsoleLogger implements Logger {
         }
 
         let log = console.log.bind(console);
-        // if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
+        if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
         if (type === 'WARN' && console.warn) { log = console.warn.bind(console); }
 
 		const prefix = `[${type}] ${this._ts()} ${this.name}`;
