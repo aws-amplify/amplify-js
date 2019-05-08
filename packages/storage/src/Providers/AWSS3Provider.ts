@@ -21,9 +21,21 @@ import { StorageOptions, StorageProvider } from '../types';
 
 const logger = new Logger('AWSS3Provider');
 
-const dispatchStorageEvent = (track, attrs, metrics) => {
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
+const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:any, message:string) => {
     if (track) {
-        Hub.dispatch('storage', { attrs, metrics }, 'Storage');
+        Hub.dispatch(
+            'storage', 
+            { 
+                event,
+                data: { attrs, metrics },
+                message
+            }, 
+            'Storage', 
+            AMPLIFY_SYMBOL
+        );
     }
 };
 
@@ -106,14 +118,23 @@ export default class AWSS3Provider implements StorageProvider{
                     if (err) {
                         dispatchStorageEvent(
                             track,
-                            { method: 'get', result: 'failed' },
-                            null);
+                            'download',
+                            { 
+                                method: 'get', 
+                                result: 'failed'
+                            },
+                            null,
+                            `Download failed with ${err.message}`
+                        );
                         rej(err);
                     } else {
                         dispatchStorageEvent(
                             track,
+                            'download',
                             { method: 'get', result: 'success' },
-                            { fileSize: Number(data.Body['length']) });
+                            { fileSize: Number(data.Body['length']) },
+                            `Download success for ${key}`
+                            );
                         res(data);
                     }
                 });
@@ -127,15 +148,21 @@ export default class AWSS3Provider implements StorageProvider{
                 const url = s3.getSignedUrl('getObject', params);
                 dispatchStorageEvent(
                     track,
+                    'getSignedUrl',
                     { method: 'get', result: 'success' },
-                    null);
+                    null, 
+                    `Signed URL: ${url}`
+                );
                 res(url);
             } catch (e) {
                 logger.warn('get signed url error', e);
                 dispatchStorageEvent(
                     track,
+                    'getSignedUrl',
                     { method: 'get', result: 'failed' },
-                    null);
+                    null,
+                    `Could not get a signed URL for ${key}`
+                );
                 rej(e);
             }
         });
@@ -155,7 +182,7 @@ export default class AWSS3Provider implements StorageProvider{
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, region, credentials, level, track, progressCallback } = opt;
-        const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
+        const { contentType, contentDisposition, cacheControl, expires, metadata, tagging } = opt;
         const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
@@ -174,6 +201,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
+        if (tagging) { params.Tagging = tagging; }
         if (serverSideEncryption) {
             params.ServerSideEncryption = serverSideEncryption;
             if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }
@@ -199,8 +227,11 @@ export default class AWSS3Provider implements StorageProvider{
             logger.debug('upload result', data);
             dispatchStorageEvent(
                 track,
+                'upload',
                 { method: 'put', result: 'success' },
-                null);
+                null,
+                `Upload success for ${key}`
+            );
 
             return {
                 key: data.Key.substr(prefix.length)
@@ -209,8 +240,11 @@ export default class AWSS3Provider implements StorageProvider{
             logger.warn("error uploading", e);
             dispatchStorageEvent(
                 track,
+                'upload',
                 { method: 'put', result: 'failed' },
-                null);
+                null,
+                `Error uploading ${key}`
+            );
 
             throw e;
         }
@@ -244,14 +278,20 @@ export default class AWSS3Provider implements StorageProvider{
                 if (err) {
                     dispatchStorageEvent(
                         track,
+                        'delete',
                         { method: 'remove', result: 'failed' },
-                        null);
+                        null,
+                        `Deletion of ${key} failed with ${err}`
+                    );
                     rej(err);
                 } else {
                     dispatchStorageEvent(
                         track,
+                        'delete',
                         { method: 'remove', result: 'success' },
-                        null);
+                        null,
+                        `Deleted ${key} successfully`
+                    );
                     res(data);
                 }
             });
@@ -287,8 +327,11 @@ export default class AWSS3Provider implements StorageProvider{
                     logger.warn('list error', err);
                     dispatchStorageEvent(
                         track,
+                        'list',
                         { method: 'list', result: 'failed' },
-                        null);
+                        null,
+                        `Listing items failed: ${err.message}`
+                    );
                     rej(err);
                 } else {
                     const list = data.Contents.map(item => {
@@ -301,8 +344,11 @@ export default class AWSS3Provider implements StorageProvider{
                     });
                     dispatchStorageEvent(
                         track,
+                        'list',
                         { method: 'list', result: 'success' },
-                        null);
+                        null,
+                        `${list.length} items returned from list operation`
+                    );
                     logger.debug('list', list);
                     res(list);
                 }

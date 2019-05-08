@@ -11,7 +11,8 @@ module.exports = {
         path: __dirname + '/dist',
         library: 'aws_amplify_storage',
         libraryTarget: 'umd',
-        umdNamedDefine: true
+        umdNamedDefine: true,
+        devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate
     },
     // Enable sourcemaps for debugging webpack's output.
     devtool: 'source-map',

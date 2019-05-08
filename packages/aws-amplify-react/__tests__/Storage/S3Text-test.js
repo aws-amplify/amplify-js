@@ -313,8 +313,8 @@ describe('S3Text test', () => {
                 });
             });
 
-            s3Text.getText('key', 'level', false);
-            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false});
+            s3Text.getText('key', 'level', false, 'identityId');
+            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false, identityId: 'identityId'});
             spyon.mockClear();
         });
 

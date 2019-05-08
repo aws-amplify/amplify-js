@@ -6,12 +6,16 @@ module.exports = {
         'aws-amplify-auth': './src/index.ts',
         'aws-amplify-auth.min': './src/index.ts'
     },
+    externals: {
+        'react-native': 'react-native'
+    },
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
         library: 'aws_amplify_auth',
         libraryTarget: 'umd',
-        umdNamedDefine: true
+        umdNamedDefine: true,
+        devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate
     },
     // Enable sourcemaps for debugging webpack's output.
     devtool: 'source-map',

@@ -31,7 +31,7 @@ describe('withAuthenticator Sign In', function() {
   it('throws validation errors if username or password is incorrect', function() {
     // Check for empty username error
     cy.get('button').contains('Sign In').click()
-    cy.get('span').contains("Cannot read property 'username' of undefined")
+    cy.get('span').contains("Username cannot be empty")
 
     cy.get('input[name=username]').type('InvalidUsername')
     cy.get('button').contains('Sign In').click()

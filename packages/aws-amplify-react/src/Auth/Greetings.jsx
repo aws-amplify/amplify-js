@@ -27,8 +27,10 @@ export default class Greetings extends AuthPiece {
     constructor(props) {
         super(props);
         this.state = {};
-        Hub.listen('auth', this);
-        this.onHubCapsule = this.onHubCapsule.bind(this)
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        Hub.listen('auth', this.onHubCapsule);
+        this._validAuthStates = ['signedIn'];
+
     }
 
     componentDidMount() {
@@ -119,10 +121,6 @@ export default class Greetings extends AuthPiece {
 
         return <SignOut 
             {...stateAndProps} 
-            google_client_id={google_client_id} 
-            facebook_app_id={facebook_app_id} 
-            amazon_client_id={amazon_client_id}
-            auth0={auth0_config}
             />;
     }
 

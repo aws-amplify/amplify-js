@@ -18,6 +18,7 @@ import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
@@ -54,7 +55,8 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
@@ -104,7 +106,7 @@ export default class APIClass {
             this._api = new RestClass(this._options);
             return true;
         } else {
-            return Promise.reject('API no configured');
+            return Promise.reject('API not configured');
         }
     }
 
@@ -126,7 +128,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.get(endpoint + path, init);
     }
@@ -149,7 +151,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
     }
@@ -172,7 +174,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
     }
@@ -195,7 +197,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.patch(endpoint + path, init);
     }
@@ -218,7 +220,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.del(endpoint + path, init);
     }
@@ -241,7 +243,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.head(endpoint + path, init);
     }
@@ -441,7 +443,10 @@ export default class APIClass {
                         const newTopics =
                             Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
 
-                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const observable = Amplify.PubSub.subscribe(newTopics, {
+                            ...subscription,
+                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                        });
 
                         handle = observable.subscribe({
                             next: (data) => observer.next(data),

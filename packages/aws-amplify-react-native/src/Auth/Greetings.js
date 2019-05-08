@@ -62,6 +62,7 @@ export default class Greetings extends AuthPiece {
             <View style={theme.navBar}>
                 <Text>{message}</Text>
                 <AmplifyButton
+                    theme={theme}
                     text={I18n.get('Sign Out')}
                     onPress={this.signOut}
                     style={theme.navButton}

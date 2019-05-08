@@ -1,6 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
@@ -33,5 +36,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Sample code**
+Include additional sample code or a sample repository to help us reproduce the issue. (Be sure to remove any sensitive data)
 
 ***You can turn on the debug mode to provide more info for us by setting window.LOG_LEVEL = 'DEBUG'; in your app.***
