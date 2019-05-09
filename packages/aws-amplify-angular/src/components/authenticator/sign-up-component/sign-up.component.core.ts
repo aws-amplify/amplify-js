@@ -15,10 +15,9 @@
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../../assets/default-sign-up-fields';
-import { UsernameAttributes } from '../types';
+import { UsernameAttributes, PhoneFieldOutput } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { countrylist, country } from '../../../assets/countries';
 import { labelMap, composePhoneNumber } from '../common';
 
 const template = `
@@ -43,33 +42,9 @@ const template = `
             </div>
         </div>
         <div *ngIf="field.key === 'phone_number'">
-          <label class="amplify-input-label">
-            {{ this.amplifyService.i18n().get(field.label) }}
-            <span *ngIf="field.required">*</span>
-          </label>
-          <div class="amplify-input-group">
-            <div class="amplify-input-group-item">
-              <select #countryCode
-                name="countryCode"
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country"
-                [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"
-                  value={{country.value}}>{{country.label}}
-                </option>
-              </select>
-            </div>
-            <div class="amplify-input-group-item">
-              <input
-                class="amplify-form-input"
-                [placeholder]="this.amplifyService.i18n().get(field.label)"
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                [(ngModel)]="local_phone_number"
-                name="local_phone_number"
-                type={{field.type}}
-              />
-            </div>
-          </div>
+          <amplify-auth-phone-field-core
+            (phoneFieldChanged)="onPhoneFieldChanged($event)"
+          ></amplify-auth-phone-field-core>
         </div>
       </div>
       <div class="amplify-form-actions">
@@ -123,7 +98,6 @@ export class SignUpComponentCore implements OnInit {
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
-  countries: any[];
   header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
@@ -133,7 +107,6 @@ export class SignUpComponentCore implements OnInit {
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.countries = countrylist;
     this.logger = this.amplifyService.logger('SignUpComponent');
   }
 
@@ -404,5 +377,10 @@ export class SignUpComponentCore implements OnInit {
 
   getUsernameLabel() {
     return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+  }
+
+  onPhoneFieldChanged(event: PhoneFieldOutput) {
+    this.country_code = event.country_code;
+    this.local_phone_number = event.local_phone_number;
   }
 }

@@ -40,7 +40,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
-  @Input() usernameAttributes: string | Array<string> = [];
+  @Input() usernameAttributes: string = 'username';
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }

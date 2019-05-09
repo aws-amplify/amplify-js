@@ -17,9 +17,7 @@ import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { includes, labelMap, composePhoneNumber } from '../common';
-import { UsernameAttributes } from '../types';
-import { countrylist, country }  from '../../../assets/countries';
-import { emailFieldTemplate, usernameFieldTemplate, phoneNumberFieldTemplate } from '../angular-templates';
+import { UsernameAttributes, UsernameFieldOutput } from '../types';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
@@ -28,17 +26,10 @@ const template = `
       <div class="amplify-form-header">
         {{ this.amplifyService.i18n().get('Sign in to your account') }}
       </div>
-      <div class="amplify-amplify-form-row amplify-signin-username">
-        <div *ngIf="this._usernameAttributes === 'email'">` + 
-          emailFieldTemplate + 
-        `</div>
-        <div *ngIf="this._usernameAttributes === 'phone_number'">` +
-          phoneNumberFieldTemplate +  
-        `</div>
-        <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` + 
-          usernameFieldTemplate +
-        `</div>
-      </div>
+      <amplify-auth-username-field-core
+        [usernameAttributes]="_usernameAttributes"
+        (usernameFieldChanged)="onUsernameFieldChanged($event)"
+      ></amplify-auth-username-field-core>
       <div class="amplify-form-row amplify-signin-password">
         <label class="amplify-input-label" for="passwordField">{{ this.amplifyService.i18n().get('Password *') }}</label>
         <input #passwordField
@@ -92,15 +83,16 @@ export class SignInComponentCore implements OnInit {
   username: string;
   password: string;
   errorMessage: string;
-  countries: country[];
   local_phone_number: string = '';
   country_code: string = '1';
   email: string = '';    
+
+  signInUsername = '';
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.countries = countrylist;
     this.logger = this.amplifyService.logger('SignInComponent');
+    this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
   }
 
   @Input()
@@ -129,25 +121,12 @@ export class SignInComponentCore implements OnInit {
     }
   }
 
-  setUsername(username: string) {
-    this.username = username;
-  }
-
   setPassword(password: string) {
     this.password = password;
   }
 
   onSignIn() {
-    let signInUsername = '';
-    if (this._usernameAttributes === UsernameAttributes.EMAIL) {
-        signInUsername = this.email;
-    } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-       signInUsername = composePhoneNumber(this.country_code, this.local_phone_number);
-    } else {
-      signInUsername = this.username;
-    }
-
-    this.amplifyService.auth().signIn(signInUsername, this.password)
+    this.amplifyService.auth().signIn(this.getSignInUsername(), this.password)
       .then(user => {
         if (user['challengeName'] === 'SMS_MFA' || user['challengeName'] === 'SOFTWARE_TOKEN_MFA') {
           this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
@@ -201,7 +180,21 @@ export class SignInComponentCore implements OnInit {
     this.logger.error(this.errorMessage);
   }
 
-  getUsernameLabel() {
-    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+  onUsernameFieldChanged(event: UsernameFieldOutput) {
+    this.email = event.email || this.email;
+    this.username = event.username || this.username;
+    this.country_code = event.country_code || this.country_code;
+    this.local_phone_number = event.local_phone_number || this.local_phone_number;
+  }
+
+  getSignInUsername() {
+    switch(this._usernameAttributes) {
+      case UsernameAttributes.EMAIL:
+        return this.email;
+      case UsernameAttributes.PHONE_NUMBER:
+        return composePhoneNumber(this.country_code, this.local_phone_number);
+      default:
+        return this.username;
+    }
   }
 }
