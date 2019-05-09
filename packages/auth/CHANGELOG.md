@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.24-unstable.0"></a>
+## [1.2.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23...@aws-amplify/auth@1.2.24-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
+
+
+
+
 <a name="1.2.23"></a>
 ## [1.2.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.8...@aws-amplify/auth@1.2.23) (2019-05-06)
 
