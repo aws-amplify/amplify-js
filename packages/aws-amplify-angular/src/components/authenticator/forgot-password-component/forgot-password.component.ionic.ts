@@ -18,17 +18,18 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div
   class="amplify-authenticator amplify-authenticator-ionic"
   *ngIf="_show"
-  data-test="forgot-password-section"
+  data-test="${auth.forgotPassword.section}"
   >
-  <div class="amplify-form-body" data-test="forgot-password-body-section">
+  <div class="amplify-form-body" data-test="${auth.forgotPassword.bodySection}">
   <div
     class="amplify-form-header amplify-form-header-ionic"
-    data-test="forgot-password-header-section"
+    data-test="${auth.forgotPassword.headerSection}"
     >
     {{ this.amplifyService.i18n().get('Reset your password') }}
   </div>
@@ -45,7 +46,7 @@ const template = `
         class="amplify-form-input"
         (keyup)="setUsername($event.target.value)"
         [value]="username"
-        data-test="forgot-password-username-input"
+        data-test="${auth.forgotPassword.usernameInput}"
       ></ion-input>
     </ion-item>
 
@@ -58,7 +59,7 @@ const template = `
         type="text"
         class="amplify-form-input"
         (keyup)="setCode(code.value)"
-        data-test="forgot-password-code-input"
+        data-test="${auth.forgotPassword.codeInput}"
       ></ion-input>
     </ion-item>
     <ion-item lines="none" *ngIf="code_sent">
@@ -71,7 +72,7 @@ const template = `
         class="amplify-form-input"
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
-        data-test="forgot-password-new-password-input"
+        data-test="${auth.forgotPassword.newPasswordInput}"
       ></ion-input>
     </ion-item>
   </ion-list>
@@ -80,7 +81,7 @@ const template = `
       <ion-button expand="block" color="primary"
         (click)="onSend()"
         *ngIf="!code_sent"
-        data-test="forgot-password-submit-button"
+        data-test="${auth.forgotPassword.submitButton}"
       >
         {{ this.amplifyService.i18n().get('Submit') }}</ion-button>
       <ion-button expand="block" color="primary"
@@ -100,7 +101,7 @@ const template = `
         <a
           class="amplify-form-link"
           (click)="onSend()"
-          data-test="forgot-password-resend-code-link"
+          data-test="${auth.forgotPassword.resendCodeLink}"
           >
           {{ this.amplifyService.i18n().get('Resend') }}
         </a>

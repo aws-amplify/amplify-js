@@ -17,17 +17,18 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div
   class="amplify-authenticator amplify-authenticator-ionic"
   *ngIf="_show"
-  data-test="require-new-password-section"
+  data-test="${auth.requireNewPassword.section}"
   >
-  <div class="amplify-form-body" data-test="require-new-password-body-section">
+  <div class="amplify-form-body" data-test="${auth.requireNewPassword.bodySection}">
     <div
       class="amplify-form-header amplify-form-header-ionic"
-      data-test="require-new-password-header-section"
+      data-test="${auth.requireNewPassword.headerSection}"
       >
       {{ this.amplifyService.i18n().get('Reset your password') }}
     </div>
@@ -42,7 +43,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
-          data-test="require-new-password-new-password-input"
+          data-test="${auth.requireNewPassword.newPasswordInput}"
         ></ion-input>
       </ion-item>
 
@@ -53,14 +54,14 @@ const template = `
         <ion-button
           expand="block"
           (click)="onSignIn()"
-          data-test="require-new-password-back-to-sign-in-link"
+          data-test="${auth.requireNewPassword.backToSignInLink}"
         >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
       </div>
       <div class="amplify-form-row">
         <ion-button
           expand="block"
           (click)="onSubmit()"
-          data-test="require-new-password-submit-button"
+          data-test="${auth.requireNewPassword.submitButton}"
         >Submit</ion-button>
       </div>
     </div>

@@ -16,12 +16,13 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container" data-test="require-new-password-section">
-  <div class="amplify-form-body" data-test="require-new-password-body-section">
-  <div class="amplify-form-header" data-test="require-new-password-header-section">
+<div class="amplify-form-container" data-test="${auth.requireNewPassword.section}">
+  <div class="amplify-form-body" data-test="${auth.requireNewPassword.bodySection}">
+  <div class="amplify-form-header" data-test="${auth.requireNewPassword.headerSection}">
     {{ this.amplifyService.i18n().get('You are required to update your password') }}
   </div>
   <div class="amplify-form-row">
@@ -34,20 +35,20 @@ const template = `
       class="amplify-form-input"
       type="password"
       placeholder="{{ this.amplifyService.i18n().get('Password') }}"
-      data-test="require-new-password-new-password-input"
+      data-test="${auth.requireNewPassword.newPasswordInput}"
     />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
-          data-test="require-new-password-back-to-sign-in-link"
+          data-test="${auth.requireNewPassword.backToSignInLink}"
         >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
           (click)="onSubmit()"
-          data-test="require-new-password-submit-button"
+          data-test="${auth.requireNewPassword.submitButton}"
         >{{ this.amplifyService.i18n().get('Submit') }}</button>
       </div>
     </div>

@@ -16,13 +16,15 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
+
 const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
-    <div class="amplify-greeting-text" data-test="greetings-nav-right">{{ greeting }}</div>
+    <div class="amplify-greeting-text">{{ greeting }}</div>
     <div class="amplify-greeting-flex-spacer"></div>
     <a class="amplify-form-link amplify-greeting-sign-out"
       (click)="onSignOut()"
-      data-test="sign-out-button"
+      data-test="${auth.greeting.signOutButton}"
     >{{ this.amplifyService.i18n().get('Sign Out') }}</a>
 </div>
 `;

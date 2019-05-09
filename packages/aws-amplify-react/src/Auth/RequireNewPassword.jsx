@@ -30,6 +30,8 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('RequireNewPassword');
 
 export default class RequireNewPassword extends AuthPiece {
@@ -89,9 +91,9 @@ export default class RequireNewPassword extends AuthPiece {
         const { requiredAttributes } = user.challengeParam;
 
         return (
-            <FormSection theme={theme} data-test="require-new-password-section">
-                <SectionHeader theme={theme} data-test="require-new-password-header-section">{I18n.get('Change Password')}</SectionHeader>
-                <SectionBody theme={theme} data-test="require-new-password-body-section">
+            <FormSection theme={theme} data-test={auth.requireNewPassword.section}>
+                <SectionHeader theme={theme} data-test={auth.requireNewPassword.headerSection}>{I18n.get('Change Password')}</SectionHeader>
+                <SectionBody theme={theme} data-test={auth.requireNewPassword.bodySection}>
                     <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
@@ -100,7 +102,7 @@ export default class RequireNewPassword extends AuthPiece {
                         name="password"
                         type="password"
                         onChange={this.handleInputChange}
-                        data-test="require-new-password-new-password-input"
+                        data-test={auth.requireNewPassword.newPasswordInput}
                     />
 
                     {requiredAttributes
@@ -126,7 +128,7 @@ export default class RequireNewPassword extends AuthPiece {
                         <Link
                             theme={theme}
                             onClick={() => this.changeState('signIn')}
-                            data-test="require-new-password-back-to-sign-in-link"
+                            data-test={auth.requireNewPassword.backToSignInLink}
                             >
                             {I18n.get('Back to Sign In')}
                         </Link>

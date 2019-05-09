@@ -18,14 +18,15 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container" data-test="sign-up-section">
-    <div class="amplify-form-body" data-test="sign-up-body-section">
+  <div class="amplify-form-container" data-test="${auth.signUp.section}">
+    <div class="amplify-form-body" data-test="${auth.signUp.bodySection}">
       <div
         class="amplify-form-header"
-        data-test="sign-up-header-section"
+        data-test="${auth.signUp.headerSection}"
         >{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
@@ -40,7 +41,7 @@ const template = `
             [placeholder]="this.amplifyService.i18n().get(field.label)"
             [(ngModel)]="user[field.key]"
             name="field.key"
-            data-test="sign-up-non-phone-number-input"
+            data-test="${auth.signUp.nonPhoneNumberInput}"
             />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
               {{passwordPolicy}}
@@ -71,7 +72,7 @@ const template = `
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
                 type={{field.type}}
-                data-test="sign-up-phone-number-input"
+                data-test="${auth.signUp.phoneNumberInput}"
               />
             </div>
           </div>
@@ -81,7 +82,7 @@ const template = `
         <div class="amplify-form-cell-left">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
-            <a class="amplify-form-link" (click)="onSignIn()" data-test="sign-up-sign-in-link">
+            <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInLink}">
               {{ this.amplifyService.i18n().get('Sign in') }}
             </a>
           </div>
@@ -89,7 +90,7 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          data-test="sign-up-create-account-button"
+          data-test="${auth.signUp.createAccountButton}"
           >{{ this.amplifyService.i18n().get('Create Account') }}</button>
         </div>
       </div>

@@ -18,16 +18,17 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { countrylist, country } from '../../../assets/countries';
+import { auth } from '../../../assets/data-test-attributes';
 
 
 const template = `
 <div
   class="amplify-authenticator"
   *ngIf="_show"
-  data-test="sign-up-section"
+  data-test="${auth.signUp.section}"
   >
-  <div class="amplify-form-body" data-test="sign-up-body-section">
-    <div class="amplify-form-header" data-test="sign-up-header-section">
+  <div class="amplify-form-body" data-test="${auth.signUp.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.signUp.headerSection}">
       {{ this.amplifyService.i18n().get(this.header) }}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
@@ -48,7 +49,7 @@ const template = `
           [placeholder]="this.amplifyService.i18n().get(field.label)"
           (keyup)="setProp($event.target)"
           name={{field.key}}
-          data-test="sign-up-non-phone-number-input"
+          data-test="${auth.signUp.nonPhoneNumberInput}"
         ></ion-input>
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <ion-grid class="amplify-ionic-grid-padding-left">
@@ -86,7 +87,7 @@ const template = `
                   [placeholder]="this.amplifyService.i18n().get(field.label)"
                   (ionChange)="onNumberChange($event.target.value)"
                   name="local_phone_number"
-                  data-test="sign-up-phone-number-input"
+                  data-test="${auth.signUp.phoneNumberInput}"
                 ></ion-input>
               </ion-col>
             </ion-row>
@@ -98,13 +99,13 @@ const template = `
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
-          data-test="sign-up-create-account-button"
+          data-test="${auth.signUp.createAccountButton}"
         >{{ this.amplifyService.i18n().get('Create Account') }}</ion-button>
       </div>
       <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
-          <a class="amplify-form-link" (click)="onSignIn()" data-test="sign-up-sign-in-button">
+          <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInButton}">
             {{ this.amplifyService.i18n().get('Sign In') }}
           </a>
         </div>
@@ -113,7 +114,7 @@ const template = `
           <a
             class="amplify-form-link"
             (click)="onConfirmSignUp()"
-            data-test="sign-up-confirm-button"
+            data-test="${auth.signUp.confirmButton}"
             >
             {{ this.amplifyService.i18n().get('Confirm') }}
           </a>

@@ -11,6 +11,8 @@ import {
     Strike,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 import {
     GoogleButton,
     FacebookButton,
@@ -154,14 +156,14 @@ export default class FederatedSignIn extends Component {
         logger.debug('federated Config is', federated);
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <FormSection theme={theme} data-test="federated-sign-in-section">
-                <SectionBody theme={theme} data-test="federated-sign-in-body-section">
+            <FormSection theme={theme} data-test={auth.federatedSignIn.section}>
+                <SectionBody theme={theme} data-test={auth.federatedSignIn.bodySection}>
                     <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
-                        data-test="federated-sign-in-buttons"
+                        data-test={auth.federatedSignIn.signInButtons}
                     />
                 </SectionBody>
             </FormSection>

@@ -17,6 +17,7 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { GreetingComponentCore } from './greeting.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
@@ -27,7 +28,7 @@ const template = `
         size="small"
         *ngIf="signedIn"
         (click)="onSignOut()"
-        data-test="sign-out-button"
+        data-test="${auth.greeting.signOutButton}"
       >{{ this.amplifyService.i18n().get('Sign Out') }}</ion-button>
 </div>
 `;

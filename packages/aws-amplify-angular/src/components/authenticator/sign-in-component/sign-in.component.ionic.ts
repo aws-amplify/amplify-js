@@ -17,15 +17,16 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div
   class="amplify-authenticator"
   *ngIf="_show"
-  data-test="sign-in-section"
+  data-test="${auth.signIn.section}"
   >
-  <div class="amplify-form-body" data-test="sign-in-body-section">
-    <div class="amplify-form-header" data-test="sign-in-header-section">
+  <div class="amplify-form-body" data-test="${auth.signIn.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.signIn.headerSection}">
       {{ this.amplifyService.i18n().get('Sign in to your account') }}
     </div>
     <ion-list lines="none">
@@ -37,7 +38,7 @@ const template = `
           #username
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
-          data-test="sign-in-username-input"
+          data-test="${auth.signIn.usernameInput}"
         ></ion-input>
       </ion-item>
 
@@ -51,7 +52,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
-          data-test="sign-in-password-input"
+          data-test="${auth.signIn.passwordInput}"
         ></ion-input>
       </ion-item>
     </ion-list>
@@ -60,7 +61,7 @@ const template = `
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"
-          data-test="sign-in-sign-in-button"
+          data-test="${auth.signIn.signInButton}"
           >{{ this.amplifyService.i18n().get('Sign In') }}</ion-button>
       </div>
 
@@ -70,7 +71,7 @@ const template = `
           <a
             class="amplify-form-link"
             (click)="onSignUp()"
-            data-test="sign-in-create-account-link"
+            data-test="${auth.signIn.createAccountLink}"
             >
             {{ this.amplifyService.i18n().get('Create account') }}
           </a>
@@ -79,7 +80,7 @@ const template = `
           <a
             class="amplify-form-link"
             (click)="onForgotPassword()"
-            data-test="sign-in-forgot-password-link"
+            data-test="${auth.signIn.forgotPasswordLink}"
             >
             {{ this.amplifyService.i18n().get('Reset Password') }}
           </a>

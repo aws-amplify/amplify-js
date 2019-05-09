@@ -16,14 +16,15 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container" data-test="confirm-sign-in-section">
-    <div class="amplify-form-body" data-test="confirm-sign-in-body-section">
+  <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
+    <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
     <div
       class="amplify-form-header"
-      data-test="confirm-sign-in-header-section"
+      data-test="${auth.confirmSignIn.headerSection}"
       >{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row">
         <label class="amplify-input-label" for="code">
@@ -36,7 +37,7 @@ const template = `
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
-          data-test="confirm-sign-in-code-input"
+          data-test="${auth.confirmSignIn.codeInput}"
         />
       </div>
       <div class="amplify-form-actions">
@@ -45,7 +46,7 @@ const template = `
             <a 
               class="amplify-form-link"
               (click)="onSignIn()"
-              data-test="confirm-sign-in-back-to-sign-in-link"
+              data-test="${auth.confirmSignIn.backToSignInLink}"
               >
                 {{ this.amplifyService.i18n().get('Back to Sign in') }}
             </a>
@@ -54,7 +55,7 @@ const template = `
         <div class="amplify-form-cell-right">
           <button
             class="amplify-form-button"
-            data-test="confirm-sign-in-confirm-button"
+            data-test="${auth.confirmSignIn.confirmButton}"
             (click)="onConfirm()"
             >
               {{ this.amplifyService.i18n().get('Confirm') }}</button>

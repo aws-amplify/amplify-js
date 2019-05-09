@@ -17,17 +17,18 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div
   class="amplify-authenticator amplify-authenticator-ionic"
   *ngIf="_show"
-  data-test="confirm-sign-up-section"
+  data-test="${auth.confirmSignUp.section}"
   >
-  <div class="amplify-form-body" data-test="confirm-sign-up-body-section">
+  <div class="amplify-form-body" data-test="${auth.confirmSignUp.bodySection}">
     <div
       class="amplify-form-header amplify-form-header-ionic"
-      data-test="confirm-sign-up-header-section"
+      data-test="${auth.confirmSignUp.headerSection}"
       >
       {{ this.amplifyService.i18n().get('Confirm your sign up code') }}
     </div>
@@ -40,7 +41,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setUsername($event.target.value)"
           [value]="username"
-          data-test="confirm-sign-up-username-input"
+          data-test="${auth.confirmSignUp.usernameInput}"
         ></ion-input>
       </ion-item>
 
@@ -54,7 +55,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
-          data-test="confirm-sign-up-confirmation-code-input"
+          data-test="${auth.confirmSignUp.confirmationCodeInput}"
         ></ion-input>
       </ion-item>
     </ion-list>
@@ -65,7 +66,7 @@ const template = `
           expand="block"
           color="primary"
           (click)="onConfirm()"
-          data-test="confirm-sign-up-confirm-button"
+          data-test="${auth.confirmSignUp.confirmButton}"
           >
           {{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
@@ -75,7 +76,7 @@ const template = `
         <a
           class="amplify-form-link"
           (click)="onSignIn()"
-          data-test="confirm-sign-up-back-to-sign-in-link"
+          data-test="${auth.confirmSignUp.backToSignInLink}"
           >
           {{ this.amplifyService.i18n().get('Sign In') }}
         </a>
@@ -85,7 +86,7 @@ const template = `
         <a
           class="amplify-form-link"
           (click)="onResend()"
-          data-test="confirm-sign-up-resend-code-link"
+          data-test="${auth.confirmSignUp.resendCodeLink}"
           >
           {{ this.amplifyService.i18n().get('Resend') }}
         </a>

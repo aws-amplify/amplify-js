@@ -31,6 +31,8 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('ConfirmSignIn');
 
 export default class ConfirmSignIn extends AuthPiece {
@@ -89,9 +91,9 @@ export default class ConfirmSignIn extends AuthPiece {
         if (hide && hide.includes(ConfirmSignIn)) { return null; }
 
         return (
-            <FormSection theme={theme} data-test="confirm-sign-in-section">
-                <SectionHeader theme={theme} data-test="confirm-sign-in-header-section">{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
-                <form onSubmit={this.confirm} data-test="confirm-sign-in-body-section">
+            <FormSection theme={theme} data-test={auth.confirmSignIn.section}>
+                <SectionHeader theme={theme} data-test={auth.confirmSignIn.headerSection}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
+                <form onSubmit={this.confirm} data-test={auth.confirmSignIn.bodySection}>
                     <SectionBody theme={theme}>
                         <FormField theme={theme}>
                             <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
@@ -103,18 +105,18 @@ export default class ConfirmSignIn extends AuthPiece {
                                 name="code"
                                 autoComplete="off"
                                 onChange={this.handleInputChange}
-                                data-test="confirm-sign-in-code-input"
+                                data-test={auth.confirmSignIn.codeInput}
                             />
                         </FormField>
                     </SectionBody>
                     <SectionFooter theme={theme}>
-                        <SectionFooterPrimaryContent theme={theme} data-test="confirm-sign-in-confirm-button">
+                        <SectionFooterPrimaryContent theme={theme} data-test={auth.confirmSignIn.confirmButton}>
                             <Button theme={theme} type="submit">
                                 {I18n.get('Confirm')}
                             </Button>
                         </SectionFooterPrimaryContent>
                         <SectionFooterSecondaryContent theme={theme}>
-                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test="confirm-sign-in-back-to-sign-in-link">
+                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.confirmSignIn.backToSignInLink}>
                                 {I18n.get('Back to Sign In')}
                             </Link>
                         </SectionFooterSecondaryContent>
