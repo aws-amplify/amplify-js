@@ -141,7 +141,7 @@ export default class VerifyContact extends AuthPiece {
                 <SectionHeader theme={theme} data-test={auth.verifyContact.headerSection}>
                     {I18n.get('Account recovery requires verified contact information')}
                 </SectionHeader>
-                <SectionBody theme={theme} data-test={verifyContact.bodySection}>
+                <SectionBody theme={theme} data-test={auth.verifyContact.bodySection}>
                     { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
