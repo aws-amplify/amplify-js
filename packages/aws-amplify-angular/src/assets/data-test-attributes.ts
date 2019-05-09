@@ -112,7 +112,7 @@ const confirmSignIn = {
   backToSignInLink: 'confirm-sign-in-back-to-sign-in-link',
 };
 
-const setMFA = {
+const setMFAComp = {
   section: 'set-mfa-section',
   headerSection: 'set-mfa-header-section',
   bodySection: 'set-mfa-header-body-section',
@@ -167,6 +167,6 @@ export const auth = {
   federatedSignIn,
   confirmSignUp,
   confirmSignIn,
-  setMFA,
+  setMFAComp,
   forgotPassword,
 };

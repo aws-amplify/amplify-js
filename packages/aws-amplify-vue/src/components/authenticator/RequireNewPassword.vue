@@ -16,7 +16,7 @@
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.requireNewPassword.bodySection">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus v-bind:data-test="auth.requireNewPassword.newPassword.Input" />
+        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus v-bind:data-test="auth.requireNewPassword.newPasswordInput" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.formField" 
