@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.11"></a>
+## [2.1.11](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.3...aws-amplify-react-native@2.1.11) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 <a name="2.1.11-unstable.3"></a>
 ## [2.1.11-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.2...aws-amplify-react-native@2.1.11-unstable.3) (2019-05-04)
 

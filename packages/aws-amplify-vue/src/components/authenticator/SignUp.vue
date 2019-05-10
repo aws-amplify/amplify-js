@@ -210,7 +210,7 @@ export default {
           user.password = e.value
         } else if (e.key === 'phone_number' && e.value) {
           user.attributes.phone_number = `+${this.countryCode}${e.value}`
-        } else {
+        } else if (e.value) {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;
         };

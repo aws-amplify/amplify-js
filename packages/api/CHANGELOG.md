@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.35-unstable.0"></a>
+## [1.0.35-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34...@aws-amplify/api@1.0.35-unstable.0) (2019-05-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34"></a>
+## [1.0.34](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.9...@aws-amplify/api@1.0.34) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.9"></a>
+## [1.0.34-unstable.9](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.8...@aws-amplify/api@1.0.34-unstable.9) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.34-unstable.8"></a>
+## [1.0.34-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.7...@aws-amplify/api@1.0.34-unstable.8) (2019-05-06)
+
+
+### Features
+
+* **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
+
+
+
+
 <a name="1.0.34-unstable.7"></a>
 ## [1.0.34-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.34-unstable.6...@aws-amplify/api@1.0.34-unstable.7) (2019-04-26)
 
