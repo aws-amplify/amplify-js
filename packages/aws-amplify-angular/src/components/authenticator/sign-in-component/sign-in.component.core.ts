@@ -54,13 +54,11 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
           data-test="${auth.signIn.passwordInput}"
         />
-        <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Forgot Password?') }}
-        <a
-          class="amplify-form-link"
-          (click)="onForgotPassword()"
-          data-test="${auth.signIn.forgotPasswordLink}"
-          >
-            {{ this.amplifyService.i18n().get('Reset password') }}</a></span>
+        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">{{ this.amplifyService.i18n().get('Forgot Password?') }}
+        <a class="amplify-form-link"
+            (click)="onForgotPassword()"
+            data-test="${auth.signIn.forgotPasswordLink}"
+          >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
@@ -69,7 +67,7 @@ const template = `
             data-test="${auth.signIn.signInButton}"
           >{{ this.amplifyService.i18n().get('Sign In') }}</button>
         </div>
-        <div class="amplify-form-cell-left">
+        <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignUp')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('No account?') }}
             <a
@@ -115,6 +113,13 @@ export class SignInComponentCore implements OnInit {
   }
 
   @Input()
+  set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
+  }
+
+  @Input() hide: string[] = [];
+
+  @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
@@ -125,6 +130,11 @@ export class SignInComponentCore implements OnInit {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 
   setUsername(username: string) {

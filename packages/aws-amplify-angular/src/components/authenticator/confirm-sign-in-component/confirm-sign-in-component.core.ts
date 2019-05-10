@@ -22,11 +22,8 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
     <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
-    <div
-      class="amplify-form-header"
-      data-test="${auth.confirmSignIn.headerSection}"
-      >{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
-      <div class="amplify-form-row">
+    <div class="amplify-form-header" data-test="${auth.confirmSignIn.headerSection}">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
+      <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}
         </label>
@@ -90,6 +87,7 @@ export class ConfirmSignInComponentCore implements OnInit {
 
   @Input()
   set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignIn';
   }
@@ -100,10 +98,17 @@ export class ConfirmSignInComponentCore implements OnInit {
     this._show = authState.state === 'confirmSignIn';
   }
 
+  @Input() hide: string[] = [];
+
   ngOnInit() {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setCode(code: string) {

@@ -66,7 +66,7 @@ const template = `
       </div>
 
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">
+        <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
           {{ this.amplifyService.i18n().get('No account?') }}
           <a
             class="amplify-form-link"
@@ -76,12 +76,8 @@ const template = `
             {{ this.amplifyService.i18n().get('Create account') }}
           </a>
         </div>
-        <div class="amplify-form-signup">
-          <a
-            class="amplify-form-link"
-            (click)="onForgotPassword()"
-            data-test="${auth.signIn.forgotPasswordLink}"
-            >
+        <div class="amplify-form-signup" *ngIf="!shouldHide('ForgotPassword')">
+          <a class="amplify-form-link" (click)="onForgotPassword()" data-test="${auth.signIn.forgotPasswordLink}">
             {{ this.amplifyService.i18n().get('Reset Password') }}
           </a>
         </div>
