@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.11-unstable.0"></a>
+## [0.2.11-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10...aws-amplify-vue@0.2.11-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **Vue-SignUp:** check fields are non-empty prior to submitting them ([1a4d04a](https://github.com/aws-amplify/amplify-js/commit/1a4d04a)), closes [#3174](https://github.com/aws-amplify/amplify-js/issues/3174)
+
+
+
+
 <a name="0.2.10"></a>
 ## [0.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10-unstable.1...aws-amplify-vue@0.2.10) (2019-05-06)
 
