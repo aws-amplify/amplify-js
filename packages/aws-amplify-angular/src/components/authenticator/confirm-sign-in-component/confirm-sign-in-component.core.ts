@@ -13,17 +13,19 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, OnInit, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
     <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
-
-      <div class="amplify-form-row">
-        <label class="amplify-input-label" for="code"> {{ this.amplifyService.i18n().get('Confirmation Code *') }}</label>
+      <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
+        <label class="amplify-input-label" for="code">
+          {{ this.amplifyService.i18n().get('Confirmation Code *') }}
+        </label>
         <input #code
           (change)="setCode(code.value)"
           (keyup)="setCode(code.value)"
@@ -33,24 +35,21 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
         />
       </div>
-
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">{{ this.amplifyService.i18n().get('Back to Sign in') }}</a>
+            <a class="amplify-form-link" (click)="onSignIn()">
+              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            </a>
           </div>
         </div>
-
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
-
       </div>
   </div>
-
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -58,7 +57,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
@@ -66,19 +64,20 @@ const template = `
   selector: 'amplify-auth-confirm-sign-in-core',
   template
 })
-export class ConfirmSignInComponentCore {
+export class ConfirmSignInComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   code: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('ConfiSignInComponent');
   }
 
   @Input()
   set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignIn';
   }
@@ -87,6 +86,19 @@ export class ConfirmSignInComponentCore {
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'confirmSignIn';
+  }
+
+  @Input() hide: string[] = [];
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    }
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setCode(code: string) {
@@ -104,12 +116,14 @@ export class ConfirmSignInComponentCore {
         mfaType
       )
       .then(() => {
+        this.onAlertClose();
         this.amplifyService.setAuthState({ state: 'signedIn', user });
       })
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

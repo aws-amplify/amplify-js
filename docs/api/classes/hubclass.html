@@ -922,13 +922,10 @@ img { max-width: 100%; }
 				<a href="hubclass.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class">
-				<a href="hubclass.html#bus" class="tsd-kind-icon">bus</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class">
-				<a href="hubclass.html#listeners" class="tsd-kind-icon">listeners</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class">
 				<a href="hubclass.html#name" class="tsd-kind-icon">name</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class">
+				<a href="hubclass.html#protectedchannels" class="tsd-kind-icon">protected<wbr>Channels</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="hubclass.html#dispatch" class="tsd-kind-icon">dispatch</a>
@@ -937,10 +934,7 @@ img { max-width: 100%; }
 				<a href="hubclass.html#listen" class="tsd-kind-icon">listen</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="hubclass.html#tolisteners" class="tsd-kind-icon">to<wbr>Listeners</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<a href="hubclass.html#createhub" class="tsd-kind-icon">create<wbr>Hub</a>
+				<a href="hubclass.html#remove" class="tsd-kind-icon">remove</a>
 			</li>
 		</ul>
 	</li>
@@ -969,9 +963,8 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-class"><a href="hubclass.html#bus" class="tsd-kind-icon">bus</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class"><a href="hubclass.html#listeners" class="tsd-kind-icon">listeners</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="hubclass.html#name" class="tsd-kind-icon">name</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class"><a href="hubclass.html#protectedchannels" class="tsd-kind-icon">protected<wbr>Channels</a></li>
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
@@ -979,8 +972,7 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="hubclass.html#dispatch" class="tsd-kind-icon">dispatch</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="hubclass.html#listen" class="tsd-kind-icon">listen</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="hubclass.html#tolisteners" class="tsd-kind-icon">to<wbr>Listeners</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="hubclass.html#createhub" class="tsd-kind-icon">create<wbr>Hub</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="hubclass.html#remove" class="tsd-kind-icon">remove</a></li>
 					</ul>
 				</section>
 			</div>
@@ -992,19 +984,19 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Hub<wbr>Class<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hubclass.html" class="tsd-signature-type">HubClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Hub<wbr>Class<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hubclass.html" class="tsd-signature-type">HubClass</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L21">core/src/Hub.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L56">core/src/Hub.ts:56</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>name: <span class="tsd-signature-type">any</span></h5>
+							<h5>name: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="hubclass.html" class="tsd-signature-type">HubClass</a></h4>
@@ -1015,37 +1007,22 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-			<a name="bus" class="tsd-anchor"></a>
-			<h3>bus</h3>
-			<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L20">core/src/Hub.ts:20</a></li>
-				</ul>
-			</aside>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-			<a name="listeners" class="tsd-anchor"></a>
-			<h3>listeners</h3>
-			<div class="tsd-signature tsd-kind-icon">listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L21">core/src/Hub.ts:21</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-				</ul>
-			</div>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 			<a name="name" class="tsd-anchor"></a>
 			<h3>name</h3>
-			<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+			<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L19">core/src/Hub.ts:19</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L52">core/src/Hub.ts:52</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<a name="protectedchannels" class="tsd-anchor"></a>
+			<h3>protected<wbr>Channels</h3>
+			<div class="tsd-signature tsd-kind-icon">protected<wbr>Channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;core&#x27;, &#x27;auth&#x27;, &#x27;api&#x27;, &#x27;analytics&#x27;, &#x27;interactions&#x27;, &#x27;pubsub&#x27;, &#x27;storage&#x27;, &#x27;xr&#x27;]</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L56">core/src/Hub.ts:56</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1056,25 +1033,28 @@ img { max-width: 100%; }
 			<a name="dispatch" class="tsd-anchor"></a>
 			<h3>dispatch</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">dispatch<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, source<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">dispatch<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#hubpayload" class="tsd-signature-type">HubPayload</a>, source<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, ampSymbol<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Symbol</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L31">core/src/Hub.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L81">core/src/Hub.ts:81</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>channel: <span class="tsd-signature-type">any</span></h5>
+							<h5>channel: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>payload: <span class="tsd-signature-type">any</span></h5>
+							<h5>payload: <a href="../globals.html#hubpayload" class="tsd-signature-type">HubPayload</a></h5>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> source: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> ampSymbol: <span class="tsd-signature-type">Symbol</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1085,22 +1065,22 @@ img { max-width: 100%; }
 			<a name="listen" class="tsd-anchor"></a>
 			<h3>listen</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">listen<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, listenerName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">listen<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, callback<span class="tsd-signature-symbol">?: </span><a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#legacycallback" class="tsd-signature-type">LegacyCallback</a>, listenerName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L46">core/src/Hub.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L103">core/src/Hub.ts:103</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>channel: <span class="tsd-signature-type">any</span></h5>
+							<h5>channel: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
 						</li>
 						<li>
-							<h5>listener: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#legacycallback" class="tsd-signature-type">LegacyCallback</a></h5>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> listenerName: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;noname&quot;</span></h5>
@@ -1111,48 +1091,28 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="tolisteners" class="tsd-anchor"></a>
-			<h3>to<wbr>Listeners</h3>
+			<a name="remove" class="tsd-anchor"></a>
+			<h3>remove</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">to<wbr>Listeners<span class="tsd-signature-symbol">(</span>capsule<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, listener<span class="tsd-signature-symbol">: </span><a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L61">core/src/Hub.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Hub.ts#L63">core/src/Hub.ts:63</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>capsule: <span class="tsd-signature-type">any</span></h5>
+							<h5>channel: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
+						</li>
+						<li>
+							<h5>listener: <a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-			<a name="createhub" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>Hub</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">create<wbr>Hub<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hubclass.html" class="tsd-signature-type">HubClass</a></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/core/src/Hub.ts#L27">core/src/Hub.ts:27</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>name: <span class="tsd-signature-type">any</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="hubclass.html" class="tsd-signature-type">HubClass</a></h4>
 				</li>
 			</ul>
 		</section>

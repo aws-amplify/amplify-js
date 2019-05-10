@@ -76,7 +76,7 @@ export default {
         .catch(e => this.setError(e));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+      AmplifyEventBus.$emit('authState', 'signIn');
     },
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);

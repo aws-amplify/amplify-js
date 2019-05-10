@@ -11541,6 +11541,12 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
             +356
           </option>
           <option
+            key="+357"
+            value="+357"
+          >
+            +357
+          </option>
+          <option
             key="+358"
             value="+358"
           >

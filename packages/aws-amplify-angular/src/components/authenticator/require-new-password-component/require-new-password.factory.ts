@@ -13,12 +13,18 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { RequireNewPasswordClass } from './require-new-password.class';
-import { RequireNewPasswordComponentIonic } from './require-new-password.component.ionic'
+import { RequireNewPasswordComponentIonic } from './require-new-password.component.ionic';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 import { AuthState } from '../../../providers';
 
@@ -33,6 +39,7 @@ import { AuthState } from '../../../providers';
 export class RequireNewPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -45,14 +52,23 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(RequireNewPasswordComponentIonic,{authState: this.authState}) : new ComponentMount(RequireNewPasswordComponentCore, {authState: this.authState});
+    const requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(RequireNewPasswordComponentIonic,{
+      authState: this.authState,
+      hide: this.hide
+    }) :
+    new ComponentMount(RequireNewPasswordComponentCore, {
+      authState: this.authState,
+      hide: this.hide
+    });
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(requireNewPasswordComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(requireNewPasswordComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<RequireNewPasswordClass>componentRef.instance).data = requireNewPasswordComponent.data;
   }
 }

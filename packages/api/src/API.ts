@@ -18,6 +18,7 @@ import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
@@ -54,7 +55,8 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
@@ -441,7 +443,10 @@ export default class APIClass {
                         const newTopics =
                             Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
 
-                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const observable = Amplify.PubSub.subscribe(newTopics, {
+                            ...subscription,
+                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                        });
 
                         handle = observable.subscribe({
                             next: (data) => observer.next(data),
