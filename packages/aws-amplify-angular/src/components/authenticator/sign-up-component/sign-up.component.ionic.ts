@@ -45,45 +45,9 @@ const template = `
           name={{field.key}}
         ></ion-input>
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
-          <ion-grid class="amplify-ionic-grid-padding-left">
-            <ion-row>
-              <ion-col size="6" class="amplify-ionic-grid-padding-left">
-                <ion-label class="amplify-input-label push-right"
-                position="stacked"
-                *ngIf="field.key === 'phone_number'"
-                >
-                  {{ this.amplifyService.i18n().get(field.label) }}
-                  <span *ngIf="field.required">*</span>
-                </ion-label>
-                <ion-select #countryCode
-                *ngIf="field.key === 'phone_number'"
-                name="countryCode"
-                [value]="country_code"
-                class="amplify-select-phone-country"
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                (ionChange)="onCodeChange($event.target.value)">
-                  <ion-select-option *ngFor="let country of countries"
-                  value={{country.value}}>
-                    {{country.label}}
-                  </ion-select-option>
-                </ion-select>
-              </ion-col>
-
-              <ion-col size="6">
-                <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
-                <ion-input
-                  #phone_number
-                  [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                  *ngIf="field.key === 'phone_number'"
-                  type={{field.type}}
-                  class="amplify-form-input-phone-ionic"
-                  [placeholder]="this.amplifyService.i18n().get(field.label)"
-                  (ionChange)="onNumberChange($event.target.value)"
-                  name="local_phone_number"
-                ></ion-input>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+          <amplify-auth-phone-field-ionic
+            (phoneFieldChanged)="onPhoneFieldChanged($event)"
+          ></amplify-auth-phone-field-ionic>
         </ion-content>
       </ion-item>
     </ion-list>

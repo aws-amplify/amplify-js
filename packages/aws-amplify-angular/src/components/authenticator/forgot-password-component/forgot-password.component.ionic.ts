@@ -31,15 +31,10 @@ const template = `
   </div>
 
   <ion-list>
-    <ion-item lines="none" *ngIf="this._usernameAttributes === 'email'">` +
-        emailFieldTemplate + 
-    `</ion-item>
-    <ion-item lines="none" *ngIf="this._usernameAttributes === 'phone_number'">` +
-      phoneNumberFieldTemplate + 
-    `</ion-item>
-    <ion-item lines="none" *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` +
-      usernameFieldTemplate + 
-    `</ion-item>
+    <amplify-auth-username-field-ionic
+      [usernameAttributes]="_usernameAttributes"
+      (usernameFieldChanged)="onUsernameFieldChanged($event)"
+    ></amplify-auth-username-field-ionic>
     <ion-item lines="none" *ngIf="code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         {{ this.amplifyService.i18n().get('Code *') }}

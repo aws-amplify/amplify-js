@@ -25,7 +25,7 @@ const template = `
         <input
             #emailField
             class="amplify-form-input"
-            type="text"
+            type="email"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setEmail($event.target.value)"
             data-test="email-input"

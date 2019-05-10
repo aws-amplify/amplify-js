@@ -31,6 +31,7 @@ const template = `
             class="amplify-select-phone-country"
             data-test="dial-code-select"
             (change)="setCountryCode($event.target.value)"
+            data-test="dial-code-select"
             >
             <option *ngFor="let country of _countries"
                 value={{country.value}}>{{country.label}}

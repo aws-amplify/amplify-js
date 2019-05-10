@@ -26,15 +26,10 @@ const template = `
       {{ this.amplifyService.i18n().get('Sign in to your account') }}
     </div>
     <ion-list lines="none">
-      <ion-item lines="none" *ngIf="this._usernameAttributes === 'email'">` +
-        emailFieldTemplate + 
-      `</ion-item>
-      <ion-item lines="none" *ngIf="this._usernameAttributes === 'phone_number'">` +
-        phoneNumberFieldTemplate + 
-      `</ion-item>
-      <ion-item lines="none" *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">` +
-        usernameFieldTemplate + 
-      `</ion-item>
+      <amplify-auth-username-field-ionic
+        [usernameAttributes]="_usernameAttributes"
+        (usernameFieldChanged)="onUsernameFieldChanged($event)"
+      ></amplify-auth-username-field-ionic>
       <ion-item lines="none">
         <ion-label class="amplify-input-label" for="password" position="stacked">
           {{ this.amplifyService.i18n().get('Password *') }}
@@ -49,7 +44,6 @@ const template = `
       </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
-
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"
@@ -91,21 +85,5 @@ export class SignInComponentIonic extends SignInComponentCore {
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);    
-  }
-
-  onCodeChange(val) {
-    this.country_code = val;
-  }
-
-  onNumberChange(val) {
-    this.local_phone_number = val;
-  }
-
-  setUsername(username: string) {
-    this.username = username;
-  }
-
-  setEmail(email: string) {
-    this.email = email;
   }
 }
