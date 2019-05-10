@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.24-unstable.0"></a>
+## [1.2.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23...@aws-amplify/auth@1.2.24-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
+
+
+
+
+<a name="1.2.23"></a>
+## [1.2.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.8...@aws-amplify/auth@1.2.23) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.8"></a>
+## [1.2.23-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.7...@aws-amplify/auth@1.2.23-unstable.8) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.7"></a>
+## [1.2.23-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.6...@aws-amplify/auth@1.2.23-unstable.7) (2019-04-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** User may not be fully signed out ([#3172](https://github.com/aws/aws-amplify/issues/3172)) ([2678cc3](https://github.com/aws/aws-amplify/commit/2678cc3)), closes [#3117](https://github.com/aws/aws-amplify/issues/3117)
+
+
+
+
 <a name="1.2.23-unstable.6"></a>
 ## [1.2.23-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.5...@aws-amplify/auth@1.2.23-unstable.6) (2019-04-26)
 
