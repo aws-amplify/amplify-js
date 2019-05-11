@@ -1503,6 +1503,12 @@ export default class AuthClass {
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
+        dispatchAuthEvent(
+            'parsingRedirectedBackUrl', 
+            { url: URL },
+            `The Auth category has been configured successfully`
+        );
+
         const currentUrl = URL || window.location.href;
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
