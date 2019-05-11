@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { 
     Auth, 
     Analytics,
@@ -183,9 +183,9 @@ export default class Authenticator extends React.Component {
             });
         return (
             
-                <View style={theme.container}>
+                <SafeAreaView style={theme.container}>
                     {children}
-                </View>
+                </SafeAreaView>
         );
     }
 }

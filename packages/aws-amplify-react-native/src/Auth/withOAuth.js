@@ -24,7 +24,7 @@ export default (Comp) => {
     return class WithOAuth extends React.Component {
         constructor(props) {
             super(props);
-
+            this._isMounted = false;
             const config = this._getOAuthConfig();
 
             const {
@@ -49,17 +49,21 @@ export default (Comp) => {
         }
 
         componentDidMount() {
+            this._isMounted = true;
             Auth.currentAuthenticatedUser().then(user => {
                 this.setState({ user })
             }).catch(error => {
                 logger.debug(error);
-
                 this.setState({ user: null });
             });
         }
-
+        componentWillUnmount() {
+            this._isMounted = false;
+            return;
+        }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
+            if (!this._isMounted) return;
             const { channel, payload } = capsule;
 
             if (channel === 'auth') {
@@ -68,7 +72,6 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-
                             this.setState({ user, error: null });
                         });
                         break;

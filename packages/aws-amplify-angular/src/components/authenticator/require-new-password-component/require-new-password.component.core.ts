@@ -81,10 +81,24 @@ export class RequireNewPasswordComponentCore implements OnInit {
     this._show = authState.state === 'requireNewPassword';
   }
 
+  @Input() hide: string[] = [];
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'requireNewPassword';
+    this.hide = data.hide ? data.hide : this.hide;
+  }
+
   ngOnInit() {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setPassword(password: string) {
