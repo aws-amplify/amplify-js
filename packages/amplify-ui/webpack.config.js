@@ -36,7 +36,7 @@ module.exports = {
               hmr: process.env.NODE_ENV === "development"
             }
           },
-          { loader: "dts-css-modules-loader", options: { namedExport: true } },
+          { loader: "dts-css-modules-loader", options: { banner: "// AUTOMATICALLY GENERATED - DO NOT EDIT", namedExport: true } },
           {
             loader: "css-loader",
             options: {

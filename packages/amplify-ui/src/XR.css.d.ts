@@ -1,3 +1,4 @@
+// AUTOMATICALLY GENERATED - DO NOT EDIT
 export const sumerianSceneContainer: string;
 export const sumerianScene: string;
 export const loadingOverlay: string;

@@ -1,3 +1,4 @@
+// AUTOMATICALLY GENERATED - DO NOT EDIT
 export const button: string;
 export const signInButton: string;
 export const googleSignInButton: string;

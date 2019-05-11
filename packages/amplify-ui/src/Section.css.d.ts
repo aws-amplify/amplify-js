@@ -1,3 +1,4 @@
+// AUTOMATICALLY GENERATED - DO NOT EDIT
 export const container: string;
 export const actionRow: string;
 export const sectionHeader: string;
