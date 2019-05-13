@@ -16,12 +16,13 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
+  <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
+    <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.confirmSignIn.headerSection}">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}
@@ -33,19 +34,28 @@ const template = `
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
+          data-test="${auth.confirmSignIn.codeInput}"
         />
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">
-              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            <a 
+              class="amplify-form-link"
+              (click)="onSignIn()"
+              data-test="${auth.confirmSignIn.backToSignInLink}"
+              >
+                {{ this.amplifyService.i18n().get('Back to Sign in') }}
             </a>
           </div>
         </div>
         <div class="amplify-form-cell-right">
-          <button class="amplify-form-button"
-            (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
+          <button
+            class="amplify-form-button"
+            data-test="${auth.confirmSignIn.confirmButton}"
+            (click)="onConfirm()"
+            >
+              {{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
       </div>

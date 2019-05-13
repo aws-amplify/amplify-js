@@ -22,6 +22,8 @@ import {
     SectionBody
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('Loading');
 
 export default class Loading extends AuthPiece {
@@ -36,7 +38,7 @@ export default class Loading extends AuthPiece {
         if (hide && hide.includes(Loading)) { return null; }
 
         return (
-            <FormSection theme={theme}>
+            <FormSection theme={theme} data-test={auth.loading.section}>
                 <SectionBody theme={theme}>{I18n.get('Loading...')}
                 </SectionBody>
             </FormSection>
