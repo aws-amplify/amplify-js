@@ -1,6 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MockComponent } from 'ng-mocks';
 import { By } from '@angular/platform-browser';
 import {
   BrowserDynamicTestingModule,
@@ -12,7 +13,8 @@ import {
   SignUpComponentCore,
   SignUpField 
 } from '../../../components/authenticator/sign-up-component/sign-up.component.core';
-import Amplify from 'aws-amplify';
+import { PhoneFieldComponentCore } 
+from '../../../components/authenticator/phone-field-component/phone-field.component.core';
 // tslint:enable
 
 describe('SignUpComponentCore (basics): ', () => {
@@ -21,7 +23,7 @@ describe('SignUpComponentCore (basics): ', () => {
   let service: AmplifyService;
 
   beforeEach(() => { 
-    service = new AmplifyService(Amplify);
+    service = new AmplifyService(authModule);
     component = new SignUpComponentCore(service);
   });
 
@@ -51,10 +53,6 @@ describe('SignUpComponentCore (basics): ', () => {
     expect(component.sortFields).toBeTruthy();
   });
 
-  it('...should have a countryList', () => {
-    expect(Array.isArray(component.countries)).toBeTruthy();
-  });
-
 });
 
 describe('SignUpComponentCore (methods and UI): ', () => {
@@ -70,7 +68,10 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SignUpComponentCore],
+      declarations: [
+        SignUpComponentCore,
+        MockComponent(PhoneFieldComponentCore)
+      ],
       providers: [
         {
           provide: AmplifyService,
@@ -96,7 +97,6 @@ describe('SignUpComponentCore (methods and UI): ', () => {
   afterEach(() => {
     component.signUpConfig = undefined;
   });
-
 
   it('...should be created with 4 default signUpFields', () => {
     expect(component.signUpFields.length).toBe(4);

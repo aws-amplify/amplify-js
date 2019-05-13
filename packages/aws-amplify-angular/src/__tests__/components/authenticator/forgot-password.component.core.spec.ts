@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MockComponent } from 'ng-mocks';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -24,19 +25,13 @@ describe('ForgotPasswordComponentCore: ', () => {
   let forgotPasswordSubmitSpy;
   let onSignInSpy;
 
-  @Component({
-    selector: 'amplify-auth-username-field-core',
-    template: '<p>Mock Product Settings Component</p>'
-  })
-  class MockUsernameFieldComponent {}
-
   beforeEach(() => { 
     service = new AmplifyService(authModule);
     component = new ForgotPasswordComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
         ForgotPasswordComponentCore,
-        MockUsernameFieldComponent
+        MockComponent(UsernameFieldComponentCore)
       ],
       providers: [
         {
@@ -64,7 +59,7 @@ describe('ForgotPasswordComponentCore: ', () => {
     component = null;
   });
 
-  it.only('...should be created', () => {
+  it('...should be created', () => {
     expect(component).toBeTruthy();
   });
 
