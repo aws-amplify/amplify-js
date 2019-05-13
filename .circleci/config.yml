@@ -20,7 +20,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: echo $AWS_EXPORTS_AUTH
+      - run: env
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn run bootstrap
