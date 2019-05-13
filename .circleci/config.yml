@@ -75,6 +75,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            echo $AWS_EXPORTS_AUTH
             cd ~
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
