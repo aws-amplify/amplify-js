@@ -133,6 +133,7 @@ workflows:
               only:
                 - release
                 - master
+                - ci-test
           requires:
             - build
       - deploy:
