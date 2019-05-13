@@ -48,7 +48,7 @@ const TOTPSetup = {
 const requireNewPassword = {
   section: 'require-new-password-section',
   headerSection: 'require-new-password-header-section',
-  footSection:'require-new-password-footer-section',
+  footerSection:'require-new-password-footer-section',
   bodySection:'require-new-password-body-section',
   newPasswordInput:'require-new-password-new-password-input',
   backToSignInLink:'require-new-password-back-to-sign-in-link',
@@ -65,6 +65,7 @@ const greetings = {
   navRight: 'greetings-nav-right'
 };
 
+// TODO: Change Angular Component (Greeting) to match React Component (Greetings) 
 const greeting = {
   signOutButton: 'sign-out-button',
   signOutLink: 'greeting-sign-out-link',
