@@ -41,6 +41,7 @@ export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() usernameAttributes: string = 'username';
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -57,12 +58,14 @@ export class SignInComponent implements OnInit, OnDestroy {
       new ComponentMount(
         SignInComponentIonic,{
           authState: this.authState,
+          hide: this.hide,
           usernameAttributes: this.usernameAttributes
         }) 
         : 
       new ComponentMount(
         SignInComponentCore, {
           authState: this.authState,
+          hide: this.hide,
           usernameAttributes: this.usernameAttributes
         });
 

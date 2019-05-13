@@ -118,10 +118,18 @@ export class ForgotPasswordComponentCore implements OnInit {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
     this._usernameAttributes = data.usernameAttributes;
+    this.hide = data.hide ? data.hide : this.hide;
 
     this.username = (data.authState.user &&
        data.authState.user.username) ?
        data.authState.user.username : '';
+  }
+
+  @Input() hide: string[] = [];
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   @Input()

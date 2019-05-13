@@ -40,6 +40,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() usernameAttributes: string = 'username';
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -56,12 +57,14 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     new ComponentMount(
       ForgotPasswordComponentIonic,{
         authState: this.authState,
+        hide: this.hide,
         usernameAttributes: this.usernameAttributes
       }) 
       :
     new ComponentMount(
       ForgotPasswordComponentCore, {
         authState: this.authState,
+        hide: this.hide,
         usernameAttributes: this.usernameAttributes
       });
 

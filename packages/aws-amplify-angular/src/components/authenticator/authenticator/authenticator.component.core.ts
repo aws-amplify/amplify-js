@@ -22,6 +22,7 @@ const template = `
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
       [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
@@ -29,23 +30,27 @@ const template = `
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
       [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
       [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-up-core>
 
     <amplify-auth-confirm-sign-in-core
-    *ngIf="!shouldHide('ConfirmSignIn')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignIn')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-in-core>
 
     <amplify-auth-forgot-password-core
-    *ngIf="!shouldHide('ForgotPassword')"
-    [authState]="authState"
-    [usernameAttributes]="_usernameAttributes"
+      *ngIf="!shouldHide('ForgotPassword')"
+      [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
@@ -55,8 +60,9 @@ const template = `
     ></amplify-auth-greetings-core>
 
      <amplify-auth-require-new-password-core
-    *ngIf="!shouldHide('RequireNewPassword')"
-    [authState]="authState"
+      *ngIf="!shouldHide('RequireNewPassword')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-require-new-password-core>
   </div>
 `;

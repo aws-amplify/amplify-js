@@ -39,6 +39,7 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() usernameAttributes: string = 'username';
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -52,8 +53,8 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes}) :
-    new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes});
+    new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide}) :
+    new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide});
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

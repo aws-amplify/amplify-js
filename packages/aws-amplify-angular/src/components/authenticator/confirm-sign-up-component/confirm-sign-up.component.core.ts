@@ -98,11 +98,13 @@ export class ConfirmSignUpComponentCore implements OnInit {
 
   @Input()
   set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignUp';
-
     this.username = data.authState.user? data.authState.user.username || '' : '';
   }
+
+  @Input() hide: string[] = [];
 
   @Input()
   set authState(authState: AuthState) {
@@ -121,6 +123,10 @@ export class ConfirmSignUpComponentCore implements OnInit {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 
   setUsername(username: string) {
