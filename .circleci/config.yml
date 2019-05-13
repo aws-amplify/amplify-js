@@ -20,6 +20,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: echo $AWS_EXPORTS_AUTH
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn run bootstrap
@@ -75,7 +76,6 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            echo $AWS_EXPORTS_AUTH
             cd ~
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
