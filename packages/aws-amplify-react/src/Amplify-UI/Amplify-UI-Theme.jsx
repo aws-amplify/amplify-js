@@ -34,6 +34,7 @@ export const FormRow = {};
 export const A = {};
 export const Hint = {};
 export const Radio = {};
+export const Label = {};
 export const InputLabel = {};
 export const AmazonSignInButton = {};
 export const FacebookSignInButton = {};
@@ -78,6 +79,7 @@ const AmplifyTheme = {
 
   hint: Hint,
   radio: Radio,
+  label: Label,
   inputLabel: InputLabel,
   toast: Toast,
   

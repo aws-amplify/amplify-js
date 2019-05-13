@@ -44,5 +44,4 @@ describe('AuthenticatorIonicComponent: ', () => {
     component.hide = ['value one', 'value two'];
     expect(component.shouldHide('value two')).toEqual(true);
   })
-
 });

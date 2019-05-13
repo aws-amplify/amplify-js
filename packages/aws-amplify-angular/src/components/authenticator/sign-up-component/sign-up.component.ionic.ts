@@ -100,7 +100,7 @@ const template = `
             {{ this.amplifyService.i18n().get('Sign In') }}
           </a>
         </div>
-        <div class="amplify-form-signup">
+        <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
           {{ this.amplifyService.i18n().get('Have a code?') }}
           <a class="amplify-form-link" (click)="onConfirmSignUp()">
             {{ this.amplifyService.i18n().get('Confirm') }}

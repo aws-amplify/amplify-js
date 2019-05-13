@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.16"></a>
+## [0.1.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.3...@aws-amplify/xr@0.1.16) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.16-unstable.3"></a>
+## [0.1.16-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.2...@aws-amplify/xr@0.1.16-unstable.3) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+<a name="0.1.16-unstable.2"></a>
+## [0.1.16-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.1...@aws-amplify/xr@0.1.16-unstable.2) (2019-04-19)
+
+
+### Features
+
+* **@aws-amplify/xr:** Changing signing logic in SumerianProvider to use Auth Headers instead of Query Params. This makes it easier for caching libraries like Workbox to cache requests which enable offline PWA Sumerian apps. ([3682b3b](https://github.com/aws/aws-amplify/commit/3682b3b))
+
+
+
+
 <a name="0.1.16-unstable.1"></a>
 ## [0.1.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.16-unstable.0...@aws-amplify/xr@0.1.16-unstable.1) (2019-04-17)
 
