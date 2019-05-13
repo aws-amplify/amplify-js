@@ -24,7 +24,8 @@ const template = `
             <ion-label class="amplify-input-label push-right"
                 position="stacked" 
                 for="localPhoneNumberField">
-                {{ this.amplifyService.i18n().get("Phone Number") }} *
+                {{ this.amplifyService.i18n().get(this._label) }}
+                <span *ngIf="_required">*</span>
             </ion-label>
             <ion-select 
             #countryCodeField
@@ -33,7 +34,8 @@ const template = `
             (ionChange)="setCountryCode($event.target.value)"
             data-test="dial-code-select">
             <ion-select-option *ngFor="let country of _countries"
-            value={{country.value}}>
+            value={{country.value}}
+            selected={{isDefaultDialCode(country)}}>
                 {{country.label}}
             </ion-select-option>
             </ion-select>

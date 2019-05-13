@@ -104,12 +104,18 @@ export default {
     },
     usernameFieldChanged: function(data) {
       const { usernameField, username, email, phoneNumber } = data;
-      if (usernameField === 'username') {
-        this.forgotPwUsername = username;
-      } else if (usernameField === 'email') {
-        this.forgotPwUsername = email;
-      } else if (usernameField === 'phone_number') {
-        this.forgotPwUsername = phoneNumber;
+      switch(usernameField) {
+        case 'username':
+          this.forgotPwUsername = username;
+          break;
+        case 'email':
+          this.forgotPwUsername = email;
+          break;
+        case 'phone_number':
+          this.forgotPwUsername = phoneNumber;
+          break;
+        default:
+          break;
       }
     },
   }

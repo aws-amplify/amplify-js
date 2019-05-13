@@ -18,7 +18,6 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
-import {usernameFieldTemplate, emailFieldTemplate, phoneNumberFieldTemplate} from '../ionic-templates';
 
 const template = `
 <div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">

@@ -43,6 +43,10 @@ const template = `
         </div>
         <div *ngIf="field.key === 'phone_number'">
           <amplify-auth-phone-field-core
+            [label]="field.label"
+            [required]="field.required"
+            [placeholder]="field.placeholder"
+            [defaultCountryCode]="country_code"
             (phoneFieldChanged)="onPhoneFieldChanged($event)"
           ></amplify-auth-phone-field-core>
         </div>
@@ -104,6 +108,7 @@ export class SignUpComponentCore implements OnInit {
   errorMessage: string;
   hiddenFields: any = [];
   passwordPolicy: string;
+  defaultCountryCode: string;
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {

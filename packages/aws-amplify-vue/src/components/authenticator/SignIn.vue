@@ -121,12 +121,18 @@ export default {
     },
     usernameFieldChanged: function(data) {
       const { usernameField, username, email, phoneNumber } = data;
-      if (usernameField === 'username') {
-        this.signInUsername = username;
-      } else if (usernameField === 'email') {
-        this.signInUsername = email;
-      } else if (usernameField === 'phone_number') {
-        this.signInUsername = phoneNumber;
+      switch(usernameField) {
+        case 'username':
+          this.signInUsername = username;
+          break;
+        case 'email':
+          this.signInUsername = email;
+          break;
+        case 'phone_number':
+          this.signInUsername = phoneNumber;
+          break;
+        default:
+          break;
       }
     },
   }

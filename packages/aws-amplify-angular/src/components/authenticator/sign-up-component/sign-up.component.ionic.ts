@@ -46,6 +46,10 @@ const template = `
         ></ion-input>
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
           <amplify-auth-phone-field-ionic
+            [label]="field.label"
+            [required]="field.required"
+            [placeholder]="field.placeholder"
+            [defaultCountryCode]="country_code"
             (phoneFieldChanged)="onPhoneFieldChanged($event)"
           ></amplify-auth-phone-field-ionic>
         </ion-content>
@@ -95,13 +99,5 @@ export class SignUpComponentIonic extends SignUpComponentCore {
 
   setProp(target){
     return this.user[target.name] = target.value;
-  }
-
-  onCodeChange(val) {
-    this.country_code = val;
-  }
-
-  onNumberChange(val) {
-    this.local_phone_number = val;
   }
 }

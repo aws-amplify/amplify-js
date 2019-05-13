@@ -21,7 +21,8 @@ import { countrylist, country }  from '../../../assets/countries';
 const template = `
 <div>
     <label class="amplify-input-label" for="localPhoneNumberField">
-        {{ this.amplifyService.i18n().get("Phone Number") }} *
+        {{ this.amplifyService.i18n().get(this._label) }}
+        <span *ngIf="_required">*</span>
     </label>
     <div class="amplify-input-group">
         <div class="amplify-input-group-item">
@@ -29,12 +30,13 @@ const template = `
             #countryCodeField
             name="countryCode"
             class="amplify-select-phone-country"
-            data-test="dial-code-select"
             (change)="setCountryCode($event.target.value)"
             data-test="dial-code-select"
             >
             <option *ngFor="let country of _countries"
-                value={{country.value}}>{{country.label}}
+                value={{country.value}}
+                selected={{isDefaultDialCode(country)}}>
+                {{country.label}}
             </option>
             </select>
         </div>
@@ -59,9 +61,12 @@ const template = `
 })
 export class PhoneFieldComponentCore implements OnInit {
     _placeholder : string = '';
+    _label: string = 'Phone Number';
+    _required: boolean = true;
     _country_code: string = '1';
     _local_phone_number: string = '';
     _countries: country[];
+    _defaultCountryCode = '1';
 
     constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
         this._countries = countrylist;
@@ -69,12 +74,30 @@ export class PhoneFieldComponentCore implements OnInit {
 
     @Input()
     set data(data: any) {
-        this._placeholder = data.placeholder;
+        this._placeholder = data.placeholder || this._placeholder;
+        this._label = data.label || this._label;
+        this._defaultCountryCode = data._defaultCountryCode || this._defaultCountryCode;
+        this._required = data.required === undefined? this._required : data.required;
     }
 
     @Input()
     set placeholder(placeholder: string) {
         this._placeholder = placeholder;
+    }
+
+    @Input()
+    set label(label: string) {
+        this._label = label;
+    }
+
+    @Input()
+    set required(required: boolean) {
+        this._required = required;
+    }
+
+    @Input()
+    set defaultCountryCode(defaultCountryCode: string) {
+        this._defaultCountryCode = defaultCountryCode;
     }
 
     @Output()
@@ -104,5 +127,18 @@ export class PhoneFieldComponentCore implements OnInit {
 
     getPlaceholder() {
         return this.amplifyService.i18n().get(`Enter your phone number` || this._placeholder);
+    }
+
+    isDefaultDialCode(country) {
+        if (country.value === this._defaultCountryCode) {
+            // Because Canada, US and Sint Maarten share the same code
+            // We will return US by default
+            if (this._defaultCountryCode === '1') {
+                return country.countryCode === 'US'? 'selected' : undefined;
+            }
+            return 'selected';
+        } else {
+            return undefined;
+        }
     }
 }

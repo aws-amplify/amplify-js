@@ -49,15 +49,14 @@ export default class AuthPiece extends React.Component {
     }
 
     getUsernameFromInput() {
-        const { usernameAttributes = [] } = this.props;
-        if (usernameAttributes === UsernameAttributes.EMAIL) {
-            // Email as Username
-            return this.inputs.email;
-        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-            // Phone number as Username
-            return this.phone_number;
-        } else {
-            return this.inputs.username;
+        const { usernameAttributes = 'username' } = this.props;
+        switch(usernameAttributes) {
+            case UsernameAttributes.EMAIL:
+                return this.inputs.email;
+            case UsernameAttributes.PHONE_NUMBER:
+                return this.phone_number;
+            default:
+                return this.inputs.username;
         }
     }
 

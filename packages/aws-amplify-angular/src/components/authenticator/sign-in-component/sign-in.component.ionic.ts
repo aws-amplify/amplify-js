@@ -17,7 +17,6 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
-import {usernameFieldTemplate, emailFieldTemplate, phoneNumberFieldTemplate} from '../ionic-templates';
 
 const template = `
 <div class="amplify-authenticator" *ngIf="_show">
