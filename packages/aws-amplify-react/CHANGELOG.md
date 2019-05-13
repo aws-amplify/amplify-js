@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.8-unstable.0"></a>
+## [2.3.8-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.7...aws-amplify-react@2.3.8-unstable.0) (2019-05-13)
+
+
+### Bug Fixes
+
+* add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws/aws-amplify/commit/49eae14))
+
+
+
+
 <a name="2.3.7"></a>
 ## [2.3.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.7-unstable.4...aws-amplify-react@2.3.7) (2019-05-06)
 
