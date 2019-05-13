@@ -30,6 +30,7 @@ export default class Greetings extends AuthPiece {
         super(props);
         this.state = {};
         this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.inGreeting = this.inGreeting.bind(this);
         Hub.listen('auth', this.onHubCapsule);
         this._validAuthStates = ['signedIn'];
 
@@ -73,7 +74,7 @@ export default class Greetings extends AuthPiece {
             } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
                 this.setState({
                     authState: 'signIn'
-                });
+                }); 
             } 
         }
     }
@@ -92,19 +93,23 @@ export default class Greetings extends AuthPiece {
         // get name from attributes first
         const { usernameAttributes = 'username' } = this.props;
         let name = '';
-        if (usernameAttributes === UsernameAttributes.EMAIL) {
-            // Email as Username
-            name = user.attributes? user.attributes.email : user.username;
-        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-            // Phone number as Username
-            name = user.attributes? user.attributes.phone_number : user.username;
-        } else {
-            const nameFromAttr = user.attributes? 
-                (user.attributes.name || 
-                (user.attributes.given_name? 
-                    (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
-                : undefined;
-            name = nameFromAttr || user.name || user.username;
+        switch (usernameAttributes) {
+            case UsernameAttributes.EMAIL:
+                // Email as Username
+                name = user.attributes? user.attributes.email : user.username;
+                break;
+            case UsernameAttributes.PHONE_NUMBER:
+                // Phone number as Username
+                name = user.attributes? user.attributes.phone_number : user.username;
+                break;
+            default:
+                const nameFromAttr = user.attributes? 
+                    (user.attributes.name || 
+                    (user.attributes.given_name? 
+                        (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
+                    : undefined;
+                name = nameFromAttr || user.name || user.username;
+                break;
         }
 
         const message = (typeof greeting === 'function')? greeting(name) : greeting;

@@ -9,6 +9,8 @@ import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 import { ForgotPasswordComponentCore } 
 from '../../../components/authenticator/forgot-password-component/forgot-password.component.core';
+import { UsernameFieldComponentCore } 
+from '../../../components/authenticator/username-field-component/username-field.component.core';
 
 describe('ForgotPasswordComponentCore: ', () => {
 
@@ -22,12 +24,19 @@ describe('ForgotPasswordComponentCore: ', () => {
   let forgotPasswordSubmitSpy;
   let onSignInSpy;
 
+  @Component({
+    selector: 'amplify-auth-username-field-core',
+    template: '<p>Mock Product Settings Component</p>'
+  })
+  class MockUsernameFieldComponent {}
+
   beforeEach(() => { 
     service = new AmplifyService(authModule);
     component = new ForgotPasswordComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
-        ForgotPasswordComponentCore
+        ForgotPasswordComponentCore,
+        MockUsernameFieldComponent
       ],
       providers: [
         {
@@ -55,7 +64,7 @@ describe('ForgotPasswordComponentCore: ', () => {
     component = null;
   });
 
-  it('...should be created', () => {
+  it.only('...should be created', () => {
     expect(component).toBeTruthy();
   });
 
