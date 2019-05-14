@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.27-unstable.0"></a>
+## [1.0.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.26...@aws-amplify/core@1.0.27-unstable.0) (2019-05-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** bind console error to console ([d01062c](https://github.com/aws/aws-amplify/commit/d01062c))
+
+
+
+
 <a name="1.0.26"></a>
 ## [1.0.26](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.26-unstable.2...@aws-amplify/core@1.0.26) (2019-05-06)
 

@@ -66,7 +66,7 @@ describe('SignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('i18n Sign In Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign in to your account');
       expect(wrapper.vm.options.username).toEqual('');
     });
     it('...should call Auth.signIn when signIn function is called', () => {
