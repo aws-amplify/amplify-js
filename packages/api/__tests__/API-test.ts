@@ -8,6 +8,8 @@ import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
+import { Signer, Credentials } from '@aws-amplify/core';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
@@ -799,6 +801,9 @@ describe('API test', () => {
 
             const observable = api.graphql(graphqlOperation(query, variables)).subscribe({
                 next: () => {
+                    expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
+                    const subscribeOptions = PubSub.subscribe.mock.calls[0][1];
+                    expect(subscribeOptions.provider).toBe(INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER);
                     done();
                 }
             });
@@ -971,12 +976,13 @@ describe('API test', () => {
             await api.get('apiName', 'path', {});
 
             expect(spyonRequest).toBeCalledWith({
-                "data": null,
-                "headers": { "Authorization": "mytoken" },
-                "host": "www.amazonaws.compath",
-                "method": "GET",
+                "data": null, 
+                "headers": {"Authorization": "mytoken"}, 
+                "host": "www.amazonaws.compath", 
+                "method": "GET", 
                 "path": "/",
-                "signerServiceInfo": undefined,
+                "responseType": "json",
+                "signerServiceInfo": undefined, 
                 "url": "https://www.amazonaws.compath/"
             }, undefined);
 
@@ -1028,8 +1034,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?ke%3Ay3=val%3Aue%203" };
-            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
+            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
         test('query-string on init-custom-auth', async () => {
@@ -1081,8 +1087,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = { "data": null, "headers": { "Authorization": "apikey" }, "host": undefined, "method": "GET", "path": "/", "signerServiceInfo": undefined, "url": "endpoint/items?ke%3Ay3=val%3Aue%203" };
-            expect(spyonRequest).toBeCalledWith(expectedParams, undefined);
+            const expectedParams = {"data": null, "headers": {"Authorization": "apikey"}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "signerServiceInfo": undefined, "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
+            expect(spyonRequest).toBeCalledWith( expectedParams, undefined );
         });
         test('query-string on init and url', async () => {
             const resp = { data: [{ name: 'Bob' }] };
@@ -1130,8 +1136,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items?key1=value1&key2=value', init);
-            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?key1=value1&key2=value2_real" };
-            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?key1=value1&key2=value2_real"};
+            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
         test('endpoint length 0', async () => {

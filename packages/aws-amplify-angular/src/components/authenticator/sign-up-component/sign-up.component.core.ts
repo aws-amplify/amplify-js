@@ -18,12 +18,16 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { countrylist, country } from '../../../assets/countries';
 import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-      <div class="amplify-form-header">{{ this.amplifyService.i18n().get(this.header) }}</div>
+  <div class="amplify-form-container" data-test="${auth.signUp.section}">
+    <div class="amplify-form-body" data-test="${auth.signUp.bodySection}">
+      <div
+        class="amplify-form-header"
+        data-test="${auth.signUp.headerSection}"
+        >{{ this.amplifyService.i18n().get(this.header) }}</div>
       <div class="amplify-form-row" *ngFor="let field of signUpFields">
         <div *ngIf="field.key !== 'phone_number'">
           <label class="amplify-input-label">
@@ -35,7 +39,10 @@ const template = `
             [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
             [placeholder]="this.amplifyService.i18n().get(field.label)"
-            [(ngModel)]="user[field.key]" name="field.key" />
+            [(ngModel)]="user[field.key]"
+            name="field.key"
+            data-test="${auth.signUp.nonPhoneNumberInput}"
+            />
             <div *ngIf="field.key === 'password'" class="amplify-form-extra-details">
               {{passwordPolicy}}
             </div>
@@ -65,16 +72,17 @@ const template = `
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
                 type={{field.type}}
+                data-test="${auth.signUp.phoneNumberInput}"
               />
             </div>
           </div>
         </div>
       </div>
       <div class="amplify-form-actions">
-        <div class="amplify-form-cell-left">
+        <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
-            <a class="amplify-form-link" (click)="onSignIn()">
+            <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInLink}">
               {{ this.amplifyService.i18n().get('Sign in') }}
             </a>
           </div>
@@ -82,7 +90,8 @@ const template = `
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
           (click)="onSignUp()"
-          >{{ this.amplifyService.i18n().get('Sign Up') }}</button>
+          data-test="${auth.signUp.createAccountButton}"
+          >{{ this.amplifyService.i18n().get('Create Account') }}</button>
         </div>
       </div>
     </div>
@@ -157,6 +166,8 @@ export class SignUpComponentCore implements OnInit {
     }
   }
 
+  @Input() hide: string[] = [];
+
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
@@ -190,6 +201,12 @@ export class SignUpComponentCore implements OnInit {
       this.logger.warn('Auth module not registered on AmplifyService provider');
     }
     this.sortFields();
+  }
+
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 
   onSignUp() {

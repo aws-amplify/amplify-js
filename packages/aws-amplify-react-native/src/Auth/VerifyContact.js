@@ -48,6 +48,32 @@ export default class VerifyContact extends AuthPiece {
         this.submit = this.submit.bind(this);
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props.authData) {
+            const { unverified } = props.authData;
+            if (!unverified) {
+                logger.debug('no unverified contact');
+                return null;
+            }
+
+            const { email, phone_number } = unverified;
+            if (email && !state.pickAttr) {
+                return {
+                    pickAttr: 'email',
+                };
+            } else if (phone_number &&  !state.pickAttr) {
+                return {
+                    pickAttr: 'phone_number',
+                };
+            } else {
+                return null;
+            }
+            
+        } else {
+            return null;
+        }
+    }
+
     verify() {
         const user = this.props.authData;
         const attr = this.state.pickAttr;

@@ -19,6 +19,7 @@ import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core
 import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
@@ -444,7 +445,10 @@ export default class APIClass {
                         const newTopics =
                             Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
 
-                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const observable = Amplify.PubSub.subscribe(newTopics, {
+                            ...subscription,
+                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                        });
 
                         handle = observable.subscribe({
                             next: (data) => observer.next(data),
