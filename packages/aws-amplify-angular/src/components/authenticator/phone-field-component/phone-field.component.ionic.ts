@@ -35,7 +35,7 @@ const template = `
             data-test="dial-code-select">
             <ion-select-option *ngFor="let country of _countries"
             value={{country.value}}
-            selected={{isDefaultDialCode(country)}}>
+            selected={{isDefaultCountryCode(country)}}>
                 {{country.label}}
             </ion-select-option>
             </ion-select>

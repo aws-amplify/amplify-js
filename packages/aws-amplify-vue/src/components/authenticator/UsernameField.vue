@@ -19,7 +19,8 @@
                 v-bind:class="amplifyUI.input" 
                 v-model="username" 
                 :placeholder="$Amplify.I18n.get(`Enter your ${getUsernameLabel()}`)" 
-                autofocus v-on:keyup="$emit('username-field-changed', {usernameField: 'username', username})" 
+                autofocus 
+                v-on:keyup="usernameChanged" 
                 data-test="username-input"
             />
         </div>
@@ -29,7 +30,8 @@
                 v-bind:class="amplifyUI.input" 
                 v-model="email" 
                 :placeholder="$Amplify.I18n.get('Enter your email')" 
-                autofocus v-on:keyup="$emit('username-field-changed', {usernameField: 'email', email})" 
+                autofocus 
+                v-on:keyup="emailChanged" 
                 data-test="email-input"
             />
         </div>
@@ -37,7 +39,7 @@
             <amplify-phone-field 
                 v-bind:required="phoneNumberRequired"
                 v-on:phone-number-changed="phoneNumberChanged"
-            />
+            ></amplify-phone-field>
         </div>
     </div>
 </template>
@@ -85,6 +87,12 @@ export default {
         phoneNumberChanged(data) {
             const phoneNumber = composePhoneNumber(data.countryCode, data.local_phone_number);
             this.$emit('username-field-changed', {usernameField: 'phone_number', phoneNumber});
+        },
+        emailChanged() {
+            this.$emit('username-field-changed', {usernameField: 'email', email});
+        },
+        usernameChanged() {
+            this.$emit('username-field-changed', {usernameField: 'username', username});
         }
         
     }

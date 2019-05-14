@@ -16,31 +16,24 @@
     <div v-if="isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Phone number')}} *</div>
     <div v-if="!isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Phone number')}}</div>
     <div v-bind:class="amplifyUI.selectInput">
-        <select v-model="country" v-on:change="$emit(
-                'phone-number-changed', 
-                { 
-                    countryCode: countries.find(c => c.label === country).value,
-                    local_phone_number
-                }
-            )"
+        <select v-model="countryCode" v-on:change="emitPhoneNumberChanged"
             data-test="dial-code-select">
-            <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
+             <option v-for="_country in countries" 
+                v-bind:key="_country.label" 
+                v-bind:value="_country.value" 
+               >{{_country.label}}</option> 
+               <!-- <option v-bind:value="country">fuck</option> -->
         </select>
         <input
             v-model="local_phone_number"
             v-bind:class="[amplifyUI.input, isInvalid ? 'invalid': '']"
             :placeholder="$Amplify.I18n.get(getPlaceholder)"
-            autofocus v-on:keyup="$emit(
-                'phone-number-changed', 
-                {
-                    countryCode,
-                    local_phone_number
-                }
-            )" 
+            autofocus 
+            v-on:keyup="emitPhoneNumberChanged" 
             data-test="phone-number-input"
         />
     </div>
-<div/>
+</div>
 </template>
 <script>
 import * as AmplifyUI from '@aws-amplify/ui';
@@ -48,25 +41,24 @@ import countries from '../../assets/countries';
 
 export default {
     name: 'PhoneField',
-    props: ['required', 'invalid', 'placeholder'],
+    props: ['required', 'invalid', 'placeholder', 'defaultCountryCode'],
     data() {
         return {
-            countryCode: '1',
+            countryCode: this.defaultCountryCode || '1',
             local_phone_number: '',
-            country: 'USA(+1)',
             countries,
             amplifyUI: AmplifyUI,
         }
     },
-    watch: {
-        /*
-        this operation is in place to avoid making country.value the select box
-        bound key, which results in a duplicate key error in console
-        */
-        country: function() {
-            this.countryCode = this.countries.find(c => c.label === this.country).value
-        },
-    },
+    // watch: {
+    //     /*
+    //     this operation is in place to avoid making country.value the select box
+    //     bound key, which results in a duplicate key error in console
+    //     */
+    //     country: function() {
+    //         this.countryCode = this.countries.find(c => c.label === this.country).value
+    //     },
+    // },
     computed: {
         isPhoneNumberRequired() {
             return this.required;
@@ -76,11 +68,16 @@ export default {
         },
         getPlaceholder() {
             return this.placeholder || 'Enter your phone number';
-        }
+        },
     },
     methods: {
-        clear() {
-
+        emitPhoneNumberChanged() {
+            this.$emit('phone-number-changed', 
+                {
+                    countryCode,
+                    local_phone_number
+                }
+            );
         }
     }
 }

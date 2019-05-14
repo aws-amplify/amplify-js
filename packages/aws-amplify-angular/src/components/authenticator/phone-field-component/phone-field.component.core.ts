@@ -35,7 +35,7 @@ const template = `
             >
             <option *ngFor="let country of _countries"
                 value={{country.value}}
-                selected={{isDefaultDialCode(country)}}>
+                selected={{isDefaultCountryCode(country)}}>
                 {{country.label}}
             </option>
             </select>
@@ -129,7 +129,7 @@ export class PhoneFieldComponentCore implements OnInit {
         return this.amplifyService.i18n().get(`Enter your phone number` || this._placeholder);
     }
 
-    isDefaultDialCode(country) {
+    isDefaultCountryCode(country) {
         if (country.value === this._defaultCountryCode) {
             // Because Canada, US and Sint Maarten share the same code
             // We will return US by default

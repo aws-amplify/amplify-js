@@ -35,6 +35,7 @@
             v-bind:required="signUpField.required"
             v-bind:invalid="signUpField.invalid"
             v-bind:placeholder="signUpField.placeholder"
+            v-bind:defaultCountryCode="options.defaultCountryCode"
             v-on:phone-number-changed="phoneNumberChanged"
           />
         </div>
@@ -92,11 +93,6 @@ export default {
     options() {
 
       let header = this.$Amplify.I18n.get('Sign Up Account');
-
-      // sets value in country code dropdown if defaultCountryCode value is present in props 
-      if (this.signUpConfig && this.signUpConfig.defaultCountryCode) {
-        this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
-      };
 
       if (this.signUpConfig && this.signUpConfig.hiddenDefaults && this.signUpConfig.hiddenDefaults.length > 0){
         this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
