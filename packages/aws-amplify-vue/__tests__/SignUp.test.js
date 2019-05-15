@@ -88,7 +88,7 @@ describe('SignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('i18n Sign Up Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Create a new account');
       expect(wrapper.vm.options.signUpFields).toEqual([
         {
           label: 'Username',

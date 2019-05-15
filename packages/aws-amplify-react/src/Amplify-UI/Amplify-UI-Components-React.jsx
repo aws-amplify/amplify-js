@@ -383,7 +383,7 @@ export const Toast = (props) => {
     const theme = props.theme || AmplifyTheme;
 
     return (
-        <div theme={theme} className={AmplifyUI.toast} style={theme.toast}>
+        <div {...props} theme={theme} className={AmplifyUI.toast} style={theme.toast}>
             <span>{props.children}</span>
             <a className={AmplifyUI.toastClose} onClick={onClose}/>
         </div>

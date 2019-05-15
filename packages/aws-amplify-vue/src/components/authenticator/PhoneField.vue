@@ -21,6 +21,7 @@
              <option v-for="_country in countries" 
                 v-bind:key="_country.label" 
                 v-bind:value="_country.value" 
+                v-bind:data-test="auth.genericAttrs.dialCodeSelect"
                >{{_country.label}}</option> 
                <!-- <option v-bind:value="country">fuck</option> -->
         </select>
@@ -30,7 +31,7 @@
             :placeholder="$Amplify.I18n.get(getPlaceholder)"
             autofocus 
             v-on:keyup="emitPhoneNumberChanged" 
-            data-test="phone-number-input"
+            v-bind:data-test="auth.genericAttrs.phoneNumberInput"
         />
     </div>
 </div>
@@ -38,6 +39,7 @@
 <script>
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import { auth } from '../../assets/data-test-attributes';
 
 export default {
     name: 'PhoneField',

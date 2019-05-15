@@ -16,6 +16,7 @@
 import { Component, Input, Inject } from '@angular/core';
 import { UsernameFieldComponentCore } from './username-field.component.core';
 import { AmplifyService } from '../../../providers/amplify.service';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 
@@ -27,7 +28,7 @@ const template = `
             type="email"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setEmail($event.target.value)"
-            data-test="email-input"
+            data-test="${auth.genericAttrs.emailInput}"
         ></ion-input>
     </ion-item> 
     <ion-item lines="none" *ngIf="this._usernameAttributes === 'phone_number'">
@@ -43,7 +44,7 @@ const template = `
             type="text"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setUsername($event.target.value)"
-            data-test="username-input"
+            data-test="${auth.genericAttrs.usernameInput}"
         ></ion-input>
     </ion-item>
 

@@ -18,11 +18,19 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { includes } from '../common';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
-  <div class="amplify-form-body">
-  <div class="amplify-form-header amplify-form-header-ionic">
+<div
+  class="amplify-authenticator amplify-authenticator-ionic"
+  *ngIf="_show"
+  data-test="${auth.forgotPassword.section}"
+  >
+  <div class="amplify-form-body" data-test="${auth.forgotPassword.bodySection}">
+  <div
+    class="amplify-form-header amplify-form-header-ionic"
+    data-test="${auth.forgotPassword.headerSection}"
+    >
     {{ this.amplifyService.i18n().get('Reset your password') }}
   </div>
   <div class="amplify-form-text" *ngIf="!code_sent">
@@ -43,6 +51,7 @@ const template = `
         type="text"
         class="amplify-form-input"
         (keyup)="setCode(code.value)"
+        data-test="${auth.forgotPassword.codeInput}"
       ></ion-input>
     </ion-item>
     <ion-item lines="none" *ngIf="code_sent">
@@ -55,6 +64,7 @@ const template = `
         class="amplify-form-input"
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
+        data-test="${auth.forgotPassword.newPasswordInput}"
       ></ion-input>
     </ion-item>
   </ion-list>
@@ -63,7 +73,9 @@ const template = `
       <ion-button expand="block" color="primary"
         (click)="onSend()"
         *ngIf="!code_sent"
-      >{{ this.amplifyService.i18n().get('Submit') }}</ion-button>
+        data-test="${auth.forgotPassword.submitButton}"
+      >
+        {{ this.amplifyService.i18n().get('Submit') }}</ion-button>
       <ion-button expand="block" color="primary"
       *ngIf="code_sent"
       (click)="onSubmit()"
@@ -78,7 +90,11 @@ const template = `
       </div>
       <div class="amplify-form-signup">
         {{ this.amplifyService.i18n().get('Lost your code?') }}
-        <a class="amplify-form-link" (click)="onSend()">
+        <a
+          class="amplify-form-link"
+          (click)="onSend()"
+          data-test="${auth.forgotPassword.resendCodeLink}"
+          >
           {{ this.amplifyService.i18n().get('Resend') }}
         </a>
       </div>

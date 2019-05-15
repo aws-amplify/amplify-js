@@ -24,6 +24,7 @@ import {
  } from '../Amplify-UI/Amplify-UI-Components-React';
 import { UsernameAttributes } from './common/types';
 import { PhoneField } from './PhoneField';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const labelMap = {
   [UsernameAttributes.EMAIL]: 'Email',
@@ -77,7 +78,7 @@ export default class AuthPiece extends React.Component {
                         key="email"
                         name="email"
                         onChange={this.handleInputChange}
-                        data-test="email-input"
+                        data-test={auth.genericAttrs.emailInput}
                     />
                 </FormField>
             );
@@ -96,7 +97,7 @@ export default class AuthPiece extends React.Component {
                         key="username"
                         name="username"
                         onChange={this.handleInputChange}
-                        data-test="username-input"
+                        data-test={auth.genericAttrs.usernameInput}
                     />
                 </FormField>
             );

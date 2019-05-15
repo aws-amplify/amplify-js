@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.11"></a>
+## [0.2.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11-unstable.1...aws-amplify-vue@0.2.11) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.11-unstable.1"></a>
+## [0.2.11-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11-unstable.0...aws-amplify-vue@0.2.11-unstable.1) (2019-05-13)
+
+
+### Bug Fixes
+
+* add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws-amplify/amplify-js/commit/49eae14))
+
+
+
+
 <a name="0.2.11-unstable.0"></a>
 ## [0.2.11-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10...aws-amplify-vue@0.2.11-unstable.0) (2019-05-09)
 

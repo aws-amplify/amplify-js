@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.27"></a>
+## [1.0.27](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.27-unstable.0...@aws-amplify/cache@1.0.27) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
 <a name="1.0.27-unstable.0"></a>
 ## [1.0.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.26...@aws-amplify/cache@1.0.27-unstable.0) (2019-05-13)
 

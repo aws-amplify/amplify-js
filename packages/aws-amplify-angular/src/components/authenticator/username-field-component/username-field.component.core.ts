@@ -17,6 +17,7 @@ import { Component, Input, OnInit, 	EventEmitter, Inject, Output } from '@angula
 import { labelMap } from '../common';
 import { UsernameAttributes, UsernameFieldOutput, PhoneFieldOutput } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-amplify-form-row amplify-signin-username">
@@ -28,7 +29,7 @@ const template = `
             type="email"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setEmail($event.target.value)"
-            data-test="email-input"
+            data-test="${auth.genericAttrs.emailInput}"
         />
     </div>
     <div *ngIf="this._usernameAttributes === 'phone_number'">
@@ -44,7 +45,7 @@ const template = `
             type="text"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setUsername($event.target.value)"
-            data-test="username-input"
+            data-test="${auth.genericAttrs.usernameInput}"
         />
     </div>
 </div>

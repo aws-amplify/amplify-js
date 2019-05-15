@@ -12,9 +12,9 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.signUp.section">
+    <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.signUp.headerSection">{{this.options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.signUp.bodySection">
       <div v-bind:class="amplifyUI.formField"
           v-for="signUpField in this.orderedSignUpFields"
           :signUpField="signUpField.key"
@@ -28,6 +28,7 @@
               v-model="signUpField.value"
               :placeholder="$Amplify.I18n.get(signUpField.label)"
               v-on:change="clear(signUpField)"
+              v-bind:data-test="auth.signUp.nonPhoneNumberInput"
             />
           </div>
         <div v-if="signUpField.key === 'phone_number'">
@@ -41,13 +42,13 @@
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
+    <div v-bind:class="amplifyUI.sectionFooter" v-bind:data-test="auth.signUp.footerSection">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp" v-bind:data-test="auth.signUp.createAccountButton">{{$Amplify.I18n.get('Create Account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.signUp.signInLink">{{$Amplify.I18n.get('Sign in')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -66,6 +67,7 @@ import countries from '../../assets/countries';
 import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
 import { labelMap, composePhoneNumber } from './common';
 import PhoneField from './PhoneField';
+import { auth } from '../../assets/data-test-attributes';
 
 Vue.use(Vue2Filters);
 Vue.component('amplify-phone-field', PhoneField);
@@ -82,6 +84,7 @@ export default {
     }
 
     return {
+      auth,
       amplifyUI: AmplifyUI,
       error: '',
       logger: {},

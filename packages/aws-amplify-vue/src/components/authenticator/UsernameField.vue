@@ -21,7 +21,7 @@
                 :placeholder="$Amplify.I18n.get(`Enter your ${getUsernameLabel()}`)" 
                 autofocus 
                 v-on:keyup="usernameChanged" 
-                data-test="username-input"
+                v-bind:data-test="auth.genericAttrs.usernameInput"
             />
         </div>
         <div v-if="shouldRenderEmailField">
@@ -32,7 +32,7 @@
                 :placeholder="$Amplify.I18n.get('Enter your email')" 
                 autofocus 
                 v-on:keyup="emailChanged" 
-                data-test="email-input"
+                v-bind:data-test="auth.genericAttrs.emailInput"
             />
         </div>
         <div v-if="shouldRenderPhoneNumberField">
@@ -51,6 +51,7 @@ import countries from '../../assets/countries';
 import { labelMap } from './common';
 import PhoneField from './PhoneField';
 import { composePhoneNumber } from './common';
+import { auth } from '../../assets/data-test-attributes';
 
 Vue.component('amplify-phone-field', PhoneField);
 

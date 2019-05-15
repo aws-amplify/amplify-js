@@ -8,6 +8,7 @@ import {
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import countryDialCodes from './common/country-dial-codes.js';
 import { I18n } from '@aws-amplify/core';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 class PhoneField extends React.Component {
     constructor(props) {
@@ -51,7 +52,7 @@ class PhoneField extends React.Component {
                 <SelectInput theme={theme}>
                     <select name="dial_code" defaultValue={defaultDialCode} 
                     onChange={this.handleInputChange}
-                    data-test="dial-code-select">
+                    data-test={auth.genericAttrs.dialCodeSelect}>
                         {countryDialCodes.map(dialCode =>
                             <option key={dialCode} value={dialCode}>
                                 {dialCode}
@@ -66,7 +67,7 @@ class PhoneField extends React.Component {
                         key="phone_line_number"
                         name="phone_line_number"
                         onChange={this.handleInputChange}
-                        data-test="phone-number-input"
+                        data-test={auth.genericAttrs.phoneNumberInput}
                     />
                 </SelectInput>
             </FormField>

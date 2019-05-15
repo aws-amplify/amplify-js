@@ -17,6 +17,7 @@ import { Component, Input, OnInit, 	EventEmitter, Inject, Output } from '@angula
 import { AmplifyService } from '../../../providers/amplify.service';
 import { PhoneFieldOutput } from '../types';
 import { countrylist, country }  from '../../../assets/countries';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div>
@@ -32,7 +33,7 @@ const template = `
             class="amplify-select-phone-country"
             [(ngModel)]="_country_code"
             (change)="setCountryCode($event.target.value)"
-            data-test="dial-code-select"
+            data-test="${auth.genericAttrs.dialCodeSelect}"
             >
             <option *ngFor="let country of _countries"
                 value={{country.value}}>
@@ -48,7 +49,7 @@ const template = `
                 name="local_phone_number"
                 type="text"
                 (keyup)="setLocalPhoneNumber($event.target.value)"
-                data-test="phone-number-input"
+                data-test="${auth.genericAttrs.phoneNumberInput}"
             />
         </div>
     </div>

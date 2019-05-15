@@ -16,6 +16,7 @@
 import { Component, Input, Inject } from '@angular/core';
 import { PhoneFieldComponentCore } from './phone-field.component.core';
 import { AmplifyService } from '../../../providers/amplify.service';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <ion-grid class="amplify-ionic-grid-padding-left">
@@ -33,7 +34,7 @@ const template = `
             class="amplify-select-phone-country"
             [value]="_country_code"
             (ionChange)="setCountryCode($event.target.value)"
-            data-test="dial-code-select">
+            data-test="${auth.genericAttrs.dialCodeSelect}">
             <ion-select-option *ngFor="let country of _countries"
             value={{country.value}}>
                 {{country.label}}
@@ -49,7 +50,7 @@ const template = `
             name="local_phone_number"
             type="text"
             (ionChange)="setLocalPhoneNumber($event.target.value)"
-            data-test="phone-number-input"
+            data-test="${auth.genericAttrs.phoneNumberInput}"
             ></ion-input>
         </ion-col>
     </ion-row>

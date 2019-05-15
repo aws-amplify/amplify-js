@@ -18,12 +18,13 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { includes, labelMap, composePhoneNumber } from '../common';
 import { UsernameAttributes, UsernameFieldOutput } from '../types';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-      <div class="amplify-form-header">
+  <div class="amplify-form-container" data-test="${auth.signIn.section}">
+    <div class="amplify-form-body" data-test="${auth.signIn.bodySection}">
+      <div class="amplify-form-header" data-test="${auth.signIn.headerSection}">
         {{ this.amplifyService.i18n().get('Sign in to your account') }}
       </div>
       <amplify-auth-username-field-core
@@ -39,22 +40,29 @@ const template = `
           type="password"
           required
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
+          data-test="${auth.signIn.passwordInput}"
         />
         <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">{{ this.amplifyService.i18n().get('Forgot Password?') }}
         <a class="amplify-form-link"
             (click)="onForgotPassword()"
+            data-test="${auth.signIn.forgotPasswordLink}"
           >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
             (click)="onSignIn()"
+            data-test="${auth.signIn.signInButton}"
           >{{ this.amplifyService.i18n().get('Sign In') }}</button>
         </div>
         <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignUp')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('No account?') }}
-            <a class="amplify-form-link" (click)="onSignUp()">
+            <a
+              class="amplify-form-link"
+              (click)="onSignUp()"
+              data-test="${auth.signIn.createAccountLink}"
+              >
               {{ this.amplifyService.i18n().get('Create account') }}
             </a>
           </div>
@@ -65,7 +73,11 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
+      <div
+        class="amplify-alert-message"
+        data-test="${auth.signIn.signInError}"
+        >
+          {{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.30"></a>
+## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30-unstable.1...@aws-amplify/storage@1.0.30) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 <a name="1.0.30-unstable.1"></a>
 ## [1.0.30-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30-unstable.0...@aws-amplify/storage@1.0.30-unstable.1) (2019-05-13)
 
@@ -17,7 +25,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* **@aws-amplify/storage:** private by default ([#3222](https://github.com/aws/aws-amplify/issues/3222)) ([8b46eb8](https://github.com/aws/aws-amplify/commit/8b46eb8))
+* **@aws-amplify/storage:** The issue was when configuring Amplify or Storage more than once, e.g. `Amplify.configure(...)` or `Storage.configure(...)` the default level was set to `private`. The default level will always be `public` except when you configure it to something different like `Storage.configure({ level: 'protected' })` ([#3222](https://github.com/aws/aws-amplify/issues/3222)) ([8b46eb8](https://github.com/aws/aws-amplify/commit/8b46eb8)) 
 
 
 
