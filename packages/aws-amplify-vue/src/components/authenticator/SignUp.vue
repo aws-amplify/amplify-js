@@ -95,7 +95,7 @@ export default {
   computed: {
     options() {
 
-      let header = this.$Amplify.I18n.get('Sign Up Account');
+      let header = this.$Amplify.I18n.get('Create a new account');
 
       if (this.signUpConfig && this.signUpConfig.hiddenDefaults && this.signUpConfig.hiddenDefaults.length > 0){
         this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {

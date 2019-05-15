@@ -65,6 +65,7 @@ export default {
             amplifyUI: AmplifyUI,
             phoneNumberRequired: true,
             logger: {},
+            auth,
         }
     },
     computed: {

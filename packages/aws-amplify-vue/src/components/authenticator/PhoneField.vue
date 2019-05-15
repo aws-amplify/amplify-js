@@ -50,6 +50,7 @@ export default {
             local_phone_number: '',
             countries,
             amplifyUI: AmplifyUI,
+            auth,
         }
     },
     computed: {
