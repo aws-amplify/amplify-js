@@ -85,8 +85,7 @@ async function buildES5() {
         ],
         // temporary fix
         "types": ["node"],
-        "outDir": `${currentPath}${tscES5OutDir}`,
-        "target": "es5"
+        "outDir": `${currentPath}${tscES5OutDir}`
     }
     
     compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
@@ -114,7 +113,7 @@ function buildES6() {
             "esnext.asynciterable"
         ],
         "sourceMap": true,
-        "target": "es5",
+        "target": "es2015",
         "module": "es2015",
         "moduleResolution": "node",
         "allowJs": false,
@@ -125,8 +124,7 @@ function buildES6() {
         ],
         // temporary fix
         "types": ["node"],
-        "outDir": `${currentPath}${tscES6OutDir}`,
-        "target": "es2015"
+        "outDir": `${currentPath}${tscES6OutDir}`
     }
     
     compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);

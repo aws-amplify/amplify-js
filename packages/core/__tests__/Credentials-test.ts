@@ -1,11 +1,12 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
 import Amplify from '../src/Amplify';
+import { AWS } from '../src/Facet';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {
     getModuleName() {
         return 'Auth';
-    }
+    },
     currentUserCredentials() {
         return Promise.resolve('cred');
     }
@@ -14,8 +15,7 @@ const authClass = {
 const cacheClass = {
     getModuleName() {
         return 'Cache';
-    }
-
+    },
     getItem() {
         return null;
     }
@@ -32,6 +32,8 @@ const options = {
     identityPoolId: "awsCognitoIdentityPoolId",
     mandatorySignIn: false
 }
+
+AWS.config.credentials = undefined;
 
 describe('Credentials test', () => {
     describe('configure test', () => {

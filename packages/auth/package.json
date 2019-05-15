@@ -38,9 +38,25 @@
     "crypto-js": "^3.1.9-1"
   },
   "jest": {
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
     },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "preset": "ts-jest",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [
       "ts",
