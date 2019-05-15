@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { PhoneFieldComponentCore } from '../../../components/authenticator/phone-field-component/phone-field.component.core';
 import { MockComponent } from 'ng-mocks';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 
-describe('UsernameFieldComponentCore: ', () => {
+describe('PhoneFieldComponentCore: ', () => {
     let component: PhoneFieldComponentCore;
     let fixtureComponent: PhoneFieldComponentCore;
     let service: AmplifyService;
@@ -18,6 +19,7 @@ describe('UsernameFieldComponentCore: ', () => {
         declarations: [
             PhoneFieldComponentCore
         ],
+        imports: [FormsModule],
         providers: [
             {
             provide: AmplifyService,

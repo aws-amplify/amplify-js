@@ -5,7 +5,7 @@ import { MockComponent } from 'ng-mocks';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 
-describe('UsernameFieldComponentCore: ', () => {
+describe('PhoneFieldComponentIonic: ', () => {
     let component: PhoneFieldComponentIonic;
     let fixtureComponent: PhoneFieldComponentIonic;
     let service: AmplifyService;
