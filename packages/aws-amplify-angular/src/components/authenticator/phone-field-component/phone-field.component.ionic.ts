@@ -31,11 +31,11 @@ const template = `
             #countryCodeField
             name="countryCode"
             class="amplify-select-phone-country"
+            [value]="_country_code"
             (ionChange)="setCountryCode($event.target.value)"
             data-test="dial-code-select">
             <ion-select-option *ngFor="let country of _countries"
-            value={{country.value}}
-            selected={{isDefaultCountryCode(country)}}>
+            value={{country.value}}>
                 {{country.label}}
             </ion-select-option>
             </ion-select>

@@ -30,12 +30,12 @@ const template = `
             #countryCodeField
             name="countryCode"
             class="amplify-select-phone-country"
+            [(ngModel)]="_country_code"
             (change)="setCountryCode($event.target.value)"
             data-test="dial-code-select"
             >
             <option *ngFor="let country of _countries"
-                value={{country.value}}
-                selected={{isDefaultCountryCode(country)}}>
+                value={{country.value}}>
                 {{country.label}}
             </option>
             </select>
@@ -66,7 +66,7 @@ export class PhoneFieldComponentCore implements OnInit {
     _country_code: string = '1';
     _local_phone_number: string = '';
     _countries: country[];
-    _defaultCountryCode = '1';
+    // _defaultCountryCode = '1';
 
     constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
         this._countries = countrylist;
@@ -76,7 +76,7 @@ export class PhoneFieldComponentCore implements OnInit {
     set data(data: any) {
         this._placeholder = data.placeholder || this._placeholder;
         this._label = data.label || this._label;
-        this._defaultCountryCode = data._defaultCountryCode || this._defaultCountryCode;
+        this._country_code = data.defaultCountryCode || this._country_code;
         this._required = data.required === undefined? this._required : data.required;
     }
 
@@ -97,7 +97,7 @@ export class PhoneFieldComponentCore implements OnInit {
 
     @Input()
     set defaultCountryCode(defaultCountryCode: string) {
-        this._defaultCountryCode = defaultCountryCode;
+        this._country_code = defaultCountryCode;
     }
 
     @Output()
@@ -108,7 +108,6 @@ export class PhoneFieldComponentCore implements OnInit {
     ngOnDestroy() {}
 
     setCountryCode(country_code: string) {
-        console.log('countrycode changed');
         this._country_code = country_code;
         this.phoneFieldChanged.emit({
             country_code: this._country_code,
@@ -117,7 +116,6 @@ export class PhoneFieldComponentCore implements OnInit {
     }
 
     setLocalPhoneNumber(local_phone_number: string) {
-        console.log('phone number changed');
         this._local_phone_number = local_phone_number;
         this.phoneFieldChanged.emit({
             country_code: this._country_code,
@@ -129,16 +127,17 @@ export class PhoneFieldComponentCore implements OnInit {
         return this.amplifyService.i18n().get(`Enter your phone number` || this._placeholder);
     }
 
-    isDefaultCountryCode(country) {
-        if (country.value === this._defaultCountryCode) {
-            // Because Canada, US and Sint Maarten share the same code
-            // We will return US by default
-            if (this._defaultCountryCode === '1') {
-                return country.countryCode === 'US'? 'selected' : undefined;
-            }
-            return 'selected';
-        } else {
-            return undefined;
-        }
-    }
+    // isDefaultCountryCode(country) {
+    //     console.log('triggered here');
+    //     if (country.value === this._defaultCountryCode) {
+    //         // Because Canada, US and Sint Maarten share the same code
+    //         // We will return US by default
+    //         if (this._defaultCountryCode === '1') {
+    //             return country.countryCode === 'US'? 'selected' : undefined;
+    //         }
+    //         return 'selected';
+    //     } else {
+    //         return undefined;
+    //     }
+    // }
 }
