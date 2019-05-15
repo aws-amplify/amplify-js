@@ -50,15 +50,6 @@ export default {
             amplifyUI: AmplifyUI,
         }
     },
-    // watch: {
-    //     /*
-    //     this operation is in place to avoid making country.value the select box
-    //     bound key, which results in a duplicate key error in console
-    //     */
-    //     country: function() {
-    //         this.countryCode = this.countries.find(c => c.label === this.country).value
-    //     },
-    // },
     computed: {
         isPhoneNumberRequired() {
             return this.required;
@@ -74,8 +65,8 @@ export default {
         emitPhoneNumberChanged() {
             this.$emit('phone-number-changed', 
                 {
-                    countryCode,
-                    local_phone_number
+                    countryCode: this.countryCode,
+                    local_phone_number: this.local_phone_number
                 }
             );
         }

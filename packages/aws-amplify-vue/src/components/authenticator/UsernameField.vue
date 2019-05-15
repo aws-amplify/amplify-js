@@ -89,10 +89,10 @@ export default {
             this.$emit('username-field-changed', {usernameField: 'phone_number', phoneNumber});
         },
         emailChanged() {
-            this.$emit('username-field-changed', {usernameField: 'email', email});
+            this.$emit('username-field-changed', {usernameField: 'email', email: this.email});
         },
         usernameChanged() {
-            this.$emit('username-field-changed', {usernameField: 'username', username});
+            this.$emit('username-field-changed', {usernameField: 'username', username: this.username});
         }
         
     }

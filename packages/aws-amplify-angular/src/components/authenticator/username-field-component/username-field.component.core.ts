@@ -64,14 +64,12 @@ export class UsernameFieldComponentCore implements OnInit {
 
     @Input()
     set data(data: any) {
-        console.log('triggered');
         this._usernameAttributes = data.usernameAttributes;
         this._placeholder = data.placeholder;
     }
 
     @Input()
     set usernameAttributes(usernameAttributes: string) {
-        console.log('triggered');
         this._usernameAttributes = usernameAttributes;
     }
 

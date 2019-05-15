@@ -8,10 +8,8 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
-import { SignInComponentCore } 
-from '../../../components/authenticator/sign-in-component/sign-in.component.core';
-import { UsernameFieldComponentCore } 
-from '../../../components/authenticator/username-field-component/username-field.component.core';
+import { SignInComponentCore } from '../../../components/authenticator/sign-in-component/sign-in.component.core';
+import { UsernameFieldComponentCore } from '../../../components/authenticator/username-field-component/username-field.component.core';
 
 describe('SignInComponentCore: ', () => {
 
