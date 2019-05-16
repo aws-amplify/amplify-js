@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.0.29-unstable.2",
+  "version": "1.0.30",
   "description": "Storage category of aws-amplify",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
@@ -33,7 +33,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "@aws-amplify/core": "1.0.26-unstable.1"
+    "@aws-amplify/core": "^1.0.27"
   },
   "jest": {
     "globals": {

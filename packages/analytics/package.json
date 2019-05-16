@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.2.15-unstable.2",
+  "version": "1.2.16",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -34,8 +34,8 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/cache": "1.0.26-unstable.1",
-    "@aws-amplify/core": "1.0.26-unstable.1",
+    "@aws-amplify/cache": "^1.0.27",
+    "@aws-amplify/core": "^1.0.27",
     "uuid": "^3.2.1"
   },
   "jest": {

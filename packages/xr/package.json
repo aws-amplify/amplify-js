@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "0.1.16-unstable.2",
+  "version": "0.1.17",
   "description": "XR category of aws-amplify",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
@@ -32,7 +32,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/core": "1.0.26-unstable.1"
+    "@aws-amplify/core": "^1.0.27"
   },
   "jest": {
     "globals": {

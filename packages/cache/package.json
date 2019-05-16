@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "1.0.26-unstable.1",
+  "version": "1.0.27",
   "description": "Cache category of aws-amplify",
   "main": "./dist/index.js",
   "module": "./esm/index.js",
@@ -35,7 +35,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/core": "1.0.26-unstable.1"
+    "@aws-amplify/core": "^1.0.27"
   },
   "jest": {
     "globals": {

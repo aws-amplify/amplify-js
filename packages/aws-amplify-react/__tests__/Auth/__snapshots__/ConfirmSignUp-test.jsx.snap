@@ -2,6 +2,7 @@
 
 exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`] = `
 <Component
+  data-test="confirm-sign-up-section"
   theme={
     Object {
       "a": Object {
@@ -246,6 +247,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
   }
 >
   <Component
+    data-test="confirm-sign-up-header-section"
     theme={
       Object {
         "a": Object {
@@ -492,6 +494,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
     Confirm Sign Up
   </Component>
   <Component
+    data-test="confirm-sign-up-body-section"
     theme={
       Object {
         "a": Object {
@@ -1227,6 +1230,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
          *
       </Component>
       <Component
+        data-test="confirm-sign-up-username-input"
         disabled=""
         key="username"
         name="username"
@@ -1971,6 +1975,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       <Component
         autoComplete="off"
         autoFocus={true}
+        data-test="confirm-sign-up-confirmation-code-input"
         key="code"
         name="code"
         onChange={[Function]}
@@ -2464,6 +2469,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       >
         Lost your code? 
         <Component
+          data-test="confirm-sign-up-resend-code-link"
           onClick={[Function]}
           theme={
             Object {
@@ -3202,6 +3208,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       }
     >
       <Component
+        data-test="confirm-sign-up-confirm-button"
         onClick={[Function]}
         theme={
           Object {
@@ -3694,6 +3701,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       }
     >
       <Component
+        data-test="confirm-sign-up-back-to-sign-in-link"
         onClick={[Function]}
         theme={
           Object {

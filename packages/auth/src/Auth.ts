@@ -184,8 +184,8 @@ export class AuthClass {
 
         // initiailize cognitoauth client if hosted ui options provided
         // to keep backward compatibility:
-        const cognitoHostedUIConfig = oauth? (isCognitoHostedOpts(this._config.oauth) 
-            ? oauth : (<any>oauth).awsCognito) 
+        const cognitoHostedUIConfig = oauth? (isCognitoHostedOpts(this._config.oauth)
+            ? oauth : (<any>oauth).awsCognito)
             : undefined;
 
         if (cognitoHostedUIConfig) {
@@ -217,7 +217,7 @@ export class AuthClass {
         }
 
         dispatchAuthEvent(
-            'configured', 
+            'configured',
             null,
             `The Auth category has been configured successfully`
         );
@@ -270,14 +270,14 @@ export class AuthClass {
             this.userPool.signUp(username, password, attributes, validationData, (err, data) => {
                 if (err) {
                     dispatchAuthEvent(
-                        'signUp_failure', 
+                        'signUp_failure',
                         err,
                         `${username} failed to signup`
                     );
                     reject(err);
                 } else {
                     dispatchAuthEvent(
-                        'signUp', 
+                        'signUp',
                         data,
                         `${username} has signed up successfully`
                     );
@@ -395,7 +395,7 @@ export class AuthClass {
                         const currentUser = await this.currentUserPoolUser();
                         that.user = currentUser;
                         dispatchAuthEvent(
-                        'signIn', 
+                        'signIn',
                         currentUser,
                         `A user ${user.getUsername()} has been signed in`
                     );
@@ -793,10 +793,10 @@ export class AuthClass {
                             logger.debug('cannot get cognito credentials', e);
                         } finally {
                             that.user = user;
-                            
+
                             dispatchAuthEvent(
-                                'signIn', 
-                                user, 
+                                'signIn',
+                                user,
                                 `${user} has signed in`
                             );
                             resolve(user);
@@ -832,7 +832,7 @@ export class AuthClass {
                     } finally {
                         that.user = user;
                         dispatchAuthEvent(
-                            'signIn', 
+                            'signIn',
                             user, `${user} has signed in`
                         );
                         resolve(user);
@@ -841,7 +841,7 @@ export class AuthClass {
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
                     dispatchAuthEvent(
-                        'completeNewPassword_failure', 
+                        'completeNewPassword_failure',
                         err,
                         `${this.user} failed to complete the new password flow`
                     );
@@ -1226,7 +1226,7 @@ export class AuthClass {
             throw e;
         }
 
-        const isSignedInHostedUI = this._oAuthHandler 
+        const isSignedInHostedUI = this._oAuthHandler
             && this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
         return new Promise((res, rej) => {
@@ -1289,15 +1289,15 @@ export class AuthClass {
             logger.debug('no Congito User pool');
         }
 
-        /** 
+        /**
          * Note for future refactor - no reliable way to get username with
          * Cognito User Pools vs Identity when federating with Social Providers
          * This is why we need a well structured session object that can be inspected
          * and information passed back in the message below for Hub dispatch
         */
         dispatchAuthEvent(
-            'signOut', 
-            this.user, 
+            'signOut',
+            this.user,
             `A user has been signed out`
         );
         this.user = null;
@@ -1464,7 +1464,7 @@ export class AuthClass {
         if (isFederatedSignInOptions(providerOrOptions)
             || isFederatedSignInOptionsCustom(providerOrOptions)
             || typeof providerOrOptions === 'undefined') {
-            
+
             const options = providerOrOptions || { provider: CognitoHostedUIIdentityProvider.Cognito };
             const provider = isFederatedSignInOptions(options)
                 ? options.provider
@@ -1525,7 +1525,7 @@ export class AuthClass {
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
-        const currentUrl = URL || window.location.href;
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')
@@ -1537,18 +1537,18 @@ export class AuthClass {
             .split('&')
             .map(entry => entry.split('='))
             .find(([k]) => k === 'access_token' || k === 'error');
-        
+
 
         if (hasCodeOrError || hasTokenOrError) {
             try {
-                
+
                 const { accessToken, idToken, refreshToken } = await this._oAuthHandler.handleAuthResponse(currentUrl);
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: idToken }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: refreshToken }),
                     AccessToken: new CognitoAccessToken({ AccessToken: accessToken })
                 });
-                
+
                 let credentials;
                 // Get AWS Credentials & store if Identity Pool is defined
                 if (this._config.identityPoolId) {
@@ -1558,19 +1558,19 @@ export class AuthClass {
 
                 /*The following is to create a user for the Cognito Identity SDK to store the tokens
                   When we remove this SDK later that logic will have to be centralized in our new version*/
-                //#region 
+                //#region
                 const currentUser = this.createCognitoUser(session.getIdToken().decodePayload()['cognito:username']);
                 dispatchAuthEvent(
-                    'signIn', 
+                    'signIn',
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in`
                 );
                 dispatchAuthEvent(
-                    'cognitoHostedUI', 
+                    'cognitoHostedUI',
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
                 );
-                
+
                 // This calls cacheTokens() in Cognito SDK
                 currentUser.setSignInUserSession(session);
                 //#endregion
@@ -1578,17 +1578,17 @@ export class AuthClass {
                 if (window && typeof window.history !== 'undefined') {
                     window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
                 }
-                
+
                 return credentials;
             } catch (err) {
                 logger.debug("Error in cognito hosted auth response", err);
                 dispatchAuthEvent(
-                    'signIn_failure', 
+                    'signIn_failure',
                     err,
                     `The OAuth response flow failed`
                 );
                 dispatchAuthEvent(
-                    'cognitoHostedUI_failure', 
+                    'cognitoHostedUI_failure',
                     err,
                     `A failure occurred when returning to the Cognito Hosted UI`
                 );

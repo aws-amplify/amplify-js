@@ -34,6 +34,8 @@ import {
 
 import { countryDialCodes } from './common/country-dial-codes.js';
 import { defaultSignUpFields } from './common/default-sign-up-fields';
+import { auth } from '../Amplify-UI/data-test-attributes';
+import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
 
@@ -207,9 +209,9 @@ export class SignUp extends AuthPiece {
         }
         this.sortFields();
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test={auth.signUp.section}>
+                <SectionHeader theme={theme} data-test={auth.signUp.headerSection}>{I18n.get(this.header)}</SectionHeader>
+                <SectionBody theme={theme} data-test={auth.signUp.bodySection}>
                     {
                         this.signUpFields.map((field) => {
                             return field.key !== 'phone_number' ? (
@@ -227,6 +229,7 @@ export class SignUp extends AuthPiece {
                                         name={field.key}
                                         key={field.key}
                                         onChange={this.handleInputChange}
+                                        data-test={auth.signUp.nonPhoneNumberInput}
                                     />
                                 </FormField>
                             ) : (
@@ -237,8 +240,10 @@ export class SignUp extends AuthPiece {
                                         <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                     }
                                     <SelectInput theme={theme}>
-                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()}
-                                        onChange={this.handleInputChange}>
+                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
+                                        onChange={this.handleInputChange}
+                                        data-test={auth.signUp.dialCodeSelect}
+                                        >
                                             {countryDialCodes.map(dialCode =>
                                                 <option key={dialCode} value={dialCode}>
                                                     {dialCode}
@@ -253,6 +258,7 @@ export class SignUp extends AuthPiece {
                                             key="phone_line_number"
                                             name="phone_line_number"
                                             onChange={this.handleInputChange}
+                                            data-test={auth.signUp.phoneNumberInput}
                                         />
                                     </SelectInput>
                                 </FormField>
@@ -260,15 +266,15 @@ export class SignUp extends AuthPiece {
                         })
                     }
                 </SectionBody>
-                <SectionFooter theme={theme}>
+                <SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme}>
+                        <Button onClick={this.signUp} theme={theme} data-test={auth.signUp.createAccountButton}>
                             {I18n.get('Create Account')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.signUp.signInLink}>
                             {I18n.get('Sign in')}
                         </Link>
                     </SectionFooterSecondaryContent>

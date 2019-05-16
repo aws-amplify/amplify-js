@@ -20,6 +20,8 @@ import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { Constants } from './common/constants';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('SignOut');
 
 export class SignOut extends AuthPiece {
@@ -136,6 +138,7 @@ export class SignOut extends AuthPiece {
             <NavButton
                 theme={theme}
                 onClick={this.signOut}
+                data-test={auth.signOut.button}
             >
                 {I18n.get('Sign Out')}
             </NavButton>

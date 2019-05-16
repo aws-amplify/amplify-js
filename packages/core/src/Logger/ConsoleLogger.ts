@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -73,7 +73,7 @@ export class ConsoleLogger implements Logger {
         }
 
         let log = console.log.bind(console);
-        // if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
+        if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
         if (type === 'WARN' && console.warn) { log = console.warn.bind(console); }
 
 		const prefix = `[${type}] ${this._ts()} ${this.name}`;

@@ -238,7 +238,24 @@ describe('Storage', () => {
             storage.configure({ Storage: { level: "public"} });
         });
 
-        test('backwards compatible issue, third configure call track', () => {
+        test('normal storage level is public by default', () => {
+          const storage = StorageCategory;
+
+          storage.configure({
+            region: 'region',
+            bucket: 'bucket',
+          });
+
+          expect(storage['_config']).toEqual({
+            AWSS3: {
+              bucket: 'bucket',
+              level: 'public',
+              region: 'region'
+            }
+          });
+        });
+
+      test('backwards compatible issue, third configure call track', () => {
             const storage = new Storage();
 
             const aws_options = {
