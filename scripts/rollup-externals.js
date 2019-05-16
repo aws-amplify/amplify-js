@@ -1,13 +1,17 @@
 const core_externals = [
     'aws-sdk',
     'aws-sdk/global',
-    'react-native'
+    'react-native',
+    'url'
 ];
 
 const analytics_externals = [
     "@aws-amplify/cache",
     "@aws-amplify/core",
-    "uuid"
+    "uuid",
+    'aws-sdk/clients/pinpoint',
+    'react-native',
+    'aws-sdk/clients/kinesis'
 ];
 
 const api_externals = [
@@ -46,7 +50,8 @@ const pubsub_externals = [
     "@aws-amplify/core",
     "@types/zen-observable",
     "uuid",
-    "zen-observable"
+    "zen-observable",
+    "paho-mqtt"
 ];
 
 const amplify_externals = [
