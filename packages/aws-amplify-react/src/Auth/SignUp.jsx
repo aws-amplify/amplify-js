@@ -44,8 +44,10 @@ const logger = new Logger('SignUp');
 export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
-
         this._validAuthStates = ['signUp'];
+        this._caseInsensitiveFields = 
+            (this.props && this.props.caseInsensitiveFields)? 
+                this.props.caseInsensitiveFields : [];
         this.signUp = this.signUp.bind(this);
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);

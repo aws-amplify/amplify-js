@@ -40,6 +40,9 @@ export default class ConfirmSignUp extends AuthPiece {
         super(props);
 
         this._validAuthStates = ['confirmSignUp'];
+        this._caseInsensitiveFields = 
+            (this.props && this.props.caseInsensitiveFields)?
+                this.props.caseInsensitiveFields : [];
         this.confirm = this.confirm.bind(this);
         this.resend = this.resend.bind(this);
     }

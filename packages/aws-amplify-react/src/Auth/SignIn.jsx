@@ -45,8 +45,10 @@ export default class SignIn extends AuthPiece {
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
-
         this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
+        this._caseInsensitiveFields = 
+            (this.props && this.props.caseInsensitiveFields)?
+                this.props.caseInsensitiveFields : [];
         this.state = {};
     }
 

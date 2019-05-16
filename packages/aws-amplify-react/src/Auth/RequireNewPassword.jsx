@@ -39,6 +39,9 @@ export default class RequireNewPassword extends AuthPiece {
         super(props);
 
         this._validAuthStates = ['requireNewPassword'];
+        this._caseInsensitiveFields = 
+            (this.props && this.props.caseInsensitiveFields)?
+                this.props.caseInsensitiveFields : [];
         this.change = this.change.bind(this);
         this.checkContact = this.checkContact.bind(this);
     }

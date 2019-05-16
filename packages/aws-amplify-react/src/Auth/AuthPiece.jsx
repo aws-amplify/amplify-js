@@ -21,7 +21,7 @@ export default class AuthPiece extends Component {
         super(props);
 
         this.inputs = {};
-
+        this._caseInsensitiveFields = [];
         this._isHidden = true;
         this._validAuthStates = [];
         this.changeState = this.changeState.bind(this);
@@ -73,8 +73,9 @@ export default class AuthPiece extends Component {
     handleInputChange(evt) {
         this.inputs = this.inputs || {};
         const { name, value, type, checked } = evt.target;
+        const lower_value = this._caseInsensitiveFields.includes(name);
         const check_type = ['radio', 'checkbox'].includes(type);
-        this.inputs[name] = check_type? checked : value;
+        this.inputs[name] = check_type? checked : lower_value? value.toLowerCase() : value;
         this.inputs['checkedValue'] = check_type? value: null;
     }
 

@@ -13,7 +13,6 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-
 import Authenticator from './Authenticator';
 
 export { default as Authenticator } from './Authenticator';
@@ -36,7 +35,7 @@ export * from './Provider';
 import Greetings from './Greetings';
 
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}, caseInsensitiveFields = []) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -58,6 +57,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                     authenticatorComponents,
                     federated,
                     theme,
+                    caseInsensitiveFields,
                     signUpConfig
                 }
             }
@@ -80,6 +80,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                                 federated={this.authConfig.federated || this.props.federated}
                                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                                 signUpConfig={this.authConfig.signUpConfig}
+                                caseInsensitiveFields={this.authConfig.caseInsensitiveFields}
                                 onStateChange={this.handleAuthStateChange}
                                 children={this.authConfig.authenticatorComponents || []}
                             /> : null
@@ -101,6 +102,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
+                caseInsensitiveFields={this.authConfig.caseInsensitiveFields}
                 children={this.authConfig.authenticatorComponents || []}
             />;
         }

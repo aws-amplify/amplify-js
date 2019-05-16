@@ -154,8 +154,7 @@ export default class Authenticator extends Component {
         // otherwise if truthy, use the supplied render prop
         // otherwise if falsey, use EmptyContainer
         const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
-
-        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig, caseInsensitiveFields } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -182,11 +181,11 @@ export default class Authenticator extends Component {
 
         const default_children = [
             <Greetings federated={federated}/>,
-            <SignIn federated={federated}/>,
-            <ConfirmSignIn/>,
-            <RequireNewPassword/>,
-            <SignUp signUpConfig={signUpConfig}/>,
-            <ConfirmSignUp/>,
+            <SignIn federated={federated} caseInsensitiveFields={caseInsensitiveFields}/>,
+            <ConfirmSignIn caseInsensitiveFields={caseInsensitiveFields}/>,
+            <RequireNewPassword caseInsensitiveFields={caseInsensitiveFields}/>,
+            <SignUp signUpConfig={signUpConfig} caseInsensitiveFields={caseInsensitiveFields}/>,
+            <ConfirmSignUp caseInsensitiveFields={caseInsensitiveFields} />,
             <VerifyContact/>,
             <ForgotPassword/>,
             <TOTPSetup/>,
