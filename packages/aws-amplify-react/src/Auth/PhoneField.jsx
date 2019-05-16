@@ -22,15 +22,19 @@ class PhoneField extends React.Component {
         }
     }
 
-    composePhoneNumber() {
-        return `${this.inputs.dial_code || '+1'}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`;
+    composePhoneNumber(dial_code, phone_line_number) {
+        return `${dial_code || '+1'}${phone_line_number.replace(/[-()]/g, '')}`;
     }
 
     handleInputChange(evt) {
         const { name, value } = evt.target;
         this.inputs[name] = value;
 
-        if (this.props.onChangeText) this.props.onChangeText(this.composePhoneNumber());
+        if (this.props.onChangeText) {
+            this.props.onChangeText(
+                this.composePhoneNumber(this.inputs.dial_code, this.inputs.phone_line_number)
+            );
+        }
     }
 
     render() {

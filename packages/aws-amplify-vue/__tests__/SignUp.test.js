@@ -70,12 +70,6 @@ describe('SignUp', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
 
-    // it.only('...it should watch the country variable', () => {
-    //   wrapper.vm.country = 'Algeria (+213)';
-    //   console.error(wrapper.vm);
-    //   expect(wrapper.vm.countryCode).toEqual('213');
-    // });
-
     it('...shoud render a phone field component', () => {
       const phoneField = wrapper.find(PhoneField);
       expect(phoneField).toBeTruthy();

@@ -127,18 +127,4 @@ export class PhoneFieldComponentCore implements OnInit {
     getPlaceholder() {
         return this.amplifyService.i18n().get(`Enter your phone number` || this._placeholder);
     }
-
-    // isDefaultCountryCode(country) {
-    //     console.log('triggered here');
-    //     if (country.value === this._defaultCountryCode) {
-    //         // Because Canada, US and Sint Maarten share the same code
-    //         // We will return US by default
-    //         if (this._defaultCountryCode === '1') {
-    //             return country.countryCode === 'US'? 'selected' : undefined;
-    //         }
-    //         return 'selected';
-    //     } else {
-    //         return undefined;
-    //     }
-    // }
 }
