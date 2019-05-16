@@ -4,6 +4,12 @@ const core_externals = [
     'react-native'
 ];
 
+const analytics_externals = [
+    "@aws-amplify/cache",
+    "@aws-amplify/core",
+    "uuid"
+];
+
 const api_externals = [
     'axios',
     'graphql',
@@ -36,13 +42,28 @@ const xr_externals = [
     '@aws-amplify/core',
 ];
 
+const amplify_externals = [
+    "@aws-amplify/analytics",
+    "@aws-amplify/api",
+    "@aws-amplify/auth",
+    "@aws-amplify/cache",
+    "@aws-amplify/core",
+    "@aws-amplify/interactions",
+    "@aws-amplify/pubsub",
+    "@aws-amplify/storage",
+    "@aws-amplify/ui",
+    "@aws-amplify/xr"
+];
+
 const rollup_externals = {
+    "@aws-amplify/analytics": analytics_externals,
     "@aws-amplify/api": api_externals,
     "@aws-amplify/auth": auth_externals,
     "@aws-amplify/cache": cache_externals,
     "@aws-amplify/core": core_externals,
     "@aws-amplify/storage": storage_externals,
-    "@aws-amplify/xr": xr_externals
+    "@aws-amplify/xr": xr_externals,
+    "aws-amplify": amplify_externals
 };
 
 module.exports = rollup_externals;

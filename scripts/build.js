@@ -66,6 +66,7 @@ function tsc(fileNames, options) {
 }
 
 async function buildES5() {
+    // tsconfig for ES5 generating
     let compilerOptions = {
         "noImplicitAny": false,
         "lib": [
@@ -105,6 +106,7 @@ async function buildES5() {
 }
 
 function buildES6() {
+    // tsconfig for ESM generating
     let compilerOptions = {
         "noImplicitAny": false,
         "lib": [
