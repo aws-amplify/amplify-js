@@ -38,7 +38,7 @@ export class PhoneField extends Component {
         super(props);
 
         this.state = {
-            dialCode: '+1',
+            dialCode: this.props.defaultDialCode || '+1',
             phone: '',
         };
     }
