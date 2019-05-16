@@ -19,7 +19,6 @@ import {
     JS,
     Hub
 } from '@aws-amplify/core';
-import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 
 import Cache from '@aws-amplify/cache';

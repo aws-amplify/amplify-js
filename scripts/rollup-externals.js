@@ -42,6 +42,13 @@ const xr_externals = [
     '@aws-amplify/core',
 ];
 
+const pubsub_externals = [
+    "@aws-amplify/core",
+    "@types/zen-observable",
+    "uuid",
+    "zen-observable"
+];
+
 const amplify_externals = [
     "@aws-amplify/analytics",
     "@aws-amplify/api",
@@ -55,6 +62,21 @@ const amplify_externals = [
     "@aws-amplify/xr"
 ];
 
+const aws_amplify_react = [
+    '@aws-amplify/auth',
+    '@aws-amplify/analytics',
+    '@aws-amplify/api',
+    '@aws-amplify/core',
+    '@aws-amplify/interactions',
+    '@aws-amplify/storage',
+    '@aws-amplify/ui',
+    '@aws-amplify/ui/dist/style.css',
+    '@aws-amplify/xr',
+    'react',
+    'regenerator-runtime/runtime',
+    'qrcode.react'
+]
+
 const rollup_externals = {
     "@aws-amplify/analytics": analytics_externals,
     "@aws-amplify/api": api_externals,
@@ -63,7 +85,9 @@ const rollup_externals = {
     "@aws-amplify/core": core_externals,
     "@aws-amplify/storage": storage_externals,
     "@aws-amplify/xr": xr_externals,
-    "aws-amplify": amplify_externals
+    "@aws-amplify/pubsub": pubsub_externals,
+    "aws-amplify": amplify_externals,
+    "aws-amplify-react": aws_amplify_react
 };
 
 module.exports = rollup_externals;

@@ -12,7 +12,7 @@
  */
 
 import * as React from 'react';
-import Analytics from '@aws-amplify/analytics';
+import { Analytics } from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
     'componentDidMount',

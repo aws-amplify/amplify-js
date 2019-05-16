@@ -1,5 +1,13 @@
+jest.mock('@aws-amplify/analytics', () => {
+    return {
+        Analytics: {
+            record: jest.fn()
+        }
+    }
+});
+
 import * as React from 'react';
-import Analytics from '@aws-amplify/analytics';
+import { Analytics } from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
 describe('trackLifecycle test', () => {
