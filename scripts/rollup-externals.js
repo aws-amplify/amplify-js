@@ -42,6 +42,12 @@ const storage_externals = [
     'aws-sdk/clients/s3'
 ];
 
+const interactions_externals = [
+    'aws-sdk/clients/lexruntime',
+    '@aws-amplify/core',
+    'handlebars',
+];
+
 const xr_externals = [
     '@aws-amplify/core',
 ];
@@ -86,13 +92,14 @@ const rollup_externals = {
     "@aws-amplify/analytics": analytics_externals,
     "@aws-amplify/api": api_externals,
     "@aws-amplify/auth": auth_externals,
+    "aws-amplify": amplify_externals,
+    "aws-amplify-react": aws_amplify_react,
     "@aws-amplify/cache": cache_externals,
     "@aws-amplify/core": core_externals,
-    "@aws-amplify/storage": storage_externals,
-    "@aws-amplify/xr": xr_externals,
+    "@aws-amplify/interactions": interactions_externals,
     "@aws-amplify/pubsub": pubsub_externals,
-    "aws-amplify": amplify_externals,
-    "aws-amplify-react": aws_amplify_react
+    "@aws-amplify/storage": storage_externals,
+    "@aws-amplify/xr": xr_externals
 };
 
 module.exports = rollup_externals;

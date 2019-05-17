@@ -2,9 +2,9 @@
   "name": "@aws-amplify/analytics",
   "version": "1.2.16",
   "description": "Analytics category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./esm/index.js",
+  "typings": "./esm/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
