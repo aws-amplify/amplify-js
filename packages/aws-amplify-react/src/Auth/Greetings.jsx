@@ -16,6 +16,7 @@ import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
+import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
@@ -76,7 +77,7 @@ export default class Greetings extends AuthPiece {
         }
     }
 
-    inGreeting(name) { return `${I18n.get('Hello')} ${name}`; }
+    inGreeting(name) { return `${I18n.get('Hello')}, ${name}`; }
     outGreeting() { return ''; }
 
 
@@ -142,9 +143,9 @@ export default class Greetings extends AuthPiece {
         if (!greeting) { return null; }
 
         return (
-            <NavBar theme={theme}>
-                <Nav theme={theme}>
-                    <NavRight theme={theme}>
+            <NavBar theme={theme} data-test={auth.greetings.navBar}>
+                <Nav theme={theme} data-test={auth.greetings.nav}>
+                    <NavRight theme={theme} data-test={auth.greetings.navRight}>
                         {greeting}
                     </NavRight>
                 </Nav>

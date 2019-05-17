@@ -12,11 +12,11 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.signUp.section">
+    <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.signUp.headerSection">{{this.options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.signUp.bodySection">
       <div v-bind:class="amplifyUI.formField"
-          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')"
+          v-for="signUpField in this.orderedSignUpFields"
           :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
@@ -28,9 +28,10 @@
             v-model="signUpField.value"
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)"
+            v-bind:data-test="auth.signUp.nonPhoneNumberInput"
           />
         <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
-          <select v-model="country">
+          <select v-model="country" v-bind:data-test="auth.signUp.dialCodeSelect">
             <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
           </select>
           <input
@@ -39,17 +40,18 @@
             type="number"
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)"
+            v-bind:data-test="auth.signUp.phoneNumberInput"
           />
         </div>
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionFooter">
+    <div v-bind:class="amplifyUI.sectionFooter" v-bind:data-test="auth.signUp.footerSection">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="signUp">{{$Amplify.I18n.get('Create account')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="signUp" v-bind:data-test="auth.signUp.createAccountButton">{{$Amplify.I18n.get('Create Account')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
         {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.signUp.signInLink">{{$Amplify.I18n.get('Sign in')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -61,9 +63,11 @@
 <script>
 import Vue from 'vue';
 import Vue2Filters from 'vue2-filters'
+import orderBy from 'lodash.orderby';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import { auth } from '../../assets/data-test-attributes';
 
 Vue.use(Vue2Filters)
 
@@ -75,6 +79,7 @@ export default {
       country: 'USA (+1)',
       countryCode: '1',
       countries,
+      auth,
       amplifyUI: AmplifyUI,
       error: '',
       logger: {},
@@ -83,7 +88,7 @@ export default {
   computed: {
     options() {
       const defaults = {
-        header: this.$Amplify.I18n.get('Sign Up Account'),
+        header: this.$Amplify.I18n.get('Create a new account'),
         signUpFields: [
           {
             label: this.$Amplify.I18n.get('Username'),
@@ -128,8 +133,8 @@ export default {
 
       // begin looping through signUpFields
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
-        // if hideDefaults is not present on props...
-        if (!this.signUpConfig.hideDefaults) {
+        // if hideAllDefaults and hideDefaults are not present on props...
+        if (!this.signUpConfig.hideAllDefaults && !this.signUpConfig.hideDefaults) {
           // ...add default fields to signUpField array unless user has passed in custom field with matching key
           defaults.signUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
@@ -174,6 +179,9 @@ export default {
       }
       
       return Object.assign(defaults, this.signUpConfig || {})
+    },
+    orderedSignUpFields: function () {
+      return orderBy(this.options.signUpFields, 'displayOrder', 'name')
     }
   },
   mounted() {
@@ -206,7 +214,7 @@ export default {
           user.password = e.value
         } else if (e.key === 'phone_number' && e.value) {
           user.attributes.phone_number = `+${this.countryCode}${e.value}`
-        } else {
+        } else if (e.value) {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;
         };
