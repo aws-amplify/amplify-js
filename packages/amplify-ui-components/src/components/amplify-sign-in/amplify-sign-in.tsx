@@ -10,18 +10,10 @@ export class AmplifySignIn {
   render() {
     return (
       <amplify-section>
-        <amplify-section-header>
-          Sign in to your account
-        </amplify-section-header>
+        <amplify-section-header>Sign in to your account</amplify-section-header>
         <form onSubmit={this.handleSubmit}>
-          <div>
-            <p>
-              <amplify-sign-in-username-field />
-            </p>
-            <p>
-              <amplify-sign-in-password-field />
-            </p>
-          </div>
+          <amplify-sign-in-username-field />
+          <amplify-sign-in-password-field />
           {this.validationErrors && <p>{this.validationErrors}</p>}
           <amplify-button type="submit">Submit</amplify-button>
         </form>

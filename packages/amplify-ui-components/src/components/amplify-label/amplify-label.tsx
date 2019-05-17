@@ -6,6 +6,7 @@ import { label } from './amplify-label.style';
 })
 export class AmplifyLabel{
   @Prop() htmlFor: string;
+  
   render() {
     return (
       <label class={label} htmlFor={this.htmlFor}>
