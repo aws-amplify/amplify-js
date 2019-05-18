@@ -1647,7 +1647,8 @@ export default class AuthClass {
     }
 
     private _isValidAuthStorage(obj) {
-        return !obj &&
+        return obj !== undefined &&
+            obj !== null && 
             typeof obj.getItem === 'function' &&
             typeof obj.setItem === 'function' &&
             typeof obj.removeItem === 'function' &&
