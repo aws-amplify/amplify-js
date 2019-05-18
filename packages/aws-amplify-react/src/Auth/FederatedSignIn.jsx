@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Component } from 'react';
 
-import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { isEmpty, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -10,6 +9,8 @@ import {
     SectionBody,
     Strike,
 } from '../Amplify-UI/Amplify-UI-Components-React';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 import {
     GoogleButton,
@@ -21,7 +22,7 @@ import {
 
 const logger = new Logger('FederatedSignIn');
 
-export class FederatedButtons extends Component {
+export class FederatedButtons extends React.Component {
     google(google_client_id) {
         if (!google_client_id) { return null; }
 
@@ -97,7 +98,7 @@ export class FederatedButtons extends Component {
             federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
-        if (JS.isEmpty(federated)) { return null; }
+        if (isEmpty(federated)) { return null; }
 
         const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0 } = federated;
 
@@ -125,7 +126,7 @@ export class FederatedButtons extends Component {
     }
 }
 
-export default class FederatedSignIn extends Component {
+export class FederatedSignIn extends React.Component {
     render() {
         const { authState, onStateChange } = this.props;
         const federated = this.props.federated || {};
@@ -154,13 +155,14 @@ export default class FederatedSignIn extends Component {
         logger.debug('federated Config is', federated);
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <FormSection theme={theme}>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test={auth.federatedSignIn.section}>
+                <SectionBody theme={theme} data-test={auth.federatedSignIn.bodySection}>
                     <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
+                        data-test={auth.federatedSignIn.signInButtons}
                     />
                 </SectionBody>
             </FormSection>

@@ -2,7 +2,7 @@ import PubSub from '../src/PubSub';
 import { MqttOverWSProvider, AWSAppSyncProvider, AWSIoTProvider, mqttTopicMatch } from '../src/Providers';
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
 import * as Paho from '../src/vendor/paho-mqtt';
 
 const pahoClientMockCache = {};

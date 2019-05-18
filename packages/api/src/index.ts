@@ -11,9 +11,9 @@
  * and limitations under the License.
  */
 
-import APIClass, { graphqlOperation } from './API';
+import { APIClass, graphqlOperation } from './API';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('API');
 
@@ -27,5 +27,8 @@ if (!_instance) {
 const API = _instance;
 Amplify.register(API);
 
+/**
+ * @deprecated use named import
+ */
 export default API;
-export { APIClass, graphqlOperation };
+export { API, APIClass, graphqlOperation };

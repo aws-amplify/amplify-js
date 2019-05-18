@@ -11,6 +11,4 @@
  * and limitations under the License.
  */
 
-import { Linking, AppState, AsyncStorage } from 'react-native';
-
-export { Linking, AppState, AsyncStorage };
+export { Linking, AppState, AsyncStorage } from 'react-native';

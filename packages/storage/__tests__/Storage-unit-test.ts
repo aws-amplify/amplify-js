@@ -1,6 +1,6 @@
 
-import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import { default as Storage } from "../src/Storage";
+import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { default as Storage } from '../src/Storage';
 import StorageCategory from "../src";
 
 const credentials = {
@@ -238,7 +238,24 @@ describe('Storage', () => {
             storage.configure({ Storage: { level: "public"} });
         });
 
-        test('backwards compatible issue, third configure call track', () => {
+        test('normal storage level is public by default', () => {
+          const storage = StorageCategory;
+
+          storage.configure({
+            region: 'region',
+            bucket: 'bucket',
+          });
+
+          expect(storage['_config']).toEqual({
+            AWSS3: {
+              bucket: 'bucket',
+              level: 'public',
+              region: 'region'
+            }
+          });
+        });
+
+      test('backwards compatible issue, third configure call track', () => {
             const storage = new Storage();
 
             const aws_options = {

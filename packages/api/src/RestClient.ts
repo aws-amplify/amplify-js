@@ -15,9 +15,9 @@ import { ConsoleLogger as Logger, Signer, Platform, Credentials } from '@aws-amp
 
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
+import {parse, format} from 'url';
 
-const logger = new Logger('RestClient'),
-    urlLib = require('url');
+const logger = new Logger('RestClient');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -99,12 +99,12 @@ export class RestClient {
 
         // custom_header callback
         const custom_header = this._custom_header ? await this._custom_header() : undefined;
-        
+
         params.headers = { ...libraryHeaders, ...(custom_header),...initParams.headers };
 
         // Intentionally discarding search
-        const { search, ...parsedUrl } = urlLib.parse(url, true, true);
-        params.url = urlLib.format({
+        const { search, ...parsedUrl } = parse(url, true, true);
+        params.url = format({
             ...parsedUrl,
             query: {
                 ...parsedUrl.query,
@@ -125,7 +125,7 @@ export class RestClient {
             return this._request(params, isAllResponse);
 
         }
-        
+
         // Signing the request in case there credentials are available
         return Credentials.get()
             .then(
@@ -205,7 +205,7 @@ export class RestClient {
     endpoint(apiName: string) {
         const cloud_logic_array = this._options.endpoints;
         let response = '';
-        
+
         if(!Array.isArray(cloud_logic_array)) {
             return response;
         }

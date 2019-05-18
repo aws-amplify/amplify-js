@@ -16,7 +16,7 @@ import {
     getCurrTime
 } from './Utils';
 
-import StorageCache from './StorageCache';
+import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -25,7 +25,7 @@ const logger = new Logger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
  */
-export class BrowserStorageCache extends StorageCache implements ICache {
+export class BrowserStorageCacheClass extends StorageCache implements ICache {
     /**
      * initialize the cache
      * @param config - the configuration of the cache
@@ -452,9 +452,13 @@ export class BrowserStorageCache extends StorageCache implements ICache {
             config.keyPrefix = getCurrTime.toString();
         }
 
-        return new BrowserStorageCache(config);
+        return new BrowserStorageCacheClass(config);
     }
 }
 
-const instance: ICache = new BrowserStorageCache();
-export default instance;
+export const BrowserStorageCache: ICache = new BrowserStorageCacheClass();
+
+/**
+ * @deprecated use named import
+ */
+export default BrowserStorageCache;

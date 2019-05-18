@@ -13,9 +13,9 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -30,9 +30,11 @@ import {
     SectionFooterSecondaryContent
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('VerifyContact');
 
-export default class VerifyContact extends AuthPiece {
+export class VerifyContact extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -135,22 +137,22 @@ export default class VerifyContact extends AuthPiece {
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>
+            <FormSection theme={theme} data-test={auth.verifyContact.section}>
+                <SectionHeader theme={theme} data-test={auth.verifyContact.headerSection}>
                     {I18n.get('Account recovery requires verified contact information')}
                 </SectionHeader>
-                <SectionBody theme={theme}>
+                <SectionBody theme={theme} data-test={auth.verifyContact.bodySection}>
                     { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
                         { this.state.verifyAttr ?
-                            <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
-                            <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
+                            <Button theme={theme} onClick={this.submit} data-test={auth.verifyContact.submitButton}>{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.verify} data-test={auth.verifyContact.verifyButton}>{I18n.get('Verify')}</Button>
                         }
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
+                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)} data-test={auth.verifyContact.skipLink}>
                             {I18n.get('Skip')}
                         </Link>
                     </SectionFooterSecondaryContent>

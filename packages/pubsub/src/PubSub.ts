@@ -14,7 +14,7 @@
 import * as Observable from 'zen-observable';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider } from './Providers';
 

@@ -12,13 +12,13 @@
  */
 
 import * as React from 'react';
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
-import SignUp from './SignUp';
-import ForgotPassword from './ForgotPassword';
+import { SignUp } from './SignUp';
+import { ForgotPassword } from './ForgotPassword';
 
 import {
     FormSection,
@@ -35,9 +35,11 @@ import {
     SectionFooterSecondaryContent
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('SignIn');
 
-export default class SignIn extends AuthPiece {
+export class SignIn extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -54,7 +56,7 @@ export default class SignIn extends AuthPiece {
         }
         Auth.verifiedContact(user)
             .then(data => {
-                if (!JS.isEmpty(data.verified)) {
+                if (!isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     user = Object.assign(user, data);
@@ -108,8 +110,8 @@ export default class SignIn extends AuthPiece {
         const hideSignUp = !override.includes('SignUp') && hide.some(component => component === SignUp);
         const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
+            <FormSection theme={theme} data-test={auth.signIn.section}>
+                <SectionHeader theme={theme} data-test={auth.signIn.headerSection}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <FederatedButtons
                         federated={federated}
                         theme={theme}
@@ -118,7 +120,7 @@ export default class SignIn extends AuthPiece {
                         onAuthEvent={onAuthEvent}
                     />
                 <form onSubmit={this.signIn}>
-                <SectionBody theme={theme}>
+                <SectionBody theme={theme} data-test={auth.signIn.bodySection}>
                     
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
@@ -129,6 +131,7 @@ export default class SignIn extends AuthPiece {
                             key="username"
                             name="username"
                             onChange={this.handleInputChange}
+                            data-test={auth.signIn.usernameInput}
                         />
                     </FormField>
                     <FormField theme={theme}>
@@ -140,27 +143,37 @@ export default class SignIn extends AuthPiece {
                             type="password"
                             name="password"
                             onChange={this.handleInputChange}
+                            data-test={auth.signIn.passwordInput}
                         />
                         {
                             !hideForgotPassword && <Hint theme={theme}>
                                 {I18n.get('Forget your password? ')}
-                                <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
+                                <Link theme={theme} onClick={() => this.changeState('forgotPassword')} data-test={auth.signIn.forgotPasswordLink}>
                                     {I18n.get('Reset password')}
                                 </Link>
                             </Hint>
                         }
                     </FormField>
                 </SectionBody>
-                <SectionFooter theme={theme}>
+                <SectionFooter theme={theme} data-test={auth.signIn.footerSection}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button theme={theme} type="submit" disabled={this.state.loading}>
+                        <Button
+                            theme={theme}
+                            type="submit"
+                            disabled={this.state.loading}
+                            data-test={auth.signIn.signInButton}
+                            >
                             {I18n.get('Sign In')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     {
                         !hideSignUp && <SectionFooterSecondaryContent theme={theme}>
                             {I18n.get('No account? ')}
-                            <Link theme={theme} onClick={() => this.changeState('signUp')}>
+                            <Link
+                                theme={theme}
+                                onClick={() => this.changeState('signUp')}
+                                data-test={auth.signIn.createAccountLink}
+                                >
                                 {I18n.get('Create account')}
                             </Link>
                         </SectionFooterSecondaryContent>

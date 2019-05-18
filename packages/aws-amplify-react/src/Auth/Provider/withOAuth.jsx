@@ -12,19 +12,21 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { oAuthSignInButton } from '@aws-amplify/ui';
 import { 
     SignInButton, 
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import { Constants } from '../common/constants';
 
-export default function withOAuth(Comp) {
-    return class extends Component {
+const logger = new Logger('withOAuth');
+
+export function withOAuth(Comp, options) {
+    return class extends React.Component {
         constructor(props) {
             super(props);
             this.signIn = this.signIn.bind(this);
@@ -56,3 +58,8 @@ const Button = (props) => (
 );
 
 export const OAuthButton = withOAuth(Button);
+
+/**
+ * @deprecated use named import
+ */
+export default withOAuth;

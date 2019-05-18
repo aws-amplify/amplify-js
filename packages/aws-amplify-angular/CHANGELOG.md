@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.3-unstable.4...aws-amplify-angular@3.0.3) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="3.0.3-unstable.4"></a>
+## [3.0.3-unstable.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.3-unstable.3...aws-amplify-angular@3.0.3-unstable.4) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="3.0.3-unstable.3"></a>
+## [3.0.3-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.3-unstable.2...aws-amplify-angular@3.0.3-unstable.3) (2019-05-13)
+
+
+### Bug Fixes
+
+* add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws-amplify/amplify-js/commit/49eae14))
+
+
+
+
+<a name="3.0.3-unstable.2"></a>
+## [3.0.3-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.3-unstable.1...aws-amplify-angular@3.0.3-unstable.2) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="3.0.3-unstable.1"></a>
+## [3.0.3-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.3-unstable.0...aws-amplify-angular@3.0.3-unstable.1) (2019-05-10)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="3.0.3-unstable.0"></a>
+## [3.0.3-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.2...aws-amplify-angular@3.0.3-unstable.0) (2019-05-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="3.0.2"></a>
 ## [3.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.2-unstable.15...aws-amplify-angular@3.0.2) (2019-05-06)
 

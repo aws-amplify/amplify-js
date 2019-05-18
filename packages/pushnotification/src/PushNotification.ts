@@ -61,7 +61,13 @@ export default class PushNotification {
             };
         }
 
-        this._config = Object.assign({}, this._config, conf);
+        this._config = Object.assign(
+            { // defaults
+                requestIOSPermissions: true, // for backwards compatibility
+            },
+            this._config,
+            conf,
+        );
 
         if (Platform.OS === 'android' && !this._androidInitialized) {
             this.initializeAndroid();
@@ -132,18 +138,20 @@ export default class PushNotification {
         });
     }
 
+    requestIOSPermissions(options = { alert: true, badge: true, sound: true }) {
+        PushNotificationIOS.requestPermissions(options);
+    }
+
     initializeIOS() {
-        PushNotificationIOS.requestPermissions({
-            alert: true,
-            badge: true,
-            sound: true
-        });
+        if (this._config.requestIOSPermissions) {
+            this.requestIOSPermissions();
+        }
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
     }
 
     _checkIfOpenedByCampaign(nextAppState) {
-        // the app is turned from background to foreground	            
+        // the app is turned from background to foreground
         if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
             PushNotificationIOS.getInitialNotification().then(data => {
                 if (data) {
@@ -152,7 +160,7 @@ export default class PushNotification {
             }).catch(e => {
                 logger.debug('Failed to get the initial notification.', e);
             });
-        };
+        }
         this._currentState = nextAppState;
     }
 
@@ -168,7 +176,7 @@ export default class PushNotification {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
                 campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
                 treatment_id: data['pinpoint.campaign.treatment_id']
-            }
+            };
         }
 
         if (!campaign) {
@@ -208,7 +216,7 @@ export default class PushNotification {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
                 campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
                 treatment_id: data['pinpoint.campaign.treatment_id']
-            }
+            };
         }
 
         if (!campaign) {

@@ -11,9 +11,9 @@
  * and limitations under the License.
  */
 
-import AuthClass, { CognitoHostedUIIdentityProvider } from './Auth';
-import { CognitoUser, CookieStorage, }from 'amazon-cognito-identity-js';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AuthClass, CognitoHostedUIIdentityProvider } from './Auth';
+import { CognitoUser, CookieStorage }from 'amazon-cognito-identity-js';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
 
@@ -27,5 +27,8 @@ if (!_instance) {
 const Auth = _instance;
 Amplify.register(Auth);
 
+/**
+ * @deprecated use named import
+ */
 export default Auth;
-export { AuthClass, CognitoUser, CookieStorage, CognitoHostedUIIdentityProvider };
+export { Auth, AuthClass, CognitoUser, CookieStorage, CognitoHostedUIIdentityProvider };

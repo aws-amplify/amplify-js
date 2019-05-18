@@ -11,7 +11,54 @@
  * and limitations under the License.
  */
 
-const dict = {
+export const dict = {
+    'de': {
+        'Sign In': "Anmelden",
+        'Sign Up': "Registrieren",
+        'Sign Out': "Abmelden",
+        'Sign in to your account': 'Melden Sie sich mit Ihrem Account an',
+        'Username': "Benutzername",
+        'Password': "Passwort",
+        'Enter your username': "Geben Sie ihre Email ein",
+        'Enter your password': "Geben Sie ihr Passwort ein",
+        'No account? ': "Kein Account? ",
+        'Forget your password? ': 'Passwort vergessen? ',
+        'Reset password': "Passwort zurücksetzen",
+        'User does not exist': 'Dieser Account existiert nicht',
+        'User already exists': "Dieser Account existiert bereits",
+        'Incorrect username or password': "Falsche Email oder falsches Passwort",
+        'Invalid password format': "Invalides Passwort",
+        'Create account': "Hier registreren",
+        'Forgot Password': "Passwort vergessen",
+        'Change Password': "Passwort ändern",
+        'New Password': "Neues Passwort",
+        'Email': "Email",
+        'Phone Number': "Telefonnummer",
+        'Confirm a Code': "Code bestätigen",
+        'Confirm Sign In': "Anmelden bestätigen",
+        'Confirm Sign Up': "Registrieren bestätigen",
+        'Back to Sign In': "Zurück zum Anmelden",
+        'Send Code': "Code senden",
+        'Confirm': "Bestätigen",
+        'Resend a Code': "Code erneut senden",
+        'Submit': "Abschicken",
+        'Skip': "Überspringen",
+        'Verify': "Verifizieren",
+        'Verify Contact': "Kontakt verifizieren",
+        'Code': "Code",
+        'Account recovery requires verified contact information':
+            "Zurücksetzen des Account benötigt einen verifizierten Account",
+        'Invalid phone number format':
+            `Invalide Telefonummer.
+            Benutze eine Nummer im Format: +12345678900`,
+        'Create Account': "Account erstellen",
+        'Have an account? ': "Schon registriert? ",
+        'Sign in': "Anmelden",
+        'Create a new account': "Erstelle einen neuen Account",
+        'Reset your password': "Zurücksetzten des Passwortes",
+        'An account with the given email already exists.': "Ein Account mit dieser Email existiert bereits.",
+        'Username cannot be empty': "Benutzername darf nicht leer sein"
+    },
     'fr': {
         'Sign In': "Se connecter",
         'Sign Up': "S'inscrire",
@@ -36,14 +83,14 @@ const dict = {
         'Verify Contact': "Vérifier le contact",
         'Code': "Code",
         'Account recovery requires verified contact information':
-"La récupération du compte nécessite des informations de contact vérifiées",
+            "La récupération du compte nécessite des informations de contact vérifiées",
 
         'User does not exist': "L'utilisateur n'existe pas",
         'User already exists': "L'utilisateur existe déjà",
         'Incorrect username or password': "identifiant ou mot de passe incorrect",
         'Invalid password format': "format de mot de passe invalide",
         'Invalid phone number format':
-`Format de numéro de téléphone invalide.
+            `Format de numéro de téléphone invalide.
 Veuillez utiliser un format de numéro de téléphone du +12345678900`,
         'Sign in to your account': "Connectez-vous à votre compte",
         'Forget your password? ': "Mot de passe oublié ? ",
@@ -85,14 +132,14 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
         'Verify Contact': "Verificar contacto",
         'Code': "Código",
         'Account recovery requires verified contact information':
-"La recuperación de la cuenta requiere información de contacto verificada",
+            "La recuperación de la cuenta requiere información de contacto verificada",
 
         'User does not exist': "el usuario no existe",
         'User already exists': "El usuario ya existe",
         'Incorrect username or password': "Nombre de usuario o contraseña incorrecta",
         'Invalid password format': "Formato de contraseña inválido",
         'Invalid phone number format':
-`Formato de número de teléfono inválido.
+            `Formato de número de teléfono inválido.
 Utilice el formato de número de teléfono +12345678900`
     },
 
@@ -120,7 +167,7 @@ Utilice el formato de número de teléfono +12345678900`
         'Verify Contact': "验证联系方式",
         'Code': "确认码",
         'Account recovery requires verified contact information':
-"账户恢复需要验证过的联系方式",
+            "账户恢复需要验证过的联系方式",
 
         'User does not exist': "用户不存在",
         'User already exists': "用户已经存在",
@@ -129,5 +176,3 @@ Utilice el formato de número de teléfono +12345678900`
         'Invalid phone number format': "电话格式错误，请使用格式 +12345678900"
     }
 };
-
-export default dict;

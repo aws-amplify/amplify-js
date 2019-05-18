@@ -13,17 +13,18 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
-import Constants from './common/constants';
+import { Constants } from './common/constants';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('SignOut');
 
-export default class SignOut extends AuthPiece {
+export class SignOut extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -130,13 +131,14 @@ export default class SignOut extends AuthPiece {
         const authState = this.props.authState || this.state.authState;
         const signedIn = (authState === 'signedIn');
 
-        const theme = this.props.theme || AmplifyTheme;
+        const theme = this.props.theme;
         if (!signedIn) { return null; }
 
         return (
             <NavButton
                 theme={theme}
                 onClick={this.signOut}
+                data-test={auth.signOut.button}
             >
                 {I18n.get('Sign Out')}
             </NavButton>

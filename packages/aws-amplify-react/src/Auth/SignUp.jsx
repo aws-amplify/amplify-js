@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import {
     FormSection,
     SectionHeader,
@@ -32,14 +32,14 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
-import countryDialCodes from './common/country-dial-codes.js';
-import defaultSignUpFields from './common/default-sign-in-fields'
+import { countryDialCodes } from './common/country-dial-codes.js';
+import { defaultSignUpFields } from './common/default-sign-up-fields';
+import { auth } from '../Amplify-UI/data-test-attributes';
 import { valid } from 'semver';
 
 const logger = new Logger('SignUp');
 
-
-export default class SignUp extends AuthPiece {
+export class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -51,7 +51,7 @@ export default class SignUp extends AuthPiece {
         this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
         this.header = (this.props &&
-            this.props.signUpConfig && 
+            this.props.signUpConfig &&
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
     }
 
@@ -150,7 +150,7 @@ export default class SignUp extends AuthPiece {
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
-        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
+        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== -1 ?
         `+${this.props.signUpConfig.defaultCountryCode}` :
         "+1"
     }
@@ -209,42 +209,41 @@ export default class SignUp extends AuthPiece {
         }
         this.sortFields();
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test={auth.signUp.section}>
+                <SectionHeader theme={theme} data-test={auth.signUp.headerSection}>{I18n.get(this.header)}</SectionHeader>
+                <SectionBody theme={theme} data-test={auth.signUp.bodySection}>
                     {
                         this.signUpFields.map((field) => {
                             return field.key !== 'phone_number' ? (
                                 <FormField theme={theme} key={field.key}>
                                 {
-                                    field.required ? 
+                                    field.required ?
                                     <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
                                     <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                 }
                                     <Input
-                                        autoFocus={
-                                            this.signUpFields.findIndex((f) => {
-                                                return f.key === field.key
-                                            }) === 0 ? true : false
-                                        }
+                                        autoFocus={this.signUpFields.findIndex(f => f.key === field.key) === 0}
                                         placeholder={I18n.get(field.placeholder)}
                                         theme={theme}
                                         type={field.type}
                                         name={field.key}
                                         key={field.key}
                                         onChange={this.handleInputChange}
+                                        data-test={auth.signUp.nonPhoneNumberInput}
                                     />
                                 </FormField>
                             ) : (
                                 <FormField theme={theme} key="phone_number">
                                     {
-                                        field.required ? 
+                                        field.required ?
                                         <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
                                         <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
                                     }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}>
+                                        onChange={this.handleInputChange}
+                                        data-test={auth.signUp.dialCodeSelect}
+                                        >
                                             {countryDialCodes.map(dialCode =>
                                                 <option key={dialCode} value={dialCode}>
                                                     {dialCode}
@@ -259,6 +258,7 @@ export default class SignUp extends AuthPiece {
                                             key="phone_line_number"
                                             name="phone_line_number"
                                             onChange={this.handleInputChange}
+                                            data-test={auth.signUp.phoneNumberInput}
                                         />
                                     </SelectInput>
                                 </FormField>
@@ -266,15 +266,15 @@ export default class SignUp extends AuthPiece {
                         })
                     }
                 </SectionBody>
-                <SectionFooter theme={theme}>
+                <SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme}>
+                        <Button onClick={this.signUp} theme={theme} data-test={auth.signUp.createAccountButton}>
                             {I18n.get('Create Account')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.signUp.signInLink}>
                             {I18n.get('Sign in')}
                         </Link>
                     </SectionFooterSecondaryContent>

@@ -12,32 +12,30 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
-import Authenticator from './Authenticator';
+import { Authenticator } from './Authenticator';
 
-export { default as Authenticator } from './Authenticator';
-export { default as AuthPiece } from './AuthPiece';
-export { default as SignIn } from './SignIn';
-export { default as ConfirmSignIn } from './ConfirmSignIn';
-export { default as SignOut } from './SignOut';
-export { default as RequireNewPassword } from './RequireNewPassword';
-export { default as SignUp } from './SignUp';
-export { default as ConfirmSignUp } from './ConfirmSignUp';
-export { default as VerifyContact } from './VerifyContact';
-export { default as ForgotPassword } from './ForgotPassword';
-export { default as Greetings } from './Greetings';
-export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
-export { default as TOTPSetup } from './TOTPSetup';
-export { default as Loading } from './Loading';
+export { Authenticator } from './Authenticator';
+export { AuthPiece } from './AuthPiece';
+export { SignIn } from './SignIn';
+export { ConfirmSignIn } from './ConfirmSignIn';
+export { SignOut } from './SignOut';
+export { RequireNewPassword } from './RequireNewPassword';
+export { SignUp } from './SignUp';
+export { ConfirmSignUp } from './ConfirmSignUp';
+export { VerifyContact } from './VerifyContact';
+export { ForgotPassword } from './ForgotPassword';
+export { Greetings } from './Greetings';
+export { FederatedSignIn, FederatedButtons } from './FederatedSignIn';
+export { TOTPSetup } from './TOTPSetup';
+export { Loading } from './Loading';
 
 export * from './Provider';
 
-import Greetings from './Greetings';
-
+import { Greetings } from './Greetings';
 
 export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
-    return class extends Component {
+    return class extends React.Component {
         constructor(props) {
             super(props);
 
@@ -48,10 +46,8 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 authData: props.authData || null
             };
 
-            this.authConfig = {};
-
-            if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            if (typeof includeGreetings === 'object') {
+                this.authConfig = Object.assign({}, includeGreetings)
             } else {
                 this.authConfig = {
                     includeGreetings,
@@ -69,8 +65,8 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
         render() {
             const { authState, authData } = this.state;
-            const signedIn = (authState === 'signedIn');
-            if (signedIn) {
+
+            if (authState === 'signedIn') {
                 return (
                     <React.Fragment>
                         { this.authConfig.includeGreetings ? 
@@ -107,7 +103,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
     };
 }
 
-export class AuthenticatorWrapper extends Component {
+export class AuthenticatorWrapper extends React.Component {
     constructor(props) {
         super(props);
 

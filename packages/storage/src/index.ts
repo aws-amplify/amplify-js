@@ -11,8 +11,7 @@
  * and limitations under the License.
  */
 
-import StorageClass from './Storage';
-import { StorageProvider } from './types';
+import { Storage as StorageClass} from './Storage';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -28,7 +27,7 @@ if (!_instance) {
     const old_configure = _instance.configure;
     _instance.configure = (options) => {
         logger.debug('storage configure called');
-        const vaultConfig = old_configure.call(_instance, options);
+        const vaultConfig = {...old_configure.call(_instance, options)};
 
         // set level private for each provider for the vault
         Object.keys(vaultConfig).forEach((providerName) => {
@@ -45,6 +44,6 @@ const Storage = _instance;
 Amplify.register(Storage);
 
 export default Storage;
-export { StorageClass };
-export { StorageProvider };
-export * from './Providers';
+export { Storage, StorageClass };
+export * from './providers';
+export * from './types';
