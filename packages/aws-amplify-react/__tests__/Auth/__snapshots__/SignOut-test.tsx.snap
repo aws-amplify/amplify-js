@@ -2,6 +2,7 @@
 
 exports[`SignOut normal case render correctly with authState signedIn 1`] = `
 <Component
+  data-test="sign-out-button"
   onClick={[Function]}
   theme="theme"
 >
@@ -11,6 +12,7 @@ exports[`SignOut normal case render correctly with authState signedIn 1`] = `
 
 exports[`SignOut normal case render correctly with empty hide 1`] = `
 <Component
+  data-test="sign-out-button"
   onClick={[Function]}
   theme="theme"
 >

@@ -40,6 +40,7 @@ import { authDecorator } from '../../../providers/auth.decorator';
 export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -53,8 +54,8 @@ export class SignInComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const authComponent = this.framework && this.framework === 'ionic' ?
-    new ComponentMount(SignInComponentIonic,{authState: this.authState}) :
-    new ComponentMount(SignInComponentCore, {authState: this.authState});
+    new ComponentMount(SignInComponentIonic,{authState: this.authState, hide: this.hide}) :
+    new ComponentMount(SignInComponentCore, {authState: this.authState, hide: this.hide});
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.24"></a>
+## [1.2.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24-unstable.1...@aws-amplify/auth@1.2.24) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.24-unstable.1"></a>
+## [1.2.24-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24-unstable.0...@aws-amplify/auth@1.2.24-unstable.1) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.24-unstable.0"></a>
+## [1.2.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23...@aws-amplify/auth@1.2.24-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
+
+
+
+
+<a name="1.2.23"></a>
+## [1.2.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.8...@aws-amplify/auth@1.2.23) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.8"></a>
+## [1.2.23-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.7...@aws-amplify/auth@1.2.23-unstable.8) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.2.23-unstable.7"></a>
 ## [1.2.23-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.6...@aws-amplify/auth@1.2.23-unstable.7) (2019-04-26)
 

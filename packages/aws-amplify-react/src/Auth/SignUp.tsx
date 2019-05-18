@@ -32,6 +32,8 @@ import {
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 import countryDialCodes from './common/country-dial-codes';
 import defaultSignUpFields, { ISignUpField } from './common/default-sign-in-fields'
 import { valid } from 'semver';
@@ -226,9 +228,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
         }
         this.sortFields();
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get(this.header)}</SectionHeader>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test={auth.signUp.section}>
+                <SectionHeader theme={theme} data-test={auth.signUp.headerSection}>{I18n.get(this.header)}</SectionHeader>
+                <SectionBody theme={theme} data-test={auth.signUp.bodySection}>
                     {
                         this.signUpFields.map((field) => {
                             return field.key !== 'phone_number' ? (
@@ -250,6 +252,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
                                         name={field.key}
                                         key={field.key}
                                         onChange={this.handleInputChange}
+                                        data-test={auth.signUp.nonPhoneNumberInput}
                                     />
                                 </FormField>
                             ) : (
@@ -261,7 +264,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
                                     }
                                     <SelectInput theme={theme}>
                                         <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}>
+                                        onChange={this.handleInputChange}
+                                        data-test={auth.signUp.dialCodeSelect}
+                                        >
                                             {countryDialCodes.map(dialCode =>
                                                 <option key={dialCode} value={dialCode}>
                                                     {dialCode}
@@ -276,6 +281,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
                                             key="phone_line_number"
                                             name="phone_line_number"
                                             onChange={this.handleInputChange}
+                                            data-test={auth.signUp.phoneNumberInput}
                                         />
                                     </SelectInput>
                                 </FormField>
@@ -283,15 +289,15 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
                         })
                     }
                 </SectionBody>
-                <SectionFooter theme={theme}>
+                <SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme}>
+                        <Button onClick={this.signUp} theme={theme} data-test={auth.signUp.createAccountButton}>
                             {I18n.get('Create Account')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.signUp.signInLink}>
                             {I18n.get('Sign in')}
                         </Link>
                     </SectionFooterSecondaryContent>

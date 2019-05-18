@@ -183,6 +183,7 @@ exports[`FederatedSignIn test render test render nothing with incorrect authStat
 
 exports[`FederatedSignIn test render test render nothing with no federated prop 1`] = `
 <Component
+  data-test="federated-sign-in-section"
   theme={
     Object {
       "a": Object {},
@@ -224,6 +225,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
   }
 >
   <Component
+    data-test="federated-sign-in-body-section"
     theme={
       Object {
         "a": Object {},
@@ -266,6 +268,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
   >
     <FederatedButtons
       authState="signIn"
+      data-test="federated-sign-in-buttons"
       federated={Object {}}
       onStateChange={[MockFunction]}
       theme={
@@ -314,6 +317,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
 
 exports[`FederatedSignIn test render test render with correct authState 1`] = `
 <Component
+  data-test="federated-sign-in-section"
   theme={
     Object {
       "a": Object {},
@@ -355,6 +359,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
   }
 >
   <Component
+    data-test="federated-sign-in-body-section"
     theme={
       Object {
         "a": Object {},
@@ -397,6 +402,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
   >
     <FederatedButtons
       authState="signIn"
+      data-test="federated-sign-in-buttons"
       federated={Object {}}
       onStateChange={[MockFunction]}
       theme={

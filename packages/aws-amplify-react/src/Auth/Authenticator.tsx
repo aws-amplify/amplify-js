@@ -31,6 +31,7 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -253,7 +254,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         return (
             <Wrapper theme={theme}>
                 {this.state.showToast && 
-                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})} data-test={auth.signIn.signInError}>
                         { I18n.get(error) }
                     </Toast>
                 }
