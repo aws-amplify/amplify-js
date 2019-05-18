@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,13 +11,11 @@
  * and limitations under the License.
  */
 
-export interface Logger { 
-    
-    debug(msg: string) : void; 
-    info(msg: string) : void; 
-    warn(msg: string) : void; 
-    error(msg: string) : void; 
+/**
+ * This Symbol is used to reference an internal-only PubSub provider that
+ * is used for AppSync/GraphQL subscriptions in the API category.
+ */
+const hasSymbol = (typeof(Symbol) !== 'undefined' && typeof(Symbol.for) === 'function');
 
-}
-
-export default Logger;
+export const INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER = hasSymbol ?
+    Symbol.for('INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER') : '@@INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER';

@@ -2,6 +2,7 @@
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 1`] = `
 <Component
+  data-test="sign-in-section"
   theme={
     Object {
       "a": Object {
@@ -246,6 +247,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
   }
 >
   <Component
+    data-test="sign-in-header-section"
     theme={
       Object {
         "a": Object {
@@ -740,6 +742,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
+      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -1476,6 +1479,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
+          data-test="sign-in-username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -2216,6 +2220,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
            *
         </Component>
         <Component
+          data-test="sign-in-password-input"
           key="password"
           name="password"
           onChange={[Function]}
@@ -2710,6 +2715,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         >
           Forget your password? 
           <Component
+            data-test="sign-in-forgot-password-link"
             onClick={[Function]}
             theme={
               Object {
@@ -2960,6 +2966,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       </Component>
     </Component>
     <Component
+      data-test="sign-in-footer-section"
       theme={
         Object {
           "a": Object {
@@ -3448,6 +3455,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         <Component
+          data-test="sign-in-sign-in-button"
           theme={
             Object {
               "a": Object {
@@ -3941,6 +3949,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       >
         No account? 
         <Component
+          data-test="sign-in-create-account-link"
           onClick={[Function]}
           theme={
             Object {
@@ -4195,6 +4204,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 2`] = `
 <Component
+  data-test="sign-in-section"
   theme={
     Object {
       "a": Object {
@@ -4439,6 +4449,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
   }
 >
   <Component
+    data-test="sign-in-header-section"
     theme={
       Object {
         "a": Object {
@@ -4933,6 +4944,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
+      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -5669,6 +5681,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
+          data-test="sign-in-username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -6409,6 +6422,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
            *
         </Component>
         <Component
+          data-test="sign-in-password-input"
           key="password"
           name="password"
           onChange={[Function]}
@@ -6903,6 +6917,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         >
           Forget your password? 
           <Component
+            data-test="sign-in-forgot-password-link"
             onClick={[Function]}
             theme={
               Object {
@@ -7153,6 +7168,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       </Component>
     </Component>
     <Component
+      data-test="sign-in-footer-section"
       theme={
         Object {
           "a": Object {
@@ -7641,6 +7657,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         <Component
+          data-test="sign-in-sign-in-button"
           theme={
             Object {
               "a": Object {
@@ -8134,6 +8151,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       >
         No account? 
         <Component
+          data-test="sign-in-create-account-link"
           onClick={[Function]}
           theme={
             Object {
@@ -8388,6 +8406,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 3`] = `
 <Component
+  data-test="sign-in-section"
   theme={
     Object {
       "a": Object {
@@ -8632,6 +8651,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
   }
 >
   <Component
+    data-test="sign-in-header-section"
     theme={
       Object {
         "a": Object {
@@ -9126,6 +9146,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
+      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -9862,6 +9883,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
+          data-test="sign-in-username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -10602,6 +10624,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
            *
         </Component>
         <Component
+          data-test="sign-in-password-input"
           key="password"
           name="password"
           onChange={[Function]}
@@ -11096,6 +11119,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         >
           Forget your password? 
           <Component
+            data-test="sign-in-forgot-password-link"
             onClick={[Function]}
             theme={
               Object {
@@ -11346,6 +11370,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       </Component>
     </Component>
     <Component
+      data-test="sign-in-footer-section"
       theme={
         Object {
           "a": Object {
@@ -11834,6 +11859,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         <Component
+          data-test="sign-in-sign-in-button"
           theme={
             Object {
               "a": Object {
@@ -12327,6 +12353,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       >
         No account? 
         <Component
+          data-test="sign-in-create-account-link"
           onClick={[Function]}
           theme={
             Object {
