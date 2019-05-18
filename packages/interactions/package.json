@@ -31,7 +31,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.27"
+    "@aws-amplify/core": "1.0.27"
   },
   "jest": {
     "globals": {

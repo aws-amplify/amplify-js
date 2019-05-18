@@ -34,8 +34,8 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.27",
-    "@aws-amplify/core": "^1.0.27",
+    "@aws-amplify/cache": "1.0.27",
+    "@aws-amplify/core": "1.0.27",
     "uuid": "^3.2.1"
   },
   "jest": {

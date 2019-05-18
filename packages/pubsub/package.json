@@ -32,7 +32,7 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.27",
+    "@aws-amplify/core": "1.0.27",
     "@types/zen-observable": "^0.5.3",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
