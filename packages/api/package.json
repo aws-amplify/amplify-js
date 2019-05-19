@@ -55,7 +55,7 @@
     "@aws-amplify/cache": "^1.0.27",
     "@aws-amplify/core": "^1.0.27",
     "axios": "^0.17.0",
-    "graphql": "0.13.0",
+    "graphql": "14.3.0",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },
