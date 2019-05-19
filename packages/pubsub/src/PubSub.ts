@@ -20,7 +20,7 @@ import { AWSAppSyncProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
-export default class PubSub {
+export class PubSub {
 
     private _options: PubSubOptions;
 
@@ -136,3 +136,8 @@ export default class PubSub {
         });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default PubSub;
