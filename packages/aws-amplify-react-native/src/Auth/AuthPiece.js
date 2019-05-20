@@ -51,12 +51,12 @@ export default class AuthPiece extends React.Component {
     getUsernameFromInput() {
         const { usernameAttributes = 'username' } = this.props;
         switch(usernameAttributes) {
-            case UsernameAttributes.EMAIL:
-                return this.inputs.email;
-            case UsernameAttributes.PHONE_NUMBER:
-                return this.phone_number;
+            case 'email':
+                return this.state.email;
+            case 'phone_number':
+                return this.state.phone_number;
             default:
-                return this.inputs.username;
+                return this.state.username;
         }
     }
 
