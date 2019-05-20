@@ -17,6 +17,8 @@ import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
 import TOTPSetupComp from '../Widget/TOTPSetupComp';
 
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 const logger = new Logger('TOTPSetup');
 
 export default class TOTPSetup extends AuthPiece {
@@ -58,7 +60,7 @@ export default class TOTPSetup extends AuthPiece {
         if (hide && hide.includes(TOTPSetup)) { return null; }
 
         return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
+            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} data-test={auth.TOTPSetup.component} />
         );
     }
 }
