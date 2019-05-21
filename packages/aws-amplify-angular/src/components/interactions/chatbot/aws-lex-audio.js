@@ -49,7 +49,7 @@
      * @param {silenceDetectionConfig} - Specify custom silence detection values.
      * @throws {Error} If audio is not supported.
      */
-    var startRecording = function (onSilence, visualizer, silenceDetectionConfig) {
+    var startRecording = async function (onSilence, visualizer, silenceDetectionConfig) {
       onSilence = onSilence || function () { /* no op */
         };
       visualizer = visualizer || function () { /* no op */
@@ -58,7 +58,7 @@
       if (!audioSupported) {
         throw new Error(UNSUPPORTED);
       }
-      recorder = audioRecorder.createRecorder(silenceDetectionConfig);
+      recorder = await audioRecorder.createRecorder(silenceDetectionConfig);
       recorder.record(onSilence, visualizer);
     };
 
@@ -509,6 +509,7 @@ module.exports = function (fn, options) {
  (function () {
   'use strict';
   var work = require('webworkify');
+  var worker = work(require('./worker.js'));
   var audio_context, audio_stream;
 
   /**
@@ -516,7 +517,7 @@ module.exports = function (fn, options) {
    * with the web worker to perform audio actions.
    */
   var recorder = function (source, silenceDetectionConfig) {
-    var worker = work(require('./worker.js'));
+
     silenceDetectionConfig = silenceDetectionConfig || {};
     silenceDetectionConfig.time = silenceDetectionConfig.hasOwnProperty('time') ? silenceDetectionConfig.time : 1500;
     silenceDetectionConfig.amplitude = silenceDetectionConfig.hasOwnProperty('amplitude') ? silenceDetectionConfig.amplitude : 0.2;
@@ -652,7 +653,6 @@ module.exports = function (fn, options) {
    * accessing the mike, and creating the Recorder object.
    */
   exports.audioRecorder = function () {
-    var worker = work(require('./worker.js'));
 
     /**
      * Creates an audio context and calls getUserMedia to request the mic (audio).
@@ -669,8 +669,12 @@ module.exports = function (fn, options) {
       });
     };
 
-    var createRecorder = function (silenceDetectionConfig) {
-      return recorder(audio_context.createMediaStreamSource(audio_stream), silenceDetectionConfig);
+    var createRecorder = async function (silenceDetectionConfig) {
+      if (!audio_stream) {
+        return recorder(audio_context.createMediaStreamSource(await navigator.mediaDevices.getUserMedia({audio: true})), silenceDetectionConfig);          
+      } else {
+        return recorder(audio_context.createMediaStreamSource(audio_stream), silenceDetectionConfig);
+      }
     };
 
     var audioContext = function () {

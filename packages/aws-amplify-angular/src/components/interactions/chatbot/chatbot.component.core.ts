@@ -154,9 +154,6 @@ export class ChatbotComponentCore implements OnInit  {
 			STATES.INITIAL.MESSAGE = "Type a message";
 		}
 
-		if (this.voiceEnabled) {
-			this.audioControl = new LexAudio.audioControl();
-		}
 	}
 
 
@@ -315,7 +312,10 @@ export class ChatbotComponentCore implements OnInit  {
 		}
 	}
 
-	async micButtonHandler() {
+	micButtonHandler() {
+		if (this.voiceEnabled) {
+			this.audioControl = new LexAudio.audioControl({checkAudioSupport: true});
+		}
 		if (this.continueConversation) {
 			this.reset();
 			this.ref.detectChanges();
