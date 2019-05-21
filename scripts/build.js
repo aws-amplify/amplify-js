@@ -66,6 +66,8 @@ function tsc(fileNames, options) {
 }
 
 async function buildES5() {
+    const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
+    const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
     // tsconfig for ES5 generating
     let compilerOptions = {
         "noImplicitAny": false,
@@ -74,11 +76,12 @@ async function buildES5() {
             "es2017",
             "esnext.asynciterable"
         ],
+        "jsx": jsx,
         "sourceMap": true,
         "target": "es5",
         "module": "es2015",
         "moduleResolution": "node",
-        "allowJs": false,
+        "allowJs": allowJs,
         "declaration": true,
         "typeRoots": [
             `${currentPath}/node_modules/@types`,
@@ -106,6 +109,8 @@ async function buildES5() {
 }
 
 function buildES6() {
+    const jsx = packageInfo.name === 'aws-amplify-react'? 'react':undefined;
+    const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
     // tsconfig for ESM generating
     let compilerOptions = {
         "noImplicitAny": false,
@@ -114,11 +119,12 @@ function buildES6() {
             "es2017",
             "esnext.asynciterable"
         ],
+        "jsx": jsx,
         "sourceMap": true,
         "target": "es2015",
         "module": "es2015",
         "moduleResolution": "node",
-        "allowJs": false,
+        "allowJs": allowJs,
         "declaration": true,
         "typeRoots": [
             `${currentPath}/node_modules/@types`,

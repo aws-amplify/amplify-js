@@ -5,6 +5,7 @@
   "main": "./dist/index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",

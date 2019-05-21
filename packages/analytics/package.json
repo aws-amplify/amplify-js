@@ -2,16 +2,17 @@
   "name": "@aws-amplify/analytics",
   "version": "1.2.16",
   "description": "Analytics category of aws-amplify",
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build:cjs": "node ./build es5 && node ./build rollup",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "clean": "rimraf lib lib-esm dist",
