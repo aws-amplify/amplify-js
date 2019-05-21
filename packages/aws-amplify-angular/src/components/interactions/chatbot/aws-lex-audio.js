@@ -509,7 +509,6 @@ module.exports = function (fn, options) {
  (function () {
   'use strict';
   var work = require('webworkify');
-  var worker = work(require('./worker.js'));
   var audio_context, audio_stream;
 
   /**
@@ -517,7 +516,7 @@ module.exports = function (fn, options) {
    * with the web worker to perform audio actions.
    */
   var recorder = function (source, silenceDetectionConfig) {
-
+    var worker = work(require('./worker.js'));
     silenceDetectionConfig = silenceDetectionConfig || {};
     silenceDetectionConfig.time = silenceDetectionConfig.hasOwnProperty('time') ? silenceDetectionConfig.time : 1500;
     silenceDetectionConfig.amplitude = silenceDetectionConfig.hasOwnProperty('amplitude') ? silenceDetectionConfig.amplitude : 0.2;
@@ -653,6 +652,7 @@ module.exports = function (fn, options) {
    * accessing the mike, and creating the Recorder object.
    */
   exports.audioRecorder = function () {
+    var worker = work(require('./worker.js'));
 
     /**
      * Creates an audio context and calls getUserMedia to request the mic (audio).
