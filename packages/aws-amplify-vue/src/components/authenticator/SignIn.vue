@@ -15,10 +15,10 @@
   <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.signIn.section">
     <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.signIn.headerSection">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.signIn.bodySection">
-      <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" v-bind:data-test="auth.signIn.usernameInput" />
-      </div>
+      <amplify-username-field 
+        v-bind:usernameAttributes="usernameAttributes" 
+        v-on:username-field-changed="usernameFieldChanged">
+      </amplify-username-field>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
         <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" v-bind:data-test="auth.signIn.passwordInput" />
@@ -47,11 +47,15 @@
 // import Auth from '@aws-amplify/auth';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import Vue from 'vue';
+import UsernameField from './UsernameField';
+
+Vue.component('amplify-username-field', UsernameField);
 import { auth } from '../../assets/data-test-attributes';
 
 export default {
   name: 'SignIn',
-  props: ['signInConfig'],
+  props: ['signInConfig', 'usernameAttributes'],
   data () {
     return {
         password: '',
@@ -59,6 +63,12 @@ export default {
         amplifyUI: AmplifyUI,
         auth,
         logger: {},
+        signInUsername: '',
+        labelMap: {
+          email: 'Email',
+          phone_number: 'Phone Number',
+          username: 'Username'
+        },
     }
   },
   computed: {
@@ -66,18 +76,17 @@ export default {
       const defaults = {
         header: this.$Amplify.I18n.get('Sign in to your account'),
         username: '',
-        isSignUpDisplayed: true
+        isSignUpDisplayed: true,
       }
       return Object.assign(defaults, this.signInConfig || {})
-    }
+    },
   },
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
   },
   methods: {
     signIn: function(event) {
-      const that = this
-      this.$Amplify.Auth.signIn(this.options.username, this.password)
+      this.$Amplify.Auth.signIn(this.signInUsername, this.password)
         .then(data => {
           this.logger.info('sign in success');
           if (data.challengeName === 'SMS_MFA' || data.challengeName === 'SOFTWARE_TOKEN_MFA') {
@@ -95,7 +104,7 @@ export default {
         })
         .catch((e) => {
           if (e.code && e.code === 'UserNotConfirmedException'){
-            AmplifyEventBus.$emit('localUser', {username: this.options.username})
+            AmplifyEventBus.$emit('localUser', {username: this.signInUsername})
             AmplifyEventBus.$emit('authState', 'confirmSignUp')
           } else {
             this.setError(e);
@@ -111,7 +120,23 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error)
-    }
+    },
+    usernameFieldChanged: function(data) {
+      const { usernameField, username, email, phoneNumber } = data;
+      switch(usernameField) {
+        case 'username':
+          this.signInUsername = username;
+          break;
+        case 'email':
+          this.signInUsername = email;
+          break;
+        case 'phone_number':
+          this.signInUsername = phoneNumber;
+          break;
+        default:
+          break;
+      }
+    },
   }
 }
 </script>
