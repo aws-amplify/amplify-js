@@ -2,12 +2,16 @@ import { Component, Input, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">
-      {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
+<div class="amplify-form-container" *ngIf="_show" data-test="${auth.confirmSignIn.section}">
+  <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
+    <div
+      class="amplify-form-header amplify-form-header-ionic"
+      data-test="${auth.confirmSignIn.headerSection}"
+      >
+        {{ this.amplifyService.i18n().get('Confirm your sign in code') }}
     </div>
     <ion-list>
       <ion-item lines="none">
@@ -20,6 +24,7 @@ const template = `
           class="amplify-form-input"
           (keyup)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
+          data-test="${auth.confirmSignIn.codeInput}"
         ></ion-input>
       </ion-item>
     </ion-list>
@@ -28,6 +33,7 @@ const template = `
       <div>
         <ion-button expand="block" color="primary"
           (click)="onConfirm()"
+          data-test="${auth.confirmSignIn.confirmButton}"
         >{{ this.amplifyService.i18n().get('Confirm Code') }}</ion-button>
       </div>
     </div>
