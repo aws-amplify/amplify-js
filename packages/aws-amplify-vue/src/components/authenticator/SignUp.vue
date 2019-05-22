@@ -20,27 +20,24 @@
           :signUpField="signUpField.key"
           v-bind:key="signUpField.key"
         >
-        <div v-bind:class="amplifyUI.inputLabel">{{signUpField.label}} {{signUpField.required ? '*': ''}}</div>
-        <input
-            v-if="signUpField.key !== 'phone_number'"
-            :type = "signUpField.type"
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
-            v-model="signUpField.value"
-            :placeholder="signUpField.label"
-            v-on:change="clear(signUpField)"
-            v-bind:data-test="auth.signUp.nonPhoneNumberInput"
-          />
-        <div v-if="signUpField.key === 'phone_number'" v-bind:class="amplifyUI.selectInput">
-          <select v-model="country" v-bind:data-test="auth.signUp.dialCodeSelect">
-            <option v-for="country in countries" v-bind:key="country.label">{{country.label}}</option>
-          </select>
+        <div v-if="signUpField.key !== 'phone_number'">
+          <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(signUpField.label)}} {{signUpField.required ? '*': ''}}</div>
           <input
-            v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
-            v-model="signUpField.value"
-            type="number"
-            :placeholder="signUpField.label"
-            v-on:change="clear(signUpField)"
-            v-bind:data-test="auth.signUp.phoneNumberInput"
+              :type = "signUpField.type"
+              v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']"
+              v-model="signUpField.value"
+              :placeholder="$Amplify.I18n.get(signUpField.label)"
+              v-on:change="clear(signUpField)"
+              v-bind:data-test="auth.signUp.nonPhoneNumberInput"
+            />
+          </div>
+        <div v-if="signUpField.key === 'phone_number'">
+          <amplify-phone-field 
+            v-bind:required="signUpField.required"
+            v-bind:invalid="signUpField.invalid"
+            v-bind:placeholder="signUpField.placeholder"
+            v-bind:defaultCountryCode="options.defaultCountryCode"
+            v-on:phone-number-changed="phoneNumberChanged"
           />
         </div>
       </div>
@@ -67,68 +64,47 @@ import orderBy from 'lodash.orderby';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../assets/default-sign-up-fields';
+import { labelMap, composePhoneNumber } from './common';
+import PhoneField from './PhoneField';
 import { auth } from '../../assets/data-test-attributes';
 
-Vue.use(Vue2Filters)
+Vue.use(Vue2Filters);
+Vue.component('amplify-phone-field', PhoneField);
 
 export default {
   name: 'SignUp',
-  props: ['signUpConfig'],
+  props: ['signUpConfig', 'usernameAttributes'],
   data () {
+    let defaultSignUpFields = signUpWithUsername;
+    if (this.usernameAttributes === 'email') {
+      defaultSignUpFields = signUpWithEmailFields;
+    } else if (this.usernameAttributes === 'phone_number') {
+      defaultSignUpFields = signUpWithPhoneNumberFields;
+    }
+
     return {
-      country: 'USA (+1)',
-      countryCode: '1',
-      countries,
       auth,
       amplifyUI: AmplifyUI,
       error: '',
       logger: {},
+      defaultSignUpFields,
+      phoneNumber: '',
     }
   },
   computed: {
     options() {
-      const defaults = {
-        header: this.$Amplify.I18n.get('Create a new account'),
-        signUpFields: [
-          {
-            label: this.$Amplify.I18n.get('Username'),
-            key: 'username',
-            required: true,
-            type: 'text',
-            displayOrder: 1,
-          },
-          {
-            label: this.$Amplify.I18n.get('Password'),
-            key: 'password',
-            required: true,
-            type: 'password',
-            displayOrder: 2,
-          },
-          {
-            label: this.$Amplify.I18n.get('Email'),
-            key: 'email',
-            required: true,
-            type: 'text',
-            displayOrder: 3
-          },
-          {
-            label: this.$Amplify.I18n.get('Phone Number'),
-            key: 'phone_number',
-            required: true,
-            displayOrder: 4
-          }
-        ]
-      }
 
-      // sets value in country code dropdown if defaultCountryCode value is present in props 
-      if (this.signUpConfig && this.signUpConfig.defaultCountryCode) {
-        this.country = this.countries.find(c => c.value === this.signUpConfig.defaultCountryCode).label;
-      };
+      let header = this.$Amplify.I18n.get('Create a new account');
 
       if (this.signUpConfig && this.signUpConfig.hiddenDefaults && this.signUpConfig.hiddenDefaults.length > 0){
-        defaults.signUpFields = defaults.signUpFields.filter((d) => {
+        this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
           return !this.signUpConfig.hiddenDefaults.includes(d.key);
         });
+      }
+
+      if (this.signUpConfig && this.signUpConfig.hideAllDefaults) {
+        this.defaultSignUpFields = [];
       }
 
       // begin looping through signUpFields
@@ -136,7 +112,7 @@ export default {
         // if hideAllDefaults and hideDefaults are not present on props...
         if (!this.signUpConfig.hideAllDefaults && !this.signUpConfig.hideDefaults) {
           // ...add default fields to signUpField array unless user has passed in custom field with matching key
-          defaults.signUpFields.forEach((f, i) => {
+          this.defaultSignUpFields.forEach((f, i) => {
             const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
               return d.key === f.key;
             });
@@ -178,7 +154,7 @@ export default {
         });
       }
       
-      return Object.assign(defaults, this.signUpConfig || {})
+      return Object.assign({header, signUpFields: this.defaultSignUpFields}, this.signUpConfig || {});
     },
     orderedSignUpFields: function () {
       return orderBy(this.options.signUpFields, 'displayOrder', 'name')
@@ -186,15 +162,6 @@ export default {
   },
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
-  },
-  watch: {
-    /*
-    this operation is in place to avoid making country.value the select box
-    bound key, which results in a duplicate key error in console
-    */
-    country: function() {
-      this.countryCode = this.countries.find(c => c.label === this.country).value
-    },
   },
   methods: {
     signUp: function() {
@@ -213,14 +180,29 @@ export default {
         } else if (e.key === 'password') {
           user.password = e.value
         } else if (e.key === 'phone_number' && e.value) {
-          user.attributes.phone_number = `+${this.countryCode}${e.value}`
-        } else if (e.value) {
+          user.attributes.phone_number = e.value;
+        } else {
           const newKey = `${this.needPrefix(e.key) ? 'custom:' : ''}${e.key}`;
           user.attributes[newKey] = e.value;
         };
-      })
+      });
 
-       this.$Amplify.Auth.signUp(user)
+      let labelCheck = false;
+      this.options.signUpFields.forEach(field => {
+          if (field.label === this.getUsernameLabel()) {
+              this.logger.debug(`Changing the username to the value of ${field.label}`);
+              user.username = user.attributes[field.key] || user.username;
+              labelCheck = true;
+          }
+      });
+      if (!labelCheck && !user.username) {
+        // if the customer customized the username field in the sign up form
+        // He needs to either set the key of that field to 'username'
+        // Or make the label of the field the same as the 'usernameAttributes'
+        throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+      }
+        
+      this.$Amplify.Auth.signUp(user)
             .then(data => {
               this.logger.info('sign up success');
               AmplifyEventBus.$emit('localUser', data.user)
@@ -269,6 +251,17 @@ export default {
       }
       return null;
     },
+
+    getUsernameLabel: function() {
+      return labelMap[this.usernameAttributes] || this.usernameAttributes;
+    },
+
+    phoneNumberChanged: function(data) {
+      const phoneNumberField = this.options.signUpFields.filter(
+         field => field.key === 'phone_number')[0];
+      this.clear(phoneNumberField);
+      phoneNumberField.value = composePhoneNumber(data.countryCode, data.local_phone_number);
+    }
   }
 }
 </script>

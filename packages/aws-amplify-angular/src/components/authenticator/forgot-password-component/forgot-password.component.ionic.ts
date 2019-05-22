@@ -38,18 +38,10 @@ const template = `
   </div>
 
   <ion-list>
-    <ion-item lines="none" *ngIf="!code_sent">
-      <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
-        {{ this.amplifyService.i18n().get('Username *') }}
-      </ion-label>
-      <ion-input type="text"
-        class="amplify-form-input"
-        (keyup)="setUsername($event.target.value)"
-        [value]="username"
-        data-test="${auth.forgotPassword.usernameInput}"
-      ></ion-input>
-    </ion-item>
-
+    <amplify-auth-username-field-ionic
+      [usernameAttributes]="_usernameAttributes"
+      (usernameFieldChanged)="onUsernameFieldChanged($event)"
+    ></amplify-auth-username-field-ionic>
     <ion-item lines="none" *ngIf="code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
         {{ this.amplifyService.i18n().get('Code *') }}
@@ -128,6 +120,21 @@ export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
+  }
 
+  onCodeChange(val) {
+    this.country_code = val;
+  }
+
+  onNumberChange(val) {
+    this.local_phone_number = val;
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+  }
+
+  setEmail(email: string) {
+    this.email = email;
   }
 }
