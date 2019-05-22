@@ -23,7 +23,6 @@
                 v-bind:value="_country.value" 
                 v-bind:data-test="auth.genericAttrs.dialCodeSelect"
                >{{_country.label}}</option> 
-               <!-- <option v-bind:value="country">fuck</option> -->
         </select>
         <input
             v-model="local_phone_number"

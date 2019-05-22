@@ -67,7 +67,6 @@ export class PhoneFieldComponentCore implements OnInit {
     _country_code: string = '1';
     _local_phone_number: string = '';
     _countries: country[];
-    // _defaultCountryCode = '1';
 
     constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
         this._countries = countrylist;

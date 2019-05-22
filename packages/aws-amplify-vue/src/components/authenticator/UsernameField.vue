@@ -64,7 +64,6 @@ export default {
             email: '',
             amplifyUI: AmplifyUI,
             phoneNumberRequired: true,
-            logger: {},
             auth,
         }
     },
@@ -78,9 +77,6 @@ export default {
         shouldRenderPhoneNumberField() {
             return this.usernameAttributes === 'phone_number';
         },
-    },
-    mounted() {
-        // this.logger = new this.$Amplify.Logger(this.$options.name);
     },
     methods: {
         getUsernameLabel() {
