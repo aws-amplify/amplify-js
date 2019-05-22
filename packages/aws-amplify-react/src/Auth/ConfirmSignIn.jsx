@@ -63,7 +63,8 @@ export default class ConfirmSignIn extends AuthPiece {
             });
     }
 
-    confirm() {
+    confirm(e) {
+        e.preventDefault();
         const user = this.props.authData;
         const { code } = this.inputs;
         const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
