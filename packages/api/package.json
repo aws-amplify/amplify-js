@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
+    "@types/zen-observable": "^0.5.3",
     "awesome-typescript-loader": "^3.2.2",
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
@@ -53,7 +54,6 @@
     "@aws-amplify/auth": "^1.2.24",
     "@aws-amplify/cache": "^1.0.27",
     "@aws-amplify/core": "^1.0.27",
-    "@types/zen-observable": "^0.5.3",
     "axios": "^0.17.0",
     "graphql": "0.13.0",
     "uuid": "^3.2.1",
