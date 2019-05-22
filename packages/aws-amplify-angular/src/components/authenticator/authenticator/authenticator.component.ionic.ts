@@ -24,6 +24,7 @@ const template = `
 <amplify-auth-sign-in-ionic
   *ngIf="!shouldHide('SignIn')"
   [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
   [hide]="hide"
 ></amplify-auth-sign-in-ionic>
 
@@ -31,36 +32,40 @@ const template = `
   *ngIf="!shouldHide('SignUp')"
   [authState]="authState"
   [signUpConfig]="_signUpConfig"
+  [usernameAttributes]="_usernameAttributes"
   [hide]="hide"
 ></amplify-auth-sign-up-ionic>
 
 <amplify-auth-confirm-sign-up-ionic
   *ngIf="!shouldHide('ConfirmSignUp')"
   [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
   [hide]="hide"
 ></amplify-auth-confirm-sign-up-ionic>
 
 <amplify-auth-confirm-sign-in-ionic
-*ngIf="!shouldHide('ConfirmSignIn')"
-[authState]="authState"
-[hide]="hide"
+  *ngIf="!shouldHide('ConfirmSignIn')"
+  [authState]="authState"
+  [hide]="hide"
 ></amplify-auth-confirm-sign-in-ionic>
 
 <amplify-auth-forgot-password-ionic
-*ngIf="!shouldHide('ForgotPassword')"
-[authState]="authState"
-[hide]="hide"
+  *ngIf="!shouldHide('ForgotPassword')"
+  [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
+  [hide]="hide"
 ></amplify-auth-forgot-password-ionic>
 
 <amplify-auth-greetings-ionic
-*ngIf="!shouldHide('Greetings')"
-[authState]="authState"
+  *ngIf="!shouldHide('Greetings')"
+  [authState]="authState"
+  [usernameAttributes]="_usernameAttributes"
 ></amplify-auth-greetings-ionic>
 
- <amplify-auth-require-new-password-ionic
-*ngIf="!shouldHide('RequireNewPassword')"
-[authState]="authState"
-[hide]="hide"
+<amplify-auth-require-new-password-ionic
+  *ngIf="!shouldHide('RequireNewPassword')"
+  [authState]="authState"
+  [hide]="hide"
 ></amplify-auth-require-new-password-ionic>
 </div>
 `;
