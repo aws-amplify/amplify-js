@@ -28,7 +28,7 @@ const dict = {
         'User already exists': "Dieser Account existiert bereits",
         'Incorrect username or password': "Falscher Benutzername oder falsches Passwort",
         'Invalid password format': "Invalides Passwort",
-        'Create account': "Hier registreren",
+        'Create account': "Hier registrieren",
         'Forgot Password': "Passwort vergessen",
         'Change Password': "Passwort ändern",
         'New Password': "Neues Passwort",
