@@ -190,7 +190,8 @@ export default class SignUp extends AuthPiece {
         const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
-            attributes: {}
+            attributes: {},
+            validationData: this.props.validationData
         };
 
         const inputKeys = Object.keys(this.inputs);
