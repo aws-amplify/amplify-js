@@ -79,7 +79,7 @@ export default class ConfirmSignUp extends AuthPiece {
                 </SectionHeader>
                 <SectionBody theme={theme} data-test={auth.confirmSignUp.bodySection}>
                     <FormField theme={theme}>
-                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
+                        <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                         <Input
                             placeholder={I18n.get('Username')}
                             theme={theme}
