@@ -1504,9 +1504,9 @@ export default class AuthClass {
         }
 
         dispatchAuthEvent(
-            'parsingRedirectedBackUrl', 
+            'parsingCallbackUrl', 
             { url: URL },
-            `The Auth category has been configured successfully`
+            `The callback url is being parsed`
         );
 
         const currentUrl = URL || window.location.href;

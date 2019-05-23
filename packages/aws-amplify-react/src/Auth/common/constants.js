@@ -4,6 +4,6 @@ const constants = {
     GOOGLE: 'google',
     FACEBOOK: 'facebook',
     AMAZON: 'amazon',
-    SIGNING_IN_WITH_HOSTEDUI_KEY: 'amplify-signing-in-with-hostedUI'
+    SIGNING_IN_WITH_HOSTEDUI_KEY: 'amplify-sign-in-with-hostedUI'
 };
 export default constants; 

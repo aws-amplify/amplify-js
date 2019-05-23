@@ -113,7 +113,7 @@ export default class Authenticator extends Component {
                 case 'customGreetingSignOut':
                     this.handleStateChange('signIn', null);
                     break;
-                case 'parsingRedirectedBackUrl':
+                case 'parsingCallbackUrl':
                     localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
                     break;
                 default:
