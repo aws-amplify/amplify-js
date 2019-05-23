@@ -83,7 +83,7 @@ export default {
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
-    }
+    },
   }
 }
 </script>

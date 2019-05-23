@@ -14,10 +14,11 @@
 // tslint:enable
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
+import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../../assets/default-sign-up-fields';
+import { UsernameAttributes, PhoneFieldOutput } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
-import { countrylist, country } from '../../../assets/countries';
-import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
+import { labelMap, composePhoneNumber } from '../common';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
@@ -48,34 +49,13 @@ const template = `
             </div>
         </div>
         <div *ngIf="field.key === 'phone_number'">
-          <label class="amplify-input-label">
-            {{ this.amplifyService.i18n().get(field.label) }}
-            <span *ngIf="field.required">*</span>
-          </label>
-          <div class="amplify-input-group">
-            <div class="amplify-input-group-item">
-              <select #countryCode
-                name="countryCode"
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                class="amplify-select-phone-country"
-                [(ngModel)]="country_code">
-                <option *ngFor="let country of countries"
-                  value={{country.value}}>{{country.label}}
-                </option>
-              </select>
-            </div>
-            <div class="amplify-input-group-item">
-              <input
-                class="amplify-form-input"
-                [placeholder]="this.amplifyService.i18n().get(field.label)"
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                [(ngModel)]="local_phone_number"
-                name="local_phone_number"
-                type={{field.type}}
-                data-test="${auth.signUp.phoneNumberInput}"
-              />
-            </div>
-          </div>
+          <amplify-auth-phone-field-core
+            [label]="field.label"
+            [required]="field.required"
+            [placeholder]="field.placeholder"
+            [defaultCountryCode]="country_code"
+            (phoneFieldChanged)="onPhoneFieldChanged($event)"
+          ></amplify-auth-phone-field-core>
         </div>
       </div>
       <div class="amplify-form-actions">
@@ -114,6 +94,7 @@ export class SignUpField{
   displayOrder?:number;
   invalid?: boolean;
   custom?: boolean;
+  signUpWith?: boolean;
 }
 
 @Component({
@@ -125,20 +106,20 @@ export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   _signUpConfig: any;
+  _usernameAttributes: string = 'username';
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
-  countries: any[];
   header: string = 'Create a new account';
   defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
   hiddenFields: any = [];
   passwordPolicy: string;
+  defaultCountryCode: string;
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.countries = countrylist;
     this.logger = this.amplifyService.logger('SignUpComponent');
   }
 
@@ -146,6 +127,7 @@ export class SignUpComponentCore implements OnInit {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'signUp';
+    this._usernameAttributes = data.usernameAttributes;
     if (data.signUpConfig) {
       this._signUpConfig = data.signUpConfig;
       if (this._signUpConfig.defaultCountryCode) {
@@ -160,6 +142,15 @@ export class SignUpComponentCore implements OnInit {
       if (this._signUpConfig.hiddenDefaults) {
         this.hiddenFields = this._signUpConfig.hiddenDefaults;
       }
+      
+      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+          this.signUpFields = signUpWithEmailFields;
+          this.defaultSignUpFields = signUpWithEmailFields;
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+          this.signUpFields = signUpWithPhoneNumberFields;
+          this.defaultSignUpFields = signUpWithPhoneNumberFields;
+      }
+
       if (this._signUpConfig.passwordPolicy) {
         this.passwordPolicy = this._signUpConfig.passwordPolicy;
       }
@@ -167,6 +158,18 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input() hide: string[] = [];
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
+    if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+        this.signUpFields = signUpWithEmailFields;
+        this.defaultSignUpFields = signUpWithEmailFields;
+    } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        this.signUpFields = signUpWithPhoneNumberFields;
+        this.defaultSignUpFields = signUpWithPhoneNumberFields;
+    }
+  }
 
   @Input()
   set authState(authState: AuthState) {
@@ -225,7 +228,7 @@ export class SignUpComponentCore implements OnInit {
       return el.key === 'phone_number';
     });
     if (phoneNumberRequested) {
-      this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+      this.user.phone_number = composePhoneNumber(this.country_code, this.local_phone_number);
     }
 
     // create user key and value arrays
@@ -241,6 +244,23 @@ export class SignUpComponentCore implements OnInit {
         this.user.attributes[newKey] = userValues[index];
       }
     });
+
+
+    let labelCheck = false;
+    this.signUpFields.forEach(field => {
+        if (field.label === this.getUsernameLabel()) {
+            this.amplifyService.logger(`Changing the username to the value of ${field.label}`, 'DEBUG');
+            this.user.username = this.user.attributes[field.key] || this.user.username;
+            labelCheck = true;
+        }
+    });
+    if (!labelCheck && !this.user.username) {
+      // if the customer customized the username field in the sign up form
+      // He needs to either set the key of that field to 'username'
+      // Or make the label of the field the same as the 'usernameAttributes'
+      throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+    }
+
     this.amplifyService.auth()
       .signUp(this.user)
       .then((user) => {
@@ -374,5 +394,14 @@ export class SignUpComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
+  }
+
+  getUsernameLabel() {
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+  }
+
+  onPhoneFieldChanged(event: PhoneFieldOutput) {
+    this.country_code = event.country_code;
+    this.local_phone_number = event.local_phone_number;
   }
 }
