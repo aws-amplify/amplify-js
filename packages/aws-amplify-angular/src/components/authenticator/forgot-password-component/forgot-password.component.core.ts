@@ -12,10 +12,11 @@
  * and limitations under the License.
  */
 // tslint:enable
-
+import { UsernameAttributes, UsernameFieldOutput } from '../types';
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { labelMap, composePhoneNumber } from '../common';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
@@ -31,19 +32,11 @@ const template = `
     <div class="amplify-form-text" *ngIf="code_sent">
       {{ this.amplifyService.i18n().get('Enter the code you received and set a new password') }}
     </div>
-    <div class="amplify-form-row" *ngIf="!code_sent">
-      <label class="amplify-input-label" for="usernameinput">
-        {{ this.amplifyService.i18n().get('Username *') }}
-      </label>
-      <input #usernameinput
-        (keyup)="setUsername($event.target.value)"
-        class="amplify-form-input"
-        type="text"
-        placeholder="{{ this.amplifyService.i18n().get('Username') }}"
-        [value]="username"
-        data-test="${auth.forgotPassword.usernameInput}"
-      />
-      </div>
+    <amplify-auth-username-field-core
+      *ngIf="!code_sent"
+      [usernameAttributes]="_usernameAttributes"
+      (usernameFieldChanged)="onUsernameFieldChanged($event)"
+    ></amplify-auth-username-field-core>
       <div class="amplify-form-row" *ngIf="code_sent">
       <label class="amplify-input-label" for="code">
         {{ this.amplifyService.i18n().get('Confirmation Code *') }}
@@ -124,12 +117,16 @@ const template = `
 export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+  _usernameAttributes: string = 'username';
   username: string;
   code: string;
   password: string;
   errorMessage: string;
   code_sent = false;
   protected logger: any;
+  local_phone_number: string;
+  country_code: string = '1';
+  email: string;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ForgotPasswordComponent');
@@ -139,6 +136,7 @@ export class ForgotPasswordComponentCore implements OnInit {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
+    this._usernameAttributes = data.usernameAttributes;
     this.hide = data.hide ? data.hide : this.hide;
 
     this.username = (data.authState.user &&
@@ -158,6 +156,9 @@ export class ForgotPasswordComponentCore implements OnInit {
     this._authState = authState;
     this._show = authState.state === 'forgotPassword';
 
+    this.email = (authState.user && authState.user.email)? authState.user.email : '';
+    this.country_code = (authState.user && authState.user.contry_code) ? authState.user.country_code : '1';
+    this.local_phone_number = (authState.user && authState.user.local_phone_number) ? authState.user.local_phone_number : '';
     this.username = (authState.user && authState.user.username) ? authState.user.username : '';
   }
 
@@ -167,8 +168,9 @@ export class ForgotPasswordComponentCore implements OnInit {
     }
   }
 
-  setUsername(username: string) {
-    this.username = username;
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
   }
 
   setCode(code: string) {
@@ -179,12 +181,24 @@ export class ForgotPasswordComponentCore implements OnInit {
     this.password = password;
   }
 
+  getforgotPwUsername() {
+    switch(this._usernameAttributes) {
+      case UsernameAttributes.EMAIL:
+        return this.email;
+      case UsernameAttributes.PHONE_NUMBER:
+        return composePhoneNumber(this.country_code, this.local_phone_number);
+      default:
+        return this.username;
+    }
+  }
+
   onSend() {
-    if (!this.username) {
+    let forgotPwUsername = this.getforgotPwUsername();
+    if (!forgotPwUsername) {
       this.errorMessage = "Username cannot be empty";
       return;
     }
-    this.amplifyService.auth().forgotPassword(this.username)
+    this.amplifyService.auth().forgotPassword(forgotPwUsername)
       .then(() => {
         this.code_sent = true;
       })
@@ -197,7 +211,7 @@ export class ForgotPasswordComponentCore implements OnInit {
   onSubmit() {
     this.amplifyService.auth()
       .forgotPasswordSubmit(
-        this.username,
+        this.getforgotPwUsername(),
         this.code,
         this.password
       )
@@ -225,5 +239,16 @@ export class ForgotPasswordComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
+  }
+  
+  getUsernameLabel() {
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+  }
+
+  onUsernameFieldChanged(event: UsernameFieldOutput) {
+    this.email = event.email || this.email;
+    this.username = event.username || this.username;
+    this.country_code = event.country_code || this.country_code;
+    this.local_phone_number = event.local_phone_number || this.local_phone_number;
   }
 }
