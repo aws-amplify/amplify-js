@@ -78,7 +78,6 @@ export default class RequireNewPassword extends AuthPiece {
                 } else {
                     this.checkContact(user);
                 }
-                
             })
             .catch(err => this.error(err));
     }
