@@ -1,3 +1,5 @@
+import { h } from '@stencil/core';
+
 const CustomPasswordField = ({ inputProps }) => (
   <div>
     <p>

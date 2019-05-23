@@ -1,4 +1,4 @@
-import { Component, State, Prop, Event, EventEmitter, Watch } from '@stencil/core';
+import { Component, State, Prop, Event, EventEmitter, Watch, h } from '@stencil/core';
 import { AuthState, UserData, Creds } from './types';
 import Tunnel from './Tunnel';
 

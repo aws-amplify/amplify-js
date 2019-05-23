@@ -5,43 +5,19 @@
  */
 
 
-import '@stencil/core';
-
-import '@stencil/state-tunnel';
+import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
-
   interface AmplifyAuthenticator {
     'content': Function;
     'signIn': Function;
   }
-  interface AmplifyAuthenticatorAttributes extends StencilHTMLAttributes {
-    'content'?: Function;
-    'onAuthStateChange'?: (event: CustomEvent) => void;
-    'signIn'?: Function;
-  }
-
   interface AmplifyButton {
     'role': string;
     'type': string;
   }
-  interface AmplifyButtonAttributes extends StencilHTMLAttributes {
-    'role'?: string;
-    'type'?: string;
-  }
-
   interface AmplifyExamples {}
-  interface AmplifyExamplesAttributes extends StencilHTMLAttributes {}
-
-  interface RockPaperScissor {
-    'icon': Function;
-  }
-  interface RockPaperScissorAttributes extends StencilHTMLAttributes {
-    'icon'?: Function;
-    'onChange'?: (event: CustomEvent) => void;
-  }
-
   interface AmplifyFormField {
     'fieldId': string;
     'hint': string | null;
@@ -51,43 +27,21 @@ export namespace Components {
     };
     'label': string | null;
   }
-  interface AmplifyFormFieldAttributes extends StencilHTMLAttributes {
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-
   interface AmplifyHint {}
-  interface AmplifyHintAttributes extends StencilHTMLAttributes {}
-
   interface AmplifyLabel {
     'htmlFor': string;
   }
-  interface AmplifyLabelAttributes extends StencilHTMLAttributes {
-    'htmlFor'?: string;
-  }
-
   interface AmplifyLink {
     'role': string;
   }
-  interface AmplifyLinkAttributes extends StencilHTMLAttributes {
-    'role'?: string;
-  }
-
-  interface AmplifySectionHeader {}
-  interface AmplifySectionHeaderAttributes extends StencilHTMLAttributes {}
-
   interface AmplifySection {
     'role': string;
   }
-  interface AmplifySectionAttributes extends StencilHTMLAttributes {
-    'role'?: string;
+  interface AmplifySectionHeader {}
+  interface AmplifySignIn {
+    'handleSubmit': (Event) => void;
+    'validationErrors': string;
   }
-
   interface AmplifySignInPasswordField {
     'component': Function;
     'description': string | null;
@@ -99,18 +53,6 @@ export namespace Components {
     };
     'label': string | null;
   }
-  interface AmplifySignInPasswordFieldAttributes extends StencilHTMLAttributes {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-
   interface AmplifySignInUsernameField {
     'component': Function;
     'description': string | null;
@@ -122,7 +64,65 @@ export namespace Components {
     };
     'label': string | null;
   }
-  interface AmplifySignInUsernameFieldAttributes extends StencilHTMLAttributes {
+  interface AmplifyTextField {
+    'description': string | null;
+    'fieldId': string;
+    'inputProps': {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label': string | null;
+  }
+  interface AmplifyTextInput {
+    'description': string | null;
+    'fieldId': string;
+    'inputProps': {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label': string | null;
+  }
+  interface RockPaperScissor {
+    'icon': Function;
+  }
+}
+
+declare namespace LocalJSX {
+  interface AmplifyAuthenticator extends JSXBase.HTMLAttributes {
+    'content'?: Function;
+    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
+    'signIn'?: Function;
+  }
+  interface AmplifyButton extends JSXBase.HTMLAttributes {
+    'role'?: string;
+    'type'?: string;
+  }
+  interface AmplifyExamples extends JSXBase.HTMLAttributes {}
+  interface AmplifyFormField extends JSXBase.HTMLAttributes {
+    'fieldId'?: string;
+    'hint'?: string | null;
+    'inputProps'?: {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface AmplifyHint extends JSXBase.HTMLAttributes {}
+  interface AmplifyLabel extends JSXBase.HTMLAttributes {
+    'htmlFor'?: string;
+  }
+  interface AmplifyLink extends JSXBase.HTMLAttributes {
+    'role'?: string;
+  }
+  interface AmplifySection extends JSXBase.HTMLAttributes {
+    'role'?: string;
+  }
+  interface AmplifySectionHeader extends JSXBase.HTMLAttributes {}
+  interface AmplifySignIn extends JSXBase.HTMLAttributes {
+    'handleSubmit'?: (Event) => void;
+    'validationErrors'?: string;
+  }
+  interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes {
     'component'?: Function;
     'description'?: string | null;
     'fieldId'?: string;
@@ -133,26 +133,18 @@ export namespace Components {
     };
     'label'?: string | null;
   }
-
-  interface AmplifySignIn {
-    'handleSubmit': (Event) => void;
-    'validationErrors': string;
-  }
-  interface AmplifySignInAttributes extends StencilHTMLAttributes {
-    'handleSubmit'?: (Event) => void;
-    'validationErrors'?: string;
-  }
-
-  interface AmplifyTextField {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
+  interface AmplifySignInUsernameField extends JSXBase.HTMLAttributes {
+    'component'?: Function;
+    'description'?: string | null;
+    'fieldId'?: string;
+    'hint'?: string | null;
+    'inputProps'?: {
       type?: string;
-      onInput?: (Event) => void;
+      onChange?: (Event) => void;
     };
-    'label': string | null;
+    'label'?: string | null;
   }
-  interface AmplifyTextFieldAttributes extends StencilHTMLAttributes {
+  interface AmplifyTextField extends JSXBase.HTMLAttributes {
     'description'?: string | null;
     'fieldId'?: string;
     'inputProps'?: {
@@ -161,17 +153,7 @@ export namespace Components {
     };
     'label'?: string | null;
   }
-
-  interface AmplifyTextInput {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextInputAttributes extends StencilHTMLAttributes {
+  interface AmplifyTextInput extends JSXBase.HTMLAttributes {
     'description'?: string | null;
     'fieldId'?: string;
     'inputProps'?: {
@@ -179,45 +161,43 @@ export namespace Components {
       onInput?: (Event) => void;
     };
     'label'?: string | null;
+  }
+  interface RockPaperScissor extends JSXBase.HTMLAttributes {
+    'icon'?: Function;
+    'onChange'?: (event: CustomEvent<any>) => void;
+  }
+
+  interface IntrinsicElements {
+    'amplify-authenticator': AmplifyAuthenticator;
+    'amplify-button': AmplifyButton;
+    'amplify-examples': AmplifyExamples;
+    'amplify-form-field': AmplifyFormField;
+    'amplify-hint': AmplifyHint;
+    'amplify-label': AmplifyLabel;
+    'amplify-link': AmplifyLink;
+    'amplify-section': AmplifySection;
+    'amplify-section-header': AmplifySectionHeader;
+    'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-in-password-field': AmplifySignInPasswordField;
+    'amplify-sign-in-username-field': AmplifySignInUsernameField;
+    'amplify-text-field': AmplifyTextField;
+    'amplify-text-input': AmplifyTextInput;
+    'rock-paper-scissor': RockPaperScissor;
   }
 }
 
-declare global {
-  interface StencilElementInterfaces {
-    'AmplifyAuthenticator': Components.AmplifyAuthenticator;
-    'AmplifyButton': Components.AmplifyButton;
-    'AmplifyExamples': Components.AmplifyExamples;
-    'RockPaperScissor': Components.RockPaperScissor;
-    'AmplifyFormField': Components.AmplifyFormField;
-    'AmplifyHint': Components.AmplifyHint;
-    'AmplifyLabel': Components.AmplifyLabel;
-    'AmplifyLink': Components.AmplifyLink;
-    'AmplifySectionHeader': Components.AmplifySectionHeader;
-    'AmplifySection': Components.AmplifySection;
-    'AmplifySignInPasswordField': Components.AmplifySignInPasswordField;
-    'AmplifySignInUsernameField': Components.AmplifySignInUsernameField;
-    'AmplifySignIn': Components.AmplifySignIn;
-    'AmplifyTextField': Components.AmplifyTextField;
-    'AmplifyTextInput': Components.AmplifyTextInput;
-  }
+export { LocalJSX as JSX };
 
-  interface StencilIntrinsicElements {
-    'amplify-authenticator': Components.AmplifyAuthenticatorAttributes;
-    'amplify-button': Components.AmplifyButtonAttributes;
-    'amplify-examples': Components.AmplifyExamplesAttributes;
-    'rock-paper-scissor': Components.RockPaperScissorAttributes;
-    'amplify-form-field': Components.AmplifyFormFieldAttributes;
-    'amplify-hint': Components.AmplifyHintAttributes;
-    'amplify-label': Components.AmplifyLabelAttributes;
-    'amplify-link': Components.AmplifyLinkAttributes;
-    'amplify-section-header': Components.AmplifySectionHeaderAttributes;
-    'amplify-section': Components.AmplifySectionAttributes;
-    'amplify-sign-in-password-field': Components.AmplifySignInPasswordFieldAttributes;
-    'amplify-sign-in-username-field': Components.AmplifySignInUsernameFieldAttributes;
-    'amplify-sign-in': Components.AmplifySignInAttributes;
-    'amplify-text-field': Components.AmplifyTextFieldAttributes;
-    'amplify-text-input': Components.AmplifyTextInputAttributes;
+
+declare module "@stencil/core" {
+  export namespace JSX {
+    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
   }
+}
+
+
+declare global {
+
 
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
@@ -236,12 +216,6 @@ declare global {
   var HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
     new (): HTMLAmplifyExamplesElement;
-  };
-
-  interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
-  var HTMLRockPaperScissorElement: {
-    prototype: HTMLRockPaperScissorElement;
-    new (): HTMLRockPaperScissorElement;
   };
 
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
@@ -268,16 +242,22 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
+  var HTMLAmplifySectionElement: {
+    prototype: HTMLAmplifySectionElement;
+    new (): HTMLAmplifySectionElement;
+  };
+
   interface HTMLAmplifySectionHeaderElement extends Components.AmplifySectionHeader, HTMLStencilElement {}
   var HTMLAmplifySectionHeaderElement: {
     prototype: HTMLAmplifySectionHeaderElement;
     new (): HTMLAmplifySectionHeaderElement;
   };
 
-  interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
-  var HTMLAmplifySectionElement: {
-    prototype: HTMLAmplifySectionElement;
-    new (): HTMLAmplifySectionElement;
+  interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
+  var HTMLAmplifySignInElement: {
+    prototype: HTMLAmplifySignInElement;
+    new (): HTMLAmplifySignInElement;
   };
 
   interface HTMLAmplifySignInPasswordFieldElement extends Components.AmplifySignInPasswordField, HTMLStencilElement {}
@@ -292,12 +272,6 @@ declare global {
     new (): HTMLAmplifySignInUsernameFieldElement;
   };
 
-  interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
-  var HTMLAmplifySignInElement: {
-    prototype: HTMLAmplifySignInElement;
-    new (): HTMLAmplifySignInElement;
-  };
-
   interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
   var HTMLAmplifyTextFieldElement: {
     prototype: HTMLAmplifyTextFieldElement;
@@ -310,49 +284,30 @@ declare global {
     new (): HTMLAmplifyTextInputElement;
   };
 
-  interface HTMLElementTagNameMap {
-    'amplify-authenticator': HTMLAmplifyAuthenticatorElement
-    'amplify-button': HTMLAmplifyButtonElement
-    'amplify-examples': HTMLAmplifyExamplesElement
-    'rock-paper-scissor': HTMLRockPaperScissorElement
-    'amplify-form-field': HTMLAmplifyFormFieldElement
-    'amplify-hint': HTMLAmplifyHintElement
-    'amplify-label': HTMLAmplifyLabelElement
-    'amplify-link': HTMLAmplifyLinkElement
-    'amplify-section-header': HTMLAmplifySectionHeaderElement
-    'amplify-section': HTMLAmplifySectionElement
-    'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement
-    'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement
-    'amplify-sign-in': HTMLAmplifySignInElement
-    'amplify-text-field': HTMLAmplifyTextFieldElement
-    'amplify-text-input': HTMLAmplifyTextInputElement
-  }
+  interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
+  var HTMLRockPaperScissorElement: {
+    prototype: HTMLRockPaperScissorElement;
+    new (): HTMLRockPaperScissorElement;
+  };
 
-  interface ElementTagNameMap {
+  interface HTMLElementTagNameMap {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
-    'rock-paper-scissor': HTMLRockPaperScissorElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
-    'amplify-section-header': HTMLAmplifySectionHeaderElement;
     'amplify-section': HTMLAmplifySectionElement;
+    'amplify-section-header': HTMLAmplifySectionHeaderElement;
+    'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
-    'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-text-field': HTMLAmplifyTextFieldElement;
     'amplify-text-input': HTMLAmplifyTextInputElement;
+    'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 
-
-  export namespace JSX {
-    export interface Element {}
-    export interface IntrinsicElements extends StencilIntrinsicElements {
-      [tagName: string]: any;
-    }
-  }
-  export interface HTMLAttributes extends StencilHTMLAttributes {}
-
+  interface ElementTagNameMap extends HTMLElementTagNameMap {}
 }
+

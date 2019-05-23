@@ -1,4 +1,4 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-text-field',
@@ -30,11 +30,12 @@ export class AmplifyTextField {
           {/* <input
             
           /> */}
-          <amplify-text-input 
+          <amplify-text-input
             id={this.fieldId}
             aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
             type="text"
-            {...this.inputProps} />
+            {...this.inputProps}
+          />
         </div>
       </div>
     );

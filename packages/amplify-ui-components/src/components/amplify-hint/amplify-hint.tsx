@@ -1,10 +1,10 @@
-import { Component } from '@stencil/core';
+import { Component, h } from '@stencil/core';
 import { hint } from './amplify-hint.style';
 @Component({
   tag: 'amplify-hint',
-  shadow: false
+  shadow: false,
 })
-export class AmplifyHint{
+export class AmplifyHint {
   render() {
     return (
       <div class={hint}>

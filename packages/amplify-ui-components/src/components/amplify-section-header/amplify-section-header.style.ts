@@ -1,5 +1,3 @@
-
-
 import { css } from 'emotion';
 
 export const sectionHeader = css`

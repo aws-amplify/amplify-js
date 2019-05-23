@@ -1,3 +1,5 @@
+import { h } from '@stencil/core';
+
 const Example2 = () => (
   <div>
     <amplify-authenticator

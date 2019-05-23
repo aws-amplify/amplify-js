@@ -1,8 +1,8 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 import { textInput } from './amplify-text-input.style';
 
 @Component({
-  tag: 'amplify-text-input'
+  tag: 'amplify-text-input',
 })
 export class AmplifyTextInput {
   @Prop() fieldId: string;

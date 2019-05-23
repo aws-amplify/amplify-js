@@ -3,11 +3,11 @@ export enum AuthState {
   LoggedIn = 'LoggedIn',
 }
 
-export type UserData = {
+export interface UserData {
   username?: string;
-};
+}
 
-export type Creds = {
+export interface Creds {
   username?: string;
   password?: string;
-};
+}

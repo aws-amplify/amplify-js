@@ -1,3 +1,5 @@
+import { h } from '@stencil/core';
+
 const colStyle = {
   float: 'left',
   marginRight: '30px',

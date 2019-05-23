@@ -1,3 +1,5 @@
+import { h } from '@stencil/core';
+
 const handleSampleFormSubmit = event => {
   event.preventDefault();
   event.stopPropagation();

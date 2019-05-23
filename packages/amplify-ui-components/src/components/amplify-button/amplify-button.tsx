@@ -1,9 +1,9 @@
-import { Component, Element, Prop } from '@stencil/core';
+import { Component, Element, Prop, h } from '@stencil/core';
 import { button } from './amplify-button.style';
 
 @Component({
   tag: 'amplify-button',
-  shadow: false
+  shadow: false,
 })
 export class AmplifyButton {
   @Element() el: HTMLElement;

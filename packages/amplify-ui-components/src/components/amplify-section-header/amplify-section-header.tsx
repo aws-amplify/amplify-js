@@ -1,4 +1,4 @@
-import { Component } from '@stencil/core';
+import { Component, h } from '@stencil/core';
 import { sectionHeader } from './amplify-section-header.style';
 
 @Component({

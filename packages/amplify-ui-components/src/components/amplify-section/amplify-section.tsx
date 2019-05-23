@@ -1,9 +1,9 @@
-import { Component, Element, Prop } from '@stencil/core';
+import { Component, Element, Prop, h } from '@stencil/core';
 import { section } from './amplify-section.style';
 
 @Component({
   tag: 'amplify-section',
-  shadow: false
+  shadow: false,
 })
 export class AmplifyLink {
   @Element() el: HTMLElement;

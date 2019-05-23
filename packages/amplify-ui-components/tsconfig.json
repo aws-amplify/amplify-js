@@ -9,7 +9,7 @@
       "es2017"
     ],
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "esnext",
     "target": "es2017",
     "noUnusedLocals": true,
     "noUnusedParameters": true,

@@ -12,9 +12,31 @@
 | `component`   | --            |             | `Function`                                            | `undefined`                  |
 | `description` | `description` |             | `string`                                              | `'Insert your password'`     |
 | `fieldId`     | `field-id`    |             | `string`                                              | `'amplify-sign-in-password'` |
+| `hint`        | `hint`        |             | `string`                                              | `'Password hint'`            |
 | `inputProps`  | --            |             | `{ type?: string; onChange?: (Event: any) => void; }` | `{}`                         |
 | `label`       | `label`       |             | `string`                                              | `'Password'`                 |
 
+
+## Dependencies
+
+### Used by
+
+ - [amplify-sign-in](../amplify-sign-in)
+
+### Depends on
+
+- [amplify-form-field](../amplify-form-field)
+
+### Graph
+```mermaid
+graph TD;
+  amplify-sign-in-password-field --> amplify-form-field
+  amplify-form-field --> amplify-label
+  amplify-form-field --> amplify-text-input
+  amplify-form-field --> amplify-hint
+  amplify-sign-in --> amplify-sign-in-password-field
+  style amplify-sign-in-password-field fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

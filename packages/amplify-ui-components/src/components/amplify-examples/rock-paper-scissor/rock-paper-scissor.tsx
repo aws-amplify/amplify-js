@@ -1,4 +1,4 @@
-import { Component, Element, Prop, State, Event, EventEmitter, Watch } from '@stencil/core';
+import { Component, Element, Prop, State, Event, EventEmitter, Watch, h } from '@stencil/core';
 
 interface Icon {
   icon: string;

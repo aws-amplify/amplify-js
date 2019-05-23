@@ -15,6 +15,19 @@
 | `label`       | `label`       |             | `string`                                             | `undefined` |
 
 
+## Dependencies
+
+### Depends on
+
+- [amplify-text-input](../amplify-text-input)
+
+### Graph
+```mermaid
+graph TD;
+  amplify-text-field --> amplify-text-input
+  style amplify-text-field fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

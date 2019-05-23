@@ -1,12 +1,12 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 import { label } from './amplify-label.style';
 @Component({
   tag: 'amplify-label',
-  shadow: false
+  shadow: false,
 })
-export class AmplifyLabel{
+export class AmplifyLabel {
   @Prop() htmlFor: string;
-  
+
   render() {
     return (
       <label class={label} htmlFor={this.htmlFor}>

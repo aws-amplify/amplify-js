@@ -1,9 +1,9 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 import { formField } from './amplify-form-field.style';
 
 @Component({
   tag: 'amplify-form-field',
-  shadow: false
+  shadow: false,
 })
 export class AmplifyTextField {
   @Prop() fieldId: string;
@@ -17,16 +17,13 @@ export class AmplifyTextField {
   render() {
     return (
       <div class={formField}>
-        {this.label && (
-          <amplify-label htmlFor={this.fieldId}>
-            {this.label}
-          </amplify-label>
-        )}
-        <amplify-text-input 
+        {this.label && <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>}
+        <amplify-text-input
           id={this.fieldId}
           aria-describedby={this.fieldId && this.hint ? `${this.fieldId}-description` : null}
           type="text"
-          {...this.inputProps} />
+          {...this.inputProps}
+        />
         {this.hint && (
           // <div id={`${this.fieldId}-description`} class="description">
           //   {this.description}
