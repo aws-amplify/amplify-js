@@ -69,13 +69,14 @@ export default class SignIn extends AuthPiece {
         // avoid submitting the form
         event.preventDefault();
         
+        const { validationData } = this.props;
         const { username='', password } = this.inputs;
         if (!Auth || typeof Auth.signIn !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         this.setState({loading: true});
         try {
-            const user = await Auth.signIn(username, password);
+            const user = await Auth.signIn({ username, password, validationData });
             logger.debug(user);
             if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
                 logger.debug('confirm user with ' + user.challengeName);
