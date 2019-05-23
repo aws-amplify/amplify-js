@@ -100,6 +100,7 @@ export function withAuthenticator(
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                             theme={theme}
+                            usernameAttributes={this.authConfig.usernameAttributes}
                         />
                         <Comp
                             {...this.props}
@@ -117,6 +118,7 @@ export function withAuthenticator(
                 signUpConfig={this.authConfig.signUpConfig}
                 onStateChange={this.handleAuthStateChange}
                 children={this.authConfig.authenticatorComponents}
+                usernameAttributes={this.authConfig.usernameAttributes}
                 theme={theme}
             />
         }

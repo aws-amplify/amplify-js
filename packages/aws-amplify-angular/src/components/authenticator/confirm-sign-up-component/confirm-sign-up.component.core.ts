@@ -16,6 +16,7 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { labelMap } from '../common';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
@@ -29,14 +30,14 @@ const template = `
       {{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
     <div class="amplify-form-row">
       <label class="amplify-input-label" for="amplifyUsername">
-        {{ this.amplifyService.i18n().get('Username *') }}
+        {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
       </label>
       <input
         #amplifyUsername
         class="amplify-form-input"
         type="text"
         disabled
-        placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+        placeholder="{{ this.amplifyService.i18n().get(getUsernameLabel()) }}"
         [value]="username"
         data-test="${auth.confirmSignUp.usernameInput}"
       />
@@ -100,6 +101,7 @@ const template = `
 export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+  _usernameAttributes: string = 'username';
   username: string;
   code: string;
   errorMessage: string;
@@ -125,6 +127,11 @@ export class ConfirmSignUpComponentCore implements OnInit {
     this._show = authState.state === 'confirmSignUp';
 
     this.username = authState.user? authState.user.username || '' : '';
+  }
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
   }
 
   ngOnInit() {
@@ -177,5 +184,9 @@ export class ConfirmSignUpComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
+  }
+
+  getUsernameLabel() {
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }
