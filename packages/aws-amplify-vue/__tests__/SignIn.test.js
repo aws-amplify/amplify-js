@@ -68,7 +68,7 @@ describe('SignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('i18n Sign In Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign in to your account');
       expect(wrapper.vm.options.username).toEqual('');
       expect(wrapper.vm.options.federated).toEqual(null);
     });

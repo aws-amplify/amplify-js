@@ -69,6 +69,15 @@ export interface apiOptions {
 export interface GraphQLOptions {
     query: string | DocumentNode,
     variables?: object,
+    authMode?: GRAPHQL_AUTH_MODE,
+}
+
+export enum GRAPHQL_AUTH_MODE {
+    API_KEY = "API_KEY",
+    AWS_IAM = "AWS_IAM",
+    OPENID_CONNECT = "OPENID_CONNECT",
+    AMAZON_COGNITO_USER_POOLS = "AMAZON_COGNITO_USER_POOLS",
+
 }
 
 export interface GraphQLResult {
