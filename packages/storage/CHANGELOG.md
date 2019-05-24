@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.31-unstable.1"></a>
+## [1.0.31-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30...@aws-amplify/storage@1.0.31-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
+<a name="1.0.30"></a>
+## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30-unstable.1...@aws-amplify/storage@1.0.30) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+<a name="1.0.30-unstable.1"></a>
+## [1.0.30-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30-unstable.0...@aws-amplify/storage@1.0.30-unstable.1) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+<a name="1.0.30-unstable.0"></a>
+## [1.0.30-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.29...@aws-amplify/storage@1.0.30-unstable.0) (2019-05-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** The issue was when configuring Amplify or Storage more than once, e.g. `Amplify.configure(...)` or `Storage.configure(...)` the default level was set to `private`. The default level will always be `public` except when you configure it to something different like `Storage.configure({ level: 'protected' })` ([#3222](https://github.com/aws/aws-amplify/issues/3222)) ([8b46eb8](https://github.com/aws/aws-amplify/commit/8b46eb8)) 
+
+
+
+
+<a name="1.0.29"></a>
+## [1.0.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.29-unstable.3...@aws-amplify/storage@1.0.29) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+<a name="1.0.29-unstable.3"></a>
+## [1.0.29-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.29-unstable.2...@aws-amplify/storage@1.0.29-unstable.3) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 <a name="1.0.29-unstable.2"></a>
 ## [1.0.29-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.29-unstable.1...@aws-amplify/storage@1.0.29-unstable.2) (2019-04-17)
 
