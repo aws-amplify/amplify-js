@@ -30,18 +30,10 @@ const template = `
       {{ this.amplifyService.i18n().get('Sign in to your account') }}
     </div>
     <ion-list lines="none">
-      <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">
-          {{ this.amplifyService.i18n().get('Username *') }}
-        </ion-label>
-        <ion-input type="text"
-          #username
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-          data-test="${auth.signIn.usernameInput}"
-        ></ion-input>
-      </ion-item>
-
+      <amplify-auth-username-field-ionic
+        [usernameAttributes]="_usernameAttributes"
+        (usernameFieldChanged)="onUsernameFieldChanged($event)"
+      ></amplify-auth-username-field-ionic>
       <ion-item lines="none">
         <ion-label class="amplify-input-label" for="password" position="stacked">
           {{ this.amplifyService.i18n().get('Password *') }}
@@ -57,7 +49,6 @@ const template = `
       </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
-
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"

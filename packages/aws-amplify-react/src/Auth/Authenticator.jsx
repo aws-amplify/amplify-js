@@ -154,7 +154,7 @@ export default class Authenticator extends Component {
         // otherwise if truthy, use the supplied render prop
         // otherwise if falsey, use EmptyContainer
         const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
-        let { hideDefault, hide = [], federated, signUpConfig, caseInsensitiveFields } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig, usernameAttributes, caseInsensitiveFields } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -205,7 +205,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    usernameAttributes
                 });
         });
        
@@ -219,7 +220,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    usernameAttributes
                 });
             });
 

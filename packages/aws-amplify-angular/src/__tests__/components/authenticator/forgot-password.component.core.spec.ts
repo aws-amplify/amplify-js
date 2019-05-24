@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MockComponent } from 'ng-mocks';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
@@ -8,6 +10,8 @@ import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 import { ForgotPasswordComponentCore } 
 from '../../../components/authenticator/forgot-password-component/forgot-password.component.core';
+import { UsernameFieldComponentCore } 
+from '../../../components/authenticator/username-field-component/username-field.component.core';
 
 describe('ForgotPasswordComponentCore: ', () => {
 
@@ -26,7 +30,8 @@ describe('ForgotPasswordComponentCore: ', () => {
     component = new ForgotPasswordComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
-        ForgotPasswordComponentCore
+        ForgotPasswordComponentCore,
+        MockComponent(UsernameFieldComponentCore)
       ],
       providers: [
         {
@@ -38,6 +43,7 @@ describe('ForgotPasswordComponentCore: ', () => {
           }
         }
       ],
+      imports: [FormsModule]
     }).compileComponents();
     fixture = TestBed.createComponent(ForgotPasswordComponentCore);
     fixtureComponent = fixture.componentInstance;

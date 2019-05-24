@@ -81,6 +81,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                                 signUpConfig={this.authConfig.signUpConfig}
                                 caseInsensitiveFields={this.authConfig.caseInsensitiveFields}
+                                usernameAttributes={this.authConfig.usernameAttributes}
                                 onStateChange={this.handleAuthStateChange}
                                 children={this.authConfig.authenticatorComponents || []}
                             /> : null
@@ -101,6 +102,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
                 federated={this.authConfig.federated || this.props.federated}
                 hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
                 signUpConfig={this.authConfig.signUpConfig}
+                usernameAttributes={this.authConfig.usernameAttributes}
                 onStateChange={this.handleAuthStateChange}
                 caseInsensitiveFields={this.authConfig.caseInsensitiveFields}
                 children={this.authConfig.authenticatorComponents || []}

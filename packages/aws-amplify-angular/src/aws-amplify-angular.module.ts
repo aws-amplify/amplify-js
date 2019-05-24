@@ -33,6 +33,8 @@ import { GreetingComponent } from './components/authenticator/greeting-component
 import { GreetingComponentCore } from './components/authenticator/greeting-component/greeting.component.core';
 import { ForgotPasswordComponent } from './components/authenticator/forgot-password-component/forgot-password.factory';
 import { ForgotPasswordComponentCore } from './components/authenticator/forgot-password-component/forgot-password.component.core';
+import { UsernameFieldComponentCore } from './components/authenticator/username-field-component/username-field.component.core';
+import { PhoneFieldComponentCore } from './components/authenticator/phone-field-component/phone-field.component.core';
 import { S3AlbumComponent } from './components/storage/s3-album-component/s3-album.factory';
 import { S3AlbumComponentCore } from './components/storage/s3-album-component/s3-album.component.core';
 import { S3ImageComponent } from './components/storage/s3-image-component/s3-image.factory';
@@ -65,6 +67,8 @@ const components = [
   GreetingComponentCore,
   ForgotPasswordComponent,
   ForgotPasswordComponentCore,
+  UsernameFieldComponentCore,
+  PhoneFieldComponentCore,
   S3AlbumComponent,
   S3AlbumComponentCore,
   S3ImageComponent,

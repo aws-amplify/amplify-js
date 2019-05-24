@@ -16,8 +16,8 @@
     <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.confirmSignUp.headerSection">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.confirmSignUp.bodySection">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus v-bind:data-test="auth.confirmSignUp.usernameInput" />
+        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(getUsernameLabel())}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get(getUsernameLabel())" autofocus v-bind:data-test="auth.confirmSignUp.usernameInput"/>
       </div>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
@@ -46,11 +46,12 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import { labelMap } from './common';
 import { auth } from '../../assets/data-test-attributes';
 
 export default {
   name: 'ConfirmSignUp',
-  props: ['confirmSignUpConfig'],
+  props: ['confirmSignUpConfig', 'usernameAttributes'],
   data () {
     return {
         code: '',
@@ -97,6 +98,9 @@ export default {
     setError(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
+    },
+    getUsernameLabel() {
+      return labelMap[this.usernameAttributes] || this.usernameAttributes;
     }
   }
 }
