@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.17-unstable.1"></a>
+## [1.2.17-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.16...@aws-amplify/analytics@1.2.17-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** manual version bump ([b347e0d](https://github.com/aws/aws-amplify/commit/b347e0d))
+
+
+
+
 <a name="1.2.16"></a>
 ## [1.2.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.16-unstable.0...@aws-amplify/analytics@1.2.16) (2019-05-14)
 

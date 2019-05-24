@@ -16,13 +16,24 @@ import React from 'react';
 import {
     Auth,
     Logger,
-    JS 
+    JS,
+    I18n
 } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+import {
+    FormField,
+    PhoneField
+} from '../AmplifyUI';
 
 const logger = new Logger('AuthPiece');
+
+const labelMap = {
+    email: 'Email',
+    phone_number: 'Phone Number',
+    username: 'Username'
+};
 
 export default class AuthPiece extends React.Component {
     constructor(props) {
@@ -32,6 +43,63 @@ export default class AuthPiece extends React.Component {
         this._validAuthStates = [];
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
+
+        this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
+        this.renderUsernameField = this.renderUsernameField.bind(this);
+    }
+
+    getUsernameFromInput() {
+        const { usernameAttributes = 'username' } = this.props;
+        switch(usernameAttributes) {
+            case 'email':
+                return this.state.email;
+            case 'phone_number':
+                return this.state.phone_number;
+            default:
+                return this.state.username;
+        }
+    }
+
+    renderUsernameField(theme) {
+        const { usernameAttributes = [] } = this.props;
+        if (usernameAttributes === 'email') {
+            return (
+                <FormField
+                    theme={theme}
+                    onChangeText={(text) => this.setState({ email: text })}
+                    label={I18n.get('Email')}
+                    placeholder={I18n.get('Enter your email')}
+                    required={true}
+                />
+            );
+        } else if (usernameAttributes === 'phone_number') {
+            return (
+                <PhoneField
+                    theme={theme}
+                    key = {'phone_number'}
+                    onChangeText={(text) => this.setState({ phone_number: text })}
+                    label={I18n.get('Phone Number')}
+                    placeholder={I18n.get('Enter your phone number')}
+                    keyboardType="phone-pad"
+                    required={true}
+                />
+            );
+        } else {
+            return (
+                <FormField
+                    theme={theme}
+                    onChangeText={(text) => this.setState({ username: text })}
+                    label={I18n.get(this.getUsernameLabel())}
+                    placeholder={I18n.get('Enter your username')}
+                    required={true}
+                />
+            );
+        }
+    }
+
+    getUsernameLabel() {
+        const { usernameAttributes = 'username' } = this.props;
+        return labelMap[usernameAttributes] || usernameAttributes;
     }
 
     changeState(state, data) {

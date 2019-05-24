@@ -68,8 +68,10 @@ export default class SignIn extends AuthPiece {
     async signIn(event) {
         // avoid submitting the form
         event.preventDefault();
-        
-        const { username='', password } = this.inputs;
+
+        const username = this.getUsernameFromInput() || '';
+        const password = this.inputs.password;
+
         if (!Auth || typeof Auth.signIn !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -103,7 +105,7 @@ export default class SignIn extends AuthPiece {
             this.setState({loading: false})
         }
     }
-
+    
     showComponent(theme) {
         const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[] } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
@@ -120,20 +122,8 @@ export default class SignIn extends AuthPiece {
                         onAuthEvent={onAuthEvent}
                     />
                 <form onSubmit={this.signIn}>
-                <SectionBody theme={theme} data-test={auth.signIn.bodySection}>
-                    
-                    <FormField theme={theme}>
-                        <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
-                        <Input
-                            autoFocus
-                            placeholder={I18n.get('Enter your username')}
-                            theme={theme}
-                            key="username"
-                            name="username"
-                            onChange={this.handleInputChange}
-                            data-test={auth.signIn.usernameInput}
-                        />
-                    </FormField>
+                <SectionBody theme={theme}>
+                    {this.renderUsernameField(theme)}
                     <FormField theme={theme}>
                         <InputLabel theme={theme}>{I18n.get('Password')} *</InputLabel>
                         <Input

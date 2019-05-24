@@ -35,7 +35,7 @@ const template = `
     <ion-list>
       <ion-item lines="none">
         <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
-          {{ this.amplifyService.i18n().get('Username *') }}
+          {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
         </ion-label>
         <ion-input type="text"
           class="amplify-form-input"
