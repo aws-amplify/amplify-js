@@ -1,20 +1,24 @@
 module.exports = {
     entry: {
-        'aws-amplify-api.min': './esm/index.js'
+        'aws-amplify-react.min': './cjs/index.js'
     },
     externals: [
-        'graphql',
-        'graphql/language/ast',
-        'graphql/language/parser',
-        'graphql/language/printer',
-        '@aws-amplify/cache',
-        '@aws-amplify/core',
         '@aws-amplify/auth',
+        '@aws-amplify/analytics',
+        '@aws-amplify/api',
+        '@aws-amplify/core',
+        '@aws-amplify/interactions',
+        '@aws-amplify/storage',
+        '@aws-amplify/ui',
+        '@aws-amplify/ui/dist/style.css',
+        '@aws-amplify/xr',
+        'aws-amplify',
+        'react'
     ],
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws_amplify_api',
+        library: 'aws_amplify_react',
         libraryTarget: 'umd',
         umdNamedDefine: true,
         devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate

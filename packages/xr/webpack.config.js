@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-xr.min': './cjs/index.js'
+        'aws-amplify-xr.min': './esm/index.js'
     },
     externals: [
         "@aws-amplify/core",

@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-analytics.min': './cjs/index.js'
+        'aws-amplify-analytics.min': './esm/index.js'
     },
     externals: [
         'react-native',

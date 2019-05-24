@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-interactions.min': './cjs/index.js'
+        'aws-amplify-interactions.min': './esm/index.js'
     },
     externals: [
         'aws-sdk/clients/lexruntime',

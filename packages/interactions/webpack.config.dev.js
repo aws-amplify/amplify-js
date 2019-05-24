@@ -1,6 +1,6 @@
 var config = require('./webpack.config.js');
 
 var entry = {
-    'aws-amplify-interactions': './cjs/index.js'
+    'aws-amplify-interactions': './esm/index.js'
 };
 module.exports = Object.assign(config, { entry, mode: 'development' });

@@ -14,13 +14,14 @@
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/trackers": "./lib/trackers/reactnative.js"
+    "./index": "./index-rn.js",
+    "./cjs/trackers": "./cjs/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",

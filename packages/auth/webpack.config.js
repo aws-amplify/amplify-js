@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-auth.min': './cjs/index.js'
+        'aws-amplify-auth.min': './esm/index.js'
     },
     externals: [
         'react-native',
