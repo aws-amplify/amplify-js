@@ -45,8 +45,9 @@ export class PhoneField extends Component {
 
     onChangeText() {
         const { dialCode, phone } = this.state;
-        const cleanedPhone = phone.replace(/[^0-9.]/g, '');
-        this.props.onChangeText(`${dialCode}${cleanedPhone}`);
+        const cleanedPhone = phone.replace(/[^0-9.]/g, '') || '';
+        const phoneNumber = cleanedPhone === '' ? '' : `${dialCode}${cleanedPhone}`;
+        this.props.onChangeText(phoneNumber);
     }
 
     render() {

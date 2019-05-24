@@ -148,6 +148,7 @@ export const auth = {
   TOTPSetup,
   requireNewPassword,
   loading,
+  genericAttrs,
   greetings,
   greeting,
   federatedSignIn,
