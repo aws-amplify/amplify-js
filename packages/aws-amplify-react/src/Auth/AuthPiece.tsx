@@ -41,7 +41,7 @@ export interface IAuthPieceProps {
     onStateChange?: (state: string, data?) => void;
     track?: () => void;
     theme?: any;
-    usernameAttributes: UsernameAttributes;
+    usernameAttributes?: UsernameAttributes;
 }
 
 export interface IAuthPieceState {

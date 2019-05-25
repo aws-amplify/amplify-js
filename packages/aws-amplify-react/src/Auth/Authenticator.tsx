@@ -32,6 +32,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
+import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -48,6 +49,7 @@ export interface IAuthenticatorProps {
     onStateChange?: (authState: string, data?) => void;
     signUpConfig?: any;
     theme?: any;
+    usernameAttributes: UsernameAttributes;
 }
 
 export interface IAuthenticatorState {
