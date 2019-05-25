@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.25-unstable.1"></a>
+## [1.2.25-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24...@aws-amplify/auth@1.2.25-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** check if storage object is valid or not ([d93d36d](https://github.com/aws/aws-amplify/commit/d93d36d))
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
 <a name="1.2.24"></a>
 ## [1.2.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24-unstable.1...@aws-amplify/auth@1.2.24) (2019-05-14)
 

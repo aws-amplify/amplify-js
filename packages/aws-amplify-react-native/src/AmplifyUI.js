@@ -38,15 +38,16 @@ export class PhoneField extends Component {
         super(props);
 
         this.state = {
-            dialCode: '+1',
+            dialCode: this.props.defaultDialCode || '+1',
             phone: '',
         };
     }
 
     onChangeText() {
         const { dialCode, phone } = this.state;
-        const cleanedPhone = phone.replace(/[^0-9.]/g, '');
-        this.props.onChangeText(`${dialCode}${cleanedPhone}`);
+        const cleanedPhone = phone.replace(/[^0-9.]/g, '') || '';
+        const phoneNumber = cleanedPhone === '' ? '' : `${dialCode}${cleanedPhone}`;
+        this.props.onChangeText(phoneNumber);
     }
 
     render() {
