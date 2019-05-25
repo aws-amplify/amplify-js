@@ -496,10 +496,7 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
     Confirm SMS Code
   </Component>
   <form
-<<<<<<< HEAD:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.tsx.snap
-=======
     data-test="confirm-sign-in-body-section"
->>>>>>> master:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.js.snap
     onSubmit={[Function]}
   >
     <Component
@@ -1240,10 +1237,7 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
         <Component
           autoComplete="off"
           autoFocus={true}
-<<<<<<< HEAD:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.tsx.snap
-=======
           data-test="confirm-sign-in-code-input"
->>>>>>> master:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.js.snap
           key="code"
           name="code"
           onChange={[Function]}
@@ -1738,10 +1732,7 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
       }
     >
       <Component
-<<<<<<< HEAD:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.tsx.snap
-=======
         data-test="confirm-sign-in-confirm-button"
->>>>>>> master:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.js.snap
         theme={
           Object {
             "a": Object {
@@ -2478,10 +2469,7 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
         }
       >
         <Component
-<<<<<<< HEAD:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.tsx.snap
-=======
           data-test="confirm-sign-in-back-to-sign-in-link"
->>>>>>> master:packages/aws-amplify-react/__tests__/Auth/__snapshots__/ConfirmSignIn-test.js.snap
           onClick={[Function]}
           theme={
             Object {

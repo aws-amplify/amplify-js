@@ -4,11 +4,7 @@ exports[`TOTPSetup render test hide props 1`] = `""`;
 
 exports[`TOTPSetup render test render correctly 1`] = `
 <TOTPSetupComp
-<<<<<<< HEAD:packages/aws-amplify-react/__tests__/Auth/__snapshots__/TOTPSetup-test.tsx.snap
-=======
-  authState="TOTPSetup"
   data-test="totp-setup-component"
->>>>>>> master:packages/aws-amplify-react/__tests__/Auth/__snapshots__/TOTPSetup-test.js.snap
   onTOTPEvent={[Function]}
   theme={
     Object {

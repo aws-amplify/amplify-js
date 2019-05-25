@@ -742,7 +742,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -1479,7 +1478,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -4944,7 +4943,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -5681,7 +5679,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -9146,7 +9144,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -9883,7 +9880,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}

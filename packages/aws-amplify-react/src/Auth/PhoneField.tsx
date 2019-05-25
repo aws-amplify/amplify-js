@@ -6,11 +6,26 @@ import {
     SelectInput
  } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import countryDialCodes from './common/country-dial-codes.js';
+import countryDialCodes from './common/country-dial-codes';
 import { I18n } from '@aws-amplify/core';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-class PhoneField extends React.Component {
+interface IPhoneFieldProps {
+    defaultDialCode?: string;
+    label?: string;
+    onChangeText: (string) => void;
+    placeholder?: string
+    required?: boolean;
+    theme?: any;
+}
+
+interface IPhoneFieldState {
+
+}
+
+class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
+    private inputs: any;
+
     constructor(props) {
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
