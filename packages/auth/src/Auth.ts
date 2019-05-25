@@ -152,8 +152,8 @@ export default class AuthClass {
                 this._storage = new StorageHelper().getStorage();
             }
         } else {
-            if (JS.isEmpty(this._config.storage)) {
-                logger.error('The storage in the Auth config can not be empty!');
+            if (!this._isValidAuthStorage(this._config.storage)) {
+                logger.error('The storage in the Auth config is not valid!');
                 throw new Error('Empty storage object');
             }
             this._storage = this._config.storage;
@@ -1644,5 +1644,14 @@ export default class AuthClass {
             user.setAuthenticationFlowType(authenticationFlowType);
         }
         return user;
+    }
+
+    private _isValidAuthStorage(obj) {
+        // We need to check if the obj has the functions of Storage
+        return !!obj &&
+            typeof obj.getItem === 'function' &&
+            typeof obj.setItem === 'function' &&
+            typeof obj.removeItem === 'function' &&
+            typeof obj.clear === 'function';
     }
 }

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.9-unstable.0"></a>
+## [2.3.9-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.8...aws-amplify-react@2.3.9-unstable.0) (2019-05-24)
+
+
+### Bug Fixes
+
+* German localisation ([80c87ea](https://github.com/aws/aws-amplify/commit/80c87ea))
+* **aws-amplify-react:** adds e.preventDefault to confirm function in ConfirmSignIn component to prevent page reload ([b4ee413](https://github.com/aws/aws-amplify/commit/b4ee413))
+* **aws-amplify-react:** Fix typo in german localisation ([a5592f2](https://github.com/aws/aws-amplify/commit/a5592f2))
+
+
+### Features
+
+* **aws-amplify-react:** allow user to sign up with email or phone number ([b81f89e](https://github.com/aws/aws-amplify/commit/b81f89e))
+
+
+
+
 <a name="2.3.8"></a>
 ## [2.3.8](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.8-unstable.1...aws-amplify-react@2.3.8) (2019-05-14)
 

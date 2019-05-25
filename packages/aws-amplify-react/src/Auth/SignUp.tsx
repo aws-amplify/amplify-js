@@ -35,8 +35,14 @@ import {
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 import countryDialCodes from './common/country-dial-codes';
-import defaultSignUpFields, { ISignUpField } from './common/default-sign-in-fields'
+import { ISignUpField } from './common/default-sign-in-fields'
+import signUpWithUsernameFields, { 
+  signUpWithEmailFields, 
+  signUpWithPhoneNumberFields
+} from './common/default-sign-up-fields'
+import { UsernameAttributes } from './common/types';
 import { valid } from 'semver';
+import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
 
@@ -65,11 +71,19 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-        this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = (this.props &&
+        this.header = (this.props && 
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
+            
+        const { usernameAttributes=UsernameAttributes.USERNAME } = this.props || {};
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
+            this.defaultSignUpFields = signUpWithEmailFields;
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+            this.defaultSignUpFields = signUpWithPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
+        }
     }
 
     validate() {
@@ -83,7 +97,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
               el.invalid = false;
             }        
           } else {
-            if (el.required && (!this.inputs.dial_code || !this.inputs.phone_line_number)) {
+            if (el.required && (!this.phone_number)) {
               el.invalid = true;
               invalids.push(el.label);
             } else {
@@ -163,7 +177,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
         return null;
     }
 
-
     getDefaultDialCode() {
         return this.props.signUpConfig &&
         this.props.signUpConfig.defaultCountryCode  &&
@@ -191,12 +204,10 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let signup_info = {
+        const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
-            attributes: {
-                
-            }
+            attributes: {}
         };
 
         const inputKeys = Object.keys(this.inputs);
@@ -204,15 +215,29 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
         inputKeys.forEach((key, index) => {
             if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
-              if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
-                const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
-                signup_info.attributes[newKey] = inputVals[index];
-              } else if (inputVals[index]) {
-                  signup_info.attributes['phone_number'] = `${this.inputs.dial_code}${this.inputs.phone_line_number.replace(/[-()]/g, '')}`
-              }
+                if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
+                    const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+                    signup_info.attributes[newKey] = inputVals[index];
+                }
             }
         });
 
+        if (this.phone_number) signup_info.attributes['phone_number'] = this.phone_number;
+        
+        let labelCheck = false;
+        this.signUpFields.forEach(field => {
+            if (field.label === this.getUsernameLabel()) {
+                logger.debug(`Changing the username to the value of ${field.label}`);
+                signup_info.username = signup_info.attributes[field.key] || signup_info.username;
+                labelCheck = true;
+            }
+        });
+        if (!labelCheck && !signup_info.username) {
+            // if the customer customized the username field in the sign up form
+            // He needs to either set the key of that field to 'username'
+            // Or make the label of the field the same as the 'usernameAttributes'
+            throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+        } 
         Auth.signUp(signup_info).then((data) => {
             // @ts-ignore
             this.changeState('confirmSignUp', data.user.username)
@@ -256,35 +281,15 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
                                     />
                                 </FormField>
                             ) : (
-                                <FormField theme={theme} key="phone_number">
-                                    {
-                                        field.required ? 
-                                        <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
-                                        <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
-                                    }
-                                    <SelectInput theme={theme}>
-                                        <select name="dial_code" defaultValue={this.getDefaultDialCode()} 
-                                        onChange={this.handleInputChange}
-                                        data-test={auth.signUp.dialCodeSelect}
-                                        >
-                                            {countryDialCodes.map(dialCode =>
-                                                <option key={dialCode} value={dialCode}>
-                                                    {dialCode}
-                                                </option>
-                                            )}
-                                        </select>
-                                        <Input
-                                            placeholder={I18n.get(field.placeholder)}
-                                            theme={theme}
-                                            type="tel"
-                                            id="phone_line_number"
-                                            key="phone_line_number"
-                                            name="phone_line_number"
-                                            onChange={this.handleInputChange}
-                                            data-test={auth.signUp.phoneNumberInput}
-                                        />
-                                    </SelectInput>
-                                </FormField>
+                                <PhoneField 
+                                    theme={theme} 
+                                    required={field.required}
+                                    defaultDialCode={this.getDefaultDialCode()}
+                                    label={field.label}
+                                    placeholder={field.placeholder}
+                                    onChangeText={this.onPhoneNumberChanged}
+                                    key="phone_number"
+                                />
                             )
                         })
                     }

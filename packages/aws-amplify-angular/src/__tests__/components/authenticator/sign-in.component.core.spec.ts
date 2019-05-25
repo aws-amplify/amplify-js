@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MockComponent } from 'ng-mocks';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
-import { SignInComponentCore } 
-from '../../../components/authenticator/sign-in-component/sign-in.component.core';
-
+import { SignInComponentCore } from '../../../components/authenticator/sign-in-component/sign-in.component.core';
+import { UsernameFieldComponentCore } from '../../../components/authenticator/username-field-component/username-field.component.core';
 
 describe('SignInComponentCore: ', () => {
 
@@ -27,7 +28,8 @@ describe('SignInComponentCore: ', () => {
     component = new SignInComponentCore(service);
     TestBed.configureTestingModule({
       declarations: [
-        SignInComponentCore
+        SignInComponentCore,
+        MockComponent(UsernameFieldComponentCore)
       ],
       providers: [
         {
@@ -39,6 +41,7 @@ describe('SignInComponentCore: ', () => {
           }
         }
       ],
+      imports: [FormsModule]
     }).compileComponents();
     fixture = TestBed.createComponent(SignInComponentCore);
     fixtureComponent = fixture.componentInstance;

@@ -11,10 +11,27 @@
  * and limitations under the License.
  */
 
-import { Component } from 'react';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
+import * as React from 'react';
+import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import countryDialCodes from './common/country-dial-codes';
+import { 
+    FormField,
+    Input,
+    InputLabel,
+    SelectInput
+ } from '../Amplify-UI/Amplify-UI-Components-React';
+import { UsernameAttributes } from './common/types';
+import { PhoneField } from './PhoneField';
+import { auth } from '../Amplify-UI/data-test-attributes';
+
+const labelMap = {
+    [UsernameAttributes.EMAIL]: 'Email',
+    [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
+    [UsernameAttributes.USERNAME]: 'Username'
+  };
+  
 
 export interface IAuthPieceProps {
     authData?: any;
@@ -24,15 +41,17 @@ export interface IAuthPieceProps {
     onStateChange?: (state: string, data?) => void;
     track?: () => void;
     theme?: any;
+    usernameAttributes: UsernameAttributes;
 }
 
 export interface IAuthPieceState {
 }
 
-export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends Component<Props, State> {
+export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends React.Component<Props, State> {
     public _validAuthStates: string[];
     public _isHidden: boolean;
     public inputs: any; 
+    public phone_number: any;
 
     constructor(props: Props) {
         super(props);
@@ -41,9 +60,73 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
 
         this._isHidden = true;
         this._validAuthStates = [];
+        this.phone_number = '';
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.renderUsernameField = this.renderUsernameField.bind(this);
+        this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
+        this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
+    }
+
+    getUsernameFromInput() {
+        const { usernameAttributes = 'username' } = this.props;
+        switch(usernameAttributes) {
+            case UsernameAttributes.EMAIL:
+                return this.inputs.email;
+            case UsernameAttributes.PHONE_NUMBER:
+                return this.phone_number;
+            default:
+                return this.inputs.username;
+        }
+    }
+
+    onPhoneNumberChanged(phone_number) {
+        this.phone_number = phone_number;
+    }
+
+    renderUsernameField(theme) {
+        const { usernameAttributes = [] } = this.props;
+        if (usernameAttributes === UsernameAttributes.EMAIL) {
+            return (
+                <FormField theme={theme}>           
+                    <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
+                    <Input
+                        autoFocus
+                        placeholder={I18n.get('Enter your email')}
+                        theme={theme}
+                        key="email"
+                        name="email"
+                        onChange={this.handleInputChange}
+                        data-test={auth.genericAttrs.emailInput}
+                    />
+                </FormField>
+            );
+        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+            return (
+                <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
+            );
+        } else {
+            return (
+                <FormField theme={theme}>           
+                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
+                    <Input
+                        autoFocus
+                        placeholder={I18n.get('Enter your username')}
+                        theme={theme}
+                        key="username"
+                        name="username"
+                        onChange={this.handleInputChange}
+                        data-test={auth.genericAttrs.usernameInput}
+                    />
+                </FormField>
+            );
+        }
+    }
+
+    getUsernameLabel() {
+        const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
+        return labelMap[usernameAttributes] || usernameAttributes;
     }
 
     // extract username from authData
