@@ -24,8 +24,8 @@ const dict = {
         'No account? ': "Kein Account? ",
         'Forget your password? ': 'Passwort vergessen? ',
         'Reset password': "Passwort zurücksetzen",
-        'User does not exist': 'Dieser Account existiert nicht',
-        'User already exists': "Dieser Account existiert bereits",
+        'User does not exist': 'Dieser Benutzer existiert nicht',
+        'User already exists': "Dieser Benutzer existiert bereits",
         'Incorrect username or password': "Falscher Benutzername oder falsches Passwort",
         'Invalid password format': "Ungültiges Passwort-Format",
         'Create account': "Hier registrieren",
@@ -37,7 +37,7 @@ const dict = {
         'Confirm a Code': "Code bestätigen",
         'Confirm Sign In': "Anmelden bestätigen",
         'Confirm Sign Up': "Registrieren bestätigen",
-        'Back to Sign In': "Zurück zum Anmelden",
+        'Back to Sign In': "Zurück zur Anmeldung",
         'Send Code': "Code senden",
         'Confirm': "Bestätigen",
         'Resend Code': "Code erneut senden",
@@ -59,7 +59,8 @@ const dict = {
         'Create a new account': "Erstelle einen neuen Account",
         'Reset your password': "Zurücksetzen des Passworts",
         'An account with the given email already exists.': "Ein Account mit dieser Email existiert bereits.",
-        'Username cannot be empty': "Benutzername darf nicht leer sein"
+        'Username cannot be empty': "Benutzername darf nicht leer sein",
+        'Password attempts exceeded': "Die maximale Anzahl der fehlerhaften Anmeldeversuche wurde erreicht"
     },
     'fr': {
         'Sign In': "Se connecter",
