@@ -62,6 +62,25 @@ or you could install the module you want to use individually:
 $ npm install @aws-amplify/auth --save
 ```
 
+__Electron__
+
+Electron installation is done the same way as web.
+
+```bash
+$ npm install aws-amplify --save
+```
+
+However, you must define `process.browser` to be truthy. This can be done by setting the variable in a script inside the root index.html or app.html.
+
+```html
+<body>
+  <script>
+    process.browser = true;
+  </script>
+  ...
+</body>
+```
+
 __React__
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
