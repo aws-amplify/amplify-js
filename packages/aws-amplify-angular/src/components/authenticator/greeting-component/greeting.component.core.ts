@@ -13,6 +13,7 @@
  */
 // tslint:enable
 
+import { UsernameAttributes } from '../types';
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
@@ -36,6 +37,7 @@ const template = `
 export class GreetingComponentCore implements OnInit {
   signedIn: boolean;
   greeting: string;
+  _usernameAttributes: string = 'username';
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
@@ -46,6 +48,11 @@ export class GreetingComponentCore implements OnInit {
   @Input()
   authState: AuthState;
 
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
+  }
+  
   ngOnInit() {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
@@ -61,9 +68,19 @@ export class GreetingComponentCore implements OnInit {
     this.authState = authState;
     this.signedIn = authState.state === 'signedIn';
 
+    let username = "";
+    if (authState.user) {
+      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+        username = authState.user.attributes? authState.user.attributes.email : authState.user.username;
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        username = authState.user.attributes? authState.user.attributes.phone_number : authState.user.username;
+      } else {
+        username = authState.user.username;
+      }
+    }
+    
     this.greeting = this.signedIn
-      ? this.amplifyService.i18n()
-      .get("Hello, {{username}}").replace('{{username}}', authState.user.username)
+      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', username)
       : "";
   }
 

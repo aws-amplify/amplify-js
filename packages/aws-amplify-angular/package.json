@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.3",
+  "version": "3.0.4-unstable.1",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -31,6 +31,7 @@
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
     "@types/jest": "^23.1.5",
+    "@types/lodash": "^4.14.106",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
@@ -45,6 +46,7 @@
     "jest": "^23.4.0",
     "jest-preset-angular": "^5.2.3",
     "json-loader": "^0.5.4",
+    "ng-mocks": "7.x.x",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
     "rollup": "^0.63.5",
@@ -66,8 +68,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@aws-amplify/ui": "^1.0.19",
-    "@types/lodash": "^4.14.106",
+    "@aws-amplify/ui": "1.0.20-unstable.0",
     "rxjs-compat": "^6.2.1"
   }
 }

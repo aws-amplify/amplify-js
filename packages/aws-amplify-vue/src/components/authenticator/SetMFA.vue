@@ -80,7 +80,7 @@ export default {
         user: null,
         mfaPreference: null,
         code: null,
-        token: null,
+        token: '',
         error: '',
         displayTotpSetup: false,
         amplifyUI: AmplifyUI,
