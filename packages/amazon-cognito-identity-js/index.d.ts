@@ -9,7 +9,7 @@ declare module "amazon-cognito-identity-js" {
         AttributeName: string,
         DeliveryMedium: string,
         Destination: string
-    } 
+    }
 
     export interface IAuthenticationCallback {
         onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
@@ -71,7 +71,7 @@ declare module "amazon-cognito-identity-js" {
                                 callbacks: IAuthenticationCallback): void;
         public confirmRegistration(code: string, forceAliasCreation: boolean, callback: NodeCallback<any, any>): void;
         public sendCustomChallengeAnswer(answerChallenge: any, callback:IAuthenticationCallback):void;
-        public resendConfirmationCode(callback: NodeCallback<Error, "SUCCESS">): void;
+        public resendConfirmationCode(callback: NodeCallback<Error, { CodeDeliveryDetails: CodeDeliveryDetails }>): void;
         public changePassword(oldPassword: string, newPassword: string, callback: NodeCallback<Error, "SUCCESS">): void;
         public forgotPassword(callbacks: { onSuccess: (data: any) => void, onFailure: (err: Error) => void, inputVerificationCode?: (data: any) => void }): void;
         public confirmPassword(verificationCode: string, newPassword: string, callbacks: { onSuccess: () => void, onFailure: (err: Error) => void }): void;
@@ -124,7 +124,7 @@ declare module "amazon-cognito-identity-js" {
         UserMFASettingList: string[];
         Username: string;
     }
-    
+
     export interface ICognitoUserAttributeData {
         Name: string;
         Value: string;

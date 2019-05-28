@@ -58,7 +58,8 @@ import {
     CognitoUserAttribute,
     CognitoIdToken,
     CognitoRefreshToken,
-    CognitoAccessToken
+    CognitoAccessToken,
+    CodeDeliveryDetails
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -316,7 +317,7 @@ export default class AuthClass {
      * @param {String} username - The username to be confirmed
      * @return - A promise resolves data if success
      */
-    public resendSignUp(username: string): Promise<string> {
+    public resendSignUp(username: string): Promise<{ CodeDeliveryDetails: CodeDeliveryDetails }> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
