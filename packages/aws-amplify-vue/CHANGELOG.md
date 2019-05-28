@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.12-unstable.1"></a>
+## [0.2.12-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.0...aws-amplify-vue@0.2.12-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify-vue/auth:** exception in QrcodeVue because of invalid parameter type ([#2656](https://github.com/aws-amplify/amplify-js/issues/2656)) ([1dead96](https://github.com/aws-amplify/amplify-js/commit/1dead96))
+
+
+
+
 <a name="0.2.12-unstable.0"></a>
 ## [0.2.12-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11...aws-amplify-vue@0.2.12-unstable.0) (2019-05-24)
 
