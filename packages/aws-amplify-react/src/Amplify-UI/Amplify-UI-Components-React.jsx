@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { JS } from '@aws-amplify/core';
 
-import "@aws-amplify/ui/dist/style.css";
 import * as AmplifyUI from '@aws-amplify/ui';
 
 import AmplifyTheme from './Amplify-UI-Theme';
