@@ -57,7 +57,7 @@ const dict = {
         'Have an account? ': "Schon registriert? ",
         'Sign in': "Anmelden",
         'Create a new account': "Erstelle einen neuen Account",
-        'Reset your password': "Zurücksetzten des Passwortes",
+        'Reset your password': "Zurücksetzen des Passworts",
         'An account with the given email already exists.': "Ein Account mit dieser Email existiert bereits.",
         'Username cannot be empty': "Benutzername darf nicht leer sein"
     },
