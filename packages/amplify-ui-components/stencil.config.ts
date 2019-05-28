@@ -1,7 +1,7 @@
 import { Config } from '@stencil/core';
 
 export const config: Config = {
-  namespace: 'Amplify',
+  namespace: 'amplify-ui-components',
   outputTargets: [
     { type: 'dist' },
     { type: 'docs-readme' },
