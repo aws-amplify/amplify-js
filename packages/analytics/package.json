@@ -20,8 +20,8 @@
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./index": "./index-rn.js",
-    "./cjs/trackers": "./cjs/trackers/reactnative.js"
+    "./index": "./esm/index.js",
+    "./esm/trackers": "./esm/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",

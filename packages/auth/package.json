@@ -6,7 +6,7 @@
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
   "react-native": {
-    "./index": "./index-rn.js"
+    "./index": "./esm/index.js"
   },
   "sideEffects": false,
   "publishConfig": {

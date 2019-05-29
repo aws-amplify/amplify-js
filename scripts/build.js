@@ -79,7 +79,7 @@ async function buildES5() {
         "jsx": jsx,
         "sourceMap": true,
         "target": "es5",
-        "module": "es2015",
+        "module": "commonjs",
         "moduleResolution": "node",
         "allowJs": allowJs,
         "declaration": true,
