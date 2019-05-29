@@ -39,6 +39,7 @@
     "@aws-amplify/auth": "1.2.24",
     "@aws-amplify/cache": "1.0.27",
     "@aws-amplify/core": "1.0.27",
+    "@aws-amplify/pubsub": "1.0.28",
     "@types/zen-observable": "^0.5.3",
     "axios": "^0.17.0",
     "graphql": "0.13.0",
