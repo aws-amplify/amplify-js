@@ -17,7 +17,8 @@
     "link": "lerna exec yarn link",
     "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]' --exact",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --exact",
-    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
+    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'",
+    "publish:modularization": "lerna publish --conventional-commits --cd-version=prerelease --independent --npm-tag=mod --preid=mod --no-push --no-git-tag-version --no-commit-hooks --exact"
   },
   "pre-commit": [
     "pre-commit"
@@ -39,6 +40,11 @@
   "devDependencies": {
     "@types/jest": "^20.0.7",
     "@types/node": "^8.9.5",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0",
     "codecov": "^1.0.1",
     "compression-webpack-plugin": "^1.1.3",
     "cypress": "^3.2.0",
@@ -62,7 +68,9 @@
     "typescript-formatter": "^6.0.0",
     "tslib": "^1.9.3",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "webpack": "^4.32.0",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.1.0"
   },
   "jest": {
     "resetMocks": true,

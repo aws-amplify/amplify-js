@@ -1,4 +1,2 @@
-import AWSPinpointProvider from './AWSPinpointProvider';
-import AWSKinesisProvider from './AWSKinesisProvider';
-
-export { AWSPinpointProvider, AWSKinesisProvider };
+export { AWSPinpointProvider } from './AWSPinpointProvider';
+export { AWSKinesisProvider } from './AWSKinesisProvider';

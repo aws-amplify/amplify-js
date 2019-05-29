@@ -12,21 +12,21 @@
  */
 
 export {
-    default as Analytics,
+    Analytics,
     AnalyticsClass,
     AnalyticsProvider,
     AWSPinpointProvider, 
     AWSKinesisProvider } from '@aws-amplify/analytics';
-export { default as Auth, AuthClass } from '@aws-amplify/auth';
-export { default as Storage, StorageClass } from '@aws-amplify/storage';
-export { default as API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { default as PubSub, PubSubClass } from '@aws-amplify/pubsub';
+export { Auth, AuthClass } from '@aws-amplify/auth';
+export { Storage, StorageClass } from '@aws-amplify/storage';
+export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export { PubSub, PubSubClass } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
-export { default as Interactions, InteractionsClass } from '@aws-amplify/interactions';
+export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
 export { default as UI } from '@aws-amplify/ui';
-export { default as XR, XRClass } from '@aws-amplify/xr';
+export { XR, XRClass } from '@aws-amplify/xr';
 export { 
-    default as Amplify, 
+    Amplify, 
     ConsoleLogger as Logger,
     Hub,
     JS,
@@ -35,8 +35,8 @@ export {
     I18n,
     ServiceWorker
 } from '@aws-amplify/core';
-
-// export default Amplify;
+import { Amplify } from '@aws-amplify/core';
+export default Amplify;
 
 // Amplify.Auth = Auth;
 // Amplify.Analytics = Analytics;

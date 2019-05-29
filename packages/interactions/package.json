@@ -2,18 +2,22 @@
   "name": "@aws-amplify/interactions",
   "version": "1.0.30",
   "description": "Interactions category of aws-amplify",
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
+  "react-native": {
+    "./index": "./esm/index.js"
+  },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build:cjs": "node ./build es5 && node ./build rollup",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
@@ -31,7 +35,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.27"
+    "@aws-amplify/core": "1.0.27"
   },
   "jest": {
     "globals": {

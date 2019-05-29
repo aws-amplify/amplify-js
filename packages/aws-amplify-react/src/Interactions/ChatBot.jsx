@@ -3,7 +3,7 @@ import { FormSection, SectionHeader, SectionBody, SectionFooter } from "../Ampli
 import { Input, Button } from "../AmplifyTheme";
 
 import { I18n } from '@aws-amplify/core';
-import Interactions from '@aws-amplify/interactions';
+import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('ChatBot');

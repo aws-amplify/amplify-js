@@ -2,24 +2,26 @@
   "name": "@aws-amplify/analytics",
   "version": "1.2.16",
   "description": "Analytics category of aws-amplify",
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build:cjs": "node ./build es5 && node ./build rollup",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/trackers": "./lib/trackers/reactnative.js"
+    "./index": "./esm/index.js",
+    "./esm/trackers": "./esm/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -34,8 +36,8 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.27",
-    "@aws-amplify/core": "^1.0.27",
+    "@aws-amplify/cache": "1.0.27",
+    "@aws-amplify/core": "1.0.27",
     "uuid": "^3.2.1"
   },
   "jest": {
