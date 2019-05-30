@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
+import { FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
 import { Input, Button } from "../AmplifyTheme";
 
 import { I18n } from '@aws-amplify/core';
-import Interactions from '@aws-amplify/interactions';
-import regeneratorRuntime from 'regenerator-runtime/runtime';
+import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('ChatBot');
@@ -51,12 +49,12 @@ const defaultVoiceConfig = {
     silenceDetectionConfig: {
         time: 2000,
         amplitude: 0.2
-    }   
+    }
 }
 
 let audioControl;
 
-export class ChatBot extends Component {
+export class ChatBot extends React.Component {
     constructor(props) {
         super(props);
 
@@ -117,7 +115,7 @@ export class ChatBot extends Component {
             }, () => {
                 audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
             })
-            
+
         }
     }
 
@@ -134,9 +132,9 @@ export class ChatBot extends Component {
                 micText: STATES.SENDING.ICON,
                 micButtonDisabled: true,
             }, () => {
-                this.lexResponseHandler(); 
+                this.lexResponseHandler();
             })
-            
+
         });
     }
 
@@ -162,15 +160,15 @@ export class ChatBot extends Component {
             currentVoiceState: STATES.SPEAKING,
             micText: STATES.SPEAKING.ICON,
             micButtonDisabled: true,
-            dialog: [...this.state.dialog, 
-                { message: response.inputTranscript, from: 'me' }, 
+            dialog: [...this.state.dialog,
+                { message: response.inputTranscript, from: 'me' },
                 response && { from: 'bot', message: response.message }],
             inputText: ''
-        }, () => { 
+        }, () => {
             this.doneSpeakingHandler();
-        }) 
+        })
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
-        
+
     }
 
     doneSpeakingHandler() {
@@ -198,7 +196,7 @@ export class ChatBot extends Component {
                     }, () => {
                         audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
                     })
-                    
+
                 }
             });
         } else {
@@ -317,10 +315,10 @@ export class ChatBot extends Component {
                    </SectionBody>
                 <SectionFooter theme={theme}>
                     <ChatBotInputs
-                        micText={this.state.micText} 
-                        voiceEnabled={this.props.voiceEnabled} 
-                        textEnabled={this.props.textEnabled} 
-                        styles={styles} 
+                        micText={this.state.micText}
+                        voiceEnabled={this.props.voiceEnabled}
+                        textEnabled={this.props.textEnabled}
+                        styles={styles}
                         onChange={this.changeInputText}
                         inputText={this.state.inputText}
                         onSubmit={this.submit}
@@ -366,11 +364,11 @@ function ChatBotMicButton(props) {
     }
 
     return(
-        <button 
-            style={styles.mic} 
-            disabled={micButtonDisabled} 
+        <button
+            style={styles.mic}
+            disabled={micButtonDisabled}
             onClick={handleMicButton}>
-            {micText}    
+            {micText}
         </button>
     )
 }
@@ -385,9 +383,9 @@ function ChatBotTextButton(props) {
     }
 
     return(
-        <button 
-            type="submit" 
-            style={styles.button} 
+        <button
+            type="submit"
+            style={styles.button}
             disabled={inputDisabled}>
             {I18n.get('Send')}
         </button>
@@ -414,7 +412,7 @@ function ChatBotInputs(props) {
     if (!voiceEnabled && !textEnabled) {
         return(<div>No Chatbot inputs enabled. Set at least one of voiceEnabled or textEnabled in the props. </div>)
     }
-    
+
     return (
         <form onSubmit={onSubmit}>
             <ChatBotTextInput
@@ -428,15 +426,15 @@ function ChatBotInputs(props) {
             />
             <ChatBotTextButton
                 onSubmit={onSubmit}
-                type="submit" 
+                type="submit"
                 styles={styles}
                 inputDisabled={inputDisabled}
                 textEnabled={textEnabled}
             />
             <ChatBotMicButton
                 styles={styles}
-                micButtonDisabled={micButtonDisabled} 
-                handleMicButton={handleMicButton}  
+                micButtonDisabled={micButtonDisabled}
+                handleMicButton={handleMicButton}
                 micText={micText}
                 voiceEnabled={voiceEnabled}
             />
@@ -454,4 +452,7 @@ ChatBot.defaultProps = {
     textEnabled: true
 };
 
+/**
+ * @deprecated use named import
+ */
 export default ChatBot;

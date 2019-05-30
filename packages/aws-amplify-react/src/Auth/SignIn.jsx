@@ -12,13 +12,13 @@
  */
 
 import * as React from 'react';
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
-import SignUp from './SignUp';
-import ForgotPassword from './ForgotPassword';
+import { SignUp } from './SignUp';
+import { ForgotPassword } from './ForgotPassword';
 
 import {
     FormSection,
@@ -39,7 +39,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('SignIn');
 
-export default class SignIn extends AuthPiece {
+export class SignIn extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -56,7 +56,7 @@ export default class SignIn extends AuthPiece {
         }
         Auth.verifiedContact(user)
             .then(data => {
-                if (!JS.isEmpty(data.verified)) {
+                if (!isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     user = Object.assign(user, data);

@@ -11,12 +11,9 @@
  * and limitations under the License.
  */
 
-import { Component } from 'react';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as React from 'react';
 
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-
-export default class AuthPiece extends Component {
+export class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
 
@@ -92,7 +89,7 @@ export default class AuthPiece extends Component {
         }
         this._isHidden = false;
 
-        return this.showComponent(this.props.theme || AmplifyTheme);
+        return this.showComponent(this.props.theme);
     }
 
     showComponent(theme) {

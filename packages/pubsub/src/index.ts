@@ -10,9 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import PubSubClass from './PubSub';
+import { PubSub as PubSubClass } from './PubSub';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PubSub');
 
@@ -26,7 +26,10 @@ if (!_instance) {
 const PubSub = _instance;
 Amplify.register(PubSub);
 
-export default PubSub;
-
 export * from './Providers/AWSIotProvider';
-export { PubSubClass };
+export { PubSub, PubSubClass };
+
+/**
+ * @deprecated use named import
+ */
+export default PubSub;

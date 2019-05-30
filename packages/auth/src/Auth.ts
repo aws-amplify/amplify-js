@@ -36,12 +36,11 @@ import {
     ConsoleLogger as Logger,
     Constants,
     Hub,
-    JS,
-    Parser,
     Credentials,
     StorageHelper,
     ICredentials,
-    Platform
+    Parser,
+    isEmpty
 } from '@aws-amplify/core';
 import {
     CookieStorage,
@@ -85,7 +84,7 @@ export enum CognitoHostedUIIdentityProvider {
 /**
 * Provide authentication steps
 */
-export default class AuthClass {
+export class AuthClass {
     private _config: AuthOptions;
     private userPool = null;
     private user: any = null;
@@ -146,13 +145,13 @@ export default class AuthClass {
         } = this._config;
 
         if (!this._config.storage) {
-            // backward compatbility
+            // backward compatability
             if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
             else {
                 this._storage = new StorageHelper().getStorage();
             }
         } else {
-            if (JS.isEmpty(this._config.storage)) {
+            if (isEmpty(this._config.storage)) {
                 logger.error('The storage in the Auth config can not be empty!');
                 throw new Error('Empty storage object');
             }
@@ -1646,3 +1645,9 @@ export default class AuthClass {
         return user;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+
+ export default AuthClass;

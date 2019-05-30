@@ -15,7 +15,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
 const logger = new Logger('Interactions');
 
-export default class Interactions {
+export class Interactions {
 
     private _options: InteractionsOptions;
 
@@ -114,3 +114,9 @@ export default class Interactions {
 
     }
 }
+
+
+/**
+ * @deprecated use named import
+ */
+export default Interactions;

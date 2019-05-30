@@ -17,7 +17,8 @@
     "link": "lerna exec yarn link",
     "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]' --exact",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --exact",
-    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
+    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'",
+    "publish:modularization": "lerna publish --conventional-commits --cd-version=prerelease --independent --npm-tag=mod --preid=mod --no-push --no-git-tag-version --no-commit-hooks --exact"
   },
   "pre-commit": [
     "pre-commit"
@@ -39,28 +40,39 @@
   "devDependencies": {
     "@types/jest": "^20.0.7",
     "@types/node": "^8.9.5",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0",
     "codecov": "^1.0.1",
     "compression-webpack-plugin": "^1.1.3",
     "cypress": "^3.2.0",
-    "jest": "^22.4.3",
+    "jest": "^24.x.x",
     "json-loader": "^0.5.7",
     "lerna": "2.11.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
+    "rollup": "^0.67.4",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript": "^1.0.0",
     "source-map-loader": "^0.2.1",
-    "ts-jest": "^22.0.0",
+    "ts-jest": "^24.x.x",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.8.0",
     "typedoc": "^0.11.0",
     "typescript": "^2.9.2",
     "typescript-formatter": "^6.0.0",
+    "tslib": "^1.9.3",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "webpack": "^4.32.0",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.1.0"
   },
   "jest": {
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
     "resetMocks": true,
     "verbose": true
   }

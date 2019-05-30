@@ -12,7 +12,7 @@
  */
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
-import AWSS3Provider from './Providers/AWSS3Provider';
+import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 
 const logger = new Logger('StorageClass');
@@ -21,18 +21,17 @@ const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
-export default class StorageClass {
+export class Storage {
     /**
      * @private
      */
     private _config;
     private _pluggables: StorageProvider[];
 
-
     /**
      * @public
      */
-    public vault: StorageClass;
+    public vault: Storage;
 
     /**
      * Initialize Storage
@@ -148,7 +147,7 @@ export default class StorageClass {
     /**
     * Get a presigned URL of the file or the object data when download:true
     *
-    * @param {String} key - key of the object
+    * @param {string} key - key of the object
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to either a presigned url or the object
     */
@@ -165,7 +164,7 @@ export default class StorageClass {
 
     /**
      * Put a file in storage bucket specified to configure method
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} object - File to be put in bucket
      * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
      *  progressCallback: function }
@@ -183,7 +182,7 @@ export default class StorageClass {
 
     /**
      * Remove the object for specified key
-     * @param {String} key - key of the object
+     * @param {string} key - key of the object
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
@@ -199,7 +198,7 @@ export default class StorageClass {
 
     /**
      * List bucket objects relative to the level and prefix specified
-     * @param {String} path - the path that contains objects
+     * @param {string} path - the path that contains objects
      * @param {Object} [config] - { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
@@ -213,3 +212,8 @@ export default class StorageClass {
         return prov.list(path, config);
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Storage;

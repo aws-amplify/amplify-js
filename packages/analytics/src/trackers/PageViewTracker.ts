@@ -12,7 +12,7 @@
  */
 
 import { pageViewTrackOpts } from '../types';
-import MethodEmbed from '../utils/MethodEmbed';
+import { MethodEmbed } from '../utils/MethodEmbed';
 import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
@@ -31,7 +31,7 @@ const defaultOpts: pageViewTrackOpts = {
 
 
 
-export default class PageViewTracker {
+export class PageViewTracker {
     private _config: pageViewTrackOpts;
     private _tracker;
     private _hasEnabled;
@@ -152,3 +152,8 @@ export default class PageViewTracker {
         }
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default PageViewTracker;

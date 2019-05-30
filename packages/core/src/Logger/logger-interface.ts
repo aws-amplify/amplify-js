@@ -20,4 +20,7 @@ export interface Logger {
 
 }
 
+/**
+ * @deprecated use named import
+ */
 export default Logger;

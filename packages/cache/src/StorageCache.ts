@@ -27,7 +27,7 @@ const logger = new Logger('StorageCache');
  * Initialization of the cache
  *
  */
-export default class StorageCache {
+export class StorageCache {
     protected cacheCurSizeKey: string;
     protected config: CacheConfig;
 
@@ -138,3 +138,8 @@ export default class StorageCache {
         return this.config;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default StorageCache;

@@ -1,18 +1,25 @@
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-import { Signer, Credentials } from '@aws-amplify/core';
+import Amplify, { Signer, Credentials } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth'
 import API, { graphqlOperation } from '../src/API';
 import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, Credentials } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
-import PubSub from '@aws-amplify/pubsub';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
+
 import Cache from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
+
+// temporary fix
+// the PubSub from "import PubSub from '@aws-amplify/pubsub';" is undefined
+Amplify.PubSub = {
+    subscribe: jest.fn()
+}
+
+let PubSub = Amplify.PubSub;
 
 jest.mock('axios');
 
@@ -20,7 +27,6 @@ const config = {
     API: {
         region: 'region',
         header: {},
-
     }
 };
 

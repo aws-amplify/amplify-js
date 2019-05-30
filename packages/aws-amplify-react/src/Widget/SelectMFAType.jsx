@@ -12,9 +12,8 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -27,11 +26,11 @@ import {
     Toast,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
-import TOTPSetupComp from './TOTPSetupComp';
+import { TOTPSetupComp } from './TOTPSetupComp';
 
 const logger = new Logger('SelectMFAType');
 
-export default class SelectMFAType extends Component {
+export class SelectMFAType extends React.Component {
     constructor(props) {
         super(props);
 
@@ -166,7 +165,7 @@ export default class SelectMFAType extends Component {
 
 
     render() {  
-        const theme = this.props.theme ? theme: AmplifyTheme;
+        const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
             {this.selectView(theme)}

@@ -22,19 +22,6 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('aws-sdk/clients/mobileanalytics', () => {
-    const MobileAnalytics = () => {
-        var mobileanalytics = null;
-        return mobileanalytics;
-    }
-
-    MobileAnalytics.prototype.putEvents = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return MobileAnalytics;
-});
-
 jest.mock('uuid', () => {
     const mockfn = () => {return 'sessionId'};
     return { v1: mockfn };
@@ -44,8 +31,9 @@ import { AWS, JS, Credentials, ClientDevice } from '@aws-amplify/core';
 import AnalyticsProvider from "../../src/Providers/AWSPinpointProvider";
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Cache from '@aws-amplify/core';
-import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
+
+console.log(Pinpoint);
 
 const endpointConfigure = {
     address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
@@ -366,7 +354,7 @@ describe("AnalyticsProvider test", () => {
     });
 
     describe('startsession test', () => {
-        test('happy case', async () => {
+        test.only('happy case', async () => {
             const analytics = new AnalyticsProvider();
             analytics.configure(
                 options 

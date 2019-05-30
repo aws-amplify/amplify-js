@@ -1044,13 +1044,15 @@ describe('auth unit test', () => {
         });
 
         test('happy case with source federation', async () => {
-            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
                 return {
+                    setItem() {},
                     getItem() {
                         return JSON.stringify({
                             user: 'federated_user'
                         });
-                    }
+                    },
+                    removeItem() {}
                 }
             });
 
@@ -1122,14 +1124,16 @@ describe('auth unit test', () => {
 
     describe('currentUserCredentials test', () => {
         test('with federated info', async () => {
-            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
                 return {
+                    setItem() {},
                     getItem() {
                         return JSON.stringify({
                             provider: 'google',
                             token: 'token'
                         });
-                    }
+                    },
+                    removeItem() {}
                 }
             });
 
@@ -1147,11 +1151,13 @@ describe('auth unit test', () => {
         });
 
         test('with cognito session', async () => {
-            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
                 return {
+                    setItem() {},
                     getItem() {
                         return null;
-                    }
+                    },
+                    removeItem() {}
                 }
             });
             const auth = new Auth(authOptions);
@@ -1173,11 +1179,13 @@ describe('auth unit test', () => {
         });
 
         test('with guest', async () => {
-            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
                 return {
+                    setItem() {},
                     getItem() {
                         return null;
-                    }
+                    },
+                    removeItem() {}
                 }
             });
             const auth = new Auth(authOptions);
@@ -1199,11 +1207,13 @@ describe('auth unit test', () => {
         });
 
         test('json parse error', async () => {
-            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+            const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
                 return {
+                    setItem() {},
                     getItem() {
                         return undefined;
-                    }
+                    },
+                    removeItem() {}
                 }
             });
             const auth = new Auth(authOptions);
@@ -1248,7 +1258,7 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            await auth.verifyUserAttribute(user, {email: 'xxx@xxx.com'});
+            await auth.verifyUserAttribute(user, 'email');
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
@@ -1269,7 +1279,7 @@ describe('auth unit test', () => {
 
             expect.assertions(1);
             try {
-                await auth.verifyUserAttribute(user, {});
+                await auth.verifyUserAttribute(user, 'email');
             } catch (e) {
                 expect(e).toBe("err");
             }
@@ -1289,7 +1299,7 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            expect(await auth.verifyUserAttributeSubmit(user, {}, 'code')).toBe("success");
+            expect(await auth.verifyUserAttributeSubmit(user, 'email', 'code')).toBe("success");
 
             spyon.mockClear();
         });
@@ -1308,7 +1318,7 @@ describe('auth unit test', () => {
 
             expect.assertions(1);
             try {
-                await auth.verifyUserAttributeSubmit(user, {}, 'code');
+                await auth.verifyUserAttributeSubmit(user, 'email', 'code');
             } catch (e) {
                 expect(e).toBe("err");
             }
@@ -1325,7 +1335,7 @@ describe('auth unit test', () => {
 
             expect.assertions(1);
             try {
-                await auth.verifyUserAttributeSubmit(user, {}, null);
+                await auth.verifyUserAttributeSubmit(user, 'email', null);
             } catch (e) {
                 expect(e).toBe('Code cannot be empty');
             }
@@ -1399,6 +1409,16 @@ describe('auth unit test', () => {
     });
 
     describe('signOut test', () => {
+        beforeAll(() => {
+            jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementationOnce(() => {
+                return {
+                    setItem() {},
+                    getItem() {},
+                    removeItem() {}
+                }
+            });
+        });
+
         test('happy case', async () => {
             const auth = new Auth(authOptions);
 

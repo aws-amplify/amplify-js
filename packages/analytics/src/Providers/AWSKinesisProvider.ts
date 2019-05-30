@@ -24,7 +24,7 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
-export default class AWSKinesisProvider implements AnalyticsProvider {
+export class AWSKinesisProvider implements AnalyticsProvider {
 
     private _config;
     private _kinesis;
@@ -239,3 +239,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
             });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSKinesisProvider;

@@ -13,10 +13,10 @@
 
 import * as React from 'react';
 
-import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import {
     FormSection,
     FormField,
@@ -35,7 +35,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ConfirmSignIn');
 
-export default class ConfirmSignIn extends AuthPiece {
+export class ConfirmSignIn extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -54,7 +54,7 @@ export default class ConfirmSignIn extends AuthPiece {
 
         Auth.verifiedContact(user)
             .then(data => {
-                if (!JS.isEmpty(data.verified)) {
+                if (!isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     const newUser = Object.assign(user, data);

@@ -11,13 +11,20 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import * as AmplifyUI from '@aws-amplify/ui';
+import {
+    loadingBar,
+    loadingBarFill,
+    loadingContainer,
+    loadingLogo,
+    loadingOverlay,
+    loadingSceneName,
+    sceneErrorText
+} from '@aws-amplify/ui';
 
-const Loading = (props) => {
-  return (
-    <div className={AmplifyUI.loadingOverlay}>
-      <div className={AmplifyUI.loadingContainer}>
-        <div className={AmplifyUI.loadingLogo}>
+export const Loading = (props) => (
+    <div className={loadingOverlay}>
+      <div className={loadingContainer}>
+        <div className={loadingLogo}>
           <svg viewBox='0 0 800 481' xmlns='http://www.w3.org/2000/svg'>
             <g id='Page-1' fillRule='evenodd'>
               <g id='AWS_logo_RGB-(1)' transform='translate(-16 -17)' fillRule='nonzero'>
@@ -31,18 +38,15 @@ const Loading = (props) => {
             </g>
           </svg>
         </div>
-        <div className={AmplifyUI.loadingSceneName}>
+        <div className={loadingSceneName}>
           {props.sceneName}
         </div>
         { props.sceneError ? 
-          <div className={AmplifyUI.sceneErrorText}>{props.sceneError.displayText}</div> :
-          <div className={AmplifyUI.loadingBar}>
-            <div className={AmplifyUI.loadingBarFill} style={{width: `${props.percentage}%`}} />
+          <div className={sceneErrorText}>{props.sceneError.displayText}</div> :
+          <div className={loadingBar}>
+            <div className={loadingBarFill} style={{width: `${props.percentage}%`}} />
           </div>
         }
       </div>
     </div>
-  );
-}
-
-export default Loading;
+);
