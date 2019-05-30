@@ -12,7 +12,7 @@
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
-    "clean": "rimraf tsc-out dist",
+    "clean": "rimraf esm cjs dist",
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
