@@ -12,7 +12,9 @@
  */
 import { RestAPI } from './RestAPI';
 import { GraphQLAPI } from './GraphQLAPI';
+import { GraphQLOptions } from './types';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as Observable from 'zen-observable';
 
 const logger = new Logger('API')
 /**
@@ -122,8 +124,8 @@ export class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {}, authMode }) {
-      return GraphQLAPI.graphql({ query: paramQuery, variables, authMode });
+    graphql(options: GraphQLOptions) {
+      return GraphQLAPI.graphql(options);
     }
 }
 

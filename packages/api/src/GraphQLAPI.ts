@@ -16,12 +16,12 @@ import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { Amplify, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { PubSub } from '@aws-amplify/pubsub';
 import { Auth } from '@aws-amplify/auth';
-import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { GraphQLOptions, GraphQLResult } from './types';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
 import { v4 as uuid } from 'uuid';
-import { PubSub } from '@aws-amplify/pubsub';
 import { RestClient as RestClass } from './RestClient';
 
 const logger = new Logger('GraphQLAPI');
@@ -240,67 +240,61 @@ export class GraphQLAPIClass {
     private clientIdentifier = uuid();
 
     private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
-        if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
-            return new Observable(observer => {
+        return new Observable(observer => {
+            let handle = null;
 
-                let handle = null;
-
-                (async () => {
-                    const {
-                        aws_appsync_authenticationType,
-                    } = this._options;
-                    const authenticationType = authMode || aws_appsync_authenticationType;
-                    const additionalheaders = {
-                        ...(authenticationType === 'API_KEY' ? {
-                            'x-amz-subscriber-id': this.clientIdentifier
-                        } : {})
-                    };
-
-                    try {
-                        const {
-                            extensions: { subscription },
-
-                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
-
-                        const { newSubscriptions } = subscription;
-
-                        const newTopics =
-                            Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
-
-                        const observable = Amplify.PubSub.subscribe(newTopics, {
-                            ...subscription,
-                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-                        });
-
-                        handle = observable.subscribe({
-                            next: (data) => observer.next(data),
-                            complete: () => observer.complete(),
-                            error: (data) => {
-                                const error = { ...data };
-                                if (!error.errors) {
-                                    error.errors = [{
-                                        ...new GraphQLError('Network Error')
-                                    }];
-                                }
-                                observer.error(error);
-                            }
-                        });
-
-                    } catch (error) {
-                        observer.error(error);
-                    }
-                })();
-
-                return () => {
-                    if (handle) {
-                        handle.unsubscribe();
-                    }
+            (async () => {
+                const {
+                    aws_appsync_authenticationType,
+                } = this._options;
+                const authenticationType = authMode || aws_appsync_authenticationType;
+                const additionalheaders = {
+                    ...(authenticationType === 'API_KEY' ? {
+                        'x-amz-subscriber-id': this.clientIdentifier
+                    } : {})
                 };
-            });
-        } else {
-            logger.debug('No pubsub module applied for subscription');
-            throw new Error('No pubsub module applied for subscription');
-        }
+
+                try {
+                    const {
+                        extensions: { subscription },
+
+                    } = await this._graphql({ query, variables, authMode }, additionalheaders);
+
+                    const { newSubscriptions } = subscription;
+
+                    const newTopics =
+                        Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                    const observable = PubSub.subscribe(newTopics, {
+                        ...subscription,
+                        provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                    });
+
+                    handle = observable.subscribe({
+                        next: (data) => observer.next(data),
+                        complete: () => observer.complete(),
+                        error: (data) => {
+                            const error = { ...data };
+                            if (!error.errors) {
+                                error.errors = [{
+                                    ...new GraphQLError('Network Error')
+                                }];
+                            }
+                            observer.error(error);
+                        }
+                    });
+
+                } catch (error) {
+                    observer.error(error);
+                }
+            })();
+
+            return () => {
+                if (handle) {
+                    handle.unsubscribe();
+                }
+            };
+        });
     }
 
     /**
