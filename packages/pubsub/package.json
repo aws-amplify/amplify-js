@@ -18,7 +18,7 @@
     "build:cjs": "node ./build es5 && cpx src/vendor/** cjs/vendor && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6 && cpx src/vendor/** esm/vendor",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib lib-esm dist",
+    "clean": "rimraf esm cjs dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
