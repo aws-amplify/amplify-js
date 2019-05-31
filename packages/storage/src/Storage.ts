@@ -101,16 +101,11 @@ export default class StorageClass {
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         const { bucket, region, level, track, customPrefix, serverSideEncryption } = amplifyConfig.Storage as any;
-<<<<<<< HEAD
         /*
             Update DEFAULT_PROVIDER with defined attributes
             bucket, region, level, track, customPrefix, serverSideEncryption if exists 
             on amplifyConfig.Storage, backwards compatible issue 
         */
-=======
-        // Update DEFAULT_PROVIDER with defined attributes bucket, region, level, track, customPrefix if exists 
-        // on amplifyConfig.Storage, backwards compatible issue 
->>>>>>> 82b459b505b9b05cbe3c9a74a95d93527c03e214
         if (
             (bucket || region || level || track || customPrefix || serverSideEncryption)
             && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
