@@ -100,17 +100,29 @@ export default class StorageClass {
         if (!config) return this._config;
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const { bucket, region, level, track, customPrefix, serverSideEncryption } = amplifyConfig.Storage as any;
+        const {
+            bucket,
+            region,
+            level,
+            track,
+            customPrefix,
+            serverSideEncryption,
+            SSECustomerAlgorithm,
+            SSECustomerKey,
+            SSECustomerKeyMD5,
+            SSEKMSKeyId,
+         } = amplifyConfig.Storage as any;
         /*
             Update DEFAULT_PROVIDER with defined attributes
             bucket, region, level, track, customPrefix, serverSideEncryption if exists 
             on amplifyConfig.Storage, backwards compatible issue 
         */
         if (
-            (bucket || region || level || track || customPrefix || serverSideEncryption)
+            (Object.keys(amplifyConfig.Storage).find(k => k !== undefined))
             && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
             amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
         }
+
         if (bucket) {
             amplifyConfig.Storage[DEFAULT_PROVIDER].bucket = bucket;
             delete amplifyConfig.Storage['bucket'];
@@ -135,6 +147,26 @@ export default class StorageClass {
         if (serverSideEncryption) {
             amplifyConfig.Storage[DEFAULT_PROVIDER].serverSideEncryption = serverSideEncryption;
             delete amplifyConfig.Storage['serverSideEncryption'];
+        }
+
+        if (SSECustomerAlgorithm) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerAlgorithm = SSECustomerAlgorithm;
+            delete amplifyConfig.Storage['SSECustomerAlgorithm'];
+        }
+
+        if (SSECustomerKey) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerKey = SSECustomerKey;
+            delete amplifyConfig.Storage['SSECustomerKey'];
+        }
+
+        if (SSECustomerKeyMD5) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerKeyMD5 = SSECustomerKeyMD5;
+            delete amplifyConfig.Storage['SSECustomerKeyMD5'];
+        }
+
+        if (SSEKMSKeyId) {
+            amplifyConfig.Storage[DEFAULT_PROVIDER].SSEKMSKeyId = SSEKMSKeyId;
+            delete amplifyConfig.Storage['SSEKMSKeyId'];
         }
 
         // only update new values for each provider

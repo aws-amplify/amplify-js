@@ -295,7 +295,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should allow server side encryption to be present', () => {
+        test('should allow server side encryption when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'testBucket',
@@ -309,6 +309,78 @@ describe('Storage', () => {
                     bucket: 'testBucket',
                     region: 'imaregion',
                     serverSideEncryption: 'iamencrypted',
+                },
+            });
+        });
+
+        test('should add SSECustomerAlgorithm when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'thisIsABucket',
+                aws_user_files_s3_bucket_region: 'whatregionareyou',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerAlgorithm: '23s2sc'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'thisIsABucket',
+                    region: 'whatregionareyou',
+                    SSECustomerAlgorithm: '23s2sc',
+                },
+            });
+        });
+
+        test('should add SSECustomerKey when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'buckbuckbucket',
+                aws_user_files_s3_bucket_region: 'thisisaregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerKey: 'iamakey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'buckbuckbucket',
+                    region: 'thisisaregion',
+                    SSECustomerKey: 'iamakey',
+                },
+            });
+        });
+
+        test('should add SSECustomerKeyMD5 when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'buckbuckbucaket',
+                aws_user_files_s3_bucket_region: 'ohnoregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerKeyMD5: 'somekey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'buckbuckbucaket',
+                    region: 'ohnoregion',
+                    SSECustomerKeyMD5: 'somekey',
+                },
+            });
+        });
+
+        test('should add SSEKMSKeyId when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'bucket2',
+                aws_user_files_s3_bucket_region: 'region1',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSEKMSKeyId: 'giveMeAnId'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'bucket2',
+                    region: 'region1',
+                    SSEKMSKeyId: 'giveMeAnId',
                 },
             });
         });
