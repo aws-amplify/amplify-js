@@ -157,7 +157,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ bucket: "another-bucket" })
+            const config = storage.configure({ bucket: "another-bucket" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
@@ -175,7 +175,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ Storage: { bucket: "another-bucket", region: "another-region" } })
+            const config = storage.configure({ Storage: { bucket: "another-bucket", region: "another-region" } });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
@@ -193,7 +193,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ AWSS3: { bucket: "another-s3-bucket", region: "another-s3-region" } })
+            const config = storage.configure({ AWSS3: { bucket: "another-s3-bucket", region: "another-s3-region" } });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-s3-bucket',
@@ -210,7 +210,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ level: "private" })
+            const config = storage.configure({ level: "private" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
@@ -264,8 +264,8 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "protected" })
-            const config = storage.configure({ track: true })
+            storage.configure({ level: "protected" });
+            const config = storage.configure({ track: true });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
@@ -284,14 +284,32 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "private" })
-            const config = storage.configure({ level: "protected" })
+            storage.configure({ level: "private" });
+            const config = storage.configure({ level: "protected" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
                     region: 'region',
                     level: 'protected',
                 }
+            });
+        });
+
+        test('should allow server side encryption to be present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'testBucket',
+                aws_user_files_s3_bucket_region: 'imaregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ serverSideEncryption: 'iamencrypted'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'testBucket',
+                    region: 'imaregion',
+                    serverSideEncryption: 'iamencrypted',
+                },
             });
         });
     });
