@@ -218,7 +218,7 @@ export default class SignUp extends AuthPiece {
                                     key = {field.key}
                                     theme={theme}
                                     type={field.type}
-                                    secureTextEntry={field.type === 'password' ? true: false}
+                                    secureTextEntry={field.type === 'password'}
                                     onChangeText={(text) => {
                                             const stateObj = this.state;
                                             stateObj[field.key] = text;
@@ -238,6 +238,7 @@ export default class SignUp extends AuthPiece {
                                     placeholder={I18n.get(field.placeholder)}
                                     keyboardType="phone-pad"
                                     required={field.required}
+                                    defaultDialCode={this.getDefaultDialCode}
                                 />
                             )
                         })

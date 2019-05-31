@@ -73,7 +73,7 @@ $ npm install aws-amplify-react --save
 
 __Angular__
 
-If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://docs.angularjs.org/api/ng/function/angular.module) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
+If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://angular.io/guide/architecture-modules) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
 
 ```bash
 $ npm install aws-amplify --save

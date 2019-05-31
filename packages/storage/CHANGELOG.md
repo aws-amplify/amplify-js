@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.31-unstable.1"></a>
+## [1.0.31-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30...@aws-amplify/storage@1.0.31-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
 <a name="1.0.30"></a>
 ## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.30-unstable.1...@aws-amplify/storage@1.0.30) (2019-05-14)
 
