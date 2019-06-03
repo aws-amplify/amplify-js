@@ -16,7 +16,8 @@
     "jsx": "react",
     "jsxFactory": "h",
     "types": [
-      "jest"
+      "jest",
+      "node"
     ]
   },
   "include": [

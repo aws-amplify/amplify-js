@@ -34,6 +34,9 @@ export namespace Components {
   interface AmplifyLink {
     'role': string;
   }
+  interface AmplifyScene {
+    'sceneName': string;
+  }
   interface AmplifySection {
     'role': string;
   }
@@ -114,6 +117,9 @@ declare namespace LocalJSX {
   interface AmplifyLink extends JSXBase.HTMLAttributes {
     'role'?: string;
   }
+  interface AmplifyScene extends JSXBase.HTMLAttributes {
+    'sceneName'?: string;
+  }
   interface AmplifySection extends JSXBase.HTMLAttributes {
     'role'?: string;
   }
@@ -175,6 +181,7 @@ declare namespace LocalJSX {
     'amplify-hint': AmplifyHint;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-scene': AmplifyScene;
     'amplify-section': AmplifySection;
     'amplify-section-header': AmplifySectionHeader;
     'amplify-sign-in': AmplifySignIn;
@@ -242,6 +249,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
+  var HTMLAmplifySceneElement: {
+    prototype: HTMLAmplifySceneElement;
+    new (): HTMLAmplifySceneElement;
+  };
+
   interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
   var HTMLAmplifySectionElement: {
     prototype: HTMLAmplifySectionElement;
@@ -298,6 +311,7 @@ declare global {
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-scene': HTMLAmplifySceneElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-section-header': HTMLAmplifySectionHeaderElement;
     'amplify-sign-in': HTMLAmplifySignInElement;

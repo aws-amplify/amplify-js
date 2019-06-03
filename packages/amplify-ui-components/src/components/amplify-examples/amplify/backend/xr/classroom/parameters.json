@@ -1,0 +1,10 @@
+{
+    "AuthRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "UnauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "AuthPolicyName": "sumerian-auth-amplify-examplesM7Viv",
+    "UnauthPolicyName": "sumerian-unauth-amplify-examplesM7Viv"
+}

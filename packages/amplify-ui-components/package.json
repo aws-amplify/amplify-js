@@ -25,6 +25,7 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
+    "aws-amplify": "^1.1.28",
     "emotion": "^10.0.9"
   },
   "devDependencies": {
@@ -40,7 +41,11 @@
     "jest": "23.6.0",
     "jest-cli": "23.6.0",
     "prettier": "^1.17.1",
-    "puppeteer": "1.14.0"
+    "puppeteer": "1.14.0",
+    "rollup-plugin-node-builtins": "^2.1.2"
+  },
+  "peerDependencies": {
+    "aws-amplify": "^1.x"
   },
   "license": "MIT"
 }

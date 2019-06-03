@@ -1,0 +1,106 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Amplify CLI XR",
+    "Parameters": {
+        "AuthRoleName": {
+            "Type": "String",
+            "Default": "AuthRoleName"
+        },
+        "AuthPolicyName": {
+            "Type": "String",
+            "Default": "AuthPolicyName"
+        },
+        "UnauthRoleName": {
+            "Type": "String",
+            "Default": "UnauthRoleName"
+        },
+        "UnauthPolicyName": {
+            "Type": "String",
+            "Default": "UnauthPolicyName"
+        },
+        "env": {
+            "Type": "String"
+        },
+        "sceneId": {
+            "Type": "String"
+        },
+        "url": {
+            "Type": "String"
+        },
+        "region": {
+            "Type": "String"
+        },
+        "projectName": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "CognitoAuthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {
+                    "Ref": "AuthPolicyName"
+                },
+                "Roles": [
+                    {
+                        "Ref": "AuthRoleName"
+                    }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sumerian:ViewRelease"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:sumerian:",
+                                            {
+                                                "Ref": "region"
+                                            },
+                                            ":",
+                                            {
+                                                "Ref": "AWS::AccountId"
+                                            },
+                                            ":project:",
+                                            {
+                                                "Ref": "projectName"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "url": {
+            "Value": {
+                "Ref": "url"
+            }
+        },
+        "sceneId": {
+            "Value": {
+                "Ref": "sceneId"
+            }
+        },
+        "region": {
+            "Value": {
+                "Ref": "region"
+            }
+        },
+        "projectName": {
+            "Value": {
+                "Ref": "projectName"
+            }
+        }
+    }
+}
