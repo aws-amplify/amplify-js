@@ -209,14 +209,11 @@ describe('PubSub', () => {
                 return Promise.reject('Failed to connect to the network');
             });
 
-            expect.assertions(1);
-            try {
-                await testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
+    
+            expect(testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
                     provider: 'AWSIoTProvider',
-                });
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            })).rejects.toThrowError('Failed to connect to the network');
+      
         });
     });
 
@@ -305,11 +302,8 @@ describe('PubSub', () => {
                 return Promise.reject('Failed to publish');
             });
 
-            try {
-                await pubsub.publish('topicA', 'my message AWSIoTProvider');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect(pubsub.publish('topicA', 'my message AWSIoTProvider')).rejects.toThrowError('Failed to publish');
+      
         });
     });
 
