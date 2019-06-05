@@ -33,10 +33,10 @@
     </div>
   <div v-bind:class="amplifyUI.sectionFooter" v-bind:data-test="auth.requireNewPassword.footerSection">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password" v-bind:data-test="auth.requireNewPassword.submitButton">{{$Amplify.I18n.get('Submit')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password" v-bind:data-test="auth.requireNewPassword.submitButton">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.requireNewPassword.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.requireNewPassword.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
