@@ -28,7 +28,12 @@ export default class S3Image extends Component {
     constructor(props) {
         super(props);
 
+        this.mounted = true;
         this.state = { src: null };
+    }
+    
+    componentWillUnmount() {
+        this.mounted = false;
     }
 
     getImageSource() {
@@ -36,9 +41,11 @@ export default class S3Image extends Component {
         Storage.get(imgKey, { level : level? level : 'public'})
             .then(url => {
                 logger.debug(url);
-                this.setState({
-                    src: { uri: url }
-                });
+                if (this.mounted) {
+                    this.setState({
+                        src: { uri: url }
+                    });
+                }
             })
             .catch(err => logger.warn(err));
     }
