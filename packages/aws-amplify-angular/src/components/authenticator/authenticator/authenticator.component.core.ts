@@ -21,6 +21,7 @@ const template = `
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
       [hide]="hide"
     ></amplify-auth-sign-in-core>
 
@@ -28,12 +29,14 @@ const template = `
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
+      [usernameAttributes]="_usernameAttributes"
       [hide]="hide"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
       [hide]="hide"
     ></amplify-auth-confirm-sign-up-core>
 
@@ -46,12 +49,14 @@ const template = `
     <amplify-auth-forgot-password-core
       *ngIf="!shouldHide('ForgotPassword')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
       [hide]="hide"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
     *ngIf="!shouldHide('Greetings')"
     [authState]="authState"
+    [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-greetings-core>
 
      <amplify-auth-require-new-password-core
@@ -61,7 +66,6 @@ const template = `
     ></amplify-auth-require-new-password-core>
   </div>
 `;
-
 
 @Component({
   selector: 'amplify-authenticator-core',
@@ -73,6 +77,8 @@ export class AuthenticatorComponentCore implements OnInit {
     user: null
   };
   _signUpConfig: any = {};
+  _usernameAttributes: string = 'username';
+
   constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
   }
@@ -106,11 +112,18 @@ export class AuthenticatorComponentCore implements OnInit {
     if (data.hide) {
       this.hide = data.hide;
     }
+
+    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes || 'username';
   }
 
   @Input()
   set signUpConfig(signUpConfig: any) {
     this._signUpConfig = signUpConfig;
+  }
+
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes || 'username';
   }
 
   subscribe() {

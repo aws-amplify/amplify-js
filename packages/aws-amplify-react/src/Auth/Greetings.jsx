@@ -21,6 +21,8 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
 import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
+import { UsernameAttributes } from './common/types';
+
 
 const logger = new Logger('Greetings');
 
@@ -29,6 +31,7 @@ export default class Greetings extends AuthPiece {
         super(props);
         this.state = {};
         this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.inGreeting = this.inGreeting.bind(this);
         Hub.listen('auth', this.onHubCapsule);
         this._validAuthStates = ['signedIn'];
 
@@ -72,12 +75,16 @@ export default class Greetings extends AuthPiece {
             } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
                 this.setState({
                     authState: 'signIn'
-                });
+                }); 
             } 
         }
     }
 
-    inGreeting(name) { return `${I18n.get('Hello')}, ${name}`; }
+    inGreeting(name) { 
+        const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
+        const prefix = usernameAttributes === UsernameAttributes.USERNAME? `${I18n.get('Hello')} ` : '';
+        return `${prefix}${name}`; 
+    }
     outGreeting() { return ''; }
 
 
@@ -85,13 +92,27 @@ export default class Greetings extends AuthPiece {
         const user = this.props.authData || this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
         // get name from attributes first
-        const nameFromAttr = user.attributes? 
-            (user.attributes.name || 
-            (user.attributes.given_name? 
-                (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
-            : undefined;
+        const { usernameAttributes = 'username' } = this.props;
+        let name = '';
+        switch (usernameAttributes) {
+            case UsernameAttributes.EMAIL:
+                // Email as Username
+                name = user.attributes? user.attributes.email : user.username;
+                break;
+            case UsernameAttributes.PHONE_NUMBER:
+                // Phone number as Username
+                name = user.attributes? user.attributes.phone_number : user.username;
+                break;
+            default:
+                const nameFromAttr = user.attributes? 
+                    (user.attributes.name || 
+                    (user.attributes.given_name? 
+                        (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
+                    : undefined;
+                name = nameFromAttr || user.name || user.username;
+                break;
+        }
 
-        const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         const { federated } = this.props;
 
