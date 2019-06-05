@@ -26,11 +26,12 @@
   },
   "dependencies": {
     "aws-amplify": "^1.1.28",
+    "aws-sdk": "^2.469.0",
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.0.0-beta.5",
-    "@stencil/state-tunnel": "^1.0.0-1",
+    "@stencil/core": "^1.0.0",
+    "@stencil/state-tunnel": "^1.0.0",
     "@types/jest": "23.3.14",
     "@types/puppeteer": "1.12.4",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
@@ -42,7 +43,8 @@
     "jest-cli": "23.6.0",
     "prettier": "^1.17.1",
     "puppeteer": "1.14.0",
-    "rollup-plugin-node-builtins": "^2.1.2"
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0"
   },
   "peerDependencies": {
     "aws-amplify": "^1.x"

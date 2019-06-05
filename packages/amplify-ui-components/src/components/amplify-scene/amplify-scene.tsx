@@ -1,7 +1,8 @@
 import { Component, Element, Prop, h } from '@stencil/core';
 import { css } from 'emotion';
 
-import { XR } from 'aws-amplify';
+import AWS from 'aws-sdk';
+import { Auth } from 'aws-amplify';
 
 const sceneContainer = css`
   background-color: blue;
@@ -24,6 +25,8 @@ export class AmplifyScene {
   @Prop() sceneName: string;
 
   async componentDidLoad() {
+    AWS.Amplify;
+    Auth.currentUserPoolUser();
     await this.loadAndSetupScene("classroom", SCENE_DOM_ID);
   }
 
@@ -31,8 +34,8 @@ export class AmplifyScene {
     console.log(sceneName);
     console.log(sceneDomId);
 
-    await XR.loadScene(sceneName, sceneDomId);
-    XR.start(sceneName);
+    // await XR.loadScene(sceneName, sceneDomId);
+    // XR.start(sceneName);
     // this.setStateAsync({ loading: true });
     // const sceneOptions = { 
       // progressCallback: (progress) => {

@@ -90,121 +90,7 @@ export namespace Components {
   }
 }
 
-declare namespace LocalJSX {
-  interface AmplifyAuthenticator extends JSXBase.HTMLAttributes {
-    'content'?: Function;
-    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
-    'signIn'?: Function;
-  }
-  interface AmplifyButton extends JSXBase.HTMLAttributes {
-    'role'?: string;
-    'type'?: string;
-  }
-  interface AmplifyExamples extends JSXBase.HTMLAttributes {}
-  interface AmplifyFormField extends JSXBase.HTMLAttributes {
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyHint extends JSXBase.HTMLAttributes {}
-  interface AmplifyLabel extends JSXBase.HTMLAttributes {
-    'htmlFor'?: string;
-  }
-  interface AmplifyLink extends JSXBase.HTMLAttributes {
-    'role'?: string;
-  }
-  interface AmplifyScene extends JSXBase.HTMLAttributes {
-    'sceneName'?: string;
-  }
-  interface AmplifySection extends JSXBase.HTMLAttributes {
-    'role'?: string;
-  }
-  interface AmplifySectionHeader extends JSXBase.HTMLAttributes {}
-  interface AmplifySignIn extends JSXBase.HTMLAttributes {
-    'handleSubmit'?: (Event) => void;
-    'validationErrors'?: string;
-  }
-  interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifySignInUsernameField extends JSXBase.HTMLAttributes {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextField extends JSXBase.HTMLAttributes {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextInput extends JSXBase.HTMLAttributes {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface RockPaperScissor extends JSXBase.HTMLAttributes {
-    'icon'?: Function;
-    'onChange'?: (event: CustomEvent<any>) => void;
-  }
-
-  interface IntrinsicElements {
-    'amplify-authenticator': AmplifyAuthenticator;
-    'amplify-button': AmplifyButton;
-    'amplify-examples': AmplifyExamples;
-    'amplify-form-field': AmplifyFormField;
-    'amplify-hint': AmplifyHint;
-    'amplify-label': AmplifyLabel;
-    'amplify-link': AmplifyLink;
-    'amplify-scene': AmplifyScene;
-    'amplify-section': AmplifySection;
-    'amplify-section-header': AmplifySectionHeader;
-    'amplify-sign-in': AmplifySignIn;
-    'amplify-sign-in-password-field': AmplifySignInPasswordField;
-    'amplify-sign-in-username-field': AmplifySignInUsernameField;
-    'amplify-text-field': AmplifyTextField;
-    'amplify-text-input': AmplifyTextInput;
-    'rock-paper-scissor': RockPaperScissor;
-  }
-}
-
-export { LocalJSX as JSX };
-
-
-declare module "@stencil/core" {
-  export namespace JSX {
-    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
-  }
-}
-
-
 declare global {
-
 
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
@@ -302,7 +188,6 @@ declare global {
     prototype: HTMLRockPaperScissorElement;
     new (): HTMLRockPaperScissorElement;
   };
-
   interface HTMLElementTagNameMap {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
@@ -321,7 +206,118 @@ declare global {
     'amplify-text-input': HTMLAmplifyTextInputElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
-
-  interface ElementTagNameMap extends HTMLElementTagNameMap {}
 }
+
+declare namespace LocalJSX {
+  interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
+    'content'?: Function;
+    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
+    'signIn'?: Function;
+  }
+  interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
+    'role'?: string;
+    'type'?: string;
+  }
+  interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
+  interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
+    'fieldId'?: string;
+    'hint'?: string | null;
+    'inputProps'?: {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
+  interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
+    'htmlFor'?: string;
+  }
+  interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
+    'role'?: string;
+  }
+  interface AmplifyScene extends JSXBase.HTMLAttributes<HTMLAmplifySceneElement> {
+    'sceneName'?: string;
+  }
+  interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
+    'role'?: string;
+  }
+  interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {}
+  interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
+    'handleSubmit'?: (Event) => void;
+    'validationErrors'?: string;
+  }
+  interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
+    'component'?: Function;
+    'description'?: string | null;
+    'fieldId'?: string;
+    'hint'?: string | null;
+    'inputProps'?: {
+      type?: string;
+      onChange?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface AmplifySignInUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifySignInUsernameFieldElement> {
+    'component'?: Function;
+    'description'?: string | null;
+    'fieldId'?: string;
+    'hint'?: string | null;
+    'inputProps'?: {
+      type?: string;
+      onChange?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
+    'description'?: string | null;
+    'fieldId'?: string;
+    'inputProps'?: {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
+    'description'?: string | null;
+    'fieldId'?: string;
+    'inputProps'?: {
+      type?: string;
+      onInput?: (Event) => void;
+    };
+    'label'?: string | null;
+  }
+  interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
+    'icon'?: Function;
+    'onChange'?: (event: CustomEvent<any>) => void;
+  }
+
+  interface IntrinsicElements {
+    'amplify-authenticator': AmplifyAuthenticator;
+    'amplify-button': AmplifyButton;
+    'amplify-examples': AmplifyExamples;
+    'amplify-form-field': AmplifyFormField;
+    'amplify-hint': AmplifyHint;
+    'amplify-label': AmplifyLabel;
+    'amplify-link': AmplifyLink;
+    'amplify-scene': AmplifyScene;
+    'amplify-section': AmplifySection;
+    'amplify-section-header': AmplifySectionHeader;
+    'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-in-password-field': AmplifySignInPasswordField;
+    'amplify-sign-in-username-field': AmplifySignInUsernameField;
+    'amplify-text-field': AmplifyTextField;
+    'amplify-text-input': AmplifyTextInput;
+    'rock-paper-scissor': RockPaperScissor;
+  }
+}
+
+export { LocalJSX as JSX };
+
+
+declare module "@stencil/core" {
+  export namespace JSX {
+    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
+  }
+}
+
 
