@@ -40,6 +40,7 @@ jobs:
       - attach_workspace:
           at: /root
       - run:
+          name: "Run Amplify JS unit tests"
           command: |
             cd amplify-js
             yarn run test --scope @aws-amplify/auth
@@ -158,9 +159,10 @@ jobs:
           path: amplify-js-samples-staging/cypress/screenshots
   deploy:
     <<: *defaults
+    working_directory: ~/
     steps:
       - attach_workspace:
-          at: ./
+          at: /root
       - restore_cache:
           keys: 
             - amplify-ssh-deps-{{ .Branch }}
