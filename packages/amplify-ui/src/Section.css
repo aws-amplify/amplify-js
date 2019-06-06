@@ -15,6 +15,9 @@
   font-weight: 500;
 }
 
+.sectionHeaderContent {
+}
+
 .sectionHeaderHint {
   color: var(--grey);
   font-size: 16px;
