@@ -5,9 +5,11 @@ exports[`SumerianScene renders successfully 1`] = `
   sceneName="TestSceneName"
 >
   <div
+    className="XR__sumerianSceneContainer___3nVMt"
     id="scene-container-dom-id"
   >
     <div
+      className="XR__sumerianScene___2Tt7-"
       id="scene-dom-id"
     >
       <Loading
@@ -15,9 +17,15 @@ exports[`SumerianScene renders successfully 1`] = `
         sceneError={null}
         sceneName="TestSceneName"
       >
-        <div>
-          <div>
-            <div>
+        <div
+          className="XR__loadingOverlay___IbqcI"
+        >
+          <div
+            className="XR__loadingContainer___2Itxb"
+          >
+            <div
+              className="XR__loadingLogo___Ub7xQ"
+            >
               <svg
                 viewBox="0 0 800 481"
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,11 +55,16 @@ exports[`SumerianScene renders successfully 1`] = `
                 </g>
               </svg>
             </div>
-            <div>
+            <div
+              className="XR__loadingSceneName___3__ne"
+            >
               TestSceneName
             </div>
-            <div>
+            <div
+              className="XR__loadingBar___2vcke"
+            >
               <div
+                className="XR__loadingBarFill___3M-D9"
                 style={
                   Object {
                     "width": "0%",
@@ -63,8 +76,12 @@ exports[`SumerianScene renders successfully 1`] = `
         </div>
       </Loading>
     </div>
-    <div>
-      <span />
+    <div
+      className="XR__sceneBar___2ShrP"
+    >
+      <span
+        className="XR__sceneActions___7plGs"
+      />
     </div>
   </div>
 </SumerianScene>
