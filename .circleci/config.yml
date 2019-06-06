@@ -8,7 +8,6 @@ machine:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 defaults: &defaults
-  working_directory: ~/app
   docker:
     - image: cypress/base:10
       environment:
@@ -18,6 +17,7 @@ defaults: &defaults
 jobs:
   build:
     <<: *defaults
+    working_directory: ~/amplify-js
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -25,77 +25,137 @@ jobs:
       - run: yarn run bootstrap
       - run: yarn run build
       - run: yarn run coverage
-      - save_cache:
-          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache ## cache both yarn and Cypress
+
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - persist_to_workspace:
-          root: .
-          paths: .
+          root: /root
+          paths: amplify-js
   unit_test:
     <<: *defaults
+    working_directory: ~/
     steps:
       - attach_workspace:
-          at: ./
-      - run: yarn run test --scope @aws-amplify/auth
-      - run: yarn run test --scope @aws-amplify/api
-      - run: yarn run test --scope @aws-amplify/analytics
-      - run: yarn run test --scope @aws-amplify/cache
-      - run: yarn run test --scope @aws-amplify/core
-      - run: yarn run test --scope @aws-amplify/interactions
-      - run: yarn run test --scope @aws-amplify/pubsub
-      - run: yarn run test --scope @aws-amplify/storage
-      - run: yarn run test --scope @aws-amplify/xr
-      - run: yarn run test --scope aws-amplify-react
-      - run: yarn run test --scope aws-amplify-angular
-      - run: yarn run test --scope aws-amplify-vue
-  integration_test_auth:
+          at: /root
+      - run:
+          command: |
+            cd amplify-js
+            yarn run test --scope @aws-amplify/auth
+            yarn run test --scope @aws-amplify/api
+            yarn run test --scope @aws-amplify/analytics
+            yarn run test --scope @aws-amplify/cache
+            yarn run test --scope @aws-amplify/core
+            yarn run test --scope @aws-amplify/interactions
+            yarn run test --scope @aws-amplify/pubsub
+            yarn run test --scope @aws-amplify/storage
+            yarn run test --scope @aws-amplify/xr
+            yarn run test --scope aws-amplify-react
+            yarn run test --scope aws-amplify-angular
+            yarn run test --scope aws-amplify-vue
+  integration_test_setup:
     <<: *defaults
+    working_directory: ~/
+    steps:
+      - run: 
+          name: "Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages"
+          command: |
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
+            cd amplify-js-samples-staging
+            yarn
+      - save_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+          paths:
+            - ~/.cache ## cache both yarn and Cypress
+      - persist_to_workspace:
+          root: /root
+          paths: amplify-js-samples-staging
+  integration_test_react:
+    <<: *defaults
+    working_directory: ~/
     steps:
       - attach_workspace:
-          at: ./
+          at: /root
       - restore_cache:
-          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
+          name: "Install React Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
+            yarn
       - run:
           name: "Link aws-amplify"
           command: |
-            cd packages/aws-amplify
+            cd amplify-js/packages/aws-amplify
             yarn link
       - run:
           name: "Link aws-amplify-react"
           command: |
-            cd packages/aws-amplify-react
+            cd amplify-js/packages/aws-amplify-react
             yarn link
-      - run: 
-          name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+      - run:
+          name: "Install React Authenticator sample"
           command: |
-            mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            cd ~
-            git clone $AUTH_CLONE_URL
-            cd aws-amplify-cypress-auth
+            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-react
-            echo $AWS_EXPORTS_AUTH > src/aws-exports.js
       - run:
-          name: "Start Auth test server in background"
+          name: "Start React Authenticator Sample server in background"
           command: |
-            cd ~/aws-amplify-cypress-auth
+            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
             yarn start
           background: true
       - run:
-          name: "Run cypress tests for aws-amplify-react"
+          name: "Run cypress tests for React Authenticator Sample"
           command: |
-            yarn cypress --scope aws-amplify-react
+            cd amplify-js-samples-staging
+            yarn cypress:react
       - store_artifacts:
-          path: /root/app/packages/aws-amplify-react/cypress/videos
+          path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
-          path: /root/app/packages/aws-amplify-react/cypress/screenshots
+          path: amplify-js-samples-staging/cypress/screenshots
+  integration_test_vue:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
+          name: "Install Vue Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link aws-amplify-vue"
+          command: |
+            cd amplify-js/packages/aws-amplify-vue
+            yarn link
+      - run:
+          name: "Start Vue Authenticator Sample server in background"
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn start
+          background: true
+      - run:
+          name: "Run cypress tests for Vue Authenticator Sample"
+          command: |
+            cd amplify-js-samples-staging
+            yarn cypress:vue
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/screenshots
   deploy:
     <<: *defaults
     steps:
@@ -126,7 +186,7 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integration_test_auth:
+      - integration_test_setup:
           filters:
             branches:
               only:
@@ -134,6 +194,22 @@ workflows:
                 - master
           requires:
             - build
+      - integration_test_react:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+          requires:
+            - integration_test_setup
+      - integration_test_vue:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+          requires:
+            - integration_test_setup
       - deploy:
           filters:
             branches:
@@ -143,3 +219,5 @@ workflows:
                 - beta
           requires:
             - unit_test
+            - integration_test_react
+            - integration_test_vue

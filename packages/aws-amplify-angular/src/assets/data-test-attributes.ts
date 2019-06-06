@@ -19,7 +19,7 @@ const signIn = {
   headerSection: 'sign-in-header-section',
   bodySection: 'sign-in-body-section',
   footerSection: 'sign-in-footer-section',
-  usernameInput: 'sign-in-username-input',
+  usernameInput: 'username-input',
   passwordInput: 'sign-in-password-input',
   forgotPasswordLink: 'sign-in-forgot-password-link',
   signInButton: 'sign-in-sign-in-button',
@@ -134,7 +134,7 @@ const forgotPassword = {
   sendCodeButton: 'forgot-password-send-code-button',
   resendCodeLink: 'forgot-password-resend-code-link',
   backToSignInLink: 'forgot-password-back-to-sign-in-link',
-  usernameInput: 'forgot-password-username-input',
+  usernameInput: 'username-input',
   codeInput: 'forgot-password-code-input',
   newPasswordInput: 'forgot-password-new-password-input',
 };
