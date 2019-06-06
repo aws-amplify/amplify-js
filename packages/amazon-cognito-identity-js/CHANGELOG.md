@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.0.13-unstable.0"></a>
+## [3.0.13-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12...amazon-cognito-identity-js@3.0.13-unstable.0) (2019-05-28)
+
+
+### Bug Fixes
+
+* **@amazon-cognito-identity-js:** Adds sendMFASelectionAnswer to types ([6c32ef3](https://github.com/aws/aws-amplify/commit/6c32ef3))
+
+
+
+
 <a name="3.0.12"></a>
 ## [3.0.12](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.12-unstable.3...amazon-cognito-identity-js@3.0.12) (2019-05-06)
 

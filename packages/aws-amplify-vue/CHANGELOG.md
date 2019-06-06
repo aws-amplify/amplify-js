@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.12-unstable.2"></a>
+## [0.2.12-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.1...aws-amplify-vue@0.2.12-unstable.2) (2019-05-31)
+
+
+### Bug Fixes
+
+* **aws-amplify-vue:** remove unused variable ([#3303](https://github.com/aws-amplify/amplify-js/issues/3303)) ([4512d0d](https://github.com/aws-amplify/amplify-js/commit/4512d0d))
+
+
+
+
 <a name="0.2.12-unstable.1"></a>
 ## [0.2.12-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.0...aws-amplify-vue@0.2.12-unstable.1) (2019-05-24)
 

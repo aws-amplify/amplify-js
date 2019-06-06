@@ -152,7 +152,6 @@ describe('PubSub', () => {
 
     describe('AWSIoTProvider', () => {
         test('subscribe and publish to the same topic using AWSIoTProvider', async (done) => {
-            expect.assertions(2);
             const config = {
                 PubSub: {
                     aws_pubsub_region: 'region',
@@ -184,7 +183,6 @@ describe('PubSub', () => {
         });
 
         test('subscriber is matching MQTT topic wildcards', () => {
-            expect.assertions(5);
 
             const publishTopic = 'topic/A/B/C';
             expect(mqttTopicMatch('topic/A/B/C', publishTopic)).toBe(true);
@@ -195,9 +193,28 @@ describe('PubSub', () => {
         });
     });
 
+    describe('MqttOverWSProvider', () => {
+        test('trigger observer error when connect failed', () => {
+            const pubsub = new PubSub();
+
+            const awsIotProvider = new AWSIoTProvider({
+                aws_pubsub_region: 'region',
+                aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt'
+            });
+            pubsub.addPluggable(awsIotProvider);
+
+            jest.spyOn(MqttOverWSProvider.prototype, 'connect').mockImplementationOnce(async () => {
+                throw new Error('Failed to connect to the network');
+            });
+
+            expect(testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
+                    provider: 'AWSIoTProvider',
+            })).rejects.toMatchObject({error: new Error('Failed to connect to the network')});
+        });
+    });
+
     describe('multiple providers', () => {
         test('subscribe and publish to specific provider', async () => {
-            expect.assertions(5);
             const pubsub = new PubSub();
 
             const awsIotProvider = new AWSIoTProvider({
@@ -228,7 +245,6 @@ describe('PubSub', () => {
         });
 
         test('subscribe and publish to MQTT provider while also using AppSync API subscriptions', async () => {
-            expect.assertions(3);
             const pubsub = new PubSub();
 
             const mqttOverWSProvider = new MqttOverWSProvider({
@@ -256,6 +272,30 @@ describe('PubSub', () => {
             };
 
             expect(subscribe).toThrow(`Could not find provider named ${testProviderName}`);
+        });
+
+        test('throw a rejected promise when publish failed by any of the provider', () => {
+            const pubsub = new PubSub();
+
+            const awsIotProvider = new AWSIoTProvider({
+                aws_pubsub_region: 'region',
+                aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt'
+            });
+            pubsub.addPluggable(awsIotProvider);
+
+            const awsAppSyncProvider = new AWSAppSyncProvider();
+            pubsub.addPluggable(awsAppSyncProvider);
+
+            const mqttOverWSProvider = new MqttOverWSProvider({
+                aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
+            });
+            pubsub.addPluggable(mqttOverWSProvider);
+
+            jest.spyOn(awsIotProvider, 'publish').mockImplementationOnce(() => {
+                return Promise.reject('Failed to publish');
+            });
+
+            expect(pubsub.publish('topicA', 'my message AWSIoTProvider')).rejects.toThrowError('Failed to publish');
         });
     });
 
