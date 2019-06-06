@@ -13,12 +13,19 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy } 
+from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { GreetingClass } from './greeting.class';
-import { GreetingComponentIonic } from './greeting.component.ionic'
+import { GreetingComponentIonic } from './greeting.component.ionic';
 import { GreetingComponentCore } from './greeting.component.core';
 import { AuthState } from '../../../providers';
 
@@ -33,6 +40,7 @@ import { AuthState } from '../../../providers';
 export class GreetingComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() usernameAttributes: string = 'username';
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -45,14 +53,17 @@ export class GreetingComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: this.authState}) : new ComponentMount(GreetingComponentCore, {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? 
+      new ComponentMount(GreetingComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes}) : 
+      new ComponentMount(GreetingComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<GreetingClass>componentRef.instance).data = authComponent.data;
   }
 }

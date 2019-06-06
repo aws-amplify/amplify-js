@@ -31,7 +31,7 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 - [__Authentication__](https://aws.github.io/aws-amplify/media/authentication_guide): APIs and building blocks for developers who want to create user authentication experiences.  
 - [__Analytics__](https://aws.github.io/aws-amplify/media/analytics_guide): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.  
 - [__API__](https://aws.github.io/aws-amplify/media/api_guide): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
-- [__GraphQL Client__](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server): Interact with your GraphQL server or AWS AppSync API with an easy to use & configure GraphQL client.  
+- [__GraphQL Client__](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.  
 - [__Storage__](https://aws.github.io/aws-amplify/media/storage_guide): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.  
 - [__Push Notifications__](https://aws.github.io/aws-amplify/media/push_notifications_setup): Allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
 - [__Interactions__](https://aws.github.io/aws-amplify/media/interactions_guide): Create conversational bots powered by deep learning technologies..  
@@ -73,7 +73,7 @@ $ npm install aws-amplify-react --save
 
 __Angular__
 
-If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://docs.angularjs.org/api/ng/function/angular.module) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
+If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://angular.io/guide/architecture-modules) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
 
 ```bash
 $ npm install aws-amplify --save
@@ -306,7 +306,7 @@ const eventDetails = {
   name: 'Party tonight!',
   when: '8:00pm',
   where: 'Ballroom',
-  decription: 'Coming together as a team!'
+  description: 'Coming together as a team!'
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));

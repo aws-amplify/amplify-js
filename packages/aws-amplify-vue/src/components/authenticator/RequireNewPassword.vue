@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
  <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.requireNewPassword.section">
+    <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.requireNewPassword.headerSection">{{options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.requireNewPassword.bodySection">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus v-bind:data-test="auth.requireNewPassword.newPasswordInput" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.formField" 
@@ -31,12 +31,12 @@
         :placeholder="attribute.charAt(0).toUpperCase() + attribute.slice(1)"
       />
     </div>
-  <div v-bind:class="amplifyUI.sectionFooter">
+  <div v-bind:class="amplifyUI.sectionFooter" v-bind:data-test="auth.requireNewPassword.footerSection">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password">{{$Amplify.I18n.get('Submit')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="change" :disabled="!password" v-bind:data-test="auth.requireNewPassword.submitButton">{{$Amplify.I18n.get('Submit')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.requireNewPassword.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -47,6 +47,8 @@
  <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import { auth } from '../../assets/data-test-attributes';
+
  export default {
   name: 'RequireNewPassword',
   props: ['requireNewPasswordConfig'],
@@ -57,7 +59,8 @@ import * as AmplifyUI from '@aws-amplify/ui';
         password: '',
         logger: {},
         requiredAttributes: {},
-        amplifyUI: AmplifyUI
+        amplifyUI: AmplifyUI,
+        auth
     }
   },
   computed: {
@@ -105,7 +108,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
         .catch(err => this.setError(err));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut')
+      AmplifyEventBus.$emit('authState', 'signIn')
     },
   }
 }

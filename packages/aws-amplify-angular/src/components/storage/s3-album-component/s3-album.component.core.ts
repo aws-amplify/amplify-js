@@ -14,7 +14,7 @@
 // tslint:enable
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { AmplifyService } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
 
 const template = `
 <div class="amplify-album">
@@ -38,13 +38,20 @@ export class S3AlbumComponentCore implements OnInit {
   list: Array<Object>;
   _path: string;
   _options: any = {};
-  amplifyService: AmplifyService;
+  protected logger: any;
 
   @Output()
   selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('S3AlbumComponent');
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.storage()){
+      throw new Error('Storage module not registered on AmplifyService provider');
+    }
+    this.getList(this._path, this._options);
   }
 
   onImageSelected(event) {
@@ -63,9 +70,6 @@ export class S3AlbumComponentCore implements OnInit {
 
   @Input() set options(options: any) {
     this._options = options;
-  }
-   ngOnInit() {
-    this.getList(this._path, this._options);
   }
 
   getList(path, options) {
