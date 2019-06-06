@@ -35,14 +35,13 @@ jobs:
           paths: amplify-js
   unit_test:
     <<: *defaults
-    working_directory: ~/
+    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
       - run:
           name: "Run Amplify JS unit tests"
           command: |
-            cd amplify-js
             yarn run test --scope @aws-amplify/auth
             yarn run test --scope @aws-amplify/api
             yarn run test --scope @aws-amplify/analytics
@@ -159,7 +158,7 @@ jobs:
           path: amplify-js-samples-staging/cypress/screenshots
   deploy:
     <<: *defaults
-    working_directory: ~/
+    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
