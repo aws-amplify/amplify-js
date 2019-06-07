@@ -96,7 +96,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isVRPresentationActive = false;
   isFullscreen = false;
   sceneError = null;
-  amplifyUI: AmplifyUI;
+  amplifyUI: any;
   protected logger: any;
 
   @Input()

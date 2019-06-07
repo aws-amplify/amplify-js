@@ -40,6 +40,7 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignInComponent implements OnInit, OnDestroy {
   @Input() framework: String;
   @Input() authState: AuthState;
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -53,8 +54,8 @@ export class ConfirmSignInComponent implements OnInit, OnDestroy {
   loadComponent() {
 
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ConfirmSignInComponentIonic,{authState: this.authState}) :
-    new ComponentMount(ConfirmSignInComponentCore, {authState: this.authState});
+    new ComponentMount(ConfirmSignInComponentIonic,{authState: this.authState, hide: this.hide}) :
+    new ComponentMount(ConfirmSignInComponentCore, {authState: this.authState, hide: this.hide});
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

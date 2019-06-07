@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.29-unstable.2"></a>
+## [1.0.29-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.29-unstable.1...@aws-amplify/pubsub@1.0.29-unstable.2) (2019-06-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** catch and throw the error when subscribing using Mqtt ([#3376](https://github.com/aws/aws-amplify/issues/3376)) ([08ce6eb](https://github.com/aws/aws-amplify/commit/08ce6eb))
+
+
+
+
+<a name="1.0.29-unstable.1"></a>
+## [1.0.29-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.28...@aws-amplify/pubsub@1.0.29-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
+<a name="1.0.28"></a>
+## [1.0.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.28-unstable.0...@aws-amplify/pubsub@1.0.28) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.28-unstable.0"></a>
+## [1.0.28-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.27...@aws-amplify/pubsub@1.0.28-unstable.0) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.27"></a>
+## [1.0.27](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.27-unstable.2...@aws-amplify/pubsub@1.0.27) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+<a name="1.0.27-unstable.2"></a>
+## [1.0.27-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.27-unstable.1...@aws-amplify/pubsub@1.0.27-unstable.2) (2019-05-06)
+
+
+### Features
+
+* **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
+
+
+
+
 <a name="1.0.27-unstable.1"></a>
 ## [1.0.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.27-unstable.0...@aws-amplify/pubsub@1.0.27-unstable.1) (2019-04-17)
 

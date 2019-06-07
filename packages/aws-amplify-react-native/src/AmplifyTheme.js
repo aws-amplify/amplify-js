@@ -27,7 +27,7 @@ export default AmplifyTheme = StyleSheet.create({
         justifyContent: 'space-around',
         paddingTop: 20,
         width: '100%',
-        marginTop: 30,
+        backgroundColor: '#FFF',
     },
     section: {
         flex: 1,
