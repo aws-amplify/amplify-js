@@ -49,7 +49,7 @@ export interface IAuthenticatorProps {
     onStateChange?: (authState: string, data?) => void;
     signUpConfig?: any;
     theme?: any;
-    usernameAttributes: UsernameAttributes;
+    usernameAttributes?: UsernameAttributes;
 }
 
 export interface IAuthenticatorState {
