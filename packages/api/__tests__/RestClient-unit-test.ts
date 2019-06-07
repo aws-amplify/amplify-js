@@ -14,16 +14,19 @@ jest.mock('axios', () => {
             return new Promise((res, rej) => {
                 if (signed_params && signed_params.headers && signed_params.headers.reject) {
                     rej({
+                        config: signed_params,
                         data: 'error'
                     });
                 }
                 else if (signed_params && signed_params.responseType === 'blob') {
                     res({
+                        config: signed_params,
                         data: 'blob'
                     });
                 }
                 else {
                     res({
+                        config: signed_params,
                         data: 'data'
                     });
                 }
@@ -151,6 +154,26 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect(await restClient.ajax('url', 'method', { headers: { Authorization: 'authorization' } })).toEqual('data');
+        });
+
+        test('ajax with onUploadProgress', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+            const handleUploadProgress = jest.fn();
+
+            const restClient = new RestClient(apiOptions);
+
+            expect((await restClient.ajax('url', 'method', {
+                response: 'allResponse',
+                onUploadProgress: handleUploadProgress
+            })).config.onUploadProgress).toEqual(handleUploadProgress);
         });
     });
 

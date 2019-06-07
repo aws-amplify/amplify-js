@@ -73,6 +73,7 @@ export class RestClient {
             path: parsed_url.path,
             headers: {},
             data: null,
+            onUploadProgress: undefined,
             responseType: 'json'
         };
 
@@ -93,6 +94,9 @@ export class RestClient {
         }
         if (initParams.responseType) {
             params.responseType = initParams.responseType;
+        }
+        if (initParams.onUploadProgress) {
+            params.onUploadProgress = initParams.onUploadProgress;
         }
 
         params['signerServiceInfo'] = initParams.signerServiceInfo;
