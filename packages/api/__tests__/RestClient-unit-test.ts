@@ -73,7 +73,7 @@ describe('RestClient test', () => {
             try {
                 await restClient.ajax('url', 'method', { headers: { reject: true } });
             } catch (error) {
-                expect(error).toEqual({ data: 'error' });
+                expect(error).toMatchObject({ data: 'error' });
             }
         });
 
