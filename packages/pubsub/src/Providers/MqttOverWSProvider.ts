@@ -187,8 +187,12 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                     url = await this.endpoint,
                 } = options;
 
-                client = await this.connect(clientId, { url });
-                targetTopics.forEach(topic => { client.subscribe(topic); });
+                try {
+                    client = await this.connect(clientId, { url });
+                    targetTopics.forEach(topic => { client.subscribe(topic); });
+                } catch (e) {
+                    observer.error(e);
+                }
             })();
 
             return () => {

@@ -40,6 +40,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
+  @Input() usernameAttributes: string = 'username';
   @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
@@ -57,11 +58,13 @@ export class SignUpComponent implements OnInit, OnDestroy {
     new ComponentMount(SignUpComponentIonic, {
       authState: this.authState,
       signUpConfig: this.signUpConfig,
+      usernameAttributes: this.usernameAttributes,
       hide: this.hide, 
     }) :
     new ComponentMount(SignUpComponentCore, {
       authState: this.authState,
       signUpConfig: this.signUpConfig,
+      usernameAttributes: this.usernameAttributes,
       hide: this.hide, 
     });
 
