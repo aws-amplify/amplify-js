@@ -13,11 +13,18 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { SignInClass } from './sign-in.class';
-import { SignInComponentIonic } from './sign-in.component.ionic'
+import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
 import { AuthState } from '../../../providers';
 import { authDecorator } from '../../../providers/auth.decorator';
@@ -34,6 +41,8 @@ export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signInConfig: any;
+  @Input() usernameAttributes: string = 'username';
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -46,22 +55,31 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(SignInComponentIonic,{ 
-        authState: this.authState,
-        signInConfig: this.signInConfig
-      }) 
-      : new ComponentMount(SignInComponentCore, { 
-        authState: this.authState,
-        signInConfig: this.signInConfig
-      });
+    let authComponent = this.framework && this.framework === 'ionic' ? 
+      new ComponentMount(
+        SignInComponentIonic,{
+          authState: this.authState,
+          hide: this.hide,
+          usernameAttributes: this.usernameAttributes,
+          signInConfig: this.signInConfig
+        }) 
+        : 
+      new ComponentMount(
+        SignInComponentCore, {
+          authState: this.authState,
+          hide: this.hide,
+          usernameAttributes: this.usernameAttributes,
+          signInConfig: this.signInConfig
+        });
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
+
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<SignInClass>componentRef.instance).data = authComponent.data;
   }
 }

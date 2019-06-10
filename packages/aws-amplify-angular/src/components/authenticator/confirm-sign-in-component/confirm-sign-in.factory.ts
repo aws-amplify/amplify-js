@@ -13,14 +13,19 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignInClass } from './confirm-sign-in.class';
-import { ConfirmSignInComponentIonic } from './confirm-sign-in-component.ionic'
+import { ConfirmSignInComponentIonic } from './confirm-sign-in-component.ionic';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
-import { String } from 'aws-sdk/clients/route53domains';
 import { AuthState } from '../../../providers';
 
 
@@ -35,6 +40,7 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignInComponent implements OnInit, OnDestroy {
   @Input() framework: String;
   @Input() authState: AuthState;
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -47,14 +53,17 @@ export class ConfirmSignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignInComponentIonic,{authState: this.authState}) : new ComponentMount(ConfirmSignInComponentCore, {authState: this.authState});
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(ConfirmSignInComponentIonic,{authState: this.authState, hide: this.hide}) :
+    new ComponentMount(ConfirmSignInComponentCore, {authState: this.authState, hide: this.hide});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<ConfirmSignInClass>componentRef.instance).data = authComponent.data;
   }
 }

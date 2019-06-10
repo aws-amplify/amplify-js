@@ -29,6 +29,8 @@ import { GoogleSignInComponentIonic } from './components/authenticator/federated
 import { FacebookSignInComponentIonic } from './components/authenticator/federated-sign-in-component/facebook-sign-in-component/facebook-sign-in.component.ionic';
 import { AmazonSignInComponentIonic } from './components/authenticator/federated-sign-in-component/amazon-sign-in-component/amazon-sign-in.component.ionic';
 import { SignUpComponentIonic } from './components/authenticator/sign-up-component/sign-up.component.ionic';
+import { PhoneFieldComponentIonic } from './components/authenticator/phone-field-component/phone-field.component.ionic';
+import { UsernameFieldComponentIonic } from './components/authenticator/username-field-component/username-field.component.ionic';
 import { RequireNewPasswordComponentIonic } from './components/authenticator/require-new-password-component/require-new-password.component.ionic';
 import { PhotoPickerIonicComponent } from './components/storage/photo-picker-component/photo-picker.component.ionic';
 import { S3AlbumComponentIonic } from './components/storage/s3-album-component/s3-album.component.ionic';
@@ -50,6 +52,8 @@ const components = [
   FacebookSignInComponentIonic,
   AmazonSignInComponentIonic,
   SignUpComponentIonic,
+  UsernameFieldComponentIonic,
+  PhoneFieldComponentIonic,
   RequireNewPasswordComponentIonic,
   PhotoPickerIonicComponent,
   S3AlbumComponentIonic,

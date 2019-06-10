@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { 
     Auth, 
     Analytics,
@@ -71,7 +71,7 @@ export default class Authenticator extends React.Component {
         this.onHubCapsule = this.onHubCapsule.bind(this);
         this.checkContact = this.checkContact.bind(this);
 
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
@@ -107,17 +107,20 @@ export default class Authenticator extends React.Component {
         }
     }
 
-    checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                logger.debug('verified user attributes', data);
-                if (!JS.isEmpty(data.verified)) {
-                    this.handleStateChange('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.handleStateChange('verifyContact', user);
-                }
-            });
+    async checkContact(user) {
+        try {
+            const data = await Auth.verifiedContact(user);
+            logger.debug('verified user attributes', data);
+            if (!JS.isEmpty(data.verified)) {
+                this.handleStateChange('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.handleStateChange('verifyContact', user);
+            }
+        } catch (e) {
+            logger.warn('Failed to verify contact', e);
+            this.handleStateChange('signedIn', user);
+        }
     }
 
     checkUser() {
@@ -152,7 +155,7 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, signUpConfig } = this.props;
+        const { hideDefault, signUpConfig, usernameAttributes } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
@@ -175,14 +178,15 @@ export default class Authenticator extends React.Component {
                     authState: authState,
                     authData: authData,
                     onStateChange: this.handleStateChange,
-                    Auth: new AuthDecorator(this.handleStateChange)
+                    Auth: new AuthDecorator(this.handleStateChange),
+                    usernameAttributes
                 });
             });
         return (
             
-                <View style={theme.container}>
+                <SafeAreaView style={theme.container}>
                     {children}
-                </View>
+                </SafeAreaView>
         );
     }
 }

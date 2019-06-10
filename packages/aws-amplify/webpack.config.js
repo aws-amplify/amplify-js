@@ -11,7 +11,8 @@ module.exports = {
         path: __dirname + '/dist',
         library: 'aws-amplify',
         libraryTarget: 'umd',
-        umdNamedDefine: true
+        umdNamedDefine: true,
+        devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate
     },
     externals: {
         'react-native': 'react-native'
