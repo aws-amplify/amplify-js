@@ -99,6 +99,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         client.onConnectionLost = ({ errorCode, ...args }) => {
             this.onDisconnect({ clientId, errorCode, ...args });
         };
+        this._clientObservers.set(clientId, new Set());
 
         await new Promise((resolve, reject) => {
             client.connect({
@@ -123,6 +124,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             client.disconnect();
         }
         this.clientsQueue.remove(clientId);
+        this._clientObservers.delete(clientId);
     }
 
     async publish(topics: string[] | string, msg: any) {
@@ -140,6 +142,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
     protected _topicsObserverSubscribed: Map<ZenObservable.SubscriptionObserver<any>, Set<string>> = new Map();
+
+    protected _clientObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
@@ -194,6 +198,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
                 try {
                     client = await this.connect(clientId, { url });
+                    this._clientObservers.get(clientId).add(observer);
                     targetTopics.forEach(topic => { client.subscribe(topic); });
                 } catch (e) {
                     observer.error(e);
@@ -203,29 +208,29 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             return () => {
                 logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
-                // delete the observer from the topic(s) sets
+                // 1. delete the observer from the topic(s) sets
                 const topicsSubscribed:Set<string> = this._topicsObserverSubscribed.get(observer);
                 topicsSubscribed.forEach(t => {
                     const observersForTopic = this._topicObservers.get(t);
                     observersForTopic.delete(observer);
-                });
-
-                
-
-                if (client) {
-                    targetTopics.forEach(topic => {
-                        if (client.isConnected()) {
-                            client.unsubscribe(topic);
+                    // if the topic has no observers subscribing, delete that topic
+                    // also let the client unsubscribe from that topic
+                    if (observersForTopic.size === 0) {
+                        this._topicObservers.delete(t);
+                        if (client && client.isConnected()) {
+                            client.unsubscribe(t);
                         }
-
-                        const observersForTopic = this._topicObservers.get(topic) ||
-                            (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
-
-                        observersForTopic.forEach(observer => observer.complete());
-
-                        observersForTopic.clear();
-                    });
+                    }
+                });
+                // 2. delete the observer from the client map and if no observers using this client, disconnet it
+                this._clientObservers.get(clientId).delete(observer);
+                if (this._clientObservers.get(clientId).size === 0) {
+                    this.disconnect(clientId);
                 }
+                // 3. remove the observer from the map
+                this._topicsObserverSubscribed.delete(observer);
+                // 4. call complete handler
+                observer.complete();
 
                 return null;
             };
