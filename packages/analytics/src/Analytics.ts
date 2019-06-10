@@ -25,8 +25,11 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
-const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics');
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
+const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
+    Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const trackers = {
@@ -93,7 +96,11 @@ export default class AnalyticsClass {
             this._config['autoSessionRecord'] = true;
         }
 
-        dispatchAnalyticsEvent('configured', null);
+        dispatchAnalyticsEvent(
+            'configured', 
+            null,
+            `The Analytics category has been configured successfully`
+        );
         logger.debug('current configuration', this._config);
 
         
@@ -169,13 +176,6 @@ export default class AnalyticsClass {
     }
 
     /**
-    * Receive a capsule from Hub
-    * @param {any} capsuak - The message from hub
-    */
-   public onHubCapsule(capsule: any): void {}
-
-
-    /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
@@ -201,6 +201,12 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async record(event: string | object, provider? , metrics?: EventMetrics) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         let params = null;
         // this is just for compatibility, going to be deprecated
         if (typeof event === 'string') {
@@ -225,6 +231,12 @@ export default class AnalyticsClass {
     }
 
     private _sendEvent(params) {
+        if (!this.isAnalyticsConfigured()) {
+            const errMsg = 'Analytics has not been configured';
+            logger.debug(errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
@@ -232,13 +244,13 @@ export default class AnalyticsClass {
 
         const provider = params.provider? params.provider: 'AWSPinpoint';
         
-        this._pluggables.forEach((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                pluggable.record(params);
-            }
+        return new Promise((resolve, reject) => {
+            this._pluggables.forEach((pluggable) => {
+                if (pluggable.getProviderName() === provider) {
+                    pluggable.record(params, { resolve, reject });
+                }
+            });
         });
-
-        return Promise.resolve();
     }
 
     public autoTrack(trackerType, opts) {
@@ -258,5 +270,9 @@ export default class AnalyticsClass {
         } else {
             tracker.configure(opts);
         }
+    }
+
+    private isAnalyticsConfigured() {
+        return this._config && Object.entries(this._config).length > 0;
     }
 }

@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnInit } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
@@ -21,57 +21,84 @@ const template = `
     <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-sign-in-core>
 
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
       [signUpConfig]="_signUpConfig"
+      [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-up-core>
 
     <amplify-auth-confirm-sign-in-core
-    *ngIf="!shouldHide('ConfirmSignIn')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignIn')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-in-core>
 
     <amplify-auth-forgot-password-core
-    *ngIf="!shouldHide('ForgotPassword')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ForgotPassword')"
+      [authState]="authState"
+      [usernameAttributes]="_usernameAttributes"
+      [hide]="hide"
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
     *ngIf="!shouldHide('Greetings')"
     [authState]="authState"
+    [usernameAttributes]="_usernameAttributes"
     ></amplify-auth-greetings-core>
 
      <amplify-auth-require-new-password-core
-    *ngIf="!shouldHide('RequireNewPassword')"
-    [authState]="authState"
+      *ngIf="!shouldHide('RequireNewPassword')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-require-new-password-core>
   </div>
 `;
-
 
 @Component({
   selector: 'amplify-authenticator-core',
   template
 })
-export class AuthenticatorComponentCore {
+export class AuthenticatorComponentCore implements OnInit {
   authState: AuthState = {
-    state: 'signIn',
+    state: 'loading',
     user: null
   };
   _signUpConfig: any = {};
-  amplifyService: AmplifyService;
+  _usernameAttributes: string = 'username';
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.subscribe();
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    } else {
+      const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
+      .then((user) => {
+        if (this.authState.state === 'loading' && user) {
+          this.amplifyService.setAuthState({ state: 'signedIn', user });
+        }
+      })
+      .catch((e) => {
+        if (this.authState.state === 'loading') {
+          this.amplifyService.setAuthState({ state: 'signIn', user: null });
+        }
+      });  
+    }
   }
 
   @Input()
@@ -85,6 +112,8 @@ export class AuthenticatorComponentCore {
     if (data.hide) {
       this.hide = data.hide;
     }
+
+    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes || 'username';
   }
 
   @Input()
@@ -92,15 +121,22 @@ export class AuthenticatorComponentCore {
     this._signUpConfig = signUpConfig;
   }
 
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes || 'username';
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
-      .subscribe(state => {
+    .subscribe(
+      state => {
         this.authState = state;
-      }, () => {
+      },
+      () => {
         this.authState = {
           'state': 'signIn',
           'user': null
-        }
+        };
       });
   }
 

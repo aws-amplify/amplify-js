@@ -18,6 +18,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "label": Object {},
       "nav": Object {},
       "navBar": Object {},
       "navButton": Object {},
@@ -42,7 +43,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
   }
 >
   <Component
-    hint="Add you photos by clicking below"
+    hint="Add your photos by clicking below"
     theme={
       Object {
         "a": Object {},
@@ -59,6 +60,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},
@@ -101,6 +103,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},
@@ -145,6 +148,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},
@@ -190,6 +194,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
       "hint": Object {},
       "input": Object {},
       "inputLabel": Object {},
+      "label": Object {},
       "nav": Object {},
       "navBar": Object {},
       "navButton": Object {},
@@ -214,7 +219,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
   }
 >
   <Component
-    hint="Add you photos by clicking below"
+    hint="Add your photos by clicking below"
     theme={
       Object {
         "a": Object {},
@@ -231,6 +236,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},
@@ -273,6 +279,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},
@@ -313,6 +320,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
           "hint": Object {},
           "input": Object {},
           "inputLabel": Object {},
+          "label": Object {},
           "nav": Object {},
           "navBar": Object {},
           "navButton": Object {},
@@ -356,6 +364,7 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
         "hint": Object {},
         "input": Object {},
         "inputLabel": Object {},
+        "label": Object {},
         "nav": Object {},
         "navBar": Object {},
         "navButton": Object {},

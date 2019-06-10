@@ -2,6 +2,7 @@
 
 exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
 <Component
+  data-test="sign-up-section"
   theme={
     Object {
       "a": Object {
@@ -246,6 +247,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
   }
 >
   <Component
+    data-test="sign-up-header-section"
     theme={
       Object {
         "a": Object {
@@ -492,6 +494,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
     Create a new account
   </Component>
   <Component
+    data-test="sign-up-body-section"
     theme={
       Object {
         "a": Object {
@@ -1229,6 +1232,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
       </Component>
       <Component
         autoFocus={true}
+        data-test="sign-up-non-phone-number-input"
         key="username"
         name="username"
         onChange={[Function]}
@@ -1971,6 +1975,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
       </Component>
       <Component
         autoFocus={false}
+        data-test="sign-up-non-phone-number-input"
         key="password"
         name="password"
         onChange={[Function]}
@@ -2714,6 +2719,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
       </Component>
       <Component
         autoFocus={false}
+        data-test="sign-up-non-phone-number-input"
         key="email"
         name="email"
         onChange={[Function]}
@@ -3700,6 +3706,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
         }
       >
         <select
+          data-test="sign-up-dial-code-select"
           defaultValue="+1"
           name="dial_code"
           onChange={[Function]}
@@ -4942,6 +4949,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
           </option>
         </select>
         <Component
+          data-test="sign-up-phone-number-input"
           id="phone_line_number"
           key="phone_line_number"
           name="phone_line_number"
@@ -5687,6 +5695,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
       </Component>
       <Component
         autoFocus={false}
+        data-test="sign-up-non-phone-number-input"
         key="address"
         name="address"
         onChange={[Function]}
@@ -5936,6 +5945,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
     </Component>
   </Component>
   <Component
+    data-test="sign-up-footer-section"
     theme={
       Object {
         "a": Object {
@@ -6424,6 +6434,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
       }
     >
       <Component
+        data-test="sign-up-create-account-button"
         onClick={[Function]}
         theme={
           Object {
@@ -6917,6 +6928,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
     >
       Have an account? 
       <Component
+        data-test="sign-up-sign-in-link"
         onClick={[Function]}
         theme={
           Object {
@@ -7172,6 +7184,7 @@ exports[`signUp with signUpConfig render correctly with hide 1`] = `""`;
 
 exports[`signUp without signUpConfig prop normal case render correctly with authState signUp 1`] = `
 <Component
+  data-test="sign-up-section"
   theme={
     Object {
       "a": Object {
@@ -7416,6 +7429,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
   }
 >
   <Component
+    data-test="sign-up-header-section"
     theme={
       Object {
         "a": Object {
@@ -7662,6 +7676,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
     Create a new account
   </Component>
   <Component
+    data-test="sign-up-body-section"
     theme={
       Object {
         "a": Object {
@@ -8399,6 +8414,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
       </Component>
       <Component
         autoFocus={true}
+        data-test="sign-up-non-phone-number-input"
         key="username"
         name="username"
         onChange={[Function]}
@@ -9141,6 +9157,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
       </Component>
       <Component
         autoFocus={false}
+        data-test="sign-up-non-phone-number-input"
         key="password"
         name="password"
         onChange={[Function]}
@@ -9884,6 +9901,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
       </Component>
       <Component
         autoFocus={false}
+        data-test="sign-up-non-phone-number-input"
         key="email"
         name="email"
         onChange={[Function]}
@@ -10870,6 +10888,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
         }
       >
         <select
+          data-test="sign-up-dial-code-select"
           defaultValue="+1"
           name="dial_code"
           onChange={[Function]}
@@ -11541,6 +11560,12 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
             +356
           </option>
           <option
+            key="+357"
+            value="+357"
+          >
+            +357
+          </option>
+          <option
             key="+358"
             value="+358"
           >
@@ -12106,6 +12131,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
           </option>
         </select>
         <Component
+          data-test="sign-up-phone-number-input"
           id="phone_line_number"
           key="phone_line_number"
           name="phone_line_number"
@@ -12359,6 +12385,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
     </Component>
   </Component>
   <Component
+    data-test="sign-up-footer-section"
     theme={
       Object {
         "a": Object {
@@ -12847,6 +12874,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
       }
     >
       <Component
+        data-test="sign-up-create-account-button"
         onClick={[Function]}
         theme={
           Object {
@@ -13340,6 +13368,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
     >
       Have an account? 
       <Component
+        data-test="sign-up-sign-in-link"
         onClick={[Function]}
         theme={
           Object {

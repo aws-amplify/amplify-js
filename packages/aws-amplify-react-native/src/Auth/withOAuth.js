@@ -24,7 +24,7 @@ export default (Comp) => {
     return class WithOAuth extends React.Component {
         constructor(props) {
             super(props);
-
+            this._isMounted = false;
             const config = this._getOAuthConfig();
 
             const {
@@ -35,41 +35,38 @@ export default (Comp) => {
 
             this.hostedUISignIn = this.hostedUISignIn.bind(this);
             this.signOut = this.signOut.bind(this);
-            this._getOAuthUrl = this._getOAuthUrl.bind(this);
             this.urlOpener = this.urlOpener.bind(this);
 
             this.state = {
                 user: null,
                 error: null,
+                loading: false,
             };
 
             listeners.forEach(listener => Hub.remove('auth', listener));
             listeners = [this];
-            Hub.listen('auth', this);
+            this.onHubCapsule = this.onHubCapsule.bind(this);
+            Hub.listen('auth', this.onHubCapsule);
         }
 
         componentDidMount() {
-            Linking.getInitialURL().then(url => {
-                const config = Auth.configure();
-
-                if (url && config) {
-                    Auth.configure(config);
-                }
-            }).catch(error => {
-                logger.debug('componentDidMount [Linking.getInitialURL]', error);
-            }).then(() => {
+            this._isMounted = true;
+            this.setState({ loading: true }, () => {
                 Auth.currentAuthenticatedUser().then(user => {
-                    this.setState({ user })
+                    this.setState({ user, loading: false })
                 }).catch(error => {
                     logger.debug(error);
-
-                    this.setState({ user: null });
+                    this.setState({ user: null, loading: false });
                 });
             });
         }
-
+        componentWillUnmount() {
+            this._isMounted = false;
+            return;
+        }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
+            if (!this._isMounted) return;
             const { channel, payload } = capsule;
 
             if (channel === 'auth') {
@@ -78,20 +75,19 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-
-                            this.setState({ user, error: null });
+                            this.setState({ user, error: null, loading: false });
                         });
                         break;
                     }
                     case 'signOut': {
                         logger.debug('signed out');
-                        this.setState({ user: null, error: null });
+                        this.setState({ user: null, error: null, loading: false });
                         break;
                     }
                     case 'signIn_failure':
                     case 'cognitoHostedUI_failure': {
                         logger.debug('not signed in');
-                        this.setState({ user: null, error: decodeURIComponent(payload.data) });
+                        this.setState({ user: null, error: decodeURIComponent(payload.data), loading: false });
                         break;
                     }
                     default:
@@ -114,37 +110,8 @@ export default (Comp) => {
             return config;
         }
 
-        _getOAuthUrl(provider = CognitoHostedUIIdentityProvider.Cognito) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                domain,
-                redirectSignIn,
-                responseType
-            } = config;
-
-            const options = config.options || {};
-            const url = `https://${domain}/authorize?${
-                Object.entries({
-                    redirect_uri: redirectSignIn,
-                    response_type: responseType,
-                    client_id: options.ClientId || Auth.configure().userPoolWebClientId,
-                    identity_provider: provider,
-                }).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
-
-            return Promise.resolve(url);
-        }
-
         hostedUISignIn(provider) {
-            const config = this._getOAuthConfig();
-
-            logger.debug('withOAuth configuration', config);
-            const {
-                redirectSignIn,
-            } = config;
-
-            return this._getOAuthUrl(provider).then(url => this.urlOpener(url, redirectSignIn));
+            this.setState({ loading: true },  () => Auth.federatedSignIn({ provider }));
         }
 
         signOut() {
@@ -152,11 +119,11 @@ export default (Comp) => {
         }
 
         render() {
-            const { user: oAuthUser, error: oAuthError } = this.state;
+            const { user: oAuthUser, error: oAuthError, loading } = this.state;
             const { oauth_config: _, ...otherProps } = this.props;
 
             const oAuthProps = {
-                getOAuthUrl: this._getOAuthUrl,
+                loading,
                 oAuthUser,
                 oAuthError,
                 hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),

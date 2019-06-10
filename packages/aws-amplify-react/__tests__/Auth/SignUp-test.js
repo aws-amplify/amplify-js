@@ -4,6 +4,7 @@ import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, Input, Button, SelectInput, InputLabel } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { PhoneField } from '../../src/Auth/PhoneField';
 
 const acceptedStates = [
     'signUp'
@@ -86,24 +87,12 @@ describe('signUp without signUpConfig prop', () => {
                     value: 'email@amazon.com'
                 }
             };
-            const event_phone = {
-                target: {
-                    name: 'phone_line_number',
-                    value: '2345678999'
-                }
-            };
-            const dial_code = {
-                target: {
-                    name: 'dial_code',
-                    value: '+1'
-                }
-            };
+            const phone_number = '+12345678999';
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
             wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(Input).at(3).simulate('change', event_phone);
-            wrapper.find('select').at(0).simulate('change', dial_code);
+            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
 
 
@@ -150,26 +139,14 @@ describe('signUp without signUpConfig prop', () => {
                     value: 'email@amazon.com'
                 }
             };
-            const event_phone = {
-                target: {
-                    name: 'phone_line_number',
-                    value: '234-567-8901'
-                }
-            };
-            const dial_code = {
-                target: {
-                    name: 'dial_code',
-                    value: '+1'
-                }
-            };
+
+            const phone_number = '+12345678901';
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
             wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(Input).at(3).simulate('change', event_phone);
-            wrapper.find('select').at(0).simulate('change', dial_code);
+            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
-
 
             expect(spyon)
                 .toBeCalledWith({
@@ -220,17 +197,13 @@ describe('signUp without signUpConfig prop', () => {
                     value: 'email@amazon.com'
                 }
             };
-            const event_phone = {
-                target: {
-                    name: 'phone_line_number',
-                    value: undefined
-                }
-            }
+
+            const phone_number = undefined;
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
             wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(Input).at(3).simulate('change', event_phone);
+            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
 
 
@@ -239,18 +212,6 @@ describe('signUp without signUpConfig prop', () => {
             spyon.mockClear();
             spyon_changeState.mockClear();
         });
-
-        test('default dial code should be +1', () => {
-            const wrapper = shallow(<SignUp/>);
-            wrapper.setProps({
-                authState: 'signUp',
-                theme: AmplifyTheme,
-            });
-    
-            let select = wrapper.find('select');
-            expect(select.props().defaultValue).toEqual('+1');
-       })
-
     });
 
     describe('null case with other authState', () => {
@@ -329,7 +290,7 @@ describe('signUp with signUpConfig', () => {
             }
         });
         const addressElementFound = wrapper.find({name: 'address'});
-        const addressChildFound = wrapper.find(Input).at(4);
+        const addressChildFound = wrapper.find(Input).at(3);
         expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
     });
 
@@ -373,7 +334,7 @@ describe('signUp with signUpConfig', () => {
         expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
     });
 
-    test('expect 5 fields to be present if hideDefaults is undefined', () => {
+    test('expect 5 fields to be present if hideAllDefaults is undefined', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -388,10 +349,11 @@ describe('signUp with signUpConfig', () => {
                 ]
             }
         });
-        expect(wrapper.find(Input).length).toEqual(5);
+        expect(wrapper.find(Input).length).toEqual(4);
+        expect(wrapper.find(PhoneField).length).toEqual(1);
     });
 
-    test('expect 5 fields to be present if hideDefaults is false', () => {
+    test('expect 5 fields to be present if hideAllDefaults is false', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -407,10 +369,11 @@ describe('signUp with signUpConfig', () => {
                 ]
             }
         });
-        expect(wrapper.find(Input).length).toEqual(5);
+        expect(wrapper.find(Input).length).toEqual(4);
+        expect(wrapper.find(PhoneField).length).toEqual(1);
     });
 
-    test('expect custom field to be the only field if hideDefaults is true', () => {
+    test('expect custom field to be the only field if hideAllDefaults is true', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -487,8 +450,8 @@ describe('signUp with signUpConfig', () => {
             }
         });
 
-        let select = wrapper.find('select');
-        expect(select.props().defaultValue).toEqual('+51');
+        let phoneField = wrapper.find(PhoneField).at(0);
+        expect(phoneField.props().defaultDialCode).toEqual('+51');
    });
 
    test('signUp should not complete if required field is not filled out', async () => {
@@ -613,23 +576,12 @@ describe('signUp with signUpConfig', () => {
                 value: 'email@amazon.com'
             }
         }
-        const event_phone = {
-            target: {
-                name: 'phone_line_number',
-                value: '2345678999'
-            }
-        }
-        const dial_code = {
-            target: {
-                name: 'dial_code',
-                value: '1'
-            }
-        }
+        const phone_number = '+12345678999';
 
         wrapper.find(Input).at(0).simulate('change', event_username);
         wrapper.find(Input).at(1).simulate('change', event_password);
         wrapper.find(Input).at(2).simulate('change', event_email);
-        wrapper.find(Input).at(3).simulate('change', event_phone);
+        wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
         await wrapper.find(Button).simulate('click');
 
 
@@ -686,18 +638,7 @@ describe('signUp with signUpConfig', () => {
                 value: 'email@amazon.com'
             }
         }
-        const event_phone = {
-            target: {
-                name: 'phone_line_number',
-                value: '2345678999'
-            }
-        }
-        const dial_code = {
-            target: {
-                name: 'dial_code',
-                value: '+1'
-            }
-        }
+        const phone_number = '+12345678999';
         const event_z = {
             target: {
                 name: 'z',
@@ -708,10 +649,9 @@ describe('signUp with signUpConfig', () => {
         wrapper.find(Input).at(0).simulate('change', event_username);
         wrapper.find(Input).at(1).simulate('change', event_password);
         wrapper.find(Input).at(2).simulate('change', event_email);
-        wrapper.find(Input).at(3).simulate('change', event_phone);
-        wrapper.find(Input).at(4).simulate('change', event_z);
+        wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+        wrapper.find(Input).at(3).simulate('change', event_z);
         await wrapper.find(Button).simulate('click');
-
 
         expect(spyon).toBeCalled();
 

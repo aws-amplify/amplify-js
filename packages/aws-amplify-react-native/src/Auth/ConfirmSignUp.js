@@ -78,7 +78,7 @@ export default class ConfirmSignUp extends AuthPiece {
                         <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ username: text })}
-                            label={I18n.get('Username')}
+                            label={I18n.get(this.getUsernameLabel())}
                             placeholder={I18n.get('Enter your username')}
                             required={true}
                             value={this.state.username}

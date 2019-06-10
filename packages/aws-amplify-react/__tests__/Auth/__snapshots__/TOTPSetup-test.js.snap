@@ -5,6 +5,7 @@ exports[`TOTPSetup render test hide props 1`] = `""`;
 exports[`TOTPSetup render test render correctly 1`] = `
 <TOTPSetupComp
   authState="TOTPSetup"
+  data-test="totp-setup-component"
   onTOTPEvent={[Function]}
   theme={
     Object {

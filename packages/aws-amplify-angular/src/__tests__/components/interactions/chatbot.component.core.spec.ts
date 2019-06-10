@@ -1,18 +1,26 @@
-import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, async} from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
-import { AmplifyService } from '../../../providers/amplify.service'
-import { ChatbotComponentCore } from '../../../components/interactions/chatbot/chatbot.component.core'
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { ChatbotComponentCore } 
+from '../../../components/interactions/chatbot/chatbot.component.core';
+import Amplify from 'aws-amplify';
 
-describe('ChatbotComponentCore: ', () => {
+
+
+describe('ChatbotComponentIonic: ', () => {
 
   let component: ChatbotComponentCore;
   let service: AmplifyService;
+  let ref: ChangeDetectorRef;
 
 
   beforeEach(() => { 
-    service = new AmplifyService();
-    component = new ChatbotComponentCore(service);
+    service = new AmplifyService(Amplify);
+    component = new ChatbotComponentCore(ref, service);
   });
 
   afterEach(() => {
