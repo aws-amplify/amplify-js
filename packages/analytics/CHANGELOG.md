@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.17-unstable.2"></a>
+## [1.2.17-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17-unstable.1...@aws-amplify/analytics@1.2.17-unstable.2) (2019-06-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** resolve/reject correctly when calling reocrd ([c3eb6cc](https://github.com/aws/aws-amplify/commit/c3eb6cc))
+
+
+
+
 <a name="1.2.17-unstable.1"></a>
 ## [1.2.17-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.16...@aws-amplify/analytics@1.2.17-unstable.1) (2019-05-24)
 
