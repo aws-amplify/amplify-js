@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.28-unstable.1"></a>
+## [1.0.28-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.27...@aws-amplify/pushnotification@1.0.28-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
 <a name="1.0.27"></a>
 ## [1.0.27](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.27-unstable.1...@aws-amplify/pushnotification@1.0.27) (2019-05-14)
 

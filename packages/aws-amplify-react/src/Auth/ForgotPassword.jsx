@@ -50,7 +50,7 @@ export default class ForgotPassword extends AuthPiece {
 
     send() {
         const { authData={} } = this.props;
-        const username = this.inputs.username || authData.username;
+        const username = this.getUsernameFromInput() || authData.username;
         if (!Auth || typeof Auth.forgotPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -65,7 +65,7 @@ export default class ForgotPassword extends AuthPiece {
     submit() {
         const { authData={} } = this.props;
         const { code, password } = this.inputs;
-        const username = this.inputs.username || authData.username;
+        const username = this.getUsernameFromInput() || authData.username;
         
         if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
@@ -83,18 +83,7 @@ export default class ForgotPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <FormField theme={theme}>
-                    <InputLabel theme={theme}>{I18n.get('Username')} *</InputLabel>
-                    <Input
-                        autoFocus
-                        placeholder={I18n.get('Enter your username')}
-                        theme={theme}
-                        key="username"
-                        name="username"
-                        onChange={this.handleInputChange}
-                        data-test={auth.forgotPassword.usernameInput}
-                    />
-                </FormField>
+                {this.renderUsernameField(theme)}
             </div>
         );
     }
