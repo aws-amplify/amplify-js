@@ -139,6 +139,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
+    protected _topicsObserverSubscribed: Map<ZenObservable.SubscriptionObserver<any>, Set<string>> = new Map();
+
     private _onMessage(topic: string, msg: any) {
         try {
             const matchedTopicObservers = [];
@@ -166,8 +168,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
         return new Observable(observer => {
-
+            const topicsSet = new Set();
             targetTopics.forEach(topic => {
+                topicsSet.add(topic);
                 let observersForTopic = this._topicObservers.get(topic);
 
                 if (!observersForTopic) {
@@ -178,6 +181,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
                 observersForTopic.add(observer);
             });
+
+            this._topicsObserverSubscribed.set(observer, topicsSet);
 
             let client: Paho.Client;
             const { clientId = this.clientId } = options;
@@ -198,6 +203,15 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             return () => {
                 logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
+                // delete the observer from the topic(s) sets
+                const topicsSubscribed:Set<string> = this._topicsObserverSubscribed.get(observer);
+                topicsSubscribed.forEach(t => {
+                    const observersForTopic = this._topicObservers.get(t);
+                    observersForTopic.delete(observer);
+                });
+
+                
+
                 if (client) {
                     targetTopics.forEach(topic => {
                         if (client.isConnected()) {
@@ -211,8 +225,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
                         observersForTopic.clear();
                     });
-
-                    this.disconnect(clientId);
                 }
 
                 return null;
