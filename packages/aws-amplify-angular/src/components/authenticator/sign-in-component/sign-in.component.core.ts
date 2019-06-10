@@ -13,7 +13,7 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { includes, labelMap, composePhoneNumber } from '../common';
 import { UsernameAttributes, UsernameFieldOutput } from '../types';
@@ -42,7 +42,9 @@ const template = `
         (usernameFieldChanged)="onUsernameFieldChanged($event)"
       ></amplify-auth-username-field-core>
       <div class="amplify-form-row amplify-signin-password">
-        <label class="amplify-input-label" for="passwordField">{{ this.amplifyService.i18n().get('Password *') }}</label>
+        <label class="amplify-input-label" for="passwordField">
+          {{ this.amplifyService.i18n().get('Password *') }}
+        </label>
         <input #passwordField
           (keyup)="setPassword(passwordField.value)"
           (keyup.enter)="onSignIn()"
@@ -52,11 +54,13 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
           data-test="${auth.signIn.passwordInput}"
         />
-        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">{{ this.amplifyService.i18n().get('Forgot Password?') }}
+        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">
+          {{ this.amplifyService.i18n().get('Forgot Password?') }}
         <a class="amplify-form-link"
             (click)="onForgotPassword()"
             data-test="${auth.signIn.forgotPasswordLink}"
-          >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
+          >{{ this.amplifyService.i18n().get('Reset your password') }}</a>
+        </span>
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
@@ -108,15 +112,15 @@ export class SignInComponentCore implements OnInit {
   errorMessage: string;
   local_phone_number: string = '';
   country_code: string = '1';
-  email: string = '';    
-
+  email: string = '';
+  amplifyUI: any; 
   signInUsername = '';
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('SignInComponent');
     this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
-    this.amplifyUI = AmplifyUI
+    this.amplifyUI = AmplifyUI;
   }
 
   @Input()
@@ -133,7 +137,9 @@ export class SignInComponentCore implements OnInit {
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
     this.email = authState.user? authState.user.email || '' : '';
-    this.country_code = authState.user && authState.user.country_code? authState.user.country_code  : this.country_code;
+    this.country_code = authState.user &&
+      authState.user.country_code? authState.user.country_code  :
+      this.country_code;
     this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
   }
 
@@ -149,7 +155,7 @@ export class SignInComponentCore implements OnInit {
   }
 
   shouldHide(comp) {
-    return this.hide.filter(item => ite= comp)
+    return this.hide.filter(item => item === comp)
       .length > 0;
   }
 

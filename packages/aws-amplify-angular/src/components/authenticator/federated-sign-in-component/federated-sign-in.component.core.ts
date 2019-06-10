@@ -34,7 +34,7 @@ const template = `
       [amazonClientId]="amazonClientId"
     ></amplify-auth-amazon-sign-in-core>
   </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-federated-sign-in-core',
@@ -61,13 +61,13 @@ export class FederatedSignInComponentCore {
     if (federatedSignInConfig) {
       this._federatedSignInConfig = federatedSignInConfig;
       if (this._federatedSignInConfig.googleClientId) {
-        this.googleClientId = this._federatedSignInConfig.googleClientId
+        this.googleClientId = this._federatedSignInConfig.googleClientId;
       }
       if (this._federatedSignInConfig.facebookAppId) {
-        this.facebookAppId = this._federatedSignInConfig.facebookAppId
+        this.facebookAppId = this._federatedSignInConfig.facebookAppId;
       }
       if (this._federatedSignInConfig.amazonClientId) {
-        this.amazonClientId = this._federatedSignInConfig.amazonClientId
+        this.amazonClientId = this._federatedSignInConfig.amazonClientId;
       }
     }
   }

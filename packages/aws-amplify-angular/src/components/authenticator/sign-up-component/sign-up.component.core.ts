@@ -249,7 +249,8 @@ export class SignUpComponentCore implements OnInit {
     let labelCheck = false;
     this.signUpFields.forEach(field => {
         if (field.label === this.getUsernameLabel()) {
-            this.amplifyService.logger(`Changing the username to the value of ${field.label}`, 'DEBUG');
+            this.amplifyService
+            .logger(`Changing the username to the value of ${field.label}`, 'DEBUG');
             this.user.username = this.user.attributes[field.key] || this.user.username;
             labelCheck = true;
         }
