@@ -92,7 +92,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
         const requestParams: RequestParams = this.generateRequestParams(params, this._sessionInfo);
         if (eventType === "MediaAutoTrack") {
             if (this._isBrowser) {
-                if ( isEmpty(get(requestParams, "eventData.properties.domElementId", null))) {
+                if (!isEmpty(get(requestParams, "eventData.properties.domElementId", null))) {
                         const isLoaded = await this.isElementFullyLoaded(
                             this.loadElement, requestParams.eventData.properties["domElementId"], 500, 5);
                         if (isLoaded) {
