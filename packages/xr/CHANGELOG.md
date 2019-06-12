@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.18-unstable.1"></a>
+## [0.1.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.17...@aws-amplify/xr@0.1.18-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
 <a name="0.1.17"></a>
 ## [0.1.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.17-unstable.0...@aws-amplify/xr@0.1.17) (2019-05-14)
 
