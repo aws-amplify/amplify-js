@@ -10,21 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import MLClass from './ML';
+import PredictionsClass from './Predictions';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AmazonTranslate } from './Providers';
+import { AmazonAIConvertPredictionsProvider } from './Providers';
 const logger = new Logger('PubSub');
 
-let _instance: MLClass = null;
+let _instance: PredictionsClass = null;
 
 if (!_instance) {
     logger.debug('Create ML Instance');
-    _instance = new MLClass({});
+    _instance = new PredictionsClass({});
 }
 
-const ML = _instance;
-Amplify.register(ML);
+const Predictions = _instance;
+Amplify.register(Predictions);
 
-export default ML;
-export { AmazonTranslate };
+export default Predictions;
+export { AmazonAIConvertPredictionsProvider };

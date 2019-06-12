@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/ml",
+  "name": "@aws-amplify/predictions",
   "version": "0.1.0",
   "description": "Machine learning category of aws-amplify",
   "main": "./lib/index.js",

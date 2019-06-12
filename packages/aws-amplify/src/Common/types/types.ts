@@ -6,7 +6,7 @@ export interface AmplifyConfig {
     Cache?: object;
     UI?: object;
     XR?: object;
-    ML?: object;
+    Predictions?: object;
 }
 
 export interface ICredentials {

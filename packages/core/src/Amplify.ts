@@ -19,7 +19,7 @@ export default class Amplify {
     static Pushnotification = null;
     static UI = null;
     static XR = null;
-    static ML = null;
+    static Predictions = null;
 
     static Logger = LoggerClass;
     static ServiceWorker = null;

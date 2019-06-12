@@ -3,13 +3,13 @@ const CompressionPlugin = require("compression-webpack-plugin")
 
 module.exports = {
     entry: {
-        'aws-amplify-ml': './src/index.ts',
-        'aws-amplify-ml.min': './src/index.ts'
+        'aws-amplify-predictions': './src/index.ts',
+        'aws-amplify-predictions.min': './src/index.ts'
     },
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws_amplify_ml',
+        library: 'aws_amplify_predictions',
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
