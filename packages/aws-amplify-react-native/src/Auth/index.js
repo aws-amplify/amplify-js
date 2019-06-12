@@ -71,7 +71,6 @@ export function withAuthenticator(
                     signUpConfig
                 }
             }
-            console.log('this.authConfig', this.authConfig)
         }
 
         handleAuthStateChange(state, data) {
