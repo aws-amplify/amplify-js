@@ -32,8 +32,8 @@ export default class S3Image extends Component {
     }
 
     getImageSource() {
-        const { imgKey, level } = this.props;
-        Storage.get(imgKey, { level : level? level : 'public'})
+        const { imgKey, level, identityId, track } = this.props;
+        Storage.get(imgKey, { level : level? level : 'public', identityId, track })
             .then(url => {
                 logger.debug(url);
                 this.setState({
@@ -44,7 +44,7 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { imgKey, body, contentType, level } = this.props;
+        const { imgKey, body, contentType, level, track } = this.props;
         if (!imgKey) {
             logger.debug('empty imgKey');
             return ;
@@ -56,7 +56,8 @@ export default class S3Image extends Component {
             const type = contentType? contentType : 'binary/octet-stream';
             const opt = {
                 contentType: type,
-                level: level? level : 'public'
+                level: level? level : 'public',
+                track
             }
             const ret = Storage.put(imgKey, body, opt);
             ret.then(data => {

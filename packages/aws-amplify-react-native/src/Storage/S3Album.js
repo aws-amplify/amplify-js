@@ -34,9 +34,9 @@ export default class S3Album extends Component {
     }
 
     componentDidMount() {
-        const { path, level, filter } = this.props;
+        const { path, level, filter, track, identityId } = this.props;
         logger.debug(path);
-        Storage.list(path, { level: level? level : 'public' })
+        Storage.list(path, { level: level? level : 'public', track, identityId })
             .then(data => {
                 logger.debug(data);
                 if (filter) { data = filter(data); }
