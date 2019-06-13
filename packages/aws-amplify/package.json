@@ -47,7 +47,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/analytics": "1.2.17-unstable.2",
+    "@aws-amplify/analytics": "^1.2.16",
     "@aws-amplify/api": "^1.0.35",
     "@aws-amplify/auth": "^1.2.24",
     "@aws-amplify/cache": "^1.0.27",
