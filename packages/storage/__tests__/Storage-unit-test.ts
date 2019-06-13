@@ -295,7 +295,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should allow server side encryption when present', () => {
+        test('should add server side encryption to storage config when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'testBucket',
@@ -313,7 +313,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should add SSECustomerAlgorithm when present', () => {
+        test('should add SSECustomerAlgorithm to storage config when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'thisIsABucket',
@@ -331,7 +331,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should add SSECustomerKey when present', () => {
+        test('should add SSECustomerKey to storage config when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'buckbuckbucket',
@@ -349,7 +349,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should add SSECustomerKeyMD5 when present', () => {
+        test('should add SSECustomerKeyMD5 to storage config when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'buckbuckbucaket',
@@ -367,7 +367,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should add SSEKMSKeyId when present', () => {
+        test('should add SSEKMSKeyId to storage config when present', () => {
             const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'bucket2',
@@ -382,6 +382,23 @@ describe('Storage', () => {
                     region: 'region1',
                     SSEKMSKeyId: 'giveMeAnId',
                 },
+            });
+        });
+
+        test('should not add randomKeyId to storage config object when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'bucket2',
+                aws_user_files_s3_bucket_region: 'region1',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ randomKeyId: 'someRandomKey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'bucket2',
+                    region: 'region1',
+                }
             });
         });
     });

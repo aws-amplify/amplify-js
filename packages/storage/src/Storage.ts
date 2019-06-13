@@ -100,74 +100,34 @@ export default class StorageClass {
         if (!config) return this._config;
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const {
-            bucket,
-            region,
-            level,
-            track,
-            customPrefix,
-            serverSideEncryption,
-            SSECustomerAlgorithm,
-            SSECustomerKey,
-            SSECustomerKeyMD5,
-            SSEKMSKeyId,
-         } = amplifyConfig.Storage as any;
-        /*
-            Update DEFAULT_PROVIDER with defined attributes
-            bucket, region, level, track, customPrefix, serverSideEncryption if exists 
-            on amplifyConfig.Storage, backwards compatible issue 
-        */
-        if (
-            (Object.keys(amplifyConfig.Storage).find(k => k !== undefined))
-            && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
+
+        const storageArrayKeys = [
+            'bucket',
+            'region',
+            'level',
+            'track',
+            'customPrefix',
+            'serverSideEncryption',
+            'SSECustomerAlgorithm',
+            'SSECustomerKey',
+            'SSECustomerKeyMD5',
+            'SSEKMSKeyId'
+        ];
+
+        const isInStorageArrayKeys = (k: any) => storageArrayKeys.includes(k);
+
+        const isDefinedNonObject = (v: any) => typeof v !== 'object' && v !== undefined;
+
+        if ((Object.values(amplifyConfig.Storage)) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
             amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
         }
 
-        if (bucket) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].bucket = bucket;
-            delete amplifyConfig.Storage['bucket'];
-        }
-        if (region) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].region = region;
-            delete amplifyConfig.Storage['region'];
-        }
-        if (level) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].level = level;
-            delete amplifyConfig.Storage['level'];
-        }
-        if (track) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].track = track;
-            delete amplifyConfig.Storage['track'];
-        }
-        if (customPrefix) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].customPrefix = customPrefix;
-            delete amplifyConfig.Storage['customPrefix'];
-        }
-
-        if (serverSideEncryption) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].serverSideEncryption = serverSideEncryption;
-            delete amplifyConfig.Storage['serverSideEncryption'];
-        }
-
-        if (SSECustomerAlgorithm) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerAlgorithm = SSECustomerAlgorithm;
-            delete amplifyConfig.Storage['SSECustomerAlgorithm'];
-        }
-
-        if (SSECustomerKey) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerKey = SSECustomerKey;
-            delete amplifyConfig.Storage['SSECustomerKey'];
-        }
-
-        if (SSECustomerKeyMD5) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].SSECustomerKeyMD5 = SSECustomerKeyMD5;
-            delete amplifyConfig.Storage['SSECustomerKeyMD5'];
-        }
-
-        if (SSEKMSKeyId) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].SSEKMSKeyId = SSEKMSKeyId;
-            delete amplifyConfig.Storage['SSEKMSKeyId'];
-        }
+        Object.entries(amplifyConfig.Storage).map(([key, value]) => {
+            if (key && isInStorageArrayKeys(key) && isDefinedNonObject(value)) {
+                amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
+                delete amplifyConfig.Storage[key];
+            }
+        });
 
         // only update new values for each provider
         Object.keys(amplifyConfig.Storage).forEach((providerName) => {
