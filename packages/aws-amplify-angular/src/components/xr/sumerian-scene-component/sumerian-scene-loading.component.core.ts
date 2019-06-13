@@ -88,7 +88,7 @@ export class SumerianSceneLoadingComponentCore {
   @Input() sceneName: string;
   @Input() sceneError: string | null;
 
-  AmplifyUI: AmplifyUI;
+  AmplifyUI: any;
 
   constructor() {
     this.AmplifyUI = AmplifyUI;
