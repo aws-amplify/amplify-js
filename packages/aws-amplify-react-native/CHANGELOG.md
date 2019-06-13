@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.13-unstable.3"></a>
+## [2.1.13-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.2...aws-amplify-react-native@2.1.13-unstable.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Remove console log ([#3305](https://github.com/aws/aws-amplify/issues/3305)) ([f03b09c](https://github.com/aws/aws-amplify/commit/f03b09c))
+
+
+
+
 <a name="2.1.13-unstable.2"></a>
 ## [2.1.13-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.1...aws-amplify-react-native@2.1.13-unstable.2) (2019-05-24)
 
