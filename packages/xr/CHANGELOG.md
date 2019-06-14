@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.18-unstable.2"></a>
+## [0.1.18-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.18-unstable.1...@aws-amplify/xr@0.1.18-unstable.2) (2019-06-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/xr
+
 <a name="0.1.18-unstable.1"></a>
 ## [0.1.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.17...@aws-amplify/xr@0.1.18-unstable.1) (2019-05-24)
 
