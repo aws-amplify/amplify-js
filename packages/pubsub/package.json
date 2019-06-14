@@ -52,7 +52,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.27",
+    "@aws-amplify/core": "^1.0.28-unstable.2",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },

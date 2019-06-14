@@ -55,7 +55,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "aws-sdk": "2.472.0",
+    "aws-sdk": "2.474.0",
     "url": "^0.11.0"
   },
   "jest": {
