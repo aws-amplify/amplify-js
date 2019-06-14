@@ -14,6 +14,7 @@
 import * as Observable from 'zen-observable';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider } from './Providers';
 
@@ -24,6 +25,21 @@ export default class PubSub {
     private _options: PubSubOptions;
 
     private _pluggables: PubSubProvider[];
+
+    /**
+     * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
+     */
+    private _awsAppSyncProvider: AWSAppSyncProvider;
+
+    /**
+     * Lazy instantiate awsAppSyncProvider when it is required by the API category
+     */
+    private get awsAppSyncProvider() {
+        if (!this._awsAppSyncProvider) {
+            this._awsAppSyncProvider = new AWSAppSyncProvider();
+        }
+        return this._awsAppSyncProvider;
+    }
 
     /**
      * Initialize PubSub with AWS configurations
@@ -53,11 +69,6 @@ export default class PubSub {
 
         this._options = Object.assign({}, this._options, opt);
 
-        if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region &&
-            !this._pluggables.find(p => p.getProviderName() === 'AWSAppSyncProvider')) {
-            this.addPluggable(new AWSAppSyncProvider());
-        }
-
         this._pluggables.map((pluggable) => pluggable.configure(this._options));
 
         return this._options;
@@ -77,15 +88,41 @@ export default class PubSub {
         }
     }
 
-    async publish(topics: string[] | string, msg: any, options: ProvidertOptions) {
-        return this._pluggables.map(provider => provider.publish(topics, msg, options));
+    private getProviderByName(providerName) {
+        if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
+            return this.awsAppSyncProvider;
+        }
+
+        return this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
     }
 
-    subscribe(topics: string[] | string, options: ProvidertOptions): Observable<any> {
+    private getProviders(options: ProvidertOptions = {}) {
+        const { provider: providerName } = options;
+        if (!providerName) {
+            return this._pluggables;
+        }
+
+        const provider = this.getProviderByName(providerName);
+        if (!provider) {
+            throw new Error(`Could not find provider named ${providerName}`);
+        }
+
+        return [provider];
+    }
+
+    async publish(topics: string[] | string, msg: any, options?: ProvidertOptions) {
+        return Promise.all(
+            this.getProviders(options).map(provider => provider.publish(topics, msg, options))
+        );
+    }
+
+    subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any> {
         logger.debug('subscribe options', options);
 
+        const providers = this.getProviders(options);
+
         return new Observable(observer => {
-            const observables = this._pluggables.map(provider => ({
+            const observables = providers.map(provider => ({
                 provider,
                 observable: provider.subscribe(topics, options),
             }));

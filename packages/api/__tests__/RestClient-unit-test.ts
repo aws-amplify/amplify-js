@@ -16,7 +16,13 @@ jest.mock('axios', () => {
                     rej({
                         data: 'error'
                     });
-                } else {
+                }
+                else if (signed_params && signed_params.responseType === 'blob') {
+                    res({
+                        data: 'blob'
+                    });
+                }
+                else {
                     res({
                         data: 'data'
                     });
@@ -113,6 +119,22 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual('data');
+        });
+
+        test('ajax with custom responseType', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', { body: 'body', responseType: 'blob' })).toEqual('blob');
         });
 
         test('ajax with Authorization header', async () => {

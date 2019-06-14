@@ -36,7 +36,7 @@ import {
     AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
-import defaultSignUpFields from './common/default-sign-in-fields'
+import signUpWithUsernameFields, { signUpWithEmailFields, signUpWithPhoneNumberFields } from './common/default-sign-up-fields'
 
 
 const logger = new Logger('SignUp');
@@ -50,25 +50,27 @@ export default class SignUp extends AuthPiece {
         this.sortFields = this.sortFields.bind(this);
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
-        this.defaultSignUpFields = defaultSignUpFields;
         this.needPrefix = this.needPrefix.bind(this);
         this.header = (this.props &&
             this.props.signUpConfig && 
             this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
+        
+        const { usernameAttributes='username' }= this.props;
+        if (usernameAttributes === 'email') {
+            this.defaultSignUpFields = signUpWithEmailFields;
+        } else if (usernameAttributes === 'phone_number') {
+            this.defaultSignUpFields = signUpWithPhoneNumberFields;
+        } else {
+            this.defaultSignUpFields = signUpWithUsernameFields;
+        }
     }
 
-    validate() {
-        const invalids = [];
-        this.signUpFields.map((el) => {
-            if (el.required && !this.state[el.key]) {
-                el.invalid = true;
-                invalids.push(el.label);
-            } else {
-                el.invalid = false;
-            }        
-        });
-        return invalids;
-      }
+    isValid() {
+        for (const el in this.signUpFields) {
+            if (el.required && !this.state[el.key]) return false;
+        }    
+        return true;
+    }
 
     sortFields() {
 
@@ -153,15 +155,11 @@ export default class SignUp extends AuthPiece {
     }
 
     signUp() {
-        const validation = this.validate();
-        if (validation && validation.length > 0) {
-          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
-        }
         if (!Auth || typeof Auth.signUp !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let signup_info = {
+        const signup_info = {
             username: this.state.username,
             password: this.state.password,
             attributes: {
@@ -178,9 +176,25 @@ export default class SignUp extends AuthPiece {
                   const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
                   signup_info.attributes[newKey] = inputVals[index];
                 }
-              }
+            }
         });
 
+        let labelCheck = false;
+        this.signUpFields.forEach(field => {
+            if (field.label === this.getUsernameLabel()) {
+                logger.debug(`Changing the username to the value of ${field.label}`);
+                signup_info.username = signup_info.attributes[field.key] || signup_info.username;
+                labelCheck = true;
+            }
+        });
+        if (!labelCheck && !signup_info.username){
+            // if the customer customized the username field in the sign up form
+            // He needs to either set the key of that field to 'username'
+            // Or make the label of the field the same as the 'usernameAttributes'
+            throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
+        }
+
+        logger.debug('Signing up with', signup_info);
         Auth.signUp(signup_info).then((data) => {
             this.changeState('confirmSignUp', data.user.username)
         })
@@ -204,7 +218,7 @@ export default class SignUp extends AuthPiece {
                                     key = {field.key}
                                     theme={theme}
                                     type={field.type}
-                                    secureTextEntry={field.type === 'password' ? true: false}
+                                    secureTextEntry={field.type === 'password'}
                                     onChangeText={(text) => {
                                             const stateObj = this.state;
                                             stateObj[field.key] = text;
@@ -224,6 +238,7 @@ export default class SignUp extends AuthPiece {
                                     placeholder={I18n.get(field.placeholder)}
                                     keyboardType="phone-pad"
                                     required={field.required}
+                                    defaultDialCode={this.getDefaultDialCode}
                                 />
                             )
                         })
@@ -232,7 +247,7 @@ export default class SignUp extends AuthPiece {
                             text={I18n.get('Sign Up').toUpperCase()}
                             theme={theme}
                             onPress={this.signUp}
-                            disabled={!this.state.username || !this.state.password}
+                            disabled={!this.isValid}
                         />
                     </View>
                     <View style={theme.sectionFooter}>

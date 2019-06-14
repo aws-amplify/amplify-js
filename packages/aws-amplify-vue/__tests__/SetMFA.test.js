@@ -18,7 +18,7 @@ describe('SetMFA', () => {
     const defaultData = SetMFA.data();
     expect(defaultData.user).toBe(null);
     expect(defaultData.mfaPreference).toBe(null);
-    expect(defaultData.token).toBe(null);
+    expect(defaultData.token).toBe('');
     expect(defaultData.displayTotpSetup).toBe(false);
     expect(defaultData.logger).toEqual({});
     expect(defaultData.error).toEqual('');
