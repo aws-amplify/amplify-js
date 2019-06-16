@@ -1517,6 +1517,28 @@ export default class AuthClass {
     }
 
     /**
+     * Creates the user session using refreshToken.
+     * In case of SSO, we can pass the refresh token to another app to create new session in that app.
+     * @param {String} username 
+     * @param {String} refreshToken 
+     * @return - A promise resolves to session object if success
+     */
+    public createSession(username: string, refreshToken: string): Promise<CognitoUserSession | any> {
+        const cognitoUser = this.createCognitoUser(username);
+        const cognitoRefreshToken = new CognitoRefreshToken({ RefreshToken: refreshToken });
+        return new Promise((res, rej) => {
+            cognitoUser.refreshSession(cognitoRefreshToken, (error, data) => {
+                if (error) {
+                    logger.debug('refreshSession failed', error);
+                    rej(error);
+                } else {
+                    res(data);
+                }
+            });
+        });
+    }
+
+    /**
      * Used to complete the OAuth flow with or without the Cognito Hosted UI
      * @param {String} URL - optional parameter for customers to pass in the response URL
      */

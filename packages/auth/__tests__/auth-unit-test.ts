@@ -2595,6 +2595,34 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
     });
+
+    describe('createSession test', () => {
+        test('happy case', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'refreshSession')
+                .mockImplementation((refreshToken, callback) => {
+                    return callback(null, 'cognitoSession');
+                });
+            const auth = new Auth(authOptions);
+            expect.assertions(1);
+            expect(await auth.createSession('username', 'refreshToken')).toBe('cognitoSession');
+            spyon.mockClear();
+        });
+
+        test('error case: token expired', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'refreshSession')
+                .mockImplementation((refreshToken, callback) => {
+                    return callback('token expired');
+                });
+            const auth = new Auth(authOptions);
+            expect.assertions(1);
+            try {
+                await auth.createSession('username', 'refreshToken');
+            } catch (e) {
+                expect(e).toBe('token expired');
+            }
+            spyon.mockClear();
+        });
+    });
 });
 
 
