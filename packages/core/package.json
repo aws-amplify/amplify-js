@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/core",
-  "version": "1.0.28-unstable.3",
+  "version": "1.0.28",
   "description": "Core category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
