@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.29"></a>
+## [1.0.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.29-unstable.4...@aws-amplify/pubsub@1.0.29) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 <a name="1.0.29-unstable.4"></a>
 ## [1.0.29-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.29-unstable.3...@aws-amplify/pubsub@1.0.29-unstable.4) (2019-06-17)
 
