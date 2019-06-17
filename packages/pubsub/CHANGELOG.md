@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.29-unstable.4"></a>
+## [1.0.29-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.29-unstable.3...@aws-amplify/pubsub@1.0.29-unstable.4) (2019-06-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** fix the typescript error ([#3461](https://github.com/aws/aws-amplify/issues/3461)) ([3497986](https://github.com/aws/aws-amplify/commit/3497986))
+
+
+
+
 <a name="1.0.29-unstable.3"></a>
 ## [1.0.29-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.29-unstable.2...@aws-amplify/pubsub@1.0.29-unstable.3) (2019-06-14)
 
