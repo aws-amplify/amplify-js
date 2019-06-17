@@ -990,43 +990,51 @@ describe('API test', () => {
         });
 
         test('non-default timeout', async () => {
-            const custom_config = {
-                API: {
-                    endpoints: [
-                        {
-                            name: 'apiName',
-                            endpoint: 'https://www.amazonaws.com'
-                        }
-                    ]
-                }
+            const resp = { data: [{ name: 'Bob' }] };
+
+            const options = {
+                aws_project_region: 'region',
+                aws_cloud_logic_custom
             };
-            const api = new API({});
-            api.configure(custom_config);
-            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+
+            const api = new API(options);
+            const creds = {
+                secretAccessKey: 'secret',
+                accessKeyId: 'access',
+                sessionToken: 'token'
+            };
+
+            const creds2 = {
+                secret_key: 'secret',
+                access_key: 'access',
+                session_token: 'token'
+            };
+
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return new Promise((res, rej) => {
-                    res('cred');
+                    res(creds);
                 });
             });
 
-            const spyonRequest = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+            const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+            const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+                return { headers: {} };
+            });
+
+            const spyAxios = jest.spyOn(axios, 'default').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    res({});
+                    res(resp);
                 });
             });
-            await api.get('apiName', 'path', {timeout: 2500});
 
-            expect(spyonRequest).toBeCalledWith({
-                "data": null, 
-                "headers": {}, 
-                "host": "www.amazonaws.compath", 
-                "method": "GET", 
-                "path": "/",
-                "responseType": "json",
-                "signerServiceInfo": undefined, 
-                "url": "https://www.amazonaws.compath/",
-                "timeout": 2500
-            }, undefined);
-
+            const init = {
+                timout: 2500
+            }
+            await api.get('apiName', '/items', init);
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 2500};
+            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
         test('query-string on init', async () => {
