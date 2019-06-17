@@ -1030,7 +1030,7 @@ describe('API test', () => {
             });
 
             const init = {
-                timout: 2500
+                timeout: 2500
             }
             await api.get('apiName', '/items', init);
             const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 2500};
