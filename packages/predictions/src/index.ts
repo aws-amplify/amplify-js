@@ -19,7 +19,7 @@ const logger = new Logger('PubSub');
 let _instance: PredictionsClass = null;
 
 if (!_instance) {
-    logger.debug('Create ML Instance');
+    logger.debug('Create Predictions Instance');
     _instance = new PredictionsClass({});
 }
 

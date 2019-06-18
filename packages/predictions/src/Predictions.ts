@@ -109,6 +109,8 @@ export default class Predictions {
             logger.debug("textToSpeech");
             return this.getPluggableToExecute(this._convertPluggables, input.transcription.providerOptions)
                 .convertSpeechToText(input);
+        } else {
+            throw new Error("Invalid input received");
         }
     }
 
@@ -136,15 +138,17 @@ export default class Predictions {
     }
 
     private isConvertPluggable(obj: any): obj is AbstractConvertPredictionsProvider {
-        console.log(obj);
         return obj && obj.getCategory() === "Predictions:Convert";
     }
+
     private isIdentifyPluggable(obj: any): obj is AbstractIdentifyPredictionsProvider {
         return obj && obj.getCategory() === "Predictions:Identify";
     }
+
     private isInterpretPluggable(obj: any): obj is AbstractInterpretPredictionsProvider {
         return obj && obj.getCategory() === "Predictions:Interpret";
     }
+
     private isInferPluggable(obj: any): obj is AbstractInferPredictionsProvider {
         return obj && obj.getCategory() === "Predictions:Infer";
     }

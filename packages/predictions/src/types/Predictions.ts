@@ -16,7 +16,7 @@ export interface TranslateTextProviderOptions extends AbstractProviderOptions {
     targetLanguage?: LanguageCode
 }
 
-export type TranslateTextInput = {
+export interface TranslateTextInput {
     translateText: {
         source: {
             text: string,
@@ -24,14 +24,14 @@ export type TranslateTextInput = {
         },
         providerOptions: TranslateTextProviderOptions
     }
-};
+}
 
 export interface TextToSpeechProviderOptions extends AbstractProviderOptions {
     terminology?: string,
     voiceId?: string
 }
 
-export type TextToSpeechInput = {
+export interface TextToSpeechInput {
     textToSpeech: {
         source: {
             text: string,
@@ -39,14 +39,14 @@ export type TextToSpeechInput = {
         }
         providerOptions: TextToSpeechProviderOptions
     }
-};
+}
 
 export interface SpeechToTextProviderOptions extends AbstractProviderOptions {
     maxSpeakers?: number,
     language?: LanguageCode
 }
 
-export type SpeechToTextInput = {
+export interface SpeechToTextInput {
     transcription: {
         source: {
             storage: {
@@ -54,13 +54,14 @@ export type SpeechToTextInput = {
                 level?: string,
                 identityId?: string
             },
-            file: File,
+            file: string,
+            outputBucketName: string,
             bytes: Buffer | ArrayBuffer | Blob | string; // TODO: Confirm the use of ArrayBuffer
             language?: LanguageCode
         }
         providerOptions: SpeechToTextProviderOptions
     }
-};
+}
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
