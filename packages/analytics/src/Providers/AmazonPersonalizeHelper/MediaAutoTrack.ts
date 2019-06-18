@@ -12,8 +12,6 @@
  */
 import {RequestParams, SessionInfo} from './DataType';
 
-
-
 enum HTML5_MEDIA_EVENT {
         "PLAY" = "play",
         "PAUSE" = "pause",
