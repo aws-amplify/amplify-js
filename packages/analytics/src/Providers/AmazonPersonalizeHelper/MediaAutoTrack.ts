@@ -67,18 +67,18 @@ export class MediaAutoTrack {
             loaded: false,
             listeners: [],
 
-            load: function(callback) {
+            load(callback) {
                 const _this = this;
                 this.listeners.push(callback);
 
-                if(this.loaded) {
+                if (this.loaded) {
                     setTimeout(function() {
                         _this.done();
                     });
                     return;
                 }
 
-                if(this.loading) {
+                if (this.loading) {
                     return;
                 }
 
@@ -95,10 +95,10 @@ export class MediaAutoTrack {
                 document.body.appendChild(script);
             },
 
-            done: function() {
+            done() {
                 delete window['onYouTubeIframeAPIReady'];
 
-                while(this.listeners.length) {
+                while (this.listeners.length) {
                     this.listeners.pop()(window['YT']);
                 }
             }
