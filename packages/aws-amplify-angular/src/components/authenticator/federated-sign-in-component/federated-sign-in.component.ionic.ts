@@ -31,7 +31,7 @@ const template = `
 
   <amplify-auth-amazon-sign-in-ionic
     *ngIf="amazonClientId"
-    [amazonClientId]="facebookAppId"
+    [amazonClientId]="amazonClientId"
   ></amplify-auth-amazon-sign-in-ionic>
 </div>
 `
