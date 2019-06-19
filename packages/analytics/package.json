@@ -55,6 +55,7 @@
   "dependencies": {
     "@aws-amplify/cache": "^1.0.28",
     "@aws-amplify/core": "^1.0.28",
+    "lodash": "^4.17.11",
     "uuid": "^3.2.1",
     "youtube-iframe": "^1.0.3"
   },
