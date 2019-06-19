@@ -14,6 +14,7 @@ export namespace Components {
     'signIn': Function;
   }
   interface AmplifyButton {
+    'primaryColor': string;
     'role': string;
     'type': string;
   }
@@ -227,6 +228,7 @@ declare namespace LocalJSX {
     'signIn'?: Function;
   }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
+    'primaryColor'?: string;
     'role'?: string;
     'type'?: string;
   }

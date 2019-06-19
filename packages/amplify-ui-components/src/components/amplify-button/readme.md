@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type     | Default    |
-| -------- | --------- | ----------- | -------- | ---------- |
-| `role`   | `role`    |             | `string` | `'button'` |
-| `type`   | `type`    |             | `string` | `'button'` |
+| Property       | Attribute       | Description | Type     | Default     |
+| -------------- | --------------- | ----------- | -------- | ----------- |
+| `primaryColor` | `primary-color` |             | `string` | `'#ff9900'` |
+| `role`         | `role`          |             | `string` | `'button'`  |
+| `type`         | `type`          |             | `string` | `'button'`  |
 
 
 ## Dependencies

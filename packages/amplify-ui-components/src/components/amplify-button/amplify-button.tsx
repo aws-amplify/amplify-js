@@ -10,10 +10,11 @@ export class AmplifyButton {
 
   @Prop() type: string = 'button';
   @Prop() role: string = 'button';
+  @Prop() primaryColor: string = '#000000';
 
   render() {
     return (
-      <button class={button} role={this.role} type={this.type}>
+      <button class={button} role={this.role} type={this.type} style={{"background-color": this.primaryColor}}>
         <slot />
       </button>
     );
