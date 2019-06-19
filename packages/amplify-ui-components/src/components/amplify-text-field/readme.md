@@ -17,6 +17,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-examples](../amplify-examples)
+
 ### Depends on
 
 - [amplify-text-input](../amplify-text-input)
@@ -25,6 +29,7 @@
 ```mermaid
 graph TD;
   amplify-text-field --> amplify-text-input
+  amplify-examples --> amplify-text-field
   style amplify-text-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

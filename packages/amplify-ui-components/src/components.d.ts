@@ -37,6 +37,11 @@ export namespace Components {
   interface AmplifyScene {
     'sceneName': string;
   }
+  interface AmplifySceneLoading {
+    'loadPercentage': number;
+    'sceneError': object;
+    'sceneName': string;
+  }
   interface AmplifySection {
     'role': string;
   }
@@ -141,6 +146,12 @@ declare global {
     new (): HTMLAmplifySceneElement;
   };
 
+  interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
+  var HTMLAmplifySceneLoadingElement: {
+    prototype: HTMLAmplifySceneLoadingElement;
+    new (): HTMLAmplifySceneLoadingElement;
+  };
+
   interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
   var HTMLAmplifySectionElement: {
     prototype: HTMLAmplifySectionElement;
@@ -197,6 +208,7 @@ declare global {
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-scene': HTMLAmplifySceneElement;
+    'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-section-header': HTMLAmplifySectionHeaderElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
@@ -236,6 +248,11 @@ declare namespace LocalJSX {
     'role'?: string;
   }
   interface AmplifyScene extends JSXBase.HTMLAttributes<HTMLAmplifySceneElement> {
+    'sceneName'?: string;
+  }
+  interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
+    'loadPercentage'?: number;
+    'sceneError'?: object;
     'sceneName'?: string;
   }
   interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
@@ -300,6 +317,7 @@ declare namespace LocalJSX {
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-scene': AmplifyScene;
+    'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-section-header': AmplifySectionHeader;
     'amplify-sign-in': AmplifySignIn;
