@@ -13,7 +13,9 @@
 
 import * as React from 'react';
 import { Component } from 'react';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
+import { UsernameAttributes, FederatedConfig, AuthState } from './common/types';
 import Authenticator from './Authenticator';
 
 export { default as Authenticator } from './Authenticator';
@@ -33,11 +35,55 @@ export { default as Loading } from './Loading';
 
 export * from './Provider';
 
-import Greetings from './Greetings';
+interface AuthenticatorPropsBase {
+    federated?: FederatedConfig
+    onStateChange: (state: AuthState, data: {}) => void
+}
 
+interface AuthenticatorPropsSignedIn extends AuthenticatorPropsBase {
+    authState: 'signedIn'
+    authData: CognitoUser
+}
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
-    return class extends Component {
+interface AuthenticatorPropsNotSignedIn extends AuthenticatorPropsBase {
+    authState:
+        | 'signIn'
+        | 'signUp'
+        | 'confirmSignIn'
+        | 'confirmSignUp'
+        | 'forgotPassword'
+        | 'requireNewPassword'
+        | 'verifyContact'
+    authData: null
+}
+
+export type AuthenticatorProps =
+    | AuthenticatorPropsSignedIn
+    | AuthenticatorPropsNotSignedIn
+
+interface State {
+    authState?: AuthenticatorProps['authState']
+    authData?: AuthenticatorProps['authData']
+}
+
+export function withAuthenticator<P extends AuthenticatorProps>(
+    Comp: React.ComponentType<P>,
+    includeGreetings: boolean = false,
+    authenticatorComponents: React.ComponentType[] = [],
+    federated: FederatedConfig = null,
+    theme: {} = null,
+    signUpConfig: {} = {}
+): React.ComponentClass<Omit<P, keyof AuthenticatorProps>> {
+    return class extends Component<Omit<P, keyof AuthenticatorProps>, State> {
+        private authConfig: {
+            includeGreetings?: boolean
+            authenticatorComponents?: React.ComponentType[],
+            federated?: FederatedConfig,
+            usernameAttributes?: UsernameAttributes
+            theme?: {},
+            signUpConfig?: {}
+        }
+
         constructor(props) {
             super(props);
 
@@ -69,8 +115,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
         render() {
             const { authState, authData } = this.state;
-            const signedIn = (authState === 'signedIn');
-            if (signedIn) {
+            if (authState === 'signedIn') {
                 return (
                     <React.Fragment>
                         { this.authConfig.includeGreetings ? 
@@ -109,7 +154,15 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
     };
 }
 
-export class AuthenticatorWrapper extends Component {
+interface AuthenticatorWrapperProps {
+    children: (auth: AuthenticatorWrapperState['auth']) => React.ReactNode
+}
+interface AuthenticatorWrapperState {
+    auth: string
+    authData?: CognitoUser
+}
+
+export class AuthenticatorWrapper extends Component<AuthenticatorWrapperProps, AuthenticatorWrapperState> {
     constructor(props) {
         super(props);
 

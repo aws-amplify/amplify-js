@@ -16,6 +16,7 @@
     "lint": "tslint 'src/**/*.ts'"
   },
   "devDependencies": {
+    "@types/react": "^16.0.0",
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.3",
     "enzyme-to-json": "^3.2.1",
