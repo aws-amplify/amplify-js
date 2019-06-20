@@ -188,6 +188,15 @@ const authOptions : AuthOptions = {
     mandatorySignIn: false
 };
 
+const authOptionsWithEndpoint : AuthOptions = {
+    userPoolId: "awsUserPoolsId",
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId",
+    endpoint: "https://myproxy.com",
+    mandatorySignIn: false
+};
+
 const authOptionsWithNoUserPoolId : AuthOptions = {
     userPoolWebClientId: "awsUserPoolsWebClientId",
     region: "region",
@@ -212,6 +221,25 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
 describe('auth unit test', () => {
     describe('signUp', () => {
+        test('happy case with an endpoint provided', async () => {
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
+            const auth = new Auth(authOptionsWithEndpoint);
+
+            const attrs = {
+                username: 'username',
+                password: 'password',
+                attributes: {
+                    email: 'email',
+                    phone_number: 'phone_number',
+                    otherAttrs: 'otherAttrs'
+                }
+            };
+
+            expect(await auth.signUp(attrs)).toBe('signUpResult');
+
+            spyon.mockClear();
+        });
+
         test('happy case with object attr', async () => {
             const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
             const auth = new Auth(authOptions);

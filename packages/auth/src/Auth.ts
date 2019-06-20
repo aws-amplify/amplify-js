@@ -142,7 +142,8 @@ export default class AuthClass {
             identityPoolId,
             mandatorySignIn,
             refreshHandlers,
-            identityPoolRegion
+            identityPoolRegion,
+            endpoint
         } = this._config;
 
         if (!this._config.storage) {
@@ -166,6 +167,7 @@ export default class AuthClass {
 
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
+                endpoint,
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId,
             };
