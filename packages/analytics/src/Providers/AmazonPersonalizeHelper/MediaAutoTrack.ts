@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import * as YouTubeIframeLoader from 'youtube-iframe';
 import {RequestParams, SessionInfo} from './DataType';
 
 enum HTML5_MEDIA_EVENT {
@@ -42,6 +41,8 @@ export class MediaAutoTrack {
             [EVENT_TYPE.PAUSE]: this.pauseEventAction.bind(this)
         };
 
+    private _youTubeIframeLoader;
+
     constructor(params: RequestParams, provider) {
         const { eventData } = params;
         this._params = params;
@@ -55,6 +56,53 @@ export class MediaAutoTrack {
         };
 
         mediaTrackFunMapping[this._mediaElement.tagName].bind(this)();
+
+        this._initYoutubeFrame();
+    }
+
+    private _initYoutubeFrame() {
+        this._youTubeIframeLoader = {
+            src: 'https://www.youtube.com/iframe_api',
+            loading: false,
+            loaded: false,
+            listeners: [],
+
+            load(callback) {
+                const _this = this;
+                this.listeners.push(callback);
+
+                if (this.loaded) {
+                    setTimeout(function() {
+                        _this.done();
+                    });
+                    return;
+                }
+
+                if (this.loading) {
+                    return;
+                }
+
+                this.loading = true;
+
+                window['onYouTubeIframeAPIReady'] = function() {
+                    _this.loaded = true;
+                    _this.done();
+                };
+
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = this.src;
+                document.body.appendChild(script);
+            },
+
+            done() {
+                delete window['onYouTubeIframeAPIReady'];
+
+                while (this.listeners.length) {
+                    this.listeners.pop()(window['YT']);
+                }
+            }
+        };
     }
 
     private _iframeMediaTracker() : void {
@@ -67,7 +115,7 @@ export class MediaAutoTrack {
             },
             3*1000
         );
-          YouTubeIframeLoader.load(function(YT) {
+        this._youTubeIframeLoader.load(function(YT) {
             that._iframePlayer = new YT.Player(that._mediaElement.id, {
                 events: {'onStateChange': that._onPlayerStateChange.bind(that)}
             });
