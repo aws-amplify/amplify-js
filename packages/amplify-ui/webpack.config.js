@@ -11,7 +11,7 @@ module.exports = {
     library: "aws_amplify_ui",
     libraryTarget: "umd",
     umdNamedDefine: true,
-    globalObject: '(typeof self !== "undefined" ? self : this)',
+    globalObject: 'this',
     devtoolModuleFilenameTemplate: require("../aws-amplify/webpack-utils")
       .devtoolModuleFilenameTemplate
   },
