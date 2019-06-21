@@ -60,7 +60,7 @@ export default class Predictions {
      * Get the plugin object
      * @param providerName - the name of the plugin
      */
-    public getPluggable(providerName: string) {
+    public getPluggable(providerName: string): AbstractPredictionsProvider {
         const pluggable = this.getAllProviders().find(pluggable => pluggable.getProviderName() === providerName);
         if (pluggable === undefined) {
             logger.debug('No convert plugin found with providerName', providerName);
@@ -82,6 +82,8 @@ export default class Predictions {
             this._interpretPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         this._inferPluggables =
             this._inferPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
+        this._graphQLPluggables = 
+            this._graphQLPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         return;
     }
 
@@ -94,42 +96,22 @@ export default class Predictions {
         });
     }
 
-    /**
-     * All convert methods' declaration followed by definition
-     *
-     * public convert(input: TranslateTextInput, options: ProviderOptions): Promise<any>;
-     * public convert(input: TextToSpeechInput, options: ProviderOptions): Promise<any>;
-     * public convert(input: SpeechToTextInput, options: ProviderOptions): Promise<any>;
-     * public convert<T>(input: T, options: ProviderOptions): Promise<any>;
-     *
-     * We probably don't need method overloading if we are using generics
-    **/
     public convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T,
                       options: ProviderOptions): Promise<any> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
-        if (isTranslateTextInput(input)) {
-            logger.debug("translateText");
-            return pluggableToExecute.translateText(input);
-        } else if (isTextToSpeechInput(input)) {
-            logger.debug("textToSpeech");
-            return pluggableToExecute.convertTextToSpeech(input);
-        } else if (isSpeechToTextInput(input)) {
-            logger.debug("textToSpeech");
-            return pluggableToExecute.convertSpeechToText(input);
-        } else {
-            // Orchestration type request. Directly call graphql
-            // return pluggableToExecute.resolveUsingGraphQL(input);
-        }
+        return pluggableToExecute.convert(input);
     }
 
-    private getPluggableToExecute(pluggables: any[], providerOptions: ProviderOptions) {
+    private getPluggableToExecute<T extends AbstractPredictionsProvider>(pluggables: T[], providerOptions: ProviderOptions): T | GraphQLPredictionsProvider {
         // Give preference to provider name first since it is more specific to this call, even if 
         // there is only one provider configured to error out if the name provided is not the one matched.
         if (providerOptions && providerOptions.providerName) {
-            return this.getPluggable(providerOptions.providerName);
+            return <T>this.getPluggable(providerOptions.providerName);
         } else {
             if (pluggables.length === 1) {
                 return pluggables[0];
+            } else if(pluggables.length === 0 && this._graphQLPluggables.length === 1 /* && should use graphQL */) {
+                return this._graphQLPluggables[0];
             } else {
                 // throw more meaningful exception here
                 throw new Error("More than one or no providers are configured, " +
@@ -142,7 +124,8 @@ export default class Predictions {
         return [...this._convertPluggables,
         ...this._identifyPluggables,
         ...this._interpretPluggables,
-        ...this._inferPluggables];
+        ...this._inferPluggables,
+        ...this._graphQLPluggables];
     }
 
     private isConvertPluggable(obj: any): obj is AbstractConvertPredictionsProvider {

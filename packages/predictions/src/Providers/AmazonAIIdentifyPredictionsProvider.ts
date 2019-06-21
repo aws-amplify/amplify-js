@@ -14,7 +14,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return "AmazonAIIdentifyPredictionsProvider";
     }
 
-    orchestrateWithGraphQL(input: any): Promise<any> {
-        return this.graphQLPredictionsProvider.orchestrateWithGraphQL(input);
+    protected orchestrateWithGraphQL(input: any): Promise<any> {
+        return this.graphQLPredictionsProvider.identify(input);
     }
 }

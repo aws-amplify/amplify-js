@@ -21,6 +21,7 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
 
     convertProvider = new AmazonAIConvertPredictionsProvider();
     identifyProvider = new AmazonAIIdentifyPredictionsProvider();
+
     configure(config: PredictionsOptions) {
         this.convertProvider.configure(config);
         this.identifyProvider.configure(config);
@@ -28,19 +29,8 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         return config;
     }
 
-    translateText(input: TranslateTextInput): Promise<any> {
-        return this.convertProvider.translateText(input);
+    convert(input: TranslateTextInput): Promise<any> {
+        return this.convertProvider.convert(input);
     }
 
-    convertTextToSpeech(input: TextToSpeechInput): Promise<any> {
-        return this.convertProvider.convertTextToSpeech(input);
-    }
-
-    convertSpeechToText(input: SpeechToTextInput): Promise<any> {
-        return this.convertProvider.convertSpeechToText(input);
-    }
-
-    orchestrateWithGraphQL(input: any): Promise<any> {
-        return this.graphQLPredictionsProvider.orchestrateWithGraphQL(input);
-    }
 }

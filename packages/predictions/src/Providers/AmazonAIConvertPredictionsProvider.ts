@@ -3,7 +3,9 @@ import { GraphQLPredictionsProvider } from '.';
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
 import * as SpeechToText from 'aws-sdk/clients/transcribeservice';
-import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput } from "../types";
+import { TranslateTextInput, TextToSpeechInput,
+         SpeechToTextInput, isTranslateTextInput,
+         isTextToSpeechInput, isSpeechToTextInput } from "../types";
 import { Credentials } from '@aws-amplify/core';
 
 export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
@@ -20,7 +22,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         return "AmazonAIConvertPredictionsProvider";
     }
 
-    translateText(input: TranslateTextInput) {
+    protected translateText(input: TranslateTextInput) {
         console.log("Starting translation");
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
@@ -41,7 +43,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         });
     }
 
-    convertTextToSpeech(input: TextToSpeechInput) {
+    protected convertTextToSpeech(input: TextToSpeechInput) {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
@@ -71,7 +73,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
     }
 
     // TODO: Experimental code, not to be merged.
-    convertSpeechToText(input: SpeechToTextInput) {
+    protected convertSpeechToText(input: SpeechToTextInput) {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
@@ -97,7 +99,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         });
     }
 
-    orchestrateWithGraphQL(input: any): Promise<any> {
-        return this.graphQLPredictionsProvider.orchestrateWithGraphQL(input);
+    protected orchestrateWithGraphQL(input: any): Promise<any> {
+        return this.graphQLPredictionsProvider.convert(input);
     }
 }
