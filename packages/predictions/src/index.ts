@@ -13,7 +13,7 @@
 import PredictionsClass from './Predictions';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AmazonAIConvertPredictionsProvider } from './Providers';
+import { AmazonAIConvertPredictionsProvider, AmazonAIPredictionsProvider, GraphQLPredictionsProvider } from './Providers';
 const logger = new Logger('PubSub');
 
 let _instance: PredictionsClass = null;
@@ -27,4 +27,4 @@ const Predictions = _instance;
 Amplify.register(Predictions);
 
 export default Predictions;
-export { AmazonAIConvertPredictionsProvider };
+export { AmazonAIConvertPredictionsProvider, AmazonAIPredictionsProvider, GraphQLPredictionsProvider };

@@ -1,4 +1,5 @@
 import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractConvertPredictionsProvider";
+import { GraphQLPredictionsProvider } from '.';
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
 import * as SpeechToText from 'aws-sdk/clients/transcribeservice';
@@ -6,6 +7,8 @@ import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput } from "../typ
 import { Credentials } from '@aws-amplify/core';
 
 export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
+
+    private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private translate: Translate;
     private textToSpeech: TextToSpeech;
     private speechToText: SpeechToText;
@@ -18,13 +21,14 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
     }
 
     translateText(input: TranslateTextInput) {
+        console.log("Starting translation");
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
             this.translate = new Translate({ region: this._config.region, credentials });
             this.translate.translateText({
                 SourceLanguageCode: input.translateText.source.language,
-                TargetLanguageCode: input.translateText.providerOptions.targetLanguage,
+                TargetLanguageCode: input.translateText.targetLanguage,
                 Text: input.translateText.source.text
 // tslint:disable-next-line: align
             }, (err, data) => {
@@ -45,7 +49,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             this.textToSpeech.synthesizeSpeech({
                 OutputFormat: 'mp3',
                 Text: input.textToSpeech.source.text,
-                VoiceId: input.textToSpeech.providerOptions.voiceId,
+                VoiceId: input.textToSpeech.voiceId,
                 TextType: 'text',
                 SampleRate: '8000'
 // tslint:disable-next-line: align
@@ -91,5 +95,9 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 }
             });
         });
+    }
+
+    orchestrateWithGraphQL(input: any): Promise<any> {
+        return this.graphQLPredictionsProvider.orchestrateWithGraphQL(input);
     }
 }

@@ -7,13 +7,8 @@ export interface PredictionsOptions {
     [key: string]: any,
 }
 
-export interface AbstractProviderOptions {
+export interface ProviderOptions {
     providerName?: string
-}
-
-export interface TranslateTextProviderOptions extends AbstractProviderOptions {
-    terminology?: string,
-    targetLanguage?: LanguageCode
 }
 
 export interface TranslateTextInput {
@@ -22,13 +17,9 @@ export interface TranslateTextInput {
             text: string,
             language?: LanguageCode
         },
-        providerOptions: TranslateTextProviderOptions
+        terminology?: string,
+        targetLanguage?: LanguageCode
     }
-}
-
-export interface TextToSpeechProviderOptions extends AbstractProviderOptions {
-    terminology?: string,
-    voiceId?: string
 }
 
 export interface TextToSpeechInput {
@@ -37,13 +28,9 @@ export interface TextToSpeechInput {
             text: string,
             language?: LanguageCode
         }
-        providerOptions: TextToSpeechProviderOptions
+        terminology?: string,
+        voiceId?: string
     }
-}
-
-export interface SpeechToTextProviderOptions extends AbstractProviderOptions {
-    maxSpeakers?: number,
-    language?: LanguageCode
 }
 
 export interface SpeechToTextInput {
@@ -59,7 +46,8 @@ export interface SpeechToTextInput {
             bytes: Buffer | ArrayBuffer | Blob | string; // TODO: Confirm the use of ArrayBuffer
             language?: LanguageCode
         }
-        providerOptions: SpeechToTextProviderOptions
+        maxSpeakers?: number,
+        language?: LanguageCode
     }
 }
 

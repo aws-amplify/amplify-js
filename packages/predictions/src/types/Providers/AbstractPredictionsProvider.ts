@@ -14,4 +14,6 @@ export abstract class AbstractPredictionsProvider {
     abstract getProviderName(): string;
 
     abstract getCategory(): string;
+
+    abstract orchestrateWithGraphQL(input: any): Promise<any>;
 }

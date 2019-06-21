@@ -1,7 +1,11 @@
 import { Credentials } from '@aws-amplify/core';
 import { AbstractIdentifyPredictionsProvider } from "../types/Providers";
+import { GraphQLPredictionsProvider } from '.';
 
 export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
+
+    private graphQLPredictionsProvider: GraphQLPredictionsProvider;
+
     constructor() {
         super();
     }
@@ -10,4 +14,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return "AmazonAIIdentifyPredictionsProvider";
     }
 
+    orchestrateWithGraphQL(input: any): Promise<any> {
+        return this.graphQLPredictionsProvider.orchestrateWithGraphQL(input);
+    }
 }

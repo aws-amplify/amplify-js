@@ -1,4 +1,4 @@
-import { AbstractPredictionsProvider } from "./AbstractPredictionsProvider";
+import { AbstractPredictionsProvider } from ".";
 
 export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredictionsProvider {
 

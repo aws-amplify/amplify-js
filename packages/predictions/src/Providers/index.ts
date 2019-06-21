@@ -1,3 +1,4 @@
 import AmazonAIConvertPredictionsProvider from './AmazonAIConvertPredictionsProvider';
-
-export { AmazonAIConvertPredictionsProvider };
+import AmazonAIPredictionsProvider from './AmazonAIPredictionsProvider';
+import GraphQLPredictionsProvider from './GraphQLPredictionsProvider';
+export { AmazonAIConvertPredictionsProvider, AmazonAIPredictionsProvider, GraphQLPredictionsProvider };
