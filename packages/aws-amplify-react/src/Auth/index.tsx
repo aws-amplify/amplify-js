@@ -69,7 +69,7 @@ interface State {
 export function withAuthenticator<P extends AuthenticatorProps>(
     Comp: React.ComponentType<P>,
     includeGreetings: boolean = false,
-    authenticatorComponents: ReactNode = [],
+    authenticatorComponents: React.ReactNode[] = [],
     federated: FederatedConfig = null,
     theme: {} = null,
     signUpConfig: {} = {}
@@ -77,7 +77,7 @@ export function withAuthenticator<P extends AuthenticatorProps>(
     return class extends Component<Omit<P, keyof AuthenticatorProps>, State> {
         private authConfig: {
             includeGreetings?: boolean
-            authenticatorComponents?: React.ComponentType[],
+            authenticatorComponents?: React.ReactNode[],
             federated?: FederatedConfig,
             usernameAttributes?: UsernameAttributes
             theme?: {},
@@ -118,7 +118,7 @@ export function withAuthenticator<P extends AuthenticatorProps>(
             if (authState === 'signedIn') {
                 return (
                     <React.Fragment>
-                        { this.authConfig.includeGreetings ? 
+                        { this.authConfig.includeGreetings ?
                             <Authenticator
                                 {...this.props}
                                 theme={this.authConfig.theme}
