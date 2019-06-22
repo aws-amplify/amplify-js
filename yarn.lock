@@ -14066,11 +14066,6 @@ yorkie@^2.0.0:
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
 
-youtube-iframe@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/youtube-iframe/-/youtube-iframe-1.0.3.tgz#0fcdf4847e60f8dca7ee91d9ecd913655067b35b"
-  integrity sha1-D830hH5g+Nyn7pHZ7NkTZVBns1s=
-
 zen-observable@^0.8.6:
   version "0.8.11"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.11.tgz#d3415885eeeb42ee5abb9821c95bb518fcd6d199"
