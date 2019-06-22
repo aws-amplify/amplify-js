@@ -69,7 +69,7 @@ interface State {
 export function withAuthenticator<P extends AuthenticatorProps>(
     Comp: React.ComponentType<P>,
     includeGreetings: boolean = false,
-    authenticatorComponents: React.ComponentType[] = [],
+    authenticatorComponents: ReactNode = [],
     federated: FederatedConfig = null,
     theme: {} = null,
     signUpConfig: {} = {}
