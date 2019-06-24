@@ -4,6 +4,13 @@ declare module "amazon-cognito-identity-js" {
 
     export type NodeCallback<E,T> = (err?: E, result?: T) => void;
 
+
+    export interface CodeDeliveryDetails {
+        AttributeName: string,
+        DeliveryMedium: string,
+        Destination: string
+    } 
+
     export interface IAuthenticationCallback {
         onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
         onFailure: (err: any) => void,
@@ -103,6 +110,13 @@ declare module "amazon-cognito-identity-js" {
             }): void;
         public verifySoftwareToken(totpCode: string, friendlyDeviceName: string, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): void;
         public setUserMfaPreference(smsMfaSettings: IMfaSettings | null, softwareTokenMfaSettings: IMfaSettings | null, callback: NodeCallback<Error, string>): void;
+        public sendMFASelectionAnswer(answerChallenge: string,
+                                      callbacks: {
+                                          onSuccess: (session: CognitoUserSession) => void,
+                                          onFailure: (err: any) => void,
+                                          mfaRequired?: (challengeName: any, challengeParameters: any) => void,
+                                          totpRequired?: (challengeName: any, challengeParameters: any) => void
+                                      }): void;
     }
 
     export interface MFAOption {
@@ -138,6 +152,7 @@ declare module "amazon-cognito-identity-js" {
         user: CognitoUser;
         userConfirmed: boolean;
         userSub: string;
+        codeDeliveryDetails: CodeDeliveryDetails
     }
 
     export interface ICognitoUserPoolData {

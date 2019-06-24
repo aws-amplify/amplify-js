@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.28"></a>
+## [1.0.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.28-unstable.2...@aws-amplify/pushnotification@1.0.28) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.28-unstable.2"></a>
+## [1.0.28-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.28-unstable.1...@aws-amplify/pushnotification@1.0.28-unstable.2) (2019-06-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.28-unstable.1"></a>
+## [1.0.28-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.27...@aws-amplify/pushnotification@1.0.28-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
+<a name="1.0.27"></a>
+## [1.0.27](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.27-unstable.1...@aws-amplify/pushnotification@1.0.27) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.27-unstable.1"></a>
+## [1.0.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.27-unstable.0...@aws-amplify/pushnotification@1.0.27-unstable.1) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.27-unstable.0"></a>
+## [1.0.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26...@aws-amplify/pushnotification@1.0.27-unstable.0) (2019-05-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26"></a>
+## [1.0.26](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.5...@aws-amplify/pushnotification@1.0.26) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26-unstable.5"></a>
+## [1.0.26-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.4...@aws-amplify/pushnotification@1.0.26-unstable.5) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26-unstable.4"></a>
+## [1.0.26-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.3...@aws-amplify/pushnotification@1.0.26-unstable.4) (2019-04-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26-unstable.3"></a>
+## [1.0.26-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.2...@aws-amplify/pushnotification@1.0.26-unstable.3) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26-unstable.2"></a>
+## [1.0.26-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.1...@aws-amplify/pushnotification@1.0.26-unstable.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** import necessary lib ([763caf5](https://github.com/aws/aws-amplify/commit/763caf5))
+
+
+
+
+<a name="1.0.26-unstable.1"></a>
+## [1.0.26-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.26-unstable.0...@aws-amplify/pushnotification@1.0.26-unstable.1) (2019-04-12)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.26-unstable.0"></a>
+## [1.0.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.25...@aws-amplify/pushnotification@1.0.26-unstable.0) (2019-04-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** fetch and cache the token if not in local ([8ba2e7f](https://github.com/aws/aws-amplify/commit/8ba2e7f))
+
+
+
+
 <a name="1.0.25"></a>
 ## [1.0.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.25-unstable.1...@aws-amplify/pushnotification@1.0.25) (2019-04-04)
 

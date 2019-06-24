@@ -71,7 +71,7 @@ describe('ForgotPassword', () => {
 
     it('...should call Auth.forgotPassword when submit method is called', () => {
       wrapper.vm.submit();
-      expect(wrapper.vm.$Amplify.Auth.forgotPassword).toBeCalledWith(wrapper.vm.username);
+      expect(wrapper.vm.$Amplify.Auth.forgotPassword).toBeCalledWith(wrapper.vm.forgotPwUsername);
     });
 
     it('...should set the local error variable when setError is called', () => {
@@ -81,7 +81,7 @@ describe('ForgotPassword', () => {
 
     it('...should call Auth.forgotPasswordSubmit when verify method is called', () => {
       wrapper.vm.verify();
-      expect(wrapper.vm.$Amplify.Auth.forgotPasswordSubmit).toBeCalledWith(wrapper.vm.username,
+      expect(wrapper.vm.$Amplify.Auth.forgotPasswordSubmit).toBeCalledWith(wrapper.vm.forgotPwUsername,
         wrapper.vm.password,
         wrapper.vm.code);
     });

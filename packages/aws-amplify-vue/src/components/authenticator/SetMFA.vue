@@ -12,33 +12,33 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
+  <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.setMFAComp.section">
     <div v-bind:class="amplifyUI.sectionHeader" v-if="!displayTotpSetup">{{options.header}}
       <div style="font-size: 16px; color: #828282; margin-top: 10px;">
         {{options.mfaDescription}}
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup">{{$Amplify.I18n.get('Verify Authentication Token')}}
+    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.headerSection">{{$Amplify.I18n.get('Verify Authentication Token')}}
       <div style="font-size: 16px; color: #828282; margin-top: 10px;">
         {{options.tokenInstructions}}
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionBody" v-if="!displayTotpSetup">
+    <div v-bind:class="amplifyUI.sectionBody" v-if="!displayTotpSetup" v-bind:data-test="auth.setMFAComp.bodySection">
       <div v-bind:class="amplifyUI.formField" v-if="options.mfaTypes.includes('SMS')">
         <div v-bind:class="amplifyUI.inputLabel">
-          <input v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="SMS" v-model="mfaPreference"/>
+          <input v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="SMS" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.smsInput" />
             {{options.smsDescription}}
         </div>
       </div>      
       <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('TOTP')">
         <div v-bind:class="amplifyUI.inputLabel">
-          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="TOTP" v-model="mfaPreference"/>  
+          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="TOTP" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.totpInput" />  
             {{options.totpDescription}}
         </div>
       </div>
       <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('None')">
         <div v-bind:class="amplifyUI.inputLabel">
-          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="NOMFA" v-model="mfaPreference"/>  
+          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="NOMFA" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.noMfaInput" />  
             {{options.noMfaDescription}}
         </div>
       </div>
@@ -47,16 +47,16 @@
       <qrcode-vue v-bind:class="amplifyUI.totpQrcode" :value="token" :size="300" level="H"></qrcode-vue>
       <div v-bind:class="amplifyUI.formField" >
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Verification Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Verification Code')" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Verification Code')" autofocus v-bind:data-test="auth.setMFAComp.verificationCodeInput" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup">{{$Amplify.I18n.get('Set MFA')}}</button>
-        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup">{{$Amplify.I18n.get('Verify Token')}}</button>
+        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup" v-bind:data-test="auth.setMFAComp.setMfaButton">{{$Amplify.I18n.get('Set MFA')}}</button>
+        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.verifyTotpTokenButton">{{$Amplify.I18n.get('Verify Token')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="cancel">{{$Amplify.I18n.get('Cancel')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="cancel" v-bind:data-test="auth.setMFAComp.cancelButton">{{$Amplify.I18n.get('Cancel')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -70,7 +70,7 @@
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import QrcodeVue from 'qrcode.vue';
-
+import { auth } from '../../assets/data-test-attributes';
 
 export default {
   name: 'SetMfa',
@@ -80,10 +80,11 @@ export default {
         user: null,
         mfaPreference: null,
         code: null,
-        token: null,
+        token: '',
         error: '',
         displayTotpSetup: false,
         amplifyUI: AmplifyUI,
+        auth,
         logger: {},
     }
   },

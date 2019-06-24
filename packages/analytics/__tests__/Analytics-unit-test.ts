@@ -26,11 +26,9 @@ const credentials = {
 
 jest.useFakeTimers();
 
-const record_spyon = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementation(() => {
-    return;
+const record_spyon = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementation((params, handlers) => {
+    return handlers.resolve();
 });
-
-
 
 describe("Analytics test", () => {
     describe('configure test', () => {
