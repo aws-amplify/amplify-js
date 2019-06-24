@@ -10,7 +10,7 @@ export class AmplifyButton {
 
   @Prop() type: string = 'button';
   @Prop() role: string = 'button';
-  @Prop() primaryColor: string = '#000000';
+  @Prop() primaryColor: string = '#FF9900';
 
   render() {
     return (

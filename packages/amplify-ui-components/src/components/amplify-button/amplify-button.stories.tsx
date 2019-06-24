@@ -7,5 +7,3 @@ storiesOf('amplify-button', module)
     const primaryColor = textKnob('Primary Color', '#FF9900');
     return `<amplify-button primary-color="${primaryColor}">${text}</amplify-button>`;
   });
-
-  

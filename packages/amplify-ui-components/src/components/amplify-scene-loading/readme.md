@@ -9,7 +9,7 @@
 
 | Property         | Attribute         | Description | Type     | Default     |
 | ---------------- | ----------------- | ----------- | -------- | ----------- |
-| `loadPercentage` | `load-percentage` |             | `number` | `undefined` |
+| `loadPercentage` | `load-percentage` |             | `number` | `0`         |
 | `sceneError`     | --                |             | `object` | `undefined` |
 | `sceneName`      | `scene-name`      |             | `string` | `undefined` |
 

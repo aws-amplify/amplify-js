@@ -9,7 +9,7 @@
 
 | Property       | Attribute       | Description | Type     | Default     |
 | -------------- | --------------- | ----------- | -------- | ----------- |
-| `primaryColor` | `primary-color` |             | `string` | `'#ff9900'` |
+| `primaryColor` | `primary-color` |             | `string` | `'#000000'` |
 | `role`         | `role`          |             | `string` | `'button'`  |
 | `type`         | `type`          |             | `string` | `'button'`  |
 

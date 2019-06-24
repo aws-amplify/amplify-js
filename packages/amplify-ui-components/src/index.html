@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
     <title>Stencil Component Starter</title>
+    <script>
+      if (global === undefined) {
+        var global = window;
+      }
+    </script>
     <script type="module" src="build/amplify-ui-components.esm.js"></script>
     <script nomodule src="build/amplify-ui-components.js"></script>
   </head>
