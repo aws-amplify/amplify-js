@@ -82,7 +82,7 @@ export default class Predictions {
             this._interpretPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         this._inferPluggables =
             this._inferPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
-        this._graphQLPluggables = 
+        this._graphQLPluggables =
             this._graphQLPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         return;
     }
@@ -96,13 +96,18 @@ export default class Predictions {
         });
     }
 
-    public convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T,
-                      options: ProviderOptions): Promise<any> {
+    public convert<T>(
+        input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T,
+        options: ProviderOptions
+    ): Promise<any> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
         return pluggableToExecute.convert(input);
     }
 
-    private getPluggableToExecute<T extends AbstractPredictionsProvider>(pluggables: T[], providerOptions: ProviderOptions): T | GraphQLPredictionsProvider {
+    private getPluggableToExecute<T extends AbstractPredictionsProvider>(
+        pluggables: T[],
+        providerOptions: ProviderOptions
+    ): T | GraphQLPredictionsProvider {
         // Give preference to provider name first since it is more specific to this call, even if 
         // there is only one provider configured to error out if the name provided is not the one matched.
         if (providerOptions && providerOptions.providerName) {
@@ -110,7 +115,7 @@ export default class Predictions {
         } else {
             if (pluggables.length === 1) {
                 return pluggables[0];
-            } else if(pluggables.length === 0 && this._graphQLPluggables.length === 1 /* && should use graphQL */) {
+            } else if (pluggables.length === 0 && this._graphQLPluggables.length === 1 /* && should use graphQL */) {
                 return this._graphQLPluggables[0];
             } else {
                 // throw more meaningful exception here
