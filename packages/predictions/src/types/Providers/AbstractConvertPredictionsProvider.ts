@@ -8,7 +8,7 @@ const logger = new Logger('AbstractConvertPredictionsProvider');
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider{
 
     getCategory(): string {
-        return "Predictions:Convert";
+        return "Convert";
     }
 
     convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T): Promise<any> {

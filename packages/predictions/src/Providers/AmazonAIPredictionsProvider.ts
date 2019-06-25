@@ -6,9 +6,13 @@ import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsPr
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
     
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
+    private convertProvider: AmazonAIConvertPredictionsProvider;
+    private identifyProvider: AmazonAIIdentifyPredictionsProvider;
 
     constructor() {
         super();
+        this.convertProvider = new AmazonAIConvertPredictionsProvider();
+        this.identifyProvider = new AmazonAIIdentifyPredictionsProvider();
     }
 
     getCategory(): string {
@@ -19,13 +23,9 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         return "AmazonAIPredictionsProvider";
     }
 
-    convertProvider = new AmazonAIConvertPredictionsProvider();
-    identifyProvider = new AmazonAIIdentifyPredictionsProvider();
-
     configure(config: PredictionsOptions) {
-        this.convertProvider.configure(config);
-        this.identifyProvider.configure(config);
-        super.configure(config);
+        this.convertProvider.configure(config.Convert);
+        this.identifyProvider.configure(config.Identify);
         return config;
     }
 

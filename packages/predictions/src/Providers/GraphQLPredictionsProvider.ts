@@ -9,7 +9,7 @@ export default class GraphQLPredictionsProvider extends AbstractPredictionsProvi
     }
     
     getCategory(): string {
-        return "Predictions:GraphQLResolver";
+        return "GraphQLResolver";
     }
 
     convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T): Promise<any> {
