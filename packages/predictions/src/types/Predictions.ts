@@ -51,6 +51,32 @@ export interface SpeechToTextInput {
     }
 }
 
+export interface IdentifyImageInput {
+    identifyImage: {
+        source: {
+            storage: {
+                bucket: string,
+                key: string,
+                level?: string,
+            },
+        },
+        maxLabels?: number,
+        minConfidence?: number
+    }
+}
+
+export interface IdentifyFacesInput {
+    identifyFaces: {
+        source: {
+            storage: {
+                bucket: string,
+                key: string,
+                level?: string,
+            },
+        }
+    }
+}
+
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
     return obj && obj.hasOwnProperty(key);
