@@ -77,6 +77,18 @@ export interface IdentifyFacesInput {
     }
 }
 
+export interface IdentifyCelebritiesInput {
+    identifyCelebrities: {
+        source: {
+            storage: {
+                bucket: string,
+                key: string,
+                level?: string,
+            },
+        }
+    }
+}
+
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
     return obj && obj.hasOwnProperty(key);
