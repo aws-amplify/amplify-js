@@ -51,9 +51,8 @@ export default class Predictions {
         else if (this.isInferPluggable(pluggable)) this._inferPluggables.push(pluggable);
         else if (this.isGraphQLPluggable(pluggable)) this._graphQLPluggables.push(pluggable);
         else throw new Error("Pluggable being added is not one of the Predictions Category");
-        let config = {};
-        config = pluggable.configure(this._options[pluggable.getProviderName()]);
-        return config;
+        const categoryConfig = Object.assign({}, this._options['Predictions'], this._options[pluggable.getCategory()]);
+        return pluggable.configure(categoryConfig);
     }
 
     /**
@@ -63,7 +62,7 @@ export default class Predictions {
     public getPluggable(providerName: string): AbstractPredictionsProvider {
         const pluggable = this.getAllProviders().find(pluggable => pluggable.getProviderName() === providerName);
         if (pluggable === undefined) {
-            logger.debug('No convert plugin found with providerName', providerName);
+            logger.debug('No plugin found with providerName=>', providerName);
             return null;
         } else
             return pluggable;
@@ -82,17 +81,18 @@ export default class Predictions {
             this._interpretPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         this._inferPluggables =
             this._inferPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
-        this._graphQLPluggables = 
+        this._graphQLPluggables =
             this._graphQLPluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
         return;
     }
 
     configure(options: PredictionsOptions) {
-        logger.debug('configure Predictions', { options });
         const predictionsConfig = options ? options.Predictions || options : {};
         this._options = { ...predictionsConfig, ...options };
+        logger.debug('configure Predictions', this._options);
         this.getAllProviders().forEach((pluggable) => {
-            pluggable.configure(this._options[pluggable.getProviderName()]);
+            const categoryConfig = Object.assign({}, this._options['Predictions'], this._options[pluggable.getCategory()]);
+            pluggable.configure(categoryConfig);
         });
     }
 
@@ -106,11 +106,12 @@ export default class Predictions {
         // Give preference to provider name first since it is more specific to this call, even if 
         // there is only one provider configured to error out if the name provided is not the one matched.
         if (providerOptions && providerOptions.providerName) {
-            return <T>this.getPluggable(providerOptions.providerName);
+            return [...pluggables, ...this._graphQLPluggables]
+                .find(pluggable => pluggable.getProviderName() === providerOptions.providerName);
         } else {
             if (pluggables.length === 1) {
                 return pluggables[0];
-            } else if(pluggables.length === 0 && this._graphQLPluggables.length === 1 /* && should use graphQL */) {
+            } else if (pluggables.length === 0 && this._graphQLPluggables.length === 1 /* && should use graphQL */) {
                 return this._graphQLPluggables[0];
             } else {
                 // throw more meaningful exception here
@@ -129,22 +130,22 @@ export default class Predictions {
     }
 
     private isConvertPluggable(obj: any): obj is AbstractConvertPredictionsProvider {
-        return obj && (obj.getCategory() === "Predictions:Convert" || obj.getCategory() === "Predictions");
+        return obj && (obj.getCategory() === "Convert" || obj.getCategory() === "Predictions");
     }
 
     private isIdentifyPluggable(obj: any): obj is AbstractIdentifyPredictionsProvider {
-        return obj && (obj.getCategory() === "Predictions:Identify" || obj.getCategory() === "Predictions");
+        return obj && (obj.getCategory() === "Identify" || obj.getCategory() === "Predictions");
     }
 
     private isInterpretPluggable(obj: any): obj is AbstractInterpretPredictionsProvider {
-        return obj && (obj.getCategory() === "Predictions:Interpret" || obj.getCategory() === "Predictions");
+        return obj && (obj.getCategory() === "Interpret" || obj.getCategory() === "Predictions");
     }
 
     private isInferPluggable(obj: any): obj is AbstractInferPredictionsProvider {
-        return obj && (obj.getCategory() === "Predictions:Infer" || obj.getCategory() === "Predictions");
+        return obj && (obj.getCategory() === "Infer" || obj.getCategory() === "Predictions");
     }
 
     private isGraphQLPluggable(obj: any): obj is GraphQLPredictionsProvider {
-        return obj && obj.getCategory() === "Predictions:GraphQLResolver";
+        return obj && obj.getCategory() === "GraphQLResolver";
     }
 }
