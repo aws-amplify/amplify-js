@@ -13,20 +13,12 @@
  */
 // tslint:enable
 
-<<<<<<< HEAD
 import { Component, Input, OnInit, Inject } from '@angular/core';
-=======
-import { Component, Input, OnInit } from '@angular/core';
-import * as AmplifyUI from '@aws-amplify/ui';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
-import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
->>>>>>> initial commit
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 import { labelMap } from '../common';
 import { auth } from '../../../assets/data-test-attributes';
 
-<<<<<<< HEAD
 const template = `
 <div class="amplify-container" *ngIf="_show">
 <div class="amplify-form-container" data-test="${auth.confirmSignUp.section}">
@@ -40,18 +32,9 @@ const template = `
       <label class="amplify-input-label" for="amplifyUsername">
         {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
       </label>
-=======
-
-const template = `
-<div class={{amplifyUI.formSection}} *ngIf="_show">
-  <div class={{amplifyUI.sectionHeader}}>Confirm Sign Up</div>
-  <div class={{amplifyUI.sectionBody}}>
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}> Username * </div>
->>>>>>> initial commit
       <input
         #amplifyUsername
-        class={{amplifyUI.input}}
+        class="amplify-form-input"
         type="text"
         disabled
         placeholder="{{ this.amplifyService.i18n().get(getUsernameLabel()) }}"
@@ -59,27 +42,19 @@ const template = `
         data-test="${auth.confirmSignUp.usernameInput}"
       />
     </div>
-<<<<<<< HEAD
     <div class="amplify-form-row">
       <label class="amplify-input-label" for="code">
         {{ this.amplifyService.i18n().get('Confirmation Code *') }}
       </label>
       <input #code
-=======
-    <div class={{amplifyUI.formField}}>
-      <div class={{amplifyUI.inputLabel}}> Confirmation Code * </div>
-      <input
-        #code
->>>>>>> initial commit
         (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
-        class={{amplifyUI.input}}
+        class="amplify-form-input"
         type="text"
         placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
         data-test="${auth.confirmSignUp.confirmationCodeInput}"
       />
-<<<<<<< HEAD
       <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Lost your code?') }}
         <a class="amplify-form-link"
             (click)="onResend()"
@@ -116,34 +91,6 @@ const template = `
   </div>
 </div>
 </div>
-=======
-      <div class={{amplifyUI.hint}}>
-        Lost your code?
-        <a class={{amplifyUI.a}} (click)="onResend()">
-          Resend Code
-        </a>
-      </div>
-    </div>
-    <div class={{amplifyUI.sectionFooter}}>
-      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
-        <a class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
-      </span>
-      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
-        <button class={{amplifyUI.button}} (click)="onConfirm()">
-          Confirm
-        </button>
-      </span>
-    </div>
-  </div>
-  <div class="amplify-alert"  *ngIf="errorMessage">
-    <div class="amplify-alert-body">
-      <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
-      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
-    </div>
-  </div>
-</div>
->>>>>>> initial commit
 `;
 
 @Component({
@@ -158,23 +105,10 @@ export class ConfirmSignUpComponentCore implements OnInit {
   username: string;
   code: string;
   errorMessage: string;
-<<<<<<< HEAD
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
-=======
-  amplifyService: AmplifyService;
-  amplifyUI: AmplifyUI;
-  private _confirmSignUpConfig: any;
-  private _customCSS: any;
-
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
-    this.amplifyUI = Object.assign({}, AmplifyUI);
-    this._customCSS = {};
-    this._confirmSignUpConfig = {};
->>>>>>> initial commit
   }
 
   @Input()
@@ -183,12 +117,6 @@ export class ConfirmSignUpComponentCore implements OnInit {
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignUp';
     this.username = data.authState.user? data.authState.user.username || '' : '';
-    if (data.confirmSignUpConfig) {
-      this._confirmSignUpConfig = data.confirmSignUpConfig;
-    }
-    if (data.customCSS) {
-      this._customCSS = data.customCSS;
-    }
   }
 
   @Input() hide: string[] = [];
@@ -197,11 +125,11 @@ export class ConfirmSignUpComponentCore implements OnInit {
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'confirmSignUp';
+
     this.username = authState.user? authState.user.username || '' : '';
   }
 
   @Input()
-<<<<<<< HEAD
   set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
   }
@@ -215,28 +143,6 @@ export class ConfirmSignUpComponentCore implements OnInit {
     return this.hide.filter(item => item === comp)
       .length > 0;
   }
-=======
-  set confirmSignUpConfig(confirmSignUpConfig: any) {
-    this._confirmSignUpConfig = confirmSignUpConfig;
-  }
-
-  @Input()
-  set customCSS(customCSS: AmplifyUIInterface) {
-    this._customCSS = customCSS;
-  }
-
-  ngOnInit() {
-    if ((this._confirmSignUpConfig && this._confirmSignUpConfig.customCSS) || this._customCSS) {
-      const allClasses = {
-        ...this._customCSS,
-        confirmSignUpConfig: this._confirmSignUpConfig && this._confirmSignUpConfig.customCSS ? 
-        this._confirmSignUpConfig.customCSS : {}
-      };
-      this._customCSS = joinKeys(allClasses, 'confirmSignUpConfig') as AmplifyUIInterface;
-      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
-    }
-  }
->>>>>>> initial commit
 
   setUsername(username: string) {
     this.username = username;

@@ -15,12 +15,7 @@
 
 import {
   Component,
-<<<<<<< HEAD
   Input, OnInit,
-=======
-  Input,
-  OnInit,
->>>>>>> initial commit
   ViewChild,
   ComponentFactoryResolver,
   OnDestroy
@@ -30,7 +25,6 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
-import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { AuthState } from '../../../providers';
 
 @Component({
@@ -44,13 +38,8 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-<<<<<<< HEAD
   @Input() usernameAttributes: string = 'username';
   @Input() hide: string[] = [];
-=======
-  @Input() customCSS: AmplifyUIInterface;
-  @Input() confirmSignUpConfig: any;
->>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -63,21 +52,9 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-<<<<<<< HEAD
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
     new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide}) :
     new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide});
-=======
-    const data = {
-      authState: this.authState,
-      confirmSignUpConfig: this.confirmSignUpConfig,
-      customCSS: this.customCSS
-    };
-
-    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ConfirmSignUpComponentIonic, data) :
-    new ComponentMount(ConfirmSignUpComponentCore, data);
->>>>>>> initial commit
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

@@ -44,7 +44,6 @@ const template = `
           data-test="${auth.confirmSignUp.usernameInput}"
         ></ion-input>
       </ion-item>
-
       <ion-item lines="none">
         <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">
           {{ this.amplifyService.i18n().get('Code *') }}
@@ -59,7 +58,6 @@ const template = `
         ></ion-input>
       </ion-item>
     </ion-list>
-
     <div class="amplify-form-actions">
       <div>
         <ion-button
@@ -94,7 +92,6 @@ const template = `
     </div>
   </div>
 </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -102,7 +99,6 @@ const template = `
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
