@@ -27,6 +27,7 @@ import { SignUpClass } from './sign-up.class';
 import { SignUpComponentIonic } from './sign-up.component.ionic';
 import { SignUpComponentCore } from './sign-up.component.core';
 import { AuthState } from '../../../providers';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 
 @Component({
   selector: 'amplify-auth-sign-up',
@@ -40,8 +41,12 @@ export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
   @Input() signUpConfig: any;
+<<<<<<< HEAD
   @Input() usernameAttributes: string = 'username';
   @Input() hide: string[] = [];
+=======
+  @Input() customCSS: AmplifyUIInterface;
+>>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -54,6 +59,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+<<<<<<< HEAD
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
     new ComponentMount(SignUpComponentIonic, {
       authState: this.authState,
@@ -67,6 +73,17 @@ export class SignUpComponent implements OnInit, OnDestroy {
       usernameAttributes: this.usernameAttributes,
       hide: this.hide, 
     });
+=======
+    const data = {
+      authState: this.authState,
+      signUpConfig: this.signUpConfig,
+      customCSS: this.customCSS
+    };
+
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(SignUpComponentIonic, data) :
+    new ComponentMount(SignUpComponentCore, data);
+>>>>>>> initial commit
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

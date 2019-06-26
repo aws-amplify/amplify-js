@@ -539,7 +539,6 @@ color: var(--color-danger);
 }
 
 .amplify-alert {
-position: absolute;
 min-height: 52px;
 width: 460px;
 margin-top: 5em;

@@ -22,6 +22,7 @@ import { auth } from '../../../assets/data-test-attributes';
 
 
 const template = `
+<<<<<<< HEAD
 <div
   class="amplify-authenticator"
   *ngIf="_show"
@@ -34,6 +35,15 @@ const template = `
       <ion-item lines="none" *ngFor="let field of signUpFields">
         <ion-label class="amplify-input-label"
         position="stacked"
+=======
+<div class="{{amplifyUI.formSection}}" *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>{{this.header}}</div>
+  <div class={{amplifyUI.sectionBody}}>
+    <ion-list lines="none">
+      <ion-item lines="none" *ngFor="let field of signUpFields">
+        <ion-label class={{amplifyUI.inputLabel}} 
+        position="stacked" 
+>>>>>>> initial commit
         *ngIf="field.key !== 'phone_number'"
         >
           {{ this.amplifyService.i18n().get(field.label) }}
@@ -44,7 +54,7 @@ const template = `
           *ngIf="field.key !== 'phone_number'"
           #{{field.key}}
           type="text"
-          class="amplify-form-input"
+          class={{amplifyUI.input}}
           type={{field.type}}
           [placeholder]="this.amplifyService.i18n().get(field.label)"
           (keyup)="setProp($event.target)"
@@ -62,8 +72,13 @@ const template = `
         </ion-content>
       </ion-item>
     </ion-list>
+<<<<<<< HEAD
     <div class="amplify-form-actions">
       <div class="amplify-form-row">
+=======
+    <div class={{amplifyUI.sectionFooter}}>
+      <div>
+>>>>>>> initial commit
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
           data-test="${auth.signUp.createAccountButton}"

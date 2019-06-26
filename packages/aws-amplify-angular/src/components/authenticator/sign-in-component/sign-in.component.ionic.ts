@@ -20,6 +20,7 @@ import { SignInComponentCore } from './sign-in.component.core';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
+<<<<<<< HEAD
 <div
   class="amplify-authenticator"
   *ngIf="_show"
@@ -29,12 +30,18 @@ const template = `
     <div class="amplify-form-header" data-test="${auth.signIn.headerSection}">
       {{ this.amplifyService.i18n().get('Sign in to your account') }}
     </div>
+=======
+<div class="{{amplifyUI.formSection}}" *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>Sign In</div>
+  <div class={{amplifyUI.sectionBody}}>
+>>>>>>> initial commit
     <ion-list lines="none">
       <amplify-auth-username-field-ionic
         [usernameAttributes]="_usernameAttributes"
         (usernameFieldChanged)="onUsernameFieldChanged($event)"
       ></amplify-auth-username-field-ionic>
       <ion-item lines="none">
+<<<<<<< HEAD
         <ion-label class="amplify-input-label" for="password" position="stacked">
           {{ this.amplifyService.i18n().get('Password *') }}
         </ion-label>
@@ -42,12 +49,32 @@ const template = `
           #password
           type="password"
           class="amplify-form-input"
+=======
+        <ion-label class={{amplifyUI.inputLabel}} for="username" position="stacked">
+          Username *
+        </ion-label>
+        <ion-input type="text" 
+          #username
+          class={{amplifyUI.input}}
+          (keyup)="setUsername($event.target.value)">
+        </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label class={{amplifyUI.inputLabel}} for="password" position="stacked">
+          Password *
+        </ion-label>
+        <ion-input 
+          #password
+          type="password" 
+          class={{amplifyUI.input}}
+>>>>>>> initial commit
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
           data-test="${auth.signIn.passwordInput}"
         ></ion-input>
       </ion-item>
     </ion-list>
+<<<<<<< HEAD
     <div class="amplify-form-actions">
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
@@ -74,7 +101,27 @@ const template = `
         </div>
       </div>
 
+=======
+    <div class={{amplifyUI.hint}}>
+      Forget your password?
+      <a class={{amplifyUI.a}} (click)="onForgotPassword()">
+        Reset your password
+      </a>
+>>>>>>> initial commit
     </div>
+  </div>
+  <div class={{amplifyUI.sectionFooter}}>
+    <span class="amplifyUI.sectionFooterPrimaryContent">
+      <ion-button expand="block" color="primary"
+        (click)="onSignIn()"
+      >
+          Sign In
+      </ion-button>
+    </span>
+    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+      No account?  
+      <a class={{amplifyUI.a}} (click)="onSignUp()">Create account</a>
+    </span>
   </div>
 
   <div class="amplify-alert" *ngIf="errorMessage">

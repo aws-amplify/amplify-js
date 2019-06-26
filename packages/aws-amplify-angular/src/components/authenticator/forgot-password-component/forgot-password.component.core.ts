@@ -12,6 +12,7 @@
  * and limitations under the License.
  */
 // tslint:enable
+<<<<<<< HEAD
 import { UsernameAttributes, UsernameFieldOutput } from '../types';
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
@@ -105,6 +106,69 @@ const template = `
       <span class="amplify-alert-icon">&#9888;</span>
       <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+=======
+
+import { Component, Input, OnInit } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { AmplifyService, AuthState } from '../../../providers';
+
+
+const template = `
+<div class={{amplifyUI.formSection}} *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>Reset your password
+    <br />
+    <div *ngIf="!code_sent" class={{amplifyUI.hint}}>You will receive a verification code</div>
+    <div *ngIf="code_sent">Enter the code you received and set a new password</div>
+  </div>
+  <div class={{amplifyUI.sectionBody}}>
+    <div class={{amplifyUI.formField}}  *ngIf="!code_sent">
+      <div class={{amplifyUI.inputLabel}}>Username * </div>
+      <input
+        (keyup)="setUsername($event.target.value)"
+        class={{amplifyUI.input}}
+        type="text"
+        placeholder="Username"
+        [value]="username"
+      />
+    </div>
+    <div class={{amplifyUI.formField}} *ngIf="code_sent">
+      <label class={{amplifyUI.inputLabel}}>Code * </label>
+      <input #code
+        (keyup)="setCode(code.value)"
+        class="amplify-form-input"
+        type="text"
+        placeholder="Enter code"
+      />
+    </div>
+    <div class={{amplifyUI.formField}} *ngIf="code_sent">
+      <label class={{amplifyUI.inputLabel}}>Password * </label>
+      <input #password
+        (keyup)="setPassword(password.value)"
+        (keyup.enter)="onSubmit()"
+        class="amplify-form-input"
+        type="password"
+        placeholder="Password"
+      />
+    </div>
+    <div class={{amplifyUI.sectionFooter}}>
+      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
+        <button *ngIf="!code_sent" class={{amplifyUI.button}} (click)="onSend()">Submit</button>
+        <button *ngIf="code_sent" class={{amplifyUI.button}} (click)="onSubmit()">Verify</button>
+      </span>
+      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+        <a *ngIf="code_sent" class={{amplifyUI.a}} (click)="onSend()">Resend Code</a>
+        <a *ngIf="!code_sent" class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
+      </span>
+    </div>
+    <div class="amplify-alert" *ngIf="errorMessage">
+      <div class="amplify-alert-body">
+        <span class="amplify-alert-icon">&#9888;</span>
+        <div class="amplify-alert-message">{{ errorMessage }}</div>
+        <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+      </div>
+>>>>>>> initial commit
     </div>
   </div>
 </div>
@@ -117,12 +181,16 @@ const template = `
 export class ForgotPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+<<<<<<< HEAD
   _usernameAttributes: string = 'username';
+=======
+>>>>>>> initial commit
   username: string;
   code: string;
   password: string;
   errorMessage: string;
   code_sent = false;
+<<<<<<< HEAD
   protected logger: any;
   local_phone_number: string;
   country_code: string = '1';
@@ -130,12 +198,25 @@ export class ForgotPasswordComponentCore implements OnInit {
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ForgotPasswordComponent');
+=======
+  amplifyService: AmplifyService;
+  amplifyUI: AmplifyUI;
+  private _forgotPasswordConfig: any;
+  private _customCSS: any;
+
+  constructor(amplifyService: AmplifyService) {
+    this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._customCSS = {};
+    this._forgotPasswordConfig = {};
+>>>>>>> initial commit
   }
 
   @Input()
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
+<<<<<<< HEAD
     this._usernameAttributes = data.usernameAttributes;
     this.hide = data.hide ? data.hide : this.hide;
 
@@ -149,6 +230,15 @@ export class ForgotPasswordComponentCore implements OnInit {
   shouldHide(comp) {
     return this.hide.filter(item => item === comp)
             .length > 0;
+=======
+    this.username = data.authState.user? data.authState.user.username || '' : '';
+    if (data.forgotPasswordConfig) {
+      this._forgotPasswordConfig = data.forgotPasswordConfig;
+    }
+    if (data.customCSS) {
+      this._customCSS = data.customCSS;
+    }
+>>>>>>> initial commit
   }
 
   @Input()
@@ -169,8 +259,34 @@ export class ForgotPasswordComponentCore implements OnInit {
   }
 
   @Input()
+<<<<<<< HEAD
   set usernameAttributes(usernameAttributes: string) {
     this._usernameAttributes = usernameAttributes;
+=======
+  set forgotPasswordConfig(forgotPasswordConfig: any) {
+    this._forgotPasswordConfig = forgotPasswordConfig;
+  }
+
+  @Input()
+  set customCSS(customCSS: AmplifyUIInterface) {
+    this._customCSS = customCSS;
+  }
+
+  ngOnInit() {
+    if ((this._forgotPasswordConfig && this._forgotPasswordConfig.customCSS) || this._customCSS) {
+      const allClasses = {
+        ...this._customCSS,
+        forgotPasswordConfig: this._forgotPasswordConfig && this._forgotPasswordConfig.customCSS ? 
+        this._forgotPasswordConfig.customCSS : {}
+      };
+      this._customCSS = joinKeys(allClasses, 'forgotPasswordConfig') as AmplifyUIInterface;
+      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
+    }
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+>>>>>>> initial commit
   }
 
   setCode(code: string) {

@@ -13,7 +13,11 @@
  */
 // tslint:enable
 
+<<<<<<< HEAD
 import {
+=======
+import { 
+>>>>>>> initial commit
   Component,
   Input,
   OnInit,
@@ -26,6 +30,10 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignInClass } from './confirm-sign-in.class';
 import { ConfirmSignInComponentIonic } from './confirm-sign-in-component.ionic';
 import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
+<<<<<<< HEAD
+=======
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+>>>>>>> initial commit
 import { AuthState } from '../../../providers';
 
 
@@ -40,7 +48,12 @@ import { AuthState } from '../../../providers';
 export class ConfirmSignInComponent implements OnInit, OnDestroy {
   @Input() framework: String;
   @Input() authState: AuthState;
+<<<<<<< HEAD
   @Input() hide: string[] = [];
+=======
+  @Input() customCSS: AmplifyUIInterface;
+  @Input() confirmSignInConfig: any;
+>>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -53,9 +66,21 @@ export class ConfirmSignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+<<<<<<< HEAD
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
     new ComponentMount(ConfirmSignInComponentIonic,{authState: this.authState, hide: this.hide}) :
     new ComponentMount(ConfirmSignInComponentCore, {authState: this.authState, hide: this.hide});
+=======
+    const data = {
+      authState: this.authState,
+      confirmSignInConfig: this.confirmSignInConfig,
+      customCSS: this.customCSS
+    };
+
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(ConfirmSignInComponentIonic, data) :
+    new ComponentMount(ConfirmSignInComponentCore, data);
+>>>>>>> initial commit
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

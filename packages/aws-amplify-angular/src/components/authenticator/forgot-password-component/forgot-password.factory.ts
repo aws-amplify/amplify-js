@@ -26,6 +26,7 @@ import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
 import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 import { AuthState } from '../../../providers';
 
 @Component({
@@ -39,8 +40,13 @@ import { AuthState } from '../../../providers';
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+<<<<<<< HEAD
   @Input() usernameAttributes: string = 'username';
   @Input() hide: string[] = [];
+=======
+  @Input() customCSS: AmplifyUIInterface;
+  @Input() forgotPasswordConfig: any;
+>>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -53,7 +59,14 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+    const data = {
+      authState: this.authState,
+      forgotPasswordConfig: this.forgotPasswordConfig,
+      customCSS: this.customCSS
+    };
+
     const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+<<<<<<< HEAD
     new ComponentMount(
       ForgotPasswordComponentIonic,{
         authState: this.authState,
@@ -67,6 +80,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
         hide: this.hide,
         usernameAttributes: this.usernameAttributes
       });
+=======
+    new ComponentMount(ForgotPasswordComponentIonic, data) :
+    new ComponentMount(ForgotPasswordComponentCore, data);
+>>>>>>> initial commit
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);

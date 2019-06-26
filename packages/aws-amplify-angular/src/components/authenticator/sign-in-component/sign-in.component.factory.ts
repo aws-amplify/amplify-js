@@ -13,7 +13,11 @@
  */
 // tslint:enable
 
+<<<<<<< HEAD
 import {
+=======
+import { 
+>>>>>>> initial commit
   Component,
   Input,
   OnInit,
@@ -28,6 +32,7 @@ import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
 import { AuthState } from '../../../providers';
 import { authDecorator } from '../../../providers/auth.decorator';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
 
 @Component({
   selector: 'amplify-auth-sign-in',
@@ -40,8 +45,13 @@ import { authDecorator } from '../../../providers/auth.decorator';
 export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+<<<<<<< HEAD
   @Input() usernameAttributes: string = 'username';
   @Input() hide: string[] = [];
+=======
+  @Input() customCSS: AmplifyUIInterface;
+  @Input() signInConfig: any;
+>>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -54,6 +64,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+<<<<<<< HEAD
     let authComponent = this.framework && this.framework === 'ionic' ? 
       new ComponentMount(
         SignInComponentIonic,{
@@ -72,6 +83,21 @@ export class SignInComponent implements OnInit, OnDestroy {
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(authComponent.component);
 
+=======
+    const data = {
+      authState: this.authState,
+      signInConfig: this.signInConfig,
+      customCSS: this.customCSS
+    };
+
+    const authComponent = this.framework && this.framework === 'ionic' ?
+      new ComponentMount(SignInComponentIonic, data):
+      new ComponentMount(SignInComponentCore, data);
+
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
+
+>>>>>>> initial commit
     const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 

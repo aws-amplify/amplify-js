@@ -13,6 +13,7 @@
  */
 // tslint:enable
 
+<<<<<<< HEAD
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
@@ -64,6 +65,45 @@ const template = `
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
       <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
+=======
+import { Component, Input, OnInit } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { AmplifyService, AuthState } from '../../../providers';
+
+const template = `
+<div class={{amplifyUI.formSection}} *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>Confirm Sign in</div>
+  <div class={{amplifyUI.sectionBody}}>
+    <div class={{amplifyUI.formField}}>
+      <div class={{amplifyUI.inputLabel}}> Confirmation Code *</div>
+      <input #code
+        (change)="setCode(code.value)"
+        (keyup)="setCode(code.value)"
+        (keyup.enter)="onConfirm()"
+        class={{amplifyUI.input}}
+        type="text"
+        placeholder="Enter your Code"
+      />
+    </div>
+
+    <div class={{amplifyUI.sectionFooter}}>
+      <span class={{amplifyUI.sectionFooterPrimaryContent}}>
+        <a class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign in</a>
+      </span>
+      <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+        <button class={{amplifyUI.button}} (click)="onConfirm()">
+          Confirm
+        </button>
+      </span>
+    </div>
+  </div>
+  <div class="amplify-alert"  *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+>>>>>>> initial commit
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
@@ -79,10 +119,23 @@ export class ConfirmSignInComponentCore implements OnInit {
   _show: boolean;
   code: string;
   errorMessage: string;
+<<<<<<< HEAD
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('ConfiSignInComponent');
+=======
+  amplifyService: AmplifyService;
+  amplifyUI: AmplifyUI;
+  private _confirmSignInConfig: any;
+  private _customCSS: any;
+
+  constructor(amplifyService: AmplifyService) {
+    this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+    this._customCSS = {};
+    this._confirmSignInConfig = {};
+>>>>>>> initial commit
   }
 
   @Input()
@@ -90,6 +143,12 @@ export class ConfirmSignInComponentCore implements OnInit {
     this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignIn';
+    if (data.confirmSignInConfig) {
+      this._confirmSignInConfig = data.confirmSignInConfig;
+    }
+    if (data.customCSS) {
+      this._customCSS = data.customCSS;
+    }
   }
 
   @Input()
@@ -98,6 +157,7 @@ export class ConfirmSignInComponentCore implements OnInit {
     this._show = authState.state === 'confirmSignIn';
   }
 
+<<<<<<< HEAD
   @Input() hide: string[] = [];
 
   ngOnInit() {
@@ -109,6 +169,28 @@ export class ConfirmSignInComponentCore implements OnInit {
   shouldHide(comp) {
     return this.hide.filter(item => item === comp)
             .length > 0;
+=======
+  @Input()
+  set confirmSignInConfig(confirmSignInConfig: any) {
+    this._confirmSignInConfig = confirmSignInConfig;
+  }
+
+  @Input()
+  set customCSS(customCSS: AmplifyUIInterface) {
+    this._customCSS = customCSS;
+  }
+
+  ngOnInit() {
+    if ((this._confirmSignInConfig && this._confirmSignInConfig.customCSS) || this._customCSS) {
+      const allClasses = {
+        ...this._customCSS,
+        confirmSignInConfig: this._confirmSignInConfig && this._confirmSignInConfig.customCSS ? 
+        this._confirmSignInConfig.customCSS : {}
+      };
+      this._customCSS = joinKeys(allClasses, 'confirmSignInConfig') as AmplifyUIInterface;
+      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
+    }
+>>>>>>> initial commit
   }
 
   setCode(code: string) {

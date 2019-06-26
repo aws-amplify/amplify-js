@@ -39,7 +39,12 @@ import { AuthState } from '../../../providers';
 export class RequireNewPasswordComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+<<<<<<< HEAD
   @Input() hide: string[] = [];
+=======
+  @Input() requireNewPasswordConfig: any;
+  @Input() customCSS: any;
+>>>>>>> initial commit
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -52,6 +57,7 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
+<<<<<<< HEAD
     const requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
     new ComponentMount(RequireNewPasswordComponentIonic,{
       authState: this.authState,
@@ -61,6 +67,17 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
       authState: this.authState,
       hide: this.hide
     });
+=======
+    const data = {
+      authState: this.authState,
+      requireNewPasswordConfig: this.requireNewPasswordConfig,
+      customCSS: this.customCSS
+    };
+
+    const requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic'
+    ? new ComponentMount(RequireNewPasswordComponentIonic, data) :
+    new ComponentMount(RequireNewPasswordComponentCore, data);
+>>>>>>> initial commit
 
     const componentFactory = this.componentFactoryResolver
     .resolveComponentFactory(requireNewPasswordComponent.component);

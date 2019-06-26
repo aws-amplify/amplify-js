@@ -14,6 +14,7 @@
 // tslint:enable
 
 import { Component, Input, OnInit, Inject } from '@angular/core';
+<<<<<<< HEAD
 import defaultSignUpFieldAssets, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../../../assets/default-sign-up-fields';
 import { UsernameAttributes, PhoneFieldOutput } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
@@ -56,8 +57,37 @@ const template = `
             [defaultCountryCode]="country_code"
             (phoneFieldChanged)="onPhoneFieldChanged($event)"
           ></amplify-auth-phone-field-core>
+=======
+import * as AmplifyUI from '@aws-amplify/ui';
+import { AmplifyService, AuthState } from '../../../providers';
+import { countrylist, country }  from '../../../assets/countries';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import defaultSignUpFieldAssets from '../../../assets/default-sign-up-fields';
+
+
+
+const template = `
+<div class={{amplifyUI.formSection}} *ngIf="_show">
+  
+  <div class={{amplifyUI.sectionHeader}}>{{this.header}}</div>
+  <div class={{amplifyUI.sectionBody}}>
+
+    <div class={{amplifyUI.formField}} *ngFor="let field of signUpFields">
+      <div *ngIf="field.key !== 'phone_number'">
+        <div class={{amplifyUI.inputLabel}}>
+          {{field.label}} 
+          <span *ngIf="field.required">*</span>
+>>>>>>> initial commit
         </div>
+        <input #{{field.key}}
+          class={{amplifyUI.input}}
+          [ngClass]="{'amplify-input-invalid ': field.invalid}"
+          type={{field.type}}
+          placeholder={{field.label}}
+          [(ngModel)]="user[field.key]" name="field.key" />
       </div>
+<<<<<<< HEAD
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
           <div class="amplify-form-signup">
@@ -72,10 +102,45 @@ const template = `
           (click)="onSignUp()"
           data-test="${auth.signUp.createAccountButton}"
           >{{ this.amplifyService.i18n().get('Create Account') }}</button>
+=======
+      <div *ngIf="field.key === 'phone_number'">
+        <div class={{amplifyUI.selectInput}}>
+
+          <select #countryCode
+            name="countryCode" 
+            [ngClass]="{'amplify-input-invalid ': field.invalid}"
+            class="amplify-select-phone-country" 
+            [(ngModel)]="country_code">
+            <option *ngFor="let country of countries"  
+              value={{country.value}}>{{country.label}} 
+            </option>
+          </select>
+
+          <input 
+            class={{amplifyUI.input}}
+            placeholder={{field.label}}
+            [ngClass]="{'amplify-input-invalid ': field.invalid}"
+            [(ngModel)]="local_phone_number"
+            name="local_phone_number"
+            type={{field.type}}
+          />
+
+>>>>>>> initial commit
         </div>
       </div>
     </div>
   </div>
+<<<<<<< HEAD
+=======
+  <div class={{amplifyUI.sectionFooter}}>
+    <span class={{amplifyUI.sectionFooterPrimaryContent}}>
+      <button class={{amplifyUI.button}} (click)="onSignUp()">Sign Up</button>
+    </span>
+    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+    Have an account? <a class={{amplifyUI.a}} (click)="onSignIn()">Sign in</a>
+    </span>
+  </div>
+>>>>>>> initial commit
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
@@ -105,8 +170,13 @@ export class SignUpField{
 export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+<<<<<<< HEAD
   _signUpConfig: any;
   _usernameAttributes: string = 'username';
+=======
+  private _signUpConfig: any;
+  private  _customCSS: any;
+>>>>>>> initial commit
   user: any = {};
   local_phone_number: string;
   country_code: string = '1';
@@ -115,12 +185,23 @@ export class SignUpComponentCore implements OnInit {
   signUpFields: SignUpField[] = this.defaultSignUpFields;
   errorMessage: string;
   hiddenFields: any = [];
+<<<<<<< HEAD
   passwordPolicy: string;
   defaultCountryCode: string;
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('SignUpComponent');
+=======
+  amplifyUI: AmplifyUI;
+
+  map: any;
+
+  constructor(@Inject(AmplifyService) amplifyService: AmplifyService) {
+    this.countries = countrylist;
+    this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+>>>>>>> initial commit
   }
 
   @Input()
@@ -169,6 +250,9 @@ export class SignUpComponentCore implements OnInit {
         this.signUpFields = signUpWithPhoneNumberFields;
         this.defaultSignUpFields = signUpWithPhoneNumberFields;
     }
+    if (data.customCSS) {
+      this._customCSS = data.customCSS;
+    }
   }
 
   @Input()
@@ -199,9 +283,25 @@ export class SignUpComponentCore implements OnInit {
     }
   }
 
+  @Input()
+  set customCSS(customCSS: AmplifyUIInterface) {
+    this._customCSS = customCSS;
+  }
+
   ngOnInit() {
+<<<<<<< HEAD
     if (!this.amplifyService.auth()){
       this.logger.warn('Auth module not registered on AmplifyService provider');
+=======
+    if ((this._signUpConfig && this._signUpConfig.customCSS) || this._customCSS) {
+      const allClasses = {
+        ...this._customCSS,
+        signUpConfig: this._signUpConfig && this._signUpConfig.customCSS ? 
+        this._signUpConfig.customCSS : {}
+      };
+      this._customCSS = joinKeys(allClasses, 'signUpConfig') as AmplifyUIInterface;
+      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
+>>>>>>> initial commit
     }
     this.sortFields();
   }

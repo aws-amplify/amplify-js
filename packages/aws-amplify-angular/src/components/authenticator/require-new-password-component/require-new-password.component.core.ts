@@ -13,6 +13,7 @@
  */
 // tslint:enable
 
+<<<<<<< HEAD
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
@@ -62,6 +63,51 @@ const template = `
 </div>
 </div>
 </div>
+=======
+import { Component, Input, OnInit } from '@angular/core';
+import * as AmplifyUI from '@aws-amplify/ui';
+import { AmplifyUIInterface } from '../../../assets/amplify-angular-theme.class';
+import { joinKeys, appendCustomClasses } from '../../../assets/helpers';
+import { AmplifyService, AuthState } from '../../../providers';
+
+const template = `
+<div class={{amplifyUI.formSection}}  *ngIf="_show">
+  <div class={{amplifyUI.sectionHeader}}>
+    You are required to update your password
+  </div>
+  <div class={{amplifyUI.sectionBody}}>
+    <div class={{amplifyUI.formField}}>
+      <div class={{amplifyUI.inputLabel}}> Password * </div>
+      <input #password
+        (keyup)="setPassword(password.value)"
+        (keyup.enter)="onSubmit()"
+        class={{amplifyUI.input}}
+        type="password"
+        placeholder="Password"
+      />
+    </div>
+  </div>
+  <div class={{amplifyUI.sectionFooter}}>
+    <span class={{amplifyUI.sectionFooterPrimaryContent}}>
+      <a class={{amplifyUI.a}} (click)="onSignIn()">Back to Sign In</a>
+    </span>
+    <span class={{amplifyUI.sectionFooterSecondaryContent}}>
+      <button class={{amplifyUI.button}} (click)="onSubmit()">
+        Submit
+      </button>
+    </span>
+  </div>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">
+        &times;
+      </a>
+    </div>
+  </div>
+</div>
+>>>>>>> initial commit
 `;
 
 @Component({
@@ -71,12 +117,35 @@ const template = `
 export class RequireNewPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+  private _requireNewPasswordConfig: any;
+  private _customCSS: any;
   password: string;
   errorMessage: string;
+<<<<<<< HEAD
   protected logger: any;
 
   constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
+=======
+  amplifyService: AmplifyService;
+  amplifyUI: AmplifyUI;
+
+  constructor(amplifyService: AmplifyService) {
+    this.amplifyService = amplifyService;
+    this.amplifyUI = Object.assign({}, AmplifyUI);
+  }
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'requireNewPassword';
+    if (data.requireNewPasswordConfig) {
+      this._requireNewPasswordConfig = data.requireNewPasswordConfig;
+    }
+    if (data.customCSS) {
+      this._customCSS = data.customCSS;
+    }
+>>>>>>> initial commit
   }
 
   @Input()
@@ -85,6 +154,7 @@ export class RequireNewPasswordComponentCore implements OnInit {
     this._show = authState.state === 'requireNewPassword';
   }
 
+<<<<<<< HEAD
   @Input() hide: string[] = [];
 
   @Input()
@@ -105,6 +175,34 @@ export class RequireNewPasswordComponentCore implements OnInit {
             .length > 0;
   }
 
+=======
+  @Input()
+  set requireNewPasswordConfig(requireNewPasswordConfig: any) {
+    this._requireNewPasswordConfig = requireNewPasswordConfig;
+  }
+
+  @Input()
+  set customCSS(customCSS: AmplifyUIInterface) {
+    this._customCSS = customCSS;
+  }
+
+  ngOnInit() {
+    if (
+      (this._requireNewPasswordConfig && this._requireNewPasswordConfig.customCSS) ||
+      this._customCSS
+    ) {
+      const allClasses = {
+        ...this._customCSS,
+        requireNewPasswordConfig: this._requireNewPasswordConfig &&
+        this._requireNewPasswordConfig.customCSS ? 
+        this._requireNewPasswordConfig.customCSS : {}
+      };
+      this._customCSS = joinKeys(allClasses, 'signUpConfig') as AmplifyUIInterface;
+      this.amplifyUI = appendCustomClasses(this.amplifyUI, this._customCSS);
+    }
+  }
+
+>>>>>>> initial commit
   setPassword(password: string) {
     this.password = password;
   }
@@ -119,7 +217,10 @@ export class RequireNewPasswordComponentCore implements OnInit {
         requiredAttributes
       )
       .then(() => {
+<<<<<<< HEAD
         this.onAlertClose();
+=======
+>>>>>>> initial commit
         this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
