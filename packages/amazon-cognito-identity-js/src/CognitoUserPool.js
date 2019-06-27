@@ -43,7 +43,7 @@ export default class CognitoUserPool {
     }
 
     // eslint-disable-next-line max-len
-    if (endpoint && /^(http|https):\/\/.+/.test(endpoint)) {
+    if (endpoint && !/^(http|https):\/\/.+/.test(endpoint)) {
       throw new Error(`endpoint was supplied as ${endpoint} but did not match the expected format`);
     }
 
