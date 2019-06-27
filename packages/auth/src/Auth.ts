@@ -1526,6 +1526,12 @@ export default class AuthClass {
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
+        dispatchAuthEvent(
+            'parsingCallbackUrl', 
+            { url: URL },
+            `The callback url is being parsed`
+        );
+
         const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
