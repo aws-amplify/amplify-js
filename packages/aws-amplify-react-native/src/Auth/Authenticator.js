@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { 
     Auth, 
     Analytics,
@@ -155,7 +155,7 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, signUpConfig } = this.props;
+        const { hideDefault, signUpConfig, usernameAttributes } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
@@ -178,14 +178,15 @@ export default class Authenticator extends React.Component {
                     authState: authState,
                     authData: authData,
                     onStateChange: this.handleStateChange,
-                    Auth: new AuthDecorator(this.handleStateChange)
+                    Auth: new AuthDecorator(this.handleStateChange),
+                    usernameAttributes
                 });
             });
         return (
             
-                <View style={theme.container}>
+                <SafeAreaView style={theme.container}>
                     {children}
-                </View>
+                </SafeAreaView>
         );
     }
 }

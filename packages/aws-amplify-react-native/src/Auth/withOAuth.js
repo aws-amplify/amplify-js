@@ -24,7 +24,7 @@ export default (Comp) => {
     return class WithOAuth extends React.Component {
         constructor(props) {
             super(props);
-
+            this._isMounted = false;
             const config = this._getOAuthConfig();
 
             const {
@@ -40,6 +40,7 @@ export default (Comp) => {
             this.state = {
                 user: null,
                 error: null,
+                loading: false,
             };
 
             listeners.forEach(listener => Hub.remove('auth', listener));
@@ -49,17 +50,23 @@ export default (Comp) => {
         }
 
         componentDidMount() {
-            Auth.currentAuthenticatedUser().then(user => {
-                this.setState({ user })
-            }).catch(error => {
-                logger.debug(error);
-
-                this.setState({ user: null });
+            this._isMounted = true;
+            this.setState({ loading: true }, () => {
+                Auth.currentAuthenticatedUser().then(user => {
+                    this.setState({ user, loading: false })
+                }).catch(error => {
+                    logger.debug(error);
+                    this.setState({ user: null, loading: false });
+                });
             });
         }
-
+        componentWillUnmount() {
+            this._isMounted = false;
+            return;
+        }
         onHubCapsule(capsule) {
             // The Auth module will emit events when user signs in, signs out, etc
+            if (!this._isMounted) return;
             const { channel, payload } = capsule;
 
             if (channel === 'auth') {
@@ -68,20 +75,19 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-
-                            this.setState({ user, error: null });
+                            this.setState({ user, error: null, loading: false });
                         });
                         break;
                     }
                     case 'signOut': {
                         logger.debug('signed out');
-                        this.setState({ user: null, error: null });
+                        this.setState({ user: null, error: null, loading: false });
                         break;
                     }
                     case 'signIn_failure':
                     case 'cognitoHostedUI_failure': {
                         logger.debug('not signed in');
-                        this.setState({ user: null, error: decodeURIComponent(payload.data) });
+                        this.setState({ user: null, error: decodeURIComponent(payload.data), loading: false });
                         break;
                     }
                     default:
@@ -105,7 +111,7 @@ export default (Comp) => {
         }
 
         hostedUISignIn(provider) {
-            Auth.federatedSignIn({ provider });
+            this.setState({ loading: true },  () => Auth.federatedSignIn({ provider }));
         }
 
         signOut() {
@@ -113,10 +119,11 @@ export default (Comp) => {
         }
 
         render() {
-            const { user: oAuthUser, error: oAuthError } = this.state;
+            const { user: oAuthUser, error: oAuthError, loading } = this.state;
             const { oauth_config: _, ...otherProps } = this.props;
 
             const oAuthProps = {
+                loading,
                 oAuthUser,
                 oAuthError,
                 hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),

@@ -62,11 +62,11 @@ describe('ConfirmSignUpComponentIonic: ', () => {
 
   it('...should have an onResend method', () => {
     expect(component.onResend).toBeTruthy();
-  }); 
+  });
 
   it('...should have an onSignIn method', () => {
     expect(component.onSignIn).toBeTruthy();
-  }); 
+  });
 
   it('...should have an setCode method', () => {
     expect(component.setCode).toBeTruthy();

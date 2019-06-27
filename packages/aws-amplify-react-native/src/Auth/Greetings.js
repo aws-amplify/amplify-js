@@ -42,13 +42,27 @@ export default class Greetings extends AuthPiece {
     }
 
     render() {
-        const { authState } = this.props;
+        const { authState, authData } = this.props;
         const signedIn = (authState === 'signedIn');
         const theme = this.props.theme || AmplifyTheme;
 
         let defaultMessage = "";
-        if (Auth.user && Auth.user.username) {
-            defaultMessage = `${I18n.get('Hello')} ${Auth.user.username}`;
+        const user = authData;
+        if (user) {
+            const { usernameAttributes = [] } = this.props;
+            let name = '';
+            if (usernameAttributes === 'email') {
+                // Email as Username
+                name = user.attributes? user.attributes.email : user.username;
+                defaultMessage = `${name}`;
+            } else if (usernameAttributes === 'phone_number') {
+                // Phone number as Username
+                name = user.attributes? user.attributes.phone_number : user.username;
+                defaultMessage = `${name}`;
+            } else {
+                name = user.username || "unknown user";
+                defaultMessage = `${I18n.get('Hello')} ${name}`;
+            }
         }
 
         let message;
