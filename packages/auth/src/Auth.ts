@@ -1244,7 +1244,7 @@ export default class AuthClass {
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
                             if (isSignedInHostedUI) {
-                                return this._oAuthHandler.signOut().then(() => res());
+                                return res(this._oAuthHandler.signOut());
                             } else {
                                 return res();
                             }
@@ -1259,7 +1259,7 @@ export default class AuthClass {
                 logger.debug('user sign out', user);
                 user.signOut();
                 if (isSignedInHostedUI) {
-                    return this._oAuthHandler.signOut().then(() => res());
+                    return res(this._oAuthHandler.signOut());
                 } else {
                     return res();
                 }
@@ -1525,6 +1525,12 @@ export default class AuthClass {
         if (!this._config.userPoolId){
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
+
+        dispatchAuthEvent(
+            'parsingCallbackUrl', 
+            { url: URL },
+            `The callback url is being parsed`
+        );
 
         const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
 
