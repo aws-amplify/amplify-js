@@ -42,7 +42,7 @@ const template = `
           #password
           type="password"
           class="amplify-form-input"
-          (keyup)="setPassword(password.value)"
+          (input)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
           data-test="${auth.signIn.passwordInput}"
         ></ion-input>
