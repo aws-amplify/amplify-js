@@ -22,7 +22,7 @@ const template = `
           #code
           type="text"
           class="amplify-form-input"
-          (keyup)="setCode(code.value)"
+          (input)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
           data-test="${auth.confirmSignIn.codeInput}"
         ></ion-input>
