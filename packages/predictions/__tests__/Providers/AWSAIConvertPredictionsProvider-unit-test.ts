@@ -44,11 +44,18 @@ const clientInfo = {
 };
 
 const options = {
-    appId: 'appId',
-    clientInfo: clientInfo,
-    credentials: credentials,
-    endpointId: 'endpointId',
-    region: 'region'
+    translateText: {
+        connection: "sdk",
+        region: "us-west-2",
+        sourceLanguage: "en",
+        targetLanguage: "es"
+    },
+    textToSpeech: {
+        connection: "sdk",
+        region: "us-west-2",
+        language: "en",
+        voiceId: "Aditi"
+    }
 };
 
 const validTranslateTextInput: TranslateTextInput = {
@@ -56,9 +63,7 @@ const validTranslateTextInput: TranslateTextInput = {
         source: {
             text: "sourceText", language: "en"
         },
-        providerOptions: {
-            targetLanguage: "es"
-        }
+        targetLanguage: "es"
     }
 };
 
@@ -67,9 +72,8 @@ const validTextToSpeechInput: TextToSpeechInput = {
         source: {
             text: "sourceText", language: "en"
         },
-        providerOptions: {
-            voiceId: "Joanna"
-        }
+        voiceId: "Joanna"
+
     }
 };
 
@@ -82,7 +86,7 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
-            return expect(predictionsProvider.translateText(validTranslateTextInput)).resolves.toMatchObject({ "language": "es", "text": "translatedText" });
+            return expect(predictionsProvider.convert(validTranslateTextInput)).resolves.toMatchObject({ "language": "es", "text": "translatedText" });
         });
         test('error case credentials do not exist', () => {
             const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -90,7 +94,7 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return null;
             });
-            return expect(predictionsProvider.translateText(validTranslateTextInput)).rejects.toMatch("No credentials");
+            return expect(predictionsProvider.convert(validTranslateTextInput)).rejects.toMatch("No credentials");
         });
         test('error case credentials exist but service fails', () => {
             const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -99,7 +103,7 @@ describe("Predictions convert provider test", () => {
                 return Promise.resolve(credentials);
             });
             const translateSpy = jest.spyOn(Translate.prototype, "translateText").mockImplementation((input, callback) => { callback("error", null) });
-            return expect(predictionsProvider.translateText(validTranslateTextInput)).rejects.toMatch("error");
+            return expect(predictionsProvider.convert(validTranslateTextInput)).rejects.toMatch("error");
         });
     });
 
@@ -112,7 +116,7 @@ describe("Predictions convert provider test", () => {
             });
             window.URL.createObjectURL = jest.fn();
             const urlSpyOn = jest.spyOn(URL, 'createObjectURL').mockImplementation((blob) => { return "dummyURL"; });
-            return expect(predictionsProvider.convertTextToSpeech(validTextToSpeechInput)).resolves.toMatchObject(
+            return expect(predictionsProvider.convert(validTextToSpeechInput)).resolves.toMatchObject(
                 {
                     speech: {
                         url: "dummyURL"
@@ -129,7 +133,7 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return null;
             });
-            return expect(predictionsProvider.convertTextToSpeech(validTextToSpeechInput)).rejects.toMatch("No credentials");
+            return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch("No credentials");
         });
         test('error case credentials exist but service fails', () => {
             const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -138,7 +142,7 @@ describe("Predictions convert provider test", () => {
                 return Promise.resolve(credentials);
             });
             const textToSpeechSpy = jest.spyOn(TextToSpeech.prototype, "synthesizeSpeech").mockImplementation((input, callback) => { callback("error", null) });
-            return expect(predictionsProvider.convertTextToSpeech(validTextToSpeechInput)).rejects.toMatch("error");
+            return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch("error");
         });
     });
 });
