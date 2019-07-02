@@ -126,6 +126,7 @@ class ServiceWorkerClass {
                                 resolve(subscription);
                             }).catch((error) => {
                                 this._logger.error(error);
+                                reject(error);
                             });
                         }
                     });
