@@ -108,48 +108,6 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         });
     }
 
-    // TODO: Experimental code, not to be merged.
-    protected convertSpeechToText(input: SpeechToTextInput) {
-        return new Promise(async (res, rej) => {
-            const credentials = await Credentials.get();
-            if (!credentials) { return rej('No credentials'); }
-
-            // Create WebSocket connection.
-            // tslint:disable-next-line: max-line-length
-            const socket = new WebSocket('wss://transcribestreaming.us-west-2.amazonaws.com:8443/stream-transcription-websocket');
-
-            // Connection opened
-            socket.addEventListener('open', function(event) {
-                socket.send('Hello Server!');
-            });
-
-            // Listen for messages
-            socket.addEventListener('message', function(event) {
-                console.log('Message from server ', event.data);
-            });
-
-            this.speechToText = new SpeechToText({ region: this._config.region, credentials });
-            this.speechToText.startTranscriptionJob({
-                LanguageCode: "en-US",
-                Media: { MediaFileUri: input.transcription.source.file },
-                MediaFormat: "mp3",
-                TranscriptionJobName: "testJob" + Date.now(),
-                OutputBucketName: input.transcription.source.outputBucketName
-                // tslint:disable-next-line: align
-            }, (err, data) => {
-                if (err) {
-                    console.log(err);
-                    rej(err);
-                } else {
-                    console.log(data);
-                    res({
-                        s3file: data.TranscriptionJob.Transcript.TranscriptFileUri // TODO: This does not work
-                    });
-                }
-            });
-        });
-    }
-
     protected orchestrateWithGraphQL(input: any): Promise<any> {
         return this.graphQLPredictionsProvider.convert(input);
     }
