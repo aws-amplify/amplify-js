@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.26-unstable.0"></a>
+## [1.2.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25...@aws-amplify/auth@1.2.26-unstable.0) (2019-06-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Handle case when `signOut()` promise is rejected ([#3179](https://github.com/aws/aws-amplify/issues/3179)) ([0a2efd4](https://github.com/aws/aws-amplify/commit/0a2efd4))
+
+
+
+
 <a name="1.2.25"></a>
 ## [1.2.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25-unstable.3...@aws-amplify/auth@1.2.25) (2019-06-17)
 
