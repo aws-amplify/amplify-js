@@ -1,17 +1,19 @@
-import { TranslateTextInput, TextToSpeechInput,
-         SpeechToTextInput, isTranslateTextInput,
-         isTextToSpeechInput, isSpeechToTextInput, ProviderOptions } from "../Predictions";
+import {
+    TranslateTextInput, TextToSpeechInput,
+    SpeechToTextInput, isTranslateTextInput,
+    isTextToSpeechInput, isSpeechToTextInput
+} from "../Predictions";
 import { AbstractPredictionsProvider } from ".";
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractConvertPredictionsProvider');
 
-export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider{
+export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
 
     getCategory(): string {
         return "Convert";
     }
 
-    convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T): Promise<any> {
+    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput): Promise<any> {
         if (isTranslateTextInput(input)) {
             logger.debug("translateText");
             return this.translateText(input);

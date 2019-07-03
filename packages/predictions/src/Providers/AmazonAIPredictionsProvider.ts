@@ -4,7 +4,7 @@ import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOp
 import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsProvider";
 
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
-    
+
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private convertProvider: AmazonAIConvertPredictionsProvider;
     private identifyProvider: AmazonAIIdentifyPredictionsProvider;
@@ -19,7 +19,7 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         return "Predictions";
     }
 
-    getProviderName() {
+    getProviderName(): string {
         return "AmazonAIPredictionsProvider";
     }
 

@@ -82,7 +82,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
     }
 
     // TODO: Experimental code, not to be merged.
-    protected convertSpeechToText(input: SpeechToTextInput) {
+    protected convertSpeechToText2(input: SpeechToTextInput) {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }

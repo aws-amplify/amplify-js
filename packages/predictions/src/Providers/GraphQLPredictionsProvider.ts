@@ -4,15 +4,19 @@ import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput } from '../typ
 
 export default class GraphQLPredictionsProvider extends AbstractPredictionsProvider {
 
+    constructor() {
+        super();
+    }
+
     getProviderName(): string {
         return "GraphQLPredictionsProvider";
     }
-    
+
     getCategory(): string {
         return "GraphQLResolver";
     }
 
-    convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T): Promise<any> {
+    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput): Promise<any> {
         return this.orchestrateWithGraphQL(input);
     }
 
