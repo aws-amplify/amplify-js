@@ -58,7 +58,7 @@ const canonical_query = function(query) {
                 const reencoded_val = escape_RFC3986(key_val[1]);
                 return key_val[0] + '=' + reencoded_val;
             }
-        }).sort((a, b) => a < b ? -1 : 1).join('&');
+        }).sort((a, b) => a.split('=')[0] < b.split('=')[0] ? -1 : 1).join('&');
 };
 
 /**
