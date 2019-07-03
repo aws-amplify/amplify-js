@@ -96,7 +96,6 @@ export default class OAuth {
     this._urlOpener(URL, redirectSignIn);
   }
 
-  // State in here
   private async _handleCodeFlow(currentUrl: string) {
     /* Convert URL into an object with parameters as keys
     { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
@@ -159,8 +158,6 @@ export default class OAuth {
       };
   }
 
-
-  // State in here.
   private async _handleImplicitFlow(currentUrl: string) {
 
     const { id_token, access_token } = parse(currentUrl).hash
