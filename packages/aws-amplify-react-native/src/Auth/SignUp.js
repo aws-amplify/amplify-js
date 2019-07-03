@@ -238,7 +238,7 @@ export default class SignUp extends AuthPiece {
                                     placeholder={I18n.get(field.placeholder)}
                                     keyboardType="phone-pad"
                                     required={field.required}
-                                    defaultDialCode={this.getDefaultDialCode}
+                                    defaultDialCode={this.getDefaultDialCode()}
                                 />
                             )
                         })
