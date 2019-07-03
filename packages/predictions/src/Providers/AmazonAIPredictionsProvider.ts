@@ -29,7 +29,7 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         return config;
     }
 
-    convert<T>(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput | T): Promise<any> {
+    convert(input: TranslateTextInput): Promise<any> {
         return this.convertProvider.convert(input);
     }
 
