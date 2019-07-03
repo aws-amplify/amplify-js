@@ -1,4 +1,5 @@
-import { LanguageCode } from "aws-sdk/clients/transcribeservice";
+import { LanguageCode } from 'aws-sdk/clients/transcribeservice';
+import { Instance, BoundingBox, AgeRange, Landmark } from 'aws-sdk/clients/rekognition';
 
 /**
  * Base types
@@ -10,6 +11,10 @@ export interface PredictionsOptions {
 export interface ProviderOptions {
     providerName?: string
 }
+
+/**
+ * Convert types
+ */
 
 export interface TranslateTextInput {
     translateText: {
@@ -51,40 +56,66 @@ export interface SpeechToTextInput {
     }
 }
 
-export interface IdentifyImageInput {
-    identifyImage: {
-        source: {
-            storage: {
-                bucket: string,
-                key: string,
-                level?: string,
-            },
-        },
-        maxLabels?: number,
-        minConfidence?: number
+/**
+ * Identify types
+ */
+
+export type identifyEntityType = 'LABELS' | 'UNSAFE' | 'ALL';
+
+export interface identifySource {
+    storage?: {
+        key: string,
+        level?: 'public' | 'private' | 'protected',
+        identityId?: string,
+    },
+    file?: File,
+    bytes?: Buffer | ArrayBuffer | Blob | string
+}
+
+export interface IdentifyEntityInput {
+    identifyEntity: {
+        source: identifySource,
+        type: identifyEntityType
     }
+}
+
+export interface IdentifyEntityOutput {
+    entity?: {
+        name: string,
+        boundingBoxes: Instance[],
+        metadata?: Object
+    }[],
+    unsafe?: 'YES' | 'NO' | 'UNKNOWN'
 }
 
 export interface IdentifyFacesInput {
     identifyFaces: {
-        source: {
-            storage: {
-                bucket: string,
-                key: string,
-                level?: string,
-            },
-        }
+        source: identifySource,
+        collection?: string,
+        maxFaces?: number,
+        celebrityDetection: Boolean
     }
 }
 
-export interface IdentifyCelebritiesInput {
-    identifyCelebrities: {
+export interface IdentifyFacesOutput {
+    face: {
+        boundingBox: BoundingBox,
+        ageRange?: AgeRange,
+        landmarks?: Landmark[],
+        attributes?: object,
+        metadata?: object // TODO: object vs Object?
+    }[]
+}
+
+export interface IdentifyTextInput {
+    identifyText: {
         source: {
             storage: {
                 bucket: string,
                 key: string,
-                level?: string,
+                level?: string
             },
+
         }
     }
 }

@@ -2,9 +2,11 @@ import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractC
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
 import * as SpeechToText from 'aws-sdk/clients/transcribeservice';
-import { TranslateTextInput, TextToSpeechInput,
-         SpeechToTextInput, isTranslateTextInput,
-         isTextToSpeechInput, isSpeechToTextInput } from "../types";
+import {
+    TranslateTextInput, TextToSpeechInput,
+    SpeechToTextInput, isTranslateTextInput,
+    isTextToSpeechInput, isSpeechToTextInput
+} from "../types";
 import { Credentials } from '@aws-amplify/core';
 import { GraphQLPredictionsProvider } from "..";
 
@@ -29,7 +31,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             if (!credentials) { return rej('No credentials'); }
             const sourceLanguageCode = input.translateText.source.language || this._config.translateText.sourceLanguage;
             const targetLanguageCode = input.translateText.targetLanguage || this._config.translateText.targetLanguage;
-            if(!sourceLanguageCode || !targetLanguageCode) {
+            if (!sourceLanguageCode || !targetLanguageCode) {
                 throw new Error("Please provide both source and target language");
             }
             this.translate = new Translate({ region: this._config.translateText.region, credentials });
@@ -37,7 +39,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 SourceLanguageCode: sourceLanguageCode,
                 TargetLanguageCode: targetLanguageCode,
                 Text: input.translateText.source.text
-// tslint:disable-next-line: align
+                // tslint:disable-next-line: align
             }, (err, data) => {
                 if (err) {
                     rej(err);
@@ -61,7 +63,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 VoiceId: voiceId,
                 TextType: 'text',
                 SampleRate: '8000'
-// tslint:disable-next-line: align
+                // tslint:disable-next-line: align
             }, (err, data) => {
                 if (err) {
                     rej(err);
@@ -91,7 +93,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 MediaFormat: "mp3",
                 TranscriptionJobName: "testJob" + Date.now(),
                 OutputBucketName: input.transcription.source.outputBucketName
-// tslint:disable-next-line: align
+                // tslint:disable-next-line: align
             }, (err, data) => {
                 if (err) {
                     console.log(err);
