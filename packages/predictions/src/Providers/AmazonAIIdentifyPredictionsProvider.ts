@@ -1,15 +1,14 @@
 import { Credentials } from '@aws-amplify/core';
-import { AbstractIdentifyPredictionsProvider } from "../types/Providers";
+import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
-    IdentifyEntityInput, IdentifyEntityOutput, identifyEntityType,
-    identifySource, IdentifyFacesInput, IdentifyFacesOutput,
+    IdentifyEntityInput, IdentifyEntityOutput, IdentifyEntityType,
+    IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 
 export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
-
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private rekognition: Rekognition;
     private textract: Textract;
@@ -19,17 +18,17 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     }
 
     getProviderName() {
-        return "AmazonAIIdentifyPredictionsProvider";
+        return 'AmazonAIIdentifyPredictionsProvider';
     }
 
     /**
      * Verify user input source and refactor it to a Rekognition.Image object that can be
      * readily used to call AWS.Rekognition API. 
-     * @param {identifySource} source - User input source that directs to the object user wants
+     * @param {IdentifySource} source - User input source that directs to the object user wants
      *  to identify (storage, file, or bytes).
      * @return - Refactored source. Throws appropriate errors if the input is not valid. 
      */
-    private verifyAndRefactorSource(source: identifySource): Rekognition.Image {
+    private verifyAndRefactorSource(source: IdentifySource): Rekognition.Image {
         /* First, check that only one source is present in the input. */
         let nSourcesProvided = 0;
         if (source.storage)++nSourcesProvided;
@@ -49,7 +48,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 // TODO: verify that if storage.level is not defined then we can assume it's public
                 storageKey = `public/${storage.key}`;
             }
-            image.S3Object = { Bucket: this._config.aws_user_files_s3_bucket, Name: storageKey };
+            image.S3Object = { Bucket: this._config.aws_user_files_s3_bucket, Name: storageKey }; 
+            // TODO: Validate how user s3 buckets are configured.
         } else if (source.file) {
             image.Bytes = source.file;
         } else { // if (source.bytes)
@@ -74,28 +74,31 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             try {
                 inputImage = this.verifyAndRefactorSource(input.identifyEntity.source);
             } catch (err) {
-                rej(err);
+                return rej(err);
             }
             const param = { Image: inputImage };
 
             let identifyEntityResult: IdentifyEntityOutput; // data to return
-            const entityType: identifyEntityType = input.identifyEntity.type;
+            const entityType: IdentifyEntityType = input.identifyEntity.type;
 
             if (entityType === 'LABELS' || entityType === 'ALL') {
                 this.rekognition.detectLabels(param, (err, data) => {
-                    if (err) rej(err);
+                    
+                    if (err) return rej(err);
                     // transform returned data to reflect identify API
                     const detectLabelData = data.Labels.map(val => {
-                        return { name: val.Name, boundingBoxes: val.Instances };
+                        // extract bounding boxes 
+                        const boxes = val.Instances.map(instance => { return instance.BoundingBox; });
+                        return { name: val.Name, boundingBoxes: boxes};
                     });
                     identifyEntityResult = { entity: detectLabelData };
                 });
             }
             if (entityType === 'UNSAFE' || entityType === 'ALL') {
                 this.rekognition.detectModerationLabels(param, (err, data) => {
-                    if (err) rej(err);
+                    if (err) return rej(err);
                     identifyEntityResult = data.ModerationLabels ?
-                        { ...identifyEntityResult, unsafe: "YES" } : { ...identifyEntityResult, unsafe: "NO" };
+                        { ...identifyEntityResult, unsafe: 'YES' } : { ...identifyEntityResult, unsafe: 'NO' };
                 });
             }
             return res(identifyEntityResult);
@@ -119,14 +122,14 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             try {
                 inputImage = this.verifyAndRefactorSource(input.identifyFaces.source);
             } catch (err) {
-                rej(err);
+                return rej(err);
             }
             const param = { Image: inputImage };
 
-            let identifyFacesResult: IdentifyFacesOutput; // TODO: strongly type this
+            let identifyFacesResult: IdentifyFacesOutput; 
             if (input.identifyFaces.celebrityDetection) {
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
-                    if (err) rej(err);
+                    if (err) return rej(err);
                     const faces = data.CelebrityFaces.map(val => {
                         return { boundingBox: val.Face.BoundingBox, landmarks: val.Face.Landmarks };
                     });
@@ -140,7 +143,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     MaxFaces: input.identifyFaces.maxFaces
                 };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
-                    if (err) rej(err);
+                    if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
                         return { boundingBox: val.Face.BoundingBox };
                     });
@@ -148,7 +151,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 });
             } else {
                 this.rekognition.detectFaces(param, (err, data) => {
-                    if (err) rej(err);
+                    if (err) return rej(err);
                     const faces = data.FaceDetails.map(val => {
                         // transform returned data to reflect identify API
                         return {
@@ -165,7 +168,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                                 eyesOpen: val.EyesOpen,
                                 mouthOpen: val.MouthOpen,
                                 emotions: val.Emotions,
-                            }
+                            },
                         };
                     });
                     identifyFacesResult = { face: faces };

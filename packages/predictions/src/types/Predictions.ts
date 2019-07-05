@@ -1,5 +1,5 @@
 import { LanguageCode } from 'aws-sdk/clients/transcribeservice';
-import { Instance, BoundingBox, AgeRange, Landmark } from 'aws-sdk/clients/rekognition';
+import * as Rekognition from 'aws-sdk/clients/rekognition';
 
 /**
  * Base types
@@ -60,9 +60,9 @@ export interface SpeechToTextInput {
  * Identify types
  */
 
-export type identifyEntityType = 'LABELS' | 'UNSAFE' | 'ALL';
+export type IdentifyEntityType = 'LABELS' | 'UNSAFE' | 'ALL';
 
-export interface identifySource {
+export interface IdentifySource {
     storage?: {
         key: string,
         level?: 'public' | 'private' | 'protected',
@@ -74,15 +74,15 @@ export interface identifySource {
 
 export interface IdentifyEntityInput {
     identifyEntity: {
-        source: identifySource,
-        type: identifyEntityType
+        source: IdentifySource,
+        type: IdentifyEntityType
     }
 }
 
 export interface IdentifyEntityOutput {
     entity?: {
         name: string,
-        boundingBoxes: Instance[],
+        boundingBoxes: Rekognition.BoundingBox[],
         metadata?: Object
     }[],
     unsafe?: 'YES' | 'NO' | 'UNKNOWN'
@@ -90,7 +90,7 @@ export interface IdentifyEntityOutput {
 
 export interface IdentifyFacesInput {
     identifyFaces: {
-        source: identifySource,
+        source: IdentifySource,
         collection?: string,
         maxFaces?: number,
         celebrityDetection: Boolean
@@ -99,10 +99,20 @@ export interface IdentifyFacesInput {
 
 export interface IdentifyFacesOutput {
     face: {
-        boundingBox: BoundingBox,
-        ageRange?: AgeRange,
-        landmarks?: Landmark[],
-        attributes?: object,
+        boundingBox?: Rekognition.BoundingBox,
+        ageRange?: Rekognition.AgeRange,
+        landmarks?: Rekognition.Landmark[],
+        attributes?: {
+            smile?: Rekognition.Smile,
+            eyeglasses?: Rekognition.Eyeglasses,
+            sunglasses?: Rekognition.Sunglasses,
+            gender?: Rekognition.Gender,
+            beard?: Rekognition.Beard,
+            mustache?: Rekognition.Mustache,
+            eyesOpen?: Rekognition.EyeOpen,
+            mouthOpen?: Rekognition.MouthOpen,
+            emotions?: Rekognition.Emotions
+        },
         metadata?: object // TODO: object vs Object?
     }[]
 }
@@ -132,5 +142,15 @@ export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
     const key: keyof SpeechToTextInput = 'transcription';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
+    const key: keyof IdentifyEntityInput = 'identifyEntity';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyFacesInput(obj: any): obj is IdentifyFacesInput {
+    const key: keyof IdentifyFacesInput = 'identifyFaces';
     return obj && obj.hasOwnProperty(key);
 }

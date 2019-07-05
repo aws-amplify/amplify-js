@@ -2,26 +2,26 @@ import {
     TranslateTextInput, TextToSpeechInput,
     SpeechToTextInput, isTranslateTextInput,
     isTextToSpeechInput, isSpeechToTextInput
-} from "../Predictions";
-import { AbstractPredictionsProvider } from ".";
+} from '../Predictions';
+import { AbstractPredictionsProvider } from '.';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractConvertPredictionsProvider');
 
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
 
     getCategory(): string {
-        return "Convert";
+        return 'Convert';
     }
 
     convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput): Promise<any> {
         if (isTranslateTextInput(input)) {
-            logger.debug("translateText");
+            logger.debug('translateText');
             return this.translateText(input);
         } else if (isTextToSpeechInput(input)) {
-            logger.debug("textToSpeech");
+            logger.debug('textToSpeech');
             return this.convertTextToSpeech(input);
         } else if (isSpeechToTextInput(input)) {
-            logger.debug("textToSpeech");
+            logger.debug('textToSpeech');
             return this.convertSpeechToText(input);
         } else {
             // Orchestration type request. Directly call graphql
@@ -30,14 +30,14 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
     }
 
     protected translateText(translateTextInput: TranslateTextInput): Promise<any> {
-        throw new Error("convertText is not implemented by this provider");
+        throw new Error('convertText is not implemented by this provider');
     }
 
     protected convertTextToSpeech(textToSpeechInput: TextToSpeechInput): Promise<any> {
-        throw new Error("convertTextToSpeech is not implemented by this provider");
+        throw new Error('convertTextToSpeech is not implemented by this provider');
     }
 
     protected convertSpeechToText(speechToTextInput: SpeechToTextInput): Promise<any> {
-        throw new Error("convertSpeechToText is not implemented by this provider");
+        throw new Error('convertSpeechToText is not implemented by this provider');
     }
 }
