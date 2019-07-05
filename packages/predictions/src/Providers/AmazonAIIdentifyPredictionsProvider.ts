@@ -48,7 +48,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 // TODO: verify that if storage.level is not defined then we can assume it's public
                 storageKey = `public/${storage.key}`;
             }
-            image.S3Object = { Bucket: this._config.aws_user_files_s3_bucket, Name: storageKey }; 
+            image.S3Object = { Bucket: this._config.aws_user_files_s3_bucket, Name: storageKey };
             // TODO: Validate how user s3 buckets are configured.
         } else if (source.file) {
             image.Bytes = source.file;
@@ -83,13 +83,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
 
             if (entityType === 'LABELS' || entityType === 'ALL') {
                 this.rekognition.detectLabels(param, (err, data) => {
-                    
+
                     if (err) return rej(err);
                     // transform returned data to reflect identify API
                     const detectLabelData = data.Labels.map(val => {
                         // extract bounding boxes 
                         const boxes = val.Instances.map(instance => { return instance.BoundingBox; });
-                        return { name: val.Name, boundingBoxes: boxes};
+                        return { name: val.Name, boundingBoxes: boxes };
                     });
                     identifyEntityResult = { entity: detectLabelData };
                 });
@@ -126,7 +126,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             }
             const param = { Image: inputImage };
 
-            let identifyFacesResult: IdentifyFacesOutput; 
+            let identifyFacesResult: IdentifyFacesOutput;
             if (input.identifyFaces.celebrityDetection) {
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
                     if (err) return rej(err);

@@ -113,7 +113,7 @@ export interface IdentifyFacesOutput {
             mouthOpen?: Rekognition.MouthOpen,
             emotions?: Rekognition.Emotions
         },
-        metadata?: object // TODO: object vs Object?
+        metadata?: object 
     }[]
 }
 

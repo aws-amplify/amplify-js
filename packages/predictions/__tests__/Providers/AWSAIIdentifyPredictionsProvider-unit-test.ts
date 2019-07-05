@@ -33,7 +33,7 @@ jest.mock('aws-sdk/clients/rekognition', () => {
         FaceMatches: [{ Face: { BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } }, Similarity: 0.0 }]
     };
     const recognizeCelebritiesResponse: Rekognition.RecognizeCelebritiesResponse = {
-        CelebrityFaces: [{ Face: { BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } }}]
+        CelebrityFaces: [{ Face: { BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } } }]
     };
 
     Rekognition.prototype.detectLabels = (params, callback) => {
@@ -249,14 +249,7 @@ describe('Predictions identify provider test', () => {
                 jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
-                const expected: IdentifyFacesOutput = {
-                    face: [{
-                        ageRange: {
-                            High: 0,
-                            Low: 0
-                        }
-                    }]
-                };
+                const expected: IdentifyFacesOutput = { face: [{ ageRange: { High: 0, Low: 0 } }] };
                 return expect(predictionsProvider.identify(detectFacesInput)).resolves.toMatchObject(expected);
             });
 

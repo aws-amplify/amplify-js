@@ -47,7 +47,7 @@ describe("Predictions test", () => {
                     "region": "us-west-2",
                     "cache": false
                 }
-            }
+            };
             const configureOptions = {
                 "Predictions": {
                     "Convert": convertOptions,
@@ -99,7 +99,7 @@ describe("Predictions test", () => {
                 "region": "us-west-2",
                 "cache": false
             }
-        }
+        };
         const configureOptions = {
             "Predictions": {
                 "Convert": convertOptions,
