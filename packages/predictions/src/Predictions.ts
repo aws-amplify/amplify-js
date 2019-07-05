@@ -1,4 +1,7 @@
-import { PredictionsOptions, TranslateTextInput, TextToSpeechInput, SpeechToTextInput, ProviderOptions } from "./types";
+import {
+    PredictionsOptions, TranslateTextInput, TextToSpeechInput, SpeechToTextInput,
+    ProviderOptions, IdentifyEntityInput, IdentifyFacesInput
+} from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
     AbstractInterpretPredictionsProvider, AbstractInferPredictionsProvider, AbstractPredictionsProvider
@@ -107,6 +110,14 @@ export default class Predictions {
     ): Promise<any> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
         return pluggableToExecute.convert(input);
+    }
+
+    public identify(
+        input: IdentifyEntityInput | IdentifyFacesInput,
+        options: ProviderOptions
+    ): Promise<any> {
+        const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
+        return pluggableToExecute.identify(input);
     }
 
     // tslint:disable-next-line: max-line-length

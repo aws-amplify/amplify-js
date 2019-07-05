@@ -1,6 +1,9 @@
 import { Credentials } from '@aws-amplify/core';
 import { AbstractPredictionsProvider } from "../types/Providers";
-import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput } from '../types';
+import {
+    TranslateTextInput, TextToSpeechInput, SpeechToTextInput,
+    IdentifyEntityInput, IdentifyFacesInput
+} from '../types';
 
 export default class GraphQLPredictionsProvider extends AbstractPredictionsProvider {
 
@@ -20,7 +23,7 @@ export default class GraphQLPredictionsProvider extends AbstractPredictionsProvi
         return this.orchestrateWithGraphQL(input);
     }
 
-    identify(input: any): Promise<any> {
+    identify(input: IdentifyEntityInput | IdentifyFacesInput): Promise<any> {
         return this.orchestrateWithGraphQL(input);
     }
 

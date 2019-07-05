@@ -23,12 +23,12 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
             return this.orchestrateWithGraphQL(input);
         }
     }
-
-    protected identifyEntity(input: IdentifyEntityInput): Promise<IdentifyEntityOutput> {
+    
+    protected identifyEntity(input: IdentifyEntityInput): Promise<any> {
         throw new Error('identifyEntity is not implemented by this provider');
     }
 
-    protected identifyFaces(input: IdentifyFacesInput): Promise<IdentifyFacesOutput> {
+    protected identifyFaces(input: IdentifyFacesInput): Promise<any> {
         throw new Error('identifyFaces is not implemented by this provider');
     }
 }
