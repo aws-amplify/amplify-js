@@ -4,7 +4,7 @@ import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyEntityInput, IdentifyEntityOutput,
-    IdentifySource, IdentifyFacesInput, IdentifyFacesOutput, IdentifyTextInput, IdentifyTextOutput,
+    IdentifySource, IdentifyFacesInput, IdentifyFacesOutput, 
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 
