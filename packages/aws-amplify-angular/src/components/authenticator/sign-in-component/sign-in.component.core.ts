@@ -156,6 +156,8 @@ export class SignInComponentCore implements OnInit {
           this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
         } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
           this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
+        } else if (user['challengeName'] === 'CUSTOM_CHALLENGE') {
+          this.amplifyService.setAuthState({ state: 'customConfirmSignIn', user });
         } else {
           this.amplifyService.setAuthState({ state: 'signedIn', user });
         }
