@@ -93,9 +93,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     if (err)
                         return rej(err);
                     if (data.ModerationLabels.length !== 0)
-                        return res({ unsafe: 'NO' });
-                    else
                         return res({ unsafe: 'YES' });
+                    else
+                        return res({ unsafe: 'NO' });
                 });
             } else { // if (entityType === 'ALL') 
                 let entityData: IdentifyEntityOutput;
@@ -111,9 +111,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     if (err)
                         return rej(err);
                     if (data.ModerationLabels.length !== 0)
-                        return res({ ...entityData, unsafe: 'NO' });
-                    else
                         return res({ ...entityData, unsafe: 'YES' });
+                    else
+                        return res({ ...entityData, unsafe: 'NO' });
                 });
             }
         });
