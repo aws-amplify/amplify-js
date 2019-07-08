@@ -3,8 +3,8 @@ import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
-    IdentifyEntityInput, IdentifyEntityOutput, IdentifyEntityType,
-    IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
+    IdentifyEntityInput, IdentifyEntityOutput, 
+    IdentifySource, IdentifyFacesInput, IdentifyFacesOutput, IdentifyTextInput,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 
@@ -69,40 +69,55 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId');
 
-            this.rekognition = new Rekognition({ region: this._config.region, credentials });
+            this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
             try {
-                inputImage = this.verifyAndRefactorSource(input.identifyEntity.source);
+                inputImage = this.verifyAndRefactorSource(input.entity.source);
             } catch (err) {
                 return rej(err);
             }
             const param = { Image: inputImage };
-
-            let identifyEntityResult: IdentifyEntityOutput; // data to return
-            const entityType: IdentifyEntityType = input.identifyEntity.type;
-
-            if (entityType === 'LABELS' || entityType === 'ALL') {
+            const entityType = input.entity.type;
+            if (entityType === 'LABELS') {
                 this.rekognition.detectLabels(param, (err, data) => {
-
-                    if (err) return rej(err);
-                    // transform returned data to reflect identify API
+                    if (err) 
+                        return rej(err);
                     const detectLabelData = data.Labels.map(val => {
-                        // extract bounding boxes 
                         const boxes = val.Instances.map(instance => { return instance.BoundingBox; });
                         return { name: val.Name, boundingBoxes: boxes };
                     });
-                    identifyEntityResult = { entity: detectLabelData };
+                    return res({ entity: detectLabelData });
                 });
-            }
-            if (entityType === 'UNSAFE' || entityType === 'ALL') {
+            } else if (entityType === 'UNSAFE') {
                 this.rekognition.detectModerationLabels(param, (err, data) => {
+                    if (err)
+                        return rej(err);
+                    if (data.ModerationLabels.length !== 0)
+                        return res({ unsafe: 'YES' });
+                    else
+                        return res({ unsafe: 'NO' });
+                });
+            } else { // if (entityType === 'ALL') 
+                let entityData: IdentifyEntityOutput;
+                this.rekognition.detectLabels(param, (err, data) => {
                     if (err) return rej(err);
-                    identifyEntityResult = data.ModerationLabels ?
-                        { ...identifyEntityResult, unsafe: 'YES' } : { ...identifyEntityResult, unsafe: 'NO' };
+                    const detectLabelData = data.Labels.map(val => {
+                        const boxes = val.Instances.map(instance => { return instance.BoundingBox; });
+                        return { name: val.Name, boundingBoxes: boxes };
+                    });
+                    entityData = { entity: detectLabelData };
+                });
+                this.rekognition.detectModerationLabels(param, (err, data) => {
+                    if (err)
+                        return rej(err);
+                    if (data.ModerationLabels.length !== 0)
+                        return res({ ...entityData, unsafe: 'YES' });
+                    else
+                        return res({ ...entityData, unsafe: 'NO' });
                 });
             }
-            return res(identifyEntityResult);
         });
+
     }
 
     /**
@@ -117,37 +132,35 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId');
 
-            this.rekognition = new Rekognition({ region: this._config.region, credentials });
+            this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
             try {
-                inputImage = this.verifyAndRefactorSource(input.identifyFaces.source);
+                inputImage = this.verifyAndRefactorSource(input.face.source);
             } catch (err) {
                 return rej(err);
             }
             const param = { Image: inputImage };
-
-            let identifyFacesResult: IdentifyFacesOutput;
-            if (input.identifyFaces.celebrityDetection) {
+            if (input.face.celebrityDetection) {
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.CelebrityFaces.map(val => {
                         return { boundingBox: val.Face.BoundingBox, landmarks: val.Face.Landmarks };
                     });
-                    identifyFacesResult = { face: faces };
+                    res({ face: faces });
                 });
-            } else if (input.identifyFaces.collection) {
+            } else if (input.face.collection) {
                 // Concatenate additional parameters
                 const updatedParam = {
                     ...param,
-                    CollectionId: input.identifyFaces.collection,
-                    MaxFaces: input.identifyFaces.maxFaces
+                    CollectionId: input.face.collection,
+                    MaxFaces: input.face.maxFaces
                 };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
                         return { boundingBox: val.Face.BoundingBox };
                     });
-                    identifyFacesResult = { face: faces };
+                    res({ face: faces });
                 });
             } else {
                 this.rekognition.detectFaces(param, (err, data) => {
@@ -171,10 +184,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             },
                         };
                     });
-                    identifyFacesResult = { face: faces };
+                    res({ face: faces });
                 });
             }
-            return res(identifyFacesResult);
         });
     }
 

@@ -59,9 +59,6 @@ export interface SpeechToTextInput {
 /**
  * Identify types
  */
-
-export type IdentifyEntityType = 'LABELS' | 'UNSAFE' | 'ALL';
-
 export interface IdentifySource {
     storage?: {
         key: string,
@@ -73,9 +70,9 @@ export interface IdentifySource {
 }
 
 export interface IdentifyEntityInput {
-    identifyEntity: {
+    entity: {
         source: IdentifySource,
-        type: IdentifyEntityType
+        type: 'LABELS' | 'UNSAFE' | 'ALL'
     }
 }
 
@@ -89,7 +86,7 @@ export interface IdentifyEntityOutput {
 }
 
 export interface IdentifyFacesInput {
-    identifyFaces: {
+    face: {
         source: IdentifySource,
         collection?: string,
         maxFaces?: number,
@@ -118,15 +115,9 @@ export interface IdentifyFacesOutput {
 }
 
 export interface IdentifyTextInput {
-    identifyText: {
-        source: {
-            storage: {
-                bucket: string,
-                key: string,
-                level?: string
-            },
-
-        }
+    text: {
+        source: IdentifySource,
+        format: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
     }
 }
 
@@ -146,11 +137,11 @@ export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 }
 
 export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
-    const key: keyof IdentifyEntityInput = 'identifyEntity';
+    const key: keyof IdentifyEntityInput = 'entity';
     return obj && obj.hasOwnProperty(key);
 }
 
 export function isIdentifyFacesInput(obj: any): obj is IdentifyFacesInput {
-    const key: keyof IdentifyFacesInput = 'identifyFaces';
+    const key: keyof IdentifyFacesInput = 'face';
     return obj && obj.hasOwnProperty(key);
 }

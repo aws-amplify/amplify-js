@@ -65,14 +65,21 @@ const credentials = {
 };
 
 const options = {
-    // No option needed as of now. 
+    "identifyEntities": {
+        "connection": "sdk",
+        "region": "us-west-2",
+    },
+    "identifyFaces": {
+        "connection": "sdk",
+        "region": "us-west-2",
+    }
 };
 
 describe('Predictions identify provider test', () => {
     describe('identifyEntity tests', () => {
         describe('identifyEntity::labels tests', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -127,7 +134,7 @@ describe('Predictions identify provider test', () => {
 
         describe('identifyEntity::unsafe tests', () => {
             const detectModerationInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -176,7 +183,7 @@ describe('Predictions identify provider test', () => {
 
         describe('identifyEntity::all tests', () => {
             const detectModerationInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -233,7 +240,7 @@ describe('Predictions identify provider test', () => {
     describe('identifyFaces tests', () => {
         describe('identifyEntity::detctFaces tests', () => {
             const detectFacesInput: IdentifyFacesInput = {
-                identifyFaces: {
+                face: {
                     source: {
                         storage: {
                             key: 'key',
@@ -279,7 +286,7 @@ describe('Predictions identify provider test', () => {
 
         describe('identifyEntity::recognizeCelebrities tests', () => {
             const recognizeCelebritiesInput: IdentifyFacesInput = {
-                identifyFaces: { source: { storage: { key: 'key', } }, celebrityDetection: true, }
+                face: { source: { storage: { key: 'key', } }, celebrityDetection: true, }
             };
 
             test('happy case credentials exist', () => {
@@ -320,7 +327,7 @@ describe('Predictions identify provider test', () => {
 
         describe('identifyEntity::searchImageByFaces tests', () => {
             const searchByFacesInput: IdentifyFacesInput = {
-                identifyFaces: {
+                face: {
                     source: { storage: { key: 'key', } },
                     celebrityDetection: false,
                     maxFaces: 0,
@@ -382,7 +389,7 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid public s3object', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -407,7 +414,7 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid private s3object', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -434,7 +441,7 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid s3object protected test', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
@@ -461,7 +468,7 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid bytes', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         bytes: 'bytes'
                     },
@@ -485,7 +492,7 @@ describe('Predictions identify provider test', () => {
         test('happy case input source valid file', () => {
             const fileInput = new File([Buffer.from('file')], 'file');
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         file: fileInput
                     },
@@ -508,7 +515,7 @@ describe('Predictions identify provider test', () => {
 
         test('error case input source not provided', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {},
                     type: 'LABELS'
                 }
@@ -523,7 +530,7 @@ describe('Predictions identify provider test', () => {
 
         test('error case missing identityId in private storage', () => {
             const detectLabelInput: IdentifyEntityInput = {
-                identifyEntity: {
+                entity: {
                     source: {
                         storage: {
                             key: 'key',
