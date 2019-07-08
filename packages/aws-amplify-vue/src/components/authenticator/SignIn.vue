@@ -98,10 +98,13 @@ export default {
           } else if (data.challengeName === 'MFA_SETUP') {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'setMfa');
-          } else if (data.challengeName === 'CUSTOM_CHALLENGE') {
+          } else if (data.challengeName === 'CUSTOM_CHALLENGE' &&
+            data.challengeParam &&
+            data.challengeParam.trigger === 'true'
+          ) {
             AmplifyEventBus.$emit('localUser', data);
             return AmplifyEventBus.$emit('authState', 'customConfirmSignIn')
-          } else if (data.challengeName !== 'CUSTOM_CHALLENGE') {
+          } else {
             return AmplifyEventBus.$emit('authState', 'signedIn')
           }
         })
