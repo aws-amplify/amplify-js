@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.18"></a>
+## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.1...@aws-amplify/analytics@1.2.18) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 <a name="1.2.18-unstable.1"></a>
 ## [1.2.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.0...@aws-amplify/analytics@1.2.18-unstable.1) (2019-07-09)
 
