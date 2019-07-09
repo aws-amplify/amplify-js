@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api",
-  "version": "1.0.37-unstable.0",
+  "version": "1.0.37",
   "description": "Api category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -51,7 +51,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/auth": "1.2.26-unstable.0",
+    "@aws-amplify/auth": "^1.2.26",
     "@aws-amplify/cache": "^1.0.28",
     "@aws-amplify/core": "^1.0.28",
     "axios": "^0.19.0",
