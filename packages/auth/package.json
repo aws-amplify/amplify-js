@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:watch": "tslint 'src/**/*.ts' && jest --watch",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
     "build:watch": "npm run clean && tsc --watch",
