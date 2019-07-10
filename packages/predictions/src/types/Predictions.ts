@@ -1,5 +1,6 @@
 import { LanguageCode } from 'aws-sdk/clients/transcribeservice';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
+import * as Textract from 'aws-sdk/clients/textract';
 
 /**
  * Base types
@@ -59,15 +60,23 @@ export interface SpeechToTextInput {
 /**
  * Identify types
  */
-export interface IdentifySource {
-    storage?: {
+interface StorageSource {
+    storage: {
         key: string,
         level?: 'public' | 'private' | 'protected',
         identityId?: string,
-    },
-    file?: File,
-    bytes?: Buffer | ArrayBuffer | Blob | string
+    },   
 }
+
+interface FileSource {
+    file: File
+}
+
+interface BytesSource {
+    bytes: Buffer | ArrayBuffer | Blob | string
+}
+
+export type IdentifySource = StorageSource | FileSource | BytesSource; 
 
 export interface IdentifyEntityInput {
     entity: {
@@ -114,12 +123,64 @@ export interface IdentifyFacesOutput {
     }[]
 }
 
-export interface IdentifyTextInput {
-    text: {
-        source: IdentifySource,
-        format: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
-    }
-}
+// export interface IdentifyTextInput {
+//     text: {
+//         source: IdentifySource,
+//         format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
+//     }
+// }
+
+// export interface IdentifyTextWord {
+//     text: string,
+//     polygon: Textract.Polygon,
+//     boundingBox: Textract.BoundingBox,
+// }
+
+// export interface IdentifyTextLineDetailed {
+//     text: string,
+//     polygon: Textract.Polygon,
+//     boundingBox: Textract.BoundingBox,
+//     id: string,
+//     page: number
+// }
+
+// export interface IdentifyTextCell {
+//     text: string,
+//     boundingBox: Textract.BoundingBox,
+//     polygon: Textract.Polygon
+// }
+
+// export interface IdentifyTextTable {
+//     size: {
+//         rows: number,
+//         columns: number
+//     },
+//     matrix: IdentifyTextCell[][],
+//     polygon: Textract.Polygon,
+//     boundingBox: Textract.BoundingBox
+// }
+
+// export interface IdentifyTextOutput {
+//     text: {
+//         fullText: string,
+//         lines: string[],
+//         linesDetailed: IdentifyTextLineDetailed[],
+//         words: IdentifyTextWord[]
+//         keyValues?: {
+//             key: string,
+//             value: string,
+//             polygon: Textract.Polygon,
+//             boundingBox: Textract.BoundingBox
+//         }[],
+//         tables?: IdentifyTextTable[],
+//         selections?: {
+//             value: string,
+//             selected: boolean,
+//             polygon: Textract.Polygon,
+//             boundingBox: Textract.BoundingBox,
+//         }[], 
+//     }
+// }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
@@ -133,6 +194,26 @@ export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
     const key: keyof SpeechToTextInput = 'transcription';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isStorageSource(obj: any): obj is StorageSource{
+    const key: keyof StorageSource = 'storage';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isFileSource(obj: any): obj is FileSource{
+    const key: keyof FileSource = 'file';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isBytesSource(obj: any): obj is BytesSource {
+    const key: keyof BytesSource = 'bytes';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
+    const key: keyof IdentifyTextInput = 'text';
     return obj && obj.hasOwnProperty(key);
 }
 

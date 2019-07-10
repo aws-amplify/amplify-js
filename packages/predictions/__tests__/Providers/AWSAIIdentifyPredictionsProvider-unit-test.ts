@@ -92,7 +92,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyEntityOutput = {
@@ -113,7 +113,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch('No credentials');
@@ -121,7 +121,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -147,7 +147,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist, unsafe image', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyEntityOutput = {
@@ -161,7 +161,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(detectModerationInput)).rejects.toMatch('No credentials');
@@ -170,7 +170,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'detectModerationLabels').mockImplementationOnce(
@@ -196,7 +196,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyEntityOutput = {
@@ -217,7 +217,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(detectModerationInput)).rejects.toMatch('No credentials');
@@ -225,7 +225,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'detectModerationLabels').mockImplementationOnce(
@@ -253,7 +253,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyFacesOutput = { face: [{ ageRange: { High: 0, Low: 0 } }] };
@@ -263,7 +263,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(detectFacesInput)).rejects.toMatch('No credentials');
@@ -272,7 +272,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'detectFaces').mockImplementationOnce(
@@ -292,7 +292,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyFacesOutput = {
@@ -304,7 +304,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(recognizeCelebritiesInput))
@@ -314,7 +314,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'recognizeCelebrities').mockImplementationOnce(
@@ -338,7 +338,7 @@ describe('Predictions identify provider test', () => {
             test('happy case credentials exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 const expected: IdentifyFacesOutput = {
@@ -350,7 +350,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials do not exist', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return null;
                 });
                 return expect(predictionsProvider.identify(searchByFacesInput))
@@ -360,7 +360,7 @@ describe('Predictions identify provider test', () => {
             test('error case credentials exist but service fails', () => {
                 const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
                 predictionsProvider.configure(options);
-                jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                jest.spyOn(Credentials, 'get').mockImplementation(() => {
                     return Promise.resolve(credentials);
                 });
                 jest.spyOn(Rekognition.prototype, 'searchFacesByImage').mockImplementationOnce(
@@ -400,7 +400,7 @@ describe('Predictions identify provider test', () => {
             };
             const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
             predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return Promise.resolve(credentials);
             });
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -427,7 +427,7 @@ describe('Predictions identify provider test', () => {
             };
             const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
             predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return Promise.resolve(credentials);
             });
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -454,7 +454,7 @@ describe('Predictions identify provider test', () => {
             };
             const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
             predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return Promise.resolve(credentials);
             });
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -477,7 +477,7 @@ describe('Predictions identify provider test', () => {
             };
             const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
             predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return Promise.resolve(credentials);
             });
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -501,7 +501,7 @@ describe('Predictions identify provider test', () => {
             };
             const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
             predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return Promise.resolve(credentials);
             });
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
@@ -511,42 +511,6 @@ describe('Predictions identify provider test', () => {
                 }
             );
             predictionsProvider.identify(detectLabelInput);
-        });
-
-        test('error case input source not provided', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: {
-                    source: {},
-                    type: 'LABELS'
-                }
-            };
-            const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
-            predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-                return Promise.resolve(credentials);
-            });
-            return expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(/Only one source/);
-        });
-
-        test('error case missing identityId in private storage', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: {
-                    source: {
-                        storage: {
-                            key: 'key',
-                            level: 'private'
-                        }
-                    },
-                    type: 'LABELS'
-                }
-            };
-            const predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
-            predictionsProvider.configure(options);
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-                return Promise.resolve(credentials);
-            });
-            return expect(predictionsProvider.identify(detectLabelInput))
-                .rejects.toThrow(/identityId must be provided/);
         });
     });
 });
