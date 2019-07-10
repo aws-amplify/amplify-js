@@ -1,4 +1,5 @@
 import { Credentials } from '@aws-amplify/core';
+import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
@@ -30,14 +31,14 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
      * @return - Refactored source. Throws appropriate errors if the input is not valid. 
      */
     private verifyAndRefactorSource(source: IdentifySource): Promise<Rekognition.Image> | Promise<Textract.Document> {
-        // TODO: Configures s3 storage and level according to awsconfig.
+        // TODO: Use Storage (config and get) in order to configure s3 storage succinctly.
         return new Promise(async (res, rej) => {
             const image: Rekognition.Image = {}; // empty image object that we'll write on.
             if (isStorageSource(source)) {
                 const storage = source.storage;
                 let storageKey: string;
                 if (!storage.level) {
-                    // storage.level = Storage.config.level
+                    // storage.level = Storage
                 }
                 if (storage.level === 'public') {
                     storageKey = `public/${storage.key}`;
@@ -55,7 +56,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                         if (!credentials || !credentials.identityId) return rej('No identityId');
                         storageKey = `protected/${credentials.identityId}/${storage.key}`;
                     }
-                } // should I put else here to catch out of type error?
+                }
                 image.S3Object = { Bucket: this._config.aws_user_files_s3_bucket, Name: storageKey };
             } else if (isFileSource(source)) {
                 image.Bytes = source.file; // File extends Blob, so we can just pass it in without changes.
