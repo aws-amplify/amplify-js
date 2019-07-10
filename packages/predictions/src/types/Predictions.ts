@@ -212,10 +212,11 @@ export function isBytesSource(obj: any): obj is BytesSource {
     return obj && obj.hasOwnProperty(key);
 }
 
-export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
-    const key: keyof IdentifyTextInput = 'text';
-    return obj && obj.hasOwnProperty(key);
-}
+
+// export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
+//     const key: keyof IdentifyTextInput = 'text';
+//     return obj && obj.hasOwnProperty(key);
+// }
 
 export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
     const key: keyof IdentifyEntityInput = 'entity';
