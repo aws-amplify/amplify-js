@@ -70,9 +70,9 @@ export default class OAuth {
     customState?: string) {
 
     const state = this._generateState(32);
-    const isCustomStatePresent = customState ? `${state}-${customState}` : state;
+    const combinedState = customState ? `${state}-${customState}` : state;
 
-    oAuthStorage.setState(isCustomStatePresent);
+    oAuthStorage.setState(combinedState);
 
     const pkce_key = this._generateRandom(128);
     oAuthStorage.setPKCE(pkce_key);
@@ -86,7 +86,7 @@ export default class OAuth {
       client_id: clientId,
       identity_provider: provider,
       scopes: this._scopes,
-      state: isCustomStatePresent,
+      state: combinedState,
       ...(responseType === 'code'?{code_challenge}:{}),
       ...(responseType === 'code'?{code_challenge_method}:{})
     }).map(([k,v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
