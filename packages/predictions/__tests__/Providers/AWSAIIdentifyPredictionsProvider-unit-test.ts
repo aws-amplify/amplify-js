@@ -392,6 +392,7 @@ describe('Predictions identify provider test', () => {
                 entity: {
                     source: {
                         storage: {
+                            level: 'public',
                             key: 'key',
                         }
                     },
