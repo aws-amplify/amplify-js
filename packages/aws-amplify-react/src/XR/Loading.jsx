@@ -15,7 +15,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 const Loading = (props) => {
   return (
-    <div className={AmplifyUI.loadingOverlay}>
+    <div className={AmplifyUI.loadingOverlay} data-test="sumerian-scene-loading">
       <div className={AmplifyUI.loadingContainer}>
         <div className={AmplifyUI.loadingLogo}>
           <svg viewBox='0 0 800 481' xmlns='http://www.w3.org/2000/svg'>

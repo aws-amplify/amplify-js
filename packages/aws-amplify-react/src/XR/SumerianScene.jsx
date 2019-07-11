@@ -168,12 +168,12 @@ class SumerianScene extends React.Component {
     }
 
     return (
-      <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer}>
-        <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene}>
-          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError}/>}
+      <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer} data-test="sumerian-scene-container">
+        <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene} data-test="sumerian-scene">
+          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError} data-test="sumerian-scene-loading"/>}
         </div>
-        <div className={AmplifyUI.sceneBar}>
-          <span className={AmplifyUI.sceneActions}>
+        <div className={AmplifyUI.sceneBar} data-test="sumerian-scene-bar">
+          <span className={AmplifyUI.sceneActions} data-test="sumerian-scene-actions">
             {muteButton}
             {enterOrExitVRButton}
             {screenSizeButton}
