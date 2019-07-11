@@ -191,7 +191,6 @@ workflows:
           filters:
             branches:
               only:
-                - cypress-spec
                 - release
                 - master
           requires:
@@ -200,7 +199,6 @@ workflows:
           filters:
             branches:
               only:
-                - cypress-spec
                 - release
                 - master
           requires:
@@ -209,7 +207,6 @@ workflows:
           filters:
             branches:
               only:
-                - cypress-spec
                 - release
                 - master
           requires:
