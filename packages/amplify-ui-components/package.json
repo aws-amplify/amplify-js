@@ -1,0 +1,57 @@
+{
+  "name": "@aws-amplify/ui-components",
+  "version": "0.0.1",
+  "description": "Stencil Component Starter",
+  "module": "dist/index.mjs",
+  "main": "dist/index.js",
+  "unpkg": "dist/ionic.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "format": "eslint --fix --ext .js,.ts,.tsx .",
+    "pretest": "npm run lint",
+    "test": "stencil test --spec --e2e",
+    "test:watch": "stencil test --spec --e2e --watchAll",
+    "stencil": "stencil build --docs-readme",
+    "stencil:watch": "stencil build --dev --watch",
+    "start": "stencil build --dev --watch --serve",
+    "storybook": "start-storybook -s ./www",
+    "build-with-test": "npm run clean && npm test && npm run stencil",
+    "build": "npm run clean && npm run stencil",
+    "build:watch": "npm run clean && npm run stencil:watch",
+    "clean": "rimraf dist .stencil"
+  },
+  "dependencies": {
+    "emotion": "^10.0.9"
+  },
+  "devDependencies": {
+    "@stencil/core": "^1.0.7",
+    "@stencil/state-tunnel": "^1.0.1",
+    "@storybook/addon-a11y": "^5.1.8",
+    "@storybook/addon-knobs": "^5.1.8",
+    "@storybook/html": "^5.1.8",
+    "@storybook/theming": "^5.1.8",
+    "@types/jest": "23.3.14",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "husky": "^2.4.1",
+    "jest": "23.6.0",
+    "jest-cli": "23.6.0",
+    "prettier": "^1.17.1",
+    "rollup-plugin-node-polyfills": "^0.2.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint && npm test"
+    }
+  },
+  "peerDependencies": {},
+  "license": "Apache-2.0"
+}
