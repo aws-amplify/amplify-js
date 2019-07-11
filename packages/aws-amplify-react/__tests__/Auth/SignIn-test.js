@@ -8,7 +8,8 @@ import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-C
 const acceptedStates = [
     'signIn',  
     'signedUp', 
-    'signedOut'
+    'signedOut',
+    'customConfirmSignIn'
 ];
 
 const deniedStates = [
@@ -94,6 +95,55 @@ describe('SignIn', () => {
 
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('requireNewPassword');
+
+            spyon.mockClear();
+            spyon_changeState.mockClear();
+        });
+
+        test('when clicking signIn and trigger-based custom auth challenge present required', async () => {
+            const wrapper = shallow(<SignIn/>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+
+            const spyon = jest.spyOn(Auth, 'signIn')
+                .mockImplementationOnce((user, password) => {
+                    return new Promise((res, rej) => {
+                        res({
+                            challengeName: 'CUSTOM_CHALLENGE',
+                            challengeParam: { trigger: 'true' }
+                        });
+                    });
+                });
+
+            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+
+            const event_username = {
+                target: {
+                    name: 'username',
+                    value: 'user1'
+                }
+            };
+            const event_password = {
+                target: {
+                    name: 'password',
+                    value: 'abc'
+                }
+            };
+
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+
+            await Promise.resolve();
+           
+            expect(spyon.mock.calls.length).toBe(1);
+            expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
+            expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
+
+            expect(spyon_changeState).toBeCalled();
+            expect(spyon_changeState.mock.calls[0][0]).toBe('customConfirmSignIn');
 
             spyon.mockClear();
             spyon_changeState.mockClear();
