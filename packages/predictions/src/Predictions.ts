@@ -1,6 +1,6 @@
 import {
     PredictionsOptions, TranslateTextInput, TextToSpeechInput, SpeechToTextInput,
-    ProviderOptions, IdentifyEntityInput, IdentifyFacesInput
+    ProviderOptions, IdentifyEntityInput, IdentifyFacesInput, IdentifyTextInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -113,7 +113,7 @@ export default class Predictions {
     }
 
     public identify(
-        input: IdentifyEntityInput | IdentifyFacesInput,
+        input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput,
         options: ProviderOptions
     ): Promise<any> {
         const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);

@@ -123,64 +123,71 @@ export interface IdentifyFacesOutput {
     }[]
 }
 
-// export interface IdentifyTextInput {
-//     text: {
-//         source: IdentifySource,
-//         format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
-//     }
-// }
+export interface IdentifyTextInput {
+    text: {
+        source: IdentifySource,
+        format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
+    }
+}
 
-// export interface IdentifyTextWord {
-//     text: string,
-//     polygon: Textract.Polygon,
-//     boundingBox: Textract.BoundingBox,
-// }
+export interface IdentifyTextWord {
+    text: string,
+    polygon: Textract.Polygon,
+    boundingBox: Textract.BoundingBox,
+}
 
-// export interface IdentifyTextLineDetailed {
-//     text: string,
-//     polygon: Textract.Polygon,
-//     boundingBox: Textract.BoundingBox,
-//     id: string,
-//     page: number
-// }
+export interface IdentifyTextLineDetailed {
+    text: string,
+    polygon: Textract.Polygon,
+    boundingBox: Textract.BoundingBox,
+    id: string,
+    page: number
+}
 
-// export interface IdentifyTextCell {
-//     text: string,
-//     boundingBox: Textract.BoundingBox,
-//     polygon: Textract.Polygon
-// }
+export interface IdentifyTextCell {
+    text: string,
+    selected?: boolean,
+    boundingBox: Textract.BoundingBox,
+    polygon: Textract.Polygon,
+    rowSpan?: Number,
+    columnSpan?: Number,
+}
 
-// export interface IdentifyTextTable {
-//     size: {
-//         rows: number,
-//         columns: number
-//     },
-//     matrix: IdentifyTextCell[][],
-//     polygon: Textract.Polygon,
-//     boundingBox: Textract.BoundingBox
-// }
+export interface IdentifyTextTable {
+    size: {
+        rows: number,
+        columns: number
+    },
+    matrix: IdentifyTextCell[][],
+    polygon: Textract.Polygon,
+    boundingBox: Textract.BoundingBox
+}
 
-// export interface IdentifyTextOutput {
-//     text: {
-//         fullText: string,
-//         lines: string[],
-//         linesDetailed: IdentifyTextLineDetailed[],
-//         words: IdentifyTextWord[]
-//         keyValues?: {
-//             key: string,
-//             value: string,
-//             polygon: Textract.Polygon,
-//             boundingBox: Textract.BoundingBox
-//         }[],
-//         tables?: IdentifyTextTable[],
-//         selections?: {
-//             value: string,
-//             selected: boolean,
-//             polygon: Textract.Polygon,
-//             boundingBox: Textract.BoundingBox,
-//         }[], 
-//     }
-// }
+export interface IdentifyKeyValue {
+    key: string,
+    value: {
+        text?: string,
+        selected?: boolean
+    },
+    polygon: Textract.Polygon,
+    boundingBox: Textract.BoundingBox
+}
+
+export interface IdentifyTextOutput {
+    text: {
+        fullText: string,
+        lines: string[],
+        linesDetailed: IdentifyTextLineDetailed[],
+        words: IdentifyTextWord[]
+        keyValues?: IdentifyKeyValue[],
+        tables?: IdentifyTextTable[],
+        selections?: {
+            selected: boolean,
+            polygon: Textract.Polygon,
+            boundingBox: Textract.BoundingBox,
+        }[], 
+    }
+}
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
@@ -212,11 +219,10 @@ export function isBytesSource(obj: any): obj is BytesSource {
     return obj && obj.hasOwnProperty(key);
 }
 
-
-// export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
-//     const key: keyof IdentifyTextInput = 'text';
-//     return obj && obj.hasOwnProperty(key);
-// }
+export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
+    const key: keyof IdentifyTextInput = 'text';
+    return obj && obj.hasOwnProperty(key);
+}
 
 export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
     const key: keyof IdentifyEntityInput = 'entity';
