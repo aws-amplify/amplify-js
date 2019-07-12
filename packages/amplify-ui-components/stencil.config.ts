@@ -13,5 +13,6 @@ export const config: Config = {
       type: 'www',
       serviceWorker: null, // disable service workers
     },
-  ]
+  ],
+  globalStyle: 'src/global/variables.css'
 };

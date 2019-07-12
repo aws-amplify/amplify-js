@@ -1,6 +1,6 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 
-export const section = css`
+export const section = cx('amplify-ui-section', css`
   position: relative;
   margin-bottom: 20px;
   background-color: #fff;
@@ -11,4 +11,4 @@ export const section = css`
   border-radius: 6px;
   box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-`;
+`);

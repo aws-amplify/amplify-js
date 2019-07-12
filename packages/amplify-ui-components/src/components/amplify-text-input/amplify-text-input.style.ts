@@ -1,6 +1,6 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 
-export const textInput = css`
+export const textInput = cx('amplify-ui-text-input', css`
   display: block;
   width: 100%;
   padding: 16px;
@@ -12,4 +12,4 @@ export const textInput = css`
   border-radius: 3px;
   box-sizing: border-box;
   margin-bottom: 10px;
-`;
+`);
