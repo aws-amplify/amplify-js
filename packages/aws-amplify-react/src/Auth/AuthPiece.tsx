@@ -108,7 +108,7 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
             );
         } else {
             let value;
-            if (window && window.location && window.search) {
+            if (window && window.location && window.location.search) {
                 const searchParams = new URLSearchParams(window.location.search);
                 value = searchParams ? searchParams.get('username') : undefined
             }
