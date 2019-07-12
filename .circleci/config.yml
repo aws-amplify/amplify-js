@@ -113,7 +113,7 @@ jobs:
           name: "Run cypress tests for React Authenticator Sample"
           command: |
             cd amplify-js-samples-staging
-            yarn cypress:react
+            yarn cypress:react --spec "cypress/integration/auth/authenticator.spec.js"
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -151,7 +151,7 @@ jobs:
           name: "Run cypress tests for Vue Authenticator Sample"
           command: |
             cd amplify-js-samples-staging
-            yarn cypress:vue
+            yarn cypress:vue --spec "cypress/integration/auth/authenticator.spec.js"
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
