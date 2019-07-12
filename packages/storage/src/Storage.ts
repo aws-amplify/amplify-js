@@ -101,6 +101,8 @@ export default class StorageClass {
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
 
+        const storageKeysFromConfig = Object.keys(amplifyConfig.Storage);
+
         const storageArrayKeys = [
             'bucket',
             'region',
@@ -114,11 +116,15 @@ export default class StorageClass {
             'SSEKMSKeyId'
         ];
 
-        const isInStorageArrayKeys = (k: any) => storageArrayKeys.includes(k);
-
+        const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
+        const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
         const isDefinedNonObject = (v: any) => typeof v !== 'object' && v !== undefined;
 
-        if ((Object.values(amplifyConfig.Storage)) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
+        if (
+            storageKeysFromConfig &&
+            checkConfigKeysFromArray(storageKeysFromConfig) &&
+            !amplifyConfig.Storage[DEFAULT_PROVIDER]
+        ) {
             amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
         }
 
