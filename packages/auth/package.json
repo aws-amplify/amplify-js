@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.26",
+  "version": "1.2.27-unstable.0",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:watch": "tslint 'src/**/*.ts' && jest --watch",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
     "build:watch": "npm run clean && tsc --watch",
