@@ -67,6 +67,14 @@ export default {
             auth,
         }
     },
+    mounted: function() {
+        if (window && window.location && window.location.search) {
+            const searchParams = new URLSearchParams(window.location.search);
+            const usernameParam = searchParams ? searchParams.get('username') : this.username;
+            this.username = usernameParam;
+            this.$emit('username-field-changed', {usernameField: 'username', username: usernameParam});
+        }
+    },  
     computed: {
         shouldRenderEmailField() {
             return this.usernameAttributes === 'email';
