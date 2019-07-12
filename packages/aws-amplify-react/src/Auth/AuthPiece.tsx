@@ -107,10 +107,16 @@ export default class AuthPiece<Props extends IAuthPieceProps, State extends IAut
                 <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
             );
         } else {
+            let value;
+            if (window && window.location && window.search) {
+                const searchParams = new URLSearchParams(window.location.search);
+                value = searchParams ? searchParams.get('username') : undefined
+            }
             return (
                 <FormField theme={theme}>           
                     <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <Input
+                        value={value}
                         autoFocus
                         placeholder={I18n.get('Enter your username')}
                         theme={theme}
