@@ -94,6 +94,10 @@ export class RestClient {
         if (initParams.responseType) {
             params.responseType = initParams.responseType;
         }
+        if (initParams.withCredentials) {
+            params['withCredentials'] = initParams.withCredentials;
+        }
+
 
         params['signerServiceInfo'] = initParams.signerServiceInfo;
 
