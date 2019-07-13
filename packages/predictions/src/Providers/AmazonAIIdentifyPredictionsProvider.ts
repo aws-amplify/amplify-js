@@ -4,7 +4,7 @@ import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
-    IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput, 
+    IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
     isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, Table, TableCell,
     KeyValue, BoundingBox,
 } from '../types';
@@ -153,7 +153,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     private refactorPolygon(polygon: Rekognition.Polygon | Textract.Polygon) {
         return polygon.map(val => { return { x: val.X, y: val.Y }; });
     }
-    
+
     /**
      * Organizes blocks from Rekognition API to each of the categories and and structures 
      * their data accordingly. 
@@ -390,10 +390,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         });
         return {
             key: keyText,
-            value: {
-                text: valueText,
-                selected: valueSelected
-            },
+            value: { text: valueText, selected: valueSelected },
             polygon: this.refactorPolygon(keyValueBlock.Geometry.Polygon),
             boundingBox: this.refactorBoundingBox(keyValueBlock.Geometry.BoundingBox),
         };
@@ -425,9 +422,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             }
             Promise.all(servicePromises).then(data => {
                 let identifyResult: IdentifyEntityOutput = {};
-                data.forEach(val => {
-                    identifyResult = { ...identifyResult, ...val }; // concatenate resolved promises to a single object
-                });
+                // concatenate resolved promises to a single object
+                data.forEach(val => { identifyResult = { ...identifyResult, ...val }; });
                 res(identifyResult);
             }).catch(err => rej(err));
         });
@@ -455,9 +451,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     return {
                         name: val.Name,
                         boundingBoxes: boxes,
-                        metadata: {
-                            confidence: val.Confidence,
-                            parents: val.Parents,
+                        metadata: { confidence: val.Confidence, 
+                            parents: val.Parents.map(val => {return {name: val.Name}}), 
                         }
                     };
                 });
