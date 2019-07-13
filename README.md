@@ -49,7 +49,7 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 
 ## Installation
 
-AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/):
+AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/).
 
 __Web__
 
@@ -84,7 +84,7 @@ Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/i
 
 __Vue__
 
-If you are developing a [Vue](https://github.com/vuejs/vue) app, you can install an additional package `aws-amplify-vue`. This package contains a [Vue plugin](https://vuejs.org/v2/guide/plugins.html) for the Amplify library along with [Vue components](https://vuejs.org/v2/guide/components.html).
+If you are developing a [Vue](https://github.com/vuejs/vue) app, you can install an additional package `aws-amplify-vue`. This package contains a [Vue plugin](https://vuejs.org/v2/guide/plugins.html) for the Amplify library along with [Vue components](https://vuejs.org/v2/guide/components.html):
 
 ```bash
 $ npm install aws-amplify --save
