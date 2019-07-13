@@ -33,12 +33,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const image: Rekognition.Image = {}; // empty image object that we'll write on.
             if (isStorageSource(source)) {
-                const storage = source.storage;
                 const storageConfig: any = {
-                    level: storage.level,
-                    identityId: storage.identityId,
+                    level: source.level,
+                    identityId: source.identityId,
                 };
-                Storage.get(storage.key, storageConfig)
+                Storage.get(source.key, storageConfig)
                     .then((url: string) => {
                         const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
                         const parsedGroups = url.match(parser);
@@ -451,8 +450,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     return {
                         name: val.Name,
                         boundingBoxes: boxes,
-                        metadata: { confidence: val.Confidence, 
-                            parents: val.Parents.map(val => {return {name: val.Name}}), 
+                        metadata: {
+                            confidence: val.Confidence,
+                            parents: val.Parents.map(val => {
+                                return { name: val.Name };
+                            }),
                         }
                     };
                 });
@@ -572,10 +574,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             landmarks: val.Landmarks.map(landmark => {
                                 return { type: landmark.Type, x: landmark.X, y: landmark.Y };
                             }),
-                            ageRange: {
-                                low: val.AgeRange.Low,
-                                high: val.AgeRange.High,
-                            },
+                            ageRange: { low: val.AgeRange.Low, high: val.AgeRange.High, },
                             attributes: faceAttributes,
                             metadata: {
                                 confidence: val.Confidence,

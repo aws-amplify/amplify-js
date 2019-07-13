@@ -59,11 +59,9 @@ export interface SpeechToTextInput {
  * Identify types
  */
 interface StorageSource {
-    storage: {
-        key: string,
-        level?: 'public' | 'private' | 'protected',
-        identityId?: string,
-    },
+    key: string,
+    level?: 'public' | 'private' | 'protected',
+    identityId?: string,
 }
 
 interface FileSource {
@@ -222,7 +220,8 @@ export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 }
 
 export function isStorageSource(obj: any): obj is StorageSource {
-    const key: keyof StorageSource = 'storage';
+    const key: keyof StorageSource = 'key';
+    console.log(obj, obj.hasOwnProperty(key));
     return obj && obj.hasOwnProperty(key);
 }
 
