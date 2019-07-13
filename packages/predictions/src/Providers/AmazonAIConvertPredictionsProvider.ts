@@ -5,11 +5,12 @@ import * as SpeechToText from 'aws-sdk/clients/transcribeservice';
 import {
     TranslateTextInput, TextToSpeechInput,
     SpeechToTextInput, isTranslateTextInput,
-    isTextToSpeechInput, isSpeechToTextInput
+    isTextToSpeechInput, isSpeechToTextInput, TranslateTextOutput, TextToSpeechOutput
 } from "../types";
-import { Credentials } from '@aws-amplify/core';
+import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { GraphQLPredictionsProvider } from "..";
 
+const logger = new Logger('AmazonAIConvertPredictionsProvider');
 export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
 
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
@@ -24,39 +25,49 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         return "AmazonAIConvertPredictionsProvider";
     }
 
-    protected translateText(input: TranslateTextInput) {
-        console.log("Starting translation");
+    protected translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
+        logger.debug("Starting translation");
+        const { translateText: {
+            defaults: { sourceLanguage = "", targetLanguage = "" } = {},
+            region = "us-east-1" } = {}
+        } = this._config;
+
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
-            const sourceLanguageCode = input.translateText.source.language || this._config.translateText.sourceLanguage;
-            const targetLanguageCode = input.translateText.targetLanguage || this._config.translateText.targetLanguage;
+            const sourceLanguageCode = input.translateText.source.language || sourceLanguage;
+            const targetLanguageCode = input.translateText.targetLanguage || targetLanguage;
             if (!sourceLanguageCode || !targetLanguageCode) {
                 throw new Error("Please provide both source and target language");
             }
-            this.translate = new Translate({ region: this._config.translateText.region, credentials });
+            this.translate = new Translate({ region, credentials });
             this.translate.translateText({
                 SourceLanguageCode: sourceLanguageCode,
                 TargetLanguageCode: targetLanguageCode,
                 Text: input.translateText.source.text
                 // tslint:disable-next-line: align
             }, (err, data) => {
+                logger.debug({ err, data });
                 if (err) {
                     rej(err);
                 } else {
-                    res({ text: data.TranslatedText, language: data.TargetLanguageCode });
+                    res({ text: data.TranslatedText, language: data.TargetLanguageCode } as TranslateTextOutput);
                 }
             });
         });
     }
 
-    protected convertTextToSpeech(input: TextToSpeechInput) {
+    protected convertTextToSpeech(input: TextToSpeechInput): Promise<TextToSpeechOutput> {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
-            const language = input.textToSpeech.source.language || this._config.textToSpeech.language;
-            const voiceId = input.textToSpeech.voiceId || this._config.textToSpeech.voiceId;
-            this.textToSpeech = new TextToSpeech({ region: this._config.textToSpeech.region, credentials });
+            const { speechGenerator: {
+                defaults: { VoiceId = "Lotte", LanguageCode = "en-US"} = {},
+                region = "us-east-1" } = {}
+            } = this._config;
+            const language = input.textToSpeech.source.language || LanguageCode;
+            const voiceId = input.textToSpeech.voiceId || VoiceId;
+            this.textToSpeech = new TextToSpeech({ region, credentials });
             this.textToSpeech.synthesizeSpeech({
                 OutputFormat: 'mp3',
                 Text: input.textToSpeech.source.text,
@@ -75,7 +86,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                         audioStream: data.AudioStream,
                         text: input.textToSpeech.source.text,
                         language: input.textToSpeech.source.language
-                    });
+                    } as TextToSpeechOutput);
                 }
             });
         });

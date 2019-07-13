@@ -1,4 +1,5 @@
 import { LanguageCode } from "aws-sdk/clients/transcribeservice";
+import { AudioStream } from "aws-sdk/clients/polly";
 
 /**
  * Base types
@@ -22,6 +23,11 @@ export interface TranslateTextInput {
     }
 }
 
+export interface TranslateTextOutput {
+    text: string,
+    language: LanguageCode
+}
+
 export interface TextToSpeechInput {
     textToSpeech: {
         source: {
@@ -31,6 +37,13 @@ export interface TextToSpeechInput {
         terminology?: string,
         voiceId?: string
     }
+}
+
+export interface TextToSpeechOutput {
+    speech: { url: string },
+    audioStream: AudioStream,
+    text: string,
+    language: string
 }
 
 export interface SpeechToTextInput {

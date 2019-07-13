@@ -1,4 +1,12 @@
-import { PredictionsOptions, TranslateTextInput, TextToSpeechInput, SpeechToTextInput, ProviderOptions } from "./types";
+import {
+    PredictionsOptions,
+    TranslateTextInput,
+    TranslateTextOutput,
+    TextToSpeechInput,
+    ProviderOptions,
+    isTranslateTextInput, 
+    TextToSpeechOutput
+} from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
     AbstractInterpretPredictionsProvider, AbstractInferPredictionsProvider, AbstractPredictionsProvider
@@ -94,16 +102,21 @@ export default class Predictions {
      * category level config (such as convert, identify etc) and pass both to each provider.
      */
     configure(options: PredictionsOptions) {
-        let predictionsConfig = options ? options.Predictions || options : {};
+        let predictionsConfig = options ? options.predictions || options : {};
         predictionsConfig = { ...predictionsConfig, ...options };
         this._options = Object.assign({}, this._options, predictionsConfig);
         logger.debug('configure Predictions', this._options);
         this.getAllProviders().forEach(pluggable => this.configurePluggable(pluggable));
     }
 
-    public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
-                   options: ProviderOptions): Promise<any> {
+    public convert(input: TranslateTextInput, options?: ProviderOptions): Promise<TranslateTextOutput>;
+    public convert(input: TextToSpeechInput, options?: ProviderOptions): Promise<TextToSpeechOutput>;
+    public convert(input: TranslateTextInput | TextToSpeechInput,
+                   options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
+        if (isTranslateTextInput(input)) {
+            return pluggableToExecute.convert(input);
+        }
         return pluggableToExecute.convert(input);
     }
 
@@ -137,8 +150,8 @@ export default class Predictions {
     private configurePluggable(pluggable: AbstractPredictionsProvider) {
         const categoryConfig = Object.assign(
             {},
-            this._options['Predictions'], // Parent predictions config for the top level provider
-            this._options[pluggable.getCategory()] // Actual category level config
+            this._options['predictions'], // Parent predictions config for the top level provider
+            // this._options[pluggable.getCategory()] // Actual category level config
         );
         pluggable.configure(categoryConfig);
     }
