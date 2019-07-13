@@ -1,6 +1,4 @@
 import { LanguageCode } from 'aws-sdk/clients/transcribeservice';
-import * as Rekognition from 'aws-sdk/clients/rekognition';
-import * as Textract from 'aws-sdk/clients/textract';
 
 /**
  * Base types
@@ -49,7 +47,7 @@ export interface SpeechToTextInput {
             },
             file: string,
             outputBucketName: string,
-            bytes: Buffer | ArrayBuffer | Blob | string; // TODO: Confirm the use of ArrayBuffer
+            bytes: Buffer | ArrayBuffer | Blob | string;
             language?: LanguageCode
         }
         maxSpeakers?: number,
@@ -65,7 +63,7 @@ interface StorageSource {
         key: string,
         level?: 'public' | 'private' | 'protected',
         identityId?: string,
-    },   
+    },
 }
 
 interface FileSource {
@@ -76,7 +74,72 @@ interface BytesSource {
     bytes: Buffer | ArrayBuffer | Blob | string
 }
 
-export type IdentifySource = StorageSource | FileSource | BytesSource; 
+export type IdentifySource = StorageSource | FileSource | BytesSource;
+
+export interface IdentifyTextInput {
+    text: {
+        source: IdentifySource,
+        format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
+    }
+}
+
+export interface Word {
+    text: string,
+    polygon: Polygon,
+    boundingBox: BoundingBox,
+}
+
+export interface LineDetailed {
+    text: string,
+    polygon: Polygon,
+    boundingBox: BoundingBox,
+    page: number
+}
+
+export interface TableCell {
+    text: string,
+    selected?: boolean,
+    boundingBox: BoundingBox,
+    polygon: Polygon,
+    rowSpan?: Number,
+    columnSpan?: Number,
+}
+
+export interface Table {
+    size: {
+        rows: number,
+        columns: number
+    },
+    table: TableCell[][],
+    polygon: Polygon,
+    boundingBox: BoundingBox
+}
+
+export interface KeyValue {
+    key: string,
+    value: {
+        text?: string,
+        selected?: boolean
+    },
+    polygon: Polygon,
+    boundingBox: BoundingBox
+}
+
+export interface IdentifyTextOutput {
+    text: {
+        fullText: string,
+        lines: string[],
+        linesDetailed: LineDetailed[],
+        words: Word[]
+        keyValues?: KeyValue[],
+        tables?: Table[],
+        selections?: {
+            selected: boolean,
+            polygon: Polygon,
+            boundingBox: BoundingBox,
+        }[],
+    }
+}
 
 export interface IdentifyEntityInput {
     entity: {
@@ -85,10 +148,22 @@ export interface IdentifyEntityInput {
     }
 }
 
+export type Polygon = {
+    x: Number,
+    y: Number
+}[];
+
+export interface BoundingBox {
+    width?: Number;
+    height?: Number;
+    left?: Number;
+    top?: Number;
+}
+
 export interface IdentifyEntityOutput {
     entity?: {
         name: string,
-        boundingBoxes: Rekognition.BoundingBox[],
+        boundingBoxes: BoundingBox[],
         metadata?: Object
     }[],
     unsafe?: 'YES' | 'NO' | 'UNKNOWN'
@@ -105,89 +180,31 @@ export interface IdentifyFacesInput {
 
 export interface IdentifyFacesOutput {
     face: {
-        boundingBox?: Rekognition.BoundingBox,
-        ageRange?: Rekognition.AgeRange,
-        landmarks?: Rekognition.Landmark[],
-        attributes?: {
-            smile?: Rekognition.Smile,
-            eyeglasses?: Rekognition.Eyeglasses,
-            sunglasses?: Rekognition.Sunglasses,
-            gender?: Rekognition.Gender,
-            beard?: Rekognition.Beard,
-            mustache?: Rekognition.Mustache,
-            eyesOpen?: Rekognition.EyeOpen,
-            mouthOpen?: Rekognition.MouthOpen,
-            emotions?: Rekognition.Emotions
+        boundingBox?: BoundingBox,
+        ageRange?: {
+            low?: Number,
+            high?: Number
         },
-        metadata?: object 
+        landmarks?: {
+            type?: string,
+            x?: number,
+            y?: number
+        }[],
+        attributes?: {
+            smile?: boolean,
+            eyeglasses?: boolean,
+            sunglasses?: boolean,
+            gender?: string,
+            beard?: boolean,
+            mustache?: boolean,
+            eyesOpen?: boolean,
+            mouthOpen?: boolean,
+            emotions?: string[]
+        },
+        metadata?: object
     }[]
 }
 
-export interface IdentifyTextInput {
-    text: {
-        source: IdentifySource,
-        format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
-    }
-}
-
-export interface IdentifyTextWord {
-    text: string,
-    polygon: Textract.Polygon,
-    boundingBox: Textract.BoundingBox,
-}
-
-export interface IdentifyTextLineDetailed {
-    text: string,
-    polygon: Textract.Polygon,
-    boundingBox: Textract.BoundingBox,
-    id: string,
-    page: number
-}
-
-export interface IdentifyTextCell {
-    text: string,
-    selected?: boolean,
-    boundingBox: Textract.BoundingBox,
-    polygon: Textract.Polygon,
-    rowSpan?: Number,
-    columnSpan?: Number,
-}
-
-export interface IdentifyTextTable {
-    size: {
-        rows: number,
-        columns: number
-    },
-    matrix: IdentifyTextCell[][],
-    polygon: Textract.Polygon,
-    boundingBox: Textract.BoundingBox
-}
-
-export interface IdentifyKeyValue {
-    key: string,
-    value: {
-        text?: string,
-        selected?: boolean
-    },
-    polygon: Textract.Polygon,
-    boundingBox: Textract.BoundingBox
-}
-
-export interface IdentifyTextOutput {
-    text: {
-        fullText: string,
-        lines: string[],
-        linesDetailed: IdentifyTextLineDetailed[],
-        words: IdentifyTextWord[]
-        keyValues?: IdentifyKeyValue[],
-        tables?: IdentifyTextTable[],
-        selections?: {
-            selected: boolean,
-            polygon: Textract.Polygon,
-            boundingBox: Textract.BoundingBox,
-        }[], 
-    }
-}
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
@@ -204,12 +221,12 @@ export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
     return obj && obj.hasOwnProperty(key);
 }
 
-export function isStorageSource(obj: any): obj is StorageSource{
+export function isStorageSource(obj: any): obj is StorageSource {
     const key: keyof StorageSource = 'storage';
     return obj && obj.hasOwnProperty(key);
 }
 
-export function isFileSource(obj: any): obj is FileSource{
+export function isFileSource(obj: any): obj is FileSource {
     const key: keyof FileSource = 'file';
     return obj && obj.hasOwnProperty(key);
 }
