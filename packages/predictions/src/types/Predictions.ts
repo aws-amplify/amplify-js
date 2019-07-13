@@ -174,7 +174,7 @@ export interface IdentifyFacesInput {
         source: IdentifySource,
         collection?: string,
         maxFaces?: number,
-        celebrityDetection: Boolean
+        celebrityDetection?: Boolean
     }
 }
 
