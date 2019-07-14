@@ -30,7 +30,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
      * @return {Promise<Rekognition.Image | Textract.Document> } - Promise resolving to the converted source object.
      */
     private configureSource(source: IdentifySource): Promise<Rekognition.Image | Textract.Document> {
-        return new Promise(async (res, rej) => {
+        return new Promise((res, rej) => {
             const image: Rekognition.Image = {}; // empty image object that we'll write on.
             if (isStorageSource(source)) {
                 const storageConfig: any = {
