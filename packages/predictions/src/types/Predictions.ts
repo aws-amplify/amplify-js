@@ -97,8 +97,8 @@ export interface LineDetailed {
 export interface TableCell {
     text: string,
     selected?: boolean,
-    boundingBox: BoundingBox,
-    polygon: Polygon,
+    boundingBox?: BoundingBox,
+    polygon?: Polygon,
     rowSpan?: Number,
     columnSpan?: Number,
 }

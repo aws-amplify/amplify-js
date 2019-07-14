@@ -352,6 +352,12 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         });
         const rowSize: number = tableMatrix.length;
         const columnSize: number = tableMatrix[0].length;
+        // Leave spanned cells undefined for distinction
+        // for (let row = 0; row < rowSize; ++row) 
+        //     for (let col = 0; col < columnSize; ++col) 
+        //         if (!tableMatrix[row][col]) 
+        //             tableMatrix[row][col] = { text: "" };
+
         return {
             size: { rows: rowSize, columns: columnSize },
             table: tableMatrix,
