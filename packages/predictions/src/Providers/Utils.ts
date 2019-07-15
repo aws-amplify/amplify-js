@@ -1,3 +1,7 @@
+/**
+ * Changes object keys to camel case. If optional parameter `keys` is given, then we extract only the 
+ * keys specified in `keys`.  
+ */
 export function makeCamelCase(obj: object, keys ?: string[]) {
   if (!obj) return undefined;
   const newObj = {};
@@ -12,11 +16,17 @@ export function makeCamelCase(obj: object, keys ?: string[]) {
   return newObj;
 }
 
+/**
+ * Given an array of object, call makeCamelCase(...) on each option.
+ */
 export function makeCamelCaseArray(objArr: object[], keys?: string[]) {
   if (!objArr) return undefined;
   return objArr.map(obj => makeCamelCase(obj, keys));
 }
 
+/**
+ * Converts blob to array buffer
+ */
 export function blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
   return new Promise((res, rej) => {
       const reader = new FileReader();
