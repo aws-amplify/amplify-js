@@ -48,14 +48,14 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     .then(buffer => { res({ Bytes: buffer }); })
                     .catch(err => rej(err));
             } else if (isBytesSource(source)) {
-                if (source.bytes instanceof Blob) {
-                    blobToArrayBuffer(source.bytes)
+                const bytes = source.bytes;
+                if (bytes instanceof Blob) {
+                    blobToArrayBuffer(bytes)
                         .then(buffer => { res({ Bytes: buffer }); })
                         .catch(err => rej(err));
-                } else {
-                    // everything else can be directly passed to Rekognition / Textract.
-                    res({ Bytes: source.bytes });
                 }
+                // everything else can be directly passed to Rekognition / Textract.
+                res({ Bytes: bytes });
             } else {
                 rej('Input source is not configured correctly.');
             }
