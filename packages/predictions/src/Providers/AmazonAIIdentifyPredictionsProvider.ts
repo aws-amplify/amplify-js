@@ -1,4 +1,4 @@
-import { Credentials } from '@aws-amplify/core';
+import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
@@ -6,7 +6,7 @@ import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
     isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, Table, TableCell,
-    KeyValue, BoundingBox,
+    KeyValue, Polygon, Content,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 
@@ -23,43 +23,67 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return 'AmazonAIIdentifyPredictionsProvider';
     }
 
+    private makeCamelCase(obj: object, keys?: string[]) {
+        if (!obj) return undefined;
+        const newObj = {};
+        const keysToRename = keys ? keys : Object.keys(obj);
+        keysToRename.forEach(key => {
+            if (obj.hasOwnProperty(key)) {
+                // change the key to camelcase.
+                const camelCaseKey = key.charAt(0).toLowerCase() + key.substr(1);
+                Object.assign(newObj, { [camelCaseKey]: obj[key] });
+            }
+        });
+        return newObj;
+    }
+
+    private makeCamelCaseArray(objArr: object[], keys?: string[]) {
+        if (!objArr) return undefined;
+        return objArr.map(obj => this.makeCamelCase(obj, keys));
+    }
+
+    private blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
+        return new Promise((res, rej) => {
+            const reader = new FileReader();
+            reader.onload = _event => { res(reader.result as ArrayBuffer); };
+            reader.onerror = err => { rej(err); };
+            try {
+                reader.readAsArrayBuffer(blob);
+            } catch (err) {
+                rej(err); // in case user gives invalid type
+            }
+        });
+    }
     /**
      * Verify user input source and converts it into source object readable by Rekognition and Textract.
      * @param {IdentifySource} source - User input source that directs to the object user wants
      * to identify (storage, file, or bytes).
-     * @return {Promise<Rekognition.Image | Textract.Document> } - Promise resolving to the converted source object.
+     * @return {Promise<Rekognition.Image> } - Promise resolving to the converted source object.
      */
-    private configureSource(source: IdentifySource): Promise<Rekognition.Image | Textract.Document> {
+    private configureSource(source: IdentifySource): Promise<Rekognition.Image> {
         return new Promise((res, rej) => {
-            const image: Rekognition.Image = {}; // empty image object that we'll write on.
             if (isStorageSource(source)) {
-                const storageConfig: any = {
-                    level: source.level,
-                    identityId: source.identityId,
-                };
+                const storageConfig = { level: source.level, identityId: source.identityId };
                 Storage.get(source.key, storageConfig)
                     .then((url: string) => {
                         const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
-                        const parsedGroups = url.match(parser);
-                        if (parsedGroups.length < 3) rej('Invalid S3 url was returned.');
-                        image.S3Object = {
-                            Bucket: parsedGroups[1],
-                            Name: decodeURIComponent(parsedGroups[2]),
-                        };
-                        res(image);
+                        const parsedURL = url.match(parser);
+                        if (parsedURL.length < 3) rej('Invalid S3 key was given.');
+                        res({ S3Object: { Bucket: parsedURL[1], Name: parsedURL[2] } });
                     })
                     .catch(err => rej(err));
             } else if (isFileSource(source)) {
-                new Response(source.file).arrayBuffer().then(bytes => {
-                    image.Bytes = bytes;
-                    res(image);
-                }).catch(err => rej(err));
+                this.blobToArrayBuffer(source.file)
+                    .then(buffer => { res({ Bytes: buffer }); })
+                    .catch(err => rej(err));
             } else if (isBytesSource(source)) {
                 if (source.bytes instanceof Blob) {
-                    new Response(source.bytes).arrayBuffer().then(bytes => {
-                        image.Bytes = bytes;
-                        res(image);
-                    }).catch(err => rej(err));
+                    this.blobToArrayBuffer(source.bytes)
+                        .then(buffer => { res({ Bytes: buffer }); })
+                        .catch(err => rej(err));
+                } else {
+                    // everything else can be directly passed to Rekognition / Textract.
+                    res({ Bytes: source.bytes });
                 }
             } else {
                 rej('Input source is not configured correctly.');
@@ -84,7 +108,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             let inputDocument: Textract.Document;
             await this.configureSource(input.text.source)
                 .then(data => inputDocument = data)
-                .catch(err => { return rej(err); });
+                .catch(err => { rej(err); });
 
             // get default value if format isn't specified in the input.
             if (!input.text.format) {
@@ -102,24 +126,24 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 featureTypes.push('TABLES');
             if (featureTypes.length === 0) {
                 /**
-                 * Empty indicates that we will identify plain text. We will use rekognition (suitable for everyday 
-                 * images but has 50 word limit) first and see if reaches its word limit. If it does, then we call
-                 * textract and use the data that identify more words.
+                 * Empty featureTypes indicates that we will identify plain text. We will use rekognition (suitable
+                 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
+                 * we call textract and use the data that identify more words.
                  */
                 const textractParam: Textract.DetectDocumentTextRequest = { Document: inputDocument, };
                 const rekognitionParam: Rekognition.DetectTextRequest = { Image: inputDocument };
                 this.rekognition.detectText(rekognitionParam, (rekognitionErr, rekognitionData) => {
                     if (rekognitionErr) return rej(rekognitionErr);
-                    const textractResponse = this.categorizeRekognitionBlocks(rekognitionData.TextDetections);
-                    if (textractResponse.text.words.length < 50) {
+                    const rekognitionResponse = this.categorizeRekognitionBlocks(rekognitionData.TextDetections);
+                    if (rekognitionResponse.text.words.length < 50) {
                         // did not hit the word limit, return the data
-                        return res(textractResponse);
+                        return res(rekognitionResponse);
                     }
                     this.textract.detectDocumentText(textractParam, (textractErr, textractData) => {
                         if (textractErr) return rej(textractErr);
                         // use the service that identified more texts.
                         if (rekognitionData.TextDetections.length > textractData.Blocks.length) {
-                            return res(textractResponse);
+                            return res(rekognitionResponse);
                         } else {
                             const textractBlocks = textractData.Blocks;
                             return res(this.categorizeTextractBlocks(textractBlocks));
@@ -140,18 +164,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             }
         });
     }
-    private refactorBoundingBox(boundingBox: Rekognition.BoundingBox | Textract.BoundingBox): BoundingBox {
-        return {
-            width: boundingBox.Width,
-            height: boundingBox.Height,
-            left: boundingBox.Left,
-            top: boundingBox.Top,
-        };
-    }
-
-    private refactorPolygon(polygon: Rekognition.Polygon | Textract.Polygon) {
-        return polygon.map(val => { return { x: val.X, y: val.Y }; });
-    }
 
     /**
      * Organizes blocks from Rekognition API to each of the categories and and structures 
@@ -169,9 +181,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 linesDetailed: [],
             }
         };
-        // if blocks is an empty array, ie. rekognition did not detect anything, return empty response.
-        if (blocks.length === 0) return response;
-
         // We categorize each block by running a forEach loop through them.
         blocks.forEach(block => {
             switch (block.Type) {
@@ -179,21 +188,23 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.lines.push(block.DetectedText);
                     response.text.linesDetailed.push({
                         text: block.DetectedText,
-                        polygon: this.refactorPolygon(block.Geometry.Polygon),
-                        boundingBox: this.refactorBoundingBox(block.Geometry.BoundingBox),
-                        page: null,
+                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
+                        page: null, // rekognition doesn't have this info
                     });
                     break;
                 case 'WORD':
                     response.text.fullText += block.DetectedText + ' ';
                     response.text.words.push({
                         text: block.DetectedText,
-                        polygon: this.refactorPolygon(block.Geometry.Polygon),
-                        boundingBox: this.refactorBoundingBox(block.Geometry.BoundingBox)
+                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox)
                     });
                     break;
             }
         });
+        // remove trailing space of fullText
+        response.text.fullText = response.text.fullText.substr(0, response.text.fullText.length - 1);
         return response;
     }
     /**
@@ -234,8 +245,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.lines.push(block.Text);
                     response.text.linesDetailed.push({
                         text: block.Text,
-                        polygon: this.refactorPolygon(block.Geometry.Polygon),
-                        boundingBox: this.refactorBoundingBox(block.Geometry.BoundingBox),
+                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
                         page: block.Page
                     });
                     break;
@@ -243,8 +254,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.fullText += block.Text + ' ';
                     response.text.words.push({
                         text: block.Text,
-                        polygon: this.refactorPolygon(block.Geometry.Polygon),
-                        boundingBox: this.refactorBoundingBox(block.Geometry.BoundingBox),
+                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
                     });
                     blockMap[block.Id] = block;
                     break;
@@ -254,8 +265,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                         response.text.selections = [];
                     response.text.selections.push({
                         selected: selectionStatus,
-                        polygon: this.refactorPolygon(block.Geometry.Polygon),
-                        boundingBox: this.refactorBoundingBox(block.Geometry.BoundingBox),
+                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
                     });
                     blockMap[block.Id] = block;
                     break;
@@ -270,7 +281,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     blockMap[block.Id] = block;
             }
         });
-        // remove trailing space of fullText
+        // remove trailing space in fullText
         response.text.fullText = response.text.fullText.substr(0, response.text.fullText.length - 1);
 
         // Post-process complex structures if they exist. 
@@ -284,7 +295,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         if (keyValueBlocks.length !== 0) {
             const keyValueResponse: KeyValue[] = Array();
             keyValueBlocks.forEach(keyValue => {
-                // We filter the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
+                // We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
                 if (keyValue.EntityTypes.indexOf('KEY') !== -1) {
                     keyValueResponse.push(this.constructKeyValue(keyValue, blockMap));
                 }
@@ -303,21 +314,24 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     private extractContentsFromBlock(
         block: Textract.Block,
         blockMap: { [id: string]: Textract.Block }
-    ): { text?: string, selected?: boolean } {
+    ): Content {
         let words: string = '';
         let isSelected: boolean;
-        if (block.Relationships) {
-            block.Relationships.forEach(relation => {
-                relation.Ids.forEach((contentId, index) => {
-                    const contentBlock = blockMap[contentId];
-                    if (contentBlock.BlockType === 'WORD') {
-                        words += contentBlock.Text + ' ';
-                    } else if (contentBlock.BlockType === 'SELECTION_ELEMENT') {
-                        isSelected = (contentBlock.SelectionStatus === 'SELECTED') ? true : false;
-                    }
-                });
-            });
+
+        if (!block.Relationships) { // some block might have no content
+            return { text: '', selected: undefined };
         }
+        block.Relationships.forEach(relation => {
+            relation.Ids.forEach(contentId => {
+                const contentBlock = blockMap[contentId];
+                if (contentBlock.BlockType === 'WORD') {
+                    words += contentBlock.Text + ' ';
+                } else if (contentBlock.BlockType === 'SELECTION_ELEMENT') {
+                    isSelected = (contentBlock.SelectionStatus === 'SELECTED') ? true : false;
+                }
+            });
+        });
+
         words = words.substr(0, words.length - 1); // remove trailing space.
         return { text: words, selected: isSelected };
     }
@@ -340,8 +354,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 const content = this.extractContentsFromBlock(cellBlock, blockMap);
                 const cell: TableCell = {
                     text: content.text,
-                    boundingBox: this.refactorBoundingBox(cellBlock.Geometry.BoundingBox),
-                    polygon: this.refactorPolygon(cellBlock.Geometry.Polygon),
+                    boundingBox: this.makeCamelCase(cellBlock.Geometry.BoundingBox),
+                    polygon: this.makeCamelCaseArray(cellBlock.Geometry.Polygon),
                     selected: content.selected,
                     rowSpan: cellBlock.RowSpan,
                     columnSpan: cellBlock.ColumnSpan,
@@ -350,19 +364,14 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 tableMatrix[row][col] = cell;
             });
         });
-        const rowSize: number = tableMatrix.length;
-        const columnSize: number = tableMatrix[0].length;
-        // Leave spanned cells undefined for distinction
-        // for (let row = 0; row < rowSize; ++row) 
-        //     for (let col = 0; col < columnSize; ++col) 
-        //         if (!tableMatrix[row][col]) 
-        //             tableMatrix[row][col] = { text: "" };
-
+        const rowSize = tableMatrix.length;
+        const columnSize = tableMatrix[0].length;
+        // Note that we leave spanned cells undefined for distinction
         return {
             size: { rows: rowSize, columns: columnSize },
             table: tableMatrix,
-            boundingBox: this.refactorBoundingBox(table.Geometry.BoundingBox),
-            polygon: this.refactorPolygon(table.Geometry.Polygon)
+            boundingBox: this.makeCamelCase(table.Geometry.BoundingBox),
+            polygon: this.makeCamelCaseArray(table.Geometry.Polygon)
         };
     }
 
@@ -372,16 +381,16 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
      * @param {[id: string]: Textract.Block} blockMap - Maps block Ids to blocks. 
      */
     private constructKeyValue(
-        keyValueBlock: Textract.Block,
+        keyBlock: Textract.Block,
         blockMap: { [key: string]: Textract.Block }
     ): KeyValue {
         let keyText: string = '';
         let valueText: string = '';
         let valueSelected: boolean;
-        keyValueBlock.Relationships.forEach(keyValueRelation => {
+        keyBlock.Relationships.forEach(keyValueRelation => {
             if (keyValueRelation.Type === 'CHILD') {
                 // relation refers to key
-                const contents = this.extractContentsFromBlock(keyValueBlock, blockMap);
+                const contents = this.extractContentsFromBlock(keyBlock, blockMap);
                 keyText = contents.text;
             } else if (keyValueRelation.Type === 'VALUE') {
                 // relation refers to value
@@ -396,8 +405,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return {
             key: keyText,
             value: { text: valueText, selected: valueSelected },
-            polygon: this.refactorPolygon(keyValueBlock.Geometry.Polygon),
-            boundingBox: this.refactorBoundingBox(keyValueBlock.Geometry.BoundingBox),
+            polygon: this.makeCamelCaseArray(keyBlock.Geometry.Polygon),
+            boundingBox: this.makeCamelCase(keyBlock.Geometry.BoundingBox),
         };
     }
 
@@ -425,6 +434,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (input.entity.type === 'UNSAFE' || input.entity.type === 'ALL') {
                 servicePromises.push(this.detectModerationLabels(param));
             }
+            if (servicePromises.length === 0) {
+                rej('You must specify entity type: LABELS | UNSAFE | ALL');
+            }
             Promise.all(servicePromises).then(data => {
                 let identifyResult: IdentifyEntityOutput = {};
                 // concatenate resolved promises to a single object
@@ -443,24 +455,16 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise((res, rej) => {
             this.rekognition.detectLabels(param, (err, data) => {
                 if (err) return rej(err);
+                if (!data.Labels) return res({ entity: null }); // no image was detected
                 const detectLabelData = data.Labels.map(val => {
-                    // extract bounding boxes 
-                    const boxes = val.Instances.map(instance => {
-                        return {
-                            width: instance.BoundingBox.Width,
-                            height: instance.BoundingBox.Height,
-                            left: instance.BoundingBox.Left,
-                            top: instance.BoundingBox.Top,
-                        };
-                    });
+                    const boxes = val.Instances ?
+                        val.Instances.map(val => this.makeCamelCase(val.BoundingBox)) : undefined;
                     return {
                         name: val.Name,
                         boundingBoxes: boxes,
                         metadata: {
                             confidence: val.Confidence,
-                            parents: val.Parents.map(val => {
-                                return { name: val.Name };
-                            }),
+                            parents: this.makeCamelCaseArray(val.Parents)
                         }
                     };
                 });
@@ -498,6 +502,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId'); // is this necessary
+            // TODO: default values
 
             this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
@@ -506,25 +511,16 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { return rej(err); });
 
             const param = { Image: inputImage };
-            if (input.face.celebrityDetection) {
+            if (input.celebrityDetection) {
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
                     if (err) return rej(err);
-                    const faces = data.CelebrityFaces.map(val => {
+                    const faces = data.CelebrityFaces.map(celebrity => {
                         return {
-                            boundingBox: this.refactorBoundingBox(val.Face.BoundingBox),
-                            landmarks: val.Face.Landmarks.map(landmark => {
-                                return { type: landmark.Type, x: landmark.X, y: landmark.Y };
-                            }),
+                            boundingBox: this.makeCamelCase(celebrity.Face.BoundingBox),
+                            landmarks: this.makeCamelCaseArray(celebrity.Face.Landmarks),
                             metadata: {
-                                id: val.Id,
-                                confidence: val.MatchConfidence,
-                                name: val.Name,
-                                urls: val.Urls,
-                                pose: {
-                                    roll: val.Face.Pose.Roll,
-                                    yaw: val.Face.Pose.Yaw,
-                                    sharpness: val.Face.Pose.Pitch,
-                                }
+                                ...this.makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
+                                pose: this.makeCamelCase(celebrity.Face.Pose)
                             }
                         };
                     });
@@ -532,16 +528,12 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 });
             } else if (input.face.collection) {
                 // Concatenate additional parameters
-                const updatedParam = {
-                    ...param,
-                    CollectionId: input.face.collection,
-                    MaxFaces: input.face.maxFaces
-                };
+                const updatedParam = { ...param, CollectionId: input.face.collection, MaxFaces: input.face.maxFaces };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
                         return {
-                            boundingBox: this.refactorBoundingBox(val.Face.BoundingBox),
+                            boundingBox: this.makeCamelCase(val.Face.BoundingBox),
                             externalImageId: val.Face.ExternalImageId,
                             imageId: val.Face.ImageId,
                             similarity: val.Similarity,
@@ -552,40 +544,22 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             } else {
                 this.rekognition.detectFaces(param, (err, data) => {
                     if (err) return rej(err);
-                    const faces = data.FaceDetails.map(val => {
-                        // transform returned data to reflect identify API
-                        const faceAttributes = {
-                            smile: val.Smile.Value,
-                            eyeglasses: val.Eyeglasses.Value,
-                            sunglasses: val.Sunglasses.Value,
-                            gender: val.Gender.Value,
-                            beard: val.Beard.Value,
-                            mustache: val.Mustache.Value,
-                            eyesOpen: val.EyesOpen.Value,
-                            mouthOpen: val.MouthOpen.Value,
-                            emotions: val.Emotions.map(emotion => {
-                                return emotion.Type;
-                            }),
-                        };
-                        Object.keys(faceAttributes).forEach(key => {
-                            faceAttributes[key] === undefined && delete faceAttributes[key];
-                        }); // strip undefined attributes for conciseness
+                    const faces = data.FaceDetails.map(detail => {
+                        // face attributes keys we want to extract from Rekognition's response
+                        const attributeKeys = [
+                            'Smile', 'Eyeglasses', 'Sunglasses', 'Gender', 'Beard',
+                            'Mustache', 'EyesOpen', 'MouthOpen',
+                        ];
+                        const faceAttributes = this.makeCamelCase(detail, attributeKeys);
+                        if (detail.Emotions) {
+                            faceAttributes['emotions'] = detail.Emotions.map(emotion => emotion.Type);
+                        }
                         return {
-                            boundingBox: {
-                                width: val.BoundingBox.Width,
-                                height: val.BoundingBox.Height,
-                                left: val.BoundingBox.Left,
-                                top: val.BoundingBox.Top,
-                            },
-                            landmarks: val.Landmarks.map(landmark => {
-                                return { type: landmark.Type, x: landmark.X, y: landmark.Y };
-                            }),
-                            ageRange: { low: val.AgeRange.Low, high: val.AgeRange.High, },
-                            attributes: faceAttributes,
-                            metadata: {
-                                confidence: val.Confidence,
-                                pose: val.Pose,
-                            }
+                            boundingBox: this.makeCamelCase(detail.BoundingBox),
+                            landmarks: this.makeCamelCaseArray(detail.Landmarks),
+                            ageRange: this.makeCamelCase(detail.AgeRange),
+                            attributes: this.makeCamelCase(detail, attributeKeys),
+                            metadata: this.makeCamelCase(detail, ['Confidence', 'Pose'])
                         };
                     });
                     res({ face: faces });

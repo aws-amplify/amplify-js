@@ -94,9 +94,12 @@ export interface LineDetailed {
     page: number
 }
 
-export interface TableCell {
-    text: string,
+export interface Content {
+    text?: string,
     selected?: boolean,
+}
+
+export interface TableCell extends Content {
     boundingBox?: BoundingBox,
     polygon?: Polygon,
     rowSpan?: Number,
@@ -115,10 +118,7 @@ export interface Table {
 
 export interface KeyValue {
     key: string,
-    value: {
-        text?: string,
-        selected?: boolean
-    },
+    value: Content,
     polygon: Polygon,
     boundingBox: BoundingBox
 }
@@ -146,10 +146,12 @@ export interface IdentifyEntityInput {
     }
 }
 
-export type Polygon = {
-    x: Number,
-    y: Number
-}[];
+export interface Point {
+    x?: Number,
+    y?: Number,
+}
+
+export type Polygon = Point[];
 
 export interface BoundingBox {
     width?: Number;
@@ -172,8 +174,20 @@ export interface IdentifyFacesInput {
         source: IdentifySource,
         collection?: string,
         maxFaces?: number,
-        celebrityDetection?: Boolean
-    }
+    },
+    celebrityDetection?: Boolean
+}
+
+export interface FaceAttributes {
+    smile?: boolean,
+    eyeglasses?: boolean,
+    sunglasses?: boolean,
+    gender?: string,
+    beard?: boolean,
+    mustache?: boolean,
+    eyesOpen?: boolean,
+    mouthOpen?: boolean,
+    emotions?: string[]
 }
 
 export interface IdentifyFacesOutput {
@@ -188,17 +202,7 @@ export interface IdentifyFacesOutput {
             x?: number,
             y?: number
         }[],
-        attributes?: {
-            smile?: boolean,
-            eyeglasses?: boolean,
-            sunglasses?: boolean,
-            gender?: string,
-            beard?: boolean,
-            mustache?: boolean,
-            eyesOpen?: boolean,
-            mouthOpen?: boolean,
-            emotions?: string[]
-        },
+        attributes?: FaceAttributes
         metadata?: object
     }[]
 }
@@ -221,7 +225,6 @@ export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 
 export function isStorageSource(obj: any): obj is StorageSource {
     const key: keyof StorageSource = 'key';
-    console.log(obj, obj.hasOwnProperty(key));
     return obj && obj.hasOwnProperty(key);
 }
 
