@@ -111,18 +111,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { rej(err); });
 
             // get default value if format isn't specified in the input.
-            if (!input.text.format) {
-                if (this._config.identify.identifyText.format) {
-                    // default from awsexports
-                    input.text.format = this._config.identify.identifyText.format;
-                } else {
-                    input.text.format = 'PLAIN';
-                }
-            }
-            const featureTypes: Textract.FeatureTypes = [];
-            if (input.text.format === 'FORM' || input.text.format === 'ALL')
+            const format = input.text.format || this._config.identify.identifyText.format || 'PLAIN';
+            const featureTypes: Textract.FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
+            if (format === 'FORM' || format === 'ALL')
                 featureTypes.push('FORMS');
-            if (input.text.format === 'TABLE' || input.text.format === 'ALL')
+            if (format === 'TABLE' || format === 'ALL')
                 featureTypes.push('TABLES');
             if (featureTypes.length === 0) {
                 /**
@@ -145,8 +138,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                         if (rekognitionData.TextDetections.length > textractData.Blocks.length) {
                             return res(rekognitionResponse);
                         } else {
-                            const textractBlocks = textractData.Blocks;
-                            return res(this.categorizeTextractBlocks(textractBlocks));
+                            return res(this.categorizeTextractBlocks(textractData.Blocks));
                         }
                     });
                 });
@@ -428,10 +420,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { return rej(err); });
             const param = { Image: inputImage };
             const servicePromises = [];
-            if (input.entity.type === 'LABELS' || input.entity.type === 'ALL') {
+
+            // get default argument
+            const entityType = input.entity.type || this._config.identify.identifyEntity.type;
+            if (entityType === 'LABELS' || entityType === 'ALL') {
                 servicePromises.push(this.detectLabels(param));
             }
-            if (input.entity.type === 'UNSAFE' || input.entity.type === 'ALL') {
+            if (entityType === 'UNSAFE' || entityType === 'ALL') {
                 servicePromises.push(this.detectModerationLabels(param));
             }
             if (servicePromises.length === 0) {
@@ -502,7 +497,12 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId'); // is this necessary
-            // TODO: default values
+
+            // default arguments
+            const collection: string = input.face.collection || this._config.identify.identifyFaces.collection;
+            const maxFaces: number = input.face.maxFaces || this._config.identify.identifyFaces.maxFaces;
+            const celebrityDetection: boolean =
+                input.celebrityDetection || this._config.identify.identifyFaces.celebrityDetection;
 
             this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
@@ -511,7 +511,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { return rej(err); });
 
             const param = { Image: inputImage };
-            if (input.celebrityDetection) {
+            if (celebrityDetection) {
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.CelebrityFaces.map(celebrity => {
@@ -526,9 +526,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     });
                     res({ face: faces });
                 });
-            } else if (input.face.collection) {
+            } else if (collection) {
                 // Concatenate additional parameters
-                const updatedParam = { ...param, CollectionId: input.face.collection, MaxFaces: input.face.maxFaces };
+                const updatedParam = { ...param, CollectionId: input.face.collection, MaxFaces: maxFaces };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
