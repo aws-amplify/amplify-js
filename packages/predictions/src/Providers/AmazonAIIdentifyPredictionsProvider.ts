@@ -6,9 +6,10 @@ import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
     isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, Table, TableCell,
-    KeyValue, Polygon, Content,
+    KeyValue, Content,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
+import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 
 export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
@@ -23,39 +24,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return 'AmazonAIIdentifyPredictionsProvider';
     }
 
-    private makeCamelCase(obj: object, keys?: string[]) {
-        if (!obj) return undefined;
-        const newObj = {};
-        const keysToRename = keys ? keys : Object.keys(obj);
-        keysToRename.forEach(key => {
-            if (obj.hasOwnProperty(key)) {
-                // change the key to camelcase.
-                const camelCaseKey = key.charAt(0).toLowerCase() + key.substr(1);
-                Object.assign(newObj, { [camelCaseKey]: obj[key] });
-            }
-        });
-        return newObj;
-    }
-
-    private makeCamelCaseArray(objArr: object[], keys?: string[]) {
-        if (!objArr) return undefined;
-        return objArr.map(obj => this.makeCamelCase(obj, keys));
-    }
-
-    private blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
-        return new Promise((res, rej) => {
-            const reader = new FileReader();
-            reader.onload = _event => { res(reader.result as ArrayBuffer); };
-            reader.onerror = err => { rej(err); };
-            try {
-                reader.readAsArrayBuffer(blob);
-            } catch (err) {
-                rej(err); // in case user gives invalid type
-            }
-        });
-    }
     /**
      * Verify user input source and converts it into source object readable by Rekognition and Textract.
+     * Note that Rekognition and Textract use the same source interface, so we need not worry about types.
      * @param {IdentifySource} source - User input source that directs to the object user wants
      * to identify (storage, file, or bytes).
      * @return {Promise<Rekognition.Image> } - Promise resolving to the converted source object.
@@ -73,12 +44,12 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     })
                     .catch(err => rej(err));
             } else if (isFileSource(source)) {
-                this.blobToArrayBuffer(source.file)
+                blobToArrayBuffer(source.file)
                     .then(buffer => { res({ Bytes: buffer }); })
                     .catch(err => rej(err));
             } else if (isBytesSource(source)) {
                 if (source.bytes instanceof Blob) {
-                    this.blobToArrayBuffer(source.bytes)
+                    blobToArrayBuffer(source.bytes)
                         .then(buffer => { res({ Bytes: buffer }); })
                         .catch(err => rej(err));
                 } else {
@@ -180,8 +151,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.lines.push(block.DetectedText);
                     response.text.linesDetailed.push({
                         text: block.DetectedText,
-                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
-                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
+                        polygon: makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: makeCamelCase(block.Geometry.BoundingBox),
                         page: null, // rekognition doesn't have this info
                     });
                     break;
@@ -189,8 +160,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.fullText += block.DetectedText + ' ';
                     response.text.words.push({
                         text: block.DetectedText,
-                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
-                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox)
+                        polygon: makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: makeCamelCase(block.Geometry.BoundingBox)
                     });
                     break;
             }
@@ -237,8 +208,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.lines.push(block.Text);
                     response.text.linesDetailed.push({
                         text: block.Text,
-                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
-                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
+                        polygon: makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: makeCamelCase(block.Geometry.BoundingBox),
                         page: block.Page
                     });
                     break;
@@ -246,8 +217,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     response.text.fullText += block.Text + ' ';
                     response.text.words.push({
                         text: block.Text,
-                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
-                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
+                        polygon: makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: makeCamelCase(block.Geometry.BoundingBox),
                     });
                     blockMap[block.Id] = block;
                     break;
@@ -257,8 +228,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                         response.text.selections = [];
                     response.text.selections.push({
                         selected: selectionStatus,
-                        polygon: this.makeCamelCaseArray(block.Geometry.Polygon),
-                        boundingBox: this.makeCamelCase(block.Geometry.BoundingBox),
+                        polygon: makeCamelCaseArray(block.Geometry.Polygon),
+                        boundingBox: makeCamelCase(block.Geometry.BoundingBox),
                     });
                     blockMap[block.Id] = block;
                     break;
@@ -346,8 +317,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 const content = this.extractContentsFromBlock(cellBlock, blockMap);
                 const cell: TableCell = {
                     text: content.text,
-                    boundingBox: this.makeCamelCase(cellBlock.Geometry.BoundingBox),
-                    polygon: this.makeCamelCaseArray(cellBlock.Geometry.Polygon),
+                    boundingBox: makeCamelCase(cellBlock.Geometry.BoundingBox),
+                    polygon: makeCamelCaseArray(cellBlock.Geometry.Polygon),
                     selected: content.selected,
                     rowSpan: cellBlock.RowSpan,
                     columnSpan: cellBlock.ColumnSpan,
@@ -362,8 +333,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return {
             size: { rows: rowSize, columns: columnSize },
             table: tableMatrix,
-            boundingBox: this.makeCamelCase(table.Geometry.BoundingBox),
-            polygon: this.makeCamelCaseArray(table.Geometry.Polygon)
+            boundingBox: makeCamelCase(table.Geometry.BoundingBox),
+            polygon: makeCamelCaseArray(table.Geometry.Polygon)
         };
     }
 
@@ -397,8 +368,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return {
             key: keyText,
             value: { text: valueText, selected: valueSelected },
-            polygon: this.makeCamelCaseArray(keyBlock.Geometry.Polygon),
-            boundingBox: this.makeCamelCase(keyBlock.Geometry.BoundingBox),
+            polygon: makeCamelCaseArray(keyBlock.Geometry.Polygon),
+            boundingBox: makeCamelCase(keyBlock.Geometry.BoundingBox),
         };
     }
 
@@ -453,13 +424,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 if (!data.Labels) return res({ entity: null }); // no image was detected
                 const detectLabelData = data.Labels.map(val => {
                     const boxes = val.Instances ?
-                        val.Instances.map(val => this.makeCamelCase(val.BoundingBox)) : undefined;
+                        val.Instances.map(val => makeCamelCase(val.BoundingBox)) : undefined;
                     return {
                         name: val.Name,
                         boundingBoxes: boxes,
                         metadata: {
                             confidence: val.Confidence,
-                            parents: this.makeCamelCaseArray(val.Parents)
+                            parents: makeCamelCaseArray(val.Parents)
                         }
                     };
                 });
@@ -516,11 +487,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     if (err) return rej(err);
                     const faces = data.CelebrityFaces.map(celebrity => {
                         return {
-                            boundingBox: this.makeCamelCase(celebrity.Face.BoundingBox),
-                            landmarks: this.makeCamelCaseArray(celebrity.Face.Landmarks),
+                            boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
+                            landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
                             metadata: {
-                                ...this.makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
-                                pose: this.makeCamelCase(celebrity.Face.Pose)
+                                ...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
+                                pose: makeCamelCase(celebrity.Face.Pose)
                             }
                         };
                     });
@@ -533,7 +504,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
                         return {
-                            boundingBox: this.makeCamelCase(val.Face.BoundingBox),
+                            boundingBox: makeCamelCase(val.Face.BoundingBox),
                             externalImageId: val.Face.ExternalImageId,
                             imageId: val.Face.ImageId,
                             similarity: val.Similarity,
@@ -550,16 +521,16 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             'Smile', 'Eyeglasses', 'Sunglasses', 'Gender', 'Beard',
                             'Mustache', 'EyesOpen', 'MouthOpen',
                         ];
-                        const faceAttributes = this.makeCamelCase(detail, attributeKeys);
+                        const faceAttributes = makeCamelCase(detail, attributeKeys);
                         if (detail.Emotions) {
                             faceAttributes['emotions'] = detail.Emotions.map(emotion => emotion.Type);
                         }
                         return {
-                            boundingBox: this.makeCamelCase(detail.BoundingBox),
-                            landmarks: this.makeCamelCaseArray(detail.Landmarks),
-                            ageRange: this.makeCamelCase(detail.AgeRange),
-                            attributes: this.makeCamelCase(detail, attributeKeys),
-                            metadata: this.makeCamelCase(detail, ['Confidence', 'Pose'])
+                            boundingBox: makeCamelCase(detail.BoundingBox),
+                            landmarks: makeCamelCaseArray(detail.Landmarks),
+                            ageRange: makeCamelCase(detail.AgeRange),
+                            attributes: makeCamelCase(detail, attributeKeys),
+                            metadata: makeCamelCase(detail, ['Confidence', 'Pose'])
                         };
                     });
                     res({ face: faces });
