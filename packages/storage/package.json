@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.0.31",
+  "version": "1.0.32-unstable.1",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:watch": "tslint 'src/**/*.ts' && jest --watch",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
     "clean": "rimraf lib lib-esm dist",

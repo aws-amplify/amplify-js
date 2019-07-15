@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.3.10"></a>
+## [2.3.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.10-unstable.2...aws-amplify-react@2.3.10) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.10-unstable.2"></a>
+## [2.3.10-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.10-unstable.1...aws-amplify-react@2.3.10-unstable.2) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.3.10-unstable.1"></a>
+## [2.3.10-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.10-unstable.0...aws-amplify-react@2.3.10-unstable.1) (2019-07-03)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** image will reload when level is changed ([0b39eb6](https://github.com/aws/aws-amplify/commit/0b39eb6))
+
+
+
+
 <a name="2.3.10-unstable.0"></a>
 ## [2.3.10-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.9...aws-amplify-react@2.3.10-unstable.0) (2019-06-27)
 
