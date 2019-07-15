@@ -1,6 +1,8 @@
 import {
     PredictionsOptions, TranslateTextInput, TextToSpeechInput, SpeechToTextInput,
-    ProviderOptions, IdentifyEntityInput, IdentifyFacesInput, IdentifyTextInput
+    ProviderOptions, IdentifyEntityInput, IdentifyFacesInput, IdentifyTextInput,
+    IdentifyTextOutput, IdentifyEntityOutput, IdentifyFacesOutput, isIdentifyTextInput, 
+    isIdentifyEntityInput, isIdentifyFacesInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -97,7 +99,7 @@ export default class Predictions {
      * category level config (such as convert, identify etc) and pass both to each provider.
      */
     configure(options: PredictionsOptions) {
-        let predictionsConfig = options ? options.Predictions || options : {};
+        let predictionsConfig = options ? options.predictions || options : {};
         predictionsConfig = { ...predictionsConfig, ...options };
         this._options = Object.assign({}, this._options, predictionsConfig);
         logger.debug('configure Predictions', this._options);
@@ -112,11 +114,19 @@ export default class Predictions {
         return pluggableToExecute.convert(input);
     }
 
-    public identify(
-        input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput,
-        options: ProviderOptions
-    ): Promise<any> {
+    public identify(input: IdentifyTextInput, options: ProviderOptions): Promise<IdentifyTextOutput>;
+    public identify(input: IdentifyEntityInput, options: ProviderOptions): Promise<IdentifyEntityOutput>;
+    public identify(input: IdentifyFacesInput, options: ProviderOptions): Promise<IdentifyFacesOutput>;
+    public identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput, options: ProviderOptions)
+        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
+        if (isIdentifyTextInput(input)) {
+            return pluggableToExecute.identify(input);
+        } else if (isIdentifyEntityInput(input)) {
+            return pluggableToExecute.identify(input);
+        } else if (isIdentifyFacesInput(input)) {
+            return pluggableToExecute.identify(input);
+        }
         return pluggableToExecute.identify(input);
     }
 
@@ -150,8 +160,8 @@ export default class Predictions {
     private configurePluggable(pluggable: AbstractPredictionsProvider) {
         const categoryConfig = Object.assign(
             {},
-            this._options['Predictions'], // Parent predictions config for the top level provider
-            this._options[pluggable.getCategory()] // Actual category level config
+            this._options['predictions'], // Parent predictions config for the top level provider
+            // this._options[pluggable.getCategory()] // Actual category level config
         );
         pluggable.configure(categoryConfig);
     }

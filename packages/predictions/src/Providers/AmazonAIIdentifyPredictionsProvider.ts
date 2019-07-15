@@ -103,8 +103,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId');
 
-            this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
-            this.textract = new Textract({ region: this._config.identifyEntities.region, credentials });
+            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
+            this.textract = new Textract({ region: this._config.identify.identifyEntities.region, credentials });
             let inputDocument: Textract.Document;
             await this.configureSource(input.text.source)
                 .then(data => inputDocument = data)
@@ -112,9 +112,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
 
             // get default value if format isn't specified in the input.
             if (!input.text.format) {
-                if (this._config.identifyText.format) {
+                if (this._config.identify.identifyText.format) {
                     // default from awsexports
-                    input.text.format = this._config.identifyText.format;
+                    input.text.format = this._config.identify.identifyText.format;
                 } else {
                     input.text.format = 'PLAIN';
                 }
@@ -421,7 +421,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (!credentials) return rej('No credentials');
             if (!credentials.identityId) return rej('No identityId');
 
-            this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
+            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
             await this.configureSource(input.entity.source)
                 .then(data => { inputImage = data; })
@@ -504,7 +504,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (!credentials.identityId) return rej('No identityId'); // is this necessary
             // TODO: default values
 
-            this.rekognition = new Rekognition({ region: this._config.identifyEntities.region, credentials });
+            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
             await this.configureSource(input.face.source)
                 .then(data => inputImage = data)
