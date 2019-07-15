@@ -56,7 +56,7 @@ const template = `
         />
         <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">
           {{ this.amplifyService.i18n().get('Forgot Password?') }}
-        <a class="amplify-form-link"
+          <a class="amplify-form-link"
             (click)="onForgotPassword()"
             data-test="${auth.signIn.forgotPasswordLink}"
           >{{ this.amplifyService.i18n().get('Reset your password') }}</a>
@@ -138,7 +138,8 @@ export class SignInComponentCore implements OnInit {
     this.username = authState.user? authState.user.username || '' : '';
     this.email = authState.user? authState.user.email || '' : '';
     this.country_code = authState.user &&
-      authState.user.country_code? authState.user.country_code  :
+      authState.user.country_code ?
+      authState.user.country_code  :
       this.country_code;
     this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
   }
@@ -179,6 +180,12 @@ export class SignInComponentCore implements OnInit {
           this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
         } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
           this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
+        } else if (
+          user['challengeName'] === 'CUSTOM_CHALLENGE' &&
+          user.challengeParam &&
+          user.challengeParam.trigger === 'true'
+        ) {
+          this.amplifyService.setAuthState({ state: 'customConfirmSignIn', user });
         } else {
           this.amplifyService.setAuthState({ state: 'signedIn', user });
         }
