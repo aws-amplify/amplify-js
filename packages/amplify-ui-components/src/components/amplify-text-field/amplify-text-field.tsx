@@ -14,9 +14,7 @@ export class AmplifyTextField {
   } = {};
 
   render() {
-    if (!this.inputProps.hasOwnProperty('type')) {
-      this.inputProps.type = 'text';
-    }
+    this.inputProps.type = this.inputProps.type || 'text';
 
     return (
       <div>
