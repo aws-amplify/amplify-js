@@ -3,9 +3,7 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
   namespace: 'amplify-ui-components',
-  plugins: [
-    nodePolyfills()
-  ],
+  plugins: [nodePolyfills()],
   outputTargets: [
     { type: 'dist' },
     { type: 'docs-readme' },
@@ -13,5 +11,5 @@ export const config: Config = {
       type: 'www',
       serviceWorker: null, // disable service workers
     },
-  ]
+  ],
 };

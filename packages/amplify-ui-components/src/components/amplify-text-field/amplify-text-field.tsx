@@ -27,14 +27,11 @@ export class AmplifyTextField {
           </div>
         )}
         <div>
-          {/* <input
-            
-          /> */}
           <amplify-text-input
             id={this.fieldId}
             aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-            type="text"
-            {...this.inputProps}
+            type={this.inputProps.hasOwnProperty('type') ? this.inputProps.text : 'text'}
+            inputProps={{ ...this.inputProps }}
           />
         </div>
       </div>
