@@ -82,9 +82,9 @@ export interface IdentifyTextInput {
 }
 
 export interface Word {
-    text: string,
-    polygon: Polygon,
-    boundingBox: BoundingBox,
+    text?: string,
+    polygon?: Polygon,
+    boundingBox?: BoundingBox,
 }
 
 export interface LineDetailed {
