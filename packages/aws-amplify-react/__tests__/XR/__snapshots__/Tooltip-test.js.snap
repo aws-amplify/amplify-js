@@ -3,7 +3,7 @@
 exports[`Tooltip renders successfully with no props 1`] = `
 <Tooltip>
   <div
-    className="XR__tooltip___3wuzm"
+    className="XR__tooltip___UYyhn"
   />
 </Tooltip>
 `;
@@ -13,7 +13,7 @@ exports[`Tooltip renders successfully with text 1`] = `
   text="Test Tooltip"
 >
   <div
-    className="XR__tooltip___3wuzm"
+    className="XR__tooltip___UYyhn"
     data-text="Test Tooltip"
   />
 </Tooltip>
