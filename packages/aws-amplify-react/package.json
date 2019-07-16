@@ -12,7 +12,7 @@
     "cypress:open": "cypress open",
     "build-with-test": "npm run clean && npm test && npm run build",
     "clean": "rimraf dist",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
   },
   "devDependencies": {
