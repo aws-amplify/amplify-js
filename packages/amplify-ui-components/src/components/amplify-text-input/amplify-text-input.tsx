@@ -18,7 +18,7 @@ export class AmplifyTextInput {
       <input
         id={this.fieldId}
         aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-        type={this.inputProps.hasOwnProperty('type') ? this.inputProps.text : 'text'}
+        type={this.inputProps.hasOwnProperty('type') ? this.inputProps.type : 'text'}
         {...this.inputProps}
         class={textInput}
       />
