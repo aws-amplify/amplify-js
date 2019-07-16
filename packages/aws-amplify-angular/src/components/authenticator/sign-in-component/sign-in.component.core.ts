@@ -169,8 +169,6 @@ export class SignInComponentCore implements OnInit {
           user.challengeParam.trigger === 'true'
         ) {
           this.amplifyService.setAuthState({ state: 'customConfirmSignIn', user });
-        } else {
-          this.amplifyService.setAuthState({ state: 'signedIn', user });
         }
       })
       .catch((err) => {
