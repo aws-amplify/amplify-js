@@ -1,7 +1,17 @@
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import * as Textract from 'aws-sdk/clients/textract';
-import { IdentifyTextOutput, Table, KeyValue, TableCell, Content } from '../types';
+import { IdentifyTextOutput, Table, KeyValue, TableCell, Content, BoundingBox, Polygon } from '../types';
 import { makeCamelCaseArray, makeCamelCase } from './Utils';
+
+ function getBoundingBox(geometry: Rekognition.Geometry | Textract.Geometry): BoundingBox {
+    if (!geometry) return undefined;
+    return makeCamelCase(geometry.BoundingBox);
+}
+
+function getPolygon(geometry: Rekognition.Geometry | Textract.Geometry): Polygon {
+    if (!geometry) return undefined;
+    return makeCamelCaseArray(geometry.Polygon);
+}
 
 /**
  * Organizes blocks from Rekognition API to each of the categories and and structures 
@@ -26,8 +36,8 @@ export function categorizeRekognitionBlocks(blocks: Rekognition.TextDetectionLis
                 response.text.lines.push(block.DetectedText);
                 response.text.linesDetailed.push({
                     text: block.DetectedText,
-                    polygon: makeCamelCaseArray(block.Geometry.Polygon),
-                    boundingBox: makeCamelCase(block.Geometry.BoundingBox),
+                    polygon: getPolygon(block.Geometry),
+                    boundingBox: getBoundingBox(block.Geometry),
                     page: null, // rekognition doesn't have this info
                 });
                 break;
@@ -35,8 +45,8 @@ export function categorizeRekognitionBlocks(blocks: Rekognition.TextDetectionLis
                 response.text.fullText += block.DetectedText + ' ';
                 response.text.words.push({
                     text: block.DetectedText,
-                    polygon: makeCamelCaseArray(block.Geometry.Polygon),
-                    boundingBox: makeCamelCase(block.Geometry.BoundingBox)
+                    polygon: getPolygon(block.Geometry),
+                    boundingBox: getBoundingBox(block.Geometry)
                 });
                 break;
         }
@@ -84,8 +94,8 @@ export function categorizeTextractBlocks(blocks: Textract.BlockList): IdentifyTe
                 response.text.lines.push(block.Text);
                 response.text.linesDetailed.push({
                     text: block.Text,
-                    polygon: makeCamelCaseArray(block.Geometry.Polygon),
-                    boundingBox: makeCamelCase(block.Geometry.BoundingBox),
+                    polygon: getPolygon(block.Geometry),
+                    boundingBox: getBoundingBox(block.Geometry),
                     page: block.Page
                 });
                 break;
@@ -93,8 +103,8 @@ export function categorizeTextractBlocks(blocks: Textract.BlockList): IdentifyTe
                 response.text.fullText += block.Text + ' ';
                 response.text.words.push({
                     text: block.Text,
-                    polygon: makeCamelCaseArray(block.Geometry.Polygon),
-                    boundingBox: makeCamelCase(block.Geometry.BoundingBox),
+                    polygon: getPolygon(block.Geometry),
+                    boundingBox: getBoundingBox(block.Geometry),
                 });
                 blockMap[block.Id] = block;
                 break;
@@ -104,8 +114,8 @@ export function categorizeTextractBlocks(blocks: Textract.BlockList): IdentifyTe
                     response.text.selections = [];
                 response.text.selections.push({
                     selected: selectionStatus,
-                    polygon: makeCamelCaseArray(block.Geometry.Polygon),
-                    boundingBox: makeCamelCase(block.Geometry.BoundingBox),
+                    polygon: getPolygon(block.Geometry),
+                    boundingBox: getBoundingBox(block.Geometry),
                 });
                 blockMap[block.Id] = block;
                 break;
@@ -162,8 +172,8 @@ export function constructTable(table: Textract.Block, blockMap: { [key: string]:
             const content = extractContentsFromBlock(cellBlock, blockMap);
             const cell: TableCell = {
                 text: content.text,
-                boundingBox: makeCamelCase(cellBlock.Geometry.BoundingBox),
-                polygon: makeCamelCaseArray(cellBlock.Geometry.Polygon),
+                boundingBox: getBoundingBox(cellBlock.Geometry),
+                polygon: getPolygon(cellBlock.Geometry),
                 selected: content.selected,
                 rowSpan: cellBlock.RowSpan,
                 columnSpan: cellBlock.ColumnSpan,
@@ -178,8 +188,8 @@ export function constructTable(table: Textract.Block, blockMap: { [key: string]:
     return {
         size: { rows: rowSize, columns: columnSize },
         table: tableMatrix,
-        boundingBox: makeCamelCase(table.Geometry.BoundingBox),
-        polygon: makeCamelCaseArray(table.Geometry.Polygon)
+        boundingBox: getBoundingBox(table.Geometry),
+        polygon: getPolygon(table.Geometry)
     };
 }
 
@@ -213,8 +223,8 @@ export function constructKeyValue(
     return {
         key: keyText,
         value: { text: valueText, selected: valueSelected },
-        polygon: makeCamelCaseArray(keyBlock.Geometry.Polygon),
-        boundingBox: makeCamelCase(keyBlock.Geometry.BoundingBox),
+        polygon: getPolygon(keyBlock.Geometry),
+        boundingBox: getBoundingBox(keyBlock.Geometry),
     };
 }
 

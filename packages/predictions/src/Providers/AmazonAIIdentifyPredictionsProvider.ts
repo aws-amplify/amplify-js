@@ -5,12 +5,11 @@ import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
-    isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, Table, TableCell,
-    KeyValue, Content,
+    isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
-import { categorizeRekognitionBlocks, categorizeTextractBlocks } from './IdentifyUtils';
+import { categorizeRekognitionBlocks, categorizeTextractBlocks } from './IdentifyTextUtils';
 
 export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
@@ -73,7 +72,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            if (!credentials.identityId) return rej('No identityId');
 
             this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
             this.textract = new Textract({ region: this._config.identify.identifyEntities.region, credentials });
@@ -138,7 +136,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            if (!credentials.identityId) return rej('No identityId');
 
             this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
             let inputImage: Rekognition.Image;
@@ -156,9 +153,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             if (entityType === 'UNSAFE' || entityType === 'ALL') {
                 servicePromises.push(this.detectModerationLabels(param));
             }
-            if (servicePromises.length === 0) {
-                rej('You must specify entity type: LABELS | UNSAFE | ALL');
-            }
+            // if (servicePromises.length === 0) {
+            //     rej('You must specify entity type: LABELS | UNSAFE | ALL');
+            // }
             Promise.all(servicePromises).then(data => {
                 let identifyResult: IdentifyEntityOutput = {};
                 // concatenate resolved promises to a single object
@@ -223,7 +220,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            if (!credentials.identityId) return rej('No identityId'); // is this necessary
 
             // default arguments
             const collection: string = input.face.collection || this._config.identify.identifyFaces.collection;
@@ -296,9 +292,5 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 });
             }
         });
-    }
-
-    protected orchestrateWithGraphQL(input: any): Promise<any> {
-        return this.graphQLPredictionsProvider.identify(input);
     }
 }

@@ -88,10 +88,10 @@ export interface Word {
 }
 
 export interface LineDetailed {
-    text: string,
-    polygon: Polygon,
-    boundingBox: BoundingBox,
-    page: number
+    text?: string,
+    polygon?: Polygon,
+    boundingBox?: BoundingBox,
+    page?: number
 }
 
 export interface Content {
