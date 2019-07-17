@@ -12,6 +12,10 @@ export interface ProviderOptions {
     providerName?: string
 }
 
+/**
+ * Convert types
+ */
+
 export interface TranslateTextInput {
     translateText: {
         source: {
@@ -85,6 +89,142 @@ export interface SpeechToTextOutput {
     }
 }
 
+export type IdentifySource = StorageSource | FileSource | BytesSource;
+
+export interface IdentifyTextInput {
+    text: {
+        source: IdentifySource,
+        format?: 'PLAIN' | 'FORM' | 'TABLE' | 'ALL'
+    }
+}
+
+export interface Word {
+    text?: string,
+    polygon?: Polygon,
+    boundingBox?: BoundingBox,
+}
+
+export interface LineDetailed {
+    text?: string,
+    polygon?: Polygon,
+    boundingBox?: BoundingBox,
+    page?: number
+}
+
+export interface Content {
+    text?: string,
+    selected?: boolean,
+}
+
+export interface TableCell extends Content {
+    boundingBox?: BoundingBox,
+    polygon?: Polygon,
+    rowSpan?: Number,
+    columnSpan?: Number,
+}
+
+export interface Table {
+    size: {
+        rows: number,
+        columns: number
+    },
+    table: TableCell[][],
+    polygon: Polygon,
+    boundingBox: BoundingBox
+}
+
+export interface KeyValue {
+    key: string,
+    value: Content,
+    polygon: Polygon,
+    boundingBox: BoundingBox
+}
+
+export interface IdentifyTextOutput {
+    text: {
+        fullText: string,
+        lines: string[],
+        linesDetailed: LineDetailed[],
+        words: Word[]
+        keyValues?: KeyValue[],
+        tables?: Table[],
+        selections?: {
+            selected: boolean,
+            polygon: Polygon,
+            boundingBox: BoundingBox,
+        }[],
+    }
+}
+
+export interface IdentifyEntityInput {
+    entity: {
+        source: IdentifySource,
+        type: 'LABELS' | 'UNSAFE' | 'ALL'
+    }
+}
+
+export interface Point {
+    x?: Number,
+    y?: Number,
+}
+
+export type Polygon = Point[];
+
+export interface BoundingBox {
+    width?: Number;
+    height?: Number;
+    left?: Number;
+    top?: Number;
+}
+
+export interface IdentifyEntityOutput {
+    entity?: {
+        name: string,
+        boundingBoxes: BoundingBox[],
+        metadata?: Object
+    }[],
+    unsafe?: 'YES' | 'NO' | 'UNKNOWN'
+}
+
+export interface IdentifyFacesInput {
+    face: {
+        source: IdentifySource,
+        collection?: string,
+        maxFaces?: number,
+    },
+    celebrityDetection?: Boolean
+}
+
+export interface FaceAttributes {
+    smile?: boolean,
+    eyeglasses?: boolean,
+    sunglasses?: boolean,
+    gender?: string,
+    beard?: boolean,
+    mustache?: boolean,
+    eyesOpen?: boolean,
+    mouthOpen?: boolean,
+    emotions?: string[]
+}
+
+export interface IdentifyFacesOutput {
+    face: {
+        boundingBox?: BoundingBox,
+        ageRange?: {
+            low?: Number,
+            high?: Number
+        },
+        landmarks?: {
+            type?: string,
+            x?: number,
+            y?: number
+        }[],
+        attributes?: FaceAttributes
+        metadata?: object
+    }[]
+}
+
+
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
     return obj && obj.hasOwnProperty(key);
@@ -112,5 +252,20 @@ export function isFileSource(obj: any): obj is FileSource {
 
 export function isBytesSource(obj: any): obj is BytesSource {
     const key: keyof BytesSource = 'bytes';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
+    const key: keyof IdentifyTextInput = 'text';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
+    const key: keyof IdentifyEntityInput = 'entity';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyFacesInput(obj: any): obj is IdentifyFacesInput {
+    const key: keyof IdentifyFacesInput = 'face';
     return obj && obj.hasOwnProperty(key);
 }

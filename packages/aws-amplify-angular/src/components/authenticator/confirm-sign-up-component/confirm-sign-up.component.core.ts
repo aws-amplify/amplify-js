@@ -16,23 +16,30 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { labelMap } from '../common';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
+<div class="amplify-form-container" data-test="${auth.confirmSignUp.section}">
+  <div class="amplify-form-body" data-test="${auth.confirmSignUp.bodySection}">
+    <div
+      class="amplify-form-header"
+      data-test="${auth.confirmSignUp.headerSection}"
+    >
+      {{ this.amplifyService.i18n().get('Confirm Sign up') }}</div>
     <div class="amplify-form-row">
       <label class="amplify-input-label" for="amplifyUsername">
-        {{ this.amplifyService.i18n().get('Username *') }}
+        {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
       </label>
       <input
         #amplifyUsername
         class="amplify-form-input"
         type="text"
         disabled
-        placeholder="{{ this.amplifyService.i18n().get('Username') }}"
+        placeholder="{{ this.amplifyService.i18n().get(getUsernameLabel()) }}"
         [value]="username"
+        data-test="${auth.confirmSignUp.usernameInput}"
       />
     </div>
     <div class="amplify-form-row">
@@ -46,23 +53,32 @@ const template = `
         class="amplify-form-input"
         type="text"
         placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
+        data-test="${auth.confirmSignUp.confirmationCodeInput}"
       />
       <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Lost your code?') }}
         <a class="amplify-form-link"
             (click)="onResend()"
+            data-test="${auth.confirmSignUp.resendCodeLink}"
           >{{ this.amplifyService.i18n().get('Resend Code') }}</a></span>
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <div class="amplify-form-actions-left">
-          <a class="amplify-form-link" (click)="onSignIn()">
+          <a
+            class="amplify-form-link"
+            (click)="onSignIn()"
+            data-test="${auth.confirmSignUp.backToSignInLink}"
+            >
             {{ this.amplifyService.i18n().get('Back to Sign in') }}
           </a>
         </div>
       </div>
       <div class="amplify-form-cell-right">
-        <button class="amplify-form-button"
-          (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
+        <button
+          class="amplify-form-button"
+          (click)="onConfirm()"
+          data-test="${auth.confirmSignUp.confirmButton}"
+          >{{ this.amplifyService.i18n().get('Confirm') }}</button>
       </div>
     </div>
   </div>
@@ -85,6 +101,7 @@ const template = `
 export class ConfirmSignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
+  _usernameAttributes: string = 'username';
   username: string;
   code: string;
   errorMessage: string;
@@ -96,11 +113,13 @@ export class ConfirmSignUpComponentCore implements OnInit {
 
   @Input()
   set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignUp';
-
     this.username = data.authState.user? data.authState.user.username || '' : '';
   }
+
+  @Input() hide: string[] = [];
 
   @Input()
   set authState(authState: AuthState) {
@@ -110,10 +129,19 @@ export class ConfirmSignUpComponentCore implements OnInit {
     this.username = authState.user? authState.user.username || '' : '';
   }
 
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
+  }
+
   ngOnInit() {
     if (!this.amplifyService.auth()){
       throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+      .length > 0;
   }
 
   setUsername(username: string) {
@@ -141,6 +169,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 
@@ -155,5 +184,9 @@ export class ConfirmSignUpComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
+  }
+
+  getUsernameLabel() {
+    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
   }
 }

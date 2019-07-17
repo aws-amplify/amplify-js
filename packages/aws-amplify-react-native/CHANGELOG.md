@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.13"></a>
+## [2.1.13](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.3...aws-amplify-react-native@2.1.13) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.13-unstable.3"></a>
+## [2.1.13-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.2...aws-amplify-react-native@2.1.13-unstable.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Remove console log ([#3305](https://github.com/aws/aws-amplify/issues/3305)) ([f03b09c](https://github.com/aws/aws-amplify/commit/f03b09c))
+
+
+
+
+<a name="2.1.13-unstable.2"></a>
+## [2.1.13-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.1...aws-amplify-react-native@2.1.13-unstable.2) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Fix awSignUpConfig.defaultCountryCode not being used ([9cec669](https://github.com/aws/aws-amplify/commit/9cec669))
+
+
+
+
+<a name="2.1.13-unstable.1"></a>
+## [2.1.13-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.13-unstable.0...aws-amplify-react-native@2.1.13-unstable.1) (2019-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.13-unstable.0"></a>
+## [2.1.13-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.12...aws-amplify-react-native@2.1.13-unstable.0) (2019-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.12"></a>
+## [2.1.12](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.12-unstable.0...aws-amplify-react-native@2.1.12) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.12-unstable.0"></a>
+## [2.1.12-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11...aws-amplify-react-native@2.1.12-unstable.0) (2019-05-13)
+
+
+### Features
+
+* **aws-amplify-react-native:** withOAuth Loading ([97ff79c](https://github.com/aws/aws-amplify/commit/97ff79c)), closes [#3021](https://github.com/aws/aws-amplify/issues/3021)
+
+
+
+
+<a name="2.1.11"></a>
+## [2.1.11](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.3...aws-amplify-react-native@2.1.11) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.11-unstable.3"></a>
+## [2.1.11-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.2...aws-amplify-react-native@2.1.11-unstable.3) (2019-05-04)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Fix funky background ([f6bc2ba](https://github.com/aws/aws-amplify/commit/f6bc2ba)), closes [#2618](https://github.com/aws/aws-amplify/issues/2618)
+
+
+
+
+<a name="2.1.11-unstable.2"></a>
+## [2.1.11-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.1...aws-amplify-react-native@2.1.11-unstable.2) (2019-05-03)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.1.11-unstable.1"></a>
+## [2.1.11-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.11-unstable.0...aws-amplify-react-native@2.1.11-unstable.1) (2019-04-26)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** sets inital value of pickAttr to email or phone_number so that verify button is enabled and passes the correct value to verification method ([3cf4915](https://github.com/aws/aws-amplify/commit/3cf4915))
+
+
+
+
+<a name="2.1.11-unstable.0"></a>
+## [2.1.11-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.10...aws-amplify-react-native@2.1.11-unstable.0) (2019-04-17)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** catch the error when verifying contact ([f8c9972](https://github.com/aws/aws-amplify/commit/f8c9972))
+
+
+
+
 <a name="2.1.10"></a>
 ## [2.1.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.10-unstable.0...aws-amplify-react-native@2.1.10) (2019-04-09)
 

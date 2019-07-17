@@ -73,7 +73,6 @@ const validTextToSpeechInput: TextToSpeechInput = {
             text: "sourceText", language: "en"
         },
         voiceId: "Joanna"
-
     }
 };
 
@@ -86,7 +85,9 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
-            return expect(predictionsProvider.convert(validTranslateTextInput)).resolves.toMatchObject({ "language": "es", "text": "translatedText" });
+            return expect(predictionsProvider.convert(validTranslateTextInput)).resolves.toMatchObject(
+                { "language": "es", "text": "translatedText" }
+            );
         });
         test('error case credentials do not exist', () => {
             const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -102,7 +103,9 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
-            const translateSpy = jest.spyOn(Translate.prototype, "translateText").mockImplementation((input, callback) => { callback("error", null) });
+            const translateSpy = jest.spyOn(Translate.prototype, "translateText").mockImplementation(
+                (input, callback) => { callback("error", null); }
+            );
             return expect(predictionsProvider.convert(validTranslateTextInput)).rejects.toMatch("error");
         });
     });
@@ -141,7 +144,9 @@ describe("Predictions convert provider test", () => {
             jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.resolve(credentials);
             });
-            const textToSpeechSpy = jest.spyOn(TextToSpeech.prototype, "synthesizeSpeech").mockImplementation((input, callback) => { callback("error", null) });
+            const textToSpeechSpy = jest.spyOn(TextToSpeech.prototype, "synthesizeSpeech").mockImplementation(
+                (input, callback) => { callback("error", null); }
+            );
             return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch("error");
         });
     });

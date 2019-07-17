@@ -47,7 +47,7 @@ describe("Predictions test", () => {
                     "region": "us-west-2",
                     "cache": false
                 }
-            }
+            };
             const configureOptions = {
                 "Predictions": {
                     "Convert": convertOptions,
@@ -55,11 +55,11 @@ describe("Predictions test", () => {
                 }
             };
             const convertProvider = new AWSConvertPredictionsProvider();
-            const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => {});
+            const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => { });
             const identifyProvider = new AWSIdentifyPredictionsProvider();
-            const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => {});
+            const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => { });
             const topLevelProvider = new AWSPredictionsProvider();
-            const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => {});
+            const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => { });
             const predictions = new Predictions(options);
             predictions.addPluggable(convertProvider);
             predictions.addPluggable(identifyProvider);
@@ -67,8 +67,8 @@ describe("Predictions test", () => {
 
             // Configuring predictions and pluggables after they are all added
             predictions.configure(configureOptions);
-            expect(convertSpy).toHaveBeenCalledWith({...convertOptions, ...(configureOptions.Predictions)});
-            expect(identifySpy).toHaveBeenCalledWith({...identifyOptions, ...(configureOptions.Predictions)});
+            expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.Predictions) });
+            expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.Predictions) });
             expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.Predictions);
         });
     });
@@ -99,7 +99,7 @@ describe("Predictions test", () => {
                 "region": "us-west-2",
                 "cache": false
             }
-        }
+        };
         const configureOptions = {
             "Predictions": {
                 "Convert": convertOptions,
@@ -112,16 +112,16 @@ describe("Predictions test", () => {
         predictions.configure(configureOptions);
 
         const convertProvider = new AWSConvertPredictionsProvider();
-        const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => {});
+        const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => { });
         const identifyProvider = new AWSIdentifyPredictionsProvider();
-        const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => {});
+        const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => { });
         const topLevelProvider = new AWSPredictionsProvider();
-        const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => {});
+        const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => { });
         predictions.addPluggable(convertProvider);
         predictions.addPluggable(identifyProvider);
         predictions.addPluggable(topLevelProvider);
-        expect(convertSpy).toHaveBeenCalledWith({...convertOptions, ...(configureOptions.Predictions)});
-        expect(identifySpy).toHaveBeenCalledWith({...identifyOptions, ...(configureOptions.Predictions)});
+        expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.Predictions) });
+        expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.Predictions) });
         expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.Predictions);
     });
 
@@ -132,8 +132,10 @@ describe("Predictions test", () => {
             const identifyProvider = new AWSIdentifyPredictionsProvider();
             predictions.addPluggable(convertProvider);
             predictions.addPluggable(identifyProvider);
-            expect(predictions.getPluggable(convertProvider.getProviderName())).toBeInstanceOf(AWSConvertPredictionsProvider);
-            expect(predictions.getPluggable(identifyProvider.getProviderName())).toBeInstanceOf(AWSIdentifyPredictionsProvider);
+            expect(predictions.getPluggable(convertProvider.getProviderName()))
+                .toBeInstanceOf(AWSConvertPredictionsProvider);
+            expect(predictions.getPluggable(identifyProvider.getProviderName()))
+                .toBeInstanceOf(AWSIdentifyPredictionsProvider);
         });
 
         test('error case with multiple pluggables of same name', () => {
@@ -143,7 +145,8 @@ describe("Predictions test", () => {
             try {
                 predictions.addPluggable(provider); // Convert provider provided twice
             } catch (e) {
-                expect(e.message).toMatch('Pluggable with name AmazonAIConvertPredictionsProvider has already been added');
+                expect(e.message)
+                    .toMatch('Pluggable with name AmazonAIConvertPredictionsProvider has already been added');
             }
         });
     });
@@ -165,7 +168,8 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSInterpretPredictionsProvider();
             predictions.addPluggable(provider);
-            expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSInterpretPredictionsProvider);
+            expect(predictions.getPluggable(provider.getProviderName()))
+                .toBeInstanceOf(AWSInterpretPredictionsProvider);
         });
         test('happy case infer', () => {
             const predictions = new Predictions(options);
@@ -243,8 +247,9 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSConvertPredictionsProvider();
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }} };
-            const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => { return Promise.resolve("translatedText"); });
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
+            const convertSpy = jest.spyOn(provider, 'convert')
+                .mockImplementation(() => { return Promise.resolve("translatedText"); });
             const data = await predictions.convert(input, options);
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -253,8 +258,9 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSPredictionsProvider();
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }} };
-            const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => { return Promise.resolve("translatedText"); });
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
+            const convertSpy = jest.spyOn(provider, 'convert')
+                .mockImplementation(() => { return Promise.resolve("translatedText"); });
             const data = await predictions.convert(input, options);
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -263,29 +269,31 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSIdentifyPredictionsProvider(); // Not the convert provider
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
             try {
                 predictions.convert(input, options);
             } catch (e) {
-                expect(e.message).toMatch('More than one or no providers are configured, Either specify a provider name or configure exactly one provider');
+                expect(e.message).toMatch('More than one or no providers are configured, ' 
+                    + 'Either specify a provider name or configure exactly one provider');
             }
         });
         test('error case with one convert and one top level pluggable and no pluggable name', () => {
             const predictions = new Predictions(options);
             predictions.addPluggable(new AWSPredictionsProvider()); // Top level provider
             predictions.addPluggable(new AWSConvertPredictionsProvider()); // Convert provider
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
             try {
                 predictions.convert(input, options);
             } catch (e) {
-                expect(e.message).toMatch('More than one or no providers are configured, Either specify a provider name or configure exactly one provider');
+                expect(e.message).toMatch('More than one or no providers are configured, ' +
+                    'Either specify a provider name or configure exactly one provider');
             }
         });
         test('error case with wrong pluggable name provided', () => {
             const predictions = new Predictions(options);
             const provider = new AWSConvertPredictionsProvider();
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
             try {
                 predictions.convert(input, { providerName: "WRONG_NAME" });
             } catch (e) {
@@ -296,8 +304,9 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSConvertPredictionsProvider();
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
-            const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => { return Promise.resolve("translatedText"); });
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
+            const convertSpy = jest.spyOn(provider, 'convert')
+                .mockImplementation(() => { return Promise.resolve("translatedText"); });
             const data = await predictions.convert(input, { providerName: "AmazonAIConvertPredictionsProvider" });
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -308,8 +317,9 @@ describe("Predictions test", () => {
             const convertProvider = new AWSConvertPredictionsProvider();
             predictions.addPluggable(topLevelProvider); // Top level provider
             predictions.addPluggable(convertProvider); // Convert provider
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
-            const convertSpy = jest.spyOn(convertProvider, 'convert').mockImplementation(() => { return Promise.resolve("translatedText"); });
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
+            const convertSpy = jest.spyOn(convertProvider, 'convert')
+                .mockImplementation(() => { return Promise.resolve("translatedText"); });
             const data = await predictions.convert(input, { providerName: "AmazonAIConvertPredictionsProvider" });
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -318,8 +328,9 @@ describe("Predictions test", () => {
             const predictions = new Predictions(options);
             const provider = new AWSGraphQLPredictionsProvider();
             predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" }}};
-            const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => { return Promise.resolve("translatedText"); });
+            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
+            const convertSpy = jest.spyOn(provider, 'convert')
+                .mockImplementation(() => { return Promise.resolve("translatedText"); });
             const data = await predictions.convert(input, options);
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);

@@ -19,13 +19,13 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
     convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
         : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         if (isTranslateTextInput(input)) {
-            logger.debug("translateText");
+            logger.debug('translateText');
             return this.translateText(input);
         } else if (isTextToSpeechInput(input)) {
-            logger.debug("textToSpeech");
+            logger.debug('textToSpeech');
             return this.convertTextToSpeech(input);
         } else if (isSpeechToTextInput(input)) {
-            logger.debug("textToSpeech");
+            logger.debug('textToSpeech');
             return this.convertSpeechToText(input);
         } // else {
         //     // Orchestration type request. Directly call graphql

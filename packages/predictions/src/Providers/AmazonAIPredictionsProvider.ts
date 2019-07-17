@@ -1,17 +1,10 @@
 import { AbstractIdentifyPredictionsProvider, AbstractPredictionsProvider } from "../types/Providers";
 import { AmazonAIConvertPredictionsProvider, GraphQLPredictionsProvider } from ".";
-import {
-    TranslateTextInput,
-    TextToSpeechInput,
-    PredictionsOptions,
-    TranslateTextOutput,
-    TextToSpeechOutput,
-    isTranslateTextInput,
-    SpeechToTextInput,
-    SpeechToTextOutput,
-    isTextToSpeechInput,
-    isSpeechToTextInput
-} from "../types";
+import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOptions, IdentifyTextInput, 
+    IdentifyTextOutput, IdentifyEntityInput, IdentifyEntityOutput, IdentifyFacesInput, IdentifyFacesOutput, 
+    isIdentifyTextInput, isIdentifyEntityInput, isIdentifyFacesInput, TranslateTextOutput,
+    TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput
+ } from "../types";
 import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsProvider";
 
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
@@ -57,6 +50,23 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         //     return this.orchestrateWithGraphQL(input);
         // }
         Promise.reject();
+    }
+
+    identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
+    identify(input: IdentifyEntityInput): Promise<IdentifyEntityOutput>;
+    identify(input: IdentifyFacesInput): Promise<IdentifyFacesOutput>;
+    identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput)
+        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+        if (isIdentifyTextInput(input)) {
+            return this.identifyProvider.identify(input);
+        } else if (isIdentifyEntityInput(input)) {
+            return this.identifyProvider.identify(input);
+        } else if (isIdentifyFacesInput(input)) {
+            return this.identifyProvider.identify(input);
+        }
+        // else {
+        //     return this.orchestrateWithGraphQL(input);
+        // }
     }
 
 }

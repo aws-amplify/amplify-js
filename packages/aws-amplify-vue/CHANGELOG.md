@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.12"></a>
+## [0.2.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.3...aws-amplify-vue@0.2.12) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.12-unstable.3"></a>
+## [0.2.12-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.2...aws-amplify-vue@0.2.12-unstable.3) (2019-06-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.12-unstable.2"></a>
+## [0.2.12-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.1...aws-amplify-vue@0.2.12-unstable.2) (2019-05-31)
+
+
+### Bug Fixes
+
+* **aws-amplify-vue:** remove unused variable ([#3303](https://github.com/aws-amplify/amplify-js/issues/3303)) ([4512d0d](https://github.com/aws-amplify/amplify-js/commit/4512d0d))
+
+
+
+
+<a name="0.2.12-unstable.1"></a>
+## [0.2.12-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.0...aws-amplify-vue@0.2.12-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify-vue/auth:** exception in QrcodeVue because of invalid parameter type ([#2656](https://github.com/aws-amplify/amplify-js/issues/2656)) ([1dead96](https://github.com/aws-amplify/amplify-js/commit/1dead96))
+
+
+
+
+<a name="0.2.12-unstable.0"></a>
+## [0.2.12-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11...aws-amplify-vue@0.2.12-unstable.0) (2019-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.11"></a>
+## [0.2.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11-unstable.1...aws-amplify-vue@0.2.11) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.11-unstable.1"></a>
+## [0.2.11-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.11-unstable.0...aws-amplify-vue@0.2.11-unstable.1) (2019-05-13)
+
+
+### Bug Fixes
+
+* add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws-amplify/amplify-js/commit/49eae14))
+
+
+
+
+<a name="0.2.11-unstable.0"></a>
+## [0.2.11-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10...aws-amplify-vue@0.2.11-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **Vue-SignUp:** check fields are non-empty prior to submitting them ([1a4d04a](https://github.com/aws-amplify/amplify-js/commit/1a4d04a)), closes [#3174](https://github.com/aws-amplify/amplify-js/issues/3174)
+
+
+
+
+<a name="0.2.10"></a>
+## [0.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10-unstable.1...aws-amplify-vue@0.2.10) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.10-unstable.1"></a>
+## [0.2.10-unstable.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.10-unstable.0...aws-amplify-vue@0.2.10-unstable.1) (2019-04-26)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.10-unstable.0"></a>
+## [0.2.10-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.9...aws-amplify-vue@0.2.10-unstable.0) (2019-04-26)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.2.9"></a>
 ## [0.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.9-unstable.0...aws-amplify-vue@0.2.9) (2019-04-04)
 

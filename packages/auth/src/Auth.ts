@@ -19,6 +19,7 @@ import {
     ConfirmSignUpOptions,
     SignOutOpts,
     CurrentUserOpts,
+    GetPreferredMFAOpts,
     SignInOpts,
     isUsernamePasswordOpts,
     isCognitoHostedOpts,
@@ -151,6 +152,10 @@ export default class AuthClass {
                 this._storage = new StorageHelper().getStorage();
             }
         } else {
+            if (!this._isValidAuthStorage(this._config.storage)) {
+                logger.error('The storage in the Auth config is not valid!');
+                throw new Error('Empty storage object');
+            }
             this._storage = this._config.storage;
         }
 
@@ -180,8 +185,8 @@ export default class AuthClass {
 
         // initiailize cognitoauth client if hosted ui options provided
         // to keep backward compatibility:
-        const cognitoHostedUIConfig = oauth? (isCognitoHostedOpts(this._config.oauth) 
-            ? oauth : (<any>oauth).awsCognito) 
+        const cognitoHostedUIConfig = oauth? (isCognitoHostedOpts(this._config.oauth)
+            ? oauth : (<any>oauth).awsCognito)
             : undefined;
 
         if (cognitoHostedUIConfig) {
@@ -213,7 +218,7 @@ export default class AuthClass {
         }
 
         dispatchAuthEvent(
-            'configured', 
+            'configured',
             null,
             `The Auth category has been configured successfully`
         );
@@ -266,14 +271,14 @@ export default class AuthClass {
             this.userPool.signUp(username, password, attributes, validationData, (err, data) => {
                 if (err) {
                     dispatchAuthEvent(
-                        'signUp_failure', 
+                        'signUp_failure',
                         err,
                         `${username} failed to signup`
                     );
                     reject(err);
                 } else {
                     dispatchAuthEvent(
-                        'signUp', 
+                        'signUp',
                         data,
                         `${username} has signed up successfully`
                     );
@@ -391,7 +396,7 @@ export default class AuthClass {
                         const currentUser = await this.currentUserPoolUser();
                         that.user = currentUser;
                         dispatchAuthEvent(
-                        'signIn', 
+                        'signIn',
                         currentUser,
                         `A user ${user.getUsername()} has been signed in`
                     );
@@ -507,26 +512,31 @@ export default class AuthClass {
     /**
      * get preferred mfa method
      * @param {CognitoUser} user - the current cognito user
+     * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
      */
-    public getPreferredMFA(user: CognitoUser | any): Promise<string> {
+    public getPreferredMFA(user: CognitoUser | any, params?: GetPreferredMFAOpts): Promise<string> {
         const that = this;
         return new Promise((res, rej) => {
-            user.getUserData((err, data) => {
-                if (err) {
-                    logger.debug('getting preferred mfa failed', err);
-                    rej(err);
-                    return;
-                }
+            const bypassCache = params? params.bypassCache: false;
+            user.getUserData(
+                (err, data) => {
+                    if (err) {
+                        logger.debug('getting preferred mfa failed', err);
+                        rej(err);
+                        return;
+                    }
 
-                const mfaType = that._getMfaTypeFromUserData(data);
-                if (!mfaType) {
-                    rej('invalid MFA Type');
-                    return;
-                } else {
-                    res(mfaType);
-                    return;
-                }
-            });
+                    const mfaType = that._getMfaTypeFromUserData(data);
+                    if (!mfaType) {
+                        rej('invalid MFA Type');
+                        return;
+                    } else {
+                        res(mfaType);
+                        return;
+                    }
+                },
+                { bypassCache }
+            );
         });
     }
 
@@ -560,21 +570,25 @@ export default class AuthClass {
         return ret;
     }
 
-    private _getUserData(user) {
+    private _getUserData(user, params) {
         return new Promise((res, rej) => {
-            user.getUserData((err, data) => {
-                if (err) {
-                    logger.debug('getting user data failed', err);
-                    rej(err);
-                    return;
-                } else {
-                    res(data);
-                    return;
-                }
-            });
+            user.getUserData(
+                (err, data) => {
+                    if (err) {
+                        logger.debug('getting user data failed', err);
+                        rej(err);
+                        return;
+                    } else {
+                        res(data);
+                        return;
+                    }
+                },
+                params
+            );
         });
 
     }
+
     /**
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
@@ -582,7 +596,7 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public async setPreferredMFA(user: CognitoUser | any, mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'): Promise<string> {
-        const userData = await this._getUserData(user);
+        const userData = await this._getUserData(user, { bypassCache: true });
         let smsMfaSettings = null;
         let totpMfaSettings = null;
 
@@ -647,10 +661,21 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('Set user mfa preference error', err);
                     return rej(err);
-
                 }
                 logger.debug('Set user mfa success', result);
-                return res(result);
+                logger.debug('Caching the latest user data into local');
+                // cache the latest result into user data
+                user.getUserData(
+                    (err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            return rej(err);
+                        } else {
+                            return res(result);
+                        }
+                    },
+                    {bypassCache: true}
+                );
             });
         });
     }
@@ -769,10 +794,10 @@ export default class AuthClass {
                             logger.debug('cannot get cognito credentials', e);
                         } finally {
                             that.user = user;
-                            
+
                             dispatchAuthEvent(
-                                'signIn', 
-                                user, 
+                                'signIn',
+                                user,
                                 `${user} has signed in`
                             );
                             resolve(user);
@@ -808,7 +833,7 @@ export default class AuthClass {
                     } finally {
                         that.user = user;
                         dispatchAuthEvent(
-                            'signIn', 
+                            'signIn',
                             user, `${user} has signed in`
                         );
                         resolve(user);
@@ -817,7 +842,7 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
                     dispatchAuthEvent(
-                        'completeNewPassword_failure', 
+                        'completeNewPassword_failure',
                         err,
                         `${this.user} failed to complete the new password flow`
                     );
@@ -985,7 +1010,7 @@ export default class AuthClass {
                             { bypassCache }
                         );
                     } else {
-                        logger.debug(`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` + 
+                        logger.debug(`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
                             `is not in the scopes of the access token`);
                         return res(user);
                     }
@@ -1202,7 +1227,7 @@ export default class AuthClass {
             throw e;
         }
 
-        const isSignedInHostedUI = this._oAuthHandler 
+        const isSignedInHostedUI = this._oAuthHandler
             && this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
         return new Promise((res, rej) => {
@@ -1219,9 +1244,10 @@ export default class AuthClass {
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
                             if (isSignedInHostedUI) {
-                                this._oAuthHandler.signOut();
+                                return this._oAuthHandler.signOut().then(() => res());
+                            } else {
+                                return res();
                             }
-                            return res();
                         },
                         onFailure: (err) => {
                             logger.debug('global sign out failed', err);
@@ -1233,9 +1259,10 @@ export default class AuthClass {
                 logger.debug('user sign out', user);
                 user.signOut();
                 if (isSignedInHostedUI) {
-                    this._oAuthHandler.signOut();
+                    return this._oAuthHandler.signOut().then(() => res());
+                } else {
+                    return res();
                 }
-                return res();
             }
         });
     }
@@ -1263,15 +1290,15 @@ export default class AuthClass {
             logger.debug('no Congito User pool');
         }
 
-        /** 
+        /**
          * Note for future refactor - no reliable way to get username with
          * Cognito User Pools vs Identity when federating with Social Providers
          * This is why we need a well structured session object that can be inspected
          * and information passed back in the message below for Hub dispatch
         */
         dispatchAuthEvent(
-            'signOut', 
-            this.user, 
+            'signOut',
+            this.user,
             `A user has been signed out`
         );
         this.user = null;
@@ -1438,7 +1465,7 @@ export default class AuthClass {
         if (isFederatedSignInOptions(providerOrOptions)
             || isFederatedSignInOptionsCustom(providerOrOptions)
             || typeof providerOrOptions === 'undefined') {
-            
+
             const options = providerOrOptions || { provider: CognitoHostedUIIdentityProvider.Cognito };
             const provider = isFederatedSignInOptions(options)
                 ? options.provider
@@ -1499,7 +1526,7 @@ export default class AuthClass {
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
-        const currentUrl = URL || window.location.href;
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')
@@ -1511,18 +1538,18 @@ export default class AuthClass {
             .split('&')
             .map(entry => entry.split('='))
             .find(([k]) => k === 'access_token' || k === 'error');
-        
+
 
         if (hasCodeOrError || hasTokenOrError) {
             try {
-                
+
                 const { accessToken, idToken, refreshToken } = await this._oAuthHandler.handleAuthResponse(currentUrl);
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: idToken }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: refreshToken }),
                     AccessToken: new CognitoAccessToken({ AccessToken: accessToken })
                 });
-                
+
                 let credentials;
                 // Get AWS Credentials & store if Identity Pool is defined
                 if (this._config.identityPoolId) {
@@ -1532,19 +1559,19 @@ export default class AuthClass {
 
                 /*The following is to create a user for the Cognito Identity SDK to store the tokens
                   When we remove this SDK later that logic will have to be centralized in our new version*/
-                //#region 
+                //#region
                 const currentUser = this.createCognitoUser(session.getIdToken().decodePayload()['cognito:username']);
                 dispatchAuthEvent(
-                    'signIn', 
+                    'signIn',
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in`
                 );
                 dispatchAuthEvent(
-                    'cognitoHostedUI', 
+                    'cognitoHostedUI',
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
                 );
-                
+
                 // This calls cacheTokens() in Cognito SDK
                 currentUser.setSignInUserSession(session);
                 //#endregion
@@ -1552,17 +1579,17 @@ export default class AuthClass {
                 if (window && typeof window.history !== 'undefined') {
                     window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
                 }
-                
+
                 return credentials;
             } catch (err) {
                 logger.debug("Error in cognito hosted auth response", err);
                 dispatchAuthEvent(
-                    'signIn_failure', 
+                    'signIn_failure',
                     err,
                     `The OAuth response flow failed`
                 );
                 dispatchAuthEvent(
-                    'cognitoHostedUI_failure', 
+                    'cognitoHostedUI_failure',
                     err,
                     `A failure occurred when returning to the Cognito Hosted UI`
                 );
@@ -1617,5 +1644,14 @@ export default class AuthClass {
             user.setAuthenticationFlowType(authenticationFlowType);
         }
         return user;
+    }
+
+    private _isValidAuthStorage(obj) {
+        // We need to check if the obj has the functions of Storage
+        return !!obj &&
+            typeof obj.getItem === 'function' &&
+            typeof obj.setItem === 'function' &&
+            typeof obj.removeItem === 'function' &&
+            typeof obj.clear === 'function';
     }
 }

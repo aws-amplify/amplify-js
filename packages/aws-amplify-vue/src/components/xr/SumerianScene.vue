@@ -12,9 +12,9 @@
  */
 
 <template>
-  <div v-bind:id="SCENE_CONTAINER_DOM_ID" v-bind:class="amplifyUI.sumerianSceneContainer">
-    <div v-bind:id="SCENE_DOM_ID" v-bind:class="amplifyUI.sumerianScene">
-      <div v-if="loading" v-bind:class="amplifyUI.loadingOverlay">
+  <div v-bind:id="SCENE_CONTAINER_DOM_ID" v-bind:class="amplifyUI.sumerianSceneContainer" v-bind:data-test="sumerianScene.container">
+    <div v-bind:id="SCENE_DOM_ID" v-bind:class="amplifyUI.sumerianScene" v-bind:data-test="sumerianScene.sumerianScene">
+      <div v-if="loading" v-bind:class="amplifyUI.loadingOverlay" v-bind:data-test="sumerianScene.loading">
         <div v-bind:class="amplifyUI.loadingContainer">
           <div v-bind:class="amplifyUI.loadingLogo">
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -78,8 +78,8 @@
         </div>
       </div>
     </div>
-    <div v-if="!loading" v-bind:class="amplifyUI.sceneBar">
-      <span v-bind:class="amplifyUI.sceneActions">
+    <div v-if="!loading" v-bind:class="amplifyUI.sceneBar" v-bind:data-test="sumerianScene.bar">
+      <span v-bind:class="amplifyUI.sceneActions" v-bind:data-test="sumerianScene.actions">
         <div v-bind:class="[amplifyUI.tooltip, showEnableAudio ? amplifyUI.autoShowTooltip : '']" :data-text="showEnableAudio ? 'The scene is muted. Click to unmute.' : (muted ? 'Unmute' : 'Mute')" v-on:click="muted ? setMuted(false) : setMuted(true)">
           <button v-bind:class="amplifyUI.actionButton">
             <svg v-if="muted" width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -143,6 +143,7 @@
 
 <script>
 import * as AmplifyUI from '@aws-amplify/ui';
+import { sumerianScene } from '../../assets/data-test-attributes';
 
 export default {
   name: 'SumerianScene',
@@ -156,6 +157,7 @@ export default {
       showEnableAudio: false,
       isVRCapable: false,
       amplifyUI: AmplifyUI,
+      sumerianScene,
       sceneError: null,
       isVRPresentationActive: false
     }

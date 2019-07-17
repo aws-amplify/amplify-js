@@ -927,11 +927,14 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-class">
 				<a href="signincomponentcore.html#_show" class="tsd-kind-icon">_show</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class">
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 				<a href="signincomponentcore.html#amplifyservice" class="tsd-kind-icon">amplify<wbr>Service</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class">
 				<a href="signincomponentcore.html#errormessage" class="tsd-kind-icon">error<wbr>Message</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a href="signincomponentcore.html#logger" class="tsd-kind-icon">logger</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class">
 				<a href="signincomponentcore.html#password" class="tsd-kind-icon">password</a>
@@ -944,6 +947,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="signincomponentcore.html#_seterror" class="tsd-kind-icon">_set<wbr>Error</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="signincomponentcore.html#ngoninit" class="tsd-kind-icon">ng<wbr>OnInit</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="signincomponentcore.html#onalertclose" class="tsd-kind-icon">on<wbr>Alert<wbr>Close</a>
@@ -982,6 +988,12 @@ img { max-width: 100%; }
 			</li>
 		</ul>
 	</section>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><span class="tsd-signature-type">any</span></li>
+		</ul>
+	</section>
 	<section class="tsd-panel-group tsd-index-group">
 		<h2>Index</h2>
 		<section class="tsd-panel tsd-index-panel">
@@ -997,8 +1009,9 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#_authstate" class="tsd-kind-icon">_auth<wbr>State</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#_show" class="tsd-kind-icon">_show</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#amplifyservice" class="tsd-kind-icon">amplify<wbr>Service</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="signincomponentcore.html#amplifyservice" class="tsd-kind-icon">amplify<wbr>Service</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#errormessage" class="tsd-kind-icon">error<wbr>Message</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="signincomponentcore.html#logger" class="tsd-kind-icon">logger</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#password" class="tsd-kind-icon">password</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="signincomponentcore.html#username" class="tsd-kind-icon">username</a></li>
 					</ul>
@@ -1013,6 +1026,7 @@ img { max-width: 100%; }
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signincomponentcore.html#_seterror" class="tsd-kind-icon">_set<wbr>Error</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signincomponentcore.html#ngoninit" class="tsd-kind-icon">ng<wbr>OnInit</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signincomponentcore.html#onalertclose" class="tsd-kind-icon">on<wbr>Alert<wbr>Close</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signincomponentcore.html#onforgotpassword" class="tsd-kind-icon">on<wbr>Forgot<wbr>Password</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signincomponentcore.html#onsignin" class="tsd-kind-icon">on<wbr>Sign<wbr>In</a></li>
@@ -1036,7 +1050,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L75">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L96">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:96</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1058,7 +1072,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">_auth<wbr>State<span class="tsd-signature-symbol">:</span> <a href="../interfaces/authstate.html" class="tsd-signature-type">AuthState</a></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L70">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:70</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L91">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:91</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1068,17 +1082,17 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">_show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L71">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:71</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L92">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:92</a></li>
 				</ul>
 			</aside>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 			<a name="amplifyservice" class="tsd-anchor"></a>
-			<h3>amplify<wbr>Service</h3>
+			<h3><span class="tsd-flag ts-flagProtected">Protected</span> amplify<wbr>Service</h3>
 			<div class="tsd-signature tsd-kind-icon">amplify<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="amplifyservice.html" class="tsd-signature-type">AmplifyService</a></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L75">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:75</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L98">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:98</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1088,7 +1102,17 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">error<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L74">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:74</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L95">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:95</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+			<a name="logger" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagProtected">Protected</span> logger</h3>
+			<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L96">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:96</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1098,7 +1122,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">password<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L73">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:73</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L94">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:94</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1108,7 +1132,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">username<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L72">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:72</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L93">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:93</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1121,7 +1145,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">auth<wbr>State<span class="tsd-signature-symbol">:</span> </div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L82">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:82</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L103">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:103</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1138,7 +1162,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L126">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L155">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:155</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1147,6 +1171,23 @@ img { max-width: 100%; }
 							<h5>err: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="ngoninit" class="tsd-anchor"></a>
+			<h3>ng<wbr>OnInit</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">ng<wbr>OnInit<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L109">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:109</a></li>
+						</ul>
+					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
@@ -1161,7 +1202,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L112">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L139">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:139</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1178,7 +1219,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L116">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:116</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L143">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:143</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1195,7 +1236,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L96">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L123">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:123</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1212,7 +1253,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L121">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L149">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:149</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1229,7 +1270,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L92">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L119">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:119</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1252,7 +1293,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L88">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts#L115">aws-amplify-angular/src/components/authenticator/sign-in-component/sign-in.component.core.ts:115</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>

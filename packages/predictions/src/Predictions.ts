@@ -9,7 +9,16 @@ import {
     SpeechToTextInput,
     SpeechToTextOutput,
     isTextToSpeechInput,
-    isSpeechToTextInput
+    isSpeechToTextInput,
+    IdentifyTextInput,
+    IdentifyTextOutput,
+    IdentifyEntityOutput,
+    IdentifyEntityInput,
+    IdentifyFacesInput,
+    IdentifyFacesOutput,
+    isIdentifyTextInput,
+    isIdentifyEntityInput,
+    isIdentifyFacesInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -126,6 +135,22 @@ export default class Predictions {
         } else if (isSpeechToTextInput(input)) {
             return pluggableToExecute.convert(input);
         }
+    }
+
+    public identify(input: IdentifyTextInput, options: ProviderOptions): Promise<IdentifyTextOutput>;
+    public identify(input: IdentifyEntityInput, options: ProviderOptions): Promise<IdentifyEntityOutput>;
+    public identify(input: IdentifyFacesInput, options: ProviderOptions): Promise<IdentifyFacesOutput>;
+    public identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput, options: ProviderOptions)
+        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+        const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
+        if (isIdentifyTextInput(input)) {
+            return pluggableToExecute.identify(input);
+        } else if (isIdentifyEntityInput(input)) {
+            return pluggableToExecute.identify(input);
+        } else if (isIdentifyFacesInput(input)) {
+            return pluggableToExecute.identify(input);
+        }
+        return pluggableToExecute.identify(input);
     }
 
     // tslint:disable-next-line: max-line-length
