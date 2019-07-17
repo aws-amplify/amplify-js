@@ -383,6 +383,7 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         protocol: parsedUrl.protocol,
         slashes: true,
         hostname: parsedUrl.hostname,
+        port: parsedUrl.port,
         pathname: parsedUrl.pathname,
         query: {
             ...parsedUrl.query,
