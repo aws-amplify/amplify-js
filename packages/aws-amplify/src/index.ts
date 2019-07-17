@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-
 import Analytics, { 
     AnalyticsClass, 
     AnalyticsProvider, 
@@ -79,16 +78,10 @@ export {
     PubSubClass,
     InteractionsClass,
     XRClass,
-<<<<<<< HEAD
     AnalyticsProvider,
     AWSPinpointProvider,
     AWSKinesisProvider,
-    AWSKinesisFirehoseProvider
-=======
-    AnalyticsProvider, 
-    AWSPinpointProvider,
-    AWSKinesisProvider,
+    AWSKinesisFirehoseProvider,
     AmazonPersonalizeProvider
->>>>>>> upstream/master
 };
 export { graphqlOperation };
