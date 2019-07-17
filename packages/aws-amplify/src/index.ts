@@ -11,12 +11,13 @@
  * and limitations under the License.
  */
 
-import Analytics, {
-    AnalyticsClass,
-    AnalyticsProvider,
-    AWSPinpointProvider,
+import Analytics, { 
+    AnalyticsClass, 
+    AnalyticsProvider, 
+    AWSPinpointProvider, 
     AWSKinesisProvider,
-    AWSKinesisFirehoseProvider } from '@aws-amplify/analytics';
+    AWSKinesisFirehoseProvider,
+    AmazonPersonalizeProvider } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
@@ -80,6 +81,7 @@ export {
     AnalyticsProvider,
     AWSPinpointProvider,
     AWSKinesisProvider,
-    AWSKinesisFirehoseProvider
+    AWSKinesisFirehoseProvider,
+    AmazonPersonalizeProvider
 };
 export { graphqlOperation };

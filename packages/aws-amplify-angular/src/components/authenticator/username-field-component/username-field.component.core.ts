@@ -43,6 +43,7 @@ const template = `
             #usernameField
             class="amplify-form-input"
             type="text"
+            value="{{this.username}}"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             (keyup)="setUsername($event.target.value)"
             data-test="${auth.genericAttrs.usernameInput}"
@@ -58,6 +59,7 @@ const template = `
 export class UsernameFieldComponentCore implements OnInit {
     _usernameAttributes : string = UsernameAttributes.USERNAME;
     _placeholder : string = '';
+    username: string;
 
     constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
         this.onPhoneFieldChanged = this.onPhoneFieldChanged.bind(this);
@@ -82,7 +84,19 @@ export class UsernameFieldComponentCore implements OnInit {
     @Output()
 	usernameFieldChanged: EventEmitter<UsernameFieldOutput> = new EventEmitter<UsernameFieldOutput>();
 
-    ngOnInit() {}
+    ngOnInit() {
+        if (window &&
+            window.location &&
+            window.location.search &&
+            this._usernameAttributes !== 'email' &&
+            this._usernameAttributes !== 'phone_number'
+        ) {
+            const searchParams = new URLSearchParams(window.location.search);
+            const username = searchParams ? searchParams.get('username') : undefined;
+            this.setUsername(username);
+            this.username = username;
+          }
+    }
 
     ngOnDestroy() {}
 

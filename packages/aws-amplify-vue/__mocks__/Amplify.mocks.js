@@ -15,7 +15,10 @@ module.exports = {
     resendSignUp: jest.fn(() => Promise.resolve({})),
     setPreferredMFA: jest.fn(() => Promise.resolve({})),
     setupTOTP: jest.fn(() => Promise.resolve('gibberish')),
-    signIn: jest.fn(() => Promise.resolve({})),
+    signIn: jest.fn(() => Promise.resolve({
+      challengeName: 'CUSTOM_CHALLENGE', 
+      challengeParam: { trigger: 'true' },
+    })),
     signOut: jest.fn(() => Promise.resolve({})),
     signUp: jest.fn(() => Promise.resolve({})),
     verifiedContact: jest.fn(() => Promise.resolve({})),
