@@ -11,6 +11,7 @@ module.exports = {
     library: "aws_amplify_ui",
     libraryTarget: "umd",
     umdNamedDefine: true,
+    globalObject: 'this',
     devtoolModuleFilenameTemplate: require("../aws-amplify/webpack-utils")
       .devtoolModuleFilenameTemplate
   },
@@ -29,7 +30,6 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          "style-loader",
           {
             loader: MiniCssExtractPlugin.loader,
             options: {

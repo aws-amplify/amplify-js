@@ -111,7 +111,9 @@ export default class PubSub {
     }
 
     async publish(topics: string[] | string, msg: any, options?: ProvidertOptions) {
-        return this.getProviders(options).map(provider => provider.publish(topics, msg, options));
+        return Promise.all(
+            this.getProviders(options).map(provider => provider.publish(topics, msg, options))
+        );
     }
 
     subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any> {

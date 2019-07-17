@@ -87,10 +87,16 @@ export default class AuthPiece extends React.Component {
                 <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
             );
         } else {
+            let value;
+            if (window && window.location && window.location.search) {
+                const searchParams = new URLSearchParams(window.location.search);
+                value = searchParams ? searchParams.get('username') : undefined
+            }
             return (
                 <FormField theme={theme}>           
                     <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <Input
+                        value={value}
                         autoFocus
                         placeholder={I18n.get('Enter your username')}
                         theme={theme}

@@ -67,7 +67,9 @@ export default class SignIn extends AuthPiece {
 
     async signIn(event) {
         // avoid submitting the form
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
 
         const username = this.getUsernameFromInput() || '';
         const password = this.inputs.password;
@@ -89,6 +91,12 @@ export default class SignIn extends AuthPiece {
             } else if (user.challengeName === 'MFA_SETUP') {
                 logger.debug('TOTP setup', user.challengeParam);
                 this.changeState('TOTPSetup', user);
+            } else if (user.challengeName === 'CUSTOM_CHALLENGE' &&
+                user.challengeParam &&
+                user.challengeParam.trigger === 'true'
+            ) {
+                logger.debug('custom challenge', user.challengeParam);
+                this.changeState('customConfirmSignIn', user);
             } else {
                 this.checkContact(user);
             }

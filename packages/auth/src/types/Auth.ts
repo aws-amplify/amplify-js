@@ -56,21 +56,23 @@ export enum CognitoHostedUIIdentityProvider {
 export type LegacyProvider = 'google'|'facebook'|'amazon'|'developer'| string;
 
 export type FederatedSignInOptions = {
-    provider: CognitoHostedUIIdentityProvider
+    provider: CognitoHostedUIIdentityProvider,
+    customState?: string
 };
 
 export type FederatedSignInOptionsCustom = {
-    customProvider: string
+    customProvider: string,
+    customState?: string
 };
 
 export function isFederatedSignInOptions(obj: any): obj is FederatedSignInOptions  {
-    const key: keyof FederatedSignInOptions = 'provider';
-    return obj && obj.hasOwnProperty(key);
+    const keys: (keyof FederatedSignInOptions)[] = ['provider', 'customState'];
+    return obj && !!keys.find((k) => obj.hasOwnProperty(k));
 }
 
 export function isFederatedSignInOptionsCustom(obj:any): obj is FederatedSignInOptionsCustom  {
-    const key: keyof FederatedSignInOptionsCustom = 'customProvider';
-    return obj && obj.hasOwnProperty(key);
+    const keys: (keyof FederatedSignInOptionsCustom)[] = ['customProvider', 'customState'];
+    return obj && !!keys.find((k) => obj.hasOwnProperty(k));
 }
 
 /**
