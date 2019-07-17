@@ -143,6 +143,10 @@ export const sumerianScene = {
   container: 'sumerian-scene-container',
   sumerianScene: 'sumerian-scene',
   loading: 'sumerian-scene-loading',
+  loadingLogo: 'sumerian-scene-loading-logo',
+  loadingSceneName: 'sumerian-scene-loading-scene-name',
+  loadingBar: 'sumerian-scene-loading-bar',
+  errorText: 'sumerian-scene-error-text',
   bar: 'sumerian-scene-bar',
   actions: 'sumerian-scene-actions',
 };
