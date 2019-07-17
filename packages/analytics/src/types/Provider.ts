@@ -10,6 +10,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
+export interface PromiseHandlers {
+    resolve: Function,
+    reject: Function
+} 
+
 export interface AnalyticsProvider {
     // you need to implement those  methods
 
@@ -17,7 +23,7 @@ export interface AnalyticsProvider {
     configure(config: object): object;
 
     // record events and returns true if succeeds
-    record(params: object): Promise<boolean>;
+    record(params: object, handlers?: PromiseHandlers): Promise<boolean>;
 
     // return 'Analytics';
     getCategory(): string;

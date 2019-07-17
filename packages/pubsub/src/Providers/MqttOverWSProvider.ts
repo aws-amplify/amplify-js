@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ProvidertOptions } from '../types';
+import { ProvidertOptions, SubscriptionObserver } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -137,7 +137,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         targetTopics.forEach(topic => client.send(topic, message));
     }
 
-    protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
+    protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
@@ -205,7 +205,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                         }
 
                         const observersForTopic = this._topicObservers.get(topic) ||
-                            (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
+                            (new Set() as Set<SubscriptionObserver<any>>);
 
                         observersForTopic.forEach(observer => observer.complete());
 

@@ -32,7 +32,9 @@ const template = `
         (usernameFieldChanged)="onUsernameFieldChanged($event)"
       ></amplify-auth-username-field-core>
       <div class="amplify-form-row amplify-signin-password">
-        <label class="amplify-input-label" for="passwordField">{{ this.amplifyService.i18n().get('Password *') }}</label>
+        <label class="amplify-input-label" for="passwordField">
+          {{ this.amplifyService.i18n().get('Password *') }}
+        </label>
         <input #passwordField
           (keyup)="setPassword(passwordField.value)"
           (keyup.enter)="onSignIn()"
@@ -42,11 +44,13 @@ const template = `
           placeholder="{{ this.amplifyService.i18n().get('Enter your password') }}"
           data-test="${auth.signIn.passwordInput}"
         />
-        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">{{ this.amplifyService.i18n().get('Forgot Password?') }}
-        <a class="amplify-form-link"
+        <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">
+          {{ this.amplifyService.i18n().get('Forgot Password?') }}
+          <a class="amplify-form-link"
             (click)="onForgotPassword()"
             data-test="${auth.signIn.forgotPasswordLink}"
-          >{{ this.amplifyService.i18n().get('Reset your password') }}</a></span>
+          >{{ this.amplifyService.i18n().get('Reset your password') }}</a>
+        </span>
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
@@ -121,7 +125,10 @@ export class SignInComponentCore implements OnInit {
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
     this.username = authState.user? authState.user.username || '' : '';
     this.email = authState.user? authState.user.email || '' : '';
-    this.country_code = authState.user && authState.user.country_code? authState.user.country_code  : this.country_code;
+    this.country_code = authState.user &&
+      authState.user.country_code ?
+      authState.user.country_code  :
+      this.country_code;
     this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
   }
 
@@ -156,8 +163,12 @@ export class SignInComponentCore implements OnInit {
           this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
         } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
           this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
-        } else {
-          this.amplifyService.setAuthState({ state: 'signedIn', user });
+        } else if (
+          user['challengeName'] === 'CUSTOM_CHALLENGE' &&
+          user.challengeParam &&
+          user.challengeParam.trigger === 'true'
+        ) {
+          this.amplifyService.setAuthState({ state: 'customConfirmSignIn', user });
         }
       })
       .catch((err) => {
