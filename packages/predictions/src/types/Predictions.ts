@@ -46,21 +46,42 @@ export interface TextToSpeechOutput {
     language: string
 }
 
+export interface StorageSource {
+    key: string,
+    level?: 'public' | 'private' | 'protected',
+    identityId?: string,
+}
+
+ export interface FileSource {
+    file: File
+}
+
+ export interface BytesSource {
+    bytes: Buffer | ArrayBuffer | Blob | string
+}
+
+ export type ConvertSource = StorageSource | FileSource | BytesSource;
+
 export interface SpeechToTextInput {
     transcription: {
-        source: {
-            storage: {
-                key: string,
-                level?: string,
-                identityId?: string
-            },
-            file: string,
-            outputBucketName: string,
-            bytes: Buffer | ArrayBuffer | Blob | string; // TODO: Confirm the use of ArrayBuffer
-            language?: LanguageCode
-        }
-        maxSpeakers?: number,
-        language?: LanguageCode
+        source: ConvertSource,
+        language?: LanguageCode,
+        maxSpeakers?: number
+    }
+}
+
+export interface TranscriptionData {
+    text: string,
+    speaker: string,
+    beginTime: number,
+    endTime: number
+}
+
+export interface SpeechToTextOutput {
+    transcription: {
+        fullText: string,
+        lines: Array<string>,
+        linesDetailed: Array<TranscriptionData>
     }
 }
 
@@ -76,5 +97,20 @@ export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
     const key: keyof SpeechToTextInput = 'transcription';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isStorageSource(obj: any): obj is StorageSource {
+    const key: keyof StorageSource = 'key';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isFileSource(obj: any): obj is FileSource {
+    const key: keyof FileSource = 'file';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isBytesSource(obj: any): obj is BytesSource {
+    const key: keyof BytesSource = 'bytes';
     return obj && obj.hasOwnProperty(key);
 }

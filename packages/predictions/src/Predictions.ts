@@ -5,7 +5,11 @@ import {
     TextToSpeechInput,
     ProviderOptions,
     isTranslateTextInput, 
-    TextToSpeechOutput
+    TextToSpeechOutput,
+    SpeechToTextInput,
+    SpeechToTextOutput,
+    isTextToSpeechInput,
+    isSpeechToTextInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -111,13 +115,17 @@ export default class Predictions {
 
     public convert(input: TranslateTextInput, options?: ProviderOptions): Promise<TranslateTextOutput>;
     public convert(input: TextToSpeechInput, options?: ProviderOptions): Promise<TextToSpeechOutput>;
-    public convert(input: TranslateTextInput | TextToSpeechInput,
-                   options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput> {
+    public convert(input: SpeechToTextInput, options?: ProviderOptions): Promise<SpeechToTextOutput>;
+    public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
+                   options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
         if (isTranslateTextInput(input)) {
             return pluggableToExecute.convert(input);
+        } else if (isTextToSpeechInput(input)) {
+            return pluggableToExecute.convert(input);
+        } else if (isSpeechToTextInput(input)) {
+            return pluggableToExecute.convert(input);
         }
-        return pluggableToExecute.convert(input);
     }
 
     // tslint:disable-next-line: max-line-length

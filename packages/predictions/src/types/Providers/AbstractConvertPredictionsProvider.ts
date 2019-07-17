@@ -1,7 +1,7 @@
 import {
     TranslateTextInput, TextToSpeechInput,
     SpeechToTextInput, isTranslateTextInput,
-    isTextToSpeechInput, isSpeechToTextInput, TranslateTextOutput, TextToSpeechOutput
+    isTextToSpeechInput, isSpeechToTextInput, TranslateTextOutput, TextToSpeechOutput, SpeechToTextOutput
 } from "../Predictions";
 import { AbstractPredictionsProvider } from ".";
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
@@ -10,26 +10,27 @@ const logger = new Logger('AbstractConvertPredictionsProvider');
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
 
     getCategory(): string {
-        return "Convert";
+        return "convert";
     }
 
     convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
     convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-    convert(input: TranslateTextInput | TextToSpeechInput): Promise<TextToSpeechOutput | TranslateTextOutput> {
+    convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
+    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
+        : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         if (isTranslateTextInput(input)) {
             logger.debug("translateText");
             return this.translateText(input);
-            // } else if (isTextToSpeechInput(input)) {
-        } else {
+        } else if (isTextToSpeechInput(input)) {
             logger.debug("textToSpeech");
             return this.convertTextToSpeech(input);
-            // } else if (isSpeechToTextInput(input)) {
-            //     logger.debug("textToSpeech");
-            //     return this.convertSpeechToText(input);
-            // } else {
-            //     // Orchestration type request. Directly call graphql
-            //     return this.orchestrateWithGraphQL(input);
-        }
+        } else if (isSpeechToTextInput(input)) {
+            logger.debug("textToSpeech");
+            return this.convertSpeechToText(input);
+        } // else {
+        //     // Orchestration type request. Directly call graphql
+        //     return this.orchestrateWithGraphQL(input);
+        // }
     }
 
     protected translateText(translateTextInput: TranslateTextInput): Promise<TranslateTextOutput> {
@@ -40,7 +41,7 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
         throw new Error("convertTextToSpeech is not implemented by this provider");
     }
 
-    protected convertSpeechToText(speechToTextInput: SpeechToTextInput): Promise<any> {
+    protected convertSpeechToText(speechToTextInput: SpeechToTextInput): Promise<SpeechToTextOutput> {
         throw new Error("convertSpeechToText is not implemented by this provider");
     }
 }

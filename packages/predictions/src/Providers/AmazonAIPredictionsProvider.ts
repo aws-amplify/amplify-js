@@ -6,7 +6,11 @@ import {
     PredictionsOptions,
     TranslateTextOutput,
     TextToSpeechOutput,
-    isTranslateTextInput
+    isTranslateTextInput,
+    SpeechToTextInput,
+    SpeechToTextOutput,
+    isTextToSpeechInput,
+    isSpeechToTextInput
 } from "../types";
 import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsProvider";
 
@@ -38,20 +42,21 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
 
     convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
     convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-    convert(input: TranslateTextInput | TextToSpeechInput): Promise<TextToSpeechOutput | TranslateTextOutput> {
+    convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
+    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
+        : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         if (isTranslateTextInput(input)) {
             return this.convertProvider.convert(input);
             // } else if (isTextToSpeechInput(input)) {
-        } else {
+        } else if (isTextToSpeechInput(input)) {
             return this.convertProvider.convert(input);
-            // } else if (isSpeechToTextInput(input)) {
-            //     logger.debug("textToSpeech");
-            //     return this.convertSpeechToText(input);
-            // } else {
-            //     // Orchestration type request. Directly call graphql
-            //     return this.orchestrateWithGraphQL(input);
-        }
-        
+        } else if (isSpeechToTextInput(input)) {
+            return this.convertProvider.convert(input);
+        } //else {
+        //     // Orchestration type request. Directly call graphql
+        //     return this.orchestrateWithGraphQL(input);
+        // }
+        Promise.reject();
     }
 
 }

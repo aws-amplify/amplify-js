@@ -5,7 +5,8 @@ import {
     TextToSpeechInput,
     SpeechToTextInput,
     TextToSpeechOutput,
-    TranslateTextOutput
+    TranslateTextOutput,
+    SpeechToTextOutput
 } from '../types';
 
 export default class GraphQLPredictionsProvider extends AbstractPredictionsProvider {
@@ -24,7 +25,9 @@ export default class GraphQLPredictionsProvider extends AbstractPredictionsProvi
 
     convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
     convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-    convert(input: TranslateTextInput | TextToSpeechInput): Promise<TranslateTextOutput | TextToSpeechOutput> {
+    convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
+    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput):
+        Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
         return this.orchestrateWithGraphQL(input);
     }
 
