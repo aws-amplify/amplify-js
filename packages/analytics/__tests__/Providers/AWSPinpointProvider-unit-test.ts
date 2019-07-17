@@ -770,7 +770,7 @@ describe("AnalyticsProvider test", () => {
                     options 
                 );
                 const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
-                    callback('err', null);
+                    callback({ message: 'error' }, null);
                 });
 
                 jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {

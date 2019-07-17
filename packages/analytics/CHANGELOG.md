@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.19-unstable.0"></a>
+## [1.2.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18...@aws-amplify/analytics@1.2.19-unstable.0) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** use startsWith to filter the updateEndpoint error message ([#3589](https://github.com/aws/aws-amplify/issues/3589)) ([0bd68f9](https://github.com/aws/aws-amplify/commit/0bd68f9))
+
+
+
+
 <a name="1.2.18"></a>
 ## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.1...@aws-amplify/analytics@1.2.18) (2019-07-09)
 
