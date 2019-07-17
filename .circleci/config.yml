@@ -175,7 +175,7 @@ jobs:
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               git status
-              git diff
+              git --no-pager diff
               yarn run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
