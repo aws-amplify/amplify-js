@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-react",
-  "version": "2.3.10-unstable.1",
+  "version": "2.3.11-unstable.0",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "cypress:open": "cypress open",
     "build-with-test": "npm run clean && npm test && npm run build",
     "clean": "rimraf dist",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
   },
   "devDependencies": {
