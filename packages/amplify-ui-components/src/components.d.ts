@@ -294,7 +294,7 @@ declare namespace LocalJSX {
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
-    'onChange'?: (event: CustomEvent<any>) => void;
+    'onIconChange'?: (event: CustomEvent<any>) => void;
   }
 
   interface IntrinsicElements {

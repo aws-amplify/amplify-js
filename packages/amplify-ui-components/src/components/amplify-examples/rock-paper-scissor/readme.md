@@ -14,9 +14,9 @@
 
 ## Events
 
-| Event    | Description | Type               |
-| -------- | ----------- | ------------------ |
-| `change` |             | `CustomEvent<any>` |
+| Event        | Description | Type               |
+| ------------ | ----------- | ------------------ |
+| `iconChange` |             | `CustomEvent<any>` |
 
 
 ## Dependencies
