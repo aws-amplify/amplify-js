@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.32-unstable.1"></a>
+## [1.0.32-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.31...@aws-amplify/storage@1.0.32-unstable.1) (2019-07-12)
+
+
+### Bug Fixes
+
+* allow SSE to be passed in global configure of storage ([9ee76cc](https://github.com/aws/aws-amplify/commit/9ee76cc))
+* allow SSE to be passed in global configure of storage ([8fb26c4](https://github.com/aws/aws-amplify/commit/8fb26c4))
+
+
+
+
 <a name="1.0.31"></a>
 ## [1.0.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.31-unstable.2...@aws-amplify/storage@1.0.31) (2019-06-17)
 
