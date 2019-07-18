@@ -14,11 +14,12 @@ export class AmplifyTextInput {
   } = {};
 
   render() {
+    this.inputProps.type = this.inputProps.type || 'text';
+
     return (
       <input
         id={this.fieldId}
         aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-        type="text"
         {...this.inputProps}
         class={textInput}
       />

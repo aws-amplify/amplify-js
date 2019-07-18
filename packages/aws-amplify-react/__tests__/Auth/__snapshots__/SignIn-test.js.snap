@@ -742,7 +742,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -1479,7 +1478,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -4944,7 +4943,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -5681,7 +5679,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -9146,7 +9144,6 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     onSubmit={[Function]}
   >
     <Component
-      data-test="sign-in-body-section"
       theme={
         Object {
           "a": Object {
@@ -9883,7 +9880,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         </Component>
         <Component
           autoFocus={true}
-          data-test="sign-in-username-input"
+          data-test="username-input"
           key="username"
           name="username"
           onChange={[Function]}
@@ -12606,11 +12603,15 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
 </Component>
 `;
 
+exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 4`] = `""`;
+
 exports[`SignIn normal case render correctly with hide 1`] = `""`;
 
 exports[`SignIn normal case render correctly with hide 2`] = `""`;
 
 exports[`SignIn normal case render correctly with hide 3`] = `""`;
+
+exports[`SignIn normal case render correctly with hide 4`] = `""`;
 
 exports[`SignIn null case with other authState render corrently 1`] = `""`;
 

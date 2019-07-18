@@ -14,19 +14,6 @@
 | `sceneName`      | `scene-name`      |             | `string` | `undefined` |
 
 
-## Dependencies
-
-### Used by
-
- - [amplify-scene](../amplify-scene)
-
-### Graph
-```mermaid
-graph TD;
-  amplify-scene --> amplify-scene-loading
-  style amplify-scene-loading fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

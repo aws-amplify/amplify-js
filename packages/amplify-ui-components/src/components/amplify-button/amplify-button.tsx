@@ -14,7 +14,7 @@ export class AmplifyButton {
 
   render() {
     return (
-      <button class={button} role={this.role} type={this.type} style={{"background-color": this.primaryColor}}>
+      <button class={button} role={this.role} type={this.type} style={{ 'background-color': this.primaryColor }}>
         <slot />
       </button>
     );

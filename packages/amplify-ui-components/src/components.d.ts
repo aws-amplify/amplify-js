@@ -35,9 +35,6 @@ export namespace Components {
   interface AmplifyLink {
     'role': string;
   }
-  interface AmplifyScene {
-    'sceneName': string;
-  }
   interface AmplifySceneLoading {
     'loadPercentage': number;
     'sceneError': object;
@@ -141,12 +138,6 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
-  interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
-  var HTMLAmplifySceneElement: {
-    prototype: HTMLAmplifySceneElement;
-    new (): HTMLAmplifySceneElement;
-  };
-
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
   var HTMLAmplifySceneLoadingElement: {
     prototype: HTMLAmplifySceneLoadingElement;
@@ -208,7 +199,6 @@ declare global {
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
-    'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-section-header': HTMLAmplifySectionHeaderElement;
@@ -248,9 +238,6 @@ declare namespace LocalJSX {
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
     'role'?: string;
-  }
-  interface AmplifyScene extends JSXBase.HTMLAttributes<HTMLAmplifySceneElement> {
-    'sceneName'?: string;
   }
   interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
@@ -307,7 +294,7 @@ declare namespace LocalJSX {
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
-    'onChange'?: (event: CustomEvent<any>) => void;
+    'onIconChange'?: (event: CustomEvent<any>) => void;
   }
 
   interface IntrinsicElements {
@@ -318,7 +305,6 @@ declare namespace LocalJSX {
     'amplify-hint': AmplifyHint;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
-    'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-section-header': AmplifySectionHeader;

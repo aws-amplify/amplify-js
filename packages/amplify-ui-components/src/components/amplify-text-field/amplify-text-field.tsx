@@ -14,6 +14,8 @@ export class AmplifyTextField {
   } = {};
 
   render() {
+    this.inputProps.type = this.inputProps.type || 'text';
+
     return (
       <div>
         {this.label && (
@@ -27,14 +29,10 @@ export class AmplifyTextField {
           </div>
         )}
         <div>
-          {/* <input
-            
-          /> */}
           <amplify-text-input
             id={this.fieldId}
             aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-            type="text"
-            {...this.inputProps}
+            inputProps={{ ...this.inputProps }}
           />
         </div>
       </div>

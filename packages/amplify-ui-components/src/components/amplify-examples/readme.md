@@ -20,7 +20,6 @@
 - [amplify-authenticator](../amplify-authenticator)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
-- [amplify-scene](../amplify-scene)
 
 ### Graph
 ```mermaid
@@ -36,7 +35,6 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
-  amplify-examples --> amplify-scene
   amplify-text-field --> amplify-text-input
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
@@ -53,7 +51,6 @@ graph TD;
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-password-field --> context-consumer
   rock-paper-scissor --> amplify-button
-  amplify-scene --> amplify-scene-loading
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
