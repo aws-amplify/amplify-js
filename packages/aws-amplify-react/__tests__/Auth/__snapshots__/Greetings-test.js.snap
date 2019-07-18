@@ -17,7 +17,7 @@ exports[`Greetings normal case render correctly with authState signedIn 1`] = `
         <Component
           theme="theme"
         >
-          Hello, username
+          Hello username
         </Component>
         <SignOut
           authData={
