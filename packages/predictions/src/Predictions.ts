@@ -4,7 +4,7 @@ import {
     TranslateTextOutput,
     TextToSpeechInput,
     ProviderOptions,
-    isTranslateTextInput, 
+    isTranslateTextInput,
     TextToSpeechOutput,
     SpeechToTextInput,
     SpeechToTextOutput,
@@ -12,13 +12,13 @@ import {
     isSpeechToTextInput,
     IdentifyTextInput,
     IdentifyTextOutput,
-    IdentifyEntityOutput,
-    IdentifyEntityInput,
-    IdentifyFacesInput,
-    IdentifyFacesOutput,
+    IdentifyLabelsOutput,
+    IdentifyLabelsInput,
+    IdentifyEntitiesInput,
+    IdentifyEntitiesOutput,
     isIdentifyTextInput,
-    isIdentifyEntityInput,
-    isIdentifyFacesInput
+    isIdentifyLabelsInput,
+    isIdentifyEntitiesInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -126,7 +126,7 @@ export default class Predictions {
     public convert(input: TextToSpeechInput, options?: ProviderOptions): Promise<TextToSpeechOutput>;
     public convert(input: SpeechToTextInput, options?: ProviderOptions): Promise<SpeechToTextOutput>;
     public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
-                   options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
+        options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
         if (isTranslateTextInput(input)) {
             return pluggableToExecute.convert(input);
@@ -138,16 +138,16 @@ export default class Predictions {
     }
 
     public identify(input: IdentifyTextInput, options: ProviderOptions): Promise<IdentifyTextOutput>;
-    public identify(input: IdentifyEntityInput, options: ProviderOptions): Promise<IdentifyEntityOutput>;
-    public identify(input: IdentifyFacesInput, options: ProviderOptions): Promise<IdentifyFacesOutput>;
-    public identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput, options: ProviderOptions)
-        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+    public identify(input: IdentifyLabelsInput, options: ProviderOptions): Promise<IdentifyLabelsOutput>;
+    public identify(input: IdentifyEntitiesInput, options: ProviderOptions): Promise<IdentifyEntitiesOutput>;
+    public identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput, options: ProviderOptions)
+        : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
         if (isIdentifyTextInput(input)) {
             return pluggableToExecute.identify(input);
-        } else if (isIdentifyEntityInput(input)) {
+        } else if (isIdentifyLabelsInput(input)) {
             return pluggableToExecute.identify(input);
-        } else if (isIdentifyFacesInput(input)) {
+        } else if (isIdentifyEntitiesInput(input)) {
             return pluggableToExecute.identify(input);
         }
         return pluggableToExecute.identify(input);

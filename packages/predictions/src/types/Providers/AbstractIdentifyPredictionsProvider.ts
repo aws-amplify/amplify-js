@@ -1,8 +1,8 @@
 import { AbstractPredictionsProvider } from '.';
 import {
-    IdentifyEntityInput, IdentifyFacesInput, isIdentifyEntityInput,
-    isIdentifyFacesInput, IdentifyTextInput, isIdentifyTextInput,
-    IdentifyTextOutput, IdentifyEntityOutput, IdentifyFacesOutput
+    IdentifyLabelsInput, IdentifyEntitiesInput, isIdentifyLabelsInput,
+    isIdentifyEntitiesInput, IdentifyTextInput, isIdentifyTextInput,
+    IdentifyTextOutput, IdentifyLabelsOutput, IdentifyEntitiesOutput
 } from '../Predictions';
 import { Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractIdentifyPredictionsProvider');
@@ -14,19 +14,19 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
     }
 
     identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-    identify(input: IdentifyEntityInput): Promise<IdentifyEntityOutput>;
-    identify(input: IdentifyFacesInput): Promise<IdentifyFacesOutput>;
-    identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput)
-        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+    identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
+    identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
+    identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
+        : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         if (isIdentifyTextInput(input)) {
             logger.debug('identifyText');
             return this.identifyText(input);
-        } else if (isIdentifyEntityInput(input)) {
-            logger.debug('identifyEntity');
-            return this.identifyEntity(input);
-        } else if (isIdentifyFacesInput(input)) {
-            logger.debug('identifyFaces');
-            return this.identifyFaces(input);
+        } else if (isIdentifyLabelsInput(input)) {
+            logger.debug('identifyLabels');
+            return this.identifyLabels(input);
+        } else if (isIdentifyEntitiesInput(input)) {
+            logger.debug('identifyEntities');
+            return this.identifyEntities(input);
         }
         // else {
         //     return this.orchestrateWithGraphQL(input);
@@ -37,11 +37,11 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
         throw new Error('identifyText is not implemented by this provider.');
     }
 
-    protected identifyEntity(input: IdentifyEntityInput): Promise<IdentifyEntityOutput> {
-        throw new Error('identifyEntity is not implemented by this provider');
+    protected identifyLabels(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput> {
+        throw new Error('identifyLabels is not implemented by this provider');
     }
 
-    protected identifyFaces(input: IdentifyFacesInput): Promise<IdentifyFacesOutput> {
-        throw new Error('identifyFaces is not implemented by this provider');
+    protected identifyEntities(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput> {
+        throw new Error('identifyEntities is not implemented by this provider');
     }
 }

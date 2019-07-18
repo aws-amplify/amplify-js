@@ -1,7 +1,7 @@
 import { AbstractPredictionsProvider } from "../types/Providers";
 import {
-    TranslateTextInput, TextToSpeechInput, SpeechToTextInput, IdentifyEntityInput, IdentifyFacesInput, 
-    IdentifyTextInput, IdentifyTextOutput, IdentifyEntityOutput, IdentifyFacesOutput,
+    TranslateTextInput, TextToSpeechInput, SpeechToTextInput, IdentifyLabelsInput, IdentifyEntitiesInput, 
+    IdentifyTextInput, IdentifyTextOutput, IdentifyLabelsOutput, IdentifyEntitiesOutput,
     TextToSpeechOutput, TranslateTextOutput,  SpeechToTextOutput} from '../types';
 
 export default class GraphQLPredictionsProvider extends AbstractPredictionsProvider {
@@ -26,10 +26,10 @@ export default class GraphQLPredictionsProvider extends AbstractPredictionsProvi
         return this.orchestrateWithGraphQL(input);
     }
     identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-    identify(input: IdentifyEntityInput): Promise<IdentifyEntityOutput>;
-    identify(input: IdentifyFacesInput): Promise<IdentifyFacesOutput>;
-    identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput)
-        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+    identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
+    identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
+    identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
+        : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         return this.orchestrateWithGraphQL(input);
     }
 

@@ -156,8 +156,8 @@ export interface IdentifyTextOutput {
     }
 }
 
-export interface IdentifyEntityInput {
-    entity: {
+export interface IdentifyLabelsInput {
+    labels: {
         source: IdentifySource,
         type: 'LABELS' | 'UNSAFE' | 'ALL'
     }
@@ -177,8 +177,8 @@ export interface BoundingBox {
     top?: Number;
 }
 
-export interface IdentifyEntityOutput {
-    entity?: {
+export interface IdentifyLabelsOutput {
+    labels?: {
         name: string,
         boundingBoxes: BoundingBox[],
         metadata?: Object
@@ -186,8 +186,8 @@ export interface IdentifyEntityOutput {
     unsafe?: 'YES' | 'NO' | 'UNKNOWN'
 }
 
-export interface IdentifyFacesInput {
-    face: {
+export interface IdentifyEntitiesInput {
+    entities: {
         source: IdentifySource,
         collection?: string,
         maxFaces?: number,
@@ -207,8 +207,8 @@ export interface FaceAttributes {
     emotions?: string[]
 }
 
-export interface IdentifyFacesOutput {
-    face: {
+export interface IdentifyEntitiesOutput {
+    entities: {
         boundingBox?: BoundingBox,
         ageRange?: {
             low?: Number,
@@ -260,12 +260,12 @@ export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
     return obj && obj.hasOwnProperty(key);
 }
 
-export function isIdentifyEntityInput(obj: any): obj is IdentifyEntityInput {
-    const key: keyof IdentifyEntityInput = 'entity';
+export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
+    const key: keyof IdentifyLabelsInput = 'labels';
     return obj && obj.hasOwnProperty(key);
 }
 
-export function isIdentifyFacesInput(obj: any): obj is IdentifyFacesInput {
-    const key: keyof IdentifyFacesInput = 'face';
+export function isIdentifyEntitiesInput(obj: any): obj is IdentifyEntitiesInput {
+    const key: keyof IdentifyEntitiesInput = 'entities';
     return obj && obj.hasOwnProperty(key);
 }

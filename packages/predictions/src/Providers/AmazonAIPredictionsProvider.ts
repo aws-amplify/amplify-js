@@ -1,8 +1,8 @@
-import { AbstractIdentifyPredictionsProvider, AbstractPredictionsProvider } from "../types/Providers";
+import { AbstractPredictionsProvider } from "../types/Providers";
 import { AmazonAIConvertPredictionsProvider, GraphQLPredictionsProvider } from ".";
 import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOptions, IdentifyTextInput, 
-    IdentifyTextOutput, IdentifyEntityInput, IdentifyEntityOutput, IdentifyFacesInput, IdentifyFacesOutput, 
-    isIdentifyTextInput, isIdentifyEntityInput, isIdentifyFacesInput, TranslateTextOutput,
+    IdentifyTextOutput, IdentifyLabelsInput, IdentifyLabelsOutput, IdentifyEntitiesInput, IdentifyEntitiesOutput, 
+    isIdentifyTextInput, isIdentifyLabelsInput, isIdentifyEntitiesInput, TranslateTextOutput,
     TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput
  } from "../types";
 import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsProvider";
@@ -53,15 +53,15 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
     }
 
     identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-    identify(input: IdentifyEntityInput): Promise<IdentifyEntityOutput>;
-    identify(input: IdentifyFacesInput): Promise<IdentifyFacesOutput>;
-    identify(input: IdentifyTextInput | IdentifyEntityInput | IdentifyFacesInput)
-        : Promise<IdentifyTextOutput | IdentifyEntityOutput | IdentifyFacesOutput> {
+    identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
+    identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
+    identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
+        : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         if (isIdentifyTextInput(input)) {
             return this.identifyProvider.identify(input);
-        } else if (isIdentifyEntityInput(input)) {
+        } else if (isIdentifyLabelsInput(input)) {
             return this.identifyProvider.identify(input);
-        } else if (isIdentifyFacesInput(input)) {
+        } else if (isIdentifyEntitiesInput(input)) {
             return this.identifyProvider.identify(input);
         }
         // else {

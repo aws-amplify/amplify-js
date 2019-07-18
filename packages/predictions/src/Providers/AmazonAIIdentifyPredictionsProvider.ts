@@ -4,7 +4,7 @@ import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
-    IdentifyEntityInput, IdentifyEntityOutput, IdentifySource, IdentifyFacesInput, IdentifyFacesOutput,
+    IdentifyLabelsInput, IdentifyLabelsOutput, IdentifySource, IdentifyEntitiesInput, IdentifyEntitiesOutput,
     isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput,
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
@@ -19,7 +19,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     constructor() {
         super();
     }
-
+   
     getProviderName() {
         return 'AmazonAIIdentifyPredictionsProvider';
     }
@@ -72,16 +72,16 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-
-            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
-            this.textract = new Textract({ region: this._config.identify.identifyEntities.region, credentials });
+            const { identifyText: { region = "us-west-2", format: configFormat = "PLAIN" } = {} } = this._config;
+            this.rekognition = new Rekognition({ region, credentials });
+            this.textract = new Textract({ region, credentials });
             let inputDocument: Textract.Document;
             await this.configureSource(input.text.source)
                 .then(data => inputDocument = data)
                 .catch(err => { rej(err); });
 
             // get default value if format isn't specified in the input.
-            const format = input.text.format || this._config.identify.identifyText.format || 'PLAIN';
+            const format = input.text.format || configFormat;
             const featureTypes: Textract.FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
             if (format === 'FORM' || format === 'ALL')
                 featureTypes.push('FORMS');
@@ -129,24 +129,24 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
 
     /**
      * Identify instances of real world entities from an image and if it contains unsafe content.
-     * @param {IdentifyEntityInput} input - Object containing the source image and entity type to identify.
-     * @return {Promise<IdentifyEntityOutput>} - Promise resolving to an array of identified entities. 
+     * @param {IdentifyLabelsInput} input - Object containing the source image and entity type to identify.
+     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to an array of identified entities. 
      */
-    protected identifyEntity(input: IdentifyEntityInput): Promise<IdentifyEntityOutput> {
+    protected identifyLabels(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput> {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-
-            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
+            const { identifyLabels: { region = "us-west-2", type = "LABELS" } = {} } = this._config;
+            this.rekognition = new Rekognition({ region, credentials });
             let inputImage: Rekognition.Image;
-            await this.configureSource(input.entity.source)
+            await this.configureSource(input.labels.source)
                 .then(data => { inputImage = data; })
                 .catch(err => { return rej(err); });
             const param = { Image: inputImage };
             const servicePromises = [];
 
             // get default argument
-            const entityType = input.entity.type || this._config.identify.identifyEntity.type;
+            const entityType = input.labels.type || type;
             if (entityType === 'LABELS' || entityType === 'ALL') {
                 servicePromises.push(this.detectLabels(param));
             }
@@ -157,7 +157,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
             //     rej('You must specify entity type: LABELS | UNSAFE | ALL');
             // }
             Promise.all(servicePromises).then(data => {
-                let identifyResult: IdentifyEntityOutput = {};
+                let identifyResult: IdentifyLabelsOutput = {};
                 // concatenate resolved promises to a single object
                 data.forEach(val => { identifyResult = { ...identifyResult, ...val }; });
                 res(identifyResult);
@@ -168,13 +168,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     /**
      * Calls Rekognition.detectLabels and organizes the returned data.
      * @param {Rekognition.DetectLabelsRequest} param - parameter to be passed onto Rekognition
-     * @return {Promise<IdentifyEntityOutput>} - Promise resolving to organized detectLabels response.
+     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
      */
-    private detectLabels(param: Rekognition.DetectLabelsRequest): Promise<IdentifyEntityOutput> {
+    private detectLabels(param: Rekognition.DetectLabelsRequest): Promise<IdentifyLabelsOutput> {
         return new Promise((res, rej) => {
             this.rekognition.detectLabels(param, (err, data) => {
                 if (err) return rej(err);
-                if (!data.Labels) return res({ entity: null }); // no image was detected
+                if (!data.Labels) return res({ labels: null }); // no image was detected
                 const detectLabelData = data.Labels.map(val => {
                     const boxes = val.Instances ?
                         val.Instances.map(val => makeCamelCase(val.BoundingBox)) : undefined;
@@ -187,7 +187,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                         }
                     };
                 });
-                return res({ entity: detectLabelData });
+                return res({ labels: detectLabelData });
             });
         });
     }
@@ -195,9 +195,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     /**
      * Calls Rekognition.detectModerationLabels and organizes the returned data.
      * @param {Rekognition.DetectLabelsRequest} param - Parameter to be passed onto Rekognition
-     * @return {Promise<IdentifyEntityOutput>} - Promise resolving to organized detectModerationLabels response.
+     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
      */
-    private detectModerationLabels(param: Rekognition.DetectFacesRequest): Promise<IdentifyEntityOutput> {
+    private detectModerationLabels(param: Rekognition.DetectFacesRequest): Promise<IdentifyLabelsOutput> {
         return new Promise((res, rej) => {
             this.rekognition.detectModerationLabels(param, (err, data) => {
                 if (err) return rej(err);
@@ -216,20 +216,25 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
      * @param {IdentifyEntityInput} input - object containing the source image and face match options.
      * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
      */
-    protected identifyFaces(input: IdentifyFacesInput): Promise<IdentifyFacesOutput> {
+    protected identifyEntities(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput> {
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-
+            const { identifyEntities: { 
+                region = "us-west-1", 
+                collection: collectionId = "", 
+                maxFaces: maxFacesConfig = 50, 
+                celebrityDetection: celebrityDetectionConfig = false
+            } = {} } = this._config;
             // default arguments
-            const collection: string = input.face.collection || this._config.identify.identifyFaces.collection;
-            const maxFaces: number = input.face.maxFaces || this._config.identify.identifyFaces.maxFaces;
+            const collection: string = input.entities.collection || collectionId;
+            const maxFaces: number = input.entities.maxFaces || maxFacesConfig;
             const celebrityDetection: boolean =
-                input.celebrityDetection || this._config.identify.identifyFaces.celebrityDetection;
+                input.celebrityDetection || celebrityDetectionConfig;
 
-            this.rekognition = new Rekognition({ region: this._config.identify.identifyEntities.region, credentials });
+            this.rekognition = new Rekognition({ region, credentials });
             let inputImage: Rekognition.Image;
-            await this.configureSource(input.face.source)
+            await this.configureSource(input.entities.source)
                 .then(data => inputImage = data)
                 .catch(err => { return rej(err); });
 
@@ -247,11 +252,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             }
                         };
                     });
-                    res({ face: faces });
+                    res({ entities: faces });
                 });
             } else if (collection) {
                 // Concatenate additional parameters
-                const updatedParam = { ...param, CollectionId: input.face.collection, MaxFaces: maxFaces };
+                const updatedParam = { ...param, CollectionId: input.entities.collection, MaxFaces: maxFaces };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
@@ -262,7 +267,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             similarity: val.Similarity,
                         };
                     });
-                    res({ face: faces });
+                    res({ entities: faces });
                 });
             } else {
                 this.rekognition.detectFaces(param, (err, data) => {
@@ -288,7 +293,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             } 
                         };
                     });
-                    res({ face: faces });
+                    res({ entities: faces });
                 });
             }
         });
