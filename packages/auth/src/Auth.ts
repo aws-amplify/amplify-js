@@ -1244,7 +1244,7 @@ export default class AuthClass {
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
                             if (isSignedInHostedUI) {
-                                return this._oAuthHandler.signOut().then(() => res());
+                                return res(this._oAuthHandler.signOut());
                             } else {
                                 return res();
                             }
@@ -1259,7 +1259,7 @@ export default class AuthClass {
                 logger.debug('user sign out', user);
                 user.signOut();
                 if (isSignedInHostedUI) {
-                    return this._oAuthHandler.signOut().then(() => res());
+                    return res(this._oAuthHandler.signOut());
                 } else {
                     return res();
                 }
@@ -1471,6 +1471,10 @@ export default class AuthClass {
                 ? options.provider
                 : (options as FederatedSignInOptionsCustom).customProvider;
 
+            const customState = isFederatedSignInOptions(options)
+                ? options.customState
+                : (options as FederatedSignInOptionsCustom).customState;
+
             if (this._config.userPoolId) {
                 const client_id = isCognitoHostedOpts(this._config.oauth)
                     ? this._config.userPoolWebClientId
@@ -1485,7 +1489,8 @@ export default class AuthClass {
                     this._config.oauth.domain,
                     redirect_uri,
                     client_id,
-                    provider);
+                    provider,
+                    customState);
 
             }
         } else {
@@ -1526,7 +1531,13 @@ export default class AuthClass {
             throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
-        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
+        dispatchAuthEvent(
+            'parsingCallbackUrl', 
+            { url: URL },
+            `The callback url is being parsed`
+        );
+
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')
@@ -1543,7 +1554,11 @@ export default class AuthClass {
         if (hasCodeOrError || hasTokenOrError) {
             try {
 
-                const { accessToken, idToken, refreshToken } = await this._oAuthHandler.handleAuthResponse(currentUrl);
+                const {
+                    accessToken,
+                    idToken,
+                    refreshToken,
+                    state } = await this._oAuthHandler.handleAuthResponse(currentUrl);
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: idToken }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: refreshToken }),
@@ -1556,6 +1571,13 @@ export default class AuthClass {
                     credentials = await Credentials.set(session, 'session');
                     logger.debug('AWS credentials', credentials);
                 }
+
+                /* 
+                Prior to the request we do sign the custom state along with the state we set. This check will verify
+                if there is a dash indicated when setting custom state from the request. If a dash is contained
+                then there is custom state present on the state string.
+                */
+                const isCustomStateIncluded = /-/.test(state);
 
                 /*The following is to create a user for the Cognito Identity SDK to store the tokens
                   When we remove this SDK later that logic will have to be centralized in our new version*/
@@ -1571,6 +1593,16 @@ export default class AuthClass {
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
                 );
+                
+                if (isCustomStateIncluded) {
+                    const [, customState] = state.split('-');
+
+                    dispatchAuthEvent(
+                        'customOAuthState',
+                        customState,
+                        `State for user ${currentUser.getUsername()}`
+                    );
+                }
 
                 // This calls cacheTokens() in Cognito SDK
                 currentUser.setSignInUserSession(session);
@@ -1592,6 +1624,11 @@ export default class AuthClass {
                     'cognitoHostedUI_failure',
                     err,
                     `A failure occurred when returning to the Cognito Hosted UI`
+                );
+                dispatchAuthEvent(
+                    'customState_failure',
+                    err,
+                    `A failure occurred when returning state`
                 );
                 throw err;
             }

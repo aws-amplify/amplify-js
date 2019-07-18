@@ -90,6 +90,12 @@ export default class SignIn extends AuthPiece {
             } else if (user.challengeName === 'MFA_SETUP') {
                 logger.debug('TOTP setup', user.challengeParam);
                 this.changeState('TOTPSetup', user);
+            } else if (user.challengeName === 'CUSTOM_CHALLENGE' &&
+                user.challengeParam &&
+                user.challengeParam.trigger === 'true'
+            ) {
+                logger.debug('custom challenge', user.challengeParam);
+                this.changeState('customConfirmSignIn', user);
             } else {
                 this.checkContact(user);
             }

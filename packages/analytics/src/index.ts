@@ -64,11 +64,15 @@ const storageEvent = (payload) => {
     const { data: { attrs, metrics }} = payload;
     if (!attrs) return;
 
-    Analytics.record({
-        name: 'Storage', 
-        attributes: attrs, 
-        metrics
-    });
+    if (analyticsConfigured) {
+        Analytics.record({
+            name: 'Storage', 
+            attributes: attrs, 
+            metrics
+        }).catch(e => {
+            logger.debug('Failed to send the storage event automatically', e);
+        });
+    }
 };
 
 const authEvent = (payload) => {
@@ -77,21 +81,33 @@ const authEvent = (payload) => {
 
     switch(event) {
         case 'signIn':
-            Analytics.record({
-                name: '_userauth.sign_in'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.sign_in'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign in event automatically', e);
+                });
+            }
             break;
         case 'signUp':
-            Analytics.record({
-                name: '_userauth.sign_up'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.sign_up'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign up event automatically', e);
+                });
+            }
             break;
         case 'signOut':
             break;
         case 'signIn_failure':
-            Analytics.record({
-                name: '_userauth.auth_fail'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.auth_fail'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign in failure event automatically', e);
+                });
+            }
             break;
         case 'configured':
             authConfigured = true;
