@@ -1,6 +1,6 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 
-export const button = cx('amplify-ui-button', css`
+export const button = css`
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
@@ -14,7 +14,7 @@ export const button = cx('amplify-ui-button', css`
   cursor: pointer;
   user-select: none;
   background-image: none;
-  color: var(--white);
+  color: var(--button-color);
   background-color: var(--button-background-color);
   border-color: #ccc;
   text-transform: uppercase;
@@ -33,4 +33,4 @@ export const button = cx('amplify-ui-button', css`
     cursor: auto;
     background-color: #ffc46d;
   }
-`);
+`;

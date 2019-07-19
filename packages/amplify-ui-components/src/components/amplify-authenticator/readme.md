@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property  | Attribute | Description | Type       | Default     |
-| --------- | --------- | ----------- | ---------- | ----------- |
-| `content` | --        |             | `Function` | `undefined` |
-| `signIn`  | --        |             | `Function` | `undefined` |
+| Property   | Attribute  | Description | Type       | Default     |
+| ---------- | ---------- | ----------- | ---------- | ----------- |
+| `content`  | --         |             | `Function` | `undefined` |
+| `override` | `override` |             | `boolean`  | `false`     |
+| `signIn`   | --         |             | `Function` | `undefined` |
 
 
 ## Events

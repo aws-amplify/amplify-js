@@ -7,9 +7,10 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type     | Default         |
-| -------- | --------- | ----------- | -------- | --------------- |
-| `role`   | `role`    |             | `string` | `'application'` |
+| Property        | Attribute        | Description | Type      | Default         |
+| --------------- | ---------------- | ----------- | --------- | --------------- |
+| `role`          | `role`           |             | `string`  | `'application'` |
+| `styleOverride` | `style-override` |             | `boolean` | `false`         |
 
 
 ## Dependencies

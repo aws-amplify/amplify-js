@@ -7,12 +7,13 @@
 
 ## Properties
 
-| Property     | Attribute  | Description | Type                                                 | Default     |
-| ------------ | ---------- | ----------- | ---------------------------------------------------- | ----------- |
-| `fieldId`    | `field-id` |             | `string`                                             | `undefined` |
-| `hint`       | `hint`     |             | `string`                                             | `undefined` |
-| `inputProps` | --         |             | `{ type?: string; onInput?: (Event: any) => void; }` | `{}`        |
-| `label`      | `label`    |             | `string`                                             | `undefined` |
+| Property        | Attribute        | Description | Type                                                 | Default     |
+| --------------- | ---------------- | ----------- | ---------------------------------------------------- | ----------- |
+| `fieldId`       | `field-id`       |             | `string`                                             | `undefined` |
+| `hint`          | `hint`           |             | `string`                                             | `undefined` |
+| `inputProps`    | --               |             | `{ type?: string; onInput?: (Event: any) => void; }` | `{}`        |
+| `label`         | `label`          |             | `string`                                             | `undefined` |
+| `styleOverride` | `style-override` |             | `boolean`                                            | `false`     |
 
 
 ## Dependencies

@@ -1,9 +1,9 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 
-export const link = cx('amplify-ui-link', css`
+export const link = css`
   color: #ff9900;
   cursor: pointer;
   :hover {
     text-decoration: underline;
   }
-`);
+`;

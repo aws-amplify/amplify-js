@@ -35,11 +35,11 @@ export class RockPaperScissor {
   @Prop() icon: Function;
 
   @State() currentIcon: Icon = getRandomIcon();
-  @Event() change: EventEmitter;
+  @Event() iconChange: EventEmitter;
 
   @Watch('currentIcon')
   watchCurrentIcon(currentIcon) {
-    this.change.emit(currentIcon);
+    this.iconChange.emit(currentIcon);
   }
 
   handleClick = () => {

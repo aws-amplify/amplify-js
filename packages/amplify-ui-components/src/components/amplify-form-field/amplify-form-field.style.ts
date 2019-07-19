@@ -1,5 +1,5 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 
-export const formField = cx('amplify-ui-form-field', css`
+export const formField = css`
   margin-bottom: 22px;
-`);
+`;

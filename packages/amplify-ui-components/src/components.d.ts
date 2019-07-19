@@ -11,11 +11,12 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 export namespace Components {
   interface AmplifyAuthenticator {
     'content': Function;
+    'override': boolean;
     'signIn': Function;
   }
   interface AmplifyButton {
-    'primaryColor': string;
     'role': string;
+    'styleOverride': boolean;
     'type': string;
   }
   interface AmplifyExamples {}
@@ -27,13 +28,18 @@ export namespace Components {
       onInput?: (Event) => void;
     };
     'label': string | null;
+    'styleOverride': boolean;
   }
-  interface AmplifyHint {}
+  interface AmplifyHint {
+    'styleOverride': boolean;
+  }
   interface AmplifyLabel {
     'htmlFor': string;
+    'styleOverride': boolean;
   }
   interface AmplifyLink {
     'role': string;
+    'styleOverride': boolean;
   }
   interface AmplifySceneLoading {
     'loadPercentage': number;
@@ -42,10 +48,14 @@ export namespace Components {
   }
   interface AmplifySection {
     'role': string;
+    'styleOverride': boolean;
   }
-  interface AmplifySectionHeader {}
+  interface AmplifySectionHeader {
+    'styleOverride': boolean;
+  }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
+    'styleOverride': boolean;
     'validationErrors': string;
   }
   interface AmplifySignInPasswordField {
@@ -215,11 +225,12 @@ declare namespace LocalJSX {
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
     'content'?: Function;
     'onAuthStateChange'?: (event: CustomEvent<any>) => void;
+    'override'?: boolean;
     'signIn'?: Function;
   }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
-    'primaryColor'?: string;
     'role'?: string;
+    'styleOverride'?: boolean;
     'type'?: string;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
@@ -231,13 +242,18 @@ declare namespace LocalJSX {
       onInput?: (Event) => void;
     };
     'label'?: string | null;
+    'styleOverride'?: boolean;
   }
-  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
+  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
+    'styleOverride'?: boolean;
+  }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
+    'styleOverride'?: boolean;
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
     'role'?: string;
+    'styleOverride'?: boolean;
   }
   interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
@@ -246,10 +262,14 @@ declare namespace LocalJSX {
   }
   interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
     'role'?: string;
+    'styleOverride'?: boolean;
   }
-  interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {}
+  interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {
+    'styleOverride'?: boolean;
+  }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;
+    'styleOverride'?: boolean;
     'validationErrors'?: string;
   }
   interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
@@ -294,7 +314,7 @@ declare namespace LocalJSX {
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
-    'onChange'?: (event: CustomEvent<any>) => void;
+    'onIconChange'?: (event: CustomEvent<any>) => void;
   }
 
   interface IntrinsicElements {

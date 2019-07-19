@@ -1,8 +1,8 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 
-export const sectionHeader = cx('amplify-ui-section-header', css`
-  color: #152939;
+export const sectionHeader = css`
+  color: var(--section-header-color);
   margin-bottom: 24px;
   font-size: 18px;
   font-weight: 500;
-`);
+`;

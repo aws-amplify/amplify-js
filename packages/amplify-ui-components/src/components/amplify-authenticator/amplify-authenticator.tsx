@@ -8,6 +8,7 @@ import Tunnel from './Tunnel';
 export class AmplifyAuthenticator {
   @Prop() signIn: Function;
   @Prop() content: Function;
+  @Prop() override: boolean = false;
 
   @State() authState: AuthState = AuthState.LoggedOut;
   @State() userData: UserData = {};
@@ -59,7 +60,7 @@ export class AmplifyAuthenticator {
       handleUsernameChange: this.handleUsernameChange,
       handlePasswordChange: this.handlePasswordChange,
     };
-    const signInProps = { handleSubmit: this.handleSignInSubmit, validationErrors: this.validationErrors };
+    const signInProps = { handleSubmit: this.handleSignInSubmit, validationErrors: this.validationErrors, styleOverride: this.override };
     const contentProps = { ...this.userData, signOut: this.handleSignOut };
     return (
       <Tunnel.Provider state={tunnerState}>
