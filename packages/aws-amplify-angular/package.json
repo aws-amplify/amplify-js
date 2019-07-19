@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.7-unstable.0",
+  "version": "3.0.7",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -69,7 +69,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@aws-amplify/ui": "1.0.22-unstable.0",
+    "@aws-amplify/ui": "^1.0.22",
     "rxjs-compat": "^6.2.1"
   }
 }
