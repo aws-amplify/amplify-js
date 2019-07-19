@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.6-unstable.3",
+  "version": "3.0.7",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -13,6 +13,7 @@
     "package": "rollup -c rollup.config.js",
     "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
     "build": "npm run transpile && npm run package && npm run minify && npm run declarations",
+    "format": "echo \"Not implemented\"",
     "declarations": "ngc --p ./declarations/"
   },
   "jest": {
@@ -68,7 +69,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@aws-amplify/ui": "1.0.21-unstable.0",
+    "@aws-amplify/ui": "^1.0.22",
     "rxjs-compat": "^6.2.1"
   }
 }
