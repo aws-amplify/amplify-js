@@ -1,0 +1,1424 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PhoneField render correctly 1`] = `
+<Component
+  key="phone_number"
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "amazonSignInButton": Object {},
+      "button": Object {},
+      "container": Object {},
+      "facebookSignInButton": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "googleSignInButton": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "label": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
+      "oAuthSignInButton": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+      "toast": Object {},
+    }
+  }
+>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Phone Number
+     *
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    <select
+      data-test="dial-code-select"
+      defaultValue="+1"
+      name="dial_code"
+      onChange={[Function]}
+    >
+      <option
+        key="+1"
+        value="+1"
+      >
+        +1
+      </option>
+      <option
+        key="+7"
+        value="+7"
+      >
+        +7
+      </option>
+      <option
+        key="+20"
+        value="+20"
+      >
+        +20
+      </option>
+      <option
+        key="+27"
+        value="+27"
+      >
+        +27
+      </option>
+      <option
+        key="+30"
+        value="+30"
+      >
+        +30
+      </option>
+      <option
+        key="+31"
+        value="+31"
+      >
+        +31
+      </option>
+      <option
+        key="+32"
+        value="+32"
+      >
+        +32
+      </option>
+      <option
+        key="+33"
+        value="+33"
+      >
+        +33
+      </option>
+      <option
+        key="+34"
+        value="+34"
+      >
+        +34
+      </option>
+      <option
+        key="+36"
+        value="+36"
+      >
+        +36
+      </option>
+      <option
+        key="+39"
+        value="+39"
+      >
+        +39
+      </option>
+      <option
+        key="+40"
+        value="+40"
+      >
+        +40
+      </option>
+      <option
+        key="+41"
+        value="+41"
+      >
+        +41
+      </option>
+      <option
+        key="+43"
+        value="+43"
+      >
+        +43
+      </option>
+      <option
+        key="+44"
+        value="+44"
+      >
+        +44
+      </option>
+      <option
+        key="+45"
+        value="+45"
+      >
+        +45
+      </option>
+      <option
+        key="+46"
+        value="+46"
+      >
+        +46
+      </option>
+      <option
+        key="+47"
+        value="+47"
+      >
+        +47
+      </option>
+      <option
+        key="+48"
+        value="+48"
+      >
+        +48
+      </option>
+      <option
+        key="+49"
+        value="+49"
+      >
+        +49
+      </option>
+      <option
+        key="+51"
+        value="+51"
+      >
+        +51
+      </option>
+      <option
+        key="+52"
+        value="+52"
+      >
+        +52
+      </option>
+      <option
+        key="+53"
+        value="+53"
+      >
+        +53
+      </option>
+      <option
+        key="+54"
+        value="+54"
+      >
+        +54
+      </option>
+      <option
+        key="+55"
+        value="+55"
+      >
+        +55
+      </option>
+      <option
+        key="+56"
+        value="+56"
+      >
+        +56
+      </option>
+      <option
+        key="+57"
+        value="+57"
+      >
+        +57
+      </option>
+      <option
+        key="+58"
+        value="+58"
+      >
+        +58
+      </option>
+      <option
+        key="+60"
+        value="+60"
+      >
+        +60
+      </option>
+      <option
+        key="+61"
+        value="+61"
+      >
+        +61
+      </option>
+      <option
+        key="+62"
+        value="+62"
+      >
+        +62
+      </option>
+      <option
+        key="+63"
+        value="+63"
+      >
+        +63
+      </option>
+      <option
+        key="+64"
+        value="+64"
+      >
+        +64
+      </option>
+      <option
+        key="+65"
+        value="+65"
+      >
+        +65
+      </option>
+      <option
+        key="+66"
+        value="+66"
+      >
+        +66
+      </option>
+      <option
+        key="+81"
+        value="+81"
+      >
+        +81
+      </option>
+      <option
+        key="+82"
+        value="+82"
+      >
+        +82
+      </option>
+      <option
+        key="+84"
+        value="+84"
+      >
+        +84
+      </option>
+      <option
+        key="+86"
+        value="+86"
+      >
+        +86
+      </option>
+      <option
+        key="+90"
+        value="+90"
+      >
+        +90
+      </option>
+      <option
+        key="+91"
+        value="+91"
+      >
+        +91
+      </option>
+      <option
+        key="+92"
+        value="+92"
+      >
+        +92
+      </option>
+      <option
+        key="+93"
+        value="+93"
+      >
+        +93
+      </option>
+      <option
+        key="+94"
+        value="+94"
+      >
+        +94
+      </option>
+      <option
+        key="+95"
+        value="+95"
+      >
+        +95
+      </option>
+      <option
+        key="+98"
+        value="+98"
+      >
+        +98
+      </option>
+      <option
+        key="+212"
+        value="+212"
+      >
+        +212
+      </option>
+      <option
+        key="+213"
+        value="+213"
+      >
+        +213
+      </option>
+      <option
+        key="+216"
+        value="+216"
+      >
+        +216
+      </option>
+      <option
+        key="+218"
+        value="+218"
+      >
+        +218
+      </option>
+      <option
+        key="+220"
+        value="+220"
+      >
+        +220
+      </option>
+      <option
+        key="+221"
+        value="+221"
+      >
+        +221
+      </option>
+      <option
+        key="+222"
+        value="+222"
+      >
+        +222
+      </option>
+      <option
+        key="+223"
+        value="+223"
+      >
+        +223
+      </option>
+      <option
+        key="+224"
+        value="+224"
+      >
+        +224
+      </option>
+      <option
+        key="+225"
+        value="+225"
+      >
+        +225
+      </option>
+      <option
+        key="+226"
+        value="+226"
+      >
+        +226
+      </option>
+      <option
+        key="+227"
+        value="+227"
+      >
+        +227
+      </option>
+      <option
+        key="+228"
+        value="+228"
+      >
+        +228
+      </option>
+      <option
+        key="+229"
+        value="+229"
+      >
+        +229
+      </option>
+      <option
+        key="+230"
+        value="+230"
+      >
+        +230
+      </option>
+      <option
+        key="+231"
+        value="+231"
+      >
+        +231
+      </option>
+      <option
+        key="+232"
+        value="+232"
+      >
+        +232
+      </option>
+      <option
+        key="+233"
+        value="+233"
+      >
+        +233
+      </option>
+      <option
+        key="+234"
+        value="+234"
+      >
+        +234
+      </option>
+      <option
+        key="+235"
+        value="+235"
+      >
+        +235
+      </option>
+      <option
+        key="+236"
+        value="+236"
+      >
+        +236
+      </option>
+      <option
+        key="+237"
+        value="+237"
+      >
+        +237
+      </option>
+      <option
+        key="+238"
+        value="+238"
+      >
+        +238
+      </option>
+      <option
+        key="+239"
+        value="+239"
+      >
+        +239
+      </option>
+      <option
+        key="+240"
+        value="+240"
+      >
+        +240
+      </option>
+      <option
+        key="+241"
+        value="+241"
+      >
+        +241
+      </option>
+      <option
+        key="+242"
+        value="+242"
+      >
+        +242
+      </option>
+      <option
+        key="+243"
+        value="+243"
+      >
+        +243
+      </option>
+      <option
+        key="+244"
+        value="+244"
+      >
+        +244
+      </option>
+      <option
+        key="+245"
+        value="+245"
+      >
+        +245
+      </option>
+      <option
+        key="+246"
+        value="+246"
+      >
+        +246
+      </option>
+      <option
+        key="+248"
+        value="+248"
+      >
+        +248
+      </option>
+      <option
+        key="+249"
+        value="+249"
+      >
+        +249
+      </option>
+      <option
+        key="+250"
+        value="+250"
+      >
+        +250
+      </option>
+      <option
+        key="+251"
+        value="+251"
+      >
+        +251
+      </option>
+      <option
+        key="+252"
+        value="+252"
+      >
+        +252
+      </option>
+      <option
+        key="+253"
+        value="+253"
+      >
+        +253
+      </option>
+      <option
+        key="+254"
+        value="+254"
+      >
+        +254
+      </option>
+      <option
+        key="+255"
+        value="+255"
+      >
+        +255
+      </option>
+      <option
+        key="+256"
+        value="+256"
+      >
+        +256
+      </option>
+      <option
+        key="+257"
+        value="+257"
+      >
+        +257
+      </option>
+      <option
+        key="+258"
+        value="+258"
+      >
+        +258
+      </option>
+      <option
+        key="+260"
+        value="+260"
+      >
+        +260
+      </option>
+      <option
+        key="+261"
+        value="+261"
+      >
+        +261
+      </option>
+      <option
+        key="+262"
+        value="+262"
+      >
+        +262
+      </option>
+      <option
+        key="+263"
+        value="+263"
+      >
+        +263
+      </option>
+      <option
+        key="+264"
+        value="+264"
+      >
+        +264
+      </option>
+      <option
+        key="+265"
+        value="+265"
+      >
+        +265
+      </option>
+      <option
+        key="+266"
+        value="+266"
+      >
+        +266
+      </option>
+      <option
+        key="+267"
+        value="+267"
+      >
+        +267
+      </option>
+      <option
+        key="+268"
+        value="+268"
+      >
+        +268
+      </option>
+      <option
+        key="+269"
+        value="+269"
+      >
+        +269
+      </option>
+      <option
+        key="+290"
+        value="+290"
+      >
+        +290
+      </option>
+      <option
+        key="+291"
+        value="+291"
+      >
+        +291
+      </option>
+      <option
+        key="+297"
+        value="+297"
+      >
+        +297
+      </option>
+      <option
+        key="+298"
+        value="+298"
+      >
+        +298
+      </option>
+      <option
+        key="+299"
+        value="+299"
+      >
+        +299
+      </option>
+      <option
+        key="+345"
+        value="+345"
+      >
+        +345
+      </option>
+      <option
+        key="+350"
+        value="+350"
+      >
+        +350
+      </option>
+      <option
+        key="+351"
+        value="+351"
+      >
+        +351
+      </option>
+      <option
+        key="+352"
+        value="+352"
+      >
+        +352
+      </option>
+      <option
+        key="+353"
+        value="+353"
+      >
+        +353
+      </option>
+      <option
+        key="+354"
+        value="+354"
+      >
+        +354
+      </option>
+      <option
+        key="+355"
+        value="+355"
+      >
+        +355
+      </option>
+      <option
+        key="+356"
+        value="+356"
+      >
+        +356
+      </option>
+      <option
+        key="+357"
+        value="+357"
+      >
+        +357
+      </option>
+      <option
+        key="+358"
+        value="+358"
+      >
+        +358
+      </option>
+      <option
+        key="+359"
+        value="+359"
+      >
+        +359
+      </option>
+      <option
+        key="+370"
+        value="+370"
+      >
+        +370
+      </option>
+      <option
+        key="+371"
+        value="+371"
+      >
+        +371
+      </option>
+      <option
+        key="+372"
+        value="+372"
+      >
+        +372
+      </option>
+      <option
+        key="+373"
+        value="+373"
+      >
+        +373
+      </option>
+      <option
+        key="+374"
+        value="+374"
+      >
+        +374
+      </option>
+      <option
+        key="+375"
+        value="+375"
+      >
+        +375
+      </option>
+      <option
+        key="+376"
+        value="+376"
+      >
+        +376
+      </option>
+      <option
+        key="+377"
+        value="+377"
+      >
+        +377
+      </option>
+      <option
+        key="+378"
+        value="+378"
+      >
+        +378
+      </option>
+      <option
+        key="+379"
+        value="+379"
+      >
+        +379
+      </option>
+      <option
+        key="+380"
+        value="+380"
+      >
+        +380
+      </option>
+      <option
+        key="+381"
+        value="+381"
+      >
+        +381
+      </option>
+      <option
+        key="+382"
+        value="+382"
+      >
+        +382
+      </option>
+      <option
+        key="+385"
+        value="+385"
+      >
+        +385
+      </option>
+      <option
+        key="+386"
+        value="+386"
+      >
+        +386
+      </option>
+      <option
+        key="+387"
+        value="+387"
+      >
+        +387
+      </option>
+      <option
+        key="+389"
+        value="+389"
+      >
+        +389
+      </option>
+      <option
+        key="+420"
+        value="+420"
+      >
+        +420
+      </option>
+      <option
+        key="+421"
+        value="+421"
+      >
+        +421
+      </option>
+      <option
+        key="+423"
+        value="+423"
+      >
+        +423
+      </option>
+      <option
+        key="+500"
+        value="+500"
+      >
+        +500
+      </option>
+      <option
+        key="+501"
+        value="+501"
+      >
+        +501
+      </option>
+      <option
+        key="+502"
+        value="+502"
+      >
+        +502
+      </option>
+      <option
+        key="+503"
+        value="+503"
+      >
+        +503
+      </option>
+      <option
+        key="+504"
+        value="+504"
+      >
+        +504
+      </option>
+      <option
+        key="+505"
+        value="+505"
+      >
+        +505
+      </option>
+      <option
+        key="+506"
+        value="+506"
+      >
+        +506
+      </option>
+      <option
+        key="+507"
+        value="+507"
+      >
+        +507
+      </option>
+      <option
+        key="+508"
+        value="+508"
+      >
+        +508
+      </option>
+      <option
+        key="+509"
+        value="+509"
+      >
+        +509
+      </option>
+      <option
+        key="+537"
+        value="+537"
+      >
+        +537
+      </option>
+      <option
+        key="+590"
+        value="+590"
+      >
+        +590
+      </option>
+      <option
+        key="+591"
+        value="+591"
+      >
+        +591
+      </option>
+      <option
+        key="+593"
+        value="+593"
+      >
+        +593
+      </option>
+      <option
+        key="+594"
+        value="+594"
+      >
+        +594
+      </option>
+      <option
+        key="+595"
+        value="+595"
+      >
+        +595
+      </option>
+      <option
+        key="+596"
+        value="+596"
+      >
+        +596
+      </option>
+      <option
+        key="+597"
+        value="+597"
+      >
+        +597
+      </option>
+      <option
+        key="+598"
+        value="+598"
+      >
+        +598
+      </option>
+      <option
+        key="+599"
+        value="+599"
+      >
+        +599
+      </option>
+      <option
+        key="+670"
+        value="+670"
+      >
+        +670
+      </option>
+      <option
+        key="+672"
+        value="+672"
+      >
+        +672
+      </option>
+      <option
+        key="+673"
+        value="+673"
+      >
+        +673
+      </option>
+      <option
+        key="+674"
+        value="+674"
+      >
+        +674
+      </option>
+      <option
+        key="+675"
+        value="+675"
+      >
+        +675
+      </option>
+      <option
+        key="+676"
+        value="+676"
+      >
+        +676
+      </option>
+      <option
+        key="+677"
+        value="+677"
+      >
+        +677
+      </option>
+      <option
+        key="+678"
+        value="+678"
+      >
+        +678
+      </option>
+      <option
+        key="+679"
+        value="+679"
+      >
+        +679
+      </option>
+      <option
+        key="+680"
+        value="+680"
+      >
+        +680
+      </option>
+      <option
+        key="+681"
+        value="+681"
+      >
+        +681
+      </option>
+      <option
+        key="+682"
+        value="+682"
+      >
+        +682
+      </option>
+      <option
+        key="+683"
+        value="+683"
+      >
+        +683
+      </option>
+      <option
+        key="+685"
+        value="+685"
+      >
+        +685
+      </option>
+      <option
+        key="+686"
+        value="+686"
+      >
+        +686
+      </option>
+      <option
+        key="+687"
+        value="+687"
+      >
+        +687
+      </option>
+      <option
+        key="+688"
+        value="+688"
+      >
+        +688
+      </option>
+      <option
+        key="+689"
+        value="+689"
+      >
+        +689
+      </option>
+      <option
+        key="+690"
+        value="+690"
+      >
+        +690
+      </option>
+      <option
+        key="+691"
+        value="+691"
+      >
+        +691
+      </option>
+      <option
+        key="+692"
+        value="+692"
+      >
+        +692
+      </option>
+      <option
+        key="+850"
+        value="+850"
+      >
+        +850
+      </option>
+      <option
+        key="+852"
+        value="+852"
+      >
+        +852
+      </option>
+      <option
+        key="+853"
+        value="+853"
+      >
+        +853
+      </option>
+      <option
+        key="+855"
+        value="+855"
+      >
+        +855
+      </option>
+      <option
+        key="+856"
+        value="+856"
+      >
+        +856
+      </option>
+      <option
+        key="+872"
+        value="+872"
+      >
+        +872
+      </option>
+      <option
+        key="+880"
+        value="+880"
+      >
+        +880
+      </option>
+      <option
+        key="+886"
+        value="+886"
+      >
+        +886
+      </option>
+      <option
+        key="+960"
+        value="+960"
+      >
+        +960
+      </option>
+      <option
+        key="+961"
+        value="+961"
+      >
+        +961
+      </option>
+      <option
+        key="+962"
+        value="+962"
+      >
+        +962
+      </option>
+      <option
+        key="+963"
+        value="+963"
+      >
+        +963
+      </option>
+      <option
+        key="+964"
+        value="+964"
+      >
+        +964
+      </option>
+      <option
+        key="+965"
+        value="+965"
+      >
+        +965
+      </option>
+      <option
+        key="+966"
+        value="+966"
+      >
+        +966
+      </option>
+      <option
+        key="+967"
+        value="+967"
+      >
+        +967
+      </option>
+      <option
+        key="+968"
+        value="+968"
+      >
+        +968
+      </option>
+      <option
+        key="+970"
+        value="+970"
+      >
+        +970
+      </option>
+      <option
+        key="+971"
+        value="+971"
+      >
+        +971
+      </option>
+      <option
+        key="+972"
+        value="+972"
+      >
+        +972
+      </option>
+      <option
+        key="+973"
+        value="+973"
+      >
+        +973
+      </option>
+      <option
+        key="+974"
+        value="+974"
+      >
+        +974
+      </option>
+      <option
+        key="+975"
+        value="+975"
+      >
+        +975
+      </option>
+      <option
+        key="+976"
+        value="+976"
+      >
+        +976
+      </option>
+      <option
+        key="+977"
+        value="+977"
+      >
+        +977
+      </option>
+      <option
+        key="+992"
+        value="+992"
+      >
+        +992
+      </option>
+      <option
+        key="+993"
+        value="+993"
+      >
+        +993
+      </option>
+      <option
+        key="+994"
+        value="+994"
+      >
+        +994
+      </option>
+      <option
+        key="+995"
+        value="+995"
+      >
+        +995
+      </option>
+      <option
+        key="+996"
+        value="+996"
+      >
+        +996
+      </option>
+      <option
+        key="+998"
+        value="+998"
+      >
+        +998
+      </option>
+    </select>
+    <Component
+      data-test="phone-number-input"
+      id="phone_line_number"
+      key="phone_line_number"
+      name="phone_line_number"
+      onChange={[Function]}
+      placeholder="Enter your phone number"
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "amazonSignInButton": Object {},
+          "button": Object {},
+          "container": Object {},
+          "facebookSignInButton": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "googleSignInButton": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "label": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
+          "oAuthSignInButton": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+          "toast": Object {},
+        }
+      }
+      type="tel"
+    />
+  </Component>
+</Component>
+`;

@@ -62,8 +62,8 @@ export default class Authenticator extends Component {
         // instead waiting for the hub event sent from Auth module
         // the item in the localStorage is a mark to indicate whether
         // the app is redirected back from Hosted UI or not
-        const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
+        const byHostedUI = localStorage.getItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+        localStorage.removeItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
         if (byHostedUI !== 'true') this.checkUser();
     }
 
@@ -113,6 +113,9 @@ export default class Authenticator extends Component {
                     break;
                 case 'customGreetingSignOut':
                     this.handleStateChange('signIn', null);
+                    break;
+                case 'parsingCallbackUrl':
+                    localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
                     break;
                 default:
                     break;
