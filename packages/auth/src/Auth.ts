@@ -1537,7 +1537,7 @@ export default class AuthClass {
             `The callback url is being parsed`
         );
 
-        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')

@@ -12603,11 +12603,15 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
 </Component>
 `;
 
+exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 4`] = `""`;
+
 exports[`SignIn normal case render correctly with hide 1`] = `""`;
 
 exports[`SignIn normal case render correctly with hide 2`] = `""`;
 
 exports[`SignIn normal case render correctly with hide 3`] = `""`;
+
+exports[`SignIn normal case render correctly with hide 4`] = `""`;
 
 exports[`SignIn null case with other authState render corrently 1`] = `""`;
 
