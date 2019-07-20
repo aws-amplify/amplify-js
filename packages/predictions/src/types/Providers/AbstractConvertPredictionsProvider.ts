@@ -10,7 +10,7 @@ const logger = new Logger('AbstractConvertPredictionsProvider');
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
 
     getCategory(): string {
-        return "convert";
+        return "Convert";
     }
 
     convert(input: TranslateTextInput): Promise<TranslateTextOutput>;

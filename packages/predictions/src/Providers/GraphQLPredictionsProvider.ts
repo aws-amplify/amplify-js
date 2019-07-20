@@ -1,8 +1,10 @@
 import { AbstractPredictionsProvider } from "../types/Providers";
 import {
-    TranslateTextInput, TextToSpeechInput, SpeechToTextInput, IdentifyLabelsInput, IdentifyEntitiesInput, 
+    TranslateTextInput, TextToSpeechInput, SpeechToTextInput, IdentifyLabelsInput, IdentifyEntitiesInput,
     IdentifyTextInput, IdentifyTextOutput, IdentifyLabelsOutput, IdentifyEntitiesOutput,
-    TextToSpeechOutput, TranslateTextOutput,  SpeechToTextOutput} from '../types';
+    TextToSpeechOutput, TranslateTextOutput, SpeechToTextOutput, InterpretTextInput,
+    InterpretTextOutput
+} from '../types';
 
 export default class GraphQLPredictionsProvider extends AbstractPredictionsProvider {
 
@@ -33,7 +35,7 @@ export default class GraphQLPredictionsProvider extends AbstractPredictionsProvi
         return this.orchestrateWithGraphQL(input);
     }
 
-    interpret(input: any): Promise<any> {
+    interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
         return this.orchestrateWithGraphQL(input);
     }
 

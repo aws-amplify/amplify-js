@@ -15,8 +15,11 @@ import PredictionsClass from './Predictions';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
     AmazonAIConvertPredictionsProvider, AmazonAIIdentifyPredictionsProvider,
-    AmazonAIPredictionsProvider, GraphQLPredictionsProvider
+    AmazonAIPredictionsProvider, GraphQLPredictionsProvider, AmazonAIInferPredictionsProvider,
+    AmazonAIInterpretPredictionsProvider,
 } from './Providers';
+
+import { InterpretTextCategories } from './types';
 const logger = new Logger('PubSub');
 
 let _instance: PredictionsClass = null;
@@ -32,5 +35,6 @@ Amplify.register(Predictions);
 export default Predictions;
 export {
     AmazonAIIdentifyPredictionsProvider, AmazonAIConvertPredictionsProvider,
-    AmazonAIPredictionsProvider, GraphQLPredictionsProvider
+    AmazonAIPredictionsProvider, GraphQLPredictionsProvider, AmazonAIInferPredictionsProvider,
+    AmazonAIInterpretPredictionsProvider, InterpretTextCategories
 };

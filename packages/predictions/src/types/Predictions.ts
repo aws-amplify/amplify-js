@@ -16,6 +16,77 @@ export interface ProviderOptions {
  * Convert types
  */
 
+export enum InterpretTextCategories {
+    ALL = "ALL",
+    LANGUAGE = "LANGUAGE",
+    ENTITIES = "ENTITIES",
+    SENTIMENT = "SENTIMENT",
+    SYNTAX = "SYNTAX",
+    KEY_PHRASES = "KEY_PHRASES"
+}
+
+export interface InterpretTextInput {
+    text: InterpretTextInputLanguage | InterpretTextOthers | InterpretTextAll
+}
+
+export interface InterpretTextInputLanguage {
+    source: {
+        text: string,
+    },
+    type: InterpretTextCategories.LANGUAGE
+}
+
+export interface InterpretTextOthers {
+    source: {
+        text: string,
+        language: LanguageCode
+    },
+    type: InterpretTextCategories.ENTITIES |
+    InterpretTextCategories.SENTIMENT |
+    InterpretTextCategories.SYNTAX |
+    InterpretTextCategories.KEY_PHRASES,
+}
+
+export interface InterpretTextAll {
+    source: {
+        text: string,
+    },
+    type: InterpretTextCategories.ALL
+}
+
+export interface TextEntities {
+    type: string,
+    text: string,
+}
+
+export interface KeyPhrases {
+    text: string,
+}
+
+
+export interface TextSyntax {
+    text: string,
+    syntax: string
+}
+
+export interface TextSentiment {
+    predominant: string,
+    positive: number,
+    negative: number,
+    neutral: number,
+    mixed: number
+}
+
+export interface InterpretTextOutput {
+    textInterpretation: {
+        language?: LanguageCode,
+        textEntities?: Array<TextEntities>,
+        keyPhrases?: Array<KeyPhrases>,
+        sentiment?: TextSentiment,
+        syntax?: Array<TextSyntax>
+    }
+}
+
 export interface TranslateTextInput {
     translateText: {
         source: {
@@ -56,15 +127,15 @@ export interface StorageSource {
     identityId?: string,
 }
 
- export interface FileSource {
+export interface FileSource {
     file: File
 }
 
- export interface BytesSource {
+export interface BytesSource {
     bytes: Buffer | ArrayBuffer | Blob | string
 }
 
- export type ConvertSource = StorageSource | FileSource | BytesSource;
+export type ConvertSource = StorageSource | FileSource | BytesSource;
 
 export interface SpeechToTextInput {
     transcription: {
@@ -187,12 +258,23 @@ export interface IdentifyLabelsOutput {
 }
 
 export interface IdentifyEntitiesInput {
-    entities: {
-        source: IdentifySource,
-        collection?: string,
-        maxFaces?: number,
-    },
-    celebrityDetection?: Boolean
+    entities: IdentifyFromCollection | IdentifyCelebrities | IdentifyEntities
+}
+
+export interface IdentifyFromCollection {
+    source: IdentifySource,
+    collection: true,
+    collectionId?: string,
+    maxFaces?: number,
+}
+
+export interface IdentifyCelebrities {
+    source: IdentifySource,
+    celebrityDetection: true
+}
+
+export interface IdentifyEntities {
+    source: IdentifySource
 }
 
 export interface FaceAttributes {
@@ -224,6 +306,15 @@ export interface IdentifyEntitiesOutput {
     }[]
 }
 
+export function isIdentifyFromCollection(obj: any): obj is IdentifyFromCollection {
+    const key: keyof IdentifyFromCollection = 'collection';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
+    const key: keyof IdentifyCelebrities = 'celebrityDetection';
+    return obj && obj.hasOwnProperty(key);
+}
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
     const key: keyof TranslateTextInput = 'translateText';
@@ -267,5 +358,10 @@ export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 
 export function isIdentifyEntitiesInput(obj: any): obj is IdentifyEntitiesInput {
     const key: keyof IdentifyEntitiesInput = 'entities';
+    return obj && obj.hasOwnProperty(key);
+}
+
+export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
+    const key: keyof InterpretTextInput = 'text';
     return obj && obj.hasOwnProperty(key);
 }

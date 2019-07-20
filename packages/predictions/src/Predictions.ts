@@ -18,7 +18,10 @@ import {
     IdentifyEntitiesOutput,
     isIdentifyTextInput,
     isIdentifyLabelsInput,
-    isIdentifyEntitiesInput
+    isIdentifyEntitiesInput,
+    InterpretTextOutput,
+    InterpretTextInput,
+    isInterpretTextInput
 } from "./types";
 import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
@@ -122,11 +125,19 @@ export default class Predictions {
         this.getAllProviders().forEach(pluggable => this.configurePluggable(pluggable));
     }
 
+    public interpret(input: InterpretTextInput, options?: ProviderOptions): Promise<InterpretTextOutput>;
+    public interpret(input: InterpretTextInput, options?: ProviderOptions): Promise<InterpretTextOutput> {
+        const pluggableToExecute = this.getPluggableToExecute(this._interpretPluggables, options);
+        if (isInterpretTextInput(input)) {
+            return pluggableToExecute.interpret(input);
+        }
+    }
+
     public convert(input: TranslateTextInput, options?: ProviderOptions): Promise<TranslateTextOutput>;
     public convert(input: TextToSpeechInput, options?: ProviderOptions): Promise<TextToSpeechOutput>;
     public convert(input: SpeechToTextInput, options?: ProviderOptions): Promise<SpeechToTextOutput>;
-    public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
-        options?: ProviderOptions): Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
+    public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput, options?: ProviderOptions):
+        Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
         if (isTranslateTextInput(input)) {
             return pluggableToExecute.convert(input);
@@ -198,7 +209,7 @@ export default class Predictions {
     }
 
     private isInterpretPluggable(obj: any): obj is AbstractInterpretPredictionsProvider {
-        return obj && (obj.getCategory() === "Interpret");
+        return obj && (obj.getCategory() === "interpret");
     }
 
     private isInferPluggable(obj: any): obj is AbstractInferPredictionsProvider {

@@ -1,22 +1,29 @@
 import { AbstractPredictionsProvider } from "../types/Providers";
-import { AmazonAIConvertPredictionsProvider, GraphQLPredictionsProvider } from ".";
+import {
+    AmazonAIConvertPredictionsProvider,
+    GraphQLPredictionsProvider,
+    AmazonAIInterpretPredictionsProvider,
+    AmazonAIIdentifyPredictionsProvider
+} from ".";
 import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOptions, IdentifyTextInput, 
     IdentifyTextOutput, IdentifyLabelsInput, IdentifyLabelsOutput, IdentifyEntitiesInput, IdentifyEntitiesOutput, 
     isIdentifyTextInput, isIdentifyLabelsInput, isIdentifyEntitiesInput, TranslateTextOutput,
-    TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput
+    TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput,
+    InterpretTextInput, InterpretTextOutput, isInterpretTextInput
  } from "../types";
-import AmazonAIIdentifyPredictionsProvider from "./AmazonAIIdentifyPredictionsProvider";
 
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private convertProvider: AmazonAIConvertPredictionsProvider;
     private identifyProvider: AmazonAIIdentifyPredictionsProvider;
+    private interpretProvider: AmazonAIInterpretPredictionsProvider;
 
     constructor() {
         super();
         this.convertProvider = new AmazonAIConvertPredictionsProvider();
         this.identifyProvider = new AmazonAIIdentifyPredictionsProvider();
+        this.interpretProvider = new AmazonAIInterpretPredictionsProvider();
     }
 
     getCategory(): string {
@@ -30,7 +37,14 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
     configure(config: PredictionsOptions) {
         this.convertProvider.configure(config.convert);
         this.identifyProvider.configure(config.identify);
+        this.interpretProvider.configure(config.interpret);
         return config;
+    }
+
+    interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
+        if (isInterpretTextInput(input)) {
+            return this.interpretProvider.interpret(input);
+        }
     }
 
     convert(input: TranslateTextInput): Promise<TranslateTextOutput>;

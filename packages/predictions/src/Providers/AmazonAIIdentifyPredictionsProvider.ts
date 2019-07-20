@@ -5,7 +5,8 @@ import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyLabelsInput, IdentifyLabelsOutput, IdentifySource, IdentifyEntitiesInput, IdentifyEntitiesOutput,
-    isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput,
+    isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, isIdentifyCelebrities,
+    isIdentifyFromCollection, IdentifyFromCollection
 } from '../types';
 import * as Textract from 'aws-sdk/clients/textract';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
@@ -35,7 +36,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise((res, rej) => {
             if (isStorageSource(source)) {
                 const storageConfig = { level: source.level, identityId: source.identityId };
-                Storage.get(source.key, storageConfig)
+        Storage.get(source.key, storageConfig)
                     .then((url: string) => {
                         const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
                         const parsedURL = url.match(parser);
@@ -72,7 +73,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            const { identifyText: { region = "us-west-2", format: configFormat = "PLAIN" } = {} } = this._config;
+            const { textIdentify: { region = "", format: configFormat = "PLAIN" } = {} } = this._config;
             this.rekognition = new Rekognition({ region, credentials });
             this.textract = new Textract({ region, credentials });
             let inputDocument: Textract.Document;
@@ -136,7 +137,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            const { identifyLabels: { region = "us-west-2", type = "LABELS" } = {} } = this._config;
+            const { identifyLabels: { region = "", type = "LABELS" } = {} } = this._config;
             this.rekognition = new Rekognition({ region, credentials });
             let inputImage: Rekognition.Image;
             await this.configureSource(input.labels.source)
@@ -220,17 +221,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            const { identifyEntities: { 
-                region = "us-west-1", 
+            const { entityIdentify: { 
+                region = "", 
                 collection: collectionId = "", 
                 maxFaces: maxFacesConfig = 50, 
-                celebrityDetection: celebrityDetectionConfig = false
+                celebrityDetectionEnabled = false
             } = {} } = this._config;
             // default arguments
-            const collection: string = input.entities.collection || collectionId;
-            const maxFaces: number = input.entities.maxFaces || maxFacesConfig;
-            const celebrityDetection: boolean =
-                input.celebrityDetection || celebrityDetectionConfig;
 
             this.rekognition = new Rekognition({ region, credentials });
             let inputImage: Rekognition.Image;
@@ -239,7 +236,11 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { return rej(err); });
 
             const param = { Image: inputImage };
-            if (celebrityDetection) {
+            
+            if (isIdentifyCelebrities(input.entities)) {
+                if ( !celebrityDetectionEnabled ) {
+                    return rej("Error: You have to enable celebrity detection first");
+                }
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.CelebrityFaces.map(celebrity => {
@@ -254,9 +255,13 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     });
                     res({ entities: faces });
                 });
-            } else if (collection) {
+            } else if (isIdentifyFromCollection(input.entities)) {
+
+                const { collection = collectionId, maxFaces = maxFacesConfig } = 
+                input.entities as IdentifyFromCollection;
+                
                 // Concatenate additional parameters
-                const updatedParam = { ...param, CollectionId: input.entities.collection, MaxFaces: maxFaces };
+                const updatedParam = { ...param, CollectionId: collection, MaxFaces: maxFaces };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
                     if (err) return rej(err);
                     const faces = data.FaceMatches.map(val => {
