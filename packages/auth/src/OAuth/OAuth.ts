@@ -144,7 +144,7 @@ export default class OAuth {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: typeof URLSearchParams !== 'undefined' ? new URLSearchParams(body) : body
+        body
       }) as any).json();
 
       if (error) {
