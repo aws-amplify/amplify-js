@@ -4,6 +4,7 @@ exports[`Loading renders successfully with no props 1`] = `
 <Loading>
   <div
     className="XR__loadingOverlay___IbqcI"
+    data-test="sumerian-scene-loading"
   >
     <div
       className="XR__loadingContainer___2Itxb"
@@ -66,6 +67,7 @@ exports[`Loading renders successfully with percentage 1`] = `
 >
   <div
     className="XR__loadingOverlay___IbqcI"
+    data-test="sumerian-scene-loading"
   >
     <div
       className="XR__loadingContainer___2Itxb"
