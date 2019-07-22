@@ -172,7 +172,7 @@ class SumerianScene extends React.Component {
     return (
       <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer} data-test={sumerianScene.container}>
         <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene} data-test={sumerianScene.sumerianScene}>
-          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError} data-test={sumerianScene.loading}/>}
+          {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError}/>}
         </div>
         <div className={AmplifyUI.sceneBar} data-test={sumerianScene.bar}>
           <span className={AmplifyUI.sceneActions} data-test={sumerianScene.actions}>

@@ -17,7 +17,7 @@ import { sumerianScene } from '../Amplify-UI/data-test-attributes';
 
 const Loading = (props) => {
   return (
-    <div className={AmplifyUI.loadingOverlay}>
+    <div className={AmplifyUI.loadingOverlay} data-test={sumerianScene.loading}>
       <div className={AmplifyUI.loadingContainer}>
         <div className={AmplifyUI.loadingLogo} data-test={sumerianScene.loadingLogo}>
           <svg viewBox='0 0 800 481' xmlns='http://www.w3.org/2000/svg'>
