@@ -37,7 +37,8 @@ import { defaultSignUpFields } from './common/default-sign-up-fields';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 import countryDialCodes from './common/country-dial-codes.js';
-import signUpWithUsernameFields, { 
+import { 
+    signUpWithUsernameFields,
     signUpWithEmailFields, 
     signUpWithPhoneNumberFields
  } from './common/default-sign-up-fields'

@@ -18,7 +18,7 @@ import { AuthPiece } from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import SignOut from './SignOut';
+import { SignOut } from './SignOut';
 import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
 import { UsernameAttributes } from './common/types';
 

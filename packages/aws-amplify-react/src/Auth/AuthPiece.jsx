@@ -12,7 +12,21 @@
  */
 
 import * as React from 'react';
+import { I18n } from '@aws-amplify/core';
+import { 
+    FormField,
+    Input,
+    InputLabel
+ } from '../Amplify-UI/Amplify-UI-Components-React';
+import { UsernameAttributes } from './common/types';
+import { PhoneField } from './PhoneField';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
+const labelMap = {
+  [UsernameAttributes.EMAIL]: 'Email',
+  [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
+  [UsernameAttributes.USERNAME]: 'Username'
+};
 export class AuthPiece extends React.Component {
     constructor(props) {
         super(props);

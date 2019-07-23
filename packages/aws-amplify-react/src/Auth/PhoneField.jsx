@@ -6,7 +6,7 @@ import {
     SelectInput
  } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import countryDialCodes from './common/country-dial-codes.js';
+import { countryDialCodes } from './common/country-dial-codes.js';
 import { I18n } from '@aws-amplify/core';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
