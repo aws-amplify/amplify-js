@@ -1,13 +1,12 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "Cache category of aws-amplify",
   "main": "./index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
   "react-native": {
-    "./index": "./esm/index.js",
-    "./esm/index.js": "./esm/reactnative.js"
+    "./lib/index.js": "./lib/reactnative.js"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -23,9 +22,6 @@
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
-  "react-native": {
-    "./lib/index.js": "./lib/reactnative.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
@@ -36,10 +32,8 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
-  "devDependencies": {
-  },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.29"
+    "@aws-amplify/core": "^1.0.30"
   },
   "jest": {
     "globals": {
