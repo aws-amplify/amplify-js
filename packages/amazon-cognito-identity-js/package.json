@@ -82,7 +82,6 @@
     "eslint-plugin-node": "^5.2.0",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
-    "is-my-json-valid": "^2.20.0",
     "jsdoc": "^3.4.0",
     "react": "^16.0.0",
     "react-native": "^0.44.0",

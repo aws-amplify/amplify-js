@@ -7,8 +7,8 @@ describe('amplify-text-field', () => {
     await page.setContent(
       `<amplify-text-field field-id="id" label="Label test" description="Description test"></amplify-text-field>`,
     );
-    const element = await page.find('amplify-text-field');
-    expect(element).toHaveProperty('type');
+    const textElement = await page.find('amplify-text-field');
+    expect(textElement).not.toBeNull();
 
     const labelElement = await page.find('label');
     expect(labelElement).toEqualText('Label test');
@@ -37,9 +37,9 @@ describe('amplify-text-field', () => {
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
-    await page.$eval('amplify-text-field', (element: any) => {
-      element.inputProps.onInput = this.exposedfunc;
-      element.label = 'adding a label so that the component rerenders';
+    await page.$eval('amplify-text-field', (textElement: any) => {
+      textElement.inputProps.onInput = this.exposedfunc;
+      textElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();
 
@@ -55,9 +55,9 @@ describe('amplify-text-field', () => {
     const page = await newE2EPage();
 
     await page.setContent(`<amplify-text-field></amplify-text-field>`);
-    const element = await page.find('amplify-text-field');
+    const textElement = await page.find('amplify-text-field');
 
-    element.setProperty('inputProps', {
+    textElement.setProperty('inputProps', {
       type: 'checkbox',
     });
     await page.waitForChanges();
