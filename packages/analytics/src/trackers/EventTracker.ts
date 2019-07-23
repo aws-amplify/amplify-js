@@ -24,7 +24,7 @@ const defaultOpts: EventTrackOpts = {
     provider: 'AWSPinpoint'
 };
 
-export default class EventTracker {
+export class EventTracker {
     private _tracker;
     private _config: EventTrackOpts;
     private _delegates;
@@ -118,3 +118,8 @@ export default class EventTracker {
     }
 
 }
+
+/**
+ * @deprecated use named import
+ */
+export default EventTracker;

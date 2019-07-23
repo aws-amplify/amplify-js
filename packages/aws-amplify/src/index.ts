@@ -11,21 +11,22 @@
  * and limitations under the License.
  */
 
-import Analytics, { 
-    AnalyticsClass, 
-    AnalyticsProvider, 
+export {
+    Analytics,
+    AnalyticsClass,
+    AnalyticsProvider,
     AWSPinpointProvider, 
-    AWSKinesisProvider,
-    AmazonPersonalizeProvider } from '@aws-amplify/analytics';
-import Auth, { AuthClass } from '@aws-amplify/auth';
-import Storage, { StorageClass } from '@aws-amplify/storage';
-import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
-import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
-import Cache from '@aws-amplify/cache';
-import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
-import * as UI from '@aws-amplify/ui';
-import XR, { XRClass } from '@aws-amplify/xr';
-import Amplify, {
+    AWSKinesisProvider } from '@aws-amplify/analytics';
+export { Auth, AuthClass } from '@aws-amplify/auth';
+export { Storage, StorageClass } from '@aws-amplify/storage';
+export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export { PubSub, PubSubClass } from '@aws-amplify/pubsub';
+export { default as Cache } from '@aws-amplify/cache';
+export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
+export { default as UI } from '@aws-amplify/ui';
+export { XR, XRClass } from '@aws-amplify/xr';
+export { 
+    Amplify, 
     ConsoleLogger as Logger,
     Hub,
     JS,
@@ -34,52 +35,56 @@ import Amplify, {
     I18n,
     ServiceWorker
 } from '@aws-amplify/core';
-
+import { Amplify } from '@aws-amplify/core';
 export default Amplify;
 
-Amplify.Auth = Auth;
-Amplify.Analytics = Analytics;
-Amplify.API = API;
-Amplify.Storage = Storage;
-Amplify.I18n = I18n;
-Amplify.Cache = Cache;
-Amplify.PubSub = PubSub;
-Amplify.Logger = Logger;
-Amplify.ServiceWorker = ServiceWorker;
-Amplify.Interactions = Interactions;
-Amplify.UI = UI;
-Amplify.XR = XR;
+// const Amplify = {
+//     Auth: Auth,
+// }
 
-export { 
-    Auth, 
-    Analytics, 
-    Storage,
-    API, 
-    PubSub, 
-    I18n, 
-    Logger, 
-    Hub, 
-    Cache, 
-    JS, 
-    ClientDevice, 
-    Signer, 
-    ServiceWorker, 
-    Interactions,
-    UI,
-    XR
-};
+// Amplify.Auth = Auth;
+// Amplify.Analytics = Analytics;
+// Amplify.API = API;
+// Amplify.Storage = Storage;
+// Amplify.I18n = I18n;
+// Amplify.Cache = Cache;
+// Amplify.PubSub = PubSub;
+// Amplify.Logger = Logger;
+// Amplify.ServiceWorker = ServiceWorker;
+// Amplify.Interactions = Interactions;
+// Amplify.UI = UI;
+// Amplify.XR = XR;
 
-export { 
-    AuthClass, 
-    AnalyticsClass, 
-    APIClass, 
-    StorageClass,
-    PubSubClass,
-    InteractionsClass,
-    XRClass,
-    AnalyticsProvider, 
-    AWSPinpointProvider,
-    AWSKinesisProvider,
-    AmazonPersonalizeProvider
-};
-export { graphqlOperation };
+// export { 
+//     Auth, 
+//     Analytics, 
+//     Storage,
+//     API, 
+//     PubSub, 
+//     I18n, 
+//     Logger, 
+//     Hub, 
+//     Cache, 
+//     JS, 
+//     ClientDevice, 
+//     Signer, 
+//     ServiceWorker, 
+//     Interactions,
+//     UI,
+//     XR
+// };
+
+// export { 
+//     AuthClass, 
+//     AnalyticsClass, 
+//     APIClass, 
+//     StorageClass,
+//     PubSubClass,
+//     InteractionsClass,
+//     XRClass,
+//     AnalyticsProvider, 
+//     AWSPinpointProvider,
+//     AWSKinesisProvider,
+//     AmazonPersonalizeProvider
+// };
+// export { graphqlOperation };

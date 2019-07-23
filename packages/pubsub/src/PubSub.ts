@@ -14,13 +14,13 @@
 import * as Observable from 'zen-observable';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
-export default class PubSub {
+export class PubSub {
 
     private _options: PubSubOptions;
 
@@ -138,3 +138,8 @@ export default class PubSub {
         });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default PubSub;

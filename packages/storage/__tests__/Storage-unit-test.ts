@@ -1,6 +1,6 @@
 
-import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import { default as Storage } from "../src/Storage";
+import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { default as Storage } from '../src/Storage';
 import StorageCategory from "../src";
 
 const credentials = {

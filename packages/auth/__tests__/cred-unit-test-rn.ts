@@ -114,7 +114,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback.onSuccess('session');
     }
 
-    CognitoUser.prototype.updateAttributes = (attributeList, callback) {
+    CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
         callback(null, 'SUCCESS');
     }
 

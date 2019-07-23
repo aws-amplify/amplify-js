@@ -36,12 +36,11 @@ import {
     ConsoleLogger as Logger,
     Constants,
     Hub,
-    JS,
-    Parser,
     Credentials,
     StorageHelper,
     ICredentials,
-    Platform
+    Parser,
+    isEmpty
 } from '@aws-amplify/core';
 import {
     CookieStorage,
@@ -85,7 +84,7 @@ export enum CognitoHostedUIIdentityProvider {
 /**
 * Provide authentication steps
 */
-export default class AuthClass {
+export class AuthClass {
     private _config: AuthOptions;
     private userPool = null;
     private user: any = null;
@@ -146,7 +145,7 @@ export default class AuthClass {
         } = this._config;
 
         if (!this._config.storage) {
-            // backward compatbility
+            // backward compatability
             if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
             else {
                 this._storage = new StorageHelper().getStorage();
@@ -1692,3 +1691,9 @@ export default class AuthClass {
             typeof obj.clear === 'function';
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+
+ export default AuthClass;

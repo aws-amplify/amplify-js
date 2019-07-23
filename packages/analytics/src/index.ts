@@ -11,10 +11,11 @@
  * and limitations under the License.
  */
 
-import AnalyticsClass from './Analytics';
+import { AnalyticsClass } from './Analytics';
 import { AnalyticsProvider } from './types';
 
-import Amplify, {
+import {
+    Amplify,
     ConsoleLogger as Logger,
     Hub,
     Linking,
@@ -36,9 +37,11 @@ if (!_instance) {
 const Analytics = _instance;
 Amplify.register(Analytics);
 
+/**
+ * @deprecated use named import
+ */
 export default Analytics;
-export { AnalyticsProvider };
-export { AnalyticsClass };
+export { AnalyticsProvider, Analytics, AnalyticsClass };
 export * from './Providers';
 
 const listener = (capsule) => {

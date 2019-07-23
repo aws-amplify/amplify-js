@@ -28,7 +28,7 @@ const FLUSH_INTERVAL = 5*1000; // 5s
 
 const IDENTIFY_EVENT = "Identify";
 
-export default class AmazonPersonalizeProvider implements AnalyticsProvider {
+export class AmazonPersonalizeProvider implements AnalyticsProvider {
 
     private _config;
     private _personalize;

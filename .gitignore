@@ -7,6 +7,8 @@ packages/*/node_modules/**
 packages/**/lib/
 packages/**/dist/
 packages/**/es/
+packages/**/esm/
+packages/**/cjs/
 .DS_Store
 .vscode
 .idea

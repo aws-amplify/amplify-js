@@ -13,9 +13,9 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -34,7 +34,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('VerifyContact');
 
-export default class VerifyContact extends AuthPiece {
+export class VerifyContact extends AuthPiece {
     constructor(props) {
         super(props);
 

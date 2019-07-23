@@ -1,12 +1,12 @@
-import { Credentials } from '../src/Credentials';
-import { AWS } from '../src/Facet';
+import { CredentialsClass as Credentials } from '../src/Credentials';
 import Amplify from '../src/Amplify';
+import { AWS } from '../src/Facet';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {
     getModuleName() {
         return 'Auth';
-    }
+    },
     currentUserCredentials() {
         return Promise.resolve('cred');
     }
@@ -15,8 +15,7 @@ const authClass = {
 const cacheClass = {
     getModuleName() {
         return 'Cache';
-    }
-
+    },
     getItem() {
         return null;
     }
@@ -34,11 +33,7 @@ const options = {
     mandatorySignIn: false
 }
 
-beforeAll(() => {
-    AWS.config.update({
-        credentials: null,
-    });
-});
+AWS.config.credentials = undefined;
 
 describe('Credentials test', () => {
     describe('configure test', () => {

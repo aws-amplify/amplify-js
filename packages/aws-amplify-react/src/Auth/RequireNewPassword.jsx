@@ -13,11 +13,10 @@
 
 import * as React from 'react';
 
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
+import { AuthPiece } from './AuthPiece';
 import {
     FormSection,
     SectionHeader,
@@ -34,7 +33,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('RequireNewPassword');
 
-export default class RequireNewPassword extends AuthPiece {
+export class RequireNewPassword extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -49,7 +48,7 @@ export default class RequireNewPassword extends AuthPiece {
         }
         Auth.verifiedContact(user)
             .then(data => {
-                if (!JS.isEmpty(data.verified)) {
+                if (!isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     user = Object.assign(user, data);

@@ -18,7 +18,7 @@ import {
     Parser,
     Platform
 } from '@aws-amplify/core';
-import AWSPinpointProvider from './Providers/AWSPinpointProvider';
+import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
@@ -41,7 +41,7 @@ const trackers = {
 /**
 * Provide mobile analytics client functions
 */
-export default class AnalyticsClass {
+export class AnalyticsClass {
     private _config;
     private _provider;
     private _pluggables: AnalyticsProvider[];
@@ -276,3 +276,8 @@ export default class AnalyticsClass {
         return this._config && Object.entries(this._config).length > 0;
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AnalyticsClass;

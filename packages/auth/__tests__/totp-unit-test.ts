@@ -113,7 +113,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback.onSuccess('session');
     }
 
-    CognitoUser.prototype.updateAttributes = (attributeList, callback) {
+    CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
         callback(null, 'SUCCESS');
     }
 
@@ -161,26 +161,22 @@ import { CognitoIdentityCredentials } from 'aws-sdk';
 
 
 const authOptions = {
-    Auth: {
-        userPoolId: "awsUserPoolsId",
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+    userPoolId: "awsUserPoolsId",
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId"
 }
 
 const authOptionsWithNoUserPoolId = {
-    Auth: {
-        userPoolId: null,
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+    userPoolId: null,
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId"
 }
 
 const userPool = new CognitoUserPool({
-    UserPoolId: authOptions.Auth.userPoolId,
-    ClientId: authOptions.Auth.userPoolWebClientId
+    UserPoolId: authOptions.userPoolId,
+    ClientId: authOptions.userPoolWebClientId
 });
 
 const idToken = new CognitoIdToken({IdToken: 'idToken'});
@@ -371,15 +367,6 @@ describe('auth unit test', () => {
    
             spyon.mockClear();
             spyon2.mockClear();
-        });
-
-        test('incorrect mfa type', async () => {
-            const auth = new Auth(authOptions);
-            try {
-                await auth.setPreferredMFA(user, 'incorrect mfa type');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
         });
     });
 

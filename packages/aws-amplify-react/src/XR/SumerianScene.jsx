@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import XR from '@aws-amplify/xr';
+import { XR } from '@aws-amplify/xr';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import IconButton from './IconButton';
-import Loading from './Loading';
+import { IconButton } from './IconButton';
+import { Loading } from './Loading';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 import { sumerianScene } from '../Amplify-UI/data-test-attributes';
@@ -24,7 +24,7 @@ const SCENE_DOM_ID = 'scene-dom-id';
 
 const logger = new Logger('SumerianScene');
 
-class SumerianScene extends React.Component {
+export class SumerianScene extends React.Component {
   constructor(props) {
     super(props);
 
@@ -75,7 +75,7 @@ class SumerianScene extends React.Component {
       const sceneError = {
         displayText: 'Failed to load scene',
         error: e
-      }
+      };
       logger.error(sceneError.displayText, sceneError.error);
       this.setStateAsync({sceneError});
       return;
@@ -185,5 +185,3 @@ class SumerianScene extends React.Component {
     );
   }
 }
-
-export default SumerianScene;

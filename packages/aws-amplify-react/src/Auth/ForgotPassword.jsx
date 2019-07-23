@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import { AuthPiece } from './AuthPiece';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 import {
@@ -37,7 +37,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ForgotPassword');
 
-export default class ForgotPassword extends AuthPiece {
+export class ForgotPassword extends AuthPiece {
     constructor(props) {
         super(props);
 

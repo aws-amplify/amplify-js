@@ -19,7 +19,6 @@ import {
     JS,
     Hub
 } from '@aws-amplify/core';
-import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 
 import Cache from '@aws-amplify/cache';
@@ -44,13 +43,12 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
-// params: { event: {name: , .... }, timeStamp, config, resendLimit }
-export default class AWSPinpointProvider implements AnalyticsProvider {
+// params: { event: {name: , .... }, timeStamp, config, resendLimits }
+export class AWSPinpointProvider implements AnalyticsProvider {
     static category = 'Analytics';
     static providerName = 'AWSPinpoint';
 
     private _config;
-    private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
     private _sessionStartTimestamp;
@@ -431,8 +429,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private async _initClients(config, credentials) {
         logger.debug('init clients');
 
-        if (this.mobileAnalytics
-            && this.pinpointClient
+        if (this.pinpointClient
             && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
             && this._config.credentials.identityId === credentials.identityId) {
@@ -443,7 +440,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         this._config.credentials = credentials;
         const { region } = config;
         logger.debug('init clients with credentials', credentials);
-        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
         if (Platform.isReactNative) {
             this.pinpointClient.customizeRequests(function(request) {
@@ -552,3 +548,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSPinpointProvider;

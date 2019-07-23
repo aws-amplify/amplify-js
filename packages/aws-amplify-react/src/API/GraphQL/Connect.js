@@ -1,10 +1,7 @@
-import regeneratorRuntime from 'regenerator-runtime/runtime';
-import { Component } from 'react';
-import API from '@aws-amplify/api';
+import * as React from 'react';
+import { API } from '@aws-amplify/api';
 
-
-
-export default class Connect extends Component {
+export class Connect extends React.Component {
 
     constructor(props) {
         super(props);

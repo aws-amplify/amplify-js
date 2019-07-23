@@ -13,7 +13,7 @@
 
 const lists : MethodEmbed[] = [];
 
-export default class MethodEmbed {
+export class MethodEmbed {
     public context;
     public methodName;
     private _originalMethod;

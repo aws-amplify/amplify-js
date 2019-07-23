@@ -12,27 +12,8 @@
  */
 
 import * as React from 'react';
-import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import countryDialCodes from './common/country-dial-codes.js';
-import { 
-    FormField,
-    Input,
-    InputLabel,
-    SelectInput
- } from '../Amplify-UI/Amplify-UI-Components-React';
-import { UsernameAttributes } from './common/types';
-import { PhoneField } from './PhoneField';
-import { auth } from '../Amplify-UI/data-test-attributes';
 
-const labelMap = {
-  [UsernameAttributes.EMAIL]: 'Email',
-  [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
-  [UsernameAttributes.USERNAME]: 'Username'
-};
-
-export default class AuthPiece extends React.Component {
+export class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
 
@@ -178,7 +159,7 @@ export default class AuthPiece extends React.Component {
         }
         this._isHidden = false;
 
-        return this.showComponent(this.props.theme || AmplifyTheme);
+        return this.showComponent(this.props.theme);
     }
 
     showComponent(theme) {

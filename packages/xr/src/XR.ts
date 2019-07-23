@@ -19,7 +19,7 @@ const logger = new Logger('XR');
 
 const DEFAULT_PROVIDER_NAME = "SumerianProvider";
 
-export default class XR {
+export class XRClass {
 
     private _options: XROptions;
 

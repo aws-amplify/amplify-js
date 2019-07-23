@@ -13,10 +13,10 @@
 
 import { ConsoleLogger as Logger } from './Logger';
 import { AWS } from './Facet';
+import { parse, format } from 'url';
 
-const logger = new Logger('Signer'),
-    url = require('url'),
-    crypto = AWS['util'].crypto;
+const logger = new Logger('Signer');
+const crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
@@ -127,7 +127,7 @@ CanonicalRequest =
 </pre>
 */
 const canonical_request = function(request) {
-    const url_info = url.parse(request.url);
+    const url_info = parse(request.url);
 
     return [
         request.method || '/',
@@ -140,7 +140,7 @@ const canonical_request = function(request) {
 };
 
 const parse_service_info = function(request) {
-    const url_info = url.parse(request.url),
+    const url_info = parse(request.url),
         host = url_info.host;
 
     const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
@@ -275,7 +275,7 @@ const sign = function(request, access_info, service_info = null) {
         dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
         d_str = dt_str.substr(0, 8);
 
-    const url_info = url.parse(request.url);
+    const url_info = parse(request.url);
     request.headers['host'] = url_info.host;
     request.headers['x-amz-date'] = dt_str;
     if (access_info.session_token) {
@@ -321,15 +321,15 @@ const sign = function(request, access_info, service_info = null) {
     return request;
 };
 
-const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, expiration?: Number) {
+const signUrl = function(urlToSign: string, accessInfo: any, serviceInfo?: any, expiration?: Number) {
     const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
     const today = now.substr(0, 8);
     // Intentionally discarding search
-    const {search, ...parsedUrl} = url.parse(urlToSign, true, true);
+    const {search, ...parsedUrl} = parse(urlToSign, true, true);
     const { host } = parsedUrl;
     const signedHeaders = { host };
 
-    const { region, service } = serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
+    const { region, service } = serviceInfo || parse_service_info({ url: format(parsedUrl) });
     const credentialScope = credential_scope(
         today,
         region,
@@ -350,7 +350,7 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
 
     const canonicalRequest = canonical_request({
         method: 'GET',
-        url: url.format({
+        url: format({
             ...parsedUrl,
             query: {
                 ...parsedUrl.query,
@@ -379,7 +379,7 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         ...(accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }),
     };
 
-    const result = url.format({
+    const result = format({
         protocol: parsedUrl.protocol,
         slashes: true,
         hostname: parsedUrl.hostname,
@@ -398,10 +398,13 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
 /**
 * AWS request signer.
 * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
-*
-* @class Signer
 */
-export default class Signer {
+export class Signer {
     static sign = sign;
     static signUrl = signUrl;
 }
+
+/**
+ * @deprecated use per-function import
+ */
+export default Signer;
