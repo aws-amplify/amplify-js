@@ -38,7 +38,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/jest": "24.0.15",
+    "@types/jest": "^20.0.7",
     "@types/node": "^8.9.5",
     "@types/puppeteer": "1.12.4",
     "codecov": "^1.0.1",
