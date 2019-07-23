@@ -27,7 +27,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@stencil/core": "^1.1.6",
+    "@stencil/core": "^1.1.9",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -47,8 +47,9 @@
     "husky": "^2.4.1",
     "is-my-json-valid": "^2.20.0",
     "jest": "24.8.0",
-    "jest-cli": "23.6.0",
+    "jest-cli": "24.8.0",
     "prettier": "^1.17.1",
+    "puppeteer": "1.17.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3"
