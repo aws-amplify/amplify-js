@@ -133,7 +133,8 @@ export default class S3Image extends Component {
     componentDidUpdate(prevProps) {
         const update = prevProps.path !== this.props.path ||
             prevProps.imgKey !== this.props.imgKey ||
-            prevProps.body !== this.props.body;
+            prevProps.body !== this.props.body ||
+            prevProps.level !== this.props.level;
         if (update) {
             this.load();
         }

@@ -5,26 +5,30 @@ exports[`SumerianScene renders successfully 1`] = `
   sceneName="TestSceneName"
 >
   <div
-    className="XR__sumerianSceneContainer___11I4t"
+    className="XR__sumerianSceneContainer___3nVMt"
+    data-test="sumerian-scene-container"
     id="scene-container-dom-id"
   >
     <div
-      className="XR__sumerianScene___3n6Vz"
+      className="XR__sumerianScene___2Tt7-"
+      data-test="sumerian-scene"
       id="scene-dom-id"
     >
       <Loading
+        data-test="sumerian-scene-loading"
         percentage={0}
         sceneError={null}
         sceneName="TestSceneName"
       >
         <div
-          className="XR__loadingOverlay___1c9lj"
+          className="XR__loadingOverlay___IbqcI"
+          data-test="sumerian-scene-loading"
         >
           <div
-            className="XR__loadingContainer___3C0lC"
+            className="XR__loadingContainer___2Itxb"
           >
             <div
-              className="XR__loadingLogo___3mETr"
+              className="XR__loadingLogo___Ub7xQ"
             >
               <svg
                 viewBox="0 0 800 481"
@@ -56,15 +60,15 @@ exports[`SumerianScene renders successfully 1`] = `
               </svg>
             </div>
             <div
-              className="XR__loadingSceneName___3JbEs"
+              className="XR__loadingSceneName___3__ne"
             >
               TestSceneName
             </div>
             <div
-              className="XR__loadingBar___QeOtl"
+              className="XR__loadingBar___2vcke"
             >
               <div
-                className="XR__loadingBarFill___2Ej9-"
+                className="XR__loadingBarFill___3M-D9"
                 style={
                   Object {
                     "width": "0%",
@@ -77,10 +81,12 @@ exports[`SumerianScene renders successfully 1`] = `
       </Loading>
     </div>
     <div
-      className="XR__sceneBar___2jB64"
+      className="XR__sceneBar___2ShrP"
+      data-test="sumerian-scene-bar"
     >
       <span
-        className="XR__sceneActions___2a04n"
+        className="XR__sceneActions___7plGs"
+        data-test="sumerian-scene-actions"
       />
     </div>
   </div>
