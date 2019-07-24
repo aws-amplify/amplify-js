@@ -2145,12 +2145,12 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@stencil/core@^1.1.6":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.1.7.tgz#17d4b4c8a86797a9cea5be0830729d4cfb22e20b"
-  integrity sha512-xqPHMe2kYMJHV2MKhQTVZoD7nHnPWaEUCRgDFXYBgvknvH7e1NuZ+kaLZ3/n93GK8L8yxbe1cqEM8zfCSEtTBw==
+"@stencil/core@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.1.9.tgz#a2035b6180c315f7ef52841494c171aa076fa280"
+  integrity sha512-Xji3A64hV9aCPLnOngh6F5uk+MwRgoXWLDg0WwYZAikxiZjkQgTJoX8D9zgu5fmsdI3t9a5tnY70PKT/80nQ0A==
   dependencies:
-    typescript "3.5.2"
+    typescript "3.5.3"
 
 "@stencil/state-tunnel@^1.0.1":
   version "1.0.1"
@@ -19960,20 +19960,15 @@ typescript@2.7.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
   integrity sha512-p5TCYZDAO0m4G344hD+wx/LATebLWZNkkh2asWUFqSsD2OrDNhbAHuSjobrmsUmdzjJjEeZVU9g1h3O6vpstnw==
 
-typescript@3.5.2:
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.2.tgz#a09e1dc69bc9551cadf17dba10ee42cf55e5d56c"
-  integrity sha512-7KxJovlYhTX5RaRbUdkAXN1KUZ8PwWlTzQdHV6xNqvuFOs7+WBo10TQUqT19Q/Jz2hk5v9TQDIhyLhhJY4p5AA==
+typescript@3.5.3, typescript@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
+  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
 
 typescript@^2.9.2:
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
   integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
-
-typescript@^3.5.3:
-  version "3.5.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
-  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
 
 ua-parser-js@^0.7.18:
   version "0.7.20"
