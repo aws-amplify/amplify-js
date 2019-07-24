@@ -15,8 +15,13 @@ import {
 } from "../types";
 import { Credentials, ConsoleLogger as Logger, AWS } from '@aws-amplify/core';
 import { GraphQLPredictionsProvider } from "..";
+import { Signer } from '@aws-amplify/core';
+import { EventStreamMarshaller, MessageHeaderValue } from '@aws-sdk/eventstream-marshaller';
+import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
+const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
+
 export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
 
     private graphQLPredictionsProvider: GraphQLPredictionsProvider;
@@ -103,28 +108,33 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
     protected convertSpeechToText(input: SpeechToTextInput): Promise<SpeechToTextOutput> {
         return new Promise(async (res, rej) => {
             try {
-                console.log('starting transcription..');
+                logger.debug('starting transcription..');
                 const credentials = await Credentials.get();
                 if (!credentials) { return rej('No credentials'); }
+                const { transcription: {
+                    defaults: { LanguageCode: languageCode = "en-US" } = {},
+                    region = "" } = {}
+                } = this._config;
+                if (!region) {
+                    rej("region not configured for transcription");
+                }
+                const { transcription: { source, language = languageCode } } = input;
+                if (isBytesSource(source)) {
+                    const connection
+                        = await this.openConnectionWithTranscribe({ credentials, region, languageCode: language });
 
-                const MediaFileUri = await this.createMediaFileUriFromSpeechToText(input, credentials);
+                    const fullText = await this.sendDataToTranscribe({ connection, raw: source.bytes });
+                    
+                    return res({
+                        transcription: {
+                            fullText,
+                            lines: [],
+                            linesDetailed: []
+                        }
+                    });
+                }
 
-                this.speechToText = new SpeechToText({ region: 'us-west-2', credentials });
-                const jobName = `predictions-${uuid()}`;
-
-                await this.startTranscriptionJobPromise({
-                    LanguageCode: "en-US",
-                    Media: {
-                        MediaFileUri
-                    },
-                    MediaFormat: "mp3",
-                    TranscriptionJobName: jobName,
-                });
-
-                const uri = await this.waitingForTranscriptionJobDone(jobName);
-
-                res(await this.fetchASRFromS3(uri));
-
+                rej("Not supported yet");
             } catch (err) {
                 rej(err);
             }
@@ -133,6 +143,175 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
 
     protected orchestrateWithGraphQL(input: any): Promise<any> {
         return this.graphQLPredictionsProvider.convert(input);
+    }
+
+    private sendDataToTranscribe({ connection, raw }): Promise<string> {
+        return new Promise((res, rej) => {
+            let fullText = "";
+            connection.onmessage = (message) => {
+                fullText += " ";
+                const transcribeMessage = eventBuilder.unmarshall(Buffer.from(message.data));
+                const transcribeMessageJson = JSON.parse(String.fromCharCode.apply(String, transcribeMessage.body));
+                if (transcribeMessage.headers[":message-type"].value === "exception") {
+                    logger.debug('exception', JSON.stringify(transcribeMessageJson.Message, null, 2));
+                }
+                else if (transcribeMessage.headers[":message-type"].value === "event") {
+                    if (transcribeMessageJson.Transcript.Results.length > 0) {
+                        if (transcribeMessageJson.Transcript.Results[0].Alternatives.length > 0) {
+                            if (transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript.length > 0) {
+                                if (transcribeMessageJson.Transcript.Results[0].IsPartial === false) {
+                                    fullText = fullText +
+                                        transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript + "\n";
+                                    // sending end frame
+                                    logger.debug({ fullText });
+                                    // return res(fullText);
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            connection.onerror = (errorEvent) => {
+                logger.debug({ errorEvent });
+                rej('failed to transcribe');
+            };
+
+            connection.onclose = (closeEvent) => {
+                logger.debug({ closeEvent });
+                return res(fullText);
+            };
+
+
+            // sending content
+            logger.debug({ raw });
+         
+            if (Array.isArray(raw)) {
+                for (let i = 0; i < raw.length - 1023; i += 1024) {
+                    const data = raw.slice(i, i + 1024);
+                    this.sendEncodedDataToTranscribe(connection, data);
+                }
+            }
+
+            // sending end frame
+            const endFrameEventMessage = this.getAudioEventMessage(Buffer.from([]));
+            const endFrameBinary = eventBuilder.marshall(endFrameEventMessage);
+            connection.send(endFrameBinary);
+
+
+        });
+    }
+
+    private sendEncodedDataToTranscribe(connection, data) {
+        const downsampledBuffer = this.downsampleBuffer({ buffer: data });
+        const pcmEncodedBuffer = this.pcmEncode(downsampledBuffer);
+        const audioEventMessage = this.getAudioEventMessage(Buffer.from(pcmEncodedBuffer));
+        const binary = eventBuilder.marshall(audioEventMessage);
+        connection.send(binary);
+    }
+
+    private getAudioEventMessage(buffer) {
+        const audioEventMessage = {
+            body: buffer as Uint8Array,
+            headers: {
+                ':message-type': {
+                    type: 'string',
+                    value: 'event'
+                } as MessageHeaderValue,
+                ':event-type': {
+                    type: 'string',
+                    value: 'AudioEvent'
+                } as MessageHeaderValue
+            },
+        };
+
+        return audioEventMessage;
+    }
+
+    private pcmEncode(input) {
+        let offset = 0;
+        const buffer = new ArrayBuffer(input.length * 2);
+        const view = new DataView(buffer);
+        for (let i = 0; i < input.length; i++ , offset += 2) {
+            const s = Math.max(-1, Math.min(1, input[i]));
+            view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+        return buffer;
+    }
+
+    private inputSampleRate = 44100;
+    private outputSampleRate = 16000;
+
+    private downsampleBuffer({ buffer }) {
+
+        if (this.outputSampleRate === this.inputSampleRate) {
+            return buffer;
+        }
+
+        const sampleRateRatio = this.inputSampleRate / this.outputSampleRate;
+        const newLength = Math.round(buffer.length / sampleRateRatio);
+        const result = new Float32Array(newLength);
+        let offsetResult = 0;
+        let offsetBuffer = 0;
+        while (offsetResult < result.length) {
+            const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+            let accum = 0,
+                count = 0;
+            for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+                accum += buffer[i];
+                count++;
+            }
+            result[offsetResult] = accum / count;
+            offsetResult++;
+            offsetBuffer = nextOffsetBuffer;
+        }
+
+        return result;
+    }
+
+    private openConnectionWithTranscribe({ credentials: userCredentials, region, languageCode }): Promise<WebSocket> {
+        return new Promise(async (res, rej) => {
+            const { accessKeyId: access_key,
+                secretAccessKey: secret_key,
+                sessionToken: session_token
+            } = userCredentials;
+
+            const credentials = {
+                access_key,
+                secret_key,
+                session_token
+            };
+
+            const signedUrl = this.generateTranscribeUrl({ credentials, region, languageCode });
+
+            logger.debug('connecting...');
+            const connection = new WebSocket(signedUrl);
+
+            connection.binaryType = "arraybuffer";
+            connection.onopen = () => {
+                logger.debug('connected');
+                res(connection);
+            };
+        });
+    }
+
+    private generateTranscribeUrl({ credentials, region, languageCode }): string {
+        // const url = ['wss://transcribestreaming.us-west-2.amazonaws.com:8443',
+        //     '/stream-transcription-websocket?',
+        //     'media-encoding=pcm&',
+        //     'sample-rate=16000&',
+        //     'language-code=en-US']
+        //     .join('');
+        const url = [`wss://transcribestreaming.${region}.amazonaws.com:8443`,
+            '/stream-transcription-websocket?',
+            `media-encoding=pcm&`,
+            `sample-rate=16000&`,
+        `language-code=${languageCode}`]
+            .join('');
+
+        const signedUrl = Signer.signUrl(url, credentials, { region, service: 'transcribe' }, 300);
+
+        return signedUrl;
     }
 
     private waitingForTranscriptionJobDone(jobName: string): Promise<string> {

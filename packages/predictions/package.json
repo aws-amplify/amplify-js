@@ -52,6 +52,8 @@
   "dependencies": {
     "@aws-amplify/core": "^1.0.25",
     "@aws-amplify/storage": "^1.0.31",
+    "@aws-sdk/eventstream-marshaller": "^0.1.0-preview.2",
+    "@aws-sdk/util-utf8-node": "^0.1.0-preview.1",
     "uuid": "^3.2.1"
   },
   "jest": {

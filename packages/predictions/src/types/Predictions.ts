@@ -141,7 +141,6 @@ export interface SpeechToTextInput {
     transcription: {
         source: ConvertSource,
         language?: LanguageCode,
-        maxSpeakers?: number
     }
 }
 
