@@ -54,15 +54,6 @@
   dependencies:
     tslib "^1.7.1"
 
-"@aws-amplify/analytics@^1.2.18":
-  version "1.2.18"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/analytics/-/analytics-1.2.18.tgz#0f62b5c76e72fff5214589ccf7741401e38bee37"
-  integrity sha512-GfVpkuGOex8H2il0QjSent6OUvOaI7wKFc154TKiawc/g/EBb9qdEaVnW/ZMn0a/iYjE5qXhqzr0aE3BnWlhLw==
-  dependencies:
-    "@aws-amplify/cache" "^1.0.28"
-    "@aws-amplify/core" "^1.0.28"
-    uuid "^3.2.1"
-
 "@aws-amplify/api@1.0.38-unstable.0":
   version "1.0.38-unstable.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/api/-/api-1.0.38-unstable.0.tgz#8038c495c1f941e33ff4082eee9cbd7369c8176a"
@@ -86,22 +77,10 @@
     amazon-cognito-identity-js "^3.0.13"
     crypto-js "^3.1.9-1"
 
-"@aws-amplify/storage@^1.0.31":
-  version "1.0.31"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/storage/-/storage-1.0.31.tgz#33d70ee4c3838c4c86388676ddaa0316ba9a14d4"
-  integrity sha512-n5Ufj8hKoXyng0eeFq6rYNFiXjqkufM17ZqaTrwNg4yKvKIJNWDx1GdaOYmRdYNZcyGQ2c7hfmr9QOVHOEqSJw==
-  dependencies:
-    "@aws-amplify/core" "^1.0.28"
-
 "@aws-amplify/ui@1.0.10-unstable.0":
   version "1.0.10-unstable.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/ui/-/ui-1.0.10-unstable.0.tgz#33916f16b9f957d598bbca78b13ee3254038d52c"
   integrity sha512-kfwkTCydvBNoMqPmY6RSx8bGnkVwBYP/TmNl/ZXAMFglxRyCtzxwRxV+kM30SJnzAxQ8KV9d16WMLnrh5WCagQ==
-
-"@aws-amplify/ui@^1.0.20":
-  version "1.0.20"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ui/-/ui-1.0.20.tgz#c10b9a2ef82026db7c03e928136682f5936858d7"
-  integrity sha512-BIrOp1ZXi2eBZZ4TgehyJ0pxbDNbvCAn0roLrnD/efSDS3UpgkzZoQ19/5gGnxMdomIFCErGEj1z7SdKxYcZ5A==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.0.0-beta.35", "@babel/code-frame@^7.0.0-beta.47":
   version "7.0.0"
