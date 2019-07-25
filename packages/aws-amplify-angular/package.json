@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.8",
+  "version": "3.0.7",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -36,6 +36,7 @@
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
+    "@types/lodash": "^4.14.106",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
     "aws-amplify": "1.1.31-unstable.0",
@@ -69,7 +70,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@aws-amplify/ui": "^1.0.23",
+    "@aws-amplify/ui": "^1.0.22",
     "rxjs-compat": "^6.2.1"
   }
 }

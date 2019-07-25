@@ -1,14 +1,15 @@
 {
   "name": "@aws-amplify/core",
-  "version": "1.0.30",
+  "version": "1.0.29",
   "description": "Core category of aws-amplify",
   "main": "./index.js",
   "module": "./esm/index.js",
   "typings": "./esm/index.d.ts",
   "react-native": {
-    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-    "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-    "./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
+    "./index": "./esm/index.js",
+    "./esm/ClientDevice": "./esm/ClientDevice/reactnative.js",
+    "./esm/RNComponents": "./esm/RNComponents/reactnative.js",
+    "./esm/StorageHelper": "./esm/StorageHelper/reactnative.js"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -23,6 +24,11 @@
     "clean": "rimraf esm cjs dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
+  },
+  "react-native": {
+    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
+    "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
+    "./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
   },
   "repository": {
     "type": "git",
