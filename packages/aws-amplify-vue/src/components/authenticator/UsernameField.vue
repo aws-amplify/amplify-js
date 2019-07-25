@@ -53,11 +53,17 @@ import PhoneField from './PhoneField';
 import { composePhoneNumber } from './common';
 import { auth } from '../../assets/data-test-attributes';
 
-Vue.component('amplify-phone-field', PhoneField);
-
 export default {
     name: 'UsernameField',
-    props: ['usernameAttributes'],
+    components: {
+        AmplifyPhoneField: PhoneField
+    },
+    props: {
+        usernameAttributes: {
+            type: String,
+            required: false
+        }
+    },
     data() {
         return {
             username: '',

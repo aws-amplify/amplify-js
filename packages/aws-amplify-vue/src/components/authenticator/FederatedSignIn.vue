@@ -14,18 +14,18 @@
 <template>
   <div>
     <google-button
-      v-if="google_client_id"
-      :google-client-id="google_client_id"
+      v-if="googleClientId"
+      :google-client-id="googleClientId"
     ></google-button>
 
     <facebook-button
-      v-if="facebook_app_id"
-      :facebook-app-id="facebook_app_id"
+      v-if="facebookAppId"
+      :facebook-app-id="facebookAppId"
     ></facebook-button>
 
     <amazon-button
-      v-if="amazon_client_id"
-      :amazon-client-id="amazon_client_id"
+      v-if="amazonClientId"
+      :amazon-client-id="amazonClientId"
     ></amazon-button>
   </div>    
 </template>
@@ -38,17 +38,17 @@ import AmazonButton from './Provider/AmazonButton';
 export default {
   name: 'FederatedSignIn',
   props: {
-    amazon_client_id: {
+    amazonClientId: {
       type: String,
       required: false,
       default: ''
     },
-    google_client_id: {
+    googleClientId: {
       type: String,
       required: false,
       default: ''
     },
-    facebook_app_id: {
+    facebookAppId: {
       type: String,
       required: false,
       default: ''
@@ -58,8 +58,6 @@ export default {
     FacebookButton,
     GoogleButton,
     AmazonButton
-  },
-  data: () => ({}),
-  mounted: function() {}
+  }
 }
 </script>

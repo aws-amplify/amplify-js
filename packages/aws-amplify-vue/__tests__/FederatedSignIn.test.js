@@ -8,10 +8,6 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
 describe('FederatedSignIn', () => {
-  it('has a mounted hook', () => {
-    expect(typeof FederatedSignIn.mounted).toBe('function')
-  });
-
   let wrapper;
 
   describe('...when it is mounted without props...', () => {
@@ -28,9 +24,9 @@ describe('FederatedSignIn', () => {
     });
 
     it('...have default props', () => {
-      expect(wrapper.vm.$props.facebook_app_id).toEqual('');
-      expect(wrapper.vm.$props.amazon_client_id).toEqual('');
-      expect(wrapper.vm.$props.google_client_id).toEqual('');
+      expect(wrapper.vm.$props.facebookAppId).toEqual('');
+      expect(wrapper.vm.$props.amazonClientId).toEqual('');
+      expect(wrapper.vm.$props.googleClientId).toEqual('');
     });
   })
 
@@ -38,17 +34,17 @@ describe('FederatedSignIn', () => {
     beforeEach(() => {
       wrapper = shallowMount(FederatedSignIn, {
         propsData: {
-          facebook_app_id: 'test',
-          google_client_id: 'test',
-          amazon_client_id: 'test'
+          facebookAppId: 'test',
+          amazonClientId: 'test',
+          googleClientId: 'test'
         },
       });
     });
 
     it('...should get the passed props', () => {
-      expect(wrapper.vm.$props.facebook_app_id).toEqual('test');
-      expect(wrapper.vm.$props.amazon_client_id).toEqual('test');
-      expect(wrapper.vm.$props.google_client_id).toEqual('test');
+      expect(wrapper.vm.$props.facebookAppId).toEqual('test');
+      expect(wrapper.vm.$props.amazonClientId).toEqual('test');
+      expect(wrapper.vm.$props.googleClientId).toEqual('test');
     });
 
     it('...should render google button component', () => {

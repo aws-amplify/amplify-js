@@ -17,9 +17,9 @@
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.signIn.bodySection">
       <div v-if="options.federated">
         <amplify-federated-sign-in 
-          v-bind:google_client_id="options.federated.google_client_id"
-          v-bind:facebook_app_id="options.federated.facebook_app_id"
-          v-bind:amazon_client_id="options.federated.amazon_client_id">
+          v-bind:google-client-id="options.federated.google_client_id"
+          v-bind:facebook-app-id="options.federated.facebook_app_id"
+          v-bind:amazon-client-id="options.federated.amazon_client_id">
         </amplify-federated-sign-in>
         <div :class="amplifyUI.strike">
           <span :class="amplifyUI.strikeContent">
@@ -28,7 +28,7 @@
         </div>
       </div>
       <amplify-username-field 
-        v-bind:usernameAttributes="usernameAttributes" 
+        v-bind:username-attributes="usernameAttributes" 
         v-on:username-field-changed="usernameFieldChanged">
       </amplify-username-field>
       <div v-bind:class="amplifyUI.formField">
@@ -58,15 +58,24 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
-import Vue from 'vue';
 import UsernameField from './UsernameField';
-
-Vue.component('amplify-username-field', UsernameField);
 import { auth } from '../../assets/data-test-attributes';
 
 export default {
   name: 'SignIn',
-  props: ['signInConfig', 'usernameAttributes'],
+  components: {
+    AmplifyUsernameField: UsernameField
+  },
+  props: {
+    signInConfig: {
+      type: Object,
+      required: false
+    },
+    usernameAttributes: {
+      type: String,
+      required: false
+    }
+  },
   data: () => ({
     password: '',
     error: '',
@@ -74,11 +83,11 @@ export default {
     auth,
     logger: {},
     signInUsername: '',
-        labelMap: {
-          email: 'Email',
-          phone_number: 'Phone Number',
-          username: 'Username'
-        },
+    labelMap: {
+      email: 'Email',
+      phone_number: 'Phone Number',
+      username: 'Username'
+    },
   }),
   computed: {
     options() {
