@@ -29,7 +29,7 @@
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.1.6",
+    "@stencil/core": "^1.1.9",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -56,7 +56,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint && npm test"
     }
   },
   "peerDependencies": {},
