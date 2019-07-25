@@ -142,8 +142,11 @@ describe('SignIn', () => {
             await Promise.resolve();
            
             expect(spyon.mock.calls.length).toBe(1);
-            expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
-            expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
+            expect(spyon.mock.calls[0][0]).toEqual({
+                username: event_username.target.value,
+                password: event_password.target.value,
+                validationData: undefined
+            });
 
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('customConfirmSignIn');
