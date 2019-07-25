@@ -15,6 +15,18 @@
   <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.signIn.section">
     <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.signIn.headerSection">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.signIn.bodySection">
+      <div v-if="options.federated">
+        <amplify-federated-sign-in 
+          v-bind:google_client_id="options.federated.google_client_id"
+          v-bind:facebook_app_id="options.federated.facebook_app_id"
+          v-bind:amazon_client_id="options.federated.amazon_client_id">
+        </amplify-federated-sign-in>
+        <div :class="amplifyUI.strike">
+          <span :class="amplifyUI.strikeContent">
+            {{$Amplify.I18n.get('or')}}
+          </span>
+        </div>
+      </div>
       <amplify-username-field 
         v-bind:usernameAttributes="usernameAttributes" 
         v-on:username-field-changed="usernameFieldChanged">
@@ -55,21 +67,19 @@ import { auth } from '../../assets/data-test-attributes';
 export default {
   name: 'SignIn',
   props: ['signInConfig', 'usernameAttributes'],
-  data () {
-    return {
-        password: '',
-        error: '',
-        amplifyUI: AmplifyUI,
-        auth,
-        logger: {},
-        signInUsername: '',
+  data: () => ({
+    password: '',
+    error: '',
+    amplifyUI: AmplifyUI,
+    auth,
+    logger: {},
+    signInUsername: '',
         labelMap: {
           email: 'Email',
           phone_number: 'Phone Number',
           username: 'Username'
         },
-    }
-  },
+  }),
   computed: {
     options() {
       const defaults = {

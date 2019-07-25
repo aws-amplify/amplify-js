@@ -14,8 +14,8 @@
 <template>
   <div v-bind:data-test="auth.signOut.section"> 
    <div v-bind:class="amplifyUI.formField">
-      <div v-bind:class="amplifyUI.inputLabel">{{options.msg}}</div>
-      <button v-bind:class="amplifyUI.button" v-on:click="signOut" v-bind:data-test="auth.signOut.button">{{options.signOutButton}}</button>
+    <div v-bind:class="amplifyUI.inputLabel">{{ options.msg }}</div>
+    <button v-bind:class="amplifyUI.button" v-on:click="signOut" v-bind:data-test="auth.signOut.button">{{options.signOutButton}}</button>
     </div>      
     <div class="error" v-if="error">
       {{ error }}
@@ -27,6 +27,8 @@
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import { existsSync } from 'fs';
+
+import constants from './common/constants.js';
 import { auth } from '../../assets/data-test-attributes';
 import constants from './common/constants.js';
 
