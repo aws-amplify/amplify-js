@@ -11,6 +11,7 @@ exports[`Loading renders successfully with no props 1`] = `
     >
       <div
         className="XR__loadingLogo___Ub7xQ"
+        data-test="sumerian-scene-loading-logo"
       >
         <svg
           viewBox="0 0 800 481"
@@ -43,9 +44,11 @@ exports[`Loading renders successfully with no props 1`] = `
       </div>
       <div
         className="XR__loadingSceneName___3__ne"
+        data-test="sumerian-scene-loading-scene-name"
       />
       <div
         className="XR__loadingBar___2vcke"
+        data-test="sumerian-scene-loading-bar"
       >
         <div
           className="XR__loadingBarFill___3M-D9"
@@ -74,6 +77,7 @@ exports[`Loading renders successfully with percentage 1`] = `
     >
       <div
         className="XR__loadingLogo___Ub7xQ"
+        data-test="sumerian-scene-loading-logo"
       >
         <svg
           viewBox="0 0 800 481"
@@ -106,9 +110,11 @@ exports[`Loading renders successfully with percentage 1`] = `
       </div>
       <div
         className="XR__loadingSceneName___3__ne"
+        data-test="sumerian-scene-loading-scene-name"
       />
       <div
         className="XR__loadingBar___2vcke"
+        data-test="sumerian-scene-loading-bar"
       >
         <div
           className="XR__loadingBarFill___3M-D9"
