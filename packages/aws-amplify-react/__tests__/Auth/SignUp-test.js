@@ -96,7 +96,13 @@ describe('signUp without signUpConfig prop', () => {
             await wrapper.find(Button).simulate('click');
 
 
-            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678999"}, "password": "abc", "username": "user1"});
+            expect(spyon)
+                .toBeCalledWith({
+                    "attributes": { "email": "email@amazon.com", "phone_number": "+12345678999" }, 
+                    "password": "abc", 
+                    "username": "user1", 
+                    "validationData": []
+                });
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
 
@@ -152,9 +158,9 @@ describe('signUp without signUpConfig prop', () => {
                 .toBeCalledWith({
                     "attributes": { "email": "email@amazon.com", "phone_number": "+12345678901" },
                     "password": "abc",
-                    "username": "user1"
+                    "username": "user1",
+                    "validationData": []
                 });
-
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
 

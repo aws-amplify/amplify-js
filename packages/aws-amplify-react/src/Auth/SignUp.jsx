@@ -187,11 +187,18 @@ export default class SignUp extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
+        const validationData = [];
+        if(this.props.validationData) {
+          Object.keys(this.props.validationData).forEach(key => {
+            validationData.push({ Name: key, Value: this.props.validationData[key] })
+          });
+        };
+        
         const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
             attributes: {},
-            validationData: this.props.validationData
+            validationData
         };
 
         const inputKeys = Object.keys(this.inputs);
