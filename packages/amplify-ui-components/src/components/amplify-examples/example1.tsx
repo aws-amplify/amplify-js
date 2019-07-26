@@ -12,16 +12,14 @@ const Example1 = () => (
       <fieldset>
         <legend>Sample form</legend>
         <p>
-          <amplify-text-field fieldId="sample-text-field" label="Sample text field" description="Insert a string" />
+          <amplify-field fieldId="sample-text-field" label="Sample text field" description="Insert a string" />
         </p>
         <p>
-          <amplify-text-field
+          <amplify-field
             fieldId="sample-number-field"
             label="Sample number field"
             description="Select a number"
-            inputProps={{
-              type: 'number',
-            }}
+            type="number"
           />
         </p>
       </fieldset>

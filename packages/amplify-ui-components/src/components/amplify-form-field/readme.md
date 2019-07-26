@@ -25,14 +25,14 @@
 ### Depends on
 
 - [amplify-label](../amplify-label)
-- [amplify-text-input](../amplify-text-input)
+- [amplify-input](../amplify-input)
 - [amplify-hint](../amplify-hint)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-form-field --> amplify-label
-  amplify-form-field --> amplify-text-input
+  amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-username-field --> amplify-form-field
