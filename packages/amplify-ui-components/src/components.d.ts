@@ -19,6 +19,13 @@ export namespace Components {
     'type': string;
   }
   interface AmplifyExamples {}
+  interface AmplifyField {
+    'description': string | null;
+    'fieldId': string;
+    'label': string | null;
+    'onInput'?: (arg0: Event) => void;
+    'type'?: string;
+  }
   interface AmplifyFormField {
     'fieldId': string;
     'hint': string | null;
@@ -29,6 +36,13 @@ export namespace Components {
     'label': string | null;
   }
   interface AmplifyHint {}
+  interface AmplifyInput {
+    'description': string | null;
+    'fieldId': string;
+    'label': string | null;
+    'onInput'?: (arg0: Event) => void;
+    'type'?: string;
+  }
   interface AmplifyLabel {
     'htmlFor': string;
   }
@@ -70,24 +84,6 @@ export namespace Components {
     };
     'label': string | null;
   }
-  interface AmplifyTextField {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextInput {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
   interface RockPaperScissor {
     'icon': Function;
   }
@@ -114,6 +110,12 @@ declare global {
     new (): HTMLAmplifyExamplesElement;
   };
 
+  interface HTMLAmplifyFieldElement extends Components.AmplifyField, HTMLStencilElement {}
+  var HTMLAmplifyFieldElement: {
+    prototype: HTMLAmplifyFieldElement;
+    new (): HTMLAmplifyFieldElement;
+  };
+
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
   var HTMLAmplifyFormFieldElement: {
     prototype: HTMLAmplifyFormFieldElement;
@@ -124,6 +126,12 @@ declare global {
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
     new (): HTMLAmplifyHintElement;
+  };
+
+  interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
+  var HTMLAmplifyInputElement: {
+    prototype: HTMLAmplifyInputElement;
+    new (): HTMLAmplifyInputElement;
   };
 
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
@@ -174,18 +182,6 @@ declare global {
     new (): HTMLAmplifySignInUsernameFieldElement;
   };
 
-  interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
-  var HTMLAmplifyTextFieldElement: {
-    prototype: HTMLAmplifyTextFieldElement;
-    new (): HTMLAmplifyTextFieldElement;
-  };
-
-  interface HTMLAmplifyTextInputElement extends Components.AmplifyTextInput, HTMLStencilElement {}
-  var HTMLAmplifyTextInputElement: {
-    prototype: HTMLAmplifyTextInputElement;
-    new (): HTMLAmplifyTextInputElement;
-  };
-
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
   var HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
@@ -195,8 +191,10 @@ declare global {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
+    'amplify-field': HTMLAmplifyFieldElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
+    'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
@@ -205,8 +203,6 @@ declare global {
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
-    'amplify-text-field': HTMLAmplifyTextFieldElement;
-    'amplify-text-input': HTMLAmplifyTextInputElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 }
@@ -223,6 +219,13 @@ declare namespace LocalJSX {
     'type'?: string;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
+  interface AmplifyField extends JSXBase.HTMLAttributes<HTMLAmplifyFieldElement> {
+    'description'?: string | null;
+    'fieldId'?: string;
+    'label'?: string | null;
+    'onInput'?: (arg0: Event) => void;
+    'type'?: string;
+  }
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     'fieldId'?: string;
     'hint'?: string | null;
@@ -233,6 +236,13 @@ declare namespace LocalJSX {
     'label'?: string | null;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
+  interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
+    'description'?: string | null;
+    'fieldId'?: string;
+    'label'?: string | null;
+    'onInput'?: (arg0: Event) => void;
+    'type'?: string;
+  }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
   }
@@ -274,24 +284,6 @@ declare namespace LocalJSX {
     };
     'label'?: string | null;
   }
-  interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
     'onIconChange'?: (event: CustomEvent<any>) => void;
@@ -301,8 +293,10 @@ declare namespace LocalJSX {
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-examples': AmplifyExamples;
+    'amplify-field': AmplifyField;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
+    'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-scene-loading': AmplifySceneLoading;
@@ -311,8 +305,6 @@ declare namespace LocalJSX {
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-password-field': AmplifySignInPasswordField;
     'amplify-sign-in-username-field': AmplifySignInUsernameField;
-    'amplify-text-field': AmplifyTextField;
-    'amplify-text-input': AmplifyTextInput;
     'rock-paper-scissor': RockPaperScissor;
   }
 }
