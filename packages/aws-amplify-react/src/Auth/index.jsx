@@ -63,6 +63,12 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             }
         }
 
+        static getInitialProps = async (appCtx) => {
+          if (Comp.getInitialProps) {
+            return Comp.getInitialProps(appCtx)
+          }
+        };
+
         handleAuthStateChange(state, data) {
             this.setState({ authState: state, authData: data });
         }
