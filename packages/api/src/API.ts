@@ -17,14 +17,21 @@ import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import { GraphQLOptions, GraphQLResult } from './types';
+import {
+    GraphQLOptions,
+    GraphQLResult,
+    APIClassOptions,
+    RestRequestExtraParams,
+    RestRequestExtraParamsWithResponse,
+} from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
+import { AxiosResponse } from 'axios';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}) => ({ query, variables });
+export const graphqlOperation = (query:string, variables = {}) => ({ query, variables });
 
 /**
  * Export Cloud Logic APIs
@@ -33,15 +40,15 @@ export default class APIClass {
     /**
      * @private
      */
-    private _options;
-    private _api = null;
+    private _options?: APIClassOptions | null;
+    private _api?: RestClass | null = null;
     private _pubSub = Amplify.PubSub;
 
     /**
      * Initialize Storage with AWS configuration
      * @param {Object} options - Configuration object for storage
      */
-    constructor(options) {
+    constructor(options: APIClass["_options"]) {
         this._options = options;
         logger.debug('API Options', this._options);
     }
@@ -55,7 +62,7 @@ export default class APIClass {
      * @param {Object} config - Configuration of the API
      * @return {Object} - The current configuration
      */
-    configure(options) {
+    configure(options?: null | APIClassOptions) {
         const { API = {}, ...otherOptions } = options || {};
         let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
@@ -118,7 +125,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async get(apiName, path, init) {
+    get<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    get<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+        ): Promise<Output>;
+    async get(apiName: string, path: string, init?: RestRequestExtraParams) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -141,7 +158,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async post(apiName, path, init) {
+    post<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    post<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async post(apiName: string, path: string, init?: RestRequestExtraParams) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -155,6 +182,8 @@ export default class APIClass {
             return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
+        // let a = this.put("","",{})
+        // let b = this.put("","",{response:true})
     }
 
     /**
@@ -164,7 +193,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async put(apiName, path, init) {
+    put<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParams & { response?:undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    put<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async put(apiName: string, path: string, init?: RestRequestExtraParams) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -187,7 +226,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async patch(apiName, path, init) {
+    patch<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParams & { response?:undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    patch<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async patch(apiName: string, path: string, init?: RestRequestExtraParams) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -210,7 +259,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async del(apiName, path, init) {
+    del<Output = {}>(
+        apiName: string,
+        url: string,
+        init?: RestRequestExtraParams & { response?:undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    del<Output = {}>(
+        apiName: string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async del(apiName: string, path: string, init?: RestRequestExtraParams){
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -233,7 +292,17 @@ export default class APIClass {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async head(apiName, path, init) {
+    head<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParams & { response?:undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    head<Output = {}>(
+        apiName:string,
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async head(apiName: string, path: string, init?: RestRequestExtraParams) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -254,7 +323,7 @@ export default class APIClass {
     * @param {string} apiName - The name of the api
     * @return {string} - The endpoint of the api
     */
-    async endpoint(apiName) {
+    async endpoint(apiName: string) {
         if (!this._api) {
             try {
                 await this.createInstance();
@@ -326,10 +395,13 @@ export default class APIClass {
      * Executes a GraphQL operation
      *
      * @param {GraphQLOptions} GraphQL Options
-     * @returns {Promise<GraphQLResult> | Observable<object>}
+     * @returns {Promise<GraphQLResult<Output>> | Observable<Output>}
      */
-    graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
-
+    graphql<Output = {}>({
+        query: paramQuery,
+        variables = {},
+        authMode,
+      }: GraphQLOptions) {
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
         const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
@@ -338,16 +410,18 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables, authMode });
+                return this._graphql<Output>({ query, variables, authMode });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables, authMode });
+                return this._graphqlSubscribe<Output>({ query, variables, authMode });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
-        : Promise<GraphQLResult> {
+    private async _graphql<Output = {}>(
+        { query, variables, authMode }: GraphQLOptions,
+        additionalHeaders = {}
+      ): Promise<GraphQLResult<Output>> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -355,7 +429,7 @@ export default class APIClass {
         const {
             aws_appsync_region: region,
             aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-            graphql_headers = () => ({}),
+            graphql_headers = async () => ({}),
             graphql_endpoint: customGraphqlEndpoint,
             graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
@@ -373,7 +447,6 @@ export default class APIClass {
             query: print(query),
             variables,
         };
-
         const init = {
             headers,
             body,
@@ -417,7 +490,10 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe<Output = {}>(
+        { query, variables, authMode }: GraphQLOptions,
+        additionalHeaders = {}
+      ): Observable<Output> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 

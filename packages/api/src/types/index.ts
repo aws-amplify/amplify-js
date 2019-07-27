@@ -11,29 +11,7 @@
  * and limitations under the License.
  */
 import { DocumentNode } from 'graphql/language/ast';
-
-/**
-* RestClient instance options
-*/
-export class RestClientOptions {
-    /** AWS credentials */
-    credentials: AWSCredentials;
-
-    /**
-    * Lookup key of AWS credentials.
-    * If credentials not provided then lookup from sessionStorage.
-    * Default 'awsCredentials'
-    */
-    credentials_key: string;
-
-    /** Additional headers for all requests send by this client. e.g. user-agent */
-    headers: object;
-
-    constructor() {
-        this.credentials_key = 'awsCredentials';
-        this.headers = {};
-    }
-}
+import { ResponseType } from 'axios';
 
 /**
 * AWS credentials needed for RestClient
@@ -60,9 +38,9 @@ export class AWSCredentials {
 }
 
 // TODO: remove this once unauth creds are figured out
-export interface apiOptions {
-    headers: object;
-    endpoints: object;
+export interface RestClientOptions {
+    headers?: object;
+    endpoints?: object;
     credentials?: object;
 }
 
@@ -77,11 +55,62 @@ export enum GRAPHQL_AUTH_MODE {
     AWS_IAM = "AWS_IAM",
     OPENID_CONNECT = "OPENID_CONNECT",
     AMAZON_COGNITO_USER_POOLS = "AMAZON_COGNITO_USER_POOLS",
-
 }
 
-export interface GraphQLResult {
-    data?: object,
+export interface GraphQLResult<Output = {}> {
+    data?: Output,
     errors?: [object],
     extensions?: { [key: string]: any },
+}
+
+interface APIClassOptionsAPI {
+    region?: string;
+    header?: {};
+    aws_cloud_logic_custom?: {
+        id: string;
+        name: string;
+        description: string;
+        endpoint: string;
+        region: string;
+        paths: string[];
+    }[];
+    aws_project_region?: string;
+    graphql_endpoint?: string;
+    graphql_headers?: ({ query, variables }:{ query: string, variables: {} }) => Promise<{
+        [customHeaderKey:string]: string
+    }>;
+    graphql_endpoint_iam_region?: string;
+    endpoints?: {
+        name: string;
+        endpoint: string;
+        service?: string;
+        region?: string;
+        custom_header?: () => { [key:string]: string };
+    }[]
+}
+export interface APIClassOptions extends APIClassOptionsAPI {
+    aws_project_region?: string;
+    aws_appsync_graphqlEndpoint?: string;
+    aws_appsync_region?: string;
+    aws_appsync_authenticationType?: string;
+    aws_appsync_apiKey?: string;
+    API?: APIClassOptionsAPI
+    headers?: {};
+    body?: {};
+}
+
+export interface RestRequestExtraParams {
+    headers?: {};
+    response?: any;
+    body?: {};
+    responseType?: ResponseType;
+    timeout?: number;
+    signerServiceInfo?: {
+        service: string;
+        region: string;
+    };
+    queryStringParameters?: {};
+}
+export interface RestRequestExtraParamsWithResponse extends RestRequestExtraParams {
+    response: any;
 }

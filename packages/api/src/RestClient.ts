@@ -13,8 +13,8 @@
 
 import { ConsoleLogger as Logger, Signer, Platform, Credentials } from '@aws-amplify/core';
 
-import { RestClientOptions, AWSCredentials, apiOptions } from './types';
-import axios from 'axios';
+import {  RestClientOptions, RestRequestExtraParams, RestRequestExtraParamsWithResponse } from './types';
+import axios, { AxiosRequestConfig, Method, ResponseType, AxiosResponse } from 'axios';
 
 const logger = new Logger('RestClient'),
     urlLib = require('url');
@@ -40,10 +40,14 @@ export class RestClient {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
-    constructor(options: apiOptions) {
+    constructor(options: RestClientOptions) {
         const { endpoints } = options;
         this._options = options;
         logger.debug('API Options', this._options);
+
+        // const res = this.ajax<{a:number}>("", "get", {});
+        // const res2 = this.ajax("", "get", {response:true});
+        // const res3 = this.get("", {response:true});
     }
 
     /**
@@ -61,7 +65,22 @@ export class RestClient {
     * @param {json} [init] - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    async ajax(url: string, method: string, init) {
+    ajax<Output = {}>(
+        url: string,
+        method: Method,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    ajax<Output = {}>(
+        url: string,
+        method: Method,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    async ajax(
+        url: string,
+        method: Method,
+        init?: RestRequestExtraParams
+    ) {
+
         logger.debug(method + ' ' + url);
 
         const parsed_url = this._parseUrl(url);
@@ -73,7 +92,7 @@ export class RestClient {
             path: parsed_url.path,
             headers: {},
             data: null,
-            responseType: 'json',
+            responseType: 'json' as ResponseType,
             timeout: 0
         };
 
@@ -98,7 +117,6 @@ export class RestClient {
         if (initParams.timeout) {
             params.timeout = initParams.timeout;
         }
-
         params['signerServiceInfo'] = initParams.signerServiceInfo;
 
         // custom_header callback
@@ -131,14 +149,15 @@ export class RestClient {
         }
         
         // Signing the request in case there credentials are available
-        return Credentials.get()
-            .then(
-                credentials => this._signed({ ...params }, credentials, isAllResponse),
-                err => {
-                    logger.debug('No credentials available, the request will be unsigned');
-                    return this._request(params, isAllResponse);
-                }
-                );
+
+        return (Credentials.get() as Promise<any>)
+        .then(
+            credentials => this._signed({ ...params }, credentials, isAllResponse),
+            err => {
+                logger.debug('No credentials available, the request will be unsigned');
+                return this._request(params, isAllResponse);
+            }
+        );
     }
 
     /**
@@ -147,7 +166,15 @@ export class RestClient {
     * @param {JSON} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    get(url: string, init) {
+    get<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    get<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    get(url: string, init?: RestRequestExtraParams) {
         return this.ajax(url, 'GET', init);
     }
 
@@ -157,7 +184,15 @@ export class RestClient {
     * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    put(url: string, init) {
+    put<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    put<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    put(url: string, init?: RestRequestExtraParamsWithResponse) {
         return this.ajax(url, 'PUT', init);
     }
 
@@ -167,7 +202,15 @@ export class RestClient {
     * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    patch(url: string, init) {
+   patch<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    patch<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    patch(url: string, init?: RestRequestExtraParamsWithResponse) {
         return this.ajax(url, 'PATCH', init);
     }
 
@@ -177,7 +220,15 @@ export class RestClient {
     * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    post(url: string, init) {
+    post<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    post<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    post(url: string, init?: RestRequestExtraParams) {
         return this.ajax(url, 'POST', init);
     }
 
@@ -187,7 +238,15 @@ export class RestClient {
     * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    del(url: string, init) {
+    del<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    del<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    del(url: string, init?: RestRequestExtraParams) {
         return this.ajax(url, 'DELETE', init);
     }
 
@@ -197,7 +256,15 @@ export class RestClient {
     * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
-    head(url: string, init) {
+    head<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParams & { response?: undefined }
+    ): Promise<AxiosResponse<Output>["data"]>;
+    head<Output = {}>(
+        url: string,
+        init?: RestRequestExtraParamsWithResponse
+    ): Promise<AxiosResponse<Output>>;
+    head(url: string, init?: RestRequestExtraParams) {
         return this.ajax(url, 'HEAD', init);
     }
 
@@ -238,9 +305,13 @@ export class RestClient {
     }
 
     /** private methods **/
-
-    private _signed(params, credentials, isAllResponse) {
-
+    private _signed<Output = {}, B extends boolean = true>(
+        params,
+        credentials,
+        isAllResponse: B
+      ): Promise<
+        B extends true ? AxiosResponse<Output> : AxiosResponse<Output>["data"]
+      > {
         const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
 
         const endpoint_region: string = this._region || this._options.region;
@@ -259,24 +330,32 @@ export class RestClient {
 
         const signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
 
-        const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
+        const signed_params:AxiosRequestConfig = Signer.sign(otherParams, creds, signerServiceInfo);
 
         if (signed_params.data) {
-            signed_params.body = signed_params.data;
+            // Property body is not defined in AxiosRequestConfig and all tests pass if we remove it , do we need this ?
+            signed_params["body"] = signed_params.data;
         }
 
         logger.debug('Signed Request: ', signed_params);
 
         delete signed_params.headers['host'];
         return axios(signed_params)
-            .then(response => isAllResponse ? response : response.data)
-            .catch((error) => {
-                logger.debug(error);
-                throw error;
-            });
+        .then(response => {
+            // response
+            return isAllResponse ? response : response.data;
+        })
+        .catch((error) => {
+            logger.debug(error);
+            throw error;
+        });
     }
-
-    private _request(params, isAllResponse = false) {
+    private _request<Output = {}, B extends boolean = true>(
+        params: AxiosRequestConfig,
+        isAllResponse: B
+      ): Promise<
+        B extends true ? AxiosResponse<Output> : AxiosResponse<Output>["data"]
+      > {          
         return axios(params)
             .then(response => isAllResponse ? response : response.data)
             .catch((error) => {
