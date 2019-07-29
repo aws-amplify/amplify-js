@@ -21,18 +21,6 @@ describe('amplify-field', () => {
     expect(descriptionElement).toEqualText('Description test');
   });
 
-  it('renders no label or description if none are provided', async () => {
-    const page = await newE2EPage();
-
-    await page.setContent(`<amplify-field></amplify-field>`);
-
-    const labelElement = await page.find('label');
-    expect(labelElement).toBeNull();
-
-    const descriptionElement = await page.find('.description');
-    expect(descriptionElement).toBeNull();
-  });
-
   it('fires an onInput event when the contents of the box are changed', async () => {
     const page = await newE2EPage();
 
