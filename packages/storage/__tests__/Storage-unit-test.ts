@@ -2,6 +2,7 @@
 import AWSStorageProvider from '../src/Providers/AWSS3Provider';
 import { default as Storage } from "../src/Storage";
 import StorageCategory from "../src";
+import { configure } from 'highlight.js';
 
 const credentials = {
     accessKeyId: 'accessKeyId',
@@ -402,7 +403,7 @@ describe('Storage', () => {
             });
         });
 
-        test('should add customPrefix global if is defined', () => {
+        test('should add customPrefix to AWSS3 provider object if is defined', () => {
             const storage = new Storage ();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'i_am_a_bucket',
@@ -428,6 +429,27 @@ describe('Storage', () => {
                         public: 'opentotheworld',
                     },
                 },
+            });
+        });
+
+        test('should not add customPrefix to AWSS3 provider object if value is undefined', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'you_dont_know_this_bucket',
+                aws_user_files_s3_bucket_region: 'WD3',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({
+                customPrefix: undefined
+            });
+
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'you_dont_know_this_bucket',
+                    region: 'WD3',
+                },
+                customPrefix: {}
             });
         });
     });
