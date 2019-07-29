@@ -2,6 +2,7 @@
 import AWSStorageProvider from '../src/Providers/AWSS3Provider';
 import { default as Storage } from "../src/Storage";
 import StorageCategory from "../src";
+import { configure } from 'highlight.js';
 
 const credentials = {
     accessKeyId: 'accessKeyId',
@@ -399,6 +400,35 @@ describe('Storage', () => {
                     bucket: 'bucket2',
                     region: 'region1',
                 }
+            });
+        });
+
+        test('should add customPrefix global if is defined', () => {
+            const storage = new Storage ();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'i_am_a_bucket',
+                aws_user_files_s3_bucket_region: 'IAD',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({
+                customPrefix: {
+                    protected: 'iamprotected',
+                    private: 'iamprivate',
+                    public: 'opentotheworld',
+                },
+            });
+
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'i_am_a_bucket',
+                    region: 'IAD',
+                    customPrefix: {
+                        protected: 'iamprotected',
+                        private: 'iamprivate',
+                        public: 'opentotheworld',
+                    },
+                },
             });
         });
     });
