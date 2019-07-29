@@ -30,7 +30,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
      * Note that Rekognition and Textract use the same source interface, so we need not worry about types.
      * @param {IdentifySource} source - User input source that directs to the object user wants
      * to identify (storage, file, or bytes).
-     * @return {Promise<Rekognition.Image> } - Promise resolving to the converted source object.
+     * @return {Promise<Rekognition.Image>} - Promise resolving to the converted source object.
      */
     private configureSource(source: IdentifySource): Promise<Rekognition.Image> {
         return new Promise((res, rej) => {
