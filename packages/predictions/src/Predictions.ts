@@ -195,7 +195,7 @@ export default class Predictions {
         const categoryConfig = Object.assign(
             {},
             this._options['predictions'], // Parent predictions config for the top level provider
-            // this._options[pluggable.getCategory()] // Actual category level config
+            this._options[pluggable.getCategory().toLowerCase()] // Actual category level config
         );
         pluggable.configure(categoryConfig);
     }

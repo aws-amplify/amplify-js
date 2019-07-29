@@ -59,7 +59,7 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
             return this.convertProvider.convert(input);
         } else if (isSpeechToTextInput(input)) {
             return this.convertProvider.convert(input);
-        } //else {
+        } // else {
         //     // Orchestration type request. Directly call graphql
         //     return this.orchestrateWithGraphQL(input);
         // }

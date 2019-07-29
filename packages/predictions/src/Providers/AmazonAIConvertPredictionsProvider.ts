@@ -13,9 +13,8 @@ import {
     isFileSource, isBytesSource,
     BytesSource
 } from "../types";
-import { Credentials, ConsoleLogger as Logger, AWS } from '@aws-amplify/core';
+import { Credentials, ConsoleLogger as Logger, Signer } from '@aws-amplify/core';
 import { GraphQLPredictionsProvider } from "..";
-import { Signer } from '@aws-amplify/core';
 import { EventStreamMarshaller, MessageHeaderValue } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 
