@@ -91,10 +91,11 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     rej(err);
                 } else {
                     const blob = new Blob([data.AudioStream as ArrayBuffer], { type: data.ContentType });
+                    logger.debug({ blob });
                     const url = URL.createObjectURL(blob);
                     res({
                         speech: { url },
-                        audioStream: data.AudioStream as ArrayBuffer,
+                        audioStream: blob,
                         text: input.textToSpeech.source.text,
                         language: input.textToSpeech.source.language
                     } as TextToSpeechOutput);
