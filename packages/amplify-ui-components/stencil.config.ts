@@ -3,9 +3,7 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
   namespace: 'amplify-ui-components',
-  plugins: [
-    nodePolyfills()
-  ],
+  plugins: [nodePolyfills()],
   outputTargets: [
     { type: 'dist' },
     { type: 'docs-readme' },

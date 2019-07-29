@@ -1,5 +1,13 @@
 import { Component, Element, Prop, h } from '@stencil/core';
-import { loadingOverlay, loadingContainer, loadingLogo, loadingSceneName, sceneErrorText, loadingBar, loadingBarFill } from './amplify-scene-loading.style';
+import {
+  loadingOverlay,
+  loadingContainer,
+  loadingLogo,
+  loadingSceneName,
+  sceneErrorText,
+  loadingBar,
+  loadingBarFill,
+} from './amplify-scene-loading.style';
 
 @Component({
   tag: 'amplify-scene-loading',
@@ -17,11 +25,13 @@ export class AmplifySceneLoading {
         <div class={loadingContainer}>
           <div class={loadingLogo}></div>
           <div class={loadingSceneName}>{this.sceneName}</div>
-          {this.sceneError
-            ? <div class={sceneErrorText}>{this.sceneError}</div>
-            : <div class={loadingBar}>
-                <div class={loadingBarFill} style={{ width: this.loadPercentage + '%'}} />
-              </div> // TODO: Make loading-bar component
+          {this.sceneError ? (
+            <div class={sceneErrorText}>{this.sceneError}</div>
+          ) : (
+            <div class={loadingBar}>
+              <div class={loadingBarFill} style={{ width: this.loadPercentage + '%' }} />
+            </div>
+          ) // TODO: Make loading-bar component
           }
         </div>
       </div>

@@ -1,10 +1,10 @@
 import { css } from 'emotion';
 
-const deepSquidInk = "#152939";
-const lightSquidInk = "#31465F";
-const white = "#FFFFFF";
-const red = "#DD3F5B";
-const lightBlue = "#00a1c9";
+const deepSquidInk = '#152939';
+const lightSquidInk = '#31465F';
+const white = '#FFFFFF';
+const red = '#DD3F5B';
+const lightBlue = '#00a1c9';
 
 export const loadingOverlay = css`
   display: flex;

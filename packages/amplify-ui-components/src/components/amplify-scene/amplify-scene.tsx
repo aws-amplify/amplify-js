@@ -32,7 +32,7 @@
 
 //   async loadAndSetupScene(sceneName, sceneDomId) {
 //     this.loading = true;
-//     const sceneOptions = { 
+//     const sceneOptions = {
 //       progressCallback: (progress) => {
 //         this.loadPercentage = progress * 100;
 //       }
@@ -46,7 +46,7 @@
 //       }
 //       return;
 //     }
-    
+
 //     XR.start(sceneName);
 
 //     this.muted = XR.isMuted(sceneName);
@@ -62,11 +62,11 @@
 //       <div id={SCENE_CONTAINER_DOM_ID} class={sceneContainer}>
 //         <div id={SCENE_DOM_ID} class={scene}>
 //           {this.loading
-//             ? <amplify-scene-loading scene-name={this.sceneName} load-percentage={this.loadPercentage} scene-error={this.sceneError} /> 
+//             ? <amplify-scene-loading scene-name={this.sceneName} load-percentage={this.loadPercentage} scene-error={this.sceneError} />
 //             : null
 //           }
 //         </div>
-        
+
 //         <div class={sceneBar}>
 //           <span class={sceneActions}>
 //             {/* <icon-button type="mute" /> */}
@@ -77,7 +77,7 @@
 //             {enterOrExitVRButton}
 //             {screenSizeButton} */}
 //           </span>
-//         </div> 
+//         </div>
 //       </div>
 //     );
 //   }

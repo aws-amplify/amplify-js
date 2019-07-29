@@ -29,27 +29,33 @@
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.0.7",
+    "@stencil/core": "^1.1.9",
     "@stencil/state-tunnel": "^1.0.1",
-    "@storybook/addon-a11y": "^5.1.8",
-    "@storybook/addon-knobs": "^5.1.8",
-    "@storybook/html": "^5.1.8",
+    "@storybook/addon-a11y": "^5.1.9",
+    "@storybook/addon-knobs": "^5.1.9",
+    "@storybook/html": "^5.1.9",
     "@storybook/theming": "^5.1.8",
-    "@types/jest": "23.3.14",
-    "@typescript-eslint/eslint-plugin": "^1.9.0",
-    "@typescript-eslint/parser": "^1.9.0",
+    "@types/jest": "24.0.15",
+    "@types/node": "^12.6.3",
+    "@types/webpack": "^4.4.35",
+    "@types/webpack-env": "^1.14.0",
+    "@typescript-eslint/eslint-plugin": "^1.12.0",
+    "@typescript-eslint/parser": "^1.12.0",
+    "babel-loader": "^8.0.6",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^2.4.1",
-    "jest": "23.6.0",
-    "jest-cli": "23.6.0",
+    "jest": "24.8.0",
+    "jest-cli": "24.8.0",
     "prettier": "^1.17.1",
-    "rollup-plugin-node-polyfills": "^0.2.1"
+    "puppeteer": "1.17.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3"
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint && npm test"
     }
   },
   "peerDependencies": {},
