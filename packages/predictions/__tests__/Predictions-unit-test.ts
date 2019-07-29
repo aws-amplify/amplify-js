@@ -23,36 +23,57 @@ describe("Predictions test", () => {
     describe('configure tests', () => {
         test('happy case configure all providers after they are added', () => {
             const convertOptions = {
-                "translateText": {
+                "transcription": {
                     "region": "us-west-2",
                     "proxy": false,
                     "defaults": {
-                        "sourceLanguage": "es",
-                        "targetLanguage": "en"
+                        "language": "en-US"
                     }
                 },
-                "textToSpeech": {
-                    "name": "speechPiece",
+                "speechGenerator": {
                     "region": "us-west-2",
                     "proxy": false,
                     "defaults": {
-                        "VoiceId": "Matthew",
+                        "VoiceId": "Salli",
                         "LanguageCode": "en-US"
                     }
                 }
             };
             const identifyOptions = {
-                "textIdentifyText": {
-                    "name": "imageIdentifierPiece",
+                "identifyText": {
+                    "proxy": false,
                     "region": "us-west-2",
-                    "cache": false
+                    "defaults": {
+                        "format": "ALL"
+                    }
+                },
+                "identifyEntities": {
+                    "proxy": false,
+                    "region": "us-west-2",
+                    "celebrityDetectionEnabled": true,
+                    "defaults": {
+                        "collectionId": "identifyEntities9de51ed0-beta",
+                        "maxEntities": 50
+                    }
+                },
+            };
+            const interpretOptions = {
+                "interpretText": {
+                    "region": "us-west-2",
+                    "proxy": false,
+                    "defaults": {
+                        "type": "ALL"
+                    }
                 }
             };
             const configureOptions = {
-                "Predictions": {
-                    "Convert": convertOptions,
-                    "Identify": identifyOptions
-                }
+                "predictions": {
+                    "identify": identifyOptions,
+                    "interpret": interpretOptions,
+                    "convert": convertOptions
+                },
+
+
             };
             const convertProvider = new AWSConvertPredictionsProvider();
             const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => { });
@@ -67,9 +88,9 @@ describe("Predictions test", () => {
 
             // Configuring predictions and pluggables after they are all added
             predictions.configure(configureOptions);
-            expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.Predictions) });
-            expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.Predictions) });
-            expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.Predictions);
+            expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.predictions) });
+            expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.predictions) });
+            expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.predictions);
         });
     });
 
@@ -83,7 +104,7 @@ describe("Predictions test", () => {
                     "targetLanguage": "en"
                 }
             },
-            "textToSpeech": {
+            "speechGenerator": {
                 "name": "speechPiece",
                 "region": "us-west-2",
                 "proxy": false,
@@ -94,16 +115,16 @@ describe("Predictions test", () => {
             }
         };
         const identifyOptions = {
-            "textIdentifyText": {
+            "identifyText": {
                 "name": "imageIdentifierPiece",
                 "region": "us-west-2",
                 "cache": false
             }
         };
         const configureOptions = {
-            "Predictions": {
-                "Convert": convertOptions,
-                "Identify": identifyOptions
+            "predictions": {
+                "convert": convertOptions,
+                "identify": identifyOptions
             }
         };
 
@@ -120,9 +141,9 @@ describe("Predictions test", () => {
         predictions.addPluggable(convertProvider);
         predictions.addPluggable(identifyProvider);
         predictions.addPluggable(topLevelProvider);
-        expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.Predictions) });
-        expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.Predictions) });
-        expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.Predictions);
+        expect(convertSpy).toHaveBeenCalledWith({ ...convertOptions, ...(configureOptions.predictions) });
+        expect(identifySpy).toHaveBeenCalledWith({ ...identifyOptions, ...(configureOptions.predictions) });
+        expect(topLevelSpy).toHaveBeenCalledWith(configureOptions.predictions);
     });
 
     describe('addPluggable tests', () => {
@@ -273,7 +294,7 @@ describe("Predictions test", () => {
             try {
                 predictions.convert(input, options);
             } catch (e) {
-                expect(e.message).toMatch('More than one or no providers are configured, ' 
+                expect(e.message).toMatch('More than one or no providers are configured, '
                     + 'Either specify a provider name or configure exactly one provider');
             }
         });
