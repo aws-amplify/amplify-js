@@ -30,7 +30,7 @@
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.2.0",
+    "@stencil/core": "^1.2.3",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -56,7 +56,9 @@
     "typescript": "^3.5.3"
   },
   "husky": {
-    "hooks": {}
+    "hooks": {
+      "pre-push": "npm run test"
+    }
   },
   "peerDependencies": {},
   "license": "Apache-2.0"
