@@ -308,6 +308,6 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     }
 
     private decodeExternalImageId(externalImageId: string): string {
-        return externalImageId.replace(/::/g, '/');
+        return ("" + externalImageId).replace(/::/g, '/');
     }
 }

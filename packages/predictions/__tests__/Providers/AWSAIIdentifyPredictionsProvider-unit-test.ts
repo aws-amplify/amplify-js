@@ -1,8 +1,9 @@
 import { Credentials } from '@aws-amplify/core';
-import { Storage } from 'aws-amplify';
+import Storage from '@aws-amplify/storage';
 import {
-    IdentifyEntityInput, IdentifyEntityOutput, IdentifyFacesInput,
-    IdentifyFacesOutput, IdentifyTextInput, IdentifyTextOutput,
+    IdentifyEntitiesInput, IdentifyEntitiesOutput,
+    IdentifyTextInput, IdentifyTextOutput,
+    IdentifyLabelsInput, IdentifyLabelsOutput,
 } from '../../src/types';
 import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
@@ -24,10 +25,32 @@ jest.mock('aws-sdk/clients/rekognition', () => {
         FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }]
     };
     const searchFacesByImageResponse: Rekognition.SearchFacesByImageResponse = {
-        FaceMatches: [{ Face: { BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } }, Similarity: 0.0 }]
+        FaceMatches: [{
+            Face: {
+                ExternalImageId:
+                    "ExternalImageId", BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 }
+            }, Similarity: 0.0
+        }]
     };
     const recognizeCelebritiesResponse: Rekognition.RecognizeCelebritiesResponse = {
-        CelebrityFaces: [{ Face: { BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } } }]
+        CelebrityFaces: [
+            {
+                Name: "William",
+                Urls: [
+                    "www.william.com"
+                ],
+                Face: {
+                    BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 },
+                    Pose: {
+                        Roll: 0
+                    },
+                    Landmarks: [{
+                        Type:"eyeLeft",
+                        X: 0.5,
+                        Y: 0.5
+                    }]
+                }
+            }]
     };
 
     const plainBlocks: Rekognition.DetectTextResponse = {
@@ -183,15 +206,25 @@ const credentials = {
     authenticated: true
 };
 
+
+
+
+
 const options = {
-    'identify': {
-        'identifyEntities': {
-            'connection': 'sdk',
-            'region': 'us-west-2',
-        },
-        'identifyFaces': {
-            'connection': 'sdk',
-            'region': 'us-west-2',
+    'identifyEntities': {
+        "proxy": false,
+        "region": "us-west-2",
+        "celebrityDetectionEnabled": true,
+        "defaults": {
+            "collectionId": "identifyEntities9de51ed0-beta",
+            "maxEntities": 50
+        }
+    },
+    "identifyLabels": {
+        "proxy": false,
+        "region": "us-west-2",
+        "defaults": {
+            "type": "LABELS"
         }
     }
 };
@@ -264,12 +297,12 @@ describe('Predictions identify provider test', () => {
             });
         });
     });
-    describe('identifyEntity tests', () => {
-        describe('identifyEntity::labels tests', () => {
-            const detectLabelInput: IdentifyEntityInput = { entity: { source: { key: 'key', }, type: 'LABELS' } };
+    describe('identifyLabels tests', () => {
+        describe('identifylabels tests', () => {
+            const detectLabelInput: IdentifyLabelsInput = { labels: { source: { key: 'key', }, type: 'LABELS' } };
             test('happy case credentials exist', () => {
-                const expected: IdentifyEntityOutput = {
-                    entity: [{ name: 'test', boundingBoxes: [{ height: 0, left: 0, top: 0, width: 0 }] }],
+                const expected: IdentifyLabelsOutput = {
+                    labels: [{ name: 'test', boundingBoxes: [{ height: 0, left: 0, top: 0, width: 0 }] }],
                 };
                 return expect(predictionsProvider.identify(detectLabelInput)).resolves.toMatchObject(expected);
             });
@@ -285,13 +318,13 @@ describe('Predictions identify provider test', () => {
             });
         });
 
-        describe('identifyEntity::unsafe tests', () => {
-            const detectModerationInput: IdentifyEntityInput = {
-                entity: { source: { key: 'key', }, type: 'UNSAFE' }
+        describe('identifyLabels::unsafe tests', () => {
+            const detectModerationInput: IdentifyLabelsInput = {
+                labels: { source: { key: 'key', }, type: 'UNSAFE' }
             };
 
             test('happy case credentials exist, unsafe image', () => {
-                const expected: IdentifyEntityOutput = { unsafe: 'YES' };
+                const expected: IdentifyLabelsOutput = { unsafe: 'YES' };
                 return expect(predictionsProvider.identify(detectModerationInput)).resolves.toMatchObject(expected);
             });
 
@@ -304,14 +337,14 @@ describe('Predictions identify provider test', () => {
             });
         });
 
-        describe('identifyEntity::all tests', () => {
-            const detectModerationInput: IdentifyEntityInput = {
-                entity: { source: { key: 'key' }, type: 'ALL' }
+        describe('identifyLabels::all tests', () => {
+            const detectModerationInput: IdentifyLabelsInput = {
+                labels: { source: { key: 'key' }, type: 'ALL' }
             };
 
             test('happy case credentials exist', () => {
-                const expected: IdentifyEntityOutput = {
-                    entity: [{
+                const expected: IdentifyLabelsOutput = {
+                    labels: [{
                         name: 'test',
                         boundingBoxes: [{ height: 0, left: 0, top: 0, width: 0, }]
                     }],
@@ -330,14 +363,25 @@ describe('Predictions identify provider test', () => {
         });
     });
     describe('identifyFaces tests', () => {
-        describe('identifyEntity::detctFaces tests', () => {
-            const detectFacesInput: IdentifyFacesInput = {
-                face: { source: { key: 'key', }, },
-                celebrityDetection: false,
+        describe('identifyEntities::detctFaces tests', () => {
+            const detectFacesInput: IdentifyEntitiesInput = {
+                entities: {
+                    source: {
+                        key: 'key',
+                    },
+                    celebrityDetection: true
+                },
             };
 
             test('happy case credentials exist', () => {
-                const expected: IdentifyFacesOutput = { face: [{ ageRange: { high: 0, low: 0 } }] };
+                const expected: IdentifyEntitiesOutput = {
+                    "entities": [
+                        {
+                            "boundingBox": { "height": 0, "left": 0, "top": 0, "width": 0 },
+                            "landmarks": [{ "type": "eyeLeft", "x": 0.5, "y": 0.5 }],
+                            "metadata": { "name": "William", "pose": { "roll": 0 }, "urls": ["www.william.com"] }
+                        }]
+                };
                 return expect(predictionsProvider.identify(detectFacesInput)).resolves.toMatchObject(expected);
             });
 
@@ -347,7 +391,7 @@ describe('Predictions identify provider test', () => {
             });
 
             test('error case credentials exist but service fails', () => {
-                jest.spyOn(Rekognition.prototype, 'detectFaces').mockImplementationOnce(
+                jest.spyOn(Rekognition.prototype, 'recognizeCelebrities').mockImplementationOnce(
                     (_input, callback) => { callback('error', null); }
                 );
                 return expect(predictionsProvider.identify(detectFacesInput)).rejects.toMatch('error');
@@ -356,14 +400,17 @@ describe('Predictions identify provider test', () => {
 
         });
 
-        describe('identifyEntity::recognizeCelebrities tests', () => {
-            const recognizeCelebritiesInput: IdentifyFacesInput = {
-                face: { source: { key: 'key' } }, celebrityDetection: true,
+        describe('identifyEntities::recognizeCelebrities tests', () => {
+            const recognizeCelebritiesInput: IdentifyEntitiesInput = {
+                entities: {
+                    source: { key: 'key' },
+                    celebrityDetection: true,
+                },
             };
 
             test('happy case credentials exist', () => {
-                const expected: IdentifyFacesOutput = {
-                    face: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }]
+                const expected: IdentifyEntitiesOutput = {
+                    entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }]
                 };
                 return expect(predictionsProvider.identify(recognizeCelebritiesInput)).resolves.toMatchObject(expected);
             });
@@ -377,19 +424,18 @@ describe('Predictions identify provider test', () => {
             });
         });
 
-        describe('identifyEntity::searchImageByFaces tests', () => {
-            const searchByFacesInput: IdentifyFacesInput = {
-                face: {
+        describe('identifyEntities::searchImageByFaces tests', () => {
+            const searchByFacesInput: IdentifyEntitiesInput = {
+                entities: {
                     source: { key: 'key' },
-                    maxFaces: 0,
-                    collection: 'collection'
+                    collectionId: 'collection',
+                    maxEntities: 0,
                 },
-                celebrityDetection: false,
             };
 
             test('happy case credentials exist', () => {
-                const expected: IdentifyFacesOutput = {
-                    face: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }]
+                const expected: IdentifyEntitiesOutput = {
+                    entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }]
                 };
                 return expect(predictionsProvider.identify(searchByFacesInput)).resolves.toMatchObject(expected);
             });
@@ -413,8 +459,8 @@ describe('Predictions identify provider test', () => {
         };
 
         test('happy case input source valid public s3object', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: { level: 'public', key: 'key', }, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: { level: 'public', key: 'key', }, type: 'LABELS' }
             };
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
                 (input, callback) => {
@@ -426,8 +472,8 @@ describe('Predictions identify provider test', () => {
         });
 
         test('happy case input source valid private s3object', (done) => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: { key: 'key', level: 'private' }, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: { key: 'key', level: 'private' }, type: 'LABELS' }
             };
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
                 (input, _callback) => {
@@ -443,8 +489,8 @@ describe('Predictions identify provider test', () => {
         });
 
         test('happy case input source valid protected s3object', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: {
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: {
                     source: { key: 'key', identityId: credentials.identityId, level: 'protected' },
                     type: 'LABELS'
                 }
@@ -459,8 +505,8 @@ describe('Predictions identify provider test', () => {
         });
 
         test('happy case input source valid bytes', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: { bytes: 'bytes' }, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: { bytes: 'bytes' }, type: 'LABELS' }
             };
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
                 (input, callback) => {
@@ -473,8 +519,8 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid bytes', done => {
             const fileInput = new Blob([Buffer.from('file')]);
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: { bytes: fileInput }, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: { bytes: fileInput }, type: 'LABELS' }
             };
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
                 (input, _callback) => {
@@ -491,8 +537,8 @@ describe('Predictions identify provider test', () => {
 
         test('happy case input source valid file', done => {
             const fileInput = new File([Buffer.from('file')], 'file');
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: { file: fileInput }, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: { file: fileInput }, type: 'LABELS' }
             };
             jest.spyOn(Rekognition.prototype, 'detectLabels').mockImplementationOnce(
                 (input, _callback) => {
@@ -508,8 +554,8 @@ describe('Predictions identify provider test', () => {
         });
 
         test('error case invalid input source', () => {
-            const detectLabelInput: IdentifyEntityInput = {
-                entity: { source: null, type: 'LABELS' }
+            const detectLabelInput: IdentifyLabelsInput = {
+                labels: { source: null, type: 'LABELS' }
             };
             return expect(predictionsProvider.identify(detectLabelInput))
                 .rejects.toMatch('not configured correctly');
