@@ -18,7 +18,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
     constructor() {
         super();
     }
-   
+
     getProviderName() {
         return 'AmazonAIIdentifyPredictionsProvider';
     }
@@ -34,7 +34,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise((res, rej) => {
             if (isStorageSource(source)) {
                 const storageConfig = { level: source.level, identityId: source.identityId };
-        Storage.get(source.key, storageConfig)
+                Storage.get(source.key, storageConfig)
                     .then((url: string) => {
                         const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
                         const parsedURL = url.match(parser);
@@ -71,7 +71,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            const { identifyText: { region = "", format: configFormat = "PLAIN" } = {} } = this._config;
+            const { identifyText: { region = "", defaults: { format: configFormat = "PLAIN" } = {} } = {} }
+                = this._config;
             this.rekognition = new Rekognition({ region, credentials });
             this.textract = new Textract({ region, credentials });
             let inputDocument: Textract.Document;
@@ -135,7 +136,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return new Promise(async (res, rej) => {
             const credentials = await Credentials.get();
             if (!credentials) return rej('No credentials');
-            const { identifyLabels: { region = "", type = "LABELS" } = {} } = this._config;
+            const { identifyLabels: { region = "", defaults: { type = "LABELS" } = {} } = {} } = this._config;
             this.rekognition = new Rekognition({ region, credentials });
             let inputImage: Rekognition.Image;
             await this.configureSource(input.labels.source)
@@ -236,9 +237,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 .catch(err => { return rej(err); });
 
             const param = { Image: inputImage };
-            
+
             if (isIdentifyCelebrities(input.entities)) {
-                if ( !celebrityDetectionEnabled ) {
+                if (!celebrityDetectionEnabled) {
                     return rej("Error: You have to enable celebrity detection first");
                 }
                 this.rekognition.recognizeCelebrities(param, (err, data) => {
@@ -257,9 +258,9 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                 });
             } else if (isIdentifyFromCollection(input.entities)) {
 
-                const { collectionId = collectionIdConfig, maxEntities: maxFaces = maxFacesConfig } = 
-                input.entities as IdentifyFromCollection;
-                
+                const { collectionId = collectionIdConfig, maxEntities: maxFaces = maxFacesConfig } =
+                    input.entities as IdentifyFromCollection;
+
                 // Concatenate additional parameters
                 const updatedParam = { ...param, CollectionId: collectionId, MaxFaces: maxFaces };
                 this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
@@ -296,7 +297,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                             metadata: {
                                 confidence: detail.Confidence,
                                 pose: makeCamelCase(detail.Pose)
-                            } 
+                            }
                         };
                     });
                     res({ entities: faces });

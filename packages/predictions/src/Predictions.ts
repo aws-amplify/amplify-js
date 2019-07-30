@@ -142,9 +142,9 @@ export default class Predictions {
         }
     }
 
-    public identify(input: IdentifyTextInput, options: ProviderOptions): Promise<IdentifyTextOutput>;
-    public identify(input: IdentifyLabelsInput, options: ProviderOptions): Promise<IdentifyLabelsOutput>;
-    public identify(input: IdentifyEntitiesInput, options: ProviderOptions): Promise<IdentifyEntitiesOutput>;
+    public identify(input: IdentifyTextInput, options?: ProviderOptions): Promise<IdentifyTextOutput>;
+    public identify(input: IdentifyLabelsInput, options?: ProviderOptions): Promise<IdentifyLabelsOutput>;
+    public identify(input: IdentifyEntitiesInput, options?: ProviderOptions): Promise<IdentifyEntitiesOutput>;
     public identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput, options: ProviderOptions)
         : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
