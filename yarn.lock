@@ -2145,10 +2145,10 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@stencil/core@^1.2.0":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.2.1.tgz#39bd08fd57be64737e04a2dc43931ec4bbcabf7c"
-  integrity sha512-aXwwWVPsX2nqMXQm4S6zxZAKxYCAuR3VnIHejWJZSUsqhCjeS6TQzNkPEEQy54LGZrTZb9xHYxKmPiakuUpV9Q==
+"@stencil/core@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.2.3.tgz#a87f8121254cdd0862964f7c453484464f20de34"
+  integrity sha512-kfeq5y6Ltp8ObiamdYYuzf9I+8kDYiogpfEleF/HGQHrfnp6y57IhpEjSTC4pgkbXFV/PzVwRVOl9dsbjlw8yw==
   dependencies:
     typescript "3.5.3"
 
