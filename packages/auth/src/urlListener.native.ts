@@ -15,24 +15,32 @@ import {
 } from '@aws-amplify/core';
 const logger = new Logger('urlListener');
 
-let linkingHandlers = [];
+let handler;
 
 export default async callback => {
+    if (handler) {
+        return;
+    }
+
     let Linking: any;
+    let AppState: any;
 
     try {
-        ({ Linking } = require('react-native'));
+        ({ Linking, AppState } = require('react-native'));
     } catch (error) { /* Keep webpack happy */ }
 
-    const handler = ({ url, ...rest }: { url: string }) => {
-        logger.debug('addEventListener', { url, ...rest });
-        callback({ url });
-    };
-    linkingHandlers.forEach(lh => Linking.removeEventListener('url', lh));
-    Linking.addEventListener('url', handler);
-    linkingHandlers = [handler];
 
-    const initialUrl = await Linking.getInitialURL();
-    logger.debug('before callback', { initialUrl });
-    callback({ url: initialUrl });
+    handler = handler || (({ url, ...rest }: { url: string }) => {
+        logger.debug('urlListener', { url, ...rest });
+        callback({ url });
+    });
+
+    Linking.removeEventListener('url', handler);
+    Linking.addEventListener('url', handler);
+    AppState.addEventListener('change', async newAppState => {
+        if (newAppState === 'active') {
+            const initialUrl = await Linking.getInitialURL();
+            handler({ url: initialUrl });
+        }
+    });
 };

@@ -100,32 +100,39 @@ export default class StorageClass {
         if (!config) return this._config;
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const { bucket, region, level, track, customPrefix } = amplifyConfig.Storage as any;
-        // Update DEFAULT_PROVIDER with defined attributes bucket, region, level, track, customPrefix if exists 
-        // on amplifyConfig.Storage, backwards compatible issue 
-        if ((bucket || region || level || track || customPrefix) && !amplifyConfig.Storage[DEFAULT_PROVIDER]) {
+
+        const storageKeysFromConfig = Object.keys(amplifyConfig.Storage);
+
+        const storageArrayKeys = [
+            'bucket',
+            'region',
+            'level',
+            'track',
+            'customPrefix',
+            'serverSideEncryption',
+            'SSECustomerAlgorithm',
+            'SSECustomerKey',
+            'SSECustomerKeyMD5',
+            'SSEKMSKeyId'
+        ];
+
+        const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
+        const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
+
+        if (
+            storageKeysFromConfig &&
+            checkConfigKeysFromArray(storageKeysFromConfig) &&
+            !amplifyConfig.Storage[DEFAULT_PROVIDER]
+        ) {
             amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
         }
-        if (bucket) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].bucket = bucket;
-            delete amplifyConfig.Storage['bucket'];
-        }
-        if (region) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].region = region;
-            delete amplifyConfig.Storage['region'];
-        }
-        if (level) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].level = level;
-            delete amplifyConfig.Storage['level'];
-        }
-        if (track) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].track = track;
-            delete amplifyConfig.Storage['track'];
-        }
-        if (customPrefix) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER].customPrefix = customPrefix;
-            delete amplifyConfig.Storage['customPrefix'];
-        }
+
+        Object.entries(amplifyConfig.Storage).map(([key, value]) => {
+            if (key && isInStorageArrayKeys(key) && value !== undefined) {
+                amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
+                delete amplifyConfig.Storage[key];
+            }
+        });
 
         // only update new values for each provider
         Object.keys(amplifyConfig.Storage).forEach((providerName) => {
