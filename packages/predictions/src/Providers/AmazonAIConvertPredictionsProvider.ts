@@ -115,7 +115,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     region = "" } = {}
                 } = this._config;
                 if (!region) {
-                    rej("region not configured for transcription");
+                    return rej("region not configured for transcription");
                 }
                 const { transcription: { source, language = languageCode } } = input;
                 if (isBytesSource(source)) {
@@ -123,12 +123,9 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                         = await this.openConnectionWithTranscribe({ credentials, region, languageCode: language });
 
                     const fullText = await this.sendDataToTranscribe({ connection, raw: source.bytes });
-                    
                     return res({
                         transcription: {
                             fullText,
-                            lines: [],
-                            linesDetailed: []
                         }
                     });
                 }
@@ -144,31 +141,47 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         return this.graphQLPredictionsProvider.convert(input);
     }
 
+    public static serializeDataFromTranscribe(message) {
+        let decodedMessage = "";
+        const transcribeMessage = eventBuilder.unmarshall(Buffer.from(message.data));
+        const transcribeMessageJson = JSON.parse(String.fromCharCode.apply(String, transcribeMessage.body));
+        if (transcribeMessage.headers[":message-type"].value === "exception") {
+            logger.debug('exception', JSON.stringify(transcribeMessageJson.Message, null, 2));
+        }
+        else if (transcribeMessage.headers[":message-type"].value === "event") {
+            if (transcribeMessageJson.Transcript.Results.length > 0) {
+                if (transcribeMessageJson.Transcript.Results[0].Alternatives.length > 0) {
+                    if (transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript.length > 0) {
+                        if (transcribeMessageJson.Transcript.Results[0].IsPartial === false) {
+                            decodedMessage = 
+                                transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript + "\n";
+                            logger.debug({ decodedMessage });
+                        } else {
+                            logger.debug({
+                                transcript: transcribeMessageJson.Transcript.Results[0].Alternatives[0]
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        return decodedMessage;
+    }
+
     private sendDataToTranscribe({ connection, raw }): Promise<string> {
         return new Promise((res, rej) => {
             let fullText = "";
             connection.onmessage = (message) => {
-                fullText += " ";
-                const transcribeMessage = eventBuilder.unmarshall(Buffer.from(message.data));
-                const transcribeMessageJson = JSON.parse(String.fromCharCode.apply(String, transcribeMessage.body));
-                if (transcribeMessage.headers[":message-type"].value === "exception") {
-                    logger.debug('exception', JSON.stringify(transcribeMessageJson.Message, null, 2));
-                }
-                else if (transcribeMessage.headers[":message-type"].value === "event") {
-                    if (transcribeMessageJson.Transcript.Results.length > 0) {
-                        if (transcribeMessageJson.Transcript.Results[0].Alternatives.length > 0) {
-                            if (transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript.length > 0) {
-                                if (transcribeMessageJson.Transcript.Results[0].IsPartial === false) {
-                                    fullText = fullText +
-                                        transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript + "\n";
-                                    // sending end frame
-                                    logger.debug({ fullText });
-                                    // return res(fullText);
-                                }
-                            }
-                        }
+                try {
+                    const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(message);
+                    if (decodedMessage) {
+                        fullText += decodedMessage + " ";
                     }
+                } catch (err) {
+                    logger.debug(err);
                 }
+                
+
             };
 
             connection.onerror = (errorEvent) => {
@@ -178,13 +191,11 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
 
             connection.onclose = (closeEvent) => {
                 logger.debug({ closeEvent });
-                return res(fullText);
+                return res(fullText.trim());
             };
 
-
-            // sending content
             logger.debug({ raw });
-         
+
             if (Array.isArray(raw)) {
                 for (let i = 0; i < raw.length - 1023; i += 1024) {
                     const data = raw.slice(i, i + 1024);
@@ -196,8 +207,6 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             const endFrameEventMessage = this.getAudioEventMessage(Buffer.from([]));
             const endFrameBinary = eventBuilder.marshall(endFrameEventMessage);
             connection.send(endFrameBinary);
-
-
         });
     }
 
@@ -291,16 +300,11 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 logger.debug('connected');
                 res(connection);
             };
+            
         });
     }
 
     private generateTranscribeUrl({ credentials, region, languageCode }): string {
-        // const url = ['wss://transcribestreaming.us-west-2.amazonaws.com:8443',
-        //     '/stream-transcription-websocket?',
-        //     'media-encoding=pcm&',
-        //     'sample-rate=16000&',
-        //     'language-code=en-US']
-        //     .join('');
         const url = [`wss://transcribestreaming.${region}.amazonaws.com:8443`,
             '/stream-transcription-websocket?',
             `media-encoding=pcm&`,
@@ -313,118 +317,4 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         return signedUrl;
     }
 
-    private waitingForTranscriptionJobDone(jobName: string): Promise<string> {
-        return new Promise(async (res, rej) => {
-            while (true) {
-                console.log('waiting for this thing');
-                await this.sleep(1000);
-                try {
-
-                    const {
-                        TranscriptionJob: {
-                            TranscriptionJobStatus, Transcript
-                        }
-                    } = await this.getTranscriptionJobPromise(jobName);
-
-                    if (TranscriptionJobStatus === 'COMPLETED') {
-                        return res(Transcript.TranscriptFileUri);
-                    }
-
-                    if (TranscriptionJobStatus === 'FAILED') {
-                        return rej('FAILED');
-                    }
-                } catch (err) {
-                    rej(err);
-                }
-            }
-        });
-    }
-
-    private getTranscriptionJobPromise(jobName: string): Promise<any> {
-        return new Promise((res, rej) => {
-            this.speechToText.getTranscriptionJob({ TranscriptionJobName: jobName }, (err, response) => {
-                if (err) {
-                    return rej(err);
-                }
-                return res(response);
-            });
-        });
-    }
-
-    private startTranscriptionJobPromise(transcribeParams): Promise<any> {
-        return new Promise((res, rej) => {
-            this.speechToText.startTranscriptionJob(transcribeParams, (err, data) => {
-                if (err) {
-                    rej(err);
-                } else {
-                    res(data);
-                }
-            });
-        });
-    }
-
-    private async fetchASRFromS3(uri: string): Promise<SpeechToTextOutput> {
-        const data = await fetch(uri, {
-            mode: "no-cors",
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'content-type': 'application/json'
-            }
-        });
-        console.log(data);
-        return this.serializeDataFromTranscribe(data);
-    }
-
-    private serializeDataFromTranscribe(data: any): SpeechToTextOutput {
-        return {
-            transcription: {
-                fullText: "test",
-                lines: [],
-                linesDetailed: []
-            }
-        };
-    }
-
-    private createMediaFileUriFromSpeechToText(input: SpeechToTextInput, credentials: any)
-        : Promise<string> {
-        return new Promise(async (res, rej) => {
-            const { transcription: { source = {} } = {} } = input;
-            if (isStorageSource(source)) {
-                const { key, level, identityId } = source;
-                let opt = {};
-                if (level) {
-                    opt = { level };
-                }
-                if (identityId) {
-                    opt = { ...opt, identityId };
-                }
-                return res(await this.getUnsignedS3Uri(key, opt));
-            } else if (isFileSource(source)) {
-                const key = await this.uploadFileToS3(source.file, credentials) as string;
-                return res(await this.getUnsignedS3Uri(key));
-            } else if (isBytesSource(source)) {
-                const key = await this.uploadFileToS3(source.bytes, credentials) as string;
-                return res(await this.getUnsignedS3Uri(key));
-            }
-            return rej("No valid source found");
-        });
-    }
-
-    private uploadFileToS3(bytes: Object, credentials: any): Promise<string> {
-        return new Promise(async (res, rej) => {
-            const { authenticated, identityId } = credentials;
-            const level = authenticated ? 'private' : 'public';
-            const objectKey = authenticated ? `${identityId}/${uuid()}` : `${uuid()}`;
-            Storage.put(objectKey, bytes, { level })
-                .then(({ key }: any) => res(key as string))
-                .catch(err => rej(err));
-
-        });
-    }
-
-    private async getUnsignedS3Uri(key: string, opt?: any) {
-        const signedUri = await Storage.get(key, opt) as string;
-        const [uri,] = signedUri.split("?");
-        return uri;
-    }
 }

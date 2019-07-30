@@ -154,8 +154,6 @@ export interface TranscriptionData {
 export interface SpeechToTextOutput {
     transcription: {
         fullText: string,
-        lines: Array<string>,
-        linesDetailed: Array<TranscriptionData>
     }
 }
 

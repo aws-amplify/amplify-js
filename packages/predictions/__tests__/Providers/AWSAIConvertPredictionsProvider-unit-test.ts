@@ -1,5 +1,5 @@
 import { AWS, ClientDevice, Parser, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import { TranslateTextInput, TextToSpeechInput, } from '../../src/types';
+import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, SpeechToTextOutput, } from '../../src/types';
 import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
@@ -27,6 +27,29 @@ jest.mock('aws-sdk/clients/polly', () => {
     return TextToSpeech;
 });
 
+(global as any).WebSocket = jest.fn((url) => {
+    let onCloseCallback = null;
+    let onErrorCallback = null;
+    let onMsgCallback = null;
+    let connection = null;
+    connection = {
+        // onopen: jest.fn((callback) => { callback(connection); console.log('open connection'); }),
+        set onmessage(callback) { onMsgCallback = callback; },
+        set onerror(callback) { onErrorCallback = callback; },
+        set onclose(callback) { onCloseCallback = callback; },
+        set onopen(callback) {
+            // code
+            callback();
+        },
+        send: jest.fn(() => {
+            onMsgCallback(""); onCloseCallback();
+        }),
+
+    };
+
+    return connection;
+});
+
 const credentials = {
     accessKeyId: 'accessKeyId',
     sessionToken: 'sessionToken',
@@ -50,7 +73,7 @@ const options = {
         sourceLanguage: "en",
         targetLanguage: "es"
     },
-    textToSpeech: {
+    speechGenerator: {
         connection: "sdk",
         region: "us-west-2",
         language: "en",
@@ -75,6 +98,14 @@ const validTextToSpeechInput: TextToSpeechInput = {
         voiceId: "Joanna"
     }
 };
+
+const validSpeechToTextInput: SpeechToTextInput = {
+    transcription: {
+        source: {
+            bytes: new Buffer([0, 1, 2])
+        }
+    }
+}
 
 describe("Predictions convert provider test", () => {
 
@@ -148,6 +179,53 @@ describe("Predictions convert provider test", () => {
                 (input, callback) => { callback("error", null); }
             );
             return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch("error");
+        });
+    });
+
+    describe('speechToText tests', () => {
+        test('Error region not configured', () => {
+            AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+                return "Hello how are you";
+            });
+
+            const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+            predictionsProvider.configure(options);
+            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return Promise.resolve(credentials);
+            });
+
+
+            return expect(predictionsProvider.convert(validSpeechToTextInput)).
+                rejects.toMatch("region not configured for transcription");
+
+        });
+        test('Happy case ', () => {
+            AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+                return "Hello, how are you?";
+            });
+
+            const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+            const speechGenOptions = {
+                "transcription": {
+                    "region": "us-west-2",
+                    "proxy": false,
+                    "defaults": {
+                        "language": "en-US"
+                    }
+                }
+            };
+            predictionsProvider.configure(speechGenOptions);
+            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return Promise.resolve(credentials);
+            });
+
+
+            return expect(predictionsProvider.convert(validSpeechToTextInput)).resolves.toMatchObject({
+                transcription: {
+                    fullText: "Hello, how are you?"
+                }
+            } as SpeechToTextOutput);
+
         });
     });
 });

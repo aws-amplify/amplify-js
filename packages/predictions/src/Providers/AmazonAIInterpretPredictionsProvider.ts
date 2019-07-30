@@ -120,7 +120,7 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
                         syntax: results[3] || [],
                         textEntities: results[1] || []
                     }
-                });   
+                });
             } catch (err) {
                 rej(err);
             }
@@ -166,13 +166,13 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
     private serializeSyntaxFromComprehend(tokens): Array<TextSyntax> {
         let response = [];
         if (tokens && Array.isArray(tokens)) {
-            response = tokens.map(({ Text: text = "", PartOfSpeech: { Tag : syntax = "" } = {} }) => {
+            response = tokens.map(({ Text: text = "", PartOfSpeech: { Tag: syntax = "" } = {} }) => {
                 return { text, syntax };
             });
         }
         return response;
     }
-    
+
     private detectSentiment(params, comprehend): Promise<TextSentiment> {
         return new Promise((res, rej) => {
             comprehend.detectSentiment(params, (err, data) => {
@@ -205,7 +205,7 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
                 if (err) {
                     if (err.code === "AccessDeniedException") {
                         rej("Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: " +
-                            "amplify predictions add");
+                        "amplify predictions add");
                     } else {
                         rej(err.message);
                     }
@@ -235,6 +235,10 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
                         rej(err.message);
                     }
                 } else {
+                    const { Languages: [{ LanguageCode }, ] = [""] } = {} = data || {};
+                    if (!LanguageCode) {
+                        rej("Language not detected");
+                    }
                     res(data.Languages[0].LanguageCode);
                 }
             });
