@@ -34,7 +34,7 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
                 text: {
                     source: { language = undefined } = {},
                 } = {}
-            } = {} = input as any; // language is only for 
+            } = {} = input as any; // language is only required for specific interpret types
 
             const comprehend = new Comprehend({
                 credentials,

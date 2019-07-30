@@ -46,6 +46,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             if (!sourceLanguageCode || !targetLanguageCode) {
                 throw new Error("Please provide both source and target language");
             }
+
             this.translate = new Translate({ region, credentials });
             this.translate.translateText({
                 SourceLanguageCode: sourceLanguageCode,
@@ -78,6 +79,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 OutputFormat: 'mp3',
                 Text: input.textToSpeech.source.text,
                 VoiceId: voiceId,
+                LanguageCode: language,
                 TextType: 'text',
                 SampleRate: '8000'
                 // tslint:disable-next-line: align
@@ -112,6 +114,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     return rej("region not configured for transcription");
                 }
                 const { transcription: { source, language = languageCode } } = input;
+
                 if (isBytesSource(source)) {
                     const connection
                         = await this.openConnectionWithTranscribe({ credentials, region, languageCode: language });

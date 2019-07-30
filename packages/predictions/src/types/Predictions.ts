@@ -1,5 +1,3 @@
-import { LanguageCode } from "aws-sdk/clients/transcribeservice";
-
 /**
  * Base types
  */
@@ -38,7 +36,7 @@ export interface InterpretTextInputLanguage {
 export interface InterpretTextOthers {
     source: {
         text: string,
-        language: LanguageCode
+        language: string
     },
     type: InterpretTextCategories.ENTITIES |
     InterpretTextCategories.SENTIMENT |
@@ -78,7 +76,7 @@ export interface TextSentiment {
 
 export interface InterpretTextOutput {
     textInterpretation: {
-        language?: LanguageCode,
+        language?: string,
         textEntities?: Array<TextEntities>,
         keyPhrases?: Array<KeyPhrases>,
         sentiment?: TextSentiment,
@@ -90,23 +88,23 @@ export interface TranslateTextInput {
     translateText: {
         source: {
             text: string,
-            language?: LanguageCode
+            language?: string
         },
         terminology?: string,
-        targetLanguage?: LanguageCode
+        targetLanguage?: string
     }
 }
 
 export interface TranslateTextOutput {
     text: string,
-    language: LanguageCode
+    language: string
 }
 
 export interface TextToSpeechInput {
     textToSpeech: {
         source: {
             text: string,
-            language?: LanguageCode
+            language?: string
         }
         terminology?: string,
         voiceId?: string
@@ -139,7 +137,7 @@ export type ConvertSource = StorageSource | FileSource | BytesSource;
 export interface SpeechToTextInput {
     transcription: {
         source: ConvertSource,
-        language?: LanguageCode,
+        language?: string,
     }
 }
 
