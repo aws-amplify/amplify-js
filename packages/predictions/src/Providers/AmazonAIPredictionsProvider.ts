@@ -1,7 +1,6 @@
 import { AbstractPredictionsProvider } from "../types/Providers";
 import {
     AmazonAIConvertPredictionsProvider,
-    GraphQLPredictionsProvider,
     AmazonAIInterpretPredictionsProvider,
     AmazonAIIdentifyPredictionsProvider
 } from ".";
@@ -14,7 +13,6 @@ import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOp
 
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 
-    private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private convertProvider: AmazonAIConvertPredictionsProvider;
     private identifyProvider: AmazonAIIdentifyPredictionsProvider;
     private interpretProvider: AmazonAIInterpretPredictionsProvider;
@@ -59,10 +57,7 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
             return this.convertProvider.convert(input);
         } else if (isSpeechToTextInput(input)) {
             return this.convertProvider.convert(input);
-        } // else {
-        //     // Orchestration type request. Directly call graphql
-        //     return this.orchestrateWithGraphQL(input);
-        // }
+        }
         Promise.reject();
     }
 
@@ -78,9 +73,6 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         } else if (isIdentifyEntitiesInput(input)) {
             return this.identifyProvider.identify(input);
         }
-        // else {
-        //     return this.orchestrateWithGraphQL(input);
-        // }
     }
 
 }

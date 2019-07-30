@@ -1,7 +1,6 @@
 import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractConvertPredictionsProvider";
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
-import * as SpeechToText from 'aws-sdk/clients/transcribeservice';
 import Storage from '@aws-amplify/storage';
 import { v4 as uuid } from 'uuid';
 import {
@@ -14,7 +13,6 @@ import {
     BytesSource
 } from "../types";
 import { Credentials, ConsoleLogger as Logger, Signer } from '@aws-amplify/core';
-import { GraphQLPredictionsProvider } from "..";
 import { EventStreamMarshaller, MessageHeaderValue } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 
@@ -23,10 +21,8 @@ const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
 export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
 
-    private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private translate: Translate;
     private textToSpeech: TextToSpeech;
-    private speechToText: SpeechToText;
     constructor() {
         super();
     }
@@ -102,8 +98,6 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         });
     }
 
-    private sleep(m) { return new Promise(r => setTimeout(r, m)); }
-
     protected convertSpeechToText(input: SpeechToTextInput): Promise<SpeechToTextOutput> {
         return new Promise(async (res, rej) => {
             try {
@@ -135,10 +129,6 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 rej(err);
             }
         });
-    }
-
-    protected orchestrateWithGraphQL(input: any): Promise<any> {
-        return this.graphQLPredictionsProvider.convert(input);
     }
 
     public static serializeDataFromTranscribe(message) {
@@ -180,8 +170,6 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 } catch (err) {
                     logger.debug(err);
                 }
-                
-
             };
 
             connection.onerror = (errorEvent) => {

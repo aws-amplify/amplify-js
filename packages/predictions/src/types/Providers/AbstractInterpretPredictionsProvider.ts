@@ -4,7 +4,7 @@ import { InterpretTextInput, InterpretTextOutput, isInterpretTextInput } from ".
 export abstract class AbstractInterpretPredictionsProvider extends AbstractPredictionsProvider {
 
     getCategory(): string {
-        return "interpret";
+        return "Interpret";
     }
 
     interpret(input: InterpretTextInput): Promise<InterpretTextOutput>;

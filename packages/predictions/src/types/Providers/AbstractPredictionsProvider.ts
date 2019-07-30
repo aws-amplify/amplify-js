@@ -16,7 +16,4 @@ export abstract class AbstractPredictionsProvider {
 
     abstract getCategory(): string;
 
-    protected orchestrateWithGraphQL(input: any): Promise<any> {
-        throw new Error("Method not implemented");
-    }
 }

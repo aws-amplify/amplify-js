@@ -1,7 +1,6 @@
 import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
-import { GraphQLPredictionsProvider } from '.';
 import * as Rekognition from 'aws-sdk/clients/rekognition';
 import {
     IdentifyLabelsInput, IdentifyLabelsOutput, IdentifySource, IdentifyEntitiesInput, IdentifyEntitiesOutput,
@@ -13,7 +12,6 @@ import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 import { categorizeRekognitionBlocks, categorizeTextractBlocks } from './IdentifyTextUtils';
 
 export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
-    private graphQLPredictionsProvider: GraphQLPredictionsProvider;
     private rekognition: Rekognition;
     private textract: Textract;
 

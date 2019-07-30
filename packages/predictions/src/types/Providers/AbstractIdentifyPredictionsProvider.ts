@@ -28,9 +28,7 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
             logger.debug('identifyEntities');
             return this.identifyEntities(input);
         }
-        // else {
-        //     return this.orchestrateWithGraphQL(input);
-        // }
+
     }
 
     protected identifyText(input: IdentifyTextInput): Promise<IdentifyTextOutput> {

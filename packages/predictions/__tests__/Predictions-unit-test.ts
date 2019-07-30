@@ -4,8 +4,6 @@ import { default as Predictions } from "../src/Predictions";
 import { default as AWSConvertPredictionsProvider } from '../src/Providers/AmazonAIConvertPredictionsProvider';
 import { default as AWSIdentifyPredictionsProvider } from '../src/Providers/AmazonAIIdentifyPredictionsProvider';
 import { default as AWSInterpretPredictionsProvider } from '../src/Providers/AmazonAIInterpretPredictionsProvider';
-import { default as AWSInferPredictionsProvider } from '../src/Providers/AmazonAIInferPredictionsProvider';
-import { default as AWSGraphQLPredictionsProvider } from '../src/Providers/GraphQLPredictionsProvider';
 import { default as AWSPredictionsProvider } from '../src/Providers/AmazonAIPredictionsProvider';
 
 const options: PredictionsOptions = {
@@ -192,18 +190,7 @@ describe("Predictions test", () => {
             expect(predictions.getPluggable(provider.getProviderName()))
                 .toBeInstanceOf(AWSInterpretPredictionsProvider);
         });
-        test('happy case infer', () => {
-            const predictions = new Predictions(options);
-            const provider = new AWSInferPredictionsProvider();
-            predictions.addPluggable(provider);
-            expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSInferPredictionsProvider);
-        });
-        test('happy case graphql', () => {
-            const predictions = new Predictions(options);
-            const provider = new AWSGraphQLPredictionsProvider();
-            predictions.addPluggable(provider);
-            expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSGraphQLPredictionsProvider);
-        });
+
         test('happy case top level predictions provider', () => {
             const predictions = new Predictions(options);
             const provider = new AWSPredictionsProvider();
@@ -240,20 +227,7 @@ describe("Predictions test", () => {
             predictions.removePluggable(interpretProvider.getProviderName());
             expect(predictions.getPluggable(interpretProvider.getProviderName())).toBeNull();
         });
-        test('happy case infer', () => {
-            const predictions = new Predictions(options);
-            const inferProvider = new AWSInferPredictionsProvider();
-            predictions.addPluggable(inferProvider);
-            predictions.removePluggable(inferProvider.getProviderName());
-            expect(predictions.getPluggable(inferProvider.getProviderName())).toBeNull();
-        });
-        test('happy case graphql', () => {
-            const predictions = new Predictions(options);
-            const graphqlProvider = new AWSGraphQLPredictionsProvider();
-            predictions.addPluggable(graphqlProvider);
-            predictions.removePluggable(graphqlProvider.getProviderName());
-            expect(predictions.getPluggable(graphqlProvider.getProviderName())).toBeNull();
-        });
+        
         test('happy case top level predictions provider', () => {
             const predictions = new Predictions(options);
             const topLevelProvider = new AWSPredictionsProvider();
@@ -345,16 +319,6 @@ describe("Predictions test", () => {
             expect(data).toEqual("translatedText");
             expect(convertSpy).toHaveBeenCalledTimes(1);
         });
-        test('happy case with only one graphql pluggable and no pluggable name provided', async () => {
-            const predictions = new Predictions(options);
-            const provider = new AWSGraphQLPredictionsProvider();
-            predictions.addPluggable(provider);
-            const input: TranslateTextInput = { translateText: { source: { text: "sourceText" } } };
-            const convertSpy = jest.spyOn(provider, 'convert')
-                .mockImplementation(() => { return Promise.resolve("translatedText"); });
-            const data = await predictions.convert(input, options);
-            expect(data).toEqual("translatedText");
-            expect(convertSpy).toHaveBeenCalledTimes(1);
-        });
+        
     });
 });

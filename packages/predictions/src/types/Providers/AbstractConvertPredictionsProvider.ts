@@ -27,10 +27,7 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
         } else if (isSpeechToTextInput(input)) {
             logger.debug('textToSpeech');
             return this.convertSpeechToText(input);
-        } // else {
-        //     // Orchestration type request. Directly call graphql
-        //     return this.orchestrateWithGraphQL(input);
-        // }
+        }
     }
 
     protected translateText(translateTextInput: TranslateTextInput): Promise<TranslateTextOutput> {
