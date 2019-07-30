@@ -7,6 +7,9 @@ describe('amplify-text-field', () => {
     await page.setContent(
       `<amplify-text-field field-id="id" label="Label test" description="Description test"></amplify-text-field>`,
     );
+    const screenshot = await page.compareScreenshot('Amplify Text Field', {fullPage: true});
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+
     const textElement = await page.find('amplify-text-field');
     expect(textElement).not.toBeNull();
 

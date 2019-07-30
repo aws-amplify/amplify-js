@@ -14,7 +14,8 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "eslint --fix --ext .js,.ts,.tsx .",
     "pretest": "npm run lint",
-    "test": "stencil test --spec --e2e",
+    "test": "stencil test --spec --e2e --screenshot",
+    "test:update-screenshot": "stencil test --spec --e2e --screenshot --update-screenshot",
     "test:watch": "stencil test --spec --e2e --watchAll",
     "stencil": "stencil build --docs-readme",
     "stencil:watch": "stencil build --dev --watch",
@@ -29,7 +30,7 @@
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.1.9",
+    "@stencil/core": "^1.2.3",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -56,6 +57,7 @@
   },
   "husky": {
     "hooks": {
+      "pre-push": "npm run test"
     }
   },
   "peerDependencies": {},
