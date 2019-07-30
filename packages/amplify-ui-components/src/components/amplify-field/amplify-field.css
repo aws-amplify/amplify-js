@@ -1,4 +1,4 @@
-amplify-text-field input {
+amplify-field input {
   padding: 5px;
   width: 100%;
   max-width: 300px;
@@ -6,19 +6,19 @@ amplify-text-field input {
   border: 1px gray solid;
 }
 
-amplify-text-field input:focus {
+amplify-field input:focus {
   outline: none;
   border-color: orange;
 }
 
-amplify-text-field .label {
+amplify-field .label {
   display: block;
   font-size: 0.9em;
   font-weight: bold;
   padding-bottom: 0.5em;
 }
 
-amplify-text-field .description {
+amplify-field .description {
   font-size: 0.8em;
   padding-top: 0.5em;
 }

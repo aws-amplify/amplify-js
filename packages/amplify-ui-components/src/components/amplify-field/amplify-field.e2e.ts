@@ -1,17 +1,17 @@
 import { newE2EPage } from '@stencil/core/testing';
 
-describe('amplify-text-field', () => {
+describe('amplify-field', () => {
   it('renders', async () => {
     const page = await newE2EPage();
 
     await page.setContent(
-      `<amplify-text-field field-id="id" label="Label test" description="Description test"></amplify-text-field>`,
+      `<amplify-field field-id="id" label="Label test" description="Description test"></amplify-field>`,
     );
-    const screenshot = await page.compareScreenshot('Amplify Text Field', {fullPage: true});
+    const screenshot = await page.compareScreenshot('Amplify Field', {fullPage: true});
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
 
-    const textElement = await page.find('amplify-text-field');
-    expect(textElement).not.toBeNull();
+    const fieldElement = await page.find('amplify-field');
+    expect(fieldElement).not.toBeNull();
 
     const labelElement = await page.find('label');
     expect(labelElement).toEqualText('Label test');
@@ -24,7 +24,7 @@ describe('amplify-text-field', () => {
   it('renders no label or description if none are provided', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-text-field></amplify-text-field>`);
+    await page.setContent(`<amplify-field></amplify-field>`);
 
     const labelElement = await page.find('label');
     expect(labelElement).toBeNull();
@@ -36,13 +36,14 @@ describe('amplify-text-field', () => {
   it('fires an onInput event when the contents of the box are changed', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-text-field></amplify-text-field>`);
+    await page.setContent(`<amplify-field></amplify-field>`);
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
-    await page.$eval('amplify-text-field', (textElement: any) => {
-      textElement.inputProps.onInput = this.exposedfunc;
-      textElement.label = 'adding a label so that the component rerenders';
+    
+    await page.$eval('amplify-field', (fieldElement: any) => {
+      fieldElement.onInput = this.exposedfunc;
+      fieldElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();
 
@@ -57,12 +58,7 @@ describe('amplify-text-field', () => {
   it('can have multiple input types', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-text-field></amplify-text-field>`);
-    const textElement = await page.find('amplify-text-field');
-
-    textElement.setProperty('inputProps', {
-      type: 'checkbox',
-    });
+    await page.setContent(`<amplify-field type='checkbox'></amplify-field>`);
     await page.waitForChanges();
 
     const input = await page.find('input');

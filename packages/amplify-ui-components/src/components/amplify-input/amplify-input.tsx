@@ -1,26 +1,25 @@
 import { Component, Prop, h } from '@stencil/core';
-import { textInput } from './amplify-text-input.style';
+import { textInput } from './amplify-input.style';
 
 @Component({
-  tag: 'amplify-text-input',
+  tag: 'amplify-input',
 })
-export class AmplifyTextInput {
+export class AmplifyInput {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() description: string | null;
-  @Prop() inputProps: {
-    type?: string;
-    onInput?: (Event) => void;
-  } = {};
+  @Prop() type?: string = "text";
+  @Prop() onInput?: (arg0: Event) => void;
 
   render() {
-    this.inputProps.type = this.inputProps.type || 'text';
+    this.type = this.type || 'text';
 
     return (
       <input
         id={this.fieldId}
         aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-        {...this.inputProps}
+        type={this.type}
+        onInput={this.onInput}
         class={textInput}
       />
     );

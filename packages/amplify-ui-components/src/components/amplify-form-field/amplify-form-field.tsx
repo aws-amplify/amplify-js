@@ -5,7 +5,7 @@ import { formField } from './amplify-form-field.style';
   tag: 'amplify-form-field',
   shadow: false,
 })
-export class AmplifyTextField {
+export class AmplifyField {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() hint: string | null;
@@ -15,14 +15,16 @@ export class AmplifyTextField {
   } = {};
 
   render() {
+    const type = this.inputProps.type || "text";
+
     return (
       <div class={formField}>
         {this.label && <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>}
-        <amplify-text-input
+        <amplify-input
           id={this.fieldId}
           aria-describedby={this.fieldId && this.hint ? `${this.fieldId}-description` : null}
-          type="text"
-          {...this.inputProps}
+          type={type}
+          onInput={this.inputProps.onInput}
         />
         {this.hint && (
           // <div id={`${this.fieldId}-description`} class="description">

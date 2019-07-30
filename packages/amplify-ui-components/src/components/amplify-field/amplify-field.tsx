@@ -1,20 +1,18 @@
 import { Component, Prop, h } from '@stencil/core';
 
 @Component({
-  tag: 'amplify-text-field',
-  styleUrl: 'amplify-text-field.css',
+  tag: 'amplify-field',
+  styleUrl: 'amplify-field.css',
 })
-export class AmplifyTextField {
+export class AmplifyField {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() description: string | null;
-  @Prop() inputProps: {
-    type?: string;
-    onInput?: (Event) => void;
-  } = {};
+  @Prop() type?: string = "text";
+  @Prop() onInput?: (arg0: Event) => void;
 
   render() {
-    this.inputProps.type = this.inputProps.type || 'text';
+    this.type = this.type || 'text';
 
     return (
       <div>
@@ -29,10 +27,11 @@ export class AmplifyTextField {
           </div>
         )}
         <div>
-          <amplify-text-input
-            id={this.fieldId}
+          <amplify-input
+            fieldId={this.fieldId}
             aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-            inputProps={{ ...this.inputProps }}
+            type={this.type}
+            onInput={this.onInput}
           />
         </div>
       </div>
