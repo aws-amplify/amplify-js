@@ -8,7 +8,6 @@ import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
@@ -976,15 +975,16 @@ describe('API test', () => {
             await api.get('apiName', 'path', {});
 
             expect(spyonRequest).toBeCalledWith({
-                "data": null, 
-                "headers": {"Authorization": "mytoken"}, 
-                "host": "www.amazonaws.compath", 
-                "method": "GET", 
+                "data": null,
+                "headers": { "Authorization": "mytoken" },
+                "host": "www.amazonaws.compath",
+                "method": "GET",
                 "path": "/",
                 "responseType": "json",
-                "signerServiceInfo": undefined, 
+                "signerServiceInfo": undefined,
                 "url": "https://www.amazonaws.compath/",
-                "timeout": 0
+                "timeout": 0,
+                "cancelToken": null
             }, undefined);
 
         });
@@ -1033,8 +1033,57 @@ describe('API test', () => {
                 timeout: 2500
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items", "timeout": 2500};
-            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
+            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items", "timeout": 2500, "cancelToken": null };
+            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
+        });
+
+        test('non-default cancelToken', async () => {
+            const resp = { data: [{ name: 'Bob' }] };
+
+            const options = {
+                aws_project_region: 'region',
+                aws_cloud_logic_custom
+            };
+
+            const api = new API(options);
+            const creds = {
+                secretAccessKey: 'secret',
+                accessKeyId: 'access',
+                sessionToken: 'token'
+            };
+
+            const creds2 = {
+                secret_key: 'secret',
+                access_key: 'access',
+                session_token: 'token'
+            };
+
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    res(creds);
+                });
+            });
+
+            const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+            const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+                return { headers: {} };
+            });
+
+            const spyAxios = jest.spyOn(axios, 'default').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(resp);
+                });
+            });
+
+            const init = {
+                cancelToken: {}
+            };
+
+            await api.get('apiName', '/items', init);
+            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items", "timeout": 0, "cancelToken": {} };
+            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
         });
 
         test('query-string on init', async () => {
@@ -1083,8 +1132,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 0};
-            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
+            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 0, "cancelToken": null };
+            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
         });
 
         test('query-string on init-custom-auth', async () => {
@@ -1136,8 +1185,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = {"data": null, "headers": {"Authorization": "apikey"}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "signerServiceInfo": undefined, "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 0};
-            expect(spyonRequest).toBeCalledWith( expectedParams, undefined );
+            const expectedParams = { "data": null, "headers": { "Authorization": "apikey" }, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "signerServiceInfo": undefined, "url": "endpoint/items?ke%3Ay3=val%3Aue%203", "timeout": 0, "cancelToken": null };
+            expect(spyonRequest).toBeCalledWith(expectedParams, undefined);
         });
         test('query-string on init and url', async () => {
             const resp = { data: [{ name: 'Bob' }] };
@@ -1185,8 +1234,8 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items?key1=value1&key2=value', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?key1=value1&key2=value2_real", "timeout": 0};
-            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
+            const expectedParams = { "data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "responseType": "json", "url": "endpoint/items?key1=value1&key2=value2_real", "timeout": 0, "cancelToken": null };
+            expect(spyonSigner).toBeCalledWith(expectedParams, creds2, { region: 'us-east-1', service: 'execute-api' });
         });
 
         test('endpoint length 0', async () => {
