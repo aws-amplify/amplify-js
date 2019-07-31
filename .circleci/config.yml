@@ -49,6 +49,7 @@ jobs:
             yarn run test --scope @aws-amplify/core
             yarn run test --scope @aws-amplify/interactions
             yarn run test --scope @aws-amplify/pubsub
+            yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
             yarn run test --scope aws-amplify-react
