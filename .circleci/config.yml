@@ -83,6 +83,7 @@ jobs:
           at: /root
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
           name: "Install Predictions React sample"
           command: |
             cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
