@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-field renders a label and description, if they are provided, and no id 1`] = `
+<amplify-field description="description" label="label">
+  <div>
+    <label class="label">
+      label
+    </label>
+    <div class="description" id="undefined-description">
+      description
+    </div>
+    <div>
+      <amplify-input type="text"></amplify-input>
+    </div>
+  </div>
+</amplify-field>
+`;
+
+exports[`amplify-field renders no label or description if none are provided 1`] = `
+<amplify-field>
+  <div>
+    <div>
+      <amplify-input type="text"></amplify-input>
+    </div>
+  </div>
+</amplify-field>
+`;
+
+exports[`amplify-field renders with an id, if it is provided 1`] = `
+<amplify-field description="description" field-id="id" label="label">
+  <div>
+    <label class="label" htmlfor="id">
+      label
+    </label>
+    <div class="description" id="id-description">
+      description
+    </div>
+    <div>
+      <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+    </div>
+  </div>
+</amplify-field>
+`;

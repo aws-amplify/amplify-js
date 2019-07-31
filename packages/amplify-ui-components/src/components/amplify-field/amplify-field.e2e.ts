@@ -55,7 +55,7 @@ describe('amplify-field', () => {
     expect(value).toBe('8');
   });
 
-  it('can have multiple input types', async () => {
+  it('can have a checkbox input', async () => {
     const page = await newE2EPage();
 
     await page.setContent(`<amplify-field type='checkbox'></amplify-field>`);
@@ -63,5 +63,15 @@ describe('amplify-field', () => {
 
     const input = await page.find('input');
     expect(input).toEqualAttribute('type', 'checkbox');
+  });
+
+  it('can have a number input', async () => {
+    const page = await newE2EPage();
+
+    await page.setContent(`<amplify-field type='number'></amplify-field>`);
+    await page.waitForChanges();
+
+    const input = await page.find('input');
+    expect(input).toEqualAttribute('type', 'number');
   });
 });
