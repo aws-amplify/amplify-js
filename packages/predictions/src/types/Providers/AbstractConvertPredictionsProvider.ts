@@ -13,9 +13,6 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
         return "Convert";
     }
 
-    convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
-    convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-    convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
     convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
         : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         if (isTranslateTextInput(input)) {

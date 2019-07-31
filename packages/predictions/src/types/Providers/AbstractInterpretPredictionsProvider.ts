@@ -7,7 +7,6 @@ export abstract class AbstractInterpretPredictionsProvider extends AbstractPredi
         return "Interpret";
     }
 
-    interpret(input: InterpretTextInput): Promise<InterpretTextOutput>;
     interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
         if (isInterpretTextInput(input)) {
             return this.interpretText(input);

@@ -13,9 +13,6 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
         return 'Identify';
     }
 
-    identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-    identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
-    identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
     identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
         : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         if (isIdentifyTextInput(input)) {

@@ -95,7 +95,7 @@ const validTranslateTextInput: TranslateTextInput = {
 const validTextToSpeechInput: TextToSpeechInput = {
     textToSpeech: {
         source: {
-            text: "sourceText", language: "en"
+            text: "sourceText"
         },
         voiceId: "Joanna"
     }
@@ -158,8 +158,7 @@ describe("Predictions convert provider test", () => {
                         url: "dummyURL"
                     },
                     audioStream: "dummyStream",
-                    text: "sourceText",
-                    language: "en"
+                    text: "sourceText"
                 }
             );
         });

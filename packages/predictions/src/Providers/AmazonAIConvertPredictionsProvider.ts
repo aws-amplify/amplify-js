@@ -1,17 +1,10 @@
 import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractConvertPredictionsProvider";
 import * as Translate from 'aws-sdk/clients/translate';
 import * as TextToSpeech from 'aws-sdk/clients/polly';
-import Storage from '@aws-amplify/storage';
-import { v4 as uuid } from 'uuid';
 import {
     TranslateTextInput, TextToSpeechInput,
-    SpeechToTextInput, isTranslateTextInput,
-    isTextToSpeechInput, isSpeechToTextInput,
-    TranslateTextOutput, TextToSpeechOutput,
-    SpeechToTextOutput, isStorageSource,
-    isFileSource, isBytesSource,
-    BytesSource
-} from "../types";
+    SpeechToTextInput, TranslateTextOutput, TextToSpeechOutput,
+    SpeechToTextOutput, isBytesSource} from "../types";
 import { Credentials, ConsoleLogger as Logger, Signer } from '@aws-amplify/core';
 import { EventStreamMarshaller, MessageHeaderValue } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
@@ -33,18 +26,22 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
 
     protected translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
         logger.debug("Starting translation");
-        const { translateText: {
-            defaults: { sourceLanguage = "", targetLanguage = "" } = {},
-            region = "us-east-1" } = {}
-        } = this._config;
-
         return new Promise(async (res, rej) => {
+            const { translateText: {
+                defaults: { sourceLanguage = "", targetLanguage = "" } = {},
+                region = "" } = {}
+            } = this._config;
+
+            if (!region) {
+                return rej("region not configured for transcription");
+            }
+
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
             const sourceLanguageCode = input.translateText.source.language || sourceLanguage;
             const targetLanguageCode = input.translateText.targetLanguage || targetLanguage;
             if (!sourceLanguageCode || !targetLanguageCode) {
-                throw new Error("Please provide both source and target language");
+                return rej("Please provide both source and target language");
             }
 
             this.translate = new Translate({ region, credentials });
@@ -56,9 +53,9 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             }, (err, data) => {
                 logger.debug({ err, data });
                 if (err) {
-                    rej(err);
+                    return rej(err);
                 } else {
-                    res({ text: data.TranslatedText, language: data.TargetLanguageCode } as TranslateTextOutput);
+                    return res({ text: data.TranslatedText, language: data.TargetLanguageCode } as TranslateTextOutput);
                 }
             });
         });
@@ -69,19 +66,30 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
             const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
             const { speechGenerator: {
-                defaults: { VoiceId = "Lotte", LanguageCode = "en-US" } = {},
-                region = "us-east-1" } = {}
+                defaults: { VoiceId = "" } = {},
+                region = "" } = {}
             } = this._config;
-            const language = input.textToSpeech.source.language || LanguageCode;
+
+            if(!input.textToSpeech.source) {
+                return rej("Source needs to be provided in the input");
+            }
             const voiceId = input.textToSpeech.voiceId || VoiceId;
+
+            if(!region) {
+                return rej("Region was undefined. Did you enable speech generator using amplify CLI?");
+            }
+
+            if(!voiceId) {
+                return rej("VoiceId was undefined.");
+            }
+
             this.textToSpeech = new TextToSpeech({ region, credentials });
             this.textToSpeech.synthesizeSpeech({
                 OutputFormat: 'mp3',
                 Text: input.textToSpeech.source.text,
                 VoiceId: voiceId,
-                LanguageCode: language,
                 TextType: 'text',
-                SampleRate: '8000'
+                SampleRate: '24000'
                 // tslint:disable-next-line: align
             }, (err, data) => {
                 if (err) {
@@ -92,8 +100,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     res({
                         speech: { url },
                         audioStream: (data.AudioStream as any).buffer,
-                        text: input.textToSpeech.source.text,
-                        language: input.textToSpeech.source.language
+                        text: input.textToSpeech.source.text
                     } as TextToSpeechOutput);
                 }
             });
@@ -107,11 +114,14 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                 const credentials = await Credentials.get();
                 if (!credentials) { return rej('No credentials'); }
                 const { transcription: {
-                    defaults: { language: languageCode = "en-US" } = {},
+                    defaults: { language: languageCode = "" } = {},
                     region = "" } = {}
                 } = this._config;
                 if (!region) {
                     return rej("region not configured for transcription");
+                }
+                if (!languageCode) {
+                    return rej("languageCode not configured or provided for transcription");
                 }
                 const { transcription: { source, language = languageCode } } = input;
 
@@ -127,9 +137,9 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     });
                 }
 
-                rej("Not supported yet");
+                return rej("Source types other than byte source are not supported.");
             } catch (err) {
-                rej(err);
+                return rej(err.name + ': ' + err.message);
             }
         });
     }

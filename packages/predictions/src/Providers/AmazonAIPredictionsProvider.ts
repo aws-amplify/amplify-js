@@ -40,39 +40,17 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
     }
 
     interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
-        if (isInterpretTextInput(input)) {
-            return this.interpretProvider.interpret(input);
-        }
+        return this.interpretProvider.interpret(input);
     }
 
-    convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
-    convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-    convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
     convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
         : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
-        if (isTranslateTextInput(input)) {
-            return this.convertProvider.convert(input);
-            // } else if (isTextToSpeechInput(input)) {
-        } else if (isTextToSpeechInput(input)) {
-            return this.convertProvider.convert(input);
-        } else if (isSpeechToTextInput(input)) {
-            return this.convertProvider.convert(input);
-        }
-        Promise.reject();
+        return this.convertProvider.convert(input);
     }
 
-    identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-    identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
-    identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
     identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
         : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
-        if (isIdentifyTextInput(input)) {
-            return this.identifyProvider.identify(input);
-        } else if (isIdentifyLabelsInput(input)) {
-            return this.identifyProvider.identify(input);
-        } else if (isIdentifyEntitiesInput(input)) {
-            return this.identifyProvider.identify(input);
-        }
+        return this.identifyProvider.identify(input);
     }
 
 }

@@ -90,7 +90,6 @@ export interface TranslateTextInput {
             text: string,
             language?: string
         },
-        terminology?: string,
         targetLanguage?: string
     }
 }
@@ -103,8 +102,7 @@ export interface TranslateTextOutput {
 export interface TextToSpeechInput {
     textToSpeech: {
         source: {
-            text: string,
-            language?: string
+            text: string
         }
         terminology?: string,
         voiceId?: string
@@ -115,7 +113,6 @@ export interface TextToSpeechOutput {
     speech: { url: string },
     audioStream: Buffer,
     text: string,
-    language: string
 }
 
 export interface StorageSource {
@@ -132,20 +129,11 @@ export interface BytesSource {
     bytes: Buffer | ArrayBuffer | Blob | string
 }
 
-export type ConvertSource = StorageSource | FileSource | BytesSource;
-
 export interface SpeechToTextInput {
     transcription: {
-        source: ConvertSource,
+        source: BytesSource,
         language?: string,
     }
-}
-
-export interface TranscriptionData {
-    text: string,
-    speaker: string,
-    beginTime: number,
-    endTime: number
 }
 
 export interface SpeechToTextOutput {
@@ -303,12 +291,12 @@ export interface IdentifyEntitiesOutput {
 export function isIdentifyFromCollection(obj: any): obj is IdentifyFromCollection {
     const key: keyof IdentifyFromCollection = 'collection';
     const keyId: keyof IdentifyFromCollection = 'collectionId';
-    return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
+    return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId)) && obj.collection;
 }
 
 export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
     const key: keyof IdentifyCelebrities = 'celebrityDetection';
-    return obj && obj.hasOwnProperty(key);
+    return obj && obj.hasOwnProperty(key) && obj.celebrityDetection;
 }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {

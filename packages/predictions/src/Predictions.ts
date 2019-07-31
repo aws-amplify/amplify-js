@@ -61,21 +61,22 @@ export default class Predictions {
         if (this.getPluggable(pluggable.getProviderName())) {
             throw new Error(`Pluggable with name ${pluggable.getProviderName()} has already been added`);
         }
-        if (this.isConvertPluggable(pluggable)) this._convertPluggables.push(pluggable);
-        else if (this.isIdentifyPluggable(pluggable)) this._identifyPluggables.push(pluggable);
-        else if (this.isInterpretPluggable(pluggable)) this._interpretPluggables.push(pluggable);
-        else if (this.isTopLevelPredictionsPluggable(pluggable)) {
-            if (this.implementsConvertPluggable(pluggable)) {
-                this._convertPluggables.push(pluggable);
-            }
-            if (this.implementsIdentifyPluggable(pluggable)) {
-                this._identifyPluggables.push(pluggable);
-            }
-            if (this.implementsInterpretPluggable(pluggable)) {
-                this._interpretPluggables.push(pluggable);
-            }
+        let pluggableAdded: boolean = false;
+        if (this.implementsConvertPluggable(pluggable)) {
+            this._convertPluggables.push(pluggable);
+            pluggableAdded = true;
         }
-        else throw new Error("Pluggable being added is not one of the Predictions Category");
+        if (this.implementsIdentifyPluggable(pluggable)) {
+            this._identifyPluggables.push(pluggable);
+            pluggableAdded = true;
+        }
+        if (this.implementsInterpretPluggable(pluggable)) {
+            this._interpretPluggables.push(pluggable);
+            pluggableAdded = true;
+        }
+        if (!pluggableAdded) {
+            throw new Error("Pluggable being added is not one of the Predictions Category");
+        }
         this.configurePluggable(pluggable);
     }
 
@@ -122,9 +123,7 @@ export default class Predictions {
     public interpret(input: InterpretTextInput, options?: ProviderOptions): Promise<InterpretTextOutput>;
     public interpret(input: InterpretTextInput, options?: ProviderOptions): Promise<InterpretTextOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._interpretPluggables, options);
-        if (isInterpretTextInput(input)) {
-            return pluggableToExecute.interpret(input);
-        }
+        return pluggableToExecute.interpret(input);
     }
 
     public convert(input: TranslateTextInput, options?: ProviderOptions): Promise<TranslateTextOutput>;
@@ -133,13 +132,7 @@ export default class Predictions {
     public convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput, options?: ProviderOptions):
         Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._convertPluggables, options);
-        if (isTranslateTextInput(input)) {
-            return pluggableToExecute.convert(input);
-        } else if (isTextToSpeechInput(input)) {
-            return pluggableToExecute.convert(input);
-        } else if (isSpeechToTextInput(input)) {
-            return pluggableToExecute.convert(input);
-        }
+        return pluggableToExecute.convert(input);
     }
 
     public identify(input: IdentifyTextInput, options?: ProviderOptions): Promise<IdentifyTextOutput>;
@@ -148,18 +141,11 @@ export default class Predictions {
     public identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput, options: ProviderOptions)
         : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
         const pluggableToExecute = this.getPluggableToExecute(this._identifyPluggables, options);
-        if (isIdentifyTextInput(input)) {
-            return pluggableToExecute.identify(input);
-        } else if (isIdentifyLabelsInput(input)) {
-            return pluggableToExecute.identify(input);
-        } else if (isIdentifyEntitiesInput(input)) {
-            return pluggableToExecute.identify(input);
-        }
         return pluggableToExecute.identify(input);
     }
 
     // tslint:disable-next-line: max-line-length
-    private getPluggableToExecute<T extends AbstractPredictionsProvider>(pluggables: T[], providerOptions: ProviderOptions): T  {
+    private getPluggableToExecute<T extends AbstractPredictionsProvider>(pluggables: T[], providerOptions: ProviderOptions): T {
         // Give preference to provider name first since it is more specific to this call, even if 
         // there is only one provider configured to error out if the name provided is not the one matched.
         if (providerOptions && providerOptions.providerName) {
@@ -191,30 +177,14 @@ export default class Predictions {
         pluggable.configure(categoryConfig);
     }
 
-    private isConvertPluggable(obj: any): obj is AbstractConvertPredictionsProvider {
-        return obj && (obj.getCategory() === "Convert");
-    }
-
-    private isIdentifyPluggable(obj: any): obj is AbstractIdentifyPredictionsProvider {
-        return obj && (obj.getCategory() === "Identify");
-    }
-
-    private isInterpretPluggable(obj: any): obj is AbstractInterpretPredictionsProvider {
-        return obj && (obj.getCategory() === "Interpret");
-    }
-
-    private isTopLevelPredictionsPluggable(obj: any): obj is AbstractPredictionsProvider {
-        return obj && obj.getCategory() === "Predictions";
-    }
-
     private implementsConvertPluggable(obj: any): obj is AbstractConvertPredictionsProvider {
         return obj && typeof obj.convert === "function";
     }
-    
+
     private implementsIdentifyPluggable(obj: any): obj is AbstractIdentifyPredictionsProvider {
         return obj && typeof obj.identify === "function";
     }
-    
+
     private implementsInterpretPluggable(obj: any): obj is AbstractInterpretPredictionsProvider {
         return obj && typeof obj.interpret === "function";
     }
