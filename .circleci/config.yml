@@ -86,7 +86,7 @@ jobs:
       - run:
           name: "Install React Predictions sample"
           command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
+            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
             yarn
   integration_test_react:
     <<: *defaults
@@ -210,6 +210,7 @@ workflows:
               only:
                 - release
                 - master
+                - predictions-integ
           requires:
             - build
       - integ_react_predictions:
@@ -218,6 +219,7 @@ workflows:
               only:
                 - release
                 - master
+                - predictions-integ
       - integration_test_react:
           filters:
             branches:
