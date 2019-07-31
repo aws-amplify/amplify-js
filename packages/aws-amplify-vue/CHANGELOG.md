@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.14](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.13...aws-amplify-vue@0.2.14) (2019-07-30)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+<a name="0.2.13"></a>
+## [0.2.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.13-unstable.0...aws-amplify-vue@0.2.13) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
+<a name="0.2.13-unstable.0"></a>
+## [0.2.13-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12...aws-amplify-vue@0.2.13-unstable.0) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.2.12"></a>
 ## [0.2.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.12-unstable.3...aws-amplify-vue@0.2.12) (2019-06-17)
 

@@ -1,12 +1,13 @@
 {
   "name": "@aws-amplify/ui",
-  "version": "1.0.20",
+  "version": "1.0.23",
   "main": "dist/aws-amplify-ui.js",
   "types": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
+    "format": "echo \"Not implemented\"",
     "test": "webpack",
     "start": "webpack-dev-server",
     "clean": "rimraf dist lib",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.2.18-unstable.0",
+  "version": "1.2.22",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -13,7 +13,7 @@
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
     "clean": "rimraf lib lib-esm dist",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
@@ -42,19 +42,17 @@
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
-    "prettier": "^1.7.4",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.8.0",
-    "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.28",
-    "@aws-amplify/core": "^1.0.28",
+    "@aws-amplify/cache": "^1.0.31",
+    "@aws-amplify/core": "^1.0.31",
     "uuid": "^3.2.1"
   },
   "jest": {
@@ -71,7 +69,6 @@
     ],
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/",
-    "mapCoverage": true,
     "coverageThreshold": {
       "global": {
         "branches": 0,

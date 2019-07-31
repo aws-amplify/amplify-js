@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.29...@aws-amplify/auth@1.2.30) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [1.2.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.28...@aws-amplify/auth@1.2.29) (2019-07-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Improve OAuth flow in react native ([#3698](https://github.com/aws/aws-amplify/issues/3698)) ([799a1cf](https://github.com/aws/aws-amplify/commit/799a1cf)), closes [#3681](https://github.com/aws/aws-amplify/issues/3681)
+
+
+
+
+
+## [1.2.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.28) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+<a name="1.2.27-unstable.1"></a>
+## [1.2.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.27-unstable.0...@aws-amplify/auth@1.2.27-unstable.1) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth, aws-amplify-react-native:** Fix OAuth flow in react native ([#3633](https://github.com/aws/aws-amplify/issues/3633)) ([82e74fc](https://github.com/aws/aws-amplify/commit/82e74fc)), closes [#3399](https://github.com/aws/aws-amplify/issues/3399) [#3576](https://github.com/aws/aws-amplify/issues/3576) [#3247](https://github.com/aws/aws-amplify/issues/3247) [#3592](https://github.com/aws/aws-amplify/issues/3592) [#3210](https://github.com/aws/aws-amplify/issues/3210)
+
+
+
+
+<a name="1.2.27-unstable.0"></a>
+## [1.2.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.27-unstable.0) (2019-07-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.26"></a>
+## [1.2.26](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26-unstable.0...@aws-amplify/auth@1.2.26) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.2.26-unstable.0"></a>
 ## [1.2.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25...@aws-amplify/auth@1.2.26-unstable.0) (2019-06-27)
 

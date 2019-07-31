@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.21...@aws-amplify/analytics@1.2.22) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [1.2.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.20...@aws-amplify/analytics@1.2.21) (2019-07-30)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [1.2.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18...@aws-amplify/analytics@1.2.20) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+<a name="1.2.19-unstable.0"></a>
+## [1.2.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18...@aws-amplify/analytics@1.2.19-unstable.0) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** use startsWith to filter the updateEndpoint error message ([#3589](https://github.com/aws/aws-amplify/issues/3589)) ([0bd68f9](https://github.com/aws/aws-amplify/commit/0bd68f9))
+
+
+
+
+<a name="1.2.18"></a>
+## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.1...@aws-amplify/analytics@1.2.18) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.18-unstable.1"></a>
+## [1.2.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.0...@aws-amplify/analytics@1.2.18-unstable.1) (2019-07-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** do not send events when analytics modules not configured ([#3614](https://github.com/aws/aws-amplify/issues/3614)) ([82e6f28](https://github.com/aws/aws-amplify/commit/82e6f28))
+
+
+
+
 <a name="1.2.18-unstable.0"></a>
 ## [1.2.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17...@aws-amplify/analytics@1.2.18-unstable.0) (2019-06-18)
 
