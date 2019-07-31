@@ -1,12 +1,12 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "publishConfig": {
-    "access": "public"
+    "registry": "https://nexus.goyaro.com/repository/yaro-npm/"
   },
   "scripts": {
     "test": "jest --coverage",
