@@ -137,7 +137,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                             }
                         });
                     } catch (err) {
-                        rej(err.message);
+                        rej(err);
                     }
                 }
 
@@ -193,7 +193,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
 
             connection.onerror = (errorEvent) => {
                 logger.debug({ errorEvent });
-                rej('failed to transcribe');
+                rej('failed to transcribe, network error');
             };
 
             connection.onclose = (closeEvent) => {
