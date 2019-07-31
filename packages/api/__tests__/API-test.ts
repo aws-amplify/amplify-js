@@ -1749,7 +1749,19 @@ describe('API test', () => {
         });
     });
 
+    describe('cancel token test', () => {
+        test('happy path isCancel', () => {
+            const api = new API(config);
+            api.isCancel({});
+            expect(axios.isCancel).toHaveBeenCalledWith({});
+        });
 
+        test('happy path cancelToken', () => {
+            const api = new API(config);
+            api.CancelToken.source();
+            expect(axios.CancelToken.source).toHaveBeenCalled();
+        });
+    });
 
 });
 
