@@ -187,6 +187,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     }
                 } catch (err) {
                     logger.debug(err);
+                    rej(err.message);
                 }
             };
 
