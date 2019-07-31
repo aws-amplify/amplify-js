@@ -84,10 +84,22 @@ jobs:
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link predictions"
+          command: |
+            cd amplify-js/packages/predictions
+            yarn link
+      - run:
           name: "Install Predictions React sample"
           command: |
             cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
             yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/predictions
       - run:
           name: "Start Predictions React Sample server in background"
           command: |
