@@ -18,6 +18,7 @@ jobs:
   build:
     <<: *defaults
     working_directory: ~/amplify-js
+    resource_class: large
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
