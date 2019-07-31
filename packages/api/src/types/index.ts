@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { DocumentNode } from 'graphql/language/ast';
-import { CancelTokenStatic } from 'axios';
+import { CancelToken } from 'axios';
 
 /**
 * RestClient instance options
@@ -71,7 +71,7 @@ export interface GraphQLOptions {
     query: string | DocumentNode,
     variables?: object,
     authMode?: GRAPHQL_AUTH_MODE,
-    cancelToken?: CancelTokenStatic
+    cancelToken?: CancelToken
 }
 
 export enum GRAPHQL_AUTH_MODE {

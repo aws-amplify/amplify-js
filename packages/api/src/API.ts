@@ -25,7 +25,7 @@ import axios, { CancelTokenStatic, CancelToken } from 'axios';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}, cancelToken: CancelTokenStatic) =>
+export const graphqlOperation = (query, variables = {}, cancelToken?: CancelToken) =>
     ({ query, variables, cancelToken });
 
 /**
