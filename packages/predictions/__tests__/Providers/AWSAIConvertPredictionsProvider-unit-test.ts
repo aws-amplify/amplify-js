@@ -20,7 +20,11 @@ jest.mock('aws-sdk/clients/polly', () => {
     const TextToSpeech = () => {
         return;
     };
-    const result = { AudioStream: 'dummyStream' };
+    const result = {
+        AudioStream: {
+            buffer: 'dummyStream'
+        }
+    };
     TextToSpeech.prototype.synthesizeSpeech = (params, callback) => {
         callback(null, result);
     };
