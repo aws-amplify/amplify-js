@@ -1,3 +1,4 @@
+import { Credentials } from '@aws-amplify/core';
 import { Comprehend } from 'aws-sdk';
 const resultDetectEntities = {
     "Entities": [
@@ -117,7 +118,6 @@ Comprehend.prototype.detectKeyPhrases = jest.fn((params, callback) => {
 
 // Mocks before importing provider to avoid race condition with provider instantiation
 import { AmazonAIInterpretPredictionsProvider } from '../../src/Providers';
-import { Credentials } from '@aws-amplify/core';
 import { InterpretTextCategories } from '../../src';
 
 const credentials = {
@@ -127,6 +127,10 @@ const credentials = {
     identityId: 'identityId',
     authenticated: true
 };
+
+jest.spyOn(Credentials, 'get').mockImplementation(() => {
+    return Promise.resolve(credentials);
+});
 
 describe("Predictions interpret provider test", () => {
 
@@ -143,9 +147,7 @@ describe("Predictions interpret provider test", () => {
         };
 
         test("happy case credentials exist detectEntities", async () => {
-            jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-                return Promise.resolve(credentials);
-            });
+
             const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
             predictionsProvider.configure(happyConfig);
 
