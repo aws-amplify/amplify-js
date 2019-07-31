@@ -291,12 +291,12 @@ export interface IdentifyEntitiesOutput {
 export function isIdentifyFromCollection(obj: any): obj is IdentifyFromCollection {
     const key: keyof IdentifyFromCollection = 'collection';
     const keyId: keyof IdentifyFromCollection = 'collectionId';
-    return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId)) && obj.collection;
+    return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
 }
 
 export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
     const key: keyof IdentifyCelebrities = 'celebrityDetection';
-    return obj && obj.hasOwnProperty(key) && obj.celebrityDetection;
+    return obj && obj.hasOwnProperty(key);
 }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {

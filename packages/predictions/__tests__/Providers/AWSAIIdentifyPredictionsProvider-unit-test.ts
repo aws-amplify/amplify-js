@@ -429,6 +429,7 @@ describe('Predictions identify provider test', () => {
                 entities: {
                     source: { key: 'key' },
                     collectionId: 'collection',
+                    collection: true,
                     maxEntities: 0,
                 },
             };

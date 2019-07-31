@@ -238,7 +238,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
 
             const param = { Image: inputImage };
 
-            if (isIdentifyCelebrities(input.entities)) {
+            if (isIdentifyCelebrities(input.entities) && input.entities.celebrityDetection) {
                 if (!celebrityDetectionEnabled) {
                     return rej("Error: You have to enable celebrity detection first");
                 }
@@ -256,7 +256,7 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
                     });
                     res({ entities: faces });
                 });
-            } else if (isIdentifyFromCollection(input.entities)) {
+            } else if (isIdentifyFromCollection(input.entities) && input.entities.collection) {
 
                 const { collectionId = collectionIdConfig, maxEntities: maxFaces = maxFacesConfig } =
                     input.entities as IdentifyFromCollection;
