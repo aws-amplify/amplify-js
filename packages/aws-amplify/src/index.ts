@@ -84,7 +84,6 @@ export {
     AnalyticsProvider, 
     AWSPinpointProvider,
     AWSKinesisProvider,
-    AmazonPersonalizeProvider,
-    AmazonAIPredictionsProvider
+    AmazonPersonalizeProvider
 };
 export { graphqlOperation };

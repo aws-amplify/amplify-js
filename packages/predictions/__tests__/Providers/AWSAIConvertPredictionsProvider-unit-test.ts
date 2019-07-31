@@ -33,12 +33,10 @@ jest.mock('aws-sdk/clients/polly', () => {
     let onMsgCallback = null;
     let connection = null;
     connection = {
-        // onopen: jest.fn((callback) => { callback(connection); console.log('open connection'); }),
         set onmessage(callback) { onMsgCallback = callback; },
         set onerror(callback) { onErrorCallback = callback; },
         set onclose(callback) { onCloseCallback = callback; },
         set onopen(callback) {
-            // code
             callback();
         },
         send: jest.fn(() => {
