@@ -28,4 +28,4 @@ const API = _instance;
 Amplify.register(API);
 
 export default API;
-export { APIClass, graphqlOperation };
+export { APIClass, graphqlOperation }; 
