@@ -129,12 +129,16 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
                     const connection
                         = await this.openConnectionWithTranscribe({ credentials, region, languageCode: language });
 
-                    const fullText = await this.sendDataToTranscribe({ connection, raw: source.bytes });
-                    return res({
-                        transcription: {
-                            fullText,
-                        }
-                    });
+                    try {
+                        const fullText = await this.sendDataToTranscribe({ connection, raw: source.bytes });
+                        return res({
+                            transcription: {
+                                fullText,
+                            }
+                        });
+                    } catch (err) {
+                        rej(err.message);
+                    }
                 }
 
                 return rej("Source types other than byte source are not supported.");
@@ -150,6 +154,7 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
         const transcribeMessageJson = JSON.parse(String.fromCharCode.apply(String, transcribeMessage.body));
         if (transcribeMessage.headers[":message-type"].value === "exception") {
             logger.debug('exception', JSON.stringify(transcribeMessageJson.Message, null, 2));
+            throw new Error(transcribeMessageJson.Message);
         }
         else if (transcribeMessage.headers[":message-type"].value === "event") {
             if (transcribeMessageJson.Transcript.Results.length > 0) {
