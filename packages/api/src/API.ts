@@ -435,7 +435,7 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, authMode, cancelToken }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -456,7 +456,7 @@ export default class APIClass {
                         const {
                             extensions: { subscription },
 
-                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
+                        } = await this._graphql({ query, variables, authMode, cancelToken }, additionalheaders);
 
                         const { newSubscriptions } = subscription;
 
