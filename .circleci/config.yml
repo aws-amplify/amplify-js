@@ -220,8 +220,8 @@ workflows:
                 - release
                 - master
                 - predictions-integ
-            requires:
-              - integration_test_setup
+          requires:
+            - integration_test_setup
       - integration_test_react:
           filters:
             branches:
