@@ -21,10 +21,12 @@ import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
+import axios, { CancelTokenStatic, CancelToken } from 'axios';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}) => ({ query, variables });
+export const graphqlOperation = (query, variables = {}, cancelToken: CancelTokenStatic) =>
+    ({ query, variables, cancelToken });
 
 /**
  * Export Cloud Logic APIs
@@ -48,6 +50,21 @@ export default class APIClass {
 
     public getModuleName() {
         return 'API';
+    }
+
+    /**
+     * Create a new cancel token
+     * @return {CancelTokenStatic} - Axios cancel token
+     */
+    readonly CancelToken: CancelTokenStatic = axios.CancelToken;
+
+	/**
+    * Checks to see if an error thrown is a cancellation 
+    * @param {any} value - the exception thrown from an api call
+    * @return {boolean} - A boolean indicating if the exception was a cancellation
+    */
+    isCancel(value: any): boolean {
+        return axios.isCancel(value);
     }
 
     /**
@@ -328,7 +345,7 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, authMode, cancelToken }: GraphQLOptions) {
 
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
@@ -338,15 +355,15 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables, authMode });
+                return this._graphql({ query, variables, authMode, cancelToken });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables, authMode });
+                return this._graphqlSubscribe({ query, variables, authMode, cancelToken });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables, authMode, cancelToken }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -380,7 +397,8 @@ export default class APIClass {
             signerServiceInfo: {
                 service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
                 region: !customGraphqlEndpoint ? region : customEndpointRegion
-            }
+            },
+            cancelToken
         };
 
         const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
