@@ -84,10 +84,37 @@ jobs:
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
-          name: "Install React Predictions sample"
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link aws-amplify-react"
+          command: |
+            cd amplify-js/packages/aws-amplify-react
+            yarn link
+      - run:
+          name: "Install Predictions React sample"
           command: |
             cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
             yarn
+            yarn link aws-amplify
+            yarn link aws-amplify-react
+      - run:
+          name: "Start Predictions React Sample server in background"
+          command: |
+            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
+            yarn start
+          background: true
+      - run:
+          name: "Run cypress tests for Predictions React Sample"
+          command: |
+            cd amplify-js-samples-staging
+            yarn cypress:react --spec "cypress/integration/predictions/multi-user-translation.spec.js"
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/screenshots
   integration_test_react:
     <<: *defaults
     working_directory: ~/
