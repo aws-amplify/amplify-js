@@ -110,7 +110,7 @@ jobs:
           name: "Run cypress tests for Predictions React Sample"
           command: |
             cd amplify-js-samples-staging
-            yarn cypress:react --spec "cypress/integration/predictions/multi-user-translation.spec.js"
+            yarn cypress:react --spec "cypress/integration/predictions/multiuser-translation.spec.js"
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
