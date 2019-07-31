@@ -39,6 +39,7 @@
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
+    "react-native": "^0.60.4",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
@@ -51,7 +52,7 @@
     "@aws-amplify/core": "^1.0.31"
   },
   "peerdependencies": {
-    "react-native": "^0.55.0"
+    "react-native": "^0.60.4"
   },
   "jest": {
     "transform": {
@@ -70,5 +71,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
+  },
+  "peerDependencies": {
+    "react-native": "^0.60.4"
   }
 }

@@ -15,26 +15,16 @@ package com.amazonaws.amplify.pushnotification;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.Log;
 
 import java.util.Map;
 import java.util.List;
 import java.util.Random;
-
-import org.json.JSONObject;
-import org.json.JSONException;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -46,10 +36,14 @@ import com.facebook.react.bridge.ReactContext;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationHelper;
-import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationCommon;
 
 public class RNPushNotificationMessagingService extends FirebaseMessagingService {
     private static final String LOG_TAG = "RNPushNotificationMessagingService";
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+    }
 
     /**
      * Called when message is received.
@@ -62,7 +56,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
         
         final Boolean isForeground = isApplicationInForeground();
         final Bundle bundle = convertMessageToBundle(remoteMessage);
-        final Boolean hasData = remoteMessage.getData().size() > 0 ? true: false;
+        final Boolean hasData = remoteMessage.getData().size() > 0;
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
         // "Can't create handler inside thread that has not called Looper.prepare()"
