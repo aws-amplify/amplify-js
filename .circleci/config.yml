@@ -18,6 +18,7 @@ jobs:
   build:
     <<: *defaults
     working_directory: ~/amplify-js
+    resource_class: large
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -74,6 +75,19 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths: amplify-js-samples-staging
+  integ_react_predictions:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
+          name: "Install React Predictions sample"
+          command: |
+            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
+            yarn
   integration_test_react:
     <<: *defaults
     working_directory: ~/
@@ -198,6 +212,12 @@ workflows:
                 - master
           requires:
             - build
+      - integ_react_predictions:
+          filters:
+            branches:
+              only:
+                - release
+                - master
       - integration_test_react:
           filters:
             branches:
