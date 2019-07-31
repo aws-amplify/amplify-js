@@ -12,8 +12,6 @@ export class AmplifyField {
   @Prop() onInput?: (arg0: Event) => void;
 
   render() {
-    this.type = this.type || 'text';
-
     return (
       <div>
         {this.label && (

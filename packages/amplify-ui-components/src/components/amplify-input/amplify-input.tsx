@@ -12,8 +12,6 @@ export class AmplifyInput {
   @Prop() onInput?: (arg0: Event) => void;
 
   render() {
-    this.type = this.type || 'text';
-
     return (
       <input
         id={this.fieldId}

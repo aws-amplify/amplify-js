@@ -5,7 +5,7 @@ import { formField } from './amplify-form-field.style';
   tag: 'amplify-form-field',
   shadow: false,
 })
-export class AmplifyField {
+export class AmplifyFormField {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() hint: string | null;
