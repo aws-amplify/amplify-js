@@ -38,6 +38,7 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 - [__PubSub__](https://aws.github.io/aws-amplify/media/pub_sub_guide): Provides connectivity with cloud-based message-oriented middleware.  
 - [__Internationalization__](https://aws.github.io/aws-amplify/media/i18n_guide): A lightweight internationalization solution.
 - [__Cache__](https://aws.github.io/aws-amplify/media/cache_guide): Provides a generic LRU cache for JavaScript developers to store data with priority and expiration settings.  
+- [__Predictions__](https://aws-amplify.github.io/docs/js/predictions): Provides a solution for using AI and ML cloud services to enhance your application.
 
 #### Visit our [Web Site](https://aws.github.io/aws-amplify) to learn more about AWS Amplify.
 
