@@ -59,7 +59,7 @@ export default class Predictions {
     **/
     public addPluggable(pluggable: AbstractPredictionsProvider) {
         if (this.getPluggable(pluggable.getProviderName())) {
-            throw new Error(`Pluggable with name ${pluggable.getProviderName()} has already been added`);
+            throw new Error(`Pluggable with name ${pluggable.getProviderName()} has already been added.`);
         }
         let pluggableAdded: boolean = false;
         if (this.implementsConvertPluggable(pluggable)) {
