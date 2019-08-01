@@ -17,10 +17,6 @@ allprojects {
         maven {
             url 'https://maven.google.com'
         }
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
-        }
         google()
     }
 }
@@ -51,7 +47,7 @@ android {
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation "com.facebook.react:react-native:0.60.4"  // From node_modules
+    implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'com.google.firebase:firebase-core:17.0.1'

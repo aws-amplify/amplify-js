@@ -6,7 +6,7 @@
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "publishConfig": {
-    "registry": "https://nexus.goyaro.com/repository/yaro-npm/"
+    "access": "public"
   },
   "scripts": {
     "test": "jest --coverage",
