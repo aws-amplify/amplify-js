@@ -126,7 +126,7 @@ export class ChatbotComponentCore implements OnInit  {
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
 
-	constructor(ref: ChangeDetectorRef, @Inject(AmplifyService) protected amplifyService: AmplifyService) {
+	constructor(ref: ChangeDetectorRef, @Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.ref = ref;
 		this.continueConversation = false;
 		this.logger = this.amplifyService.logger('ChatbotComponent');

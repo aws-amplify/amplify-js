@@ -118,7 +118,7 @@ const template = `
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
     super(amplifyService);
   }
 

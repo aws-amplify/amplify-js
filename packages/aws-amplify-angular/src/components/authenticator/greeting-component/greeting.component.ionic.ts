@@ -39,7 +39,7 @@ const template = `
 })
 export class GreetingComponentIonic extends GreetingComponentCore {
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
     super(amplifyService);
   }
 }

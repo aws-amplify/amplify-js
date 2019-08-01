@@ -104,7 +104,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     this.sceneName = data.sceneName;
   }
 
-  constructor(protected amplifyService: AmplifyService) {
+  constructor(public amplifyService: AmplifyService) {
     this.amplifyUI = AmplifyUI;
     this.logger = this.amplifyService.logger('SumerianSceneComponentCore');
   }
