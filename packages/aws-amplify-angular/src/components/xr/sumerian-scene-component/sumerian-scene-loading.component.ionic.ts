@@ -13,10 +13,12 @@
 import { Component } from '@angular/core';
 import { SumerianSceneLoadingComponentCore } from './sumerian-scene-loading.component.core';
 
+import { sumerianScene } from '../../../assets/data-test-attributes';
+
 const template = `
 <div class={{AmplifyUI.loadingOverlay}}>
   <div class={{AmplifyUI.loadingContainer}}>
-    <div class={{AmplifyUI.loadingLogo}}>
+    <div class={{AmplifyUI.loadingLogo}} data-test="${sumerianScene.loadingLogo}">
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
       viewBox="0 0 2000 1195" style="enable-background:new 0 0 2000 1195;" xml:space="preserve">
         <g>
@@ -70,9 +72,9 @@ const template = `
         </g>
       </svg>
     </div>
-    <div class={{AmplifyUI.loadingSceneName}}>{{sceneName}}</div>
-    <div *ngIf="sceneError" class={{AmplifyUI.sceneErrorText}}>{{sceneError}}</div>
-    <div *ngIf="!sceneError" class={{AmplifyUI.loadingBar}}>
+    <div class={{AmplifyUI.loadingSceneName}} data-test="${sumerianScene.loadingSceneName}">{{sceneName}}</div>
+    <div *ngIf="sceneError" class={{AmplifyUI.sceneErrorText}} data-test="${sumerianScene.errorText}">{{sceneError}}</div>
+    <div *ngIf="!sceneError" class={{AmplifyUI.loadingBar}} data-test="${sumerianScene.loadingBar}">
       <div class={{AmplifyUI.loadingBarFill}} [ngStyle]="{ 'width': loadPercentage + '%' }"></div>
     </div>
   </div>
