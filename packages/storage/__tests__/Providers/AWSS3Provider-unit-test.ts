@@ -86,7 +86,7 @@ describe('StorageProvider test', () => {
     });
 
     describe('configure test', () => {
-        test('happy case', () => {
+        test('standard configuration', () => {
             const storage = new StorageProvider();
             
             const aws_options = {
