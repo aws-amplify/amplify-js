@@ -39,6 +39,8 @@ const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:an
     }
 };
 
+const localTestingStorageEndpoint = 'http://localhost:20005';
+
 /**
  * Provide storage methods to use AWS S3
  */
@@ -403,14 +405,29 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     private _createS3(config) {
-        const { bucket, region, credentials } = config;
+        const {
+            bucket,
+            region,
+            credentials,
+            dangerouslyConnectToHttpEndpointForTesting
+        } = config;
+        let localTestingConfig = {};
+        
+        if(dangerouslyConnectToHttpEndpointForTesting) {
+            localTestingConfig = {
+                endpoint: localTestingStorageEndpoint,
+                s3BucketEndpoint: true,
+                s3ForcePathStyle : true
+            };
+        }
 
         return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             signatureVersion: 'v4',
             region,
-            credentials
+            credentials,
+            ...localTestingConfig
         });
     }
 }
