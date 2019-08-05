@@ -19,7 +19,6 @@ import * as S3 from 'aws-sdk/clients/s3';
  * actually be using dispatchStorageEvent from Storage
  */
 
- 
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
     return 'url';
 });
@@ -99,6 +98,26 @@ describe('StorageProvider test', () => {
             expect(config).toEqual({
                 AWSS3: {
                     "bucket": "bucket", "region": "region"
+                }
+            });
+        });
+
+        test('configuration for local testing', () => {
+            const storage = new StorageProvider();
+
+            const aws_options = {
+                aws_user_files_s3_bucket: 'bucket',
+                aws_user_files_s3_bucket_region: 'region',
+                aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing: true
+
+            }
+
+            const config = storage.configure(aws_options);
+            expect(config).toEqual({
+                AWSS3: {
+                    "bucket": "bucket",
+                    "region": "region",
+                    "dangerouslyConnectToHttpEndpointForTesting": true
                 }
             });
         });
