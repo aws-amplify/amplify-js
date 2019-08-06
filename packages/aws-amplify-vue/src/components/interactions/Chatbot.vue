@@ -159,6 +159,7 @@ export default {
       };
       this.$Amplify.Interactions.send(this.options.bot, this.inputText)
         .then(response => {
+          AmplifyEventBus.$emit("chatResponse", response);
           this.inputText = "";
           if (response.message) {
             message.bot = response.message;

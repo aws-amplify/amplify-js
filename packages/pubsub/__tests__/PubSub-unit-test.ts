@@ -7,6 +7,10 @@ import * as Paho from '../src/vendor/paho-mqtt';
 
 const pahoClientMockCache = {};
 
+const mockConnect = jest.fn((options) => {
+    options.onSuccess();
+});
+
 const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
     if (pahoClientMockCache[clientId]) {
         return pahoClientMockCache[clientId];
@@ -14,9 +18,7 @@ const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
 
     var client = {} as any;
 
-    client.connect = jest.fn((options) => {
-        options.onSuccess();
-    });
+    client.connect = mockConnect;
     client.send = jest.fn((topic, message) => {
         client.onMessageArrived({ destinationName: topic, payloadString: message });
     });
@@ -210,6 +212,32 @@ describe('PubSub', () => {
             expect(testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
                     provider: 'AWSIoTProvider',
             })).rejects.toMatchObject({error: new Error('Failed to connect to the network')});
+        });
+    });
+
+    describe('MqttOverWSProvider local testing config', () => {
+        test('ssl should be disabled in the case of local testing', async () => {
+            mockConnect.mockClear();
+            const pubsub = new PubSub();
+
+            const mqttOverWSProvider = new MqttOverWSProvider({
+                aws_pubsub_region: 'region',
+                aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true
+            });
+            pubsub.addPluggable(mqttOverWSProvider);
+            
+            await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider', {
+                provider: 'MqttOverWSProvider',
+            });
+            
+            expect(mqttOverWSProvider.isSSLEnabled).toBe(false);
+            expect(mockConnect).toBeCalledWith({
+                useSSL: false,
+                mqttVersion: 3,
+                onSuccess: expect.any(Function),
+                onFailure: expect.any(Function)
+            });
+
         });
     });
 

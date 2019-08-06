@@ -36,7 +36,7 @@ export default class PubSub {
      */
     private get awsAppSyncProvider() {
         if (!this._awsAppSyncProvider) {
-            this._awsAppSyncProvider = new AWSAppSyncProvider();
+            this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
         }
         return this._awsAppSyncProvider;
     }

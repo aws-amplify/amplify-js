@@ -75,7 +75,7 @@ export default class SignIn extends AuthPiece {
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
                     <View style={theme.sectionBody}>
-                        {this.renderUsernameField()}
+                        {this.renderUsernameField(theme)}
                         <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}

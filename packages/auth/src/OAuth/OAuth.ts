@@ -72,7 +72,7 @@ export default class OAuth {
     const generatedState = this._generateState(32);
     const state = customState ? `${generatedState}-${customState}` : generatedState;
 
-    oAuthStorage.setState(state);
+    oAuthStorage.setState(encodeURIComponent(state));
 
     const pkce_key = this._generateRandom(128);
     oAuthStorage.setPKCE(pkce_key);
