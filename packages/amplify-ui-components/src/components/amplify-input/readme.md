@@ -11,7 +11,6 @@
 | ------------- | ------------- | ----------- | ----------------------- | ----------- |
 | `description` | `description` |             | `string`                | `undefined` |
 | `fieldId`     | `field-id`    |             | `string`                | `undefined` |
-| `label`       | `label`       |             | `string`                | `undefined` |
 | `onInput`     | --            |             | `(arg0: Event) => void` | `undefined` |
 | `type`        | `type`        |             | `string`                | `"text"`    |
 

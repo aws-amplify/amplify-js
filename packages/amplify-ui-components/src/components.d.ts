@@ -39,7 +39,6 @@ export namespace Components {
   interface AmplifyInput {
     'description': string | null;
     'fieldId': string;
-    'label': string | null;
     'onInput'?: (arg0: Event) => void;
     'type'?: string;
   }
@@ -239,7 +238,6 @@ declare namespace LocalJSX {
   interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
     'description'?: string | null;
     'fieldId'?: string;
-    'label'?: string | null;
     'onInput'?: (arg0: Event) => void;
     'type'?: string;
   }

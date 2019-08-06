@@ -6,7 +6,6 @@ import { textInput } from './amplify-input.style';
 })
 export class AmplifyInput {
   @Prop() fieldId: string;
-  @Prop() label: string | null;
   @Prop() description: string | null;
   @Prop() type?: string = "text";
   @Prop() onInput?: (arg0: Event) => void;

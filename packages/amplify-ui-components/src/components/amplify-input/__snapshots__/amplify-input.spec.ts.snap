@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-input renders correct HTML 1`] = `
+<amplify-input>
+  <input class="css-1s61rh1" type="text">
+</amplify-input>
+`;

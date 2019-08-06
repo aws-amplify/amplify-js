@@ -40,7 +40,7 @@ describe('amplify-field', () => {
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
-    
+
     await page.$eval('amplify-field', (fieldElement: any) => {
       fieldElement.onInput = this.exposedfunc;
       fieldElement.label = 'adding a label so that the component rerenders';
