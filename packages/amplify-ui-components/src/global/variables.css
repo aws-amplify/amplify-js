@@ -1,0 +1,82 @@
+/*
+ * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+ :root {
+
+  /* Colors */
+  --amazon-orange: #FF9900;
+  --light-amazon-orange: #FFAC31;
+  --dark-amazon-orange: #E88B01;
+  --squid-ink: #232F3E;
+  --light-squid-ink: #31465F;
+  --deep-squid-ink: #152939;
+  --grey: #828282;
+  --light-grey: #C4C4C4;
+  --silver: #E1E4EA;
+  --dark-blue: #31465F;
+  --red: #DD3F5B;
+  --white: #FFFFFF;
+  --light-blue: #00a1c9;
+  
+
+  /* Theme */
+  /* All of the variables below can be used within any application that does an @import inside of their application */
+  --button-color: var(--white);
+  --button-background-color: var(--amazon-orange);
+  --button-click: var(--dark-amazon-orange);
+  --section-background-color: var(--white);
+  --section-header-color: var(--deep-squid-ink);
+  --label-color: var(--deep-squid-ink);
+  --link-color: var(--amazon-orange);
+  --hint-color: var(--grey);
+  --form-color: var(--white);
+  --input-color: var(--deep-squid-ink);
+  --input-background-color: var(--white);
+  --input-border-color: var(--light-grey);
+
+  --font-family: "Amazon Ember","Helvetica Neue Light","Helvetica Neue","Helvetica" ,"Arial","sans-serif";
+  --body-background: #F8F4F4;
+
+  /** Angular Theme **/
+  --component-width-desktop: 460px;
+  --component-width-mobile: 100%;
+
+  --color-primary: #FF9900;
+  --color-primary-accent: #232F3E;
+  --color-primary-highlight: #FFC46D;
+  
+  --color-background:#232F3E;
+
+  --color-secondary: #152939;
+  --color-secondary-accent: #31465F;
+
+  --color-danger: #DD3F5B;
+  --color-error: #D0021B;
+
+  --color-accent-brown: #828282;
+  --color-accent-blue: #E1E4EA;
+
+  --gradient-blaze: linear-gradient(270deg, #FFC300 0%, #FF9000 100%);
+
+  --color-blue: #007EB9;
+  --color-purple: #527FFF;
+  --color-gray: #828282;
+  --color-white: #FFFFFF;
+
+  --input-border: 1px solid #C4C4C4;
+  --input-padding: 0.5em 0.5em 0.3em 1em;
+
+  --box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+  --button-height: 42px;
+
+  --interactions-conversation-height: 250px;
+}
