@@ -6,7 +6,9 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  SelectOptions,
+} from './common/types';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -19,14 +21,19 @@ export namespace Components {
     'styleOverride': boolean;
     'type': string;
   }
+  interface AmplifyCheckbox {
+    'inputProps': {
+      type: string;
+      name?: string;
+      value?: any;
+      checked?: boolean;
+    };
+    'styleOverride': boolean;
+  }
   interface AmplifyExamples {}
   interface AmplifyFormField {
     'fieldId': string;
     'hint': string | null;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
     'label': string | null;
     'styleOverride': boolean;
   }
@@ -41,6 +48,15 @@ export namespace Components {
     'role': string;
     'styleOverride': boolean;
   }
+  interface AmplifyRadioButton {
+    'inputProps': {
+      type: string;
+      name?: string;
+      value?: any;
+      checked?: boolean;
+    };
+    'styleOverride': boolean;
+  }
   interface AmplifySceneLoading {
     'loadPercentage': number;
     'sceneError': object;
@@ -51,6 +67,10 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifySectionHeader {
+    'styleOverride': boolean;
+  }
+  interface AmplifySelect {
+    'options': SelectOptions;
     'styleOverride': boolean;
   }
   interface AmplifySignIn {
@@ -90,13 +110,13 @@ export namespace Components {
     'label': string | null;
   }
   interface AmplifyTextInput {
-    'description': string | null;
     'fieldId': string;
     'inputProps': {
+      placeholder?: string;
       type?: string;
       onInput?: (Event) => void;
     };
-    'label': string | null;
+    'styleOverride': boolean;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -116,6 +136,12 @@ declare global {
   var HTMLAmplifyButtonElement: {
     prototype: HTMLAmplifyButtonElement;
     new (): HTMLAmplifyButtonElement;
+  };
+
+  interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {}
+  var HTMLAmplifyCheckboxElement: {
+    prototype: HTMLAmplifyCheckboxElement;
+    new (): HTMLAmplifyCheckboxElement;
   };
 
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
@@ -148,6 +174,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
+  var HTMLAmplifyRadioButtonElement: {
+    prototype: HTMLAmplifyRadioButtonElement;
+    new (): HTMLAmplifyRadioButtonElement;
+  };
+
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
   var HTMLAmplifySceneLoadingElement: {
     prototype: HTMLAmplifySceneLoadingElement;
@@ -164,6 +196,12 @@ declare global {
   var HTMLAmplifySectionHeaderElement: {
     prototype: HTMLAmplifySectionHeaderElement;
     new (): HTMLAmplifySectionHeaderElement;
+  };
+
+  interface HTMLAmplifySelectElement extends Components.AmplifySelect, HTMLStencilElement {}
+  var HTMLAmplifySelectElement: {
+    prototype: HTMLAmplifySelectElement;
+    new (): HTMLAmplifySelectElement;
   };
 
   interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
@@ -204,14 +242,17 @@ declare global {
   interface HTMLElementTagNameMap {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
+    'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-section-header': HTMLAmplifySectionHeaderElement;
+    'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
@@ -233,14 +274,19 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
     'type'?: string;
   }
+  interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
+    'inputProps'?: {
+      type: string;
+      name?: string;
+      value?: any;
+      checked?: boolean;
+    };
+    'styleOverride'?: boolean;
+  }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     'fieldId'?: string;
     'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
     'label'?: string | null;
     'styleOverride'?: boolean;
   }
@@ -255,6 +301,15 @@ declare namespace LocalJSX {
     'role'?: string;
     'styleOverride'?: boolean;
   }
+  interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
+    'inputProps'?: {
+      type: string;
+      name?: string;
+      value?: any;
+      checked?: boolean;
+    };
+    'styleOverride'?: boolean;
+  }
   interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
     'sceneError'?: object;
@@ -265,6 +320,10 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {
+    'styleOverride'?: boolean;
+  }
+  interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
+    'options'?: SelectOptions;
     'styleOverride'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
@@ -304,13 +363,13 @@ declare namespace LocalJSX {
     'label'?: string | null;
   }
   interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
-    'description'?: string | null;
     'fieldId'?: string;
     'inputProps'?: {
+      placeholder?: string;
       type?: string;
       onInput?: (Event) => void;
     };
-    'label'?: string | null;
+    'styleOverride'?: boolean;
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
@@ -320,14 +379,17 @@ declare namespace LocalJSX {
   interface IntrinsicElements {
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
+    'amplify-checkbox': AmplifyCheckbox;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-section-header': AmplifySectionHeader;
+    'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-password-field': AmplifySignInPasswordField;
     'amplify-sign-in-username-field': AmplifySignInUsernameField;

@@ -1,27 +1,27 @@
 import { Component, Prop, h } from '@stencil/core';
 import { textInput } from './amplify-text-input.style';
+import { styleNuker } from '../../common/helpers';
+import { AMPLIFY_UI_TEXT_INPUT } from '../../common/constants';
 
 @Component({
   tag: 'amplify-text-input',
 })
 export class AmplifyTextInput {
   @Prop() fieldId: string;
-  @Prop() label: string | null;
-  @Prop() description: string | null;
   @Prop() inputProps: {
+    placeholder?: string;
     type?: string;
     onInput?: (Event) => void;
   } = {};
+  @Prop() styleOverride: boolean = false;
 
   render() {
     this.inputProps.type = this.inputProps.type || 'text';
 
     return (
       <input
-        id={this.fieldId}
-        aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
+        class={styleNuker(this.styleOverride, AMPLIFY_UI_TEXT_INPUT, textInput)}
         {...this.inputProps}
-        class={textInput}
       />
     );
   }

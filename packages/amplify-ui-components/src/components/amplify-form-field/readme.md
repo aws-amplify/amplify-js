@@ -7,13 +7,12 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type                                                 | Default     |
-| --------------- | ---------------- | ----------- | ---------------------------------------------------- | ----------- |
-| `fieldId`       | `field-id`       |             | `string`                                             | `undefined` |
-| `hint`          | `hint`           |             | `string`                                             | `undefined` |
-| `inputProps`    | --               |             | `{ type?: string; onInput?: (Event: any) => void; }` | `{}`        |
-| `label`         | `label`          |             | `string`                                             | `undefined` |
-| `styleOverride` | `style-override` |             | `boolean`                                            | `false`     |
+| Property        | Attribute        | Description | Type      | Default     |
+| --------------- | ---------------- | ----------- | --------- | ----------- |
+| `fieldId`       | `field-id`       |             | `string`  | `undefined` |
+| `hint`          | `hint`           |             | `string`  | `undefined` |
+| `label`         | `label`          |             | `string`  | `undefined` |
+| `styleOverride` | `style-override` |             | `boolean` | `false`     |
 
 
 ## Dependencies
@@ -26,14 +25,12 @@
 ### Depends on
 
 - [amplify-label](../amplify-label)
-- [amplify-text-input](../amplify-text-input)
 - [amplify-hint](../amplify-hint)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-form-field --> amplify-label
-  amplify-form-field --> amplify-text-input
   amplify-form-field --> amplify-hint
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-username-field --> amplify-form-field

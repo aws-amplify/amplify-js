@@ -11,6 +11,7 @@
 
 - [amplify-text-field](../amplify-text-field)
 - [amplify-text-field](../amplify-text-field)
+- [amplify-select](../amplify-select)
 - [amplify-button](../amplify-button)
 - [amplify-link](../amplify-link)
 - [amplify-authenticator](../amplify-authenticator)
@@ -26,6 +27,7 @@
 graph TD;
   amplify-examples --> amplify-text-field
   amplify-examples --> amplify-text-field
+  amplify-examples --> amplify-select
   amplify-examples --> amplify-button
   amplify-examples --> amplify-link
   amplify-examples --> amplify-authenticator
@@ -46,7 +48,6 @@ graph TD;
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
   amplify-form-field --> amplify-label
-  amplify-form-field --> amplify-text-input
   amplify-form-field --> amplify-hint
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-password-field --> context-consumer

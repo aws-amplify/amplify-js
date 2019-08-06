@@ -7,28 +7,20 @@ import { AMPLIFY_UI_FORM_FIELD } from '../../common/constants';
   tag: 'amplify-form-field',
   shadow: false,
 })
-export class AmplifyTextField {
+export class AmplifyFormField {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() hint: string | null;
-  @Prop() inputProps: {
-    type?: string;
-    onInput?: (Event) => void;
-  } = {};
   @Prop() styleOverride: boolean = false;
 
   render() {
     return (
       <div class={styleNuker(this.styleOverride, AMPLIFY_UI_FORM_FIELD, formField)}>
         {this.label && <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>}
-        <amplify-text-input
-          id={this.fieldId}
-          aria-describedby={this.fieldId && this.hint ? `${this.fieldId}-description` : null}
-          type="text"
-          {...this.inputProps}
-        />
+        <slot />
         {this.hint && (<amplify-hint id={`${this.fieldId}-description`}>{this.hint}</amplify-hint>)}
       </div>
     );
   }
 }
+ 
