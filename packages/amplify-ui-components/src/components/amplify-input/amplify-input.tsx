@@ -5,9 +5,13 @@ import { textInput } from './amplify-input.style';
   tag: 'amplify-input',
 })
 export class AmplifyInput {
+  /** The ID of the field.  Should match with its corresponding input's ID. */
   @Prop() fieldId: string;
+  /** The text of the description.  Goes just below the label. */
   @Prop() description: string | null;
+  /** The input type.  Can be any HTML input type. */
   @Prop() type?: string = "text";
+  /** The callback, called when the input is modified by the user. */
   @Prop() onInput?: (arg0: Event) => void;
 
   render() {

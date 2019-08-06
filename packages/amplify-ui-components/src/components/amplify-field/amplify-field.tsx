@@ -5,10 +5,15 @@ import { Component, Prop, h } from '@stencil/core';
   styleUrl: 'amplify-field.css',
 })
 export class AmplifyField {
+  /** The ID of the field.  Should match with its corresponding input's ID. */
   @Prop() fieldId: string;
+  /** The text of the label.  Goes above the input. Ex: "First name" */
   @Prop() label: string | null;
+  /** The text of the description.  Goes just below the label. */
   @Prop() description: string | null;
+  /** The input type.  Can be any HTML input type. */
   @Prop() type?: string = "text";
+  /** The callback, called when the input is modified by the user. */
   @Prop() onInput?: (arg0: Event) => void;
 
   render() {

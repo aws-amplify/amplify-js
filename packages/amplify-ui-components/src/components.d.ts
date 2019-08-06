@@ -20,10 +20,25 @@ export namespace Components {
   }
   interface AmplifyExamples {}
   interface AmplifyField {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
     'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId': string;
+    /**
+    * The text of the label.  Goes above the input. Ex: "First name"
+    */
     'label': string | null;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
     'onInput'?: (arg0: Event) => void;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
     'type'?: string;
   }
   interface AmplifyFormField {
@@ -37,9 +52,21 @@ export namespace Components {
   }
   interface AmplifyHint {}
   interface AmplifyInput {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
     'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
     'onInput'?: (arg0: Event) => void;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
     'type'?: string;
   }
   interface AmplifyLabel {
@@ -219,10 +246,25 @@ declare namespace LocalJSX {
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyField extends JSXBase.HTMLAttributes<HTMLAmplifyFieldElement> {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
     'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId'?: string;
+    /**
+    * The text of the label.  Goes above the input. Ex: "First name"
+    */
     'label'?: string | null;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
     'onInput'?: (arg0: Event) => void;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
     'type'?: string;
   }
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
@@ -236,9 +278,21 @@ declare namespace LocalJSX {
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
   interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
     'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
     'onInput'?: (arg0: Event) => void;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
     'type'?: string;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {

@@ -14,9 +14,9 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "eslint --fix --ext .js,.ts,.tsx .",
     "pretest": "npm run lint",
-    "test": "stencil test --spec --e2e --screenshot",
-    "test:update-screenshot": "stencil test --spec --e2e --screenshot --update-screenshot",
-    "test:refresh-screenshot": "rm -f screenshot/builds/master.json && rm -f screenshot/images/* && npm run test",
+    "test": "stencil test --spec --e2e",
+    "test:screenshot": "stencil test --spec --e2e --screenshot",
+    "test:update-screenshot": "rm -f screenshot/builds/master.json && rm -f screenshot/images/* && stencil test --spec --e2e --screenshot --update-screenshot",
     "test:watch": "stencil test --spec --e2e --watchAll",
     "stencil": "stencil build --docs-readme",
     "stencil:watch": "stencil build --dev --watch",
@@ -57,9 +57,7 @@
     "typescript": "^3.5.3"
   },
   "husky": {
-    "hooks": {
-      "pre-push": "npm run test && npm run test:refresh-screenshot"
-    }
+    "hooks": {}
   },
   "peerDependencies": {},
   "license": "Apache-2.0"
