@@ -6,7 +6,9 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  TextFieldTypes,
+} from './common/types';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -39,13 +41,13 @@ export namespace Components {
     /**
     * The input type.  Can be any HTML input type.
     */
-    'type'?: string;
+    'type'?: TextFieldTypes;
   }
   interface AmplifyFormField {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onInput?: (Event) => void;
     };
     'label': string | null;
@@ -67,7 +69,7 @@ export namespace Components {
     /**
     * The input type.  Can be any HTML input type.
     */
-    'type'?: string;
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -94,7 +96,7 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
@@ -105,7 +107,7 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
@@ -265,13 +267,13 @@ declare namespace LocalJSX {
     /**
     * The input type.  Can be any HTML input type.
     */
-    'type'?: string;
+    'type'?: TextFieldTypes;
   }
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onInput?: (Event) => void;
     };
     'label'?: string | null;
@@ -293,7 +295,7 @@ declare namespace LocalJSX {
     /**
     * The input type.  Can be any HTML input type.
     */
-    'type'?: string;
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
@@ -320,7 +322,7 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;
@@ -331,7 +333,7 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;

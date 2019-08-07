@@ -7,14 +7,14 @@
 
 ## Properties
 
-| Property      | Attribute     | Description | Type                                                  | Default                      |
-| ------------- | ------------- | ----------- | ----------------------------------------------------- | ---------------------------- |
-| `component`   | --            |             | `Function`                                            | `undefined`                  |
-| `description` | `description` |             | `string`                                              | `'Insert your username'`     |
-| `fieldId`     | `field-id`    |             | `string`                                              | `'amplify-sign-in-username'` |
-| `hint`        | `hint`        |             | `string`                                              | `'Username hint'`            |
-| `inputProps`  | --            |             | `{ type?: string; onChange?: (Event: any) => void; }` | `{}`                         |
-| `label`       | `label`       |             | `string`                                              | `'Username'`                 |
+| Property      | Attribute     | Description | Type                                                          | Default                      |
+| ------------- | ------------- | ----------- | ------------------------------------------------------------- | ---------------------------- |
+| `component`   | --            |             | `Function`                                                    | `undefined`                  |
+| `description` | `description` |             | `string`                                                      | `'Insert your username'`     |
+| `fieldId`     | `field-id`    |             | `string`                                                      | `'amplify-sign-in-username'` |
+| `hint`        | `hint`        |             | `string`                                                      | `'Username hint'`            |
+| `inputProps`  | --            |             | `{ type?: TextFieldTypes; onChange?: (Event: any) => void; }` | `{}`                         |
+| `label`       | `label`       |             | `string`                                                      | `'Username'`                 |
 
 
 ## Dependencies

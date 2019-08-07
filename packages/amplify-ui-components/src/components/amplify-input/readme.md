@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property      | Attribute     | Description                                                           | Type                    | Default     |
-| ------------- | ------------- | --------------------------------------------------------------------- | ----------------------- | ----------- |
-| `description` | `description` | The text of the description.  Goes just below the label.              | `string`                | `undefined` |
-| `fieldId`     | `field-id`    | The ID of the field.  Should match with its corresponding input's ID. | `string`                | `undefined` |
-| `onInput`     | --            | The callback, called when the input is modified by the user.          | `(arg0: Event) => void` | `undefined` |
-| `type`        | `type`        | The input type.  Can be any HTML input type.                          | `string`                | `"text"`    |
+| Property      | Attribute     | Description                                                           | Type                                                                                            | Default     |
+| ------------- | ------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
+| `description` | `description` | The text of the description.  Goes just below the label.              | `string`                                                                                        | `undefined` |
+| `fieldId`     | `field-id`    | The ID of the field.  Should match with its corresponding input's ID. | `string`                                                                                        | `undefined` |
+| `onInput`     | --            | The callback, called when the input is modified by the user.          | `(arg0: Event) => void`                                                                         | `undefined` |
+| `type`        | `type`        | The input type.  Can be any HTML input type.                          | `"date" \| "email" \| "number" \| "password" \| "search" \| "tel" \| "text" \| "time" \| "url"` | `"text"`    |
 
 
 ## Dependencies

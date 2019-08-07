@@ -1,4 +1,5 @@
 import { Component, Prop, h } from '@stencil/core';
+import { TextFieldTypes } from '../../common/types';
 
 @Component({
   tag: 'amplify-field',
@@ -12,7 +13,7 @@ export class AmplifyField {
   /** The text of the description.  Goes just below the label. */
   @Prop() description: string | null;
   /** The input type.  Can be any HTML input type. */
-  @Prop() type?: string = "text";
+  @Prop() type?: TextFieldTypes = "text";
   /** The callback, called when the input is modified by the user. */
   @Prop() onInput?: (arg0: Event) => void;
 

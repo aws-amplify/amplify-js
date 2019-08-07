@@ -1,5 +1,6 @@
 import { Component, Prop, h } from '@stencil/core';
 import { formField } from './amplify-form-field.style';
+import { TextFieldTypes } from '../../common/types';
 
 @Component({
   tag: 'amplify-form-field',
@@ -10,7 +11,7 @@ export class AmplifyFormField {
   @Prop() label: string | null;
   @Prop() hint: string | null;
   @Prop() inputProps: {
-    type?: string;
+    type?: TextFieldTypes;
     onInput?: (Event) => void;
   } = {};
 
