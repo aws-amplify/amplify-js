@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.36...@aws-amplify/storage@1.1.0) (2019-08-05)
+
+
+### Features
+
+* Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
+
+
+
+
+
 ## [1.0.36](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.35...@aws-amplify/storage@1.0.36) (2019-08-01)
 
 
