@@ -3,6 +3,7 @@ import { select } from './amplify-select.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_SELECT } from '../../common/constants';
 import { SelectOptions } from '../../common/types';
+import countryDialCodes from '../../common/country-dial-codes';
 
 const splitIntoSeparateOptionsForSelect = (opts: any) => {
   let content = [];
@@ -22,7 +23,7 @@ export class AmplifySelect {
   render() {
     return (
       <select class={styleNuker(this.styleOverride, AMPLIFY_UI_SELECT, select)}>
-        {splitIntoSeparateOptionsForSelect(this.options)}
+        {this.options ? splitIntoSeparateOptionsForSelect(this.options): splitIntoSeparateOptionsForSelect(countryDialCodes)}
       </select>
     );
   }

@@ -6,12 +6,6 @@ const handleSampleFormSubmit = event => {
   console.log('sample form submit', event);
 };
 
-const optionsForSelect = [
-  { value: 1, label: 'Rad'},
-  { value: 2, label: 'Super'},
-  { value: 3, label: 'Tad'}
-];
-
 const Example1 = () => (
   <div>
     <form onSubmit={handleSampleFormSubmit}>
@@ -31,7 +25,7 @@ const Example1 = () => (
           />
         </p>
       </fieldset>
-      <amplify-select options={optionsForSelect}></amplify-select>
+      <amplify-select></amplify-select>
       <amplify-button type="submit">Submit</amplify-button>
       <amplify-link>Reset</amplify-link>
     </form>
