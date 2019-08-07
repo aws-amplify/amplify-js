@@ -10,9 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import PredictionsClass from './Predictions';
+import { Predictions as PredictionsClass } from './Predictions';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
     AmazonAIConvertPredictionsProvider, AmazonAIIdentifyPredictionsProvider,
     AmazonAIPredictionsProvider, AmazonAIInterpretPredictionsProvider,
@@ -31,8 +31,12 @@ if (!_instance) {
 const Predictions = _instance;
 Amplify.register(Predictions);
 
-export default Predictions;
 export {
-    AmazonAIIdentifyPredictionsProvider, AmazonAIConvertPredictionsProvider,
+    Predictions, AmazonAIIdentifyPredictionsProvider, AmazonAIConvertPredictionsProvider,
     AmazonAIPredictionsProvider, AmazonAIInterpretPredictionsProvider, InterpretTextCategories
 };
+
+/**
+ * @deprecated use named import
+ */
+export default Predictions;

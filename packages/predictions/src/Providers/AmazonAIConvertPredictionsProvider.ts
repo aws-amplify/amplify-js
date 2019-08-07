@@ -12,7 +12,7 @@ import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
-export default class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
+export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
 
     private translate: Translate;
     private textToSpeech: TextToSpeech;
@@ -325,3 +325,8 @@ export default class AmazonAIConvertPredictionsProvider extends AbstractConvertP
     }
 
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIConvertPredictionsProvider;

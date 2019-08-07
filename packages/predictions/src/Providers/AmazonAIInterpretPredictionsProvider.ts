@@ -5,9 +5,9 @@ import {
     InterpretTextInput, InterpretTextOutput, InterpretTextCategories,
     TextEntities, TextSentiment, TextSyntax, KeyPhrases
 } from '../types';
-import { Comprehend } from 'aws-sdk';
+import * as Comprehend from 'aws-sdk/clients/comprehend';
 
-export default class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
+export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
 
     constructor() {
         super();
@@ -244,3 +244,8 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
     }
 
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIInterpretPredictionsProvider;

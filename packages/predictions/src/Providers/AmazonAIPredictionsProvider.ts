@@ -6,12 +6,10 @@ import {
 } from ".";
 import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOptions, IdentifyTextInput, 
     IdentifyTextOutput, IdentifyLabelsInput, IdentifyLabelsOutput, IdentifyEntitiesInput, IdentifyEntitiesOutput, 
-    isIdentifyTextInput, isIdentifyLabelsInput, isIdentifyEntitiesInput, TranslateTextOutput,
-    TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput,
-    InterpretTextInput, InterpretTextOutput, isInterpretTextInput
- } from "../types";
+    TranslateTextOutput, TextToSpeechOutput, SpeechToTextOutput, InterpretTextInput, InterpretTextOutput }
+    from "../types";
 
-export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
+export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 
     private convertProvider: AmazonAIConvertPredictionsProvider;
     private identifyProvider: AmazonAIIdentifyPredictionsProvider;
@@ -54,3 +52,8 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
     }
 
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIPredictionsProvider;

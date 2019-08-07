@@ -11,7 +11,7 @@ import * as Textract from 'aws-sdk/clients/textract';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 import { categorizeRekognitionBlocks, categorizeTextractBlocks } from './IdentifyTextUtils';
 
-export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
+export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
     private rekognition: Rekognition;
     private textract: Textract;
 
@@ -310,3 +310,8 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
         return ("" + externalImageId).replace(/::/g, '/');
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIIdentifyPredictionsProvider;
