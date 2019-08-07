@@ -30,12 +30,14 @@ export class AmplifyField {
           </div>
         )}
         <div>
-          <amplify-input
-            fieldId={this.fieldId}
-            aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-            type={this.type}
-            onInput={this.onInput}
-          />
+          <slot name="input">
+            <amplify-input
+              fieldId={this.fieldId}
+              aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
+              type={this.type}
+              onInput={this.onInput}
+            />
+          </slot>
         </div>
       </div>
     );

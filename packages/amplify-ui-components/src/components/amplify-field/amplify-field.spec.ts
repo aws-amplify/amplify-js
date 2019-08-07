@@ -28,4 +28,13 @@ describe('amplify-field', () => {
 
     expect(page.root).toMatchSnapshot();
   });
+
+  it('replaces the input component, if a new one is provided', async () => {
+    const page = await newSpecPage({
+      components: [AmplifyField],
+      html: `<amplify-field label='label' description='description' field-id='id'><input slot="input" /></amplify-field>`,
+    });
+
+    expect(page.root).toMatchSnapshot();
+  });
 });

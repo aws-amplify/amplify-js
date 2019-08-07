@@ -2,6 +2,7 @@
 
 exports[`amplify-field renders a label and description, if they are provided, and no id 1`] = `
 <amplify-field description="description" label="label">
+  <!---->
   <div>
     <label class="label">
       label
@@ -10,7 +11,9 @@ exports[`amplify-field renders a label and description, if they are provided, an
       description
     </div>
     <div>
-      <amplify-input type="text"></amplify-input>
+      <slot-fb name="input">
+        <amplify-input type="text"></amplify-input>
+      </slot-fb>
     </div>
   </div>
 </amplify-field>
@@ -18,9 +21,12 @@ exports[`amplify-field renders a label and description, if they are provided, an
 
 exports[`amplify-field renders no label or description if none are provided 1`] = `
 <amplify-field>
+  <!---->
   <div>
     <div>
-      <amplify-input type="text"></amplify-input>
+      <slot-fb name="input">
+        <amplify-input type="text"></amplify-input>
+      </slot-fb>
     </div>
   </div>
 </amplify-field>
@@ -28,6 +34,7 @@ exports[`amplify-field renders no label or description if none are provided 1`] 
 
 exports[`amplify-field renders with an id, if it is provided 1`] = `
 <amplify-field description="description" field-id="id" label="label">
+  <!---->
   <div>
     <label class="label" htmlfor="id">
       label
@@ -36,7 +43,29 @@ exports[`amplify-field renders with an id, if it is provided 1`] = `
       description
     </div>
     <div>
-      <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+      <slot-fb name="input">
+        <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
+</amplify-field>
+`;
+
+exports[`amplify-field replaces the input component, if a new one is provided 1`] = `
+<amplify-field description="description" field-id="id" label="label">
+  <!---->
+  <div>
+    <label class="label" htmlfor="id">
+      label
+    </label>
+    <div class="description" id="id-description">
+      description
+    </div>
+    <div>
+      <input slot="input">
+      <slot-fb hidden="" name="input">
+        <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+      </slot-fb>
     </div>
   </div>
 </amplify-field>
