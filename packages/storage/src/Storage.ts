@@ -117,7 +117,6 @@ export class Storage {
 
         const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
         const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
-        const isDefinedNonObject = (v: any) => typeof v !== 'object' && v !== undefined;
 
         if (
             storageKeysFromConfig &&
@@ -128,7 +127,7 @@ export class Storage {
         }
 
         Object.entries(amplifyConfig.Storage).map(([key, value]) => {
-            if (key && isInStorageArrayKeys(key) && isDefinedNonObject(value)) {
+            if (key && isInStorageArrayKeys(key) && value !== undefined) {
                 amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
                 delete amplifyConfig.Storage[key];
             }

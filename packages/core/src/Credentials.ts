@@ -313,7 +313,7 @@ export class CredentialsClass {
                     // the Cache module no longer stores federated info
                     // this is just for backward compatibility
                     if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-                        Amplify.Cache.setItem(
+                        await Amplify.Cache.setItem(
                             'federatedInfo', 
                             { 
                                 provider, 

@@ -33,12 +33,14 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
         storageConfig = {
             AWSS3: {
                 bucket: config['aws_user_files_s3_bucket'],
-                region: config['aws_user_files_s3_bucket_region']
+                region: config['aws_user_files_s3_bucket_region'],
+                dangerouslyConnectToHttpEndpointForTesting:
+                config['aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing']
             }
         };
     } else {
         storageConfig = config ? config.Storage || config : {};
-    }
+    } 
     amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
     amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
     amplifyConfig.Storage = Object.assign({}, storageConfig);
