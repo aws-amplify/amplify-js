@@ -8,7 +8,7 @@
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   SelectOptions,
-} from './common/types';
+} from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -22,13 +22,34 @@ export namespace Components {
     'type': string;
   }
   interface AmplifyCheckbox {
-    'inputProps': {
-      type: string;
-      name?: string;
-      value?: any;
-      checked?: boolean;
-    };
-    'styleOverride': boolean;
+    /**
+    * (optional) Will toggle the checkbox when set. Default set to false
+    */
+    'checked'?: boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId': string;
+    /**
+    * Label for the checkbox
+    */
+    'label': string;
+    /**
+    * Name of the checkbox
+    */
+    'name'?: string;
+    /**
+    * (optional) Whether or not to override default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * Default to checkbox
+    */
+    'type': string;
+    /**
+    * Value of the checkbox
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFormField {
@@ -49,13 +70,34 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifyRadioButton {
-    'inputProps': {
-      type: string;
-      name?: string;
-      value?: any;
-      checked?: boolean;
-    };
-    'styleOverride': boolean;
+    /**
+    * (optional) Will toggle the radio button when set. Default set to false
+    */
+    'checked'?: boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId': string;
+    /**
+    * Label for the radio button
+    */
+    'label': string;
+    /**
+    * (optional) Name of radio button
+    */
+    'name'?: string;
+    /**
+    * (optional) Whether or not to override default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * Type of input for this component is radio
+    */
+    'type': string;
+    /**
+    * (optional) Value of radio button
+    */
+    'value'?: string;
   }
   interface AmplifySceneLoading {
     'loadPercentage': number;
@@ -70,7 +112,13 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifySelect {
-    'options': SelectOptions;
+    /**
+    * Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    */
+    'options'?: SelectOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
     'styleOverride': boolean;
   }
   interface AmplifySignIn {
@@ -275,13 +323,34 @@ declare namespace LocalJSX {
     'type'?: string;
   }
   interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
-    'inputProps'?: {
-      type: string;
-      name?: string;
-      value?: any;
-      checked?: boolean;
-    };
+    /**
+    * (optional) Will toggle the checkbox when set. Default set to false
+    */
+    'checked'?: boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId'?: string;
+    /**
+    * Label for the checkbox
+    */
+    'label'?: string;
+    /**
+    * Name of the checkbox
+    */
+    'name'?: string;
+    /**
+    * (optional) Whether or not to override default styling
+    */
     'styleOverride'?: boolean;
+    /**
+    * Default to checkbox
+    */
+    'type'?: string;
+    /**
+    * Value of the checkbox
+    */
+    'value'?: string;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
@@ -302,13 +371,34 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
-    'inputProps'?: {
-      type: string;
-      name?: string;
-      value?: any;
-      checked?: boolean;
-    };
+    /**
+    * (optional) Will toggle the radio button when set. Default set to false
+    */
+    'checked'?: boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId'?: string;
+    /**
+    * Label for the radio button
+    */
+    'label'?: string;
+    /**
+    * (optional) Name of radio button
+    */
+    'name'?: string;
+    /**
+    * (optional) Whether or not to override default styling
+    */
     'styleOverride'?: boolean;
+    /**
+    * Type of input for this component is radio
+    */
+    'type'?: string;
+    /**
+    * (optional) Value of radio button
+    */
+    'value'?: string;
   }
   interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
@@ -323,7 +413,13 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
+    /**
+    * Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    */
     'options'?: SelectOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
     'styleOverride'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {

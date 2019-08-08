@@ -1,11 +1,12 @@
 import { Component, Prop, h } from '@stencil/core';
 import { select } from './amplify-select.style';
 import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_SELECT } from '../../common/constants';
-import { SelectOptions } from '../../common/types';
+import { SelectOptions } from './amplify-select-interface';
 import countryDialCodes from '../../common/country-dial-codes';
 
-const splitIntoSeparateOptionsForSelect = (opts: any) => {
+const AMPLIFY_UI_SELECT = 'amplify-ui-select';
+
+const splitIntoSeparateOptionsForSelect = (opts: SelectOptions) => {
   let content = [];
   opts.forEach(opt => content.push(<option value={opt.value}>{opt.label}</option>));
 
@@ -17,8 +18,10 @@ const splitIntoSeparateOptionsForSelect = (opts: any) => {
   shadow: false,
 })
 export class AmplifySelect {
+  /** (Optional) Overrides default styling */
   @Prop() styleOverride: boolean = false;
-  @Prop() options: SelectOptions;
+  /** Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
+  @Prop() options?: SelectOptions;
 
   render() {
     return (

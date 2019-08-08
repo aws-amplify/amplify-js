@@ -9,6 +9,8 @@
 
 ### Depends on
 
+- [amplify-checkbox](../amplify-checkbox)
+- [amplify-radio-button](../amplify-radio-button)
 - [amplify-text-field](../amplify-text-field)
 - [amplify-text-field](../amplify-text-field)
 - [amplify-select](../amplify-select)
@@ -25,6 +27,8 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-examples --> amplify-checkbox
+  amplify-examples --> amplify-radio-button
   amplify-examples --> amplify-text-field
   amplify-examples --> amplify-text-field
   amplify-examples --> amplify-select
@@ -37,6 +41,7 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
+  amplify-checkbox --> amplify-label
   amplify-text-field --> amplify-text-input
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer

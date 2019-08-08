@@ -8,22 +8,32 @@ import { AMPLIFY_UI_RADIO_BUTTON } from '../../common/constants';
   shadow: false,
 })
 export class AmplifyRadioButton {
-  @Prop() styleOverride: boolean = false;
-  @Prop() inputProps: {
-    type: string;
-    name?: string;
-    value?: any;
-    checked?: boolean;
-  }
+  /** (optional) Whether or not to override default styling */
+  @Prop() styleOverride?: boolean = false;
+  /** Type of input for this component is radio */
+  @Prop() readonly type: string = 'radio';
+  /** (optional) Name of radio button */
+  @Prop() name?: string;
+  /** (optional) Value of radio button */
+  @Prop() value?: string;
+  /** (optional) Will toggle the radio button when set. Default set to false */
+  @Prop() checked?: boolean = false;
+  /** Field ID used for the 'for' in the label */
+  @Prop() fieldId: string;
+  /** Label for the radio button */
+  @Prop() label: string;
 
   render() {
-    this.inputProps.type = 'radio';
-
     return (
       <input
         class={styleNuker(this.styleOverride, AMPLIFY_UI_RADIO_BUTTON, radioButton)}
-        {...this.inputProps}
-      />
+        type={this.type}
+        name={this.name}
+        value={this.value}
+        checked={this.checked}
+      >
+        <label htmlFor={this.fieldId}>{this.label}</label>
+      </input>
     );
   }
 }
