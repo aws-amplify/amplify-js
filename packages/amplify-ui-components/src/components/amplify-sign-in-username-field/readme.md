@@ -34,7 +34,6 @@
 graph TD;
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
-  amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
   amplify-examples --> amplify-sign-in-username-field

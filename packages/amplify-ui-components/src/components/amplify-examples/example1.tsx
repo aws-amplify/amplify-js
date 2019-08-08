@@ -12,10 +12,10 @@ const Example1 = () => (
       <fieldset>
         <legend>Sample form</legend>
         <p>
-          <amplify-field fieldId="sample-text-field" label="Sample text field" description="Insert a string" />
+          <amplify-form-field fieldId="sample-text-field" label="Sample text field" description="Insert a string" />
         </p>
         <p>
-          <amplify-field
+          <amplify-form-field
             fieldId="sample-number-field"
             label="Sample number field"
             description="Select a number"

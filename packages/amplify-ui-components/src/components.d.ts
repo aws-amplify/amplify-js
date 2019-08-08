@@ -21,15 +21,19 @@ export namespace Components {
     'type': string;
   }
   interface AmplifyExamples {}
-  interface AmplifyField {
+  interface AmplifyFormField {
     /**
-    * The text of the description.  Goes just below the label.
+    * The text of the description.  Goes between the label and the input.
     */
     'description': string | null;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId': string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
+    'hint': string | null;
     /**
     * The text of the label.  Goes above the input. Ex: "First name"
     */
@@ -42,15 +46,6 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
-  }
-  interface AmplifyFormField {
-    'fieldId': string;
-    'hint': string | null;
-    'inputProps': {
-      type?: TextFieldTypes;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
   }
   interface AmplifyHint {}
   interface AmplifyInput {
@@ -138,12 +133,6 @@ declare global {
     new (): HTMLAmplifyExamplesElement;
   };
 
-  interface HTMLAmplifyFieldElement extends Components.AmplifyField, HTMLStencilElement {}
-  var HTMLAmplifyFieldElement: {
-    prototype: HTMLAmplifyFieldElement;
-    new (): HTMLAmplifyFieldElement;
-  };
-
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
   var HTMLAmplifyFormFieldElement: {
     prototype: HTMLAmplifyFormFieldElement;
@@ -219,7 +208,6 @@ declare global {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
-    'amplify-field': HTMLAmplifyFieldElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-input': HTMLAmplifyInputElement;
@@ -247,15 +235,19 @@ declare namespace LocalJSX {
     'type'?: string;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
-  interface AmplifyField extends JSXBase.HTMLAttributes<HTMLAmplifyFieldElement> {
+  interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     /**
-    * The text of the description.  Goes just below the label.
+    * The text of the description.  Goes between the label and the input.
     */
     'description'?: string | null;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId'?: string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
+    'hint'?: string | null;
     /**
     * The text of the label.  Goes above the input. Ex: "First name"
     */
@@ -268,15 +260,6 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
-  }
-  interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: TextFieldTypes;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
   interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
@@ -347,7 +330,6 @@ declare namespace LocalJSX {
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-examples': AmplifyExamples;
-    'amplify-field': AmplifyField;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
     'amplify-input': AmplifyInput;

@@ -19,13 +19,11 @@
 
 ### Used by
 
- - [amplify-field](../amplify-field)
  - [amplify-form-field](../amplify-form-field)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-field --> amplify-input
   amplify-form-field --> amplify-input
   style amplify-input fill:#f9f,stroke:#333,stroke-width:4px
 ```

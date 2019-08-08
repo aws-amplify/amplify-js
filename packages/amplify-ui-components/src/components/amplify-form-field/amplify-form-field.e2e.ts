@@ -1,16 +1,16 @@
 import { newE2EPage } from '@stencil/core/testing';
 
-describe('amplify-field', () => {
+describe('amplify-form-field', () => {
   it('renders', async () => {
     const page = await newE2EPage();
 
     await page.setContent(
-      `<amplify-field field-id="id" label="Label test" description="Description test"></amplify-field>`,
+      `<amplify-form-field field-id="id" label="Label test" description="Description test"></amplify-form-field>`,
     );
-    const screenshot = await page.compareScreenshot('Amplify Field', {fullPage: true});
+    const screenshot = await page.compareScreenshot('Amplify Form Field', {fullPage: true});
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
 
-    const fieldElement = await page.find('amplify-field');
+    const fieldElement = await page.find('amplify-form-field');
     expect(fieldElement).not.toBeNull();
 
     const labelElement = await page.find('label');
@@ -24,7 +24,7 @@ describe('amplify-field', () => {
   it('renders no label or description if none are provided', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-field></amplify-field>`);
+    await page.setContent(`<amplify-form-field></amplify-form-field>`);
 
     const labelElement = await page.find('label');
     expect(labelElement).toBeNull();
@@ -36,12 +36,12 @@ describe('amplify-field', () => {
   it('fires an onInput event when the contents of the box are changed', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-field></amplify-field>`);
+    await page.setContent(`<amplify-form-field></amplify-form-field>`);
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
 
-    await page.$eval('amplify-field', (fieldElement: any) => {
+    await page.$eval('amplify-form-field', (fieldElement: any) => {
       fieldElement.onInput = this.exposedfunc;
       fieldElement.label = 'adding a label so that the component rerenders';
     });
@@ -58,7 +58,7 @@ describe('amplify-field', () => {
   it('can have a checkbox input', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-field type='checkbox'></amplify-field>`);
+    await page.setContent(`<amplify-form-field type='checkbox'></amplify-form-field>`);
     await page.waitForChanges();
 
     const input = await page.find('input');
@@ -68,7 +68,7 @@ describe('amplify-field', () => {
   it('can have a number input', async () => {
     const page = await newE2EPage();
 
-    await page.setContent(`<amplify-field type='number'></amplify-field>`);
+    await page.setContent(`<amplify-form-field type='number'></amplify-form-field>`);
     await page.waitForChanges();
 
     const input = await page.find('input');

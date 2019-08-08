@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-field renders a label and description, if they are provided, and no id 1`] = `
-<amplify-field description="description" label="label">
+exports[`amplify-form-field renders a label and description, if they are provided, and no id 1`] = `
+<amplify-form-field description="description" label="label">
   <!---->
   <div>
     <label class="label">
@@ -16,11 +16,11 @@ exports[`amplify-field renders a label and description, if they are provided, an
       </slot-fb>
     </div>
   </div>
-</amplify-field>
+</amplify-form-field>
 `;
 
-exports[`amplify-field renders no label or description if none are provided 1`] = `
-<amplify-field>
+exports[`amplify-form-field renders no label or description if none are provided 1`] = `
+<amplify-form-field>
   <!---->
   <div>
     <div>
@@ -29,11 +29,11 @@ exports[`amplify-field renders no label or description if none are provided 1`] 
       </slot-fb>
     </div>
   </div>
-</amplify-field>
+</amplify-form-field>
 `;
 
-exports[`amplify-field renders with an id, if it is provided 1`] = `
-<amplify-field description="description" field-id="id" label="label">
+exports[`amplify-form-field renders with an id, if it is provided 1`] = `
+<amplify-form-field description="description" field-id="id" label="label">
   <!---->
   <div>
     <label class="label" htmlfor="id">
@@ -48,11 +48,11 @@ exports[`amplify-field renders with an id, if it is provided 1`] = `
       </slot-fb>
     </div>
   </div>
-</amplify-field>
+</amplify-form-field>
 `;
 
-exports[`amplify-field replaces the input component, if a new one is provided 1`] = `
-<amplify-field description="description" field-id="id" label="label">
+exports[`amplify-form-field replaces the input component, if a new one is provided 1`] = `
+<amplify-form-field description="description" field-id="id" label="label">
   <!---->
   <div>
     <label class="label" htmlfor="id">
@@ -68,5 +68,5 @@ exports[`amplify-field replaces the input component, if a new one is provided 1`
       </slot-fb>
     </div>
   </div>
-</amplify-field>
+</amplify-form-field>
 `;
