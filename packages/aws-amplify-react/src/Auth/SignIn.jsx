@@ -161,7 +161,7 @@ export default class SignIn extends AuthPiece {
                             disabled={this.state.loading}
                             data-test={auth.signIn.signInButton}
                             >
-                            {I18n.get('Sign In')}
+                            {this.state.loading? I18n.get('Loading...') : I18n.get('Sign In')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     {
