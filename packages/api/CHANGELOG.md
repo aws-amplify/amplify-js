@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.42](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.41...@aws-amplify/api@1.0.42) (2019-08-05)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
+## [1.0.41](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.40...@aws-amplify/api@1.0.41) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
+## [1.0.40](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.39...@aws-amplify/api@1.0.40) (2019-07-30)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
+## [1.0.39](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.37...@aws-amplify/api@1.0.39) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
 <a name="1.0.38-unstable.2"></a>
 ## [1.0.38-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.38-unstable.1...@aws-amplify/api@1.0.38-unstable.2) (2019-07-12)
 
