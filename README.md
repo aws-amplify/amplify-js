@@ -34,10 +34,11 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 - [__GraphQL Client__](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.  
 - [__Storage__](https://aws.github.io/aws-amplify/media/storage_guide): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.  
 - [__Push Notifications__](https://aws.github.io/aws-amplify/media/push_notifications_setup): Allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
-- [__Interactions__](https://aws.github.io/aws-amplify/media/interactions_guide): Create conversational bots powered by deep learning technologies..  
+- [__Interactions__](https://aws.github.io/aws-amplify/media/interactions_guide): Create conversational bots powered by deep learning technologies.
 - [__PubSub__](https://aws.github.io/aws-amplify/media/pub_sub_guide): Provides connectivity with cloud-based message-oriented middleware.  
 - [__Internationalization__](https://aws.github.io/aws-amplify/media/i18n_guide): A lightweight internationalization solution.
 - [__Cache__](https://aws.github.io/aws-amplify/media/cache_guide): Provides a generic LRU cache for JavaScript developers to store data with priority and expiration settings.  
+- [__Predictions__](https://aws-amplify.github.io/docs/js/predictions): Provides a solution for using AI and ML cloud services to enhance your application.
 
 #### Visit our [Web Site](https://aws.github.io/aws-amplify) to learn more about AWS Amplify.
 
@@ -49,7 +50,7 @@ Amplify@1.x.x has structural changes. For details please check [Amplify Modulari
 
 ## Installation
 
-AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/)
+AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/).
 
 __Web__
 
@@ -84,7 +85,7 @@ Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/i
 
 __Vue__
 
-If you are developing a [Vue](https://github.com/vuejs/vue) app, you can install an additional package `aws-amplify-vue`. This package contains a [Vue plugin](https://vuejs.org/v2/guide/plugins.html) for the Amplify library along with [Vue components](https://vuejs.org/v2/guide/components.html).
+If you are developing a [Vue](https://github.com/vuejs/vue) app, you can install an additional package `aws-amplify-vue`. This package contains a [Vue plugin](https://vuejs.org/v2/guide/plugins.html) for the Amplify library along with [Vue components](https://vuejs.org/v2/guide/components.html):
 
 ```bash
 $ npm install aws-amplify --save
@@ -95,7 +96,7 @@ Visit our [Installation Guide for Web](https://aws-amplify.github.io/amplify-js/
 
 __React Native__
 
-For React Native development, install `aws-amplify` 
+For React Native development, install `aws-amplify`:
 
 ```bash
 $ npm install aws-amplify --save
@@ -226,7 +227,7 @@ See our [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 
 ### 3. Sign HTTP requests
 
-AWS Amplify automatically signs your REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) when using the API module :
+AWS Amplify automatically signs your REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) when using the API module:
 
 ```js
 import API from '@aws-amplify/api';
