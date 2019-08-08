@@ -54,7 +54,7 @@ export default class AuthPiece extends React.Component {
             if (!this.props.authData || !this.props.authData.username) {
                 const searchParams = new URLSearchParams(window.location.search);
                 let username = searchParams ? searchParams.get('username') : undefined;
-                this.setState({username})
+                this.setState({username});
             }
         }
     }
