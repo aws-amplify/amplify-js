@@ -5,7 +5,7 @@ describe('amplify-icon', () => {
   it('renders correct HTML', async () => {
     const page = await newSpecPage({
       components: [AmplifyIcon],
-      html: `<amplify-icon></amplify-icon>`,
+      html: `<amplify-icon name='sound-mute'></amplify-icon>`,
     });
 
     expect(page.root).toMatchSnapshot();
