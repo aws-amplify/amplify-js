@@ -3,13 +3,14 @@
 exports[`Loading renders successfully with no props 1`] = `
 <Loading>
   <div
-    className="XR__loadingOverlay___1c9lj"
+    className="XR__loadingOverlay___IbqcI"
+    data-test="sumerian-scene-loading"
   >
     <div
-      className="XR__loadingContainer___3C0lC"
+      className="XR__loadingContainer___2Itxb"
     >
       <div
-        className="XR__loadingLogo___3mETr"
+        className="XR__loadingLogo___Ub7xQ"
       >
         <svg
           viewBox="0 0 800 481"
@@ -41,13 +42,13 @@ exports[`Loading renders successfully with no props 1`] = `
         </svg>
       </div>
       <div
-        className="XR__loadingSceneName___3JbEs"
+        className="XR__loadingSceneName___3__ne"
       />
       <div
-        className="XR__loadingBar___QeOtl"
+        className="XR__loadingBar___2vcke"
       >
         <div
-          className="XR__loadingBarFill___2Ej9-"
+          className="XR__loadingBarFill___3M-D9"
           style={
             Object {
               "width": "undefined%",
@@ -65,13 +66,14 @@ exports[`Loading renders successfully with percentage 1`] = `
   percentage="0"
 >
   <div
-    className="XR__loadingOverlay___1c9lj"
+    className="XR__loadingOverlay___IbqcI"
+    data-test="sumerian-scene-loading"
   >
     <div
-      className="XR__loadingContainer___3C0lC"
+      className="XR__loadingContainer___2Itxb"
     >
       <div
-        className="XR__loadingLogo___3mETr"
+        className="XR__loadingLogo___Ub7xQ"
       >
         <svg
           viewBox="0 0 800 481"
@@ -103,13 +105,13 @@ exports[`Loading renders successfully with percentage 1`] = `
         </svg>
       </div>
       <div
-        className="XR__loadingSceneName___3JbEs"
+        className="XR__loadingSceneName___3__ne"
       />
       <div
-        className="XR__loadingBar___QeOtl"
+        className="XR__loadingBar___2vcke"
       >
         <div
-          className="XR__loadingBarFill___2Ej9-"
+          className="XR__loadingBarFill___3M-D9"
           style={
             Object {
               "width": "0%",

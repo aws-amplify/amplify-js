@@ -19,7 +19,7 @@ export const linkUnderlayColor = '#FFF';
 export const errorIconColor = '#DD3F5B';
 
 // Theme
-export default AmplifyTheme = StyleSheet.create({
+export default StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',

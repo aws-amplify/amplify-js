@@ -350,7 +350,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         that.pinpointClient.updateEndpoint(update_params, (err, data) => {
             if (err) {
                 logger.debug('updateEndpoint failed', err);
-                if (err.message === 'Exceeded maximum endpoint per user count 10') {
+                if (err.message.startsWith('Exceeded maximum endpoint per user count')) {
                     this._removeUnusedEndpoints(appId, request.User.UserId)
                     .then(() => {
                         logger.debug('Remove the unused endpoints successfully');

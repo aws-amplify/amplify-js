@@ -66,10 +66,13 @@ export default class OAuth {
     domain: string,
     redirectSignIn: string,
     clientId: string,
-    provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito) {
+    provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito,
+    customState?: string) {
 
-    const state = this._generateState(32);
-    oAuthStorage.setState(state);
+    const generatedState = this._generateState(32);
+    const state = customState ? `${generatedState}-${customState}` : generatedState;
+
+    oAuthStorage.setState(encodeURIComponent(state));
 
     const pkce_key = this._generateRandom(128);
     oAuthStorage.setPKCE(pkce_key);
@@ -141,7 +144,7 @@ export default class OAuth {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: typeof URLSearchParams !== 'undefined' ? new URLSearchParams(body) : body
+        body
       }) as any).json();
 
       if (error) {
@@ -196,17 +199,17 @@ export default class OAuth {
       throw new Error(error_description);
     }
 
-    this._validateState(urlParams);
+    const state: string = this._validateState(urlParams);
 
     logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
     if (this._config.responseType === 'code') {
-      return this._handleCodeFlow(currentUrl);
+      return {...await this._handleCodeFlow(currentUrl), state};
     } else {
-      return this._handleImplicitFlow(currentUrl);
+      return {...await this._handleImplicitFlow(currentUrl), state};
     }
   }
 
-  private _validateState(urlParams: any) {
+  private _validateState(urlParams: any): string {
     if (!urlParams) { return; }
 
     const savedState = oAuthStorage.getState();
@@ -216,6 +219,7 @@ export default class OAuth {
     if (savedState && savedState !== returnedState) {
       throw new Error('Invalid state in OAuth flow');
     }
+    return returnedState;
   }
 
   public async signOut() {

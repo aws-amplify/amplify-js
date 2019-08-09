@@ -157,7 +157,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ bucket: "another-bucket" })
+            const config = storage.configure({ bucket: "another-bucket" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
@@ -175,7 +175,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ Storage: { bucket: "another-bucket", region: "another-region" } })
+            const config = storage.configure({ Storage: { bucket: "another-bucket", region: "another-region" } });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
@@ -193,7 +193,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ AWSS3: { bucket: "another-s3-bucket", region: "another-s3-region" } })
+            const config = storage.configure({ AWSS3: { bucket: "another-s3-bucket", region: "another-s3-region" } });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-s3-bucket',
@@ -210,7 +210,7 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ level: "private" })
+            const config = storage.configure({ level: "private" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
@@ -264,8 +264,8 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "protected" })
-            const config = storage.configure({ track: true })
+            storage.configure({ level: "protected" });
+            const config = storage.configure({ track: true });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
@@ -284,14 +284,171 @@ describe('Storage', () => {
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "private" })
-            const config = storage.configure({ level: "protected" })
+            storage.configure({ level: "private" });
+            const config = storage.configure({ level: "protected" });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
                     region: 'region',
                     level: 'protected',
                 }
+            });
+        });
+
+        test('should add server side encryption to storage config when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'testBucket',
+                aws_user_files_s3_bucket_region: 'imaregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ serverSideEncryption: 'iamencrypted'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'testBucket',
+                    region: 'imaregion',
+                    serverSideEncryption: 'iamencrypted',
+                },
+            });
+        });
+
+        test('should add SSECustomerAlgorithm to storage config when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'thisIsABucket',
+                aws_user_files_s3_bucket_region: 'whatregionareyou',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerAlgorithm: '23s2sc'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'thisIsABucket',
+                    region: 'whatregionareyou',
+                    SSECustomerAlgorithm: '23s2sc',
+                },
+            });
+        });
+
+        test('should add SSECustomerKey to storage config when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'buckbuckbucket',
+                aws_user_files_s3_bucket_region: 'thisisaregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerKey: 'iamakey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'buckbuckbucket',
+                    region: 'thisisaregion',
+                    SSECustomerKey: 'iamakey',
+                },
+            });
+        });
+
+        test('should add SSECustomerKeyMD5 to storage config when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'buckbuckbucaket',
+                aws_user_files_s3_bucket_region: 'ohnoregion',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSECustomerKeyMD5: 'somekey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'buckbuckbucaket',
+                    region: 'ohnoregion',
+                    SSECustomerKeyMD5: 'somekey',
+                },
+            });
+        });
+
+        test('should add SSEKMSKeyId to storage config when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'bucket2',
+                aws_user_files_s3_bucket_region: 'region1',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ SSEKMSKeyId: 'giveMeAnId'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'bucket2',
+                    region: 'region1',
+                    SSEKMSKeyId: 'giveMeAnId',
+                },
+            });
+        });
+
+        test('should not add randomKeyId to storage config object when present', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'bucket2',
+                aws_user_files_s3_bucket_region: 'region1',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({ randomKeyId: 'someRandomKey'});
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'bucket2',
+                    region: 'region1',
+                }
+            });
+        });
+
+        test('should add customPrefix to AWSS3 provider object if is defined', () => {
+            const storage = new Storage ();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'i_am_a_bucket',
+                aws_user_files_s3_bucket_region: 'IAD',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({
+                customPrefix: {
+                    protected: 'iamprotected',
+                    private: 'iamprivate',
+                    public: 'opentotheworld',
+                },
+            });
+
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'i_am_a_bucket',
+                    region: 'IAD',
+                    customPrefix: {
+                        protected: 'iamprotected',
+                        private: 'iamprivate',
+                        public: 'opentotheworld',
+                    },
+                },
+            });
+        });
+
+        test('should not add customPrefix to AWSS3 provider object if value is undefined', () => {
+            const storage = new Storage();
+            const awsconfig = {
+                aws_user_files_s3_bucket: 'you_dont_know_this_bucket',
+                aws_user_files_s3_bucket_region: 'WD3',
+            };
+
+            storage.configure(awsconfig);
+            const config = storage.configure({
+                customPrefix: undefined
+            });
+
+            expect(config).toEqual({
+                AWSS3: {
+                    bucket: 'you_dont_know_this_bucket',
+                    region: 'WD3',
+                },
+                customPrefix: {}
             });
         });
     });
