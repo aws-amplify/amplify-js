@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.30...@aws-amplify/auth@1.2.31) (2019-08-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Encode customState when storing to compare against incoming state for federated sign in ([#3784](https://github.com/aws/aws-amplify/issues/3784)) ([1824134](https://github.com/aws/aws-amplify/commit/1824134))
+
+
+
+
+
+## [1.2.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.29...@aws-amplify/auth@1.2.30) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [1.2.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.28...@aws-amplify/auth@1.2.29) (2019-07-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Improve OAuth flow in react native ([#3698](https://github.com/aws/aws-amplify/issues/3698)) ([799a1cf](https://github.com/aws/aws-amplify/commit/799a1cf)), closes [#3681](https://github.com/aws/aws-amplify/issues/3681)
+
+
+
+
+
 ## [1.2.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.28) (2019-07-18)
 
 **Note:** Version bump only for package @aws-amplify/auth
