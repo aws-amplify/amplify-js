@@ -8,3 +8,4 @@ export const AMPLIFY_UI_LINK = 'amplify-ui-link';
 export const AMPLIFY_UI_FORM_FIELD = 'amplify-ui-form-field';
 export const AMPLIFY_UI_SCENE = 'amplify-ui-scene';
 export const AMPLIFY_UI_SCENE_LOADING = 'amplify-ui-scene-loading';
+export const AMPLIFY_UI_ICON = 'amplify-ui-icon';

@@ -14,7 +14,7 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "eslint --fix --ext .js,.ts,.tsx .",
     "pretest": "npm run lint",
-    "test": "stencil test --spec --e2e --screenshot",
+    "test": "stencil test --spec --e2e",
     "test:update-screenshot": "stencil test --spec --e2e --screenshot --update-screenshot",
     "test:watch": "stencil test --spec --e2e --watchAll",
     "stencil": "stencil build --docs-readme",

@@ -6,7 +6,9 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  IconNameType,
+} from './components/amplify-icon/amplify-icon';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -32,6 +34,13 @@ export namespace Components {
   }
   interface AmplifyHint {
     'styleOverride': boolean;
+  }
+  interface AmplifyIcon {
+    /**
+    * (Required) Icon name used to determine the icon rendered
+    */
+    'name': IconNameType;
+    'overrideStyle': boolean;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -136,6 +145,12 @@ declare global {
     new (): HTMLAmplifyHintElement;
   };
 
+  interface HTMLAmplifyIconElement extends Components.AmplifyIcon, HTMLStencilElement {}
+  var HTMLAmplifyIconElement: {
+    prototype: HTMLAmplifyIconElement;
+    new (): HTMLAmplifyIconElement;
+  };
+
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
   var HTMLAmplifyLabelElement: {
     prototype: HTMLAmplifyLabelElement;
@@ -207,6 +222,7 @@ declare global {
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
+    'amplify-icon': HTMLAmplifyIconElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
@@ -246,6 +262,13 @@ declare namespace LocalJSX {
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     'styleOverride'?: boolean;
+  }
+  interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
+    /**
+    * (Required) Icon name used to determine the icon rendered
+    */
+    'name'?: IconNameType;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
@@ -323,6 +346,7 @@ declare namespace LocalJSX {
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
+    'amplify-icon': AmplifyIcon;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-scene-loading': AmplifySceneLoading;

@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-icon renders correct HTML 1`] = `
+<amplify-icon>
+  <span class="amplify-ui-icon css-1j5wl5d"></span>
+</amplify-icon>
+`;
