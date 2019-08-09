@@ -14,3 +14,4 @@ export const AMPLIFY_UI_CHECKBOX = `${AMPLIFY_UI}-checkbox`;
 export const AMPLIFY_UI_TEXT_INPUT = `${AMPLIFY_UI}-text-input`;
 export const AMPLIFY_UI_SCENE = `${AMPLIFY_UI}-scene`;
 export const AMPLIFY_UI_SCENE_LOADING = `${AMPLIFY_UI}-scene-loading`;
+export const AMPLIFY_UI_SELECT = `${AMPLIFY_UI}-select`;
