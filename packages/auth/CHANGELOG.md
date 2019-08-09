@@ -3,6 +3,226 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.30...@aws-amplify/auth@1.2.31) (2019-08-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Encode customState when storing to compare against incoming state for federated sign in ([#3784](https://github.com/aws/aws-amplify/issues/3784)) ([1824134](https://github.com/aws/aws-amplify/commit/1824134))
+
+
+
+
+
+## [1.2.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.29...@aws-amplify/auth@1.2.30) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [1.2.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.28...@aws-amplify/auth@1.2.29) (2019-07-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Improve OAuth flow in react native ([#3698](https://github.com/aws/aws-amplify/issues/3698)) ([799a1cf](https://github.com/aws/aws-amplify/commit/799a1cf)), closes [#3681](https://github.com/aws/aws-amplify/issues/3681)
+
+
+
+
+
+## [1.2.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.28) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+<a name="1.2.27-unstable.1"></a>
+## [1.2.27-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.27-unstable.0...@aws-amplify/auth@1.2.27-unstable.1) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth, aws-amplify-react-native:** Fix OAuth flow in react native ([#3633](https://github.com/aws/aws-amplify/issues/3633)) ([82e74fc](https://github.com/aws/aws-amplify/commit/82e74fc)), closes [#3399](https://github.com/aws/aws-amplify/issues/3399) [#3576](https://github.com/aws/aws-amplify/issues/3576) [#3247](https://github.com/aws/aws-amplify/issues/3247) [#3592](https://github.com/aws/aws-amplify/issues/3592) [#3210](https://github.com/aws/aws-amplify/issues/3210)
+
+
+
+
+<a name="1.2.27-unstable.0"></a>
+## [1.2.27-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.27-unstable.0) (2019-07-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.26"></a>
+## [1.2.26](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26-unstable.0...@aws-amplify/auth@1.2.26) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.26-unstable.0"></a>
+## [1.2.26-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25...@aws-amplify/auth@1.2.26-unstable.0) (2019-06-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Handle case when `signOut()` promise is rejected ([#3179](https://github.com/aws/aws-amplify/issues/3179)) ([0a2efd4](https://github.com/aws/aws-amplify/commit/0a2efd4))
+
+
+
+
+<a name="1.2.25"></a>
+## [1.2.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25-unstable.3...@aws-amplify/auth@1.2.25) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.25-unstable.3"></a>
+## [1.2.25-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25-unstable.2...@aws-amplify/auth@1.2.25-unstable.3) (2019-06-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.25-unstable.2"></a>
+## [1.2.25-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.25-unstable.1...@aws-amplify/auth@1.2.25-unstable.2) (2019-05-28)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.25-unstable.1"></a>
+## [1.2.25-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24...@aws-amplify/auth@1.2.25-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** check if storage object is valid or not ([d93d36d](https://github.com/aws/aws-amplify/commit/d93d36d))
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
+<a name="1.2.24"></a>
+## [1.2.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24-unstable.1...@aws-amplify/auth@1.2.24) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.24-unstable.1"></a>
+## [1.2.24-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.24-unstable.0...@aws-amplify/auth@1.2.24-unstable.1) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.24-unstable.0"></a>
+## [1.2.24-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23...@aws-amplify/auth@1.2.24-unstable.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
+
+
+
+
+<a name="1.2.23"></a>
+## [1.2.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.8...@aws-amplify/auth@1.2.23) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.8"></a>
+## [1.2.23-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.7...@aws-amplify/auth@1.2.23-unstable.8) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.7"></a>
+## [1.2.23-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.6...@aws-amplify/auth@1.2.23-unstable.7) (2019-04-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** User may not be fully signed out ([#3172](https://github.com/aws/aws-amplify/issues/3172)) ([2678cc3](https://github.com/aws/aws-amplify/commit/2678cc3)), closes [#3117](https://github.com/aws/aws-amplify/issues/3117)
+
+
+
+
+<a name="1.2.23-unstable.6"></a>
+## [1.2.23-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.5...@aws-amplify/auth@1.2.23-unstable.6) (2019-04-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.5"></a>
+## [1.2.23-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.4...@aws-amplify/auth@1.2.23-unstable.5) (2019-04-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Always bypass the cache on setPreferredMFA method ([3b28c98](https://github.com/aws/aws-amplify/commit/3b28c98))
+
+
+### Features
+
+* **@aws-amplify/auth:** Allow bypassing cache on setPreferredMFA and getPreferredMFA methods ([83a8ccf](https://github.com/aws/aws-amplify/commit/83a8ccf))
+
+
+
+
+<a name="1.2.23-unstable.4"></a>
+## [1.2.23-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.3...@aws-amplify/auth@1.2.23-unstable.4) (2019-04-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix 'Not Supported' error on SSR ([7f7e93d](https://github.com/aws/aws-amplify/commit/7f7e93d))
+
+
+
+
+<a name="1.2.23-unstable.3"></a>
+## [1.2.23-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.2...@aws-amplify/auth@1.2.23-unstable.3) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.2.23-unstable.2"></a>
+## [1.2.23-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.1...@aws-amplify/auth@1.2.23-unstable.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
+
+
+
+
 <a name="1.2.23-unstable.1"></a>
 ## [1.2.23-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.23-unstable.0...@aws-amplify/auth@1.2.23-unstable.1) (2019-04-12)
 

@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.35](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.34...@aws-amplify/interactions@1.0.35) (2019-08-05)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [1.0.34](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.33...@aws-amplify/interactions@1.0.34) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [1.0.33](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.32...@aws-amplify/interactions@1.0.33) (2019-07-30)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [1.0.32](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.31...@aws-amplify/interactions@1.0.32) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+<a name="1.0.31"></a>
+## [1.0.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.31-unstable.2...@aws-amplify/interactions@1.0.31) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.31-unstable.2"></a>
+## [1.0.31-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.31-unstable.1...@aws-amplify/interactions@1.0.31-unstable.2) (2019-06-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.31-unstable.1"></a>
+## [1.0.31-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.30...@aws-amplify/interactions@1.0.31-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+
+
+
+
+<a name="1.0.30"></a>
+## [1.0.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.30-unstable.0...@aws-amplify/interactions@1.0.30) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.30-unstable.0"></a>
+## [1.0.30-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.29...@aws-amplify/interactions@1.0.30-unstable.0) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.29"></a>
+## [1.0.29](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.29-unstable.2...@aws-amplify/interactions@1.0.29) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.29-unstable.2"></a>
+## [1.0.29-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.29-unstable.1...@aws-amplify/interactions@1.0.29-unstable.2) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+<a name="1.0.29-unstable.1"></a>
+## [1.0.29-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.29-unstable.0...@aws-amplify/interactions@1.0.29-unstable.1) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 <a name="1.0.29-unstable.0"></a>
 ## [1.0.29-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/interactions@1.0.28...@aws-amplify/interactions@1.0.29-unstable.0) (2019-04-12)
 

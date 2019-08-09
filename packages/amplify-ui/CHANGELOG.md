@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.22...@aws-amplify/ui@1.0.23) (2019-07-30)
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+
+
+
+
+## [1.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.20...@aws-amplify/ui@1.0.22) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+
+
+
+
+<a name="1.0.21-unstable.0"></a>
+## [1.0.21-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.20...@aws-amplify/ui@1.0.21-unstable.0) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui:** Fix the issue that window is not defined in [@aws-amplify](https://github.com/aws-amplify)/ui in NodeJS ([#3512](https://github.com/aws-amplify/amplify-js/issues/3512)) ([f290a00](https://github.com/aws-amplify/amplify-js/commit/f290a00))
+
+
+
+
+<a name="1.0.20"></a>
+## [1.0.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.20-unstable.1...@aws-amplify/ui@1.0.20) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.20-unstable.1"></a>
+## [1.0.20-unstable.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.20-unstable.0...@aws-amplify/ui@1.0.20-unstable.1) (2019-06-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.20-unstable.0"></a>
+## [1.0.20-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.19...@aws-amplify/ui@1.0.20-unstable.0) (2019-05-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.19"></a>
+## [1.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.19-unstable.1...@aws-amplify/ui@1.0.19) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.19-unstable.1"></a>
+## [1.0.19-unstable.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.19-unstable.0...@aws-amplify/ui@1.0.19-unstable.1) (2019-04-19)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
 <a name="1.0.19-unstable.0"></a>
 ## [1.0.19-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.18...@aws-amplify/ui@1.0.19-unstable.0) (2019-04-12)
 

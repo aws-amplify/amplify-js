@@ -15,15 +15,18 @@ import Analytics, {
     AnalyticsClass, 
     AnalyticsProvider, 
     AWSPinpointProvider, 
-    AWSKinesisProvider } from '@aws-amplify/analytics';
+    AWSKinesisProvider,
+    AmazonPersonalizeProvider } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
 import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
-import UI from '@aws-amplify/ui';
+import * as UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
+import Predictions, { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
+
 import Amplify, {
     ConsoleLogger as Logger,
     Hub,
@@ -48,6 +51,7 @@ Amplify.ServiceWorker = ServiceWorker;
 Amplify.Interactions = Interactions;
 Amplify.UI = UI;
 Amplify.XR = XR;
+Amplify.Predictions = Predictions;
 
 export { 
     Auth, 
@@ -65,7 +69,8 @@ export {
     ServiceWorker, 
     Interactions,
     UI,
-    XR
+    XR,
+    Predictions
 };
 
 export { 
@@ -77,7 +82,8 @@ export {
     InteractionsClass,
     XRClass,
     AnalyticsProvider, 
-    AWSPinpointProvider, 
-    AWSKinesisProvider
+    AWSPinpointProvider,
+    AWSKinesisProvider,
+    AmazonPersonalizeProvider
 };
 export { graphqlOperation };

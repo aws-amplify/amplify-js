@@ -3,6 +3,165 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.22...@aws-amplify/analytics@1.2.23) (2019-08-05)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [1.2.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.21...@aws-amplify/analytics@1.2.22) (2019-07-31)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [1.2.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.20...@aws-amplify/analytics@1.2.21) (2019-07-30)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [1.2.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18...@aws-amplify/analytics@1.2.20) (2019-07-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+<a name="1.2.19-unstable.0"></a>
+## [1.2.19-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18...@aws-amplify/analytics@1.2.19-unstable.0) (2019-07-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** use startsWith to filter the updateEndpoint error message ([#3589](https://github.com/aws/aws-amplify/issues/3589)) ([0bd68f9](https://github.com/aws/aws-amplify/commit/0bd68f9))
+
+
+
+
+<a name="1.2.18"></a>
+## [1.2.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.1...@aws-amplify/analytics@1.2.18) (2019-07-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.18-unstable.1"></a>
+## [1.2.18-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.18-unstable.0...@aws-amplify/analytics@1.2.18-unstable.1) (2019-07-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** do not send events when analytics modules not configured ([#3614](https://github.com/aws/aws-amplify/issues/3614)) ([82e6f28](https://github.com/aws/aws-amplify/commit/82e6f28))
+
+
+
+
+<a name="1.2.18-unstable.0"></a>
+## [1.2.18-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17...@aws-amplify/analytics@1.2.18-unstable.0) (2019-06-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.17"></a>
+## [1.2.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17-unstable.3...@aws-amplify/analytics@1.2.17) (2019-06-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.17-unstable.3"></a>
+## [1.2.17-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17-unstable.2...@aws-amplify/analytics@1.2.17-unstable.3) (2019-06-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.17-unstable.2"></a>
+## [1.2.17-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.17-unstable.1...@aws-amplify/analytics@1.2.17-unstable.2) (2019-06-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** resolve/reject correctly when calling reocrd ([c3eb6cc](https://github.com/aws/aws-amplify/commit/c3eb6cc))
+
+
+
+
+<a name="1.2.17-unstable.1"></a>
+## [1.2.17-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.16...@aws-amplify/analytics@1.2.17-unstable.1) (2019-05-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** manual version bump ([b347e0d](https://github.com/aws/aws-amplify/commit/b347e0d))
+
+
+
+
+<a name="1.2.16"></a>
+## [1.2.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.16-unstable.0...@aws-amplify/analytics@1.2.16) (2019-05-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.16-unstable.0"></a>
+## [1.2.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.15...@aws-amplify/analytics@1.2.16-unstable.0) (2019-05-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.15"></a>
+## [1.2.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.15-unstable.3...@aws-amplify/analytics@1.2.15) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.15-unstable.3"></a>
+## [1.2.15-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.15-unstable.2...@aws-amplify/analytics@1.2.15-unstable.3) (2019-05-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+<a name="1.2.15-unstable.2"></a>
+## [1.2.15-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.15-unstable.1...@aws-amplify/analytics@1.2.15-unstable.2) (2019-04-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** prevent sending reqeusts simultaneously if endpoint is not generated yet ([8a7d7cc](https://github.com/aws/aws-amplify/commit/8a7d7cc))
+
+
+
+
+<a name="1.2.15-unstable.1"></a>
+## [1.2.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.15-unstable.0...@aws-amplify/analytics@1.2.15-unstable.1) (2019-04-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 <a name="1.2.15-unstable.0"></a>
 ## [1.2.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.14...@aws-amplify/analytics@1.2.15-unstable.0) (2019-04-12)
 

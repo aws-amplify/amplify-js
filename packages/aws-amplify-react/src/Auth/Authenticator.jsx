@@ -31,6 +31,7 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -61,9 +62,9 @@ export default class Authenticator extends Component {
         // instead waiting for the hub event sent from Auth module
         // the item in the localStorage is a mark to indicate whether
         // the app is redirected back from Hosted UI or not
-        const byHostedUI = localStorage.getItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        localStorage.removeItem(Constants.SIGN_IN_WITH_HOSTEDUI_KEY);
-        if (!byHostedUI) this.checkUser();
+        const byHostedUI = localStorage.getItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+        localStorage.removeItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+        if (byHostedUI !== 'true') this.checkUser();
     }
 
     componentWillUnmount() {
@@ -113,6 +114,9 @@ export default class Authenticator extends Component {
                 case 'customGreetingSignOut':
                     this.handleStateChange('signIn', null);
                     break;
+                case 'parsingCallbackUrl':
+                    localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
+                    break;
                 default:
                     break;
             }
@@ -154,7 +158,7 @@ export default class Authenticator extends Component {
         // otherwise if falsey, use EmptyContainer
         const Wrapper = this.props.container === undefined ? Container : this.props.container || EmptyContainer;
 
-        let { hideDefault, hide = [], federated, signUpConfig } = this.props;
+        let { hideDefault, hide = [], federated, signUpConfig, usernameAttributes } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -205,7 +209,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    usernameAttributes
                 });
         });
        
@@ -219,7 +224,8 @@ export default class Authenticator extends Component {
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
                     hide,
-                    override: props_children_override
+                    override: props_children_override,
+                    usernameAttributes
                 });
             });
 
@@ -229,7 +235,7 @@ export default class Authenticator extends Component {
         return (
             <Wrapper theme={theme}>
                 {this.state.showToast && 
-                    <Toast theme={theme} onClose={() => this.setState({showToast: false})}>
+                    <Toast theme={theme} onClose={() => this.setState({showToast: false})} data-test={auth.signIn.signInError}>
                         { I18n.get(error) }
                     </Toast>
                 }
