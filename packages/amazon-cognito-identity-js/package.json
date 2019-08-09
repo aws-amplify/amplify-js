@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "3.0.13",
+  "version": "3.0.15",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -49,8 +49,9 @@
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
-    "test": "eslint src",
-    "lint2": "eslint enhance-rn.js"
+    "lint2": "eslint enhance-rn.js",
+    "test": "jest --passWithNoTests",
+    "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
   "react-native": {

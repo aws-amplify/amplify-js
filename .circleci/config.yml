@@ -18,6 +18,7 @@ jobs:
   build:
     <<: *defaults
     working_directory: ~/amplify-js
+    resource_class: large
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -49,6 +50,7 @@ jobs:
             yarn run test --scope @aws-amplify/core
             yarn run test --scope @aws-amplify/interactions
             yarn run test --scope @aws-amplify/pubsub
+            yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
             yarn run test --scope aws-amplify-react
@@ -73,6 +75,46 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths: amplify-js-samples-staging
+  integ_react_predictions:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link predictions"
+          command: |
+            cd amplify-js/packages/predictions
+            yarn link
+      - run:
+          name: "Install Predictions React sample"
+          command: |
+            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/predictions
+      - run:
+          name: "Start Predictions React Sample server in background"
+          command: |
+            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
+            yarn start
+          background: true
+      - run:
+          name: "Run cypress tests for Predictions React Sample"
+          command: |
+            cd amplify-js-samples-staging
+            yarn cypress:react --spec "cypress/integration/predictions/multiuser-translation.spec.js"
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/screenshots
   integration_test_react:
     <<: *defaults
     working_directory: ~/
@@ -113,7 +155,7 @@ jobs:
           name: "Run cypress tests for React Authenticator Sample"
           command: |
             cd amplify-js-samples-staging
-            yarn cypress:react
+            yarn cypress:react --spec "cypress/integration/auth/authenticator.spec.js"
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -151,7 +193,7 @@ jobs:
           name: "Run cypress tests for Vue Authenticator Sample"
           command: |
             cd amplify-js-samples-staging
-            yarn cypress:vue
+            yarn cypress:vue --spec "cypress/integration/auth/authenticator.spec.js"
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -174,6 +216,8 @@ jobs:
               npm whoami
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
+              git status
+              git --no-pager diff
               yarn run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
@@ -195,6 +239,14 @@ workflows:
                 - master
           requires:
             - build
+      - integ_react_predictions:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+          requires:
+            - integration_test_setup
       - integration_test_react:
           filters:
             branches:

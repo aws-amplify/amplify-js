@@ -1028,7 +1028,7 @@ export default class AuthClass {
      * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
-        logger.debug('getting current authenticted user');
+        logger.debug('getting current authenticated user');
         let federatedUser = null;
         try {
             await this._storageSync;
@@ -1537,7 +1537,7 @@ export default class AuthClass {
             `The callback url is being parsed`
         );
 
-        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : null);
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')
