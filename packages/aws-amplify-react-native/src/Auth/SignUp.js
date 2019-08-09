@@ -36,6 +36,7 @@ import {
     AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import countryDialCodes from '../CountryDialCodes';
 import signUpWithUsernameFields, { signUpWithEmailFields, signUpWithPhoneNumberFields } from './common/default-sign-up-fields'
 
 
