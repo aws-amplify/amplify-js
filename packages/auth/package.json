@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.30",
+  "version": "1.2.31",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -50,8 +50,8 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.31",
-    "@aws-amplify/core": "^1.0.31",
+    "@aws-amplify/cache": "^1.0.32",
+    "@aws-amplify/core": "^1.1.0",
     "amazon-cognito-identity-js": "^3.0.15",
     "crypto-js": "^3.1.9-1"
   },

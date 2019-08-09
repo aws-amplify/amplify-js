@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -51,7 +51,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.31"
+    "@aws-amplify/core": "^1.1.0"
   },
   "jest": {
     "transform": {
