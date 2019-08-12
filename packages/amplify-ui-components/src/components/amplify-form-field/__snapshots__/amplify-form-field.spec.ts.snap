@@ -3,16 +3,16 @@
 exports[`amplify-form-field renders a label and description, if they are provided, and no id 1`] = `
 <amplify-form-field description="description" label="label">
   <!---->
-  <div>
-    <label class="label">
+  <div class="css-jv413b">
+    <amplify-label class="css-d9myqf">
       label
-    </label>
-    <div class="description" id="undefined-description">
+    </amplify-label>
+    <div class="css-14gnkqd" id="undefined-description">
       description
     </div>
     <div>
       <slot-fb name="input">
-        <amplify-input type="text"></amplify-input>
+        <amplify-input description="description" placeholder="" type="text"></amplify-input>
       </slot-fb>
     </div>
   </div>
@@ -22,10 +22,10 @@ exports[`amplify-form-field renders a label and description, if they are provide
 exports[`amplify-form-field renders no label or description if none are provided 1`] = `
 <amplify-form-field>
   <!---->
-  <div>
+  <div class="css-jv413b">
     <div>
       <slot-fb name="input">
-        <amplify-input type="text"></amplify-input>
+        <amplify-input placeholder="" type="text"></amplify-input>
       </slot-fb>
     </div>
   </div>
@@ -35,16 +35,16 @@ exports[`amplify-form-field renders no label or description if none are provided
 exports[`amplify-form-field renders with an id, if it is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
-  <div>
-    <label class="label" htmlfor="id">
+  <div class="css-jv413b">
+    <amplify-label class="css-d9myqf" htmlfor="id">
       label
-    </label>
-    <div class="description" id="id-description">
+    </amplify-label>
+    <div class="css-14gnkqd" id="id-description">
       description
     </div>
     <div>
       <slot-fb name="input">
-        <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+        <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
       </slot-fb>
     </div>
   </div>
@@ -54,17 +54,17 @@ exports[`amplify-form-field renders with an id, if it is provided 1`] = `
 exports[`amplify-form-field replaces the input component, if a new one is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
-  <div>
-    <label class="label" htmlfor="id">
+  <div class="css-jv413b">
+    <amplify-label class="css-d9myqf" htmlfor="id">
       label
-    </label>
-    <div class="description" id="id-description">
+    </amplify-label>
+    <div class="css-14gnkqd" id="id-description">
       description
     </div>
     <div>
       <input slot="input">
       <slot-fb hidden="" name="input">
-        <amplify-input aria-describedby="id-description" fieldid="id" type="text"></amplify-input>
+        <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
       </slot-fb>
     </div>
   </div>

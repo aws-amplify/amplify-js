@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const textInput = css`
+export const input = css`
   display: block;
   width: 100%;
   padding: 16px;

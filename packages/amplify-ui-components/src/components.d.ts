@@ -35,13 +35,17 @@ export namespace Components {
     */
     'hint': string | null;
     /**
-    * The text of the label.  Goes above the input. Ex: "First name"
+    * The text of the label.  Goes above the input. Ex: 'First name'
     */
     'label': string | null;
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (arg0: Event) => void;
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * The input type.  Can be any HTML input type.
     */
@@ -60,7 +64,11 @@ export namespace Components {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (arg0: Event) => void;
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * The input type.  Can be any HTML input type.
     */
@@ -249,13 +257,17 @@ declare namespace LocalJSX {
     */
     'hint'?: string | null;
     /**
-    * The text of the label.  Goes above the input. Ex: "First name"
+    * The text of the label.  Goes above the input. Ex: 'First name'
     */
     'label'?: string | null;
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (arg0: Event) => void;
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * The input type.  Can be any HTML input type.
     */
@@ -274,7 +286,11 @@ declare namespace LocalJSX {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (arg0: Event) => void;
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * The input type.  Can be any HTML input type.
     */

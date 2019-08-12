@@ -34,6 +34,7 @@
 graph TD;
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-password-field --> context-consumer
+  amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
   amplify-examples --> amplify-sign-in-password-field

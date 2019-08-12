@@ -1,14 +1,15 @@
 import { newE2EPage } from '@stencil/core/testing';
+import { pixelThreshold } from '../../common/testing';
 
 describe('amplify-input', () => {
-  it('renders with a different test name', async () => {
+  it('renders', async () => {
     const page = await newE2EPage();
 
     await page.setContent(
-      `<amplify-input field-id="id" description="Description test"></amplify-input>`,
+      `<amplify-input field-id="id" description="Description test" placeholder="Placeholder test"></amplify-input>`,
     );
     const screenshot = await page.compareScreenshot('Amplify Input', {fullPage: true});
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
 
     const inputElement = await page.find('amplify-input');
     expect(inputElement).not.toBeNull();
