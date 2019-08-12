@@ -1,5 +1,7 @@
 import { h } from '@stencil/core';
 
+export type IconNameType = 'sound-mute' | 'sound' | 'maximize' | 'minimize' | 'enter-vr' | 'exit-vr';
+
 export const icons = {
   'sound-mute': (
     <svg width='19' height='19' viewBox='0 0 19 19' xmlns='http://www.w3.org/2000/svg'>

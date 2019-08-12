@@ -8,7 +8,7 @@
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   IconNameType,
-} from './components/amplify-icon/amplify-icon';
+} from './components/amplify-icon/icons';
 
 export namespace Components {
   interface AmplifyAuthenticator {

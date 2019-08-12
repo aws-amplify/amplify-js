@@ -3,9 +3,7 @@ import { icon } from './amplify-icon.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_ICON } from '../../common/constants';
 
-export type IconNameType = 'sound-mute' | 'sound' | 'maximize' | 'minimize' | 'enter-vr' | 'exit-vr';
-
-import { icons } from './icons';
+import { icons, IconNameType } from './icons';
 
 @Component({
   tag: 'amplify-icon',
