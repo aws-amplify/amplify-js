@@ -42,6 +42,7 @@ graph TD;
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-checkbox --> amplify-label
+  amplify-radio-button --> amplify-label
   amplify-text-field --> amplify-text-input
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer

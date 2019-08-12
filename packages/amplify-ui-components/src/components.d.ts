@@ -23,11 +23,7 @@ export namespace Components {
   }
   interface AmplifyCheckbox {
     /**
-    * (optional) Will toggle the checkbox when set. Default set to false
-    */
-    'checked'?: boolean;
-    /**
-    * Field ID used for the 'for' in the label
+    * Field ID used for the 'htmlFor' in the label
     */
     'fieldId': string;
     /**
@@ -70,10 +66,6 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifyRadioButton {
-    /**
-    * (optional) Will toggle the radio button when set. Default set to false
-    */
-    'checked'?: boolean;
     /**
     * Field ID used for the 'for' in the label
     */
@@ -324,11 +316,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
     /**
-    * (optional) Will toggle the checkbox when set. Default set to false
-    */
-    'checked'?: boolean;
-    /**
-    * Field ID used for the 'for' in the label
+    * Field ID used for the 'htmlFor' in the label
     */
     'fieldId'?: string;
     /**
@@ -371,10 +359,6 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
-    /**
-    * (optional) Will toggle the radio button when set. Default set to false
-    */
-    'checked'?: boolean;
     /**
     * Field ID used for the 'for' in the label
     */

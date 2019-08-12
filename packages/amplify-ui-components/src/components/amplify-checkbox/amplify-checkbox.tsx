@@ -16,23 +16,21 @@ export class AmplifyCheckbox {
   @Prop() name?: string;
   /** Value of the checkbox */
   @Prop() value?: string;
-  /** (optional) Will toggle the checkbox when set. Default set to false */
-  @Prop() checked?: boolean = false;
-  /** Field ID used for the 'for' in the label */
+  /** Field ID used for the 'htmlFor' in the label */
   @Prop() fieldId: string;
   /** Label for the checkbox */
   @Prop() label: string;
 
   render() {
     return (
-      <input
-        class={styleNuker(this.styleOverride, AMPLIFY_UI_CHECKBOX, checkbox)}
-        type={this.type}
-        name={this.name}
-        value={this.value}
-      >
+      <span class={styleNuker(this.styleOverride, AMPLIFY_UI_CHECKBOX, checkbox)}>
+        <input
+          type={this.type}
+          name={this.name}
+          value={this.value}
+        />
         <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>
-      </input>
+      </span>
     );
   }
 }

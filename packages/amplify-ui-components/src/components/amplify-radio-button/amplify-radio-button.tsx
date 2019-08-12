@@ -16,8 +16,6 @@ export class AmplifyRadioButton {
   @Prop() name?: string;
   /** (optional) Value of radio button */
   @Prop() value?: string;
-  /** (optional) Will toggle the radio button when set. Default set to false */
-  @Prop() checked?: boolean = false;
   /** Field ID used for the 'for' in the label */
   @Prop() fieldId: string;
   /** Label for the radio button */
@@ -25,15 +23,14 @@ export class AmplifyRadioButton {
 
   render() {
     return (
-      <input
-        class={styleNuker(this.styleOverride, AMPLIFY_UI_RADIO_BUTTON, radioButton)}
-        type={this.type}
-        name={this.name}
-        value={this.value}
-        checked={this.checked}
-      >
-        <label htmlFor={this.fieldId}>{this.label}</label>
-      </input>
+      <span class={styleNuker(this.styleOverride, AMPLIFY_UI_RADIO_BUTTON, radioButton)}>
+        <input
+          type={this.type}
+          name={this.name}
+          value={this.value}
+        />
+        <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>
+      </span>
     );
   }
 }
