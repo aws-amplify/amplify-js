@@ -31,6 +31,32 @@ describe('amplify-input', () => {
 
     const input = await page.find('input');
     await input.press('8');
+    await input.press('a');
+    await input.press('$');
+    expect(func).toBeCalledTimes(3);
+    expect(func.mock.calls[0][0].isTrusted).toBe(true);
+    const value = await input.getProperty('value');
+    expect(value).toBe('8a$');
+  });
+
+  it('prevents adding text to a numeric input', async () => {
+    const page = await newE2EPage();
+
+    await page.setContent(`<amplify-input type="number"></amplify-input>`);
+
+    const func = jest.fn();
+    await page.exposeFunction('exposedfunc', func);
+
+    await page.$eval('amplify-input', (inputElement: any) => {
+      inputElement.onInput = this.exposedfunc;
+      inputElement.label = 'adding a label so that the component rerenders';
+    });
+    await page.waitForChanges();
+
+    const input = await page.find('input');
+    await input.press('8');
+    await input.press('a');
+    await input.press('$');
     expect(func).toBeCalledTimes(1);
     expect(func.mock.calls[0][0].isTrusted).toBe(true);
     const value = await input.getProperty('value');

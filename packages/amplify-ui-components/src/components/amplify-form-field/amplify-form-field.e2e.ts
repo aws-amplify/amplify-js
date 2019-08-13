@@ -1,5 +1,6 @@
 import { newE2EPage } from '@stencil/core/testing';
 import { formDescription } from './amplify-form-field.style';
+import { selectors } from '../../common/testing';
 
 describe('amplify-form-field', () => {
   it('renders', async () => {
@@ -18,7 +19,7 @@ describe('amplify-form-field', () => {
     expect(labelElement).toEqualText('Label test');
     expect(labelElement).toEqualAttribute('for', 'id');
 
-    const descriptionElement = await page.find(`.${formDescription}`);
+    const descriptionElement = await page.find(selectors.formFieldDescription);
     expect(descriptionElement).toEqualText('Description test');
   });
 
@@ -30,7 +31,7 @@ describe('amplify-form-field', () => {
     const labelElement = await page.find('label');
     expect(labelElement).toBeNull();
 
-    const descriptionElement = await page.find(`.${formDescription}`);
+    const descriptionElement = await page.find(selectors.formFieldDescription);
     expect(descriptionElement).toBeNull();
   });
 

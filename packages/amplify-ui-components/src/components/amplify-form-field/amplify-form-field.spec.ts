@@ -1,5 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifyFormField } from './amplify-form-field.tsx'
+import { AmplifyFormField } from './amplify-form-field'
 
 describe('amplify-form-field', () => {
   it('renders no label or description if none are provided', async () => {

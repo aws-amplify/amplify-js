@@ -15,7 +15,7 @@ export const formField = css`
   }
 `;
 
-export const formLabel = css`
+export const formFieldLabel = css`
   .label {
     display: block;
     font-size: 0.9em;
@@ -24,7 +24,7 @@ export const formLabel = css`
   }
 `;
 
-export const formDescription = css`
+export const formFieldDescription = css`
   .description {
     font-size: 0.8em;
     padding-top: 0.5em;
