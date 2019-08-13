@@ -44,6 +44,7 @@ export interface IAuthPieceProps {
 }
 
 export interface IAuthPieceState {
+    username?: any;
 }
 
 export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends React.Component<Props, State> {

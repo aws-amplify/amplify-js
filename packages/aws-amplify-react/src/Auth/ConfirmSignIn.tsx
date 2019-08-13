@@ -35,7 +35,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ConfirmSignIn');
 
-export interface IConfirmSignInState {
+export interface IConfirmSignInState extends IAuthPieceState {
     mfaType: string;
 }
 

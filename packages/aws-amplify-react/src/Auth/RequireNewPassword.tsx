@@ -34,7 +34,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('RequireNewPassword');
 
-export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuthPieceProps> {
+export default class RequireNewPassword extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
     constructor(props: IAuthPieceProps) {
         super(props);
 

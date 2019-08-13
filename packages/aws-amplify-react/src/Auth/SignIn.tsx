@@ -48,7 +48,7 @@ export interface ISignInState extends IAuthPieceState {
     loading?: boolean;
 }
 
-export default class SignIn extends AuthPiece<ISignInProps,ISignInState> {
+export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
     constructor(props: ISignInProps) {
         super(props);
 
