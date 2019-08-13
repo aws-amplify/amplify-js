@@ -7,14 +7,15 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                           | Type      | Default      |
-| --------------- | ---------------- | ----------------------------------------------------- | --------- | ------------ |
-| `fieldId`       | `field-id`       | Field ID used for the 'htmlFor' in the label          | `string`  | `undefined`  |
-| `label`         | `label`          | Label for the checkbox                                | `string`  | `undefined`  |
-| `name`          | `name`           | Name of the checkbox                                  | `string`  | `undefined`  |
-| `styleOverride` | `style-override` | (optional) Whether or not to override default styling | `boolean` | `false`      |
-| `type`          | `type`           | Default to checkbox                                   | `string`  | `'checkbox'` |
-| `value`         | `value`          | Value of the checkbox                                 | `string`  | `undefined`  |
+| Property        | Attribute        | Description                                  | Type      | Default     |
+| --------------- | ---------------- | -------------------------------------------- | --------- | ----------- |
+| `checked`       | `checked`        | If `true`, the checkbox is selected.         | `boolean` | `false`     |
+| `disabled`      | `disabled`       | If `true`, the checkbox is disabled          | `boolean` | `false`     |
+| `fieldId`       | `field-id`       | Field ID used for the 'htmlFor' in the label | `string`  | `undefined` |
+| `label`         | `label`          | Label for the checkbox                       | `string`  | `undefined` |
+| `name`          | `name`           | Name of the checkbox                         | `string`  | `undefined` |
+| `styleOverride` | `style-override` | (Optional) Overrides default styling         | `boolean` | `false`     |
+| `value`         | `value`          | Value of the checkbox                        | `string`  | `undefined` |
 
 
 ## Dependencies

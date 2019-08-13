@@ -1,4 +1,4 @@
-export default [
+const countryDialCodes = [
   { label: '+1', value: '+1'},
   { label: '+7', value: '+7'},
   { label: '+20', value: '+20'},
@@ -206,3 +206,5 @@ export default [
   { label: '+996', value: '+996'},
   { label: '+998', value: '+998'},
 ];
+
+export default countryDialCodes;

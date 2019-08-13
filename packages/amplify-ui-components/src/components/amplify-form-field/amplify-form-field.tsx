@@ -7,7 +7,7 @@ import { AMPLIFY_UI_FORM_FIELD } from '../../common/constants';
   tag: 'amplify-form-field',
   shadow: false,
 })
-export class AmplifyFormField {
+export class AmplifyTextField {
   @Prop() fieldId: string;
   @Prop() label: string | null;
   @Prop() hint: string | null;

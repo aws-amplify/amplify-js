@@ -25,7 +25,7 @@ const Example1 = () => (
               type: 'number',
             }}
           />
-        </p>  
+        </p>
       </fieldset>
       <amplify-select></amplify-select>
       <amplify-button type="submit">Submit</amplify-button>

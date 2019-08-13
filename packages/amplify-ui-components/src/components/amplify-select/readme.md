@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                                                                | Type            | Default     |
-| --------------- | ---------------- | ------------------------------------------------------------------------------------------ | --------------- | ----------- |
-| `options`       | --               | Must be an Array of Objects with an Object shape of {label: string, value: string\|number} | `SelectOptions` | `undefined` |
-| `styleOverride` | `style-override` | (Optional) Overrides default styling                                                       | `boolean`       | `false`     |
+| Property        | Attribute        | Description                                                                                                                 | Type            | Default            |
+| --------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------- | ------------------ |
+| `fieldId`       | `field-id`       | Used for id field                                                                                                           | `string`        | `undefined`        |
+| `options`       | --               | The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string\|number} | `SelectOptions` | `countryDialCodes` |
+| `styleOverride` | `style-override` | (Optional) Overrides default styling                                                                                        | `boolean`       | `false`            |
 
 
 ## Dependencies

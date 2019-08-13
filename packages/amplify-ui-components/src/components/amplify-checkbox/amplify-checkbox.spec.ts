@@ -1,7 +1,7 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyCheckbox } from './amplify-checkbox';
 
-describe('Checkbox Component:', () => {
+describe('amplify-checkbox:', () => {
   describe('Default cases ->', () => {
     describe('Class logic ->', () => {
       let checkbox;
@@ -10,24 +10,26 @@ describe('Checkbox Component:', () => {
         checkbox = new AmplifyCheckbox();
       });
 
-      it('should have style override set to false and type of checkbox for input', () => {
+      it('should have checked prop set to false', () => {
+        expect(checkbox.checked).toBe(false);
+      });
+
+      it('should have disabled prop set to false', () => {
+        expect(checkbox.disabled).toBe(false);
+      });
+
+      it('should have style override prop set to false', () => {
         expect(checkbox.styleOverride).toBe(false);
-        expect(checkbox.type).toEqual('checkbox');
       });
     });
-    describe('Html logic ->', () => {
-      it('should render with only a class of `amplify-checkbox` when style override is true', async () => {
+    describe('HTML logic ->', () => {
+      it('should render with only a class of `amplify-ui--checkbox` when style override is true', async () => {
         const page = await newSpecPage({
           components: [AmplifyCheckbox],
           html: `<amplify-checkbox style-override='true'></amplify-checkbox>`
         });
 
-        expect(page.root).toEqualHtml(`<amplify-checkbox style-override="true">
-        <span class=\"amplify-ui-checkbox\">
-          <input type=\"checkbox\">
-          <amplify-label></amplify-label>
-        </span>
-      </amplify-checkbox>`);
+        expect(page.root).toMatchSnapshot();
       });
 
       it('should render a checkbox with an input type of checkbox and empty label', async () => {
@@ -36,12 +38,7 @@ describe('Checkbox Component:', () => {
           html: `<amplify-checkbox></amplify-checkbox>`
         });
 
-        expect(page.root).toEqualHtml(`<amplify-checkbox>
-        <span class=\"amplify-ui-checkbox css-1i87iyc\">
-          <input type=\"checkbox\">
-          <amplify-label></amplify-label>
-        </span>
-      </amplify-checkbox>`);
+        expect(page.root).toMatchSnapshot();
       });
     });
   });

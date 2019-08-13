@@ -23,6 +23,14 @@ export namespace Components {
   }
   interface AmplifyCheckbox {
     /**
+    * If `true`, the checkbox is selected.
+    */
+    'checked': boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled': boolean;
+    /**
     * Field ID used for the 'htmlFor' in the label
     */
     'fieldId': string;
@@ -35,13 +43,9 @@ export namespace Components {
     */
     'name'?: string;
     /**
-    * (optional) Whether or not to override default styling
+    * (Optional) Overrides default styling
     */
     'styleOverride'?: boolean;
-    /**
-    * Default to checkbox
-    */
-    'type': string;
     /**
     * Value of the checkbox
     */
@@ -67,6 +71,14 @@ export namespace Components {
   }
   interface AmplifyRadioButton {
     /**
+    * If `true`, the radio button is selected.
+    */
+    'checked': boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled': boolean;
+    /**
     * Field ID used for the 'for' in the label
     */
     'fieldId': string;
@@ -79,13 +91,9 @@ export namespace Components {
     */
     'name'?: string;
     /**
-    * (optional) Whether or not to override default styling
+    * (Optional) Overrides default styling
     */
     'styleOverride'?: boolean;
-    /**
-    * Type of input for this component is radio
-    */
-    'type': string;
     /**
     * (optional) Value of radio button
     */
@@ -105,7 +113,11 @@ export namespace Components {
   }
   interface AmplifySelect {
     /**
-    * Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    * Used for id field
+    */
+    'fieldId': string;
+    /**
+    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
     'options'?: SelectOptions;
     /**
@@ -316,6 +328,14 @@ declare namespace LocalJSX {
   }
   interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
     /**
+    * If `true`, the checkbox is selected.
+    */
+    'checked'?: boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled'?: boolean;
+    /**
     * Field ID used for the 'htmlFor' in the label
     */
     'fieldId'?: string;
@@ -328,13 +348,9 @@ declare namespace LocalJSX {
     */
     'name'?: string;
     /**
-    * (optional) Whether or not to override default styling
+    * (Optional) Overrides default styling
     */
     'styleOverride'?: boolean;
-    /**
-    * Default to checkbox
-    */
-    'type'?: string;
     /**
     * Value of the checkbox
     */
@@ -360,6 +376,14 @@ declare namespace LocalJSX {
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
+    * If `true`, the radio button is selected.
+    */
+    'checked'?: boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled'?: boolean;
+    /**
     * Field ID used for the 'for' in the label
     */
     'fieldId'?: string;
@@ -372,13 +396,9 @@ declare namespace LocalJSX {
     */
     'name'?: string;
     /**
-    * (optional) Whether or not to override default styling
+    * (Optional) Overrides default styling
     */
     'styleOverride'?: boolean;
-    /**
-    * Type of input for this component is radio
-    */
-    'type'?: string;
     /**
     * (optional) Value of radio button
     */
@@ -398,7 +418,11 @@ declare namespace LocalJSX {
   }
   interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
     /**
-    * Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    * Used for id field
+    */
+    'fieldId'?: string;
+    /**
+    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
     'options'?: SelectOptions;
     /**
