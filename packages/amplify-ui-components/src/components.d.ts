@@ -37,7 +37,7 @@ export namespace Components {
   }
   interface AmplifyIcon {
     /**
-    * (Required) Icon name used to determine the icon rendered
+    * (Required) Name of icon used to determine the icon rendered
     */
     'name': IconNameType;
     /**
@@ -268,7 +268,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
     /**
-    * (Required) Icon name used to determine the icon rendered
+    * (Required) Name of icon used to determine the icon rendered
     */
     'name'?: IconNameType;
     /**
