@@ -40,6 +40,9 @@ export namespace Components {
     * (Required) Icon name used to determine the icon rendered
     */
     'name': IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle': boolean;
   }
   interface AmplifyLabel {
@@ -268,6 +271,9 @@ declare namespace LocalJSX {
     * (Required) Icon name used to determine the icon rendered
     */
     'name'?: IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle'?: boolean;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {

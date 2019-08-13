@@ -1,5 +1,6 @@
 import { newE2EPage } from '@stencil/core/testing';
 
+/** Helper functions */
 async function matchIcon(iconName: string) {
   const page = await newE2EPage();
 
@@ -13,7 +14,8 @@ async function matchIcon(iconName: string) {
   expect(iconElement).not.toBeNull();
 }
 
-describe('amplify-icon', () => {
+/** Tests */
+describe('amplify-icon screenshot tests:', () => {
   it('renders with a sound-mute icon', async () => matchIcon('sound-mute'));
   it('renders with a sound icon', async () => matchIcon('sound'));
   it('renders with a maxmimize icon', async () => matchIcon('maxmimize'));

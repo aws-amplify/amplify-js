@@ -10,8 +10,9 @@ import { icons, IconNameType } from './icons';
   shadow: false,
 })
 export class AmplifyIcon {
-  /** (Required) Icon name used to determine the icon rendered */
+  /** (Required) Name of icon used to determine the icon rendered */
   @Prop() name: IconNameType;
+  /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean;
 
   @Watch('name')
