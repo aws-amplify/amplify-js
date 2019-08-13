@@ -1,5 +1,4 @@
 import { newE2EPage } from '@stencil/core/testing';
-import { formDescription } from './amplify-form-field.style';
 import { selectors } from '../../common/testing';
 
 describe('amplify-form-field', () => {
