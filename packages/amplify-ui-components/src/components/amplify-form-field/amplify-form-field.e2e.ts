@@ -1,5 +1,5 @@
 import { newE2EPage } from '@stencil/core/testing';
-import { selectors } from '../../common/testing';
+import { pixelThreshold, selectors } from '../../common/testing';
 
 describe('amplify-form-field', () => {
   it('renders', async () => {
@@ -9,7 +9,7 @@ describe('amplify-form-field', () => {
       `<amplify-form-field field-id="id" label="Label test" description="Description test"></amplify-form-field>`,
     );
     const screenshot = await page.compareScreenshot('Amplify Form Field', {fullPage: true});
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
 
     const fieldElement = await page.find('amplify-form-field');
     expect(fieldElement).not.toBeNull();
