@@ -20,7 +20,7 @@ export const knobs = {
         return textKnob('Hint', placeholder);
     },
 
-    typeKnob: function (placeholder: string) {
+    inputTypeKnob: function (placeholder: string) {
         return selectKnob('Type', ['date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'time'], placeholder);
     },
 
