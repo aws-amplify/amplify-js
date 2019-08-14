@@ -21,12 +21,11 @@ import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
-import axios, { CancelTokenStatic, CancelToken } from 'axios';
+import axios, { CancelTokenStatic } from 'axios';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}, cancelToken?: CancelToken) =>
-    ({ query, variables, cancelToken });
+export const graphqlOperation = (query, variables = {}, init = {}) => ({ query, variables, init });
 
 /**
  * Export Cloud Logic APIs
@@ -345,7 +344,7 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {}, authMode, cancelToken }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, authMode, init }: GraphQLOptions) {
 
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
@@ -355,15 +354,15 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables, authMode, cancelToken });
+                return this._graphql({ query, variables, authMode, init });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables, authMode, cancelToken });
+                return this._graphqlSubscribe({ query, variables, authMode, init });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables, authMode, cancelToken }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables, authMode, init = {} }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -391,15 +390,14 @@ export default class APIClass {
             variables,
         };
 
-        const init = {
+        Object.assign(init, {
             headers,
             body,
             signerServiceInfo: {
                 service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
                 region: !customGraphqlEndpoint ? region : customEndpointRegion
-            },
-            cancelToken
-        };
+            }
+        });
 
         const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
@@ -435,7 +433,7 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables, authMode, cancelToken }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, authMode, init }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -456,7 +454,7 @@ export default class APIClass {
                         const {
                             extensions: { subscription },
 
-                        } = await this._graphql({ query, variables, authMode, cancelToken }, additionalheaders);
+                        } = await this._graphql({ query, variables, authMode, init }, additionalheaders);
 
                         const { newSubscriptions } = subscription;
 

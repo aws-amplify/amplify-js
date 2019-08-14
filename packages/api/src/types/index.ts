@@ -71,7 +71,7 @@ export interface GraphQLOptions {
     query: string | DocumentNode,
     variables?: object,
     authMode?: GRAPHQL_AUTH_MODE,
-    cancelToken?: CancelToken
+    init: {}
 }
 
 export enum GRAPHQL_AUTH_MODE {
