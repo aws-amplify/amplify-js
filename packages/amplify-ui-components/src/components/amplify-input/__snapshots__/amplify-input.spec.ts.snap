@@ -2,6 +2,6 @@
 
 exports[`amplify-input renders correct HTML 1`] = `
 <amplify-input>
-  <input class="css-1s61rh1" type="text">
+  <input class="css-g9dmxw" type="text">
 </amplify-input>
 `;

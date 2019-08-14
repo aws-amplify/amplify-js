@@ -6,7 +6,7 @@ describe('amplify-form-field', () => {
     const page = await newE2EPage();
 
     await page.setContent(
-      `<amplify-form-field field-id="id" label="Label test" description="Description test"></amplify-form-field>`,
+      `<amplify-form-field field-id="id" label="Label test" description="Description test" hint="Hint test" placeholder="Placeholder test"></amplify-form-field>`,
     );
     const screenshot = await page.compareScreenshot('Amplify Form Field', {fullPage: true});
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });

@@ -1,5 +1,5 @@
 import { Component, Prop, h } from '@stencil/core';
-import { formField, formFieldLabel, formFieldDescription } from './amplify-form-field.style';
+import { formFieldLabel, formFieldDescription } from './amplify-form-field.style';
 import { TextFieldTypes } from '../../common/types';
 
 @Component({
@@ -24,7 +24,7 @@ export class AmplifyFormField {
 
   render() {
     return (
-      <div class={formField}>
+      <div>
         {this.label && (
           <div class={formFieldLabel}>
             <amplify-label htmlFor={this.fieldId}>

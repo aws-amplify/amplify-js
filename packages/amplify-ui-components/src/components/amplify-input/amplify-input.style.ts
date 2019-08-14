@@ -12,4 +12,9 @@ export const input = css`
   border-radius: 3px;
   box-sizing: border-box;
   margin-bottom: 10px;
+
+  :focus {
+    outline: none;
+    border-color: orange;
+  }
 `;
