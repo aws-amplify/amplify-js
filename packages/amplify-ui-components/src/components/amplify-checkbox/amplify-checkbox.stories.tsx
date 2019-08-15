@@ -5,7 +5,6 @@ const checkboxStories = storiesOf('amplify-checkbox', module);
 
 checkboxStories.add('with label', () => {
   const label = textKnob('Label', 'Boise');
-
   return `<amplify-checkbox label=${label} name="boise" field-id="boise" value="boise"></amplify-checkbox>`;
 });
 

@@ -9,6 +9,17 @@ exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkb
 </amplify-checkbox>
 `;
 
+exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkbox with an input type of checkbox and label 1`] = `
+<amplify-checkbox label="Seattle">
+  <span class="amplify-ui--checkbox css-1i87iyc">
+    <input type="checkbox">
+    <amplify-label>
+      Seattle
+    </amplify-label>
+  </span>
+</amplify-checkbox>
+`;
+
 exports[`amplify-checkbox: Default cases -> HTML logic -> should render with only a class of \`amplify-ui--checkbox\` when style override is true 1`] = `
 <amplify-checkbox style-override="true">
   <span class="amplify-ui--checkbox">

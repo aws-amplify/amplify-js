@@ -25,10 +25,15 @@ export class AmplifyCheckbox {
   /** If `true`, the checkbox is disabled */
   @Prop() disabled: boolean = false;
 
+  private onClick = () => {
+    this.checked = !this.checked;
+  }
+
   render() {
     return (
       <span class={styleNuker(this.styleOverride, staticCheckboxClassName, checkbox)}>
         <input
+          onClick={this.onClick}
           type="checkbox"
           name={this.name}
           value={this.value}

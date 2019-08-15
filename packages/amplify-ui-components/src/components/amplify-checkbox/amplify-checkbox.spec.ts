@@ -32,6 +32,15 @@ describe('amplify-checkbox:', () => {
         expect(page.root).toMatchSnapshot();
       });
 
+      it('should render a checkbox with an input type of checkbox and label', async () => {
+        const page = await newSpecPage({
+          components: [AmplifyCheckbox],
+          html: `<amplify-checkbox label="Seattle"></amplify-checkbox>`
+        });
+
+        expect(page.root).toMatchSnapshot();
+      });
+
       it('should render a checkbox with an input type of checkbox and empty label', async () => {
         const page = await newSpecPage({
           components: [AmplifyCheckbox],
