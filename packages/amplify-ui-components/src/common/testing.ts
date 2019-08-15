@@ -8,23 +8,23 @@ export const selectors = {
 }
 
 export const knobs = {
-    labelKnob: function (placeholder: string) {
-        return textKnob('Label', placeholder);
+    labelKnob (labelPlaceholder: string) {
+        return textKnob('Label', labelPlaceholder);
     },
 
-    descriptionKnob: function (placeholder: string) {
-        return textKnob('Description', placeholder);
+    descriptionKnob (descriptionPlaceholder: string) {
+        return textKnob('Description', descriptionPlaceholder);
     },
 
-    hintKnob: function (placeholder: string) {
-        return textKnob('Hint', placeholder);
+    hintKnob (hintPlaceholder: string) {
+        return textKnob('Hint', hintPlaceholder);
     },
 
-    inputTypeKnob: function (placeholder: string) {
-        return selectKnob('Type', ['date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'time'], placeholder);
+    inputTypeKnob (inputTypePlaceholder: string) {
+        return selectKnob('Type', ['date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'time'], inputTypePlaceholder);
     },
 
-    placeholderKnob: function (placeholder: string) {
-        return textKnob('Placeholder', placeholder);
+    placeholderKnob (placeholderPlaceholder: string) {
+        return textKnob('Placeholder', placeholderPlaceholder);
     }
 }
