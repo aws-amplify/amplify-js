@@ -9,6 +9,10 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   TextFieldTypes,
 } from './common/types';
+import {
+  SelectOptionsNumber,
+  SelectOptionsString,
+} from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -82,7 +86,9 @@ export namespace Components {
     */
     'type'?: TextFieldTypes;
   }
-  interface AmplifyHint {}
+  interface AmplifyHint {
+    'styleOverride': boolean;
+  }
   interface AmplifyInput {
     /**
     * The text of the description.  Goes just below the label.
@@ -406,7 +412,9 @@ declare namespace LocalJSX {
     */
     'type'?: TextFieldTypes;
   }
-  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
+  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
+    'styleOverride'?: boolean;
+  }
   interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
     /**
     * The text of the description.  Goes just below the label.
