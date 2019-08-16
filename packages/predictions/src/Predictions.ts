@@ -74,10 +74,9 @@ export default class Predictions {
             this._interpretPluggables.push(pluggable);
             pluggableAdded = true;
         }
-        if (!pluggableAdded) {
-            throw new Error("Pluggable being added is not one of the Predictions Category");
+        if (pluggableAdded) {
+            this.configurePluggable(pluggable);
         }
-        this.configurePluggable(pluggable);
     }
 
     /**

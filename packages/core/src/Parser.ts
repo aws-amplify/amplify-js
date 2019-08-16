@@ -35,7 +35,9 @@ export default class Parser {
             storageConfig = {
                 AWSS3: {
                     bucket: config['aws_user_files_s3_bucket'],
-                    region: config['aws_user_files_s3_bucket_region']
+                    region: config['aws_user_files_s3_bucket_region'],
+                    dangerouslyConnectToHttpEndpointForTesting:
+                    config['aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing']
                 }
             };
         } else {
