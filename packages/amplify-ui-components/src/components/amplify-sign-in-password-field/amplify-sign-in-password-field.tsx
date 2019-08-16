@@ -1,4 +1,5 @@
 import { Component, Prop, h } from '@stencil/core';
+import { TextFieldTypes } from '../../common/types';
 
 import Tunnel from '../amplify-authenticator/Tunnel';
 
@@ -12,7 +13,7 @@ export class AmplifySignInPasswordField {
   @Prop() hint: string | null = 'Password hint';
   @Prop() component: Function;
   @Prop() inputProps: {
-    type?: string;
+    type?: TextFieldTypes;
     onChange?: (Event) => void;
   } = {};
 
@@ -21,7 +22,7 @@ export class AmplifySignInPasswordField {
       <Tunnel.Consumer>
         {({ handlePasswordChange }) => {
           const inputProps = {
-            type: 'password',
+            type: 'password' as TextFieldTypes,
             onChange: handlePasswordChange,
             ...this.inputProps,
           };

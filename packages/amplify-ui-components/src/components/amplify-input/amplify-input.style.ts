@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const textInput = css`
+export const input = css`
   display: block;
   width: 100%;
   padding: 16px;
@@ -12,4 +12,9 @@ export const textInput = css`
   border-radius: 3px;
   box-sizing: border-box;
   margin-bottom: 10px;
+
+  :focus {
+    outline: none;
+    border-color: orange;
+  }
 `;
