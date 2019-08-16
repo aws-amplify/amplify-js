@@ -2,7 +2,7 @@
 
 exports[`amplify-radio-button: Default cases -> HTML logic should render a radio button with no label and a type of radio for input 1`] = `
 <amplify-radio-button>
-  <span class="amplify-ui--radio-button css-1i87iyc">
+  <span class="amplify-ui--radio-button css-iud8ha">
     <input type="radio">
     <amplify-label></amplify-label>
   </span>

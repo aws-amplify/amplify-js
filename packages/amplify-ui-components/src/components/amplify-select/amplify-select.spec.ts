@@ -25,7 +25,7 @@ describe('amplify-select: ', () => {
         select.options = options;
 
         expect(select.options).toBeDefined();
-        expect(select.splitIntoSeparateOptionsForSelect).toThrowError();
+        expect(select.contructSelectOptions).toThrowError();
       });
 
       it('should use custom options when passed from parent', () => {
@@ -47,7 +47,7 @@ describe('amplify-select: ', () => {
         select.options = options;
 
         expect(select.options).toBeDefined();
-        expect(select.splitIntoSeparateOptionsForSelect).toThrowError();
+        expect(select.contructSelectOptions).toThrowError();
       });
     });
   });
@@ -67,12 +67,13 @@ describe('amplify-select: ', () => {
       });
     });
     describe('HTML logic ->', () => {
-      it('should render with all country code dials as default', async () => {
+      it('should render an empty `placeholder` label and value of `1`', async () => {
+
         const page = await newSpecPage({
           components: [AmplifySelect],
           html: `<amplify-select></amplify-select>`
         });
-    
+
         expect(page.root).toMatchSnapshot();
       });
     });

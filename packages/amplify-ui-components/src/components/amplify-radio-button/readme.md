@@ -13,9 +13,9 @@
 | `disabled`      | `disabled`       | If `true`, the checkbox is disabled      | `boolean` | `false`     |
 | `fieldId`       | `field-id`       | Field ID used for the 'for' in the label | `string`  | `undefined` |
 | `label`         | `label`          | Label for the radio button               | `string`  | `undefined` |
-| `name`          | `name`           | (optional) Name of radio button          | `string`  | `undefined` |
+| `name`          | `name`           | (Optional) Name of radio button          | `string`  | `undefined` |
 | `styleOverride` | `style-override` | (Optional) Overrides default styling     | `boolean` | `false`     |
-| `value`         | `value`          | (optional) Value of radio button         | `string`  | `undefined` |
+| `value`         | `value`          | (Optional) Value of radio button         | `string`  | `undefined` |
 
 
 ## Dependencies

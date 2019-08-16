@@ -12,9 +12,9 @@ const staticRadioButtonClassName = `${AMPLIFY_UI_PREFIX}--radio-button`;
 export class AmplifyRadioButton {
   /** (Optional) Overrides default styling */
   @Prop() styleOverride?: boolean = false;
-  /** (optional) Name of radio button */
+  /** (Optional) Name of radio button */
   @Prop() name?: string;
-  /** (optional) Value of radio button */
+  /** (Optional) Value of radio button */
   @Prop() value?: string;
   /** Field ID used for the 'for' in the label */
   @Prop() fieldId: string;

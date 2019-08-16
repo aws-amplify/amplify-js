@@ -88,7 +88,7 @@ export namespace Components {
     */
     'label': string;
     /**
-    * (optional) Name of radio button
+    * (Optional) Name of radio button
     */
     'name'?: string;
     /**
@@ -96,7 +96,7 @@ export namespace Components {
     */
     'styleOverride'?: boolean;
     /**
-    * (optional) Value of radio button
+    * (Optional) Value of radio button
     */
     'value'?: string;
   }
@@ -120,7 +120,7 @@ export namespace Components {
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
-    'options'?: SelectOptionsString | SelectOptionsNumber;
+    'options': SelectOptionsString | SelectOptionsNumber;
     /**
     * (Optional) Overrides default styling
     */
@@ -393,7 +393,7 @@ declare namespace LocalJSX {
     */
     'label'?: string;
     /**
-    * (optional) Name of radio button
+    * (Optional) Name of radio button
     */
     'name'?: string;
     /**
@@ -401,7 +401,7 @@ declare namespace LocalJSX {
     */
     'styleOverride'?: boolean;
     /**
-    * (optional) Value of radio button
+    * (Optional) Value of radio button
     */
     'value'?: string;
   }

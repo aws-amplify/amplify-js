@@ -2,7 +2,7 @@
 
 exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkbox with an input type of checkbox and empty label 1`] = `
 <amplify-checkbox>
-  <span class="amplify-ui--checkbox css-1i87iyc">
+  <span class="amplify-ui--checkbox css-1teaxst">
     <input type="checkbox">
     <amplify-label></amplify-label>
   </span>
@@ -11,7 +11,7 @@ exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkb
 
 exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkbox with an input type of checkbox and label 1`] = `
 <amplify-checkbox label="Seattle">
-  <span class="amplify-ui--checkbox css-1i87iyc">
+  <span class="amplify-ui--checkbox css-1teaxst">
     <input type="checkbox">
     <amplify-label>
       Seattle
