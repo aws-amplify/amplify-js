@@ -1,4 +1,5 @@
 import { newE2EPage } from '@stencil/core/testing';
+import { pixelThreshold } from '../../common/testing';
 
 describe('amplify-select:', () => {
   it('should render a amplify-select', async () => {
@@ -8,6 +9,6 @@ describe('amplify-select:', () => {
     expect(el).not.toBeNull();
 
     const screenshot = await page.compareScreenshot('amplify-select', { fullPage: true });
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
   });
 });

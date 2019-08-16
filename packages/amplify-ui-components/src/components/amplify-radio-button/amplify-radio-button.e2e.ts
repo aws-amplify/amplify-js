@@ -1,4 +1,5 @@
 import { newE2EPage } from '@stencil/core/testing';
+import { pixelThreshold } from '../../common/testing';
 
 describe('amplify-radio-button:', () => {
   it('should render a amplify-radio-button', async () => {
@@ -9,6 +10,6 @@ describe('amplify-radio-button:', () => {
     expect(el).not.toBeNull();
 
     const screenshot = await page.compareScreenshot('amplify-radio-button', { fullPage: true });
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
   });
 });

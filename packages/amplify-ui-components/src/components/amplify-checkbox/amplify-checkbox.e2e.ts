@@ -1,4 +1,5 @@
 import { newE2EPage } from '@stencil/core/testing';
+import { pixelThreshold } from '../../common/testing';
 
 describe('amplify-checkbox:', () => {
   it('should render amplify-checkbox with no label', async () => {
@@ -8,7 +9,7 @@ describe('amplify-checkbox:', () => {
     expect(el).not.toBeNull();
 
     const screenshot = await page.compareScreenshot('amplify-checkbox', { fullPage: true });
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
   });
 
   it('should render amplify-checkbox with label', async () => {
@@ -18,7 +19,7 @@ describe('amplify-checkbox:', () => {
     expect(el).not.toBeNull();
 
     const screenshot = await page.compareScreenshot('amplify-checkbox-label', { fullPage: true });
-    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 10 });
+    expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
   });
 
   it('should have a checkbox checked', async () => {
