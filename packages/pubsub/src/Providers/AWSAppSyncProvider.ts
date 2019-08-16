@@ -136,9 +136,9 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                             url,
                         });
                     } catch (err) {
-                        observer.error('Fail to connect');
+                        observer.error('Failed to connect');
                         observer.complete();
-                        return Promise.resolve(undefined)
+                        return undefined;
                     }
 
                     // subscribe to all topics for this client
