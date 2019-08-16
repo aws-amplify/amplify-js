@@ -45,6 +45,10 @@ graph TD;
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
   amplify-form-field --> amplify-label
+<<<<<<< HEAD
+=======
+  amplify-form-field --> amplify-input
+>>>>>>> 20613df3a4d67efa57101d21644fad257b67e6c4
   amplify-form-field --> amplify-hint
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-password-field --> context-consumer

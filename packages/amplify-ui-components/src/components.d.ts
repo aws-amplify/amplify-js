@@ -7,9 +7,8 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  SelectOptionsNumber,
-  SelectOptionsString,
-} from './components/amplify-select/amplify-select-interface';
+  TextFieldTypes,
+} from './common/types';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -54,13 +53,57 @@ export namespace Components {
   }
   interface AmplifyExamples {}
   interface AmplifyFormField {
+    /**
+    * The text of the description.  Goes between the label and the input.
+    */
+    'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId': string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
     'hint': string | null;
+    /**
+    * The text of the label.  Goes above the input. Ex: 'First name'
+    */
     'label': string | null;
-    'styleOverride': boolean;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
-  interface AmplifyHint {
-    'styleOverride': boolean;
+  interface AmplifyHint {}
+  interface AmplifyInput {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
+    'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -137,7 +180,7 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
@@ -148,28 +191,10 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
-  }
-  interface AmplifyTextField {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextInput {
-    'fieldId': string;
-    'inputProps': {
-      placeholder?: string;
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'styleOverride': boolean;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -213,6 +238,12 @@ declare global {
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
     new (): HTMLAmplifyHintElement;
+  };
+
+  interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
+  var HTMLAmplifyInputElement: {
+    prototype: HTMLAmplifyInputElement;
+    new (): HTMLAmplifyInputElement;
   };
 
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
@@ -275,18 +306,6 @@ declare global {
     new (): HTMLAmplifySignInUsernameFieldElement;
   };
 
-  interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
-  var HTMLAmplifyTextFieldElement: {
-    prototype: HTMLAmplifyTextFieldElement;
-    new (): HTMLAmplifyTextFieldElement;
-  };
-
-  interface HTMLAmplifyTextInputElement extends Components.AmplifyTextInput, HTMLStencilElement {}
-  var HTMLAmplifyTextInputElement: {
-    prototype: HTMLAmplifyTextInputElement;
-    new (): HTMLAmplifyTextInputElement;
-  };
-
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
   var HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
@@ -299,6 +318,7 @@ declare global {
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
+    'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
@@ -309,8 +329,6 @@ declare global {
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
-    'amplify-text-field': HTMLAmplifyTextFieldElement;
-    'amplify-text-input': HTMLAmplifyTextInputElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 }
@@ -359,13 +377,57 @@ declare namespace LocalJSX {
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
+    /**
+    * The text of the description.  Goes between the label and the input.
+    */
+    'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId'?: string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
     'hint'?: string | null;
+    /**
+    * The text of the label.  Goes above the input. Ex: 'First name'
+    */
     'label'?: string | null;
-    'styleOverride'?: boolean;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
-  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
-    'styleOverride'?: boolean;
+  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {}
+  interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
+    'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
@@ -442,7 +504,7 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;
@@ -453,28 +515,10 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;
-  }
-  interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
-    'fieldId'?: string;
-    'inputProps'?: {
-      placeholder?: string;
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'styleOverride'?: boolean;
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
@@ -488,6 +532,7 @@ declare namespace LocalJSX {
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
+    'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-radio-button': AmplifyRadioButton;
@@ -498,8 +543,6 @@ declare namespace LocalJSX {
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-password-field': AmplifySignInPasswordField;
     'amplify-sign-in-username-field': AmplifySignInUsernameField;
-    'amplify-text-field': AmplifyTextField;
-    'amplify-text-input': AmplifyTextInput;
     'rock-paper-scissor': RockPaperScissor;
   }
 }
