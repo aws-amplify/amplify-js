@@ -15,6 +15,19 @@ describe('amplify-select: ', () => {
         expect(select.styleOverride).toBe(true);
       });
 
+      it('should throw an error when there is a mixture of `string` and `number` values', () => {
+        const options = [
+          {label: 'us-east-1', value: '1'},
+          {label: 'us-west-2', value: '2'},
+          {label: 'us-west-1', value: 3}
+        ];
+
+        select.options = options;
+
+        expect(select.options).toBeDefined();
+        expect(select.splitIntoSeparateOptionsForSelect).toThrowError();
+      });
+
       it('should use custom options when passed from parent', () => {
         const options = [
           {label: 'Gogi', value: '1'},

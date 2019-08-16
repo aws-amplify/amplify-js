@@ -7,7 +7,8 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  SelectOptions,
+  SelectOptionsNumber,
+  SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
@@ -119,7 +120,7 @@ export namespace Components {
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
-    'options'?: SelectOptions;
+    'options'?: SelectOptionsString | SelectOptionsNumber;
     /**
     * (Optional) Overrides default styling
     */
@@ -424,7 +425,7 @@ declare namespace LocalJSX {
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
-    'options'?: SelectOptions;
+    'options'?: SelectOptionsString | SelectOptionsNumber;
     /**
     * (Optional) Overrides default styling
     */
