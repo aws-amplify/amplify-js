@@ -15,13 +15,15 @@ import { SumerianSceneComponentCore } from './sumerian-scene.component.core';
 import { AmplifyService } from '../../../providers';
 import * as AmplifyUI from '@aws-amplify/ui';
 
+import { sumerianScene } from '../../../assets/data-test-attributes';
+
 const template = `
-<div id="sumerian-scene-container" [ngClass]="amplifyUI.sumerianSceneContainer">
-  <div id="sumerian-scene-dom-id" [class]="amplifyUI.sumerianScene">
-    <sumerian-scene-loading-ionic *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}}></sumerian-scene-loading-ionic>
+<div id="sumerian-scene-container" [ngClass]="amplifyUI.sumerianSceneContainer" data-test="${sumerianScene.container}">
+  <div id="sumerian-scene-dom-id" [class]="amplifyUI.sumerianScene" data-test="${sumerianScene.sumerianScene}">
+    <sumerian-scene-loading-ionic *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}} data-test="${sumerianScene.loading}"></sumerian-scene-loading-ionic>
   </div>
-  <div *ngIf="!loading" class={{amplifyUI.sceneBar}}>
-    <span class={{amplifyUI.sceneActions}}>
+  <div *ngIf="!loading" class={{amplifyUI.sceneBar}} data-test="${sumerianScene.bar}">
+    <span class={{amplifyUI.sceneActions}} data-test="${sumerianScene.actions}">
       <div [ngClass]="[amplifyUI.tooltip, showEnableAudio ? amplifyUI.autoShowTooltip : '']" [attr.data-text]="showEnableAudio ? 'The scene is muted. Click to unmute.' : (muted ? 'Unmute' : 'Mute')" (click)="muted ? setMuted(false) : setMuted(true)">
         <button class={{amplifyUI.actionButton}}>
           <svg *ngIf="muted" width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

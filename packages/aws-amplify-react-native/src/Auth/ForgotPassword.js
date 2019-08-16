@@ -72,7 +72,7 @@ export default class ForgotPassword extends AuthPiece {
     forgotBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                {this.renderUsernameField()}
+                {this.renderUsernameField(theme)}
                 <AmplifyButton
                     text={I18n.get('Send').toUpperCase()}
                     theme={theme}

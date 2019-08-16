@@ -13,11 +13,13 @@
 import * as React from 'react';
 import * as AmplifyUI from '@aws-amplify/ui';
 
+import { sumerianScene } from '../Amplify-UI/data-test-attributes';
+
 const Loading = (props) => {
   return (
-    <div className={AmplifyUI.loadingOverlay}>
+    <div className={AmplifyUI.loadingOverlay} data-test={sumerianScene.loading}>
       <div className={AmplifyUI.loadingContainer}>
-        <div className={AmplifyUI.loadingLogo}>
+        <div className={AmplifyUI.loadingLogo} data-test={sumerianScene.loadingLogo}>
           <svg viewBox='0 0 800 481' xmlns='http://www.w3.org/2000/svg'>
             <g id='Page-1' fillRule='evenodd'>
               <g id='AWS_logo_RGB-(1)' transform='translate(-16 -17)' fillRule='nonzero'>
@@ -31,12 +33,12 @@ const Loading = (props) => {
             </g>
           </svg>
         </div>
-        <div className={AmplifyUI.loadingSceneName}>
+        <div className={AmplifyUI.loadingSceneName} data-test={sumerianScene.loadingSceneName}>
           {props.sceneName}
         </div>
         { props.sceneError ? 
-          <div className={AmplifyUI.sceneErrorText}>{props.sceneError.displayText}</div> :
-          <div className={AmplifyUI.loadingBar}>
+          <div className={AmplifyUI.sceneErrorText} data-test={sumerianScene.errorText}>{props.sceneError.displayText}</div> :
+          <div className={AmplifyUI.loadingBar} data-test={sumerianScene.loadingBar}>
             <div className={AmplifyUI.loadingBarFill} style={{width: `${props.percentage}%`}} />
           </div>
         }
