@@ -9,8 +9,8 @@
 
 ### Depends on
 
-- [amplify-text-field](../amplify-text-field)
-- [amplify-text-field](../amplify-text-field)
+- [amplify-form-field](../amplify-form-field)
+- [amplify-form-field](../amplify-form-field)
 - [amplify-button](../amplify-button)
 - [amplify-link](../amplify-link)
 - [amplify-authenticator](../amplify-authenticator)
@@ -24,8 +24,8 @@
 ### Graph
 ```mermaid
 graph TD;
-  amplify-examples --> amplify-text-field
-  amplify-examples --> amplify-text-field
+  amplify-examples --> amplify-form-field
+  amplify-examples --> amplify-form-field
   amplify-examples --> amplify-button
   amplify-examples --> amplify-link
   amplify-examples --> amplify-authenticator
@@ -35,7 +35,9 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
-  amplify-text-field --> amplify-text-input
+  amplify-form-field --> amplify-label
+  amplify-form-field --> amplify-input
+  amplify-form-field --> amplify-hint
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-section
@@ -45,9 +47,6 @@ graph TD;
   amplify-sign-in --> amplify-button
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
-  amplify-form-field --> amplify-label
-  amplify-form-field --> amplify-text-input
-  amplify-form-field --> amplify-hint
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-password-field --> context-consumer
   rock-paper-scissor --> amplify-button

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/interactions",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "Interactions category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -48,7 +48,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.31"
+    "@aws-amplify/core": "^1.1.0"
   },
   "jest": {
     "transform": {

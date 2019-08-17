@@ -6,7 +6,9 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  TextFieldTypes,
+} from './common/types';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -21,17 +23,59 @@ export namespace Components {
   }
   interface AmplifyExamples {}
   interface AmplifyFormField {
+    /**
+    * The text of the description.  Goes between the label and the input.
+    */
+    'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId': string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
     'hint': string | null;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
+    /**
+    * The text of the label.  Goes above the input. Ex: 'First name'
+    */
     'label': string | null;
-    'styleOverride': boolean;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyHint {
     'styleOverride': boolean;
+  }
+  interface AmplifyInput {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
+    'description': string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -64,7 +108,7 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
@@ -75,7 +119,7 @@ export namespace Components {
     'fieldId': string;
     'hint': string | null;
     'inputProps': {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label': string | null;
@@ -134,6 +178,12 @@ declare global {
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
     new (): HTMLAmplifyHintElement;
+  };
+
+  interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
+  var HTMLAmplifyInputElement: {
+    prototype: HTMLAmplifyInputElement;
+    new (): HTMLAmplifyInputElement;
   };
 
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
@@ -207,6 +257,7 @@ declare global {
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
+    'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
@@ -235,17 +286,59 @@ declare namespace LocalJSX {
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
+    /**
+    * The text of the description.  Goes between the label and the input.
+    */
+    'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
     'fieldId'?: string;
+    /**
+    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+    */
     'hint'?: string | null;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
+    /**
+    * The text of the label.  Goes above the input. Ex: 'First name'
+    */
     'label'?: string | null;
-    'styleOverride'?: boolean;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     'styleOverride'?: boolean;
+  }
+  interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
+    /**
+    * The text of the description.  Goes just below the label.
+    */
+    'description'?: string | null;
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'onInput'?: (inputEvent: Event) => void;
+    /**
+    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
+    /**
+    * The input type.  Can be any HTML input type.
+    */
+    'type'?: TextFieldTypes;
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
@@ -278,7 +371,7 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;
@@ -289,7 +382,7 @@ declare namespace LocalJSX {
     'fieldId'?: string;
     'hint'?: string | null;
     'inputProps'?: {
-      type?: string;
+      type?: TextFieldTypes;
       onChange?: (Event) => void;
     };
     'label'?: string | null;
@@ -323,6 +416,7 @@ declare namespace LocalJSX {
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
+    'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-scene-loading': AmplifySceneLoading;

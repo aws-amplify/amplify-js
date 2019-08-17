@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.31...@aws-amplify/core@1.1.0) (2019-08-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Await for cache.setItem when setting federatedInfo ([8691c42](https://github.com/aws/aws-amplify/commit/8691c42)), closes [#3296](https://github.com/aws/aws-amplify/issues/3296)
+* **@aws-amplify/core:** Edge browser misidentified as Chrome ([#3807](https://github.com/aws/aws-amplify/issues/3807)) ([302d95b](https://github.com/aws/aws-amplify/commit/302d95b))
+
+
+### Features
+
+* Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
+
+
+
+
+
 ## [1.0.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.30...@aws-amplify/core@1.0.31) (2019-07-31)
 
 **Note:** Version bump only for package @aws-amplify/core

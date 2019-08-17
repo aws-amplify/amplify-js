@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "description": "Api category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -49,9 +49,9 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^1.2.30",
-    "@aws-amplify/cache": "^1.0.31",
-    "@aws-amplify/core": "^1.0.31",
+    "@aws-amplify/auth": "^1.2.31",
+    "@aws-amplify/cache": "^1.0.32",
+    "@aws-amplify/core": "^1.1.0",
     "axios": "^0.19.0",
     "graphql": "0.13.0",
     "uuid": "^3.2.1",
