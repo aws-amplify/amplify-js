@@ -58,7 +58,9 @@
     "typescript": "^3.5.3"
   },
   "husky": {
-    "hooks": {}
+    "hooks": {
+      "pre-push": "npm run test"
+    }
   },
   "peerDependencies": {},
   "license": "Apache-2.0"
