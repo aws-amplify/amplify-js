@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                              | Type                                                                             | Default     |
-| --------------- | ---------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------- |
-| `name`          | `name`           | (Required) Icon name used to determine the icon rendered | `"enter-vr" \| "exit-vr" \| "maximize" \| "minimize" \| "sound" \| "sound-mute"` | `undefined` |
-| `overrideStyle` | `override-style` | (Optional) Override default styling                      | `boolean`                                                                        | `undefined` |
+| Property        | Attribute        | Description                                                 | Type                                                                             | Default     |
+| --------------- | ---------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------- |
+| `name`          | `name`           | (Required) Name of icon used to determine the icon rendered | `"enter-vr" \| "exit-vr" \| "maximize" \| "minimize" \| "sound" \| "sound-mute"` | `undefined` |
+| `overrideStyle` | `override-style` | (Optional) Override default styling                         | `boolean`                                                                        | `undefined` |
 
 
 ----------------------------------------------
