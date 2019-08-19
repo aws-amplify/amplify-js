@@ -9,6 +9,10 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   TextFieldTypes,
 } from './common/types';
+import {
+  SelectOptionsNumber,
+  SelectOptionsString,
+} from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
   interface AmplifyAuthenticator {
@@ -20,6 +24,36 @@ export namespace Components {
     'role': string;
     'styleOverride': boolean;
     'type': string;
+  }
+  interface AmplifyCheckbox {
+    /**
+    * If `true`, the checkbox is selected.
+    */
+    'checked': boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled': boolean;
+    /**
+    * Field ID used for the 'htmlFor' in the label
+    */
+    'fieldId': string;
+    /**
+    * Label for the checkbox
+    */
+    'label': string;
+    /**
+    * Name of the checkbox
+    */
+    'name'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * Value of the checkbox
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFormField {
@@ -85,6 +119,36 @@ export namespace Components {
     'role': string;
     'styleOverride': boolean;
   }
+  interface AmplifyRadioButton {
+    /**
+    * If `true`, the radio button is selected.
+    */
+    'checked': boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled': boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId': string;
+    /**
+    * Label for the radio button
+    */
+    'label': string;
+    /**
+    * (Optional) Name of radio button
+    */
+    'name'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * (Optional) Value of radio button
+    */
+    'value'?: string;
+  }
   interface AmplifySceneLoading {
     'loadPercentage': number;
     'sceneError': object;
@@ -95,6 +159,20 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifySectionHeader {
+    'styleOverride': boolean;
+  }
+  interface AmplifySelect {
+    /**
+    * Used for id field
+    */
+    'fieldId': string;
+    /**
+    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    */
+    'options': SelectOptionsString | SelectOptionsNumber;
+    /**
+    * (Optional) Overrides default styling
+    */
     'styleOverride': boolean;
   }
   interface AmplifySignIn {
@@ -162,6 +240,12 @@ declare global {
     new (): HTMLAmplifyButtonElement;
   };
 
+  interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {}
+  var HTMLAmplifyCheckboxElement: {
+    prototype: HTMLAmplifyCheckboxElement;
+    new (): HTMLAmplifyCheckboxElement;
+  };
+
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
   var HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
@@ -198,6 +282,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
+  var HTMLAmplifyRadioButtonElement: {
+    prototype: HTMLAmplifyRadioButtonElement;
+    new (): HTMLAmplifyRadioButtonElement;
+  };
+
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
   var HTMLAmplifySceneLoadingElement: {
     prototype: HTMLAmplifySceneLoadingElement;
@@ -214,6 +304,12 @@ declare global {
   var HTMLAmplifySectionHeaderElement: {
     prototype: HTMLAmplifySectionHeaderElement;
     new (): HTMLAmplifySectionHeaderElement;
+  };
+
+  interface HTMLAmplifySelectElement extends Components.AmplifySelect, HTMLStencilElement {}
+  var HTMLAmplifySelectElement: {
+    prototype: HTMLAmplifySelectElement;
+    new (): HTMLAmplifySelectElement;
   };
 
   interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
@@ -254,15 +350,18 @@ declare global {
   interface HTMLElementTagNameMap {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
+    'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-section-header': HTMLAmplifySectionHeaderElement;
+    'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
@@ -283,6 +382,36 @@ declare namespace LocalJSX {
     'role'?: string;
     'styleOverride'?: boolean;
     'type'?: string;
+  }
+  interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
+    /**
+    * If `true`, the checkbox is selected.
+    */
+    'checked'?: boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled'?: boolean;
+    /**
+    * Field ID used for the 'htmlFor' in the label
+    */
+    'fieldId'?: string;
+    /**
+    * Label for the checkbox
+    */
+    'label'?: string;
+    /**
+    * Name of the checkbox
+    */
+    'name'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * Value of the checkbox
+    */
+    'value'?: string;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
@@ -348,6 +477,36 @@ declare namespace LocalJSX {
     'role'?: string;
     'styleOverride'?: boolean;
   }
+  interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
+    /**
+    * If `true`, the radio button is selected.
+    */
+    'checked'?: boolean;
+    /**
+    * If `true`, the checkbox is disabled
+    */
+    'disabled'?: boolean;
+    /**
+    * Field ID used for the 'for' in the label
+    */
+    'fieldId'?: string;
+    /**
+    * Label for the radio button
+    */
+    'label'?: string;
+    /**
+    * (Optional) Name of radio button
+    */
+    'name'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'styleOverride'?: boolean;
+    /**
+    * (Optional) Value of radio button
+    */
+    'value'?: string;
+  }
   interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
     'sceneError'?: object;
@@ -358,6 +517,20 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {
+    'styleOverride'?: boolean;
+  }
+  interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
+    /**
+    * Used for id field
+    */
+    'fieldId'?: string;
+    /**
+    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+    */
+    'options'?: SelectOptionsString | SelectOptionsNumber;
+    /**
+    * (Optional) Overrides default styling
+    */
     'styleOverride'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
@@ -413,15 +586,18 @@ declare namespace LocalJSX {
   interface IntrinsicElements {
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
+    'amplify-checkbox': AmplifyCheckbox;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-section-header': AmplifySectionHeader;
+    'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-password-field': AmplifySignInPasswordField;
     'amplify-sign-in-username-field': AmplifySignInUsernameField;
