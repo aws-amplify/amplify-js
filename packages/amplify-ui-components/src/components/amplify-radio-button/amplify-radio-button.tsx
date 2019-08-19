@@ -3,7 +3,7 @@ import { radioButton } from './amplify-radio-button.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
-const staticRadioButtonClassName = `${AMPLIFY_UI_PREFIX}--radio-button`;
+const STATIC_RADIO_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--radio-button`;
 
 @Component({
   tag: 'amplify-radio-button',
@@ -27,7 +27,7 @@ export class AmplifyRadioButton {
 
   render() {
     return (
-      <span class={styleNuker(this.styleOverride, staticRadioButtonClassName, radioButton)}>
+      <span class={styleNuker(this.styleOverride, STATIC_RADIO_BUTTON_CLASS_NAME, radioButton)}>
         <input
           type="radio"
           name={this.name}

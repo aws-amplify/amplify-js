@@ -3,7 +3,7 @@ import { checkbox } from './amplify-checkbox.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
-const staticCheckboxClassName = `${AMPLIFY_UI_PREFIX}--checkbox`;
+const STATIC_CHECKBOX_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--checkbox`;
 
 @Component({
   tag: 'amplify-checkbox',
@@ -31,7 +31,7 @@ export class AmplifyCheckbox {
 
   render() {
     return (
-      <span class={styleNuker(this.styleOverride, staticCheckboxClassName, checkbox)}>
+      <span class={styleNuker(this.styleOverride, STATIC_CHECKBOX_CLASS_NAME, checkbox)}>
         <input
           onClick={this.onClick}
           type="checkbox"
