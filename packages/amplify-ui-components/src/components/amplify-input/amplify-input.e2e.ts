@@ -15,7 +15,7 @@ describe('amplify-input', () => {
     expect(inputElement).not.toBeNull();
   });
 
-  it('fires an onInput event when the contents of the box are changed', async () => {
+  it('fires an onInputChange event when the contents of the box are changed', async () => {
     const page = await newE2EPage();
 
     await page.setContent(`<amplify-input></amplify-input>`);
@@ -24,7 +24,7 @@ describe('amplify-input', () => {
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-input', (inputElement: any) => {
-      inputElement.onInput = this.exposedfunc;
+      inputElement.onInputChange = this.exposedfunc;
       inputElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();
@@ -48,7 +48,7 @@ describe('amplify-input', () => {
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-input', (inputElement: any) => {
-      inputElement.onInput = this.exposedfunc;
+      inputElement.onInputChange = this.exposedfunc;
       inputElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();

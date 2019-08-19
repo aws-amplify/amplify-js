@@ -18,7 +18,7 @@ export class AmplifyFormField {
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
   /** The callback, called when the input is modified by the user. */
-  @Prop() onInput?: (inputEvent: Event) => void;
+  @Prop() onInputChange?: (inputEvent: Event) => void;
   /** (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
 
@@ -43,7 +43,7 @@ export class AmplifyFormField {
               fieldId={this.fieldId}
               description={this.description}
               type={this.type}
-              onInput={this.onInput}
+              onInput={this.onInputChange}
               placeholder={this.placeholder}
             />
           </slot>
