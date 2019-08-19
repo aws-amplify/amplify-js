@@ -93,8 +93,8 @@ describe('RequireNewPasswordComponentCore: ', () => {
     const buttons = fixture.debugElement.nativeElement
       .querySelectorAll('ion-button');
     const signInButton = Object.values(buttons)
-      .find((el) => el.innerHTML === 'Back to Sign In');
-    signInButton.click();
+      .find((el) => (el as any).innerHTML === 'Back to Sign In');
+    (signInButton as any).click();
     expect(onSignInSpy).toHaveBeenCalled();
   });
 
@@ -108,8 +108,8 @@ describe('RequireNewPasswordComponentCore: ', () => {
     const buttons = fixture.debugElement.nativeElement
       .querySelectorAll('ion-button');
     const submitButton = Object.values(buttons)
-      .find((el) => el.innerHTML === 'Submit');
-    submitButton.click();
+      .find((el) => (el as any).innerHTML === 'Submit');
+    (submitButton as any).click();
     expect(onSubmitSpy).toHaveBeenCalled();
   });
 

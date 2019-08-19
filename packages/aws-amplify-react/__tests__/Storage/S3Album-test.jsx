@@ -3,11 +3,18 @@ import { Storage } from '@aws-amplify/storage';
 import { S3Album } from '../../src/Storage/S3Album';
 import { S3Text } from '../../src/Storage/S3Text';
 import { S3Image } from '../../src/Storage/S3Image';
+
+// This mock has to be global and before the actual import. We will override and reset in respective tests.
+jest.mock('@aws-amplify/core', () => ({
+    __esModule: true,
+    ...(jest.requireActual('@aws-amplify/core')),
+}));
 import * as core from '@aws-amplify/core';
 
 const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
     return 0;
 });
+
 describe('S3Album test', () => {
     describe('render test', () => {
         test('render correctly if has images and texts', () => {
@@ -453,7 +460,8 @@ describe('S3Album test', () => {
 
     describe('contentType test', () => {
         test('happy case', () => {
-            const spyOn = jest.spyOn(core, 'filenameToContentType').mockReturnValueOnce('');
+            const originalFunc = core.filenameToContentType;
+            core.filenameToContentType = jest.fn();
 
             const wrapper = shallow(<S3Album/>);
             const s3Album = wrapper.instance();
@@ -462,9 +470,8 @@ describe('S3Album test', () => {
                 key: 'key'
             });
 
-            expect(spyOn).toBeCalledWith('key', 'image/*');
-
-            spyOn.mockClear();
+            expect(core.filenameToContentType).toBeCalledWith('key', 'image/*');
+            core.filenameToContentType = originalFunc;
         });
     });
 

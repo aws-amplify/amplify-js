@@ -56,3 +56,8 @@ function getInstance(context, methodName): MethodEmbed {
 
     return instance;
 }
+
+/**
+ * @deprecated use named import
+ */
+export default MethodEmbed;

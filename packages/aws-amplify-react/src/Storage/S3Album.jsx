@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 
-import {ConsoleLogger as Logger, filenameToContentType, Hub, isTextFile, sortByField} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, filenameToContentType, Hub, isTextFile, sortByField } from '@aws-amplify/core';
 import { Storage } from '@aws-amplify/storage';
 
 import { Picker } from '../Widget/Picker';

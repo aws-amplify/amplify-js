@@ -24,7 +24,7 @@ jest.mock('aws-sdk/clients/personalizeevents', () => {
 });
 
 import { Credentials } from '@aws-amplify/core';
-import AmazonPersonalizeProvider from "../../src/Providers/AmazonPersonalizeProvider";
+import { AmazonPersonalizeProvider } from "../../src/Providers/AmazonPersonalizeProvider";
 
 jest.useFakeTimers();
 

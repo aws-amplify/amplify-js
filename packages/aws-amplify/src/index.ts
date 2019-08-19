@@ -23,7 +23,7 @@ export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export { PubSub, PubSubClass } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
 export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
-export { default as UI } from '@aws-amplify/ui';
+export  * from '@aws-amplify/ui';
 export { XR, XRClass } from '@aws-amplify/xr';
 export { Predictions, AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
 export { 
@@ -40,7 +40,8 @@ export {
 import { 
     Amplify, 
     I18n, // Deprecated: Remove on major version bump
-    Logger // Deprecated: Remove on major version bump
+    Logger, // Deprecated: Remove on major version bump
+    ServiceWorker
 } from '@aws-amplify/core';
 
 /* Deprecated: Remove on major version bump */

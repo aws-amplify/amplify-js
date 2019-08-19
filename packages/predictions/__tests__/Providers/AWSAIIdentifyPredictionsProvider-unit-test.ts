@@ -206,10 +206,6 @@ const credentials = {
     authenticated: true
 };
 
-
-
-
-
 const options = {
     'identifyEntities': {
         "proxy": false,

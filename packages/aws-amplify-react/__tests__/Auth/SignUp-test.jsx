@@ -3,6 +3,7 @@ import { Auth } from '@aws-amplify/auth';
 import { SignUp } from '../../src/Auth/SignUp';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import { Input, Button, InputLabel } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { PhoneField } from '../../src/Auth/PhoneField';
 
 const acceptedStates = [
     'signUp'

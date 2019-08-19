@@ -39,7 +39,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/jest": "^20.0.7",
+    "@types/jest": "^24.0.18",
     "@types/node": "^8.9.5",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
@@ -65,7 +65,7 @@
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.8.0",
     "typedoc": "^0.11.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.5.3",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^4.32.0",
     "webpack-bundle-analyzer": "^3.3.2",

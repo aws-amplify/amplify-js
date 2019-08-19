@@ -335,3 +335,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
             });
     }
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonPersonalizeProvider;

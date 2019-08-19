@@ -14,6 +14,7 @@
 import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
 import { Amplify } from './Amplify';
+import { Platform } from './Platform';
 
 export * from './Facet';
 export { ClientDevice } from './ClientDevice';
@@ -32,7 +33,7 @@ export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { Platform } from './Platform';
 
-import { Platform } from './Platform';
+
 export const Constants = {
     'userAgent': Platform.userAgent
 };

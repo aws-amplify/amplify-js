@@ -169,7 +169,6 @@ export class CredentialsClass {
             region
         });
 
-        const that = this;
         return this._loadCredentials(credentials, 'guest', false, null)
         .then((res) => {
             return res;
@@ -203,7 +202,6 @@ export class CredentialsClass {
     private _setCredentialsFromAWS() {
         const credentials = AWS.config.credentials;
         logger.debug('setting credentials from aws');
-        const that = this;
         if (credentials instanceof AWS.Credentials){
             return Promise.resolve(credentials);
         } else {
@@ -213,7 +211,7 @@ export class CredentialsClass {
     }
 
     private _setCredentialsFromFederation(params) {
-        const { provider, token, identity_id, user, expires_at } = params;
+        const { provider, token, identity_id } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -271,7 +269,6 @@ export class CredentialsClass {
             region
         });
 
-        const that = this;
         return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
