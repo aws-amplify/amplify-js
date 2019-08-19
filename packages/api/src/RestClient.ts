@@ -95,6 +95,9 @@ export class RestClient {
         if (initParams.responseType) {
             params.responseType = initParams.responseType;
         }
+        if (initParams.withCredentials) {
+            params['withCredentials'] = initParams.withCredentials;
+        }
         if (initParams.timeout) {
             params.timeout = initParams.timeout;
         }
