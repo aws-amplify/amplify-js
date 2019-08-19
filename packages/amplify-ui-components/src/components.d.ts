@@ -10,6 +10,9 @@ import {
   TextFieldTypes,
 } from './common/types';
 import {
+  IconNameType,
+} from './components/amplify-icon/icons';
+import {
   SelectOptionsNumber,
   SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
@@ -88,6 +91,16 @@ export namespace Components {
   }
   interface AmplifyHint {
     'styleOverride': boolean;
+  }
+  interface AmplifyIcon {
+    /**
+    * (Required) Name of icon used to determine the icon rendered
+    */
+    'name': IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle': boolean;
   }
   interface AmplifyInput {
     /**
@@ -264,6 +277,12 @@ declare global {
     new (): HTMLAmplifyHintElement;
   };
 
+  interface HTMLAmplifyIconElement extends Components.AmplifyIcon, HTMLStencilElement {}
+  var HTMLAmplifyIconElement: {
+    prototype: HTMLAmplifyIconElement;
+    new (): HTMLAmplifyIconElement;
+  };
+
   interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
   var HTMLAmplifyInputElement: {
     prototype: HTMLAmplifyInputElement;
@@ -354,6 +373,7 @@ declare global {
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-hint': HTMLAmplifyHintElement;
+    'amplify-icon': HTMLAmplifyIconElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
@@ -446,6 +466,16 @@ declare namespace LocalJSX {
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     'styleOverride'?: boolean;
+  }
+  interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
+    /**
+    * (Required) Name of icon used to determine the icon rendered
+    */
+    'name'?: IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
   }
   interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
     /**
@@ -590,6 +620,7 @@ declare namespace LocalJSX {
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-hint': AmplifyHint;
+    'amplify-icon': AmplifyIcon;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
