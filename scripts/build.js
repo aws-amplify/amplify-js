@@ -121,7 +121,7 @@ function buildES6() {
         ],
         "jsx": jsx,
         "sourceMap": true,
-        "target": "es2015",
+        "target": "es5",
         "module": "es2015",
         "moduleResolution": "node",
         "allowJs": allowJs,
