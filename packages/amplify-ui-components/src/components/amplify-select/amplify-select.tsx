@@ -4,9 +4,8 @@ import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 import { SelectOptionsString, SelectOptionsNumber, SelectOptionNumber, SelectOptionString } from './amplify-select-interface';
 
-const staticSelectClassName = `${AMPLIFY_UI_PREFIX}--amplify-select`;
-
-const defaultSelectOption = [{label: '', value: 1}];
+const STATIC_SELECT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--amplify-select`;
+const DEFAULT_SELECT_OPTION = [{label: '', value: 1}];
 
 @Component({
   tag: 'amplify-select',
@@ -16,7 +15,7 @@ export class AmplifySelect {
   /** (Optional) Overrides default styling */
   @Prop() styleOverride: boolean = false;
   /** The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
-  @Prop() options: SelectOptionsString | SelectOptionsNumber = defaultSelectOption;
+  @Prop() options: SelectOptionsString | SelectOptionsNumber = DEFAULT_SELECT_OPTION;
   /** Used for id field */
   @Prop() fieldId: string;
 
@@ -29,7 +28,7 @@ export class AmplifySelect {
 
   render() {
     return (
-      <select id={this.fieldId} class={styleNuker(this.styleOverride, staticSelectClassName, select)}>
+      <select id={this.fieldId} class={styleNuker(this.styleOverride, STATIC_SELECT_CLASS_NAME, select)}>
         {this.contructSelectOptions(this.options)}
       </select>
     );
