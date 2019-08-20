@@ -1,6 +1,8 @@
 import { css } from 'emotion';
 
-export const formField = css``;
+export const formField = css`
+  margin-bottom: 15px;
+`;
 
 export const formFieldLabel = css`
   display: block;

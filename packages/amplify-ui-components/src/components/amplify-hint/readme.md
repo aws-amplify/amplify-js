@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type      | Default |
-| ---------- | ---------- | ----------- | --------- | ------- |
-| `override` | `override` |             | `boolean` | `false` |
+| Property        | Attribute        | Description | Type      | Default |
+| --------------- | ---------------- | ----------- | --------- | ------- |
+| `overrideStyle` | `override-style` |             | `boolean` | `false` |
 
 
 ## Dependencies

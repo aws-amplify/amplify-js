@@ -8,11 +8,11 @@ import { AMPLIFY_UI_LABEL } from '../../common/constants';
 })
 export class AmplifyLabel {
   @Prop() htmlFor: string;
-  @Prop() override: boolean = false;
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (
-      <label class={styleNuker(this.override, AMPLIFY_UI_LABEL, label)} htmlFor={this.htmlFor}>
+      <label class={styleNuker(this.overrideStyle, AMPLIFY_UI_LABEL, label)} htmlFor={this.htmlFor}>
         <slot />
       </label>
     );

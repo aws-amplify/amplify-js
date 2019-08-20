@@ -5,7 +5,7 @@ import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
 import { icons, IconNameType } from './icons';
 
-const staticIconClass = `${AMPLIFY_UI_PREFIX}--icon`;
+const STATIC_ICON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--icon`;
 
 @Component({
   tag: 'amplify-icon',
@@ -25,7 +25,7 @@ export class AmplifyIcon {
 
   render() {
     return (
-      <span class={styleNuker(this.overrideStyle, staticIconClass, icon)}>
+      <span class={styleNuker(this.overrideStyle, STATIC_ICON_CLASS_NAME, icon)}>
         {icons[this.name]}
       </span>
     );

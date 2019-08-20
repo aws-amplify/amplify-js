@@ -83,7 +83,7 @@ export namespace Components {
     /**
     * (Optional) Override default styling
     */
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -94,7 +94,7 @@ export namespace Components {
     'type'?: TextFieldTypes;
   }
   interface AmplifyHint {
-    'override': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifyIcon {
     /**
@@ -122,7 +122,7 @@ export namespace Components {
     /**
     * (Optional) Override default styling
     */
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -134,7 +134,7 @@ export namespace Components {
   }
   interface AmplifyLabel {
     'htmlFor': string;
-    'override': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifyLink {
     'role': string;
@@ -466,7 +466,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Override default styling
     */
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -477,7 +477,7 @@ declare namespace LocalJSX {
     'type'?: TextFieldTypes;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
     /**
@@ -505,7 +505,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Override default styling
     */
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -517,7 +517,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
-    'override'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
     'role'?: string;

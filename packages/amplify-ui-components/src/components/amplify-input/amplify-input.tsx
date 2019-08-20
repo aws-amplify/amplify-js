@@ -4,7 +4,7 @@ import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
-const staticInputClass = `${AMPLIFY_UI_PREFIX}--input`;
+const STATIC_INPUT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--input`;
 
 @Component({
   tag: 'amplify-input',
@@ -22,7 +22,7 @@ export class AmplifyInput {
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
   /** (Optional) Override default styling */
-  @Prop() override?: boolean = false;
+  @Prop() overrideStyle?: boolean = false;
 
   render() {
     return (
@@ -32,7 +32,7 @@ export class AmplifyInput {
         type={this.type}
         onInput={this.onInputChange}
         placeholder={this.placeholder}
-        class={styleNuker(this.override, staticInputClass, input)}
+        class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
       />
     );
   }
