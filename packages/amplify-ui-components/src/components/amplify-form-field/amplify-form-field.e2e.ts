@@ -36,14 +36,14 @@ describe('amplify-form-field', () => {
     expect(descriptionElement).toBeNull();
   });
 
-  it('fires an onInput event when the contents of the box are changed', async () => {
+  it('fires an onInputChange event when the contents of the box are changed', async () => {
     await page.setContent(`<amplify-form-field></amplify-form-field>`);
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-form-field', (fieldElement: any) => {
-      fieldElement.onInput = this.exposedfunc;
+      fieldElement.onInputChange = this.exposedfunc;
       fieldElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();

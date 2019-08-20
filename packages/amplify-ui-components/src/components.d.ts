@@ -79,7 +79,7 @@ export namespace Components {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (inputEvent: Event) => void;
+    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -114,7 +114,7 @@ export namespace Components {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (inputEvent: Event) => void;
+    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -454,7 +454,7 @@ declare namespace LocalJSX {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (inputEvent: Event) => void;
+    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -489,7 +489,7 @@ declare namespace LocalJSX {
     /**
     * The callback, called when the input is modified by the user.
     */
-    'onInput'?: (inputEvent: Event) => void;
+    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
