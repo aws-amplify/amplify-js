@@ -1,8 +1,8 @@
-import { newE2EPage } from '@stencil/core/testing';
+import { newE2EPage, E2EPage } from '@stencil/core/testing';
 import { pixelThreshold, selectors } from '../../common/testing';
 
 describe('amplify-form-field', () => {
-  let page;
+  let page: E2EPage;
 
   beforeEach(async () => {
     page = await newE2EPage();
@@ -36,14 +36,14 @@ describe('amplify-form-field', () => {
     expect(descriptionElement).toBeNull();
   });
 
-  it('fires an onInput event when the contents of the box are changed', async () => {
+  it('fires an onInputChange event when the contents of the box are changed', async () => {
     await page.setContent(`<amplify-form-field></amplify-form-field>`);
 
     const func = jest.fn();
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-form-field', (fieldElement: any) => {
-      fieldElement.onInput = this.exposedfunc;
+      fieldElement.onInputChange = this.exposedfunc;
       fieldElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();

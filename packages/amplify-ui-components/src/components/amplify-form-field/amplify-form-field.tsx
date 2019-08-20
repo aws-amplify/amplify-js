@@ -1,6 +1,12 @@
 import { Component, Prop, h } from '@stencil/core';
-import { formFieldLabel, formFieldDescription } from './amplify-form-field.style';
+import { formField, formFieldLabel, formFieldDescription } from './amplify-form-field.style';
+import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
+
+const staticFormFieldLabelClass = `${AMPLIFY_UI_PREFIX}--form-field-label`;
+const staticFormFieldDescriptionClass = `${AMPLIFY_UI_PREFIX}--form-field-description`;
+const staticFormFieldClass = `${AMPLIFY_UI_PREFIX}--form-field`;
 
 @Component({
   tag: 'amplify-form-field',
@@ -18,22 +24,28 @@ export class AmplifyFormField {
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
   /** The callback, called when the input is modified by the user. */
-  @Prop() onInput?: (inputEvent: Event) => void;
-  /** (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
+  @Prop() onInputChange?: (inputEvent: Event) => void;
+  /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
+  /** (Optional) Override default styling */
+  @Prop() override?: boolean = false;
 
   render() {
     return (
-      <div>
+      <div class={styleNuker(this.override, staticFormFieldClass, formField)}>
         {this.label && (
-          <div class={formFieldLabel}>
-            <amplify-label htmlFor={this.fieldId}>
+          <div class={styleNuker(this.override, staticFormFieldLabelClass, formFieldLabel)}>
+            <amplify-label htmlFor={this.fieldId} override={this.override}>
               {this.label}
             </amplify-label>
           </div>
         )}
         {this.description && (
-          <div id={`${this.fieldId}-description`} class={formFieldDescription} data-test="form-field-description">
+          <div
+            id={`${this.fieldId}-description`}
+            class={styleNuker(this.override, staticFormFieldDescriptionClass, formFieldDescription)}
+            data-test="form-field-description"
+          >
             {this.description}
           </div>
         )}
@@ -43,13 +55,14 @@ export class AmplifyFormField {
               fieldId={this.fieldId}
               description={this.description}
               type={this.type}
-              onInput={this.onInput}
+              onInputChange={this.onInputChange}
               placeholder={this.placeholder}
+              override={this.override}
             />
           </slot>
         </div>
         {this.hint && (
-          <amplify-hint id={`${this.fieldId}-hint`}>{this.hint}</amplify-hint>
+          <amplify-hint id={`${this.fieldId}-hint`} override={this.override}>{this.hint}</amplify-hint>
         )}
       </div>
     );

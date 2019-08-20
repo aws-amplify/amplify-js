@@ -3,13 +3,13 @@
 exports[`amplify-form-field renders a label and description, if they are provided, and no id 1`] = `
 <amplify-form-field description="description" label="label">
   <!---->
-  <div>
-    <div class="css-1h8rqh2">
+  <div class="amplify-ui--form-field css-0">
+    <div class="amplify-ui--form-field-label css-1h8rqh2">
       <amplify-label>
         label
       </amplify-label>
     </div>
-    <div class="css-10lf99y" data-test="form-field-description" id="undefined-description">
+    <div class="amplify-ui--form-field-description css-10lf99y" data-test="form-field-description" id="undefined-description">
       description
     </div>
     <div>
@@ -24,7 +24,7 @@ exports[`amplify-form-field renders a label and description, if they are provide
 exports[`amplify-form-field renders no label or description if none are provided 1`] = `
 <amplify-form-field>
   <!---->
-  <div>
+  <div class="amplify-ui--form-field css-0">
     <div>
       <slot-fb name="input">
         <amplify-input placeholder="" type="text"></amplify-input>
@@ -37,13 +37,13 @@ exports[`amplify-form-field renders no label or description if none are provided
 exports[`amplify-form-field renders with an id, if it is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
-  <div>
-    <div class="css-1h8rqh2">
+  <div class="amplify-ui--form-field css-0">
+    <div class="amplify-ui--form-field-label css-1h8rqh2">
       <amplify-label htmlfor="id">
         label
       </amplify-label>
     </div>
-    <div class="css-10lf99y" data-test="form-field-description" id="id-description">
+    <div class="amplify-ui--form-field-description css-10lf99y" data-test="form-field-description" id="id-description">
       description
     </div>
     <div>
@@ -58,13 +58,13 @@ exports[`amplify-form-field renders with an id, if it is provided 1`] = `
 exports[`amplify-form-field replaces the input component, if a new one is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
-  <div>
-    <div class="css-1h8rqh2">
+  <div class="amplify-ui--form-field css-0">
+    <div class="amplify-ui--form-field-label css-1h8rqh2">
       <amplify-label htmlfor="id">
         label
       </amplify-label>
     </div>
-    <div class="css-10lf99y" data-test="form-field-description" id="id-description">
+    <div class="amplify-ui--form-field-description css-10lf99y" data-test="form-field-description" id="id-description">
       description
     </div>
     <div>

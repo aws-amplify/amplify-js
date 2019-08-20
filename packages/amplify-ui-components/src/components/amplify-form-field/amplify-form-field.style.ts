@@ -1,5 +1,7 @@
 import { css } from 'emotion';
 
+export const formField = css``;
+
 export const formFieldLabel = css`
   display: block;
   font-size: 0.9em;
