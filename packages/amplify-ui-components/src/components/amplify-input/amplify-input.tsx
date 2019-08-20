@@ -1,6 +1,10 @@
 import { Component, Prop, h } from '@stencil/core';
 import { input } from './amplify-input.style';
+import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
+
+const STATIC_INPUT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--input`;
 
 @Component({
   tag: 'amplify-input',
@@ -15,8 +19,10 @@ export class AmplifyInput {
   @Prop() type?: TextFieldTypes = 'text';
   /** The callback, called when the input is modified by the user. */
   @Prop() onInputChange?: (inputEvent: Event) => void;
-  /** (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
+  /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle?: boolean = false;
 
   render() {
     return (
@@ -26,7 +32,7 @@ export class AmplifyInput {
         type={this.type}
         onInput={this.onInputChange}
         placeholder={this.placeholder}
-        class={input}
+        class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
       />
     );
   }

@@ -1,5 +1,6 @@
 import { storiesOf } from '@storybook/html';
 import { knobs } from '../../common/testing';
+import { boolean as booleanKnob } from '@storybook/addon-knobs';
 
 const formFieldStories = storiesOf('amplify-form-field', module);
 
@@ -9,7 +10,8 @@ formFieldStories.add('generalized', () => {
   const hint = knobs.hintKnob('Hint placeholder');
   const type = knobs.inputTypeKnob('text');
   const placeholder = knobs.placeholderKnob('Placeholder placeholder');
-  return `<amplify-form-field field-id="id" label="${label}" description="${description}" hint="${hint}" type="${type}" placeholder="${placeholder}"/>`;
+  const override = booleanKnob('style override', false);
+  return `<amplify-form-field field-id="id" label="${label}" description="${description}" hint="${hint}" type="${type}" placeholder="${placeholder}" override="${override}"/>`;
 });
 
 formFieldStories.add('password example', () => {

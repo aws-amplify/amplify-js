@@ -9,7 +9,7 @@
 
 | Property        | Attribute        | Description | Type      | Default |
 | --------------- | ---------------- | ----------- | --------- | ------- |
-| `styleOverride` | `style-override` |             | `boolean` | `false` |
+| `overrideStyle` | `override-style` |             | `boolean` | `false` |
 
 
 ## Dependencies

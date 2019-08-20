@@ -1,9 +1,11 @@
 import { Component, Prop, Watch, h } from '@stencil/core';
 import { icon } from './amplify-icon.style';
 import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_ICON } from '../../common/constants';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
 import { icons, IconNameType } from './icons';
+
+const STATIC_ICON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--icon`;
 
 @Component({
   tag: 'amplify-icon',
@@ -23,7 +25,7 @@ export class AmplifyIcon {
 
   render() {
     return (
-      <span class={styleNuker(this.overrideStyle, AMPLIFY_UI_ICON, icon)}>
+      <span class={styleNuker(this.overrideStyle, STATIC_ICON_CLASS_NAME, icon)}>
         {icons[this.name]}
       </span>
     );
