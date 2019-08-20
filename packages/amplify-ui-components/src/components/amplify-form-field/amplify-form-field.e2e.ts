@@ -1,8 +1,8 @@
-import { newE2EPage } from '@stencil/core/testing';
+import { newE2EPage, E2EPage } from '@stencil/core/testing';
 import { pixelThreshold, selectors } from '../../common/testing';
 
 describe('amplify-form-field', () => {
-  let page;
+  let page: E2EPage;
 
   beforeEach(async () => {
     page = await newE2EPage();

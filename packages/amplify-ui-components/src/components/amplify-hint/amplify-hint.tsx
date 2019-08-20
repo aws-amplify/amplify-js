@@ -8,11 +8,11 @@ import { AMPLIFY_UI_HINT } from '../../common/constants';
 })
 
 export class AmplifyHint {
-  @Prop() styleOverride: boolean = false;
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (
-      <div class={styleNuker(this.styleOverride, AMPLIFY_UI_HINT, hint)}>
+      <div class={styleNuker(this.overrideStyle, AMPLIFY_UI_HINT, hint)}>
         <slot />
       </div>
     );

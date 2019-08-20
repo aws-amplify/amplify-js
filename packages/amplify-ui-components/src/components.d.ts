@@ -81,7 +81,11 @@ export namespace Components {
     */
     'onInputChange'?: (inputEvent: Event) => void;
     /**
-    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
     /**
@@ -100,7 +104,7 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyHint {
-    'styleOverride': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifyIcon {
     /**
@@ -126,7 +130,11 @@ export namespace Components {
     */
     'onInputChange'?: (inputEvent: Event) => void;
     /**
-    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
     /**
@@ -136,7 +144,7 @@ export namespace Components {
   }
   interface AmplifyLabel {
     'htmlFor': string;
-    'styleOverride': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifyLink {
     'role': string;
@@ -473,7 +481,11 @@ declare namespace LocalJSX {
     */
     'onInputChange'?: (inputEvent: Event) => void;
     /**
-    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
     /**
@@ -492,7 +504,7 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
     /**
@@ -518,7 +530,11 @@ declare namespace LocalJSX {
     */
     'onInputChange'?: (inputEvent: Event) => void;
     /**
-    * (optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
     /**
@@ -528,7 +544,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
     'role'?: string;
