@@ -89,6 +89,16 @@ export namespace Components {
     */
     'type'?: TextFieldTypes;
   }
+  interface AmplifyFormSection {
+    /**
+    * Label for submit button
+    */
+    'buttonLabel': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+  }
   interface AmplifyHint {
     'styleOverride': boolean;
   }
@@ -271,6 +281,12 @@ declare global {
     new (): HTMLAmplifyFormFieldElement;
   };
 
+  interface HTMLAmplifyFormSectionElement extends Components.AmplifyFormSection, HTMLStencilElement {}
+  var HTMLAmplifyFormSectionElement: {
+    prototype: HTMLAmplifyFormSectionElement;
+    new (): HTMLAmplifyFormSectionElement;
+  };
+
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
@@ -372,6 +388,7 @@ declare global {
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
+    'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-input': HTMLAmplifyInputElement;
@@ -463,6 +480,16 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+  }
+  interface AmplifyFormSection extends JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement> {
+    /**
+    * Label for submit button
+    */
+    'buttonLabel'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     'styleOverride'?: boolean;
@@ -619,6 +646,7 @@ declare namespace LocalJSX {
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
+    'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-input': AmplifyInput;

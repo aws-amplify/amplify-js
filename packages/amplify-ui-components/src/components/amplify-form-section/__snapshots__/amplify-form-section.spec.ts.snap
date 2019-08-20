@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-form-section HTML logic -> should render a form section with a button label of \`Go\` 1`] = `
+<amplify-form-section button-label="Go">
+  <!---->
+  <form class="amplify-ui--form-section css-g81eb6">
+    <div></div>
+    <div></div>
+    <div class="amplify-ui--form-section-footer css-gw3w6p">
+      <amplify-button type="submit">
+        Go
+      </amplify-button>
+    </div>
+  </form>
+</amplify-form-section>
+`;
+
+exports[`amplify-form-section HTML logic -> should render a form section with a default button of \`Submit\` 1`] = `
+<amplify-form-section>
+  <!---->
+  <form class="amplify-ui--form-section css-g81eb6">
+    <div></div>
+    <div></div>
+    <div class="amplify-ui--form-section-footer css-gw3w6p">
+      <amplify-button type="submit">
+        Submit
+      </amplify-button>
+    </div>
+  </form>
+</amplify-form-section>
+`;
+
+exports[`amplify-form-section HTML logic -> should render a form section with only a class of \`amplify-ui--form-section\` when style override is true 1`] = `
+<amplify-form-section override-style="true">
+  <!---->
+  <form class="amplify-ui--form-section">
+    <div></div>
+    <div></div>
+    <div class="amplify-ui--form-section-footer">
+      <amplify-button type="submit">
+        Submit
+      </amplify-button>
+    </div>
+  </form>
+</amplify-form-section>
+`;
