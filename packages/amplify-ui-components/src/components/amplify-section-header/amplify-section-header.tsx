@@ -7,11 +7,12 @@ import { styleNuker } from '../../common/helpers';
   tag: 'amplify-section-header',
 })
 export class AmplifySectionHeader {
-  @Prop() styleOverride: boolean = false;
+  /** (Optional) Overrides default styling */
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (
-      <h2 class={styleNuker(this.styleOverride, AMPLIFY_UI_SECTION_HEADER, sectionHeader)}>
+      <h2 class={styleNuker(this.overrideStyle, AMPLIFY_UI_SECTION_HEADER, sectionHeader)}>
         <slot />
       </h2>
     );

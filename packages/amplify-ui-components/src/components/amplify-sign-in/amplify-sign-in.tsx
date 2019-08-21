@@ -11,7 +11,7 @@ export class AmplifySignIn {
   render() {
     return (
       <amplify-section styleOverride={this.styleOverride}>
-        <amplify-section-header styleOverride={this.styleOverride}>Sign in to your account</amplify-section-header>
+        <amplify-section-header overrideStyle={this.styleOverride}>Sign in to your account</amplify-section-header>
         <form onSubmit={this.handleSubmit}>
           <amplify-sign-in-username-field />
           <amplify-sign-in-password-field />

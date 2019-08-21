@@ -95,13 +95,17 @@ export namespace Components {
   }
   interface AmplifyFormSection {
     /**
-    * Label for submit button
+    * (Optional) Used as a the default value within the default footer slot
     */
-    'buttonLabel': string;
+    'buttonLabel'?: string;
+    /**
+    * (Required) Submit function used when form is submitted
+    */
+    'handleSubmit': (inputEvent: Event) => void;
     /**
     * (Optional) Overrides default styling
     */
-    'overrideStyle': boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifyHint {
     'overrideStyle': boolean;
@@ -190,7 +194,10 @@ export namespace Components {
     'styleOverride': boolean;
   }
   interface AmplifySectionHeader {
-    'styleOverride': boolean;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
   }
   interface AmplifySelect {
     /**
@@ -495,9 +502,13 @@ declare namespace LocalJSX {
   }
   interface AmplifyFormSection extends JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement> {
     /**
-    * Label for submit button
+    * (Optional) Used as a the default value within the default footer slot
     */
     'buttonLabel'?: string;
+    /**
+    * (Required) Submit function used when form is submitted
+    */
+    'handleSubmit'?: (inputEvent: Event) => void;
     /**
     * (Optional) Overrides default styling
     */
@@ -590,7 +601,10 @@ declare namespace LocalJSX {
     'styleOverride'?: boolean;
   }
   interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {
-    'styleOverride'?: boolean;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
   }
   interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
     /**

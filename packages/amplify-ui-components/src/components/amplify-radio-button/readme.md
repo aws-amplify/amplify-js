@@ -20,10 +20,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [amplify-examples](../amplify-examples)
-
 ### Depends on
 
 - [amplify-label](../amplify-label)
@@ -32,7 +28,6 @@
 ```mermaid
 graph TD;
   amplify-radio-button --> amplify-label
-  amplify-examples --> amplify-radio-button
   style amplify-radio-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

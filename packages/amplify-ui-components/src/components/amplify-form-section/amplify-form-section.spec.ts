@@ -1,7 +1,7 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyFormSection } from './amplify-form-section';
 
-describe('amplify-form-section', () => {
+describe('amplify-form-section spec:', () => {
   describe('Class logic ->', () => {
     let formSection;
 
@@ -11,10 +11,6 @@ describe('amplify-form-section', () => {
 
     it('should render `Submit` for the button label', () => {
       expect(formSection.buttonLabel).toEqual('Submit');
-    });
-
-    it('should render a `style override` as false', () => {
-      expect(formSection.overrideStyle).toBe(false);
     });
   });
   describe('HTML logic ->', () => {
