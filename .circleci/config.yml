@@ -237,6 +237,7 @@ workflows:
               only:
                 - release
                 - master
+                - modularization
           requires:
             - build
       - integ_react_predictions:
@@ -245,6 +246,7 @@ workflows:
               only:
                 - release
                 - master
+                - modularization
           requires:
             - integration_test_setup
       - integration_test_react:
@@ -253,6 +255,7 @@ workflows:
               only:
                 - release
                 - master
+                - modularization
           requires:
             - integration_test_setup
       - integration_test_vue:
@@ -261,6 +264,7 @@ workflows:
               only:
                 - release
                 - master
+                - modularization
           requires:
             - integration_test_setup
       - deploy:
@@ -270,6 +274,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - modularization
           requires:
             - unit_test
             - integration_test_react
