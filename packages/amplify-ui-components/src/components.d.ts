@@ -7,6 +7,7 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
+  ButtonTypes,
   TextFieldTypes,
 } from './common/types';
 import {
@@ -24,9 +25,18 @@ export namespace Components {
     'signIn': Function;
   }
   interface AmplifyButton {
-    'role': string;
-    'styleOverride': boolean;
-    'type': string;
+    /**
+    * (Optional) Callback called when a user clicks on the button
+    */
+    'onButtonClick': (evt: Event) => void;
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Type of the button: 'button', 'submit' or 'reset'
+    */
+    'type': ButtonTypes;
   }
   interface AmplifyCheckbox {
     /**
@@ -213,7 +223,7 @@ export namespace Components {
   }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
-    'overrideStyle'?: boolean;
+    'overrideStyle': boolean;
     'validationErrors': string;
   }
   interface AmplifySignInPasswordField {
@@ -422,9 +432,18 @@ declare namespace LocalJSX {
     'signIn'?: Function;
   }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
-    'role'?: string;
-    'styleOverride'?: boolean;
-    'type'?: string;
+    /**
+    * (Optional) Callback called when a user clicks on the button
+    */
+    'onButtonClick'?: (evt: Event) => void;
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Type of the button: 'button', 'submit' or 'reset'
+    */
+    'type'?: ButtonTypes;
   }
   interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
     /**

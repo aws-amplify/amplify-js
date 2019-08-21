@@ -52,7 +52,7 @@
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
     "prettier": "^1.17.1",
-    "puppeteer": "1.19.0",
+    "puppeteer": "1.17.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3"

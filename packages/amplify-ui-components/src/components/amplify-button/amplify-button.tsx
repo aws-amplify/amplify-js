@@ -1,22 +1,27 @@
-import { Component, Element, Prop, h } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 import { button } from './amplify-button.style';
 import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_BUTTON } from '../../common/constants';
+import { ButtonTypes } from '../../common/types';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
+
+const STATIC_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--button`;
 
 @Component({
   tag: 'amplify-button',
   shadow: false,
 })
 export class AmplifyButton {
-  @Element() el: HTMLElement;
-
-  @Prop() type: string = 'button';
-  @Prop() role: string = 'button';
-  @Prop() styleOverride: boolean = false;
+  /** Type of the button: 'button', 'submit' or 'reset' */
+  @Prop() type: ButtonTypes = 'button';
+  /** (Optional) Callback called when a user clicks on the button */
+  @Prop() onButtonClick: (evt: Event) => void = (_) => {alert("new alert");this.test = "clicked now!";};
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle: boolean = false;
+  test: string = "not clicked yet";
 
   render() {
     return (
-      <button class={styleNuker(this.styleOverride, AMPLIFY_UI_BUTTON, button)} role={this.role} type={this.type}>
+      <button class={styleNuker(this.overrideStyle, STATIC_BUTTON_CLASS_NAME, button)} type={this.type} onClick={this.onButtonClick}>
         <slot />
       </button>
     );

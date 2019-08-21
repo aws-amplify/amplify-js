@@ -2,7 +2,6 @@
 export const AMPLIFY_UI_PREFIX = 'amplify-ui';
 
 // Classnames
-export const AMPLIFY_UI_BUTTON = `${AMPLIFY_UI_PREFIX}-button`;
 export const AMPLIFY_UI_HINT = `${AMPLIFY_UI_PREFIX}-hint`;
 export const AMPLIFY_UI_LABEL = `${AMPLIFY_UI_PREFIX}-label`;
 export const AMPLIFY_UI_LINK = `${AMPLIFY_UI_PREFIX}-link`;
