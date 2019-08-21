@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.1.0...@aws-amplify/core@1.2.0) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** expose tree-shaking for Webpack ([d1e5616](https://github.com/aws/aws-amplify/commit/d1e5616))
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws/aws-amplify/commit/bdd162c))
+
+
+### Features
+
+* **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws/aws-amplify/commit/d73d5e1))
+
+
+
+
+
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.31...@aws-amplify/core@1.1.0) (2019-08-05)
 
 

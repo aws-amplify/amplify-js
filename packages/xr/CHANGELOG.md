@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.22...@aws-amplify/xr@0.2.0) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/xr:** fix usage of default -> named import ([92bcff5](https://github.com/aws/aws-amplify/commit/92bcff5))
+
+
+### Features
+
+* **@aws-amplify/xr:** publish ES2015/ESM artifacts ([6298193](https://github.com/aws/aws-amplify/commit/6298193))
+
+
+
+
+
 ## [0.1.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.21...@aws-amplify/xr@0.1.22) (2019-08-05)
 
 **Note:** Version bump only for package @aws-amplify/xr

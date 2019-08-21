@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.32...@aws-amplify/cache@1.1.0) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/cache:** expose tree-shaking for Webpack ([32061ac](https://github.com/aws/aws-amplify/commit/32061ac))
+
+
+### Features
+
+* **@aws-amplify/cache:** publish ES2015/ESM artifacts ([22da40e](https://github.com/aws/aws-amplify/commit/22da40e))
+
+
+
+
+
 ## [1.0.32](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.31...@aws-amplify/cache@1.0.32) (2019-08-05)
 
 **Note:** Version bump only for package @aws-amplify/cache
