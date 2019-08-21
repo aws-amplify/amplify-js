@@ -22,7 +22,7 @@ jobs:
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
-      - run: yarn
+      - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
       - run: yarn run coverage
@@ -67,6 +67,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            # git checkout modularization
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -169,11 +170,6 @@ jobs:
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
-          name: "Install Vue Authenticator sample"
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn
-      - run:
           name: "Link aws-amplify"
           command: |
             cd amplify-js/packages/aws-amplify
@@ -183,6 +179,13 @@ jobs:
           command: |
             cd amplify-js/packages/aws-amplify-vue
             yarn link
+      - run:
+          name: "Install Vue Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link aws-amplify-vue
       - run:
           name: "Start Vue Authenticator Sample server in background"
           command: |
@@ -278,4 +281,3 @@ workflows:
           requires:
             - unit_test
             - integration_test_react
-            - integration_test_vue
