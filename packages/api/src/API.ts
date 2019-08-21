@@ -126,12 +126,12 @@ export default class APIClass {
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
     get<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParamsWithResponse
     ): Promise<AxiosResponse<Output>>;
     get<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParams & { response?: undefined }
         ): Promise<Output>;
@@ -159,7 +159,7 @@ export default class APIClass {
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
     post<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParams & { response?: undefined }
     ): Promise<AxiosResponse<Output>["data"]>;
@@ -194,12 +194,12 @@ export default class APIClass {
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
     put<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParams & { response?:undefined }
     ): Promise<AxiosResponse<Output>["data"]>;
     put<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParamsWithResponse
     ): Promise<AxiosResponse<Output>>;
@@ -227,12 +227,12 @@ export default class APIClass {
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
     patch<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParams & { response?:undefined }
     ): Promise<AxiosResponse<Output>["data"]>;
     patch<Output = {}>(
-        apiName:string,
+        apiName: string,
         url: string,
         init?: RestRequestExtraParamsWithResponse
     ): Promise<AxiosResponse<Output>>;

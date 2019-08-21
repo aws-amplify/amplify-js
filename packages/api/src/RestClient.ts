@@ -44,10 +44,6 @@ export class RestClient {
         const { endpoints } = options;
         this._options = options;
         logger.debug('API Options', this._options);
-
-        // const res = this.ajax<{a:number}>("", "get", {});
-        // const res2 = this.ajax("", "get", {response:true});
-        // const res3 = this.get("", {response:true});
     }
 
     /**
@@ -342,7 +338,6 @@ export class RestClient {
         delete signed_params.headers['host'];
         return axios(signed_params)
         .then(response => {
-            // response
             return isAllResponse ? response : response.data;
         })
         .catch((error) => {

@@ -39,8 +39,10 @@ export class AWSCredentials {
 
 // TODO: remove this once unauth creds are figured out
 export interface RestClientOptions {
+    /** Additional headers for all requests send by this client. e.g. user-agent */
     headers?: object;
     endpoints?: object;
+    /** AWS credentials */
     credentials?: object;
 }
 
