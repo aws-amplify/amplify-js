@@ -1,24 +1,19 @@
 import { E2EPage, newE2EPage } from '@stencil/core/testing';
 
 describe('amplify-button', () => {
-  /*
   let page: E2EPage;
 
   beforeEach(async () => {
     page = await newE2EPage();
   });
-  */
 
   it('renders', async () => {
-    const page = await newE2EPage();
     await page.setContent('<amplify-button></amplify-button>');
     const element = await page.find('amplify-button');
     expect(element).toHaveProperty('type');
-    await page.close();
   });
 
   it('fires its onButtonClicked callback upon being clicked', async () => {
-    const page = await newE2EPage();
     console.log("started the test");
     await page.setContent('<amplify-button></amplify-button>');
 

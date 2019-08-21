@@ -14,10 +14,9 @@ export class AmplifyButton {
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
   /** (Optional) Callback called when a user clicks on the button */
-  @Prop() onButtonClick: (evt: Event) => void = (_) => {alert("new alert");this.test = "clicked now!";};
+  @Prop() onButtonClick: (evt: Event) => void;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
-  test: string = "not clicked yet";
 
   render() {
     return (
