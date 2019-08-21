@@ -15,8 +15,7 @@
 
   import { Injectable, Optional, Inject } from '@angular/core';
   import { Subject } from 'rxjs/Subject';
-  import { Observable } from 'rxjs/Observable';
-  import Amplify, { Logger, I18n } from '@aws-amplify/core';
+  import { Amplify, Logger, I18n } from '@aws-amplify/core';
   import { AuthState } from './auth.state';
   import { authDecorator } from './auth.decorator';
   
