@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.1.0...@aws-amplify/storage@1.2.0) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws/aws-amplify/commit/28a34a5))
+
+
+### Features
+
+* **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws/aws-amplify/commit/bc8610a))
+
+
+
+
+
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.36...@aws-amplify/storage@1.1.0) (2019-08-05)
 
 

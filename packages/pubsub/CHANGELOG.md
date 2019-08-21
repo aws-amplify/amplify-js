@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.1.0...@aws-amplify/pubsub@1.1.1) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** fix ZenObservable import ([#3406](https://github.com/aws/aws-amplify/issues/3406)) ([f25d4c2](https://github.com/aws/aws-amplify/commit/f25d4c2))
+
+
+
+
+
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.32...@aws-amplify/pubsub@1.1.0) (2019-08-05)
 
 

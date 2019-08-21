@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.31...@aws-amplify/auth@1.3.0) (2019-08-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** expose tree-shaking for Webpack ([7ad2d4e](https://github.com/aws/aws-amplify/commit/7ad2d4e))
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws/aws-amplify/commit/bdd162c))
+
+
+### Features
+
+* **@aws-amplify/auth:** publish ES2015/ESM artifacts ([6cf2c22](https://github.com/aws/aws-amplify/commit/6cf2c22))
+
+
+
+
+
 ## [1.2.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.30...@aws-amplify/auth@1.2.31) (2019-08-05)
 
 
