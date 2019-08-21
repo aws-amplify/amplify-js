@@ -387,7 +387,6 @@ export default class APIClass {
     getGraphqlOperationType(operation) {
         const doc = parse(operation);
         const { definitions: [{ operation: operationType },] } = doc;
-
         return operationType;
     }
 
@@ -397,29 +396,29 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult<Output>> | Observable<Output>}
      */
-    graphql<Output = {}>({
+    graphql<Output = {}, Variables = {}>({
         query: paramQuery,
-        variables = {},
+        variables = {} as Variables,
         authMode,
-      }: GraphQLOptions) {
+      }: GraphQLOptions<Variables>) {
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
+        const [operationDef = {}] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql<Output>({ query, variables, authMode });
+                return this._graphql<Output, Variables>({ query, variables, authMode });
             case 'subscription':
-                return this._graphqlSubscribe<Output>({ query, variables, authMode });
+                return this._graphqlSubscribe<Output, Variables>({ query, variables, authMode });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql<Output = {}>(
-        { query, variables, authMode }: GraphQLOptions,
+    private async _graphql<Output = {}, Variables = {}>(
+        { query, variables, authMode }: GraphQLOptions<Variables>,
         additionalHeaders = {}
       ): Promise<GraphQLResult<Output>> {
         if (!this._api) {
@@ -490,8 +489,8 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe<Output = {}>(
-        { query, variables, authMode }: GraphQLOptions,
+    private _graphqlSubscribe<Output = {}, Variables = {}>(
+        { query, variables, authMode }: GraphQLOptions<Variables>,
         additionalHeaders = {}
       ): Observable<Output> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {

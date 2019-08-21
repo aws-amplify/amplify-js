@@ -46,9 +46,9 @@ export interface RestClientOptions {
     credentials?: object;
 }
 
-export interface GraphQLOptions {
+export interface GraphQLOptions<Variables = object> {
     query: string | DocumentNode,
-    variables?: object,
+    variables?: Variables,
     authMode?: GRAPHQL_AUTH_MODE,
 }
 
