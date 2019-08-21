@@ -11,11 +11,11 @@ export class AmplifyLink {
   @Element() el: HTMLElement;
 
   @Prop() role: string = 'application';
-  @Prop() styleOverride: boolean = false;
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (
-      <section class={styleNuker(this.styleOverride, AMPLIFY_UI_SECTION, section)} role={this.role}>
+      <section class={styleNuker(this.overrideStyle, AMPLIFY_UI_SECTION, section)} role={this.role}>
         <slot />
       </section>
     );

@@ -10,7 +10,7 @@
 | Property           | Attribute           | Description | Type                   | Default     |
 | ------------------ | ------------------- | ----------- | ---------------------- | ----------- |
 | `handleSubmit`     | --                  |             | `(Event: any) => void` | `undefined` |
-| `styleOverride`    | `style-override`    |             | `boolean`              | `false`     |
+| `overrideStyle`    | `override-style`    |             | `boolean`              | `false`     |
 | `validationErrors` | `validation-errors` |             | `string`               | `undefined` |
 
 
