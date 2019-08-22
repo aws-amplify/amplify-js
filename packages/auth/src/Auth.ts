@@ -70,8 +70,7 @@ import { AuthErrorTypes } from './types/Auth';
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
     ? Symbol.for('amplify_default')
     : '@@amplify_default') as Symbol;
 
@@ -116,19 +115,13 @@ export default class AuthClass {
             const { event } = payload;
             switch (event) {
                 case 'signIn':
-                    this._storage.setItem(
-                        'amplify-signin-with-hostedUI',
-                        'false'
-                    );
+                    this._storage.setItem('amplify-signin-with-hostedUI', 'false');
                     break;
                 case 'signOut':
                     this._storage.removeItem('amplify-signin-with-hostedUI');
                     break;
                 case 'cognitoHostedUI':
-                    this._storage.setItem(
-                        'amplify-signin-with-hostedUI',
-                        'true'
-                    );
+                    this._storage.setItem('amplify-signin-with-hostedUI', 'true');
                     break;
             }
         });
@@ -141,12 +134,7 @@ export default class AuthClass {
     configure(config) {
         if (!config) return this._config || {};
         logger.debug('configure Auth');
-        const conf = Object.assign(
-            {},
-            this._config,
-            Parser.parseMobilehubConfig(config).Auth,
-            config
-        );
+        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
 
         this._config = conf;
         const {
@@ -235,11 +223,7 @@ export default class AuthClass {
             });
         }
 
-        dispatchAuthEvent(
-            'configured',
-            null,
-            `The Auth category has been configured successfully`
-        );
+        dispatchAuthEvent('configured', null, `The Auth category has been configured successfully`);
         return this._config;
     }
 
@@ -249,10 +233,7 @@ export default class AuthClass {
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    public signUp(
-        params: string | SignUpParams,
-        ...restOfAttrs: string[]
-    ): Promise<ISignUpResult> {
+    public signUp(params: string | SignUpParams, ...restOfAttrs: string[]): Promise<ISignUpResult> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
@@ -267,8 +248,7 @@ export default class AuthClass {
             const email: string = restOfAttrs ? restOfAttrs[1] : null;
             const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
             if (email) attributes.push({ Name: 'email', Value: email });
-            if (phone_number)
-                attributes.push({ Name: 'phone_number', Value: phone_number });
+            if (phone_number) attributes.push({ Name: 'phone_number', Value: phone_number });
         } else if (params && typeof params === 'object') {
             username = params['username'];
             password = params['password'];
@@ -295,29 +275,15 @@ export default class AuthClass {
         logger.debug('signUp validation data:', validationData);
 
         return new Promise((resolve, reject) => {
-            this.userPool.signUp(
-                username,
-                password,
-                attributes,
-                validationData,
-                (err, data) => {
-                    if (err) {
-                        dispatchAuthEvent(
-                            'signUp_failure',
-                            err,
-                            `${username} failed to signup`
-                        );
-                        reject(err);
-                    } else {
-                        dispatchAuthEvent(
-                            'signUp',
-                            data,
-                            `${username} has signed up successfully`
-                        );
-                        resolve(data);
-                    }
+            this.userPool.signUp(username, password, attributes, validationData, (err, data) => {
+                if (err) {
+                    dispatchAuthEvent('signUp_failure', err, `${username} failed to signup`);
+                    reject(err);
+                } else {
+                    dispatchAuthEvent('signUp', data, `${username} has signed up successfully`);
+                    resolve(data);
                 }
-            );
+            });
         });
     }
 
@@ -328,11 +294,7 @@ export default class AuthClass {
      * @param {ConfirmSignUpOptions} options - other options for confirm signup
      * @return - A promise resolves callback data if success
      */
-    public confirmSignUp(
-        username: string,
-        code: string,
-        options?: ConfirmSignUpOptions
-    ): Promise<any> {
+    public confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
@@ -345,9 +307,7 @@ export default class AuthClass {
 
         const user = this.createCognitoUser(username);
         const forceAliasCreation =
-            options && typeof options.forceAliasCreation === 'boolean'
-                ? options.forceAliasCreation
-                : true;
+            options && typeof options.forceAliasCreation === 'boolean' ? options.forceAliasCreation : true;
 
         return new Promise((resolve, reject) => {
             user.confirmRegistration(code, forceAliasCreation, (err, data) => {
@@ -391,26 +351,21 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(
-        usernameOrSignInOpts: string | SignInOpts,
-        pw?: string
-    ): Promise<CognitoUser | any> {
+    public signIn(usernameOrSignInOpts: string | SignInOpts, pw?: string): Promise<CognitoUser | any> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
         let username = null;
         let password = null;
         let validationData = {};
-        
+
         // for backward compatibility
         if (typeof usernameOrSignInOpts === 'string') {
             username = usernameOrSignInOpts;
             password = pw;
         } else if (isUsernamePasswordOpts(usernameOrSignInOpts)) {
             if (typeof pw !== 'undefined') {
-                logger.warn(
-                    'The password should be defined under the first parameter object!'
-                );
+                logger.warn('The password should be defined under the first parameter object!');
             }
             username = usernameOrSignInOpts.username;
             password = usernameOrSignInOpts.password;
@@ -418,7 +373,7 @@ export default class AuthClass {
         } else {
             return this.rejectAuthError(AuthErrorTypes.InvalidUsername);
         }
-        
+
         if (!username) {
             return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
         }
@@ -465,11 +420,7 @@ export default class AuthClass {
                         // We need to trigger currentUserPoolUser again
                         const currentUser = await this.currentUserPoolUser();
                         that.user = currentUser;
-                        dispatchAuthEvent(
-                            'signIn',
-                            currentUser,
-                            `A user ${user.getUsername()} has been signed in`
-                        );
+                        dispatchAuthEvent('signIn', currentUser, `A user ${user.getUsername()} has been signed in`);
                         resolve(currentUser);
                     } catch (e) {
                         logger.error('Failed to get the signed in user', e);
@@ -479,11 +430,7 @@ export default class AuthClass {
             },
             onFailure: err => {
                 logger.debug('signIn failure', err);
-                dispatchAuthEvent(
-                    'signIn_failure',
-                    err,
-                    `${user.getUsername()} failed to signin`
-                );
+                dispatchAuthEvent('signIn_failure', err, `${user.getUsername()} failed to signin`);
                 reject(err);
             },
             customChallenge: challengeParam => {
@@ -534,15 +481,10 @@ export default class AuthClass {
      * @param {AuthenticationDetails} authDetails - the user sign in data
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithPassword(
-        authDetails: AuthenticationDetails
-    ): Promise<CognitoUser | any> {
+    private signInWithPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {
         const user = this.createCognitoUser(authDetails.getUsername());
         return new Promise((resolve, reject) => {
-            user.authenticateUser(
-                authDetails,
-                this.authCallbacks(user, resolve, reject)
-            );
+            user.authenticateUser(authDetails, this.authCallbacks(user, resolve, reject));
         });
     }
 
@@ -552,17 +494,12 @@ export default class AuthClass {
      * @param {AuthenticationDetails} authDetails - the user sign in data
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithoutPassword(
-        authDetails: AuthenticationDetails
-    ): Promise<CognitoUser | any> {
+    private signInWithoutPassword(authDetails: AuthenticationDetails): Promise<CognitoUser | any> {
         const user = this.createCognitoUser(authDetails.getUsername());
         user.setAuthenticationFlowType('CUSTOM_AUTH');
 
         return new Promise((resolve, reject) => {
-            user.initiateAuth(
-                authDetails,
-                this.authCallbacks(user, resolve, reject)
-            );
+            user.initiateAuth(authDetails, this.authCallbacks(user, resolve, reject));
         });
     }
 
@@ -593,10 +530,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current cognito user
      * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
      */
-    public getPreferredMFA(
-        user: CognitoUser | any,
-        params?: GetPreferredMFAOpts
-    ): Promise<string> {
+    public getPreferredMFA(user: CognitoUser | any, params?: GetPreferredMFAOpts): Promise<string> {
         const that = this;
         return new Promise((res, rej) => {
             const bypassCache = params ? params.bypassCache : false;
@@ -654,19 +588,16 @@ export default class AuthClass {
 
     private _getUserData(user, params) {
         return new Promise((res, rej) => {
-            user.getUserData(
-                (err, data) => {
-                    if (err) {
-                        logger.debug('getting user data failed', err);
-                        rej(err);
-                        return;
-                    } else {
-                        res(data);
-                        return;
-                    }
-                }, 
-                params
-            );
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting user data failed', err);
+                    rej(err);
+                    return;
+                } else {
+                    res(data);
+                    return;
+                }
+            }, params);
         });
     }
 
@@ -676,10 +607,7 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public async setPreferredMFA(
-        user: CognitoUser | any,
-        mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
-    ): Promise<string> {
+    public async setPreferredMFA(user: CognitoUser | any, mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'): Promise<string> {
         const userData = await this._getUserData(user, { bypassCache: true });
         let smsMfaSettings = null;
         let totpMfaSettings = null;
@@ -699,9 +627,7 @@ export default class AuthClass {
                 break;
             case 'NOMFA':
                 const mfaList = userData['UserMFASettingList'];
-                const currentMFAType = await this._getMfaTypeFromUserData(
-                    userData
-                );
+                const currentMFAType = await this._getMfaTypeFromUserData(userData);
                 if (currentMFAType === 'NOMFA') {
                     return Promise.resolve('No change for mfa type');
                 } else if (currentMFAType === 'SMS_MFA') {
@@ -742,30 +668,26 @@ export default class AuthClass {
 
         const that = this;
         return new Promise<string>((res, rej) => {
-            user.setUserMfaPreference(
-                smsMfaSettings,
-                totpMfaSettings,
-                (err, result) => {
-                    if (err) {
-                        logger.debug('Set user mfa preference error', err);
-                        return rej(err);
-                    }
-                    logger.debug('Set user mfa success', result);
-                    logger.debug('Caching the latest user data into local');
-                    // cache the latest result into user data
-                    user.getUserData(
-                        (err, data) => {
-                            if (err) {
-                                logger.debug('getting user data failed', err);
-                                return rej(err);
-                            } else {
-                                return res(result);
-                            }
-                        },
-                        { bypassCache: true }
-                    );
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
+                if (err) {
+                    logger.debug('Set user mfa preference error', err);
+                    return rej(err);
                 }
-            );
+                logger.debug('Set user mfa success', result);
+                logger.debug('Caching the latest user data into local');
+                // cache the latest result into user data
+                user.getUserData(
+                    (err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            return rej(err);
+                        } else {
+                            return res(result);
+                        }
+                    },
+                    { bypassCache: true }
+                );
+            });
         });
     }
 
@@ -839,10 +761,7 @@ export default class AuthClass {
      * @param {string} challengeAnswer - challenge answer
      * @return - A promise resolves is success
      */
-    public verifyTotpToken(
-        user: CognitoUser | any,
-        challengeAnswer: string
-    ): Promise<CognitoUserSession> {
+    public verifyTotpToken(user: CognitoUser | any, challengeAnswer: string): Promise<CognitoUserSession> {
         logger.debug('verfication totp token', user, challengeAnswer);
         return new Promise((res, rej) => {
             user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
@@ -883,24 +802,14 @@ export default class AuthClass {
                         logger.debug(session);
                         try {
                             await Credentials.clear();
-                            const cred = await Credentials.set(
-                                session,
-                                'session'
-                            );
-                            logger.debug(
-                                'succeed to get cognito credentials',
-                                cred
-                            );
+                            const cred = await Credentials.set(session, 'session');
+                            logger.debug('succeed to get cognito credentials', cred);
                         } catch (e) {
                             logger.debug('cannot get cognito credentials', e);
                         } finally {
                             that.user = user;
 
-                            dispatchAuthEvent(
-                                'signIn',
-                                user,
-                                `${user} has signed in`
-                            );
+                            dispatchAuthEvent('signIn', user, `${user} has signed in`);
                             resolve(user);
                         }
                     },
@@ -931,19 +840,12 @@ export default class AuthClass {
                     try {
                         await Credentials.clear();
                         const cred = await Credentials.set(session, 'session');
-                        logger.debug(
-                            'succeed to get cognito credentials',
-                            cred
-                        );
+                        logger.debug('succeed to get cognito credentials', cred);
                     } catch (e) {
                         logger.debug('cannot get cognito credentials', e);
                     } finally {
                         that.user = user;
-                        dispatchAuthEvent(
-                            'signIn',
-                            user,
-                            `${user} has signed in`
-                        );
+                        dispatchAuthEvent('signIn', user, `${user} has signed in`);
                         resolve(user);
                     }
                 },
@@ -977,10 +879,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - The CognitoUser object
      * @param {String} challengeResponses - The confirmation code
      */
-    public sendCustomChallengeAnswer(
-        user: CognitoUser | any,
-        challengeResponses: string
-    ): Promise<CognitoUser | any> {
+    public sendCustomChallengeAnswer(user: CognitoUser | any, challengeResponses: string): Promise<CognitoUser | any> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
@@ -990,10 +889,7 @@ export default class AuthClass {
 
         const that = this;
         return new Promise((resolve, reject) => {
-            user.sendCustomChallengeAnswer(
-                challengeResponses,
-                this.authCallbacks(user, resolve, reject)
-            );
+            user.sendCustomChallengeAnswer(challengeResponses, this.authCallbacks(user, resolve, reject));
         });
     }
 
@@ -1002,10 +898,7 @@ export default class AuthClass {
      * @param {CognitoUser} - The currently logged in user object
      * @return {Promise}
      **/
-    public updateUserAttributes(
-        user: CognitoUser | any,
-        attributes: object
-    ): Promise<string> {
+    public updateUserAttributes(user: CognitoUser | any, attributes: object): Promise<string> {
         const attributeList: ICognitoUserAttributeData[] = [];
         const that = this;
         return new Promise((resolve, reject) => {
@@ -1034,9 +927,7 @@ export default class AuthClass {
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to user attributes if success
      */
-    public userAttributes(
-        user: CognitoUser | any
-    ): Promise<CognitoUserAttribute[]> {
+    public userAttributes(user: CognitoUser | any): Promise<CognitoUserAttribute[]> {
         return new Promise((resolve, reject) => {
             this.userSession(user).then(session => {
                 user.getUserAttributes((err, attributes) => {
@@ -1081,9 +972,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to current authenticated CognitoUser if success
      */
-    public currentUserPoolUser(
-        params?: CurrentUserOpts
-    ): Promise<CognitoUser | any> {
+    public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
@@ -1109,23 +998,16 @@ export default class AuthClass {
                         // get user data from Cognito
                         const bypassCache = params ? params.bypassCache : false;
                         // validate the token's scope fisrt before calling this function
-                        const {
-                            scope = ''
-                        } = session.getAccessToken().decodePayload();
+                        const { scope = '' } = session.getAccessToken().decodePayload();
                         if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
                             user.getUserData(
                                 (err, data) => {
                                     if (err) {
-                                        logger.debug(
-                                            'getting user data failed',
-                                            err
-                                        );
+                                        logger.debug('getting user data failed', err);
                                         // Make sure the user is still valid
                                         if (
-                                            err.message ===
-                                                'User is disabled' ||
-                                            err.message ===
-                                                'User does not exist.'
+                                            err.message === 'User is disabled' ||
+                                            err.message === 'User does not exist.'
                                         ) {
                                             rej(err);
                                         } else {
@@ -1136,28 +1018,19 @@ export default class AuthClass {
                                         }
                                         return;
                                     }
-                                    const preferredMFA =
-                                        data.PreferredMfaSetting || 'NOMFA';
+                                    const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
                                     const attributeList = [];
 
-                                    for (
-                                        let i = 0;
-                                        i < data.UserAttributes.length;
-                                        i++
-                                    ) {
+                                    for (let i = 0; i < data.UserAttributes.length; i++) {
                                         const attribute = {
                                             Name: data.UserAttributes[i].Name,
                                             Value: data.UserAttributes[i].Value
                                         };
-                                        const userAttribute = new CognitoUserAttribute(
-                                            attribute
-                                        );
+                                        const userAttribute = new CognitoUserAttribute(attribute);
                                         attributeList.push(userAttribute);
                                     }
 
-                                    const attributes = that.attributesToObject(
-                                        attributeList
-                                    );
+                                    const attributes = that.attributesToObject(attributeList);
                                     Object.assign(user, {
                                         attributes,
                                         preferredMFA
@@ -1187,9 +1060,7 @@ export default class AuthClass {
      * @param {CurrentUserOpts} - options for getting the current user
      * @return - A promise resolves to current authenticated CognitoUser if success
      */
-    public async currentAuthenticatedUser(
-        params?: CurrentUserOpts
-    ): Promise<CognitoUser | any> {
+    public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
         logger.debug('getting current authenticated user');
         let federatedUser = null;
         try {
@@ -1200,9 +1071,7 @@ export default class AuthClass {
         }
 
         try {
-            federatedUser = JSON.parse(
-                this._storage.getItem('aws-amplify-federatedInfo')
-            ).user;
+            federatedUser = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo')).user;
         } catch (e) {
             logger.debug('cannot load federated user from auth storage');
         }
@@ -1245,10 +1114,7 @@ export default class AuthClass {
                             return;
                         })
                         .catch(e => {
-                            logger.debug(
-                                'Failed to get the current session',
-                                e
-                            );
+                            logger.debug('Failed to get the current session', e);
                             rej(e);
                             return;
                         });
@@ -1305,14 +1171,9 @@ export default class AuthClass {
         // first to check whether there is federation info in the auth storage
         let federatedInfo = null;
         try {
-            federatedInfo = JSON.parse(
-                this._storage.getItem('aws-amplify-federatedInfo')
-            );
+            federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
         } catch (e) {
-            logger.debug(
-                'failed to get or parse item aws-amplify-federatedInfo',
-                e
-            );
+            logger.debug('failed to get or parse item aws-amplify-federatedInfo', e);
         }
 
         if (federatedInfo) {
@@ -1342,10 +1203,7 @@ export default class AuthClass {
      * @param {Object} attr - The attributes to be verified
      * @return - A promise resolves to callback data if success
      */
-    public verifyUserAttribute(
-        user: CognitoUser | any,
-        attr: string
-    ): Promise<void> {
+    public verifyUserAttribute(user: CognitoUser | any, attr: string): Promise<void> {
         return new Promise((resolve, reject) => {
             user.getAttributeVerificationCode(attr, {
                 onSuccess() {
@@ -1365,11 +1223,7 @@ export default class AuthClass {
      * @param {String} code - The confirmation code
      * @return - A promise resolves to callback data if success
      */
-    public verifyUserAttributeSubmit(
-        user: CognitoUser | any,
-        attr: string,
-        code: string
-    ): Promise<string> {
+    public verifyUserAttributeSubmit(user: CognitoUser | any, attr: string, code: string): Promise<string> {
         if (!code) {
             return this.rejectAuthError(AuthErrorTypes.EmptyCode);
         }
@@ -1390,9 +1244,7 @@ export default class AuthClass {
 
     public verifyCurrentUserAttribute(attr: string): Promise<void> {
         const that = this;
-        return that
-            .currentUserPoolUser()
-            .then(user => that.verifyUserAttribute(user, attr));
+        return that.currentUserPoolUser().then(user => that.verifyUserAttribute(user, attr));
     }
 
     /**
@@ -1401,20 +1253,12 @@ export default class AuthClass {
      * @param {String} code - The confirmation code
      * @return - A promise resolves to callback data if success
      */
-    verifyCurrentUserAttributeSubmit(
-        attr: string,
-        code: string
-    ): Promise<string> {
+    verifyCurrentUserAttributeSubmit(attr: string, code: string): Promise<string> {
         const that = this;
-        return that
-            .currentUserPoolUser()
-            .then(user => that.verifyUserAttributeSubmit(user, attr, code));
+        return that.currentUserPoolUser().then(user => that.verifyUserAttributeSubmit(user, attr, code));
     }
 
-    private async cognitoIdentitySignOut(
-        opts: SignOutOpts,
-        user: CognitoUser | any
-    ) {
+    private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
         try {
             await this._storageSync;
         } catch (e) {
@@ -1423,8 +1267,7 @@ export default class AuthClass {
         }
 
         const isSignedInHostedUI =
-            this._oAuthHandler &&
-            this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+            this._oAuthHandler && this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
         return new Promise((res, rej) => {
             if (opts && opts.global) {
@@ -1508,11 +1351,7 @@ export default class AuthClass {
      * @param {String} newPassword - the requested new password
      * @return - A promise resolves if success
      */
-    public changePassword(
-        user: CognitoUser | any,
-        oldPassword: string,
-        newPassword: string
-    ): Promise<'SUCCESS'> {
+    public changePassword(user: CognitoUser | any, oldPassword: string, newPassword: string): Promise<'SUCCESS'> {
         return new Promise((resolve, reject) => {
             this.userSession(user).then(session => {
                 user.changePassword(oldPassword, newPassword, (err, data) => {
@@ -1567,11 +1406,7 @@ export default class AuthClass {
      * @param {String} password - The new password
      * @return - A promise that resolves if success
      */
-    public forgotPasswordSubmit(
-        username: string,
-        code: string,
-        password: string
-    ): Promise<void> {
+    public forgotPasswordSubmit(username: string, code: string, password: string): Promise<void> {
         if (!this.userPool) {
             return this.rejectNoUserPool();
         }
@@ -1609,9 +1444,7 @@ export default class AuthClass {
         const source = Credentials.getCredSource();
 
         if (!source || source === 'aws' || source === 'userPool') {
-            const user = await this.currentUserPoolUser().catch(err =>
-                logger.debug(err)
-            );
+            const user = await this.currentUserPoolUser().catch(err => logger.debug(err));
             if (!user) {
                 return null;
             }
@@ -1623,10 +1456,7 @@ export default class AuthClass {
                 try {
                     credentials = await this.currentCredentials();
                 } catch (e) {
-                    logger.debug(
-                        'Failed to retrieve credentials while getting current user info',
-                        e
-                    );
+                    logger.debug('Failed to retrieve credentials while getting current user info', e);
                 }
 
                 const info = {
@@ -1647,37 +1477,26 @@ export default class AuthClass {
         }
     }
 
-    public async federatedSignIn(
-        options?: FederatedSignInOptions
-    ): Promise<ICredentials>;
+    public async federatedSignIn(options?: FederatedSignInOptions): Promise<ICredentials>;
     public async federatedSignIn(
         provider: LegacyProvider,
         response: FederatedResponse,
         user: FederatedUser
     ): Promise<ICredentials>;
+    public async federatedSignIn(options?: FederatedSignInOptionsCustom): Promise<ICredentials>;
     public async federatedSignIn(
-        options?: FederatedSignInOptionsCustom
-    ): Promise<ICredentials>;
-    public async federatedSignIn(
-        providerOrOptions:
-            | LegacyProvider
-            | FederatedSignInOptions
-            | FederatedSignInOptionsCustom,
+        providerOrOptions: LegacyProvider | FederatedSignInOptions | FederatedSignInOptionsCustom,
         response?: FederatedResponse,
         user?: FederatedUser
     ): Promise<ICredentials> {
         if (!this._config.identityPoolId && !this._config.userPoolId) {
-            throw new Error(
-                `Federation requires either a User Pool or Identity Pool in config`
-            );
+            throw new Error(`Federation requires either a User Pool or Identity Pool in config`);
         }
 
         // Ensure backwards compatability
         if (typeof providerOrOptions === 'undefined') {
             if (this._config.identityPoolId && !this._config.userPoolId) {
-                throw new Error(
-                    `Federation with Identity Pools requires tokens passed as arguments`
-                );
+                throw new Error(`Federation with Identity Pools requires tokens passed as arguments`);
             }
         }
 
@@ -1727,16 +1546,9 @@ export default class AuthClass {
             const { token, identity_id, expires_at } = response;
             // Because Credentials.set would update the user info with identity id
             // So we need to retrieve the user again.
-            const credentials = await Credentials.set(
-                { provider, token, identity_id, user, expires_at },
-                'federation'
-            );
+            const credentials = await Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation');
             const currentUser = await this.currentAuthenticatedUser();
-            dispatchAuthEvent(
-                'signIn',
-                currentUser,
-                `A user ${currentUser.username} has been signed in`
-            );
+            dispatchAuthEvent('signIn', currentUser, `A user ${currentUser.username} has been signed in`);
             logger.debug('federated sign in credentials', credentials);
             return credentials;
         }
@@ -1748,19 +1560,12 @@ export default class AuthClass {
      */
     private async _handleAuthResponse(URL?: string) {
         if (!this._config.userPoolId) {
-            throw new Error(
-                `OAuth responses require a User Pool defined in config`
-            );
+            throw new Error(`OAuth responses require a User Pool defined in config`);
         }
 
-        dispatchAuthEvent(
-            'parsingCallbackUrl',
-            { url: URL },
-            `The callback url is being parsed`
-        );
+        dispatchAuthEvent('parsingCallbackUrl', { url: URL }, `The callback url is being parsed`);
 
-        const currentUrl =
-            URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
+        const currentUrl = URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
 
         const hasCodeOrError = !!(parse(currentUrl).query || '')
             .split('&')
@@ -1775,12 +1580,9 @@ export default class AuthClass {
 
         if (hasCodeOrError || hasTokenOrError) {
             try {
-                const {
-                    accessToken,
-                    idToken,
-                    refreshToken,
-                    state
-                } = await this._oAuthHandler.handleAuthResponse(currentUrl);
+                const { accessToken, idToken, refreshToken, state } = await this._oAuthHandler.handleAuthResponse(
+                    currentUrl
+                );
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: idToken }),
                     RefreshToken: new CognitoRefreshToken({
@@ -1808,14 +1610,8 @@ export default class AuthClass {
                 /*The following is to create a user for the Cognito Identity SDK to store the tokens
                   When we remove this SDK later that logic will have to be centralized in our new version*/
                 //#region
-                const currentUser = this.createCognitoUser(
-                    session.getIdToken().decodePayload()['cognito:username']
-                );
-                dispatchAuthEvent(
-                    'signIn',
-                    currentUser,
-                    `A user ${currentUser.getUsername()} has been signed in`
-                );
+                const currentUser = this.createCognitoUser(session.getIdToken().decodePayload()['cognito:username']);
+                dispatchAuthEvent('signIn', currentUser, `A user ${currentUser.getUsername()} has been signed in`);
                 dispatchAuthEvent(
                     'cognitoHostedUI',
                     currentUser,
@@ -1825,11 +1621,7 @@ export default class AuthClass {
                 if (isCustomStateIncluded) {
                     const [, customState] = state.split('-');
 
-                    dispatchAuthEvent(
-                        'customOAuthState',
-                        customState,
-                        `State for user ${currentUser.getUsername()}`
-                    );
+                    dispatchAuthEvent('customOAuthState', customState, `State for user ${currentUser.getUsername()}`);
                 }
 
                 // This calls cacheTokens() in Cognito SDK
@@ -1837,32 +1629,19 @@ export default class AuthClass {
                 //#endregion
 
                 if (window && typeof window.history !== 'undefined') {
-                    window.history.replaceState(
-                        {},
-                        null,
-                        (this._config.oauth as AwsCognitoOAuthOpts)
-                            .redirectSignIn
-                    );
+                    window.history.replaceState({}, null, (this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn);
                 }
 
                 return credentials;
             } catch (err) {
                 logger.debug('Error in cognito hosted auth response', err);
-                dispatchAuthEvent(
-                    'signIn_failure',
-                    err,
-                    `The OAuth response flow failed`
-                );
+                dispatchAuthEvent('signIn_failure', err, `The OAuth response flow failed`);
                 dispatchAuthEvent(
                     'cognitoHostedUI_failure',
                     err,
                     `A failure occurred when returning to the Cognito Hosted UI`
                 );
-                dispatchAuthEvent(
-                    'customState_failure',
-                    err,
-                    `A failure occurred when returning state`
-                );
+                dispatchAuthEvent('customState_failure', err, `A failure occurred when returning state`);
                 throw err;
             }
         }
