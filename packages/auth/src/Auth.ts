@@ -588,16 +588,19 @@ export default class AuthClass {
 
     private _getUserData(user, params) {
         return new Promise((res, rej) => {
-            user.getUserData((err, data) => {
-                if (err) {
-                    logger.debug('getting user data failed', err);
-                    rej(err);
-                    return;
-                } else {
-                    res(data);
-                    return;
-                }
-            }, params);
+            user.getUserData(
+                (err, data) => {
+                    if (err) {
+                        logger.debug('getting user data failed', err);
+                        rej(err);
+                        return;
+                    } else {
+                        res(data);
+                        return;
+                    }
+                }, 
+                params
+            );
         });
     }
 
