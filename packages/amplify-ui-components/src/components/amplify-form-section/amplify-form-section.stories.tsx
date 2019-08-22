@@ -11,5 +11,5 @@ formSectionStories.add('default', () => {
 formSectionStories.add('custom button text', () => {
   const submitButtonText = textKnob('Submit button', 'Go');
 
-  return `<amplify-form-section submit-button-text=${submitButtonText}></amplify-form-section>`;
+  return `<amplify-form-section submit-button-text="${submitButtonText}"></amplify-form-section>`;
 });
