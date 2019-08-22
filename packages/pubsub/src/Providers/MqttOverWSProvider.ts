@@ -89,7 +89,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     public onDisconnect({ clientId, errorCode, ...args }) {
         if (errorCode !== 0) {
             logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+            this._topicObservers.forEach((observerForTopic, _observerTopic) => {
+                observerForTopic.forEach(observer => {
+                    observer.error('Disconnected, error code: ' + errorCode);
+                    observer.complete();
+                });
+            });
         }
+        this._topicObservers = new Map();
     }
 
     public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
