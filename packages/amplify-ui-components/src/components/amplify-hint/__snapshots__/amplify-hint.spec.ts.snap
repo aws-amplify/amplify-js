@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-input renders with hint text FOO 1`] = `
+<amplify-hint>
+  <!---->
+  <div class="amplify-ui-hint css-1qzfaa1">
+    FOO
+  </div>
+</amplify-hint>
+`;
+
+exports[`amplify-input renders with no hint text 1`] = `
+<amplify-hint>
+  <!---->
+  <div class="amplify-ui-hint css-1qzfaa1"></div>
+</amplify-hint>
+`;
