@@ -9,8 +9,8 @@
 
 | Property        | Attribute        | Description | Type      | Default         |
 | --------------- | ---------------- | ----------- | --------- | --------------- |
+| `overrideStyle` | `override-style` |             | `boolean` | `false`         |
 | `role`          | `role`           |             | `string`  | `'application'` |
-| `styleOverride` | `style-override` |             | `boolean` | `false`         |
 
 
 ## Dependencies

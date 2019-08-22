@@ -194,8 +194,8 @@ export namespace Components {
     'sceneName': string;
   }
   interface AmplifySection {
+    'overrideStyle'?: boolean;
     'role': string;
-    'styleOverride': boolean;
   }
   interface AmplifySelect {
     /**
@@ -213,7 +213,7 @@ export namespace Components {
   }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
-    'styleOverride': boolean;
+    'overrideStyle'?: boolean;
     'validationErrors': string;
   }
   interface AmplifySignInPasswordField {
@@ -592,8 +592,8 @@ declare namespace LocalJSX {
     'sceneName'?: string;
   }
   interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
+    'overrideStyle'?: boolean;
     'role'?: string;
-    'styleOverride'?: boolean;
   }
   interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
     /**
@@ -611,7 +611,7 @@ declare namespace LocalJSX {
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     'validationErrors'?: string;
   }
   interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
