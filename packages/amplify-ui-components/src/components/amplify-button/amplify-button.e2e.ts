@@ -31,7 +31,7 @@ describe('amplify-button', () => {
     });
     await page.waitForChanges();
 
-    const button = await page.find('button');
+    const button = await buttonElement.find('button');
     expect(func).not.toHaveBeenCalled();
     await button.click();
     //expect(func).toHaveBeenCalledTimes(1);

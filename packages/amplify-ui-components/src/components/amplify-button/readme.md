@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                                 | Type                              | Default                                                   |
-| --------------- | ---------------- | ----------------------------------------------------------- | --------------------------------- | --------------------------------------------------------- |
-| `onButtonClick` | --               | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`            | `(_) => {alert("new alert");this.test = "clicked now!";}` |
-| `overrideStyle` | `override-style` | (Optional) Override default styling                         | `boolean`                         | `false`                                                   |
-| `type`          | `type`           | Type of the button: 'button', 'submit' or 'reset'           | `"button" \| "reset" \| "submit"` | `'button'`                                                |
+| Property        | Attribute        | Description                                                 | Type                              | Default     |
+| --------------- | ---------------- | ----------------------------------------------------------- | --------------------------------- | ----------- |
+| `onButtonClick` | --               | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`            | `undefined` |
+| `overrideStyle` | `override-style` | (Optional) Override default styling                         | `boolean`                         | `false`     |
+| `type`          | `type`           | Type of the button: 'button', 'submit' or 'reset'           | `"button" \| "reset" \| "submit"` | `'button'`  |
 
 
 ## Dependencies
