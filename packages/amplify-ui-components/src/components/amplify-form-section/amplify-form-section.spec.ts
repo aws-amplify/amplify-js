@@ -23,10 +23,10 @@ describe('amplify-form-section spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render a form section with a button label of `Go`', async () => {
+    it('should render a form section with a submit button text of `Go`', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormSection],
-        html: `<amplify-form-section button-label="Go"></amplify-form-section>`
+        html: `<amplify-form-section submit-button-text="Go"></amplify-form-section>`
       });
 
       expect(page.root).toMatchSnapshot();

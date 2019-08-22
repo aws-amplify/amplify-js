@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-form-section spec: Render logic -> should render a form section with a button label of \`Go\` 1`] = `
-<amplify-form-section button-label="Go">
+exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
+<amplify-form-section>
   <!---->
   <form>
     <amplify-section class="amplify-ui--form-section css-1u8jjs9">
@@ -29,8 +29,8 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
-<amplify-form-section>
+exports[`amplify-form-section spec: Render logic -> should render a form section with a submit button text of \`Go\` 1`] = `
+<amplify-form-section submit-button-text="Go">
   <!---->
   <form>
     <amplify-section class="amplify-ui--form-section css-1u8jjs9">
@@ -48,7 +48,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
         <div class="amplify-ui--footer-section css-1q62vzk">
           <slot-fb name="amplify-section-footer">
             <amplify-button type="submit">
-              Submit
+              Go
             </amplify-button>
           </slot-fb>
         </div>
