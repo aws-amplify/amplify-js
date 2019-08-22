@@ -2,18 +2,18 @@ import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyFormSection } from './amplify-form-section';
 
 describe('amplify-form-section spec:', () => {
-  describe('Class logic ->', () => {
+  describe('Component logic ->', () => {
     let formSection;
 
     beforeEach(() => {
       formSection = new AmplifyFormSection();
     });
 
-    it('should render `Submit` for the button label', () => {
-      expect(formSection.buttonLabel).toEqual('Submit');
+    it('should render `Submit` for the button text', () => {
+      expect(formSection.submitButtonText).toEqual('Submit');
     });
   });
-  describe('HTML logic ->', () => {
+  describe('Render logic ->', () => {
     it('should render a form section with only a class of `amplify-ui--form-section` when style override is true', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormSection],

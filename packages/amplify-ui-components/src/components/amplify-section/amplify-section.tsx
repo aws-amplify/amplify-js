@@ -16,7 +16,9 @@ export class AmplifyLink {
   render() {
     return (
       <section class={styleNuker(this.styleOverride, AMPLIFY_UI_SECTION, section)} role={this.role}>
-        <slot />
+        <slot name="amplify-section-header" />
+        <slot name="amplify-section-body" />
+        <slot name="amplify-section-footer" />
       </section>
     );
   }

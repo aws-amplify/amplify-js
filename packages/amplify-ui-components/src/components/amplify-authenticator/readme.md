@@ -38,7 +38,6 @@ graph TD;
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-section-header
   amplify-sign-in --> amplify-sign-in-username-field
   amplify-sign-in --> amplify-sign-in-password-field
   amplify-sign-in --> amplify-button

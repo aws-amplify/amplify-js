@@ -1,76 +1,88 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-form-section spec: HTML logic -> should render a form section with a button label of \`Go\` 1`] = `
+exports[`amplify-form-section spec: Render logic -> should render a form section with a button label of \`Go\` 1`] = `
 <amplify-form-section button-label="Go">
   <!---->
-  <amplify-section class="amplify-ui--form-section css-1u8jjs9">
-    <form>
-      <slot-fb name="amplify-form-section-header">
-        <amplify-section-header>
-          Create a new account
-        </amplify-section-header>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-body">
-        <amplify-form-field label="Email Address *" placeholder="email@example.com" type="email"></amplify-form-field>
-        <amplify-form-field label="Phone Number *" placeholder="555-555-5555" type="tel"></amplify-form-field>
-        <amplify-form-field label="Password *" placeholder="Create a password" type="password"></amplify-form-field>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-footer">
-        <amplify-button class="amplify-ui--footer-section css-gw3w6p" type="submit">
-          Go
-        </amplify-button>
-      </slot-fb>
-    </form>
-  </amplify-section>
+  <form>
+    <amplify-section class="amplify-ui--form-section css-1u8jjs9">
+      <div slot="amplify-section-header">
+        <div class="amplify-ui--section-header css-xdkp27">
+          <slot-fb name="amplify-section-header">
+            <h2>
+              Amplify
+            </h2>
+          </slot-fb>
+        </div>
+      </div>
+      <div slot="amplify-section-body"></div>
+      <div slot="amplify-section-footer">
+        <div class="amplify-ui--footer-section css-1q62vzk">
+          <slot-fb name="amplify-section-footer">
+            <amplify-button type="submit">
+              Submit
+            </amplify-button>
+          </slot-fb>
+        </div>
+      </div>
+    </amplify-section>
+  </form>
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: HTML logic -> should render a form section with a default button of \`Submit\` 1`] = `
+exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
 <amplify-form-section>
   <!---->
-  <amplify-section class="amplify-ui--form-section css-1u8jjs9">
-    <form>
-      <slot-fb name="amplify-form-section-header">
-        <amplify-section-header>
-          Create a new account
-        </amplify-section-header>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-body">
-        <amplify-form-field label="Email Address *" placeholder="email@example.com" type="email"></amplify-form-field>
-        <amplify-form-field label="Phone Number *" placeholder="555-555-5555" type="tel"></amplify-form-field>
-        <amplify-form-field label="Password *" placeholder="Create a password" type="password"></amplify-form-field>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-footer">
-        <amplify-button class="amplify-ui--footer-section css-gw3w6p" type="submit">
-          Submit
-        </amplify-button>
-      </slot-fb>
-    </form>
-  </amplify-section>
+  <form>
+    <amplify-section class="amplify-ui--form-section css-1u8jjs9">
+      <div slot="amplify-section-header">
+        <div class="amplify-ui--section-header css-xdkp27">
+          <slot-fb name="amplify-section-header">
+            <h2>
+              Amplify
+            </h2>
+          </slot-fb>
+        </div>
+      </div>
+      <div slot="amplify-section-body"></div>
+      <div slot="amplify-section-footer">
+        <div class="amplify-ui--footer-section css-1q62vzk">
+          <slot-fb name="amplify-section-footer">
+            <amplify-button type="submit">
+              Submit
+            </amplify-button>
+          </slot-fb>
+        </div>
+      </div>
+    </amplify-section>
+  </form>
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: HTML logic -> should render a form section with only a class of \`amplify-ui--form-section\` when style override is true 1`] = `
+exports[`amplify-form-section spec: Render logic -> should render a form section with only a class of \`amplify-ui--form-section\` when style override is true 1`] = `
 <amplify-form-section override-style="true">
   <!---->
-  <amplify-section class="amplify-ui--form-section">
-    <form>
-      <slot-fb name="amplify-form-section-header">
-        <amplify-section-header>
-          Create a new account
-        </amplify-section-header>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-body">
-        <amplify-form-field label="Email Address *" placeholder="email@example.com" type="email"></amplify-form-field>
-        <amplify-form-field label="Phone Number *" placeholder="555-555-5555" type="tel"></amplify-form-field>
-        <amplify-form-field label="Password *" placeholder="Create a password" type="password"></amplify-form-field>
-      </slot-fb>
-      <slot-fb name="amplify-form-section-footer">
-        <amplify-button class="amplify-ui--footer-section" type="submit">
-          Submit
-        </amplify-button>
-      </slot-fb>
-    </form>
-  </amplify-section>
+  <form>
+    <amplify-section class="amplify-ui--form-section">
+      <div slot="amplify-section-header">
+        <div class="amplify-ui--section-header css-xdkp27">
+          <slot-fb name="amplify-section-header">
+            <h2>
+              Amplify
+            </h2>
+          </slot-fb>
+        </div>
+      </div>
+      <div slot="amplify-section-body"></div>
+      <div slot="amplify-section-footer">
+        <div class="amplify-ui--footer-section css-1q62vzk">
+          <slot-fb name="amplify-section-footer">
+            <amplify-button type="submit">
+              Submit
+            </amplify-button>
+          </slot-fb>
+        </div>
+      </div>
+    </amplify-section>
+  </form>
 </amplify-form-section>
 `;

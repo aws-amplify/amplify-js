@@ -40,8 +40,6 @@ graph TD;
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-form-section --> amplify-section
-  amplify-form-section --> amplify-section-header
-  amplify-form-section --> amplify-form-field
   amplify-form-section --> amplify-button
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
@@ -49,7 +47,6 @@ graph TD;
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-section-header
   amplify-sign-in --> amplify-sign-in-username-field
   amplify-sign-in --> amplify-sign-in-password-field
   amplify-sign-in --> amplify-button

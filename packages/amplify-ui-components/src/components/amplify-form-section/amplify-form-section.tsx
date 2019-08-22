@@ -1,39 +1,59 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-import { formSectionFooter, formSection } from './amplify-form-section.style';
+import { formSection, formSectionHeader, formSectionFooter } from './amplify-form-section.style';
+import { AmplifyFormSectionHeaderProps, AmplifyFormSectionFooterProps } from './amplify-form-section-interface';
 
 const STATIC_FORM_SECTION_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--form-section`;
+const STATIC_SECTION_HEADER_CLASS_NAME =  `${AMPLIFY_UI_PREFIX}--section-header`;
 const STATIC_FORM_SECTION_FOOTER_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--footer-section`;
+
+
+const AmplifyFormSectionHeader: FC<AmplifyFormSectionHeaderProps> = ({ headerText, overrideStyle = false }) => (
+  <div class={styleNuker(overrideStyle, STATIC_SECTION_HEADER_CLASS_NAME, formSectionHeader)}>
+    <slot name="amplify-section-header">
+      <h2>{headerText}</h2>
+    </slot>
+  </div>
+);
+
+const AmplifyFormSectionFooter: FC<AmplifyFormSectionFooterProps> = ({ submitButtonText, overrideStyle = false }) => (
+  <div class={styleNuker(overrideStyle, STATIC_FORM_SECTION_FOOTER_CLASS_NAME, formSectionFooter)}>
+    <slot name="amplify-section-footer">
+      <amplify-button type="submit">{submitButtonText}</amplify-button>
+    </slot>
+  </div>
+);
+
 @Component({
   tag: 'amplify-form-section',
   shadow: false,
 })
 export class AmplifyFormSection {
-  /** (Required) Submit function used when form is submitted */
+  /** (Required) Function called upon submission of form */
   @Prop() handleSubmit: (inputEvent: Event) => void;
   /** (Optional) Used as a the default value within the default footer slot */
-  @Prop() buttonLabel?: string = 'Submit';
+  @Prop() submitButtonText?: string = 'Submit';
+  /** Used for form section header */
+  @Prop() headerText: string = 'Amplify';
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle?: boolean = false;
 
   render() {
     return (
-      <amplify-section class={styleNuker(this.overrideStyle, STATIC_FORM_SECTION_CLASS_NAME, formSection)}>
-        <form onSubmit={this.handleSubmit}>
-          <slot name="amplify-form-section-header">
-            <amplify-section-header>Create a new account</amplify-section-header>
-          </slot>
-          <slot name="amplify-form-section-body">
-            <amplify-form-field label="Email Address *" placeholder="email@example.com" type="email"></amplify-form-field>
-            <amplify-form-field label="Phone Number *" placeholder="555-555-5555" type="tel"></amplify-form-field>
-            <amplify-form-field label="Password *" placeholder="Create a password" type="password"></amplify-form-field>
-          </slot>
-          <slot name="amplify-form-section-footer">
-            <amplify-button type="submit" class={styleNuker(this.overrideStyle, STATIC_FORM_SECTION_FOOTER_CLASS_NAME, formSectionFooter)}>{this.buttonLabel}</amplify-button>
-          </slot>
-        </form>
-      </amplify-section>
+      <form onSubmit={this.handleSubmit}>
+        <amplify-section class={styleNuker(this.overrideStyle, STATIC_FORM_SECTION_CLASS_NAME, formSection)}>
+          <div slot="amplify-section-header" >
+            <AmplifyFormSectionHeader headerText={this.headerText} />
+          </div>
+          <div slot="amplify-section-body">
+            <slot />
+          </div>
+          <div slot="amplify-section-footer">
+            <AmplifyFormSectionFooter submitButtonText={this.submitButtonText} />
+          </div>
+        </amplify-section>
+      </form>
     );
   }
 }
