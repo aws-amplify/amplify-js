@@ -246,11 +246,7 @@ describe('auth unit test', () => {
                 }
             };
             expect.assertions(1);
-            try {
-                await auth.signUp(attrs);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect(auth.signUp(attrs).then()).rejects.toThrow(AuthError);
         });
 
         test('callback error', async () => {
