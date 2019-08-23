@@ -52,9 +52,14 @@ export const authErrorMessages: AuthErrorMessages = {
     noConfig: {
         message: DEFAULT_MSG,
         log: `
-            Error: Amplify has not been configured correctly. 
-            Please make sure you're passing the config object to Amplify.configure(). 
-            See https://aws-amplify.github.io/docs/js/authentication#configure-your-app for more information
+            Error: Amplify has not been configured correctly.
+            This error is typically caused by one of the following scenarios:
+            
+            1. Make sure you're passing the awsconfig object to Amplify.configure() in your app's entry point
+                See https://aws-amplify.github.io/docs/js/authentication#configure-your-app for more information
+            
+            2. There might be multiple conflicting versions of aws-amplify or amplify packages in your node_modules.
+                Try deleting your node_modules folder and reinstalling the dependencies with \`yarn install\`
         `
     },
     missingAuthConfig: {
