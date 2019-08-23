@@ -15,7 +15,7 @@
     "format": "eslint --fix --ext .js,.ts,.tsx .",
     "pretest": "npm run lint",
     "test": "stencil test --spec --e2e --coverage",
-    "test:screenshot": "stencil test --spec --e2e --screenshot",
+    "test:screenshot": "stencil test --spec --e2e --screenshot --coverage",
     "test:update-screenshot": "rm -f screenshot/builds/master.json && rm -f screenshot/images/* && stencil test --spec --e2e --screenshot --update-screenshot",
     "test:watch": "stencil test --spec --e2e --watchAll",
     "stencil": "stencil build --docs-readme",
@@ -59,7 +59,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run test"
+      "pre-push": "yarn run test:screenshot"
     }
   },
   "peerDependencies": {},
