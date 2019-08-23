@@ -1,7 +1,7 @@
 import { E2EPage, newE2EPage } from '@stencil/core/testing';
 import { pixelThreshold } from '../../common/testing';
 
-describe('amplify-hint', () => {
+describe('amplify-hint e2e:', () => {
   let page: E2EPage;
 
   beforeEach(async () => {
