@@ -10,7 +10,7 @@
 | Property           | Attribute           | Description | Type                   | Default     |
 | ------------------ | ------------------- | ----------- | ---------------------- | ----------- |
 | `handleSubmit`     | --                  |             | `(Event: any) => void` | `undefined` |
-| `styleOverride`    | `style-override`    |             | `boolean`              | `false`     |
+| `overrideStyle`    | `override-style`    |             | `boolean`              | `false`     |
 | `validationErrors` | `validation-errors` |             | `string`               | `undefined` |
 
 
@@ -23,7 +23,6 @@
 ### Depends on
 
 - [amplify-section](../amplify-section)
-- [amplify-section-header](../amplify-section-header)
 - [amplify-sign-in-username-field](../amplify-sign-in-username-field)
 - [amplify-sign-in-password-field](../amplify-sign-in-password-field)
 - [amplify-button](../amplify-button)
@@ -32,7 +31,6 @@
 ```mermaid
 graph TD;
   amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-section-header
   amplify-sign-in --> amplify-sign-in-username-field
   amplify-sign-in --> amplify-sign-in-password-field
   amplify-sign-in --> amplify-button

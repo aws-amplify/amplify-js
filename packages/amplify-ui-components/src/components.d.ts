@@ -93,6 +93,24 @@ export namespace Components {
     */
     'type'?: TextFieldTypes;
   }
+  interface AmplifyFormSection {
+    /**
+    * (Required) Function called upon submission of form
+    */
+    'handleSubmit': (inputEvent: Event) => void;
+    /**
+    * Used for form section header
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) Used as a the default value within the default footer slot
+    */
+    'submitButtonText'?: string;
+  }
   interface AmplifyHint {
     'overrideStyle': boolean;
   }
@@ -176,11 +194,8 @@ export namespace Components {
     'sceneName': string;
   }
   interface AmplifySection {
+    'overrideStyle'?: boolean;
     'role': string;
-    'styleOverride': boolean;
-  }
-  interface AmplifySectionHeader {
-    'styleOverride': boolean;
   }
   interface AmplifySelect {
     /**
@@ -198,7 +213,7 @@ export namespace Components {
   }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
-    'styleOverride': boolean;
+    'overrideStyle'?: boolean;
     'validationErrors': string;
   }
   interface AmplifySignInPasswordField {
@@ -279,6 +294,12 @@ declare global {
     new (): HTMLAmplifyFormFieldElement;
   };
 
+  interface HTMLAmplifyFormSectionElement extends Components.AmplifyFormSection, HTMLStencilElement {}
+  var HTMLAmplifyFormSectionElement: {
+    prototype: HTMLAmplifyFormSectionElement;
+    new (): HTMLAmplifyFormSectionElement;
+  };
+
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
@@ -325,12 +346,6 @@ declare global {
   var HTMLAmplifySectionElement: {
     prototype: HTMLAmplifySectionElement;
     new (): HTMLAmplifySectionElement;
-  };
-
-  interface HTMLAmplifySectionHeaderElement extends Components.AmplifySectionHeader, HTMLStencilElement {}
-  var HTMLAmplifySectionHeaderElement: {
-    prototype: HTMLAmplifySectionHeaderElement;
-    new (): HTMLAmplifySectionHeaderElement;
   };
 
   interface HTMLAmplifySelectElement extends Components.AmplifySelect, HTMLStencilElement {}
@@ -380,6 +395,7 @@ declare global {
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
+    'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-input': HTMLAmplifyInputElement;
@@ -388,7 +404,6 @@ declare global {
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
-    'amplify-section-header': HTMLAmplifySectionHeaderElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
@@ -476,6 +491,24 @@ declare namespace LocalJSX {
     */
     'type'?: TextFieldTypes;
   }
+  interface AmplifyFormSection extends JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement> {
+    /**
+    * (Required) Function called upon submission of form
+    */
+    'handleSubmit'?: (inputEvent: Event) => void;
+    /**
+    * Used for form section header
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) Used as a the default value within the default footer slot
+    */
+    'submitButtonText'?: string;
+  }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     'overrideStyle'?: boolean;
   }
@@ -559,11 +592,8 @@ declare namespace LocalJSX {
     'sceneName'?: string;
   }
   interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
+    'overrideStyle'?: boolean;
     'role'?: string;
-    'styleOverride'?: boolean;
-  }
-  interface AmplifySectionHeader extends JSXBase.HTMLAttributes<HTMLAmplifySectionHeaderElement> {
-    'styleOverride'?: boolean;
   }
   interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
     /**
@@ -581,7 +611,7 @@ declare namespace LocalJSX {
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     'validationErrors'?: string;
   }
   interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
@@ -635,6 +665,7 @@ declare namespace LocalJSX {
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
+    'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-input': AmplifyInput;
@@ -643,7 +674,6 @@ declare namespace LocalJSX {
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
-    'amplify-section-header': AmplifySectionHeader;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-password-field': AmplifySignInPasswordField;

@@ -1,21 +1,23 @@
 import { Component, Element, Prop, h } from '@stencil/core';
 import { section } from './amplify-section.style';
 import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_SECTION } from '../../common/constants';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
+
+const STATIC_SECTION_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--section`;
 
 @Component({
   tag: 'amplify-section',
   shadow: false,
 })
-export class AmplifyLink {
+export class AmplifySection {
   @Element() el: HTMLElement;
 
   @Prop() role: string = 'application';
-  @Prop() styleOverride: boolean = false;
+  @Prop() overrideStyle?: boolean = false;
 
   render() {
     return (
-      <section class={styleNuker(this.styleOverride, AMPLIFY_UI_SECTION, section)} role={this.role}>
+      <section class={styleNuker(this.overrideStyle, STATIC_SECTION_CLASS_NAME, section)} role={this.role}>
         <slot />
       </section>
     );

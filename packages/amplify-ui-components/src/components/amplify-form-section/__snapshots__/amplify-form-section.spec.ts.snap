@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
+<amplify-form-section>
+  <!---->
+  <form>
+    <amplify-section>
+      <div>
+        <slot-fb name="amplify-form-section-header">
+          <div class="amplify-ui--section-header css-xdkp27">
+            <h2>
+              Amplify
+            </h2>
+          </div>
+        </slot-fb>
+      </div>
+      <div>
+        <slot-fb name="amplify-form-section-footer">
+          <div class="amplify-ui--section-footer css-1q62vzk">
+            <amplify-button type="submit">
+              Submit
+            </amplify-button>
+          </div>
+        </slot-fb>
+      </div>
+    </amplify-section>
+  </form>
+</amplify-form-section>
+`;
+
+exports[`amplify-form-section spec: Render logic -> should render a form section with a submit button text of \`Go\` 1`] = `
+<amplify-form-section submit-button-text="Go">
+  <!---->
+  <form>
+    <amplify-section>
+      <div>
+        <slot-fb name="amplify-form-section-header">
+          <div class="amplify-ui--section-header css-xdkp27">
+            <h2>
+              Amplify
+            </h2>
+          </div>
+        </slot-fb>
+      </div>
+      <div>
+        <slot-fb name="amplify-form-section-footer">
+          <div class="amplify-ui--section-footer css-1q62vzk">
+            <amplify-button type="submit">
+              Go
+            </amplify-button>
+          </div>
+        </slot-fb>
+      </div>
+    </amplify-section>
+  </form>
+</amplify-form-section>
+`;
+
+exports[`amplify-form-section spec: Render logic -> should render a form section with only a class of \`amplify-ui--form-section\` when style override is true 1`] = `
+<amplify-form-section override-style="true">
+  <!---->
+  <form>
+    <amplify-section override-style="">
+      <div>
+        <slot-fb name="amplify-form-section-header">
+          <div class="amplify-ui--section-header">
+            <h2>
+              Amplify
+            </h2>
+          </div>
+        </slot-fb>
+      </div>
+      <div>
+        <slot-fb name="amplify-form-section-footer">
+          <div class="amplify-ui--section-footer">
+            <amplify-button type="submit">
+              Submit
+            </amplify-button>
+          </div>
+        </slot-fb>
+      </div>
+    </amplify-section>
+  </form>
+</amplify-form-section>
+`;
