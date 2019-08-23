@@ -9,7 +9,7 @@ describe('amplify-hint e2e:', () => {
     await page.setContent('<amplify-hint>This is a hint</amplify-hint>');
   });
 
-  it('renders', async () => {
+  it(`renders with text 'This is a hint'`, async () => {
     const element = await page.find('amplify-hint');
     expect(element).not.toBeNull();
 
