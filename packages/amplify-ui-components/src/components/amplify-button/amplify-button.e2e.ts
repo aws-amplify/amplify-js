@@ -1,7 +1,7 @@
 import { E2EPage, newE2EPage } from '@stencil/core/testing';
 import { pixelThreshold } from '../../common/testing';
 
-describe('amplify-button', () => {
+describe('amplify-button e2e:', () => {
   let page: E2EPage;
 
   beforeEach(async () => {
@@ -9,7 +9,7 @@ describe('amplify-button', () => {
     await page.setContent('<amplify-button>FOO</amplify-button>');
   });
 
-  it('renders', async () => {
+  it(`renders with text 'FOO'`, async () => {
     const element = await page.find('amplify-button');
     expect(element).not.toBeNull();
 

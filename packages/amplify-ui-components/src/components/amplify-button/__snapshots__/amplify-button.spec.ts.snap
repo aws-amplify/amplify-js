@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-input renders with button text FOO 1`] = `
+exports[`amplify-input spec: Render logic -> renders with button text FOO 1`] = `
 <amplify-button>
   <!---->
   <button class="amplify-ui--button css-1qhle2w" type="button">
@@ -9,7 +9,7 @@ exports[`amplify-input renders with button text FOO 1`] = `
 </amplify-button>
 `;
 
-exports[`amplify-input renders with no button text 1`] = `
+exports[`amplify-input spec: Render logic -> renders with no button text 1`] = `
 <amplify-button>
   <!---->
   <button class="amplify-ui--button css-1qhle2w" type="button"></button>
