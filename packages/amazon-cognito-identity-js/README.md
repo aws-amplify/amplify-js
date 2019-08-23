@@ -28,7 +28,7 @@ depending on your project setup and experience with modern JavaScript build tool
 
 - Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
+**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) or its polyfil in Node.js. For [older browsers](https://caniuse.com/#feat=fetch), you may need to include a polyfill. For example.
 
 ```javascript
 global.fetch = require('node-fetch');
