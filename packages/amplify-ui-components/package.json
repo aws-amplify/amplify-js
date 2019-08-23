@@ -59,7 +59,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn run test"
+      "pre-push": "yarn run test:screenshot"
     }
   },
   "peerDependencies": {},
