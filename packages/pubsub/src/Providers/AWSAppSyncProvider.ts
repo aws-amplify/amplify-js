@@ -129,10 +129,17 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                 // reconnect everything we have in the map
                 await Promise.all(map.map(async ([clientId, { url, topics }]) => {
                     // connect to new client
-                    const client = await this.connect(clientId, {
-                        clientId,
-                        url,
-                    });
+                    let client = null;
+                    try {
+                        client = await this.connect(clientId, {
+                            clientId,
+                            url,
+                        });
+                    } catch (err) {
+                        observer.error({ message: 'Failed to connect', error: err });
+                        observer.complete();
+                        return undefined;
+                    }
 
                     // subscribe to all topics for this client
                     // store topic-client mapping
