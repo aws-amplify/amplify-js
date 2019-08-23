@@ -854,11 +854,11 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
 
-            const error = new AuthError(AuthErrorTypes.EmptyPassword);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyPassword);
 
             expect.assertions(2);
             await expect(auth.completeNewPassword(user, null, {}).then()).rejects.toThrow(AuthError);
-            await expect(auth.completeNewPassword(user, null, {}).then()).rejects.toEqual(error);
+            await expect(auth.completeNewPassword(user, null, {}).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -1303,11 +1303,11 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            const error = new AuthError(AuthErrorTypes.EmptyCode);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyCode);
 
             expect.assertions(2);
             expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toThrow(AuthError);
-            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toEqual(error);
+            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toEqual(errorMessage);
         });
     });
 

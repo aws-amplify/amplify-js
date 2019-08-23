@@ -191,7 +191,7 @@ export enum AuthErrorTypes {
     Default = 'default'
 }
 
-export type AuthErrorMessages = { [key in AuthErrorTypes]?: AuthErrorMessage };
+export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
 
 export interface AuthErrorMessage {
     message: string;

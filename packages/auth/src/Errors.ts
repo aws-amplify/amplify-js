@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -54,7 +54,7 @@ export const authErrorMessages: AuthErrorMessages = {
         log: `
             Error: Amplify has not been configured correctly.
             This error is typically caused by one of the following scenarios:
-            
+
             1. Make sure you're passing the awsconfig object to Amplify.configure() in your app's entry point
                 See https://aws-amplify.github.io/docs/js/authentication#configure-your-app for more information
             
@@ -74,6 +74,7 @@ export const authErrorMessages: AuthErrorMessages = {
     emptyUsername: {
         message: 'Username cannot be empty'
     },
+    // TODO: should include a list of valid sign-in types
     invalidUsername: {
         message:
             'The username should either be a string or one of the sign in types'
