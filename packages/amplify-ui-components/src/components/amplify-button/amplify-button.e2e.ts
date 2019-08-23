@@ -26,14 +26,14 @@ describe('amplify-button', () => {
 
     // This block here, and the .exposeFunction() above, are both necessary
     // if you ever want to pass a function into an object's props
-    await page.$eval('amplify-button', (el: any) => {
-      el.onButtonClicked = this.exposedfunc;
+    await page.$eval('amplify-button', (componentElement: any) => {
+      componentElement.onButtonClick = this.exposedfunc;
     });
     await page.waitForChanges();
 
     const button = await buttonElement.find('button');
     expect(func).not.toHaveBeenCalled();
     await button.click();
-    //expect(func).toHaveBeenCalledTimes(1);
+    expect(func).toHaveBeenCalledTimes(1);
   });
 });
