@@ -1,7 +1,7 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyHint } from './amplify-hint';
 
-describe('amplify-input spec:', () => {
+describe('amplify-hint spec:', () => {
   describe('Render logic ->', () => {
     it('renders with no hint text', async () => {
       const page = await newSpecPage({
@@ -19,5 +19,19 @@ describe('amplify-input spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
+    it('renders without Emotion CSS class when overrideStyle is true', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyHint],
+        html: `<amplify-hint override-style='true'>FOO</amplify-hint>`,
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
+  });
+  describe('Component logic ->', () => {
+    it('should have overrideStyle false by default', async () => {
+      const hint = new AmplifyHint();
+      expect(hint.overrideStyle).toBe(false);
+    })
   });
 });
