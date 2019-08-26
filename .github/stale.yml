@@ -7,6 +7,7 @@ exemptLabels:
   - feature-request
   - to-be-triaged
   - bug
+  - tracked
 staleLabel: pending-close-response-required
 markComment: >
   This issue has been automatically marked as stale because it has not had
