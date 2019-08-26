@@ -32,6 +32,6 @@ describe('amplify-hint spec:', () => {
     it('should have overrideStyle false by default', async () => {
       const hint = new AmplifyHint();
       expect(hint.overrideStyle).toBe(false);
-    })
+    });
   });
 });

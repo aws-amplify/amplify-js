@@ -1,8 +1,9 @@
 import { storiesOf } from '@storybook/html';
-import { text as textKnob } from '@storybook/addon-knobs';
+import { knobs } from '../../common/testing';
 
 storiesOf('amplify-button', module).add('with text', () => {
-  const text = textKnob('Text', 'Foo');
-  const primaryColor = textKnob('Primary Color', '#FF9900');
-  return `<amplify-button primary-color="${primaryColor}">${text}</amplify-button>`;
+  const text = knobs.buttonTextKnob('Foo');
+  const type = knobs.buttonTypeKnob('button');
+  const override = knobs.overrideStyleKnob();
+  return `<amplify-button type=${type} override-style=${override}>${text}</amplify-button>`;
 });
