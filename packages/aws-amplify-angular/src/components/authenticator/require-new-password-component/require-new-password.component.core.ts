@@ -13,68 +13,96 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, OnInit, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container">
-  <div class="amplify-form-body">
-  <div class="amplify-form-header">You are required to update your password</div>
-    <div class="amplify-form-row">
-      <label class="amplify-input-label" for="password"> Password *</label>
-      <input #password
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
-        type="password"
-        placeholder="Password"
-      />
+<div class="amplify-form-container" data-test="${auth.requireNewPassword.section}">
+  <div class="amplify-form-body" data-test="${auth.requireNewPassword.bodySection}">
+  <div class="amplify-form-header" data-test="${auth.requireNewPassword.headerSection}">
+    {{ this.amplifyService.i18n().get('You are required to update your password') }}
+  </div>
+  <div class="amplify-form-row">
+    <label class="amplify-input-label" for="password">
+      {{ this.amplifyService.i18n().get('Password *') }}
+    </label>
+    <input #password
+      (keyup)="setPassword(password.value)"
+      (keyup.enter)="onSubmit()"
+      class="amplify-form-input"
+      type="password"
+      placeholder="{{ this.amplifyService.i18n().get('Password') }}"
+      data-test="${auth.requireNewPassword.newPasswordInput}"
+    />
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
-        >Back to Sign In</a>
+          data-test="${auth.requireNewPassword.backToSignInLink}"
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"
           (click)="onSubmit()"
-        >Submit</button>
+          data-test="${auth.requireNewPassword.submitButton}"
+        >{{ this.amplifyService.i18n().get('Submit') }}</button>
       </div>
     </div>
   </div>
-  
 </div>
 <div class="amplify-alert" *ngIf="errorMessage">
 <div class="amplify-alert-body">
   <span class="amplify-alert-icon">&#9888;</span>
-  <div class="amplify-alert-message">{{ errorMessage }}</div>
+  <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
   <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
 </div>
 </div>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-require-new-password-core',
-  template: template
+  template
 })
-export class RequireNewPasswordComponentCore {
+export class RequireNewPasswordComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
   password: string;
   errorMessage: string;
-  amplifyService: AmplifyService;
+  protected logger: any;
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
   }
 
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'requireNewPassword';
+  }
+
+  @Input() hide: string[] = [];
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'requireNewPassword';
+    this.hide = data.hide ? data.hide : this.hide;
+  }
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    }
+  }
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setPassword(password: string) {
@@ -91,12 +119,14 @@ export class RequireNewPasswordComponentCore {
         requiredAttributes
       )
       .then(() => {
-        this.amplifyService.setAuthState({ state: 'signIn', user: user });
+        this.onAlertClose();
+        this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
   }
 
   onSignIn() {
+    this.onAlertClose();
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
   }
 

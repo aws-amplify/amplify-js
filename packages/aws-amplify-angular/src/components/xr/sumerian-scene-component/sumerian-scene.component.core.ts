@@ -11,20 +11,19 @@
  * and limitations under the License.
  */
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Logger, XR } from 'aws-amplify';
 import { AmplifyService } from '../../../providers';
 
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const logger = new Logger('SumerianSceneComponentCore');
+import { sumerianScene } from '../../../assets/data-test-attributes';
 
 const template = `
-<div id="sumerian-scene-container" class={{amplifyUI.sumerianSceneContainer}}>
-  <div id="sumerian-scene-dom-id" class={{amplifyUI.sumerianScene}}>
-    <sumerian-scene-loading-core *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}} sceneError={{sceneError}}></sumerian-scene-loading-core>
+<div id="sumerian-scene-container" class={{amplifyUI.sumerianSceneContainer}} data-test="${sumerianScene.container}">
+  <div id="sumerian-scene-dom-id" class={{amplifyUI.sumerianScene}} data-test="${sumerianScene.sumerianScene}">
+    <sumerian-scene-loading-core *ngIf="loading" loadPercentage={{loadPercentage}} sceneName={{sceneName}} sceneError={{sceneError}} data-test="${sumerianScene.loading}"></sumerian-scene-loading-core>
   </div>
-  <div *ngIf="!loading" class={{amplifyUI.sceneBar}}>
-    <span class={{amplifyUI.sceneActions}}>
+  <div *ngIf="!loading" class={{amplifyUI.sceneBar}} data-test="${sumerianScene.bar}">
+    <span class={{amplifyUI.sceneActions}} data-test="${sumerianScene.actions}">
       <div [ngClass]="[amplifyUI.tooltip, showEnableAudio ? amplifyUI.autoShowTooltip : '']" [attr.data-text]="showEnableAudio ? 'The scene is muted. Click to unmute.' : (muted ? 'Unmute' : 'Mute')" (click)="muted ? setMuted(false) : setMuted(true)">
         <button class={{amplifyUI.actionButton}}>
           <svg *ngIf="muted" width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -99,18 +98,17 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   isVRPresentationActive = false;
   isFullscreen = false;
   sceneError = null;
-
-  amplifyService: AmplifyService;
-  amplifyUI: AmplifyUI;
+  amplifyUI: any;
+  protected logger: any;
 
   @Input()
   set data(data: any) {
     this.sceneName = data.sceneName;
   }
 
-  constructor(amplifyService: AmplifyService) {
-    this.amplifyService = amplifyService;
+  constructor(protected amplifyService: AmplifyService) {
     this.amplifyUI = AmplifyUI;
+    this.logger = this.amplifyService.logger('SumerianSceneComponentCore');
   }
 
   ngOnInit() {   
@@ -119,7 +117,13 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
     document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
     document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
 
+    if (!this.amplifyService.xr()){
+      throw new Error('XR module not registered on AmplifyService provider');
+    }
+
     this.loadAndStartScene();
+
+
   }
 
   ngOnDestroy() {
@@ -132,7 +136,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   progressCallback = (progress) => {
     const percentage = progress * 100;
     this.loadPercentage = percentage;
-  };
+  }
 
   async loadAndStartScene() {
     this.loading = true;
@@ -140,29 +144,32 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
       progressCallback: this.progressCallback
     };
     try {
-      await XR.loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
+      await this.amplifyService.xr()
+      .loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
     } catch (e) {
       this.sceneError = 'Failed to load scene';
-      logger.error(this.sceneError, e);
+      this.logger.error(this.sceneError, e);
       return;
     }
-    XR.start(this.sceneName);
+    this.amplifyService.xr().start(this.sceneName);
 
     this.loading = false;
-    this.muted = XR.isMuted(this.sceneName);
+    this.muted = this.amplifyService.xr().isMuted(this.sceneName);
 
-    this.isVRCapable = XR.isVRCapable(this.sceneName);
-    this.isVRPresentationActive = XR.isVRPresentationActive(this.sceneName);
+    this.isVRCapable = this.amplifyService.xr().isVRCapable(this.sceneName);
+    this.isVRPresentationActive = this.amplifyService.xr().isVRPresentationActive(this.sceneName);
 
-    XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-    XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
+    this.amplifyService.xr()
+    .onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
+    this.amplifyService.xr()
+    .onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
   }
   
   setMuted(muted) {
     this.muted = muted;
-    XR.setMuted(this.sceneName, muted);
+    this.amplifyService.xr().setMuted(this.sceneName, muted);
     if (this.showEnableAudio) {
-      XR.enableAudio(this.sceneName);
+      this.amplifyService.xr().enableAudio(this.sceneName);
       this.showEnableAudio = false;
     }
   }
@@ -170,12 +177,12 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
   toggleVRPresentation() {
     try {
       if (this.isVRPresentationActive) {
-        XR.exitVR(this.sceneName);
+        this.amplifyService.xr().exitVR(this.sceneName);
       } else {
-        XR.enterVR(this.sceneName);
+        this.amplifyService.xr().enterVR(this.sceneName);
       }
     } catch(e) {
-      logger.error('Unable to start/stop WebVR System: ' + e.message);
+      this.logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
     this.isVRPresentationActive = !this.isVRPresentationActive;

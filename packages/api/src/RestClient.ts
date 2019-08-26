@@ -72,7 +72,9 @@ export class RestClient {
             host: parsed_url.host,
             path: parsed_url.path,
             headers: {},
-            data: null
+            data: null,
+            responseType: 'json',
+            timeout: 0
         };
 
         let libraryHeaders = {};
@@ -89,6 +91,15 @@ export class RestClient {
         if (initParams.body) {
             libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(initParams.body);
+        }
+        if (initParams.responseType) {
+            params.responseType = initParams.responseType;
+        }
+        if (initParams.withCredentials) {
+            params['withCredentials'] = initParams.withCredentials;
+        }
+        if (initParams.timeout) {
+            params.timeout = initParams.timeout;
         }
 
         params['signerServiceInfo'] = initParams.signerServiceInfo;

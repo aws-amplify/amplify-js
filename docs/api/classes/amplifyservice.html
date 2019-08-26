@@ -940,7 +940,13 @@ img { max-width: 100%; }
 				<a href="amplifyservice.html#cache" class="tsd-kind-icon">cache</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="amplifyservice.html#i18n" class="tsd-kind-icon">i18n</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="amplifyservice.html#interactions" class="tsd-kind-icon">interactions</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="amplifyservice.html#logger" class="tsd-kind-icon">logger</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="amplifyservice.html#pubsub" class="tsd-kind-icon">pubsub</a>
@@ -950,6 +956,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="amplifyservice.html#storage" class="tsd-kind-icon">storage</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="amplifyservice.html#xr" class="tsd-kind-icon">xr</a>
 			</li>
 		</ul>
 	</li>
@@ -989,10 +998,13 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#auth" class="tsd-kind-icon">auth</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#authstate" class="tsd-kind-icon">auth<wbr>State</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#cache" class="tsd-kind-icon">cache</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#i18n" class="tsd-kind-icon">i18n</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#interactions" class="tsd-kind-icon">interactions</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#logger" class="tsd-kind-icon">logger</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#pubsub" class="tsd-kind-icon">pubsub</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#setauthstate" class="tsd-kind-icon">set<wbr>Auth<wbr>State</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#storage" class="tsd-kind-icon">storage</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="amplifyservice.html#xr" class="tsd-kind-icon">xr</a></li>
 					</ul>
 				</section>
 			</div>
@@ -1004,15 +1016,21 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Amplify<wbr>Service<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="amplifyservice.html" class="tsd-signature-type">AmplifyService</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Amplify<wbr>Service<span class="tsd-signature-symbol">(</span>modules<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="amplifyservice.html" class="tsd-signature-type">AmplifyService</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L29">aws-amplify-angular/src/providers/amplify.service.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L36">aws-amplify-angular/src/providers/amplify.service.ts:36</a></li>
 						</ul>
 					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> modules: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+						</li>
+					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="amplifyservice.html" class="tsd-signature-type">AmplifyService</a></h4>
 				</li>
 			</ul>
@@ -1026,7 +1044,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">auth<wbr>State<wbr>Change$<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;this._authState.asObservable()</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L29">aws-amplify-angular/src/providers/amplify.service.ts:29</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L36">aws-amplify-angular/src/providers/amplify.service.ts:36</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1037,16 +1055,16 @@ img { max-width: 100%; }
 			<a name="analytics" class="tsd-anchor"></a>
 			<h3>analytics</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">analytics<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="analyticsclass.html" class="tsd-signature-type">AnalyticsClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">analytics<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L45">aws-amplify-angular/src/providers/amplify.service.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L63">aws-amplify-angular/src/providers/amplify.service.ts:63</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="analyticsclass.html" class="tsd-signature-type">AnalyticsClass</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1054,16 +1072,16 @@ img { max-width: 100%; }
 			<a name="api" class="tsd-anchor"></a>
 			<h3>api</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">api<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="apiclass.html" class="tsd-signature-type">APIClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">api<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L47">aws-amplify-angular/src/providers/amplify.service.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L65">aws-amplify-angular/src/providers/amplify.service.ts:65</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="apiclass.html" class="tsd-signature-type">APIClass</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1071,16 +1089,16 @@ img { max-width: 100%; }
 			<a name="auth" class="tsd-anchor"></a>
 			<h3>auth</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">auth<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authclass.html" class="tsd-signature-type">AuthClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">auth<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L44">aws-amplify-angular/src/providers/amplify.service.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L62">aws-amplify-angular/src/providers/amplify.service.ts:62</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="authclass.html" class="tsd-signature-type">AuthClass</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1094,7 +1112,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L52">aws-amplify-angular/src/providers/amplify.service.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L73">aws-amplify-angular/src/providers/amplify.service.ts:73</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -1111,7 +1129,24 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L49">aws-amplify-angular/src/providers/amplify.service.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L67">aws-amplify-angular/src/providers/amplify.service.ts:67</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="i18n" class="tsd-anchor"></a>
+			<h3>i18n</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">i18n<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L71">aws-amplify-angular/src/providers/amplify.service.ts:71</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -1122,16 +1157,42 @@ img { max-width: 100%; }
 			<a name="interactions" class="tsd-anchor"></a>
 			<h3>interactions</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">interactions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">InteractionsClass</span></li>
+				<li class="tsd-signature tsd-kind-icon">interactions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L48">aws-amplify-angular/src/providers/amplify.service.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L66">aws-amplify-angular/src/providers/amplify.service.ts:66</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">InteractionsClass</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="logger" class="tsd-anchor"></a>
+			<h3>logger</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, level<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="amplify.html#logger" class="tsd-signature-type">Logger</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L69">aws-amplify-angular/src/providers/amplify.service.ts:69</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>name: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> level: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="amplify.html#logger" class="tsd-signature-type">Logger</a></h4>
 				</li>
 			</ul>
 		</section>
@@ -1145,7 +1206,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L50">aws-amplify-angular/src/providers/amplify.service.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L68">aws-amplify-angular/src/providers/amplify.service.ts:68</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -1162,7 +1223,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L53">aws-amplify-angular/src/providers/amplify.service.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L74">aws-amplify-angular/src/providers/amplify.service.ts:74</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1179,16 +1240,33 @@ img { max-width: 100%; }
 			<a name="storage" class="tsd-anchor"></a>
 			<h3>storage</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storageclass.html" class="tsd-signature-type">StorageClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4644b432/packages/aws-amplify-angular/src/providers/amplify.service.ts#L46">aws-amplify-angular/src/providers/amplify.service.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L64">aws-amplify-angular/src/providers/amplify.service.ts:64</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="storageclass.html" class="tsd-signature-type">StorageClass</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="xr" class="tsd-anchor"></a>
+			<h3>xr</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">xr<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/providers/amplify.service.ts#L70">aws-amplify-angular/src/providers/amplify.service.ts:70</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>

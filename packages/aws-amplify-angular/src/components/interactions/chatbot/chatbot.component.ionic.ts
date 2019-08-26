@@ -13,9 +13,9 @@
  */
 // tslint:enable
 
-import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ChatbotComponentCore } from './chatbot.component.core'
-import { AmplifyService } from '../../../providers';
+import { Component, ViewChild, ChangeDetectorRef, Inject } from '@angular/core';
+import { ChatbotComponentCore } from './chatbot.component.core';
+import { AmplifyService } from '../../../providers/amplify.service';
 
 const template = `
 <div class="amplify-interactions-container">
@@ -66,7 +66,6 @@ const template = `
 				</ion-col>
 			</ion-row>
 		</ion-grid>
-
 		<div class="amplify-form-row">
 		    <ion-input #inputValue
 				type='text'
@@ -77,16 +76,29 @@ const template = `
 				(ionChange)="onInputChange($event.target.value)"
 				[disabled]="inputDisabled"
 				*ngIf="textEnabled"></ion-input>
-
 			<ion-input #inputValue
 				type='text'
 				class="amplify-form-input amplify-form-input-interactions-ionic"
 				placeholder="{{currentVoiceState}}"
 				[disabled]="!textEnabled"
 				*ngIf="!textEnabled"></ion-input>
-
-			<ion-button expand="block" *ngIf="voiceEnabled" ng-style="{float: 'right'}" (click)="micButtonHandler()" [disabled]="micButtonDisabled">{{micText}}</ion-button>
-			<ion-button expand="block" *ngIf="textEnabled" ng-style="{float: 'right'}" (click)="inputDisabled === false || onSubmit(inputValue.value)">Send</ion-button>
+			<ion-button 
+				expand="block"
+				*ngIf="voiceEnabled"
+				ng-style="{float: 'right'}"
+				(click)="micButtonHandler()"
+				[disabled]="micButtonDisabled"
+			>
+				{{micText}}
+			</ion-button>
+			<ion-button
+				expand="block"
+				*ngIf="textEnabled"
+				ng-style="{float: 'right'}"
+				(click)="inputDisabled === false || onSubmit(inputValue.value)"
+			>
+				Send
+			</ion-button>
 		</div>
 	</div>
 </div>
@@ -97,8 +109,13 @@ const template = `
   template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
-  
-  constructor(ref: ChangeDetectorRef, amplifyService: AmplifyService) {
+	
+	inputValue;
+	
+  constructor(
+		ref: ChangeDetectorRef, 
+		@Inject(AmplifyService) 
+		protected amplifyService: AmplifyService) {
     super(ref, amplifyService);    
   }
 

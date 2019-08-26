@@ -14,8 +14,11 @@ import  StorageProvider  from '../../src/Providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
+/**
+ * NOTE - These test cases use Hub.dispatch but they should
+ * actually be using dispatchStorageEvent from Storage
+ */
 
- 
 S3.prototype.getSignedUrl = jest.fn((key, params) => {
     return 'url';
 });
@@ -83,7 +86,7 @@ describe('StorageProvider test', () => {
     });
 
     describe('configure test', () => {
-        test('happy case', () => {
+        test('standard configuration', () => {
             const storage = new StorageProvider();
             
             const aws_options = {
@@ -95,6 +98,26 @@ describe('StorageProvider test', () => {
             expect(config).toEqual({
                 AWSS3: {
                     "bucket": "bucket", "region": "region"
+                }
+            });
+        });
+
+        test('configuration for local testing', () => {
+            const storage = new StorageProvider();
+
+            const aws_options = {
+                aws_user_files_s3_bucket: 'bucket',
+                aws_user_files_s3_bucket_region: 'region',
+                aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing: true
+
+            }
+
+            const config = storage.configure(aws_options);
+            expect(config).toEqual({
+                AWSS3: {
+                    "bucket": "bucket",
+                    "region": "region",
+                    "dangerouslyConnectToHttpEndpointForTesting": true
                 }
             });
         });
@@ -130,8 +153,26 @@ describe('StorageProvider test', () => {
 
             expect.assertions(3);
             expect(await storage.get('key', { downloaded: false, track: true })).toBe('url');
-            expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
-            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "get", "result": "success"}, metrics: null}, 'Storage');
+            expect(spyon).toBeCalledWith(
+                'getObject', 
+                {
+                    "Bucket": "bucket", 
+                    "Key": "public/key"
+                }
+            );
+            expect(spyon2).toBeCalledWith(
+                'storage', 
+                {
+                    event: 'getSignedUrl',
+                    data : {
+                        attrs: {"method": "get", "result": "success"},
+                        metrics: null
+                    },
+                    message: 'Signed URL: url'
+                },
+                'Storage', 
+                Symbol.for('amplify_default')
+            );
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
@@ -379,7 +420,21 @@ describe('StorageProvider test', () => {
                 "ContentType": "binary/octet-stream",
                 "Key": "public/key"
             });
-            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "put", "result": "success"}, metrics: null}, 'Storage');
+            expect(spyon2).toBeCalledWith(
+                'storage', 
+                {
+                    event: 'upload',
+                    data : {
+                        attrs: 
+                        {
+                            "method": "put", "result": "success"}, 
+                            metrics: null,
+                        },
+                        message: 'Upload success for key'
+                }, 
+                'Storage', 
+                Symbol.for('amplify_default')
+            );
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
@@ -427,7 +482,11 @@ describe('StorageProvider test', () => {
             const spyon = jest.spyOn(S3.prototype, 'upload');
 
             expect.assertions(2);
-            expect(await storage.put('key', 'obejct', {level: 'private', contentType: 'text/plain'})).toEqual({"key": "/itemsKey"});
+            expect(await storage.put(
+                'key', 
+                'obejct', 
+                {level: 'private', contentType: 'text/plain'}
+                )).toEqual({"key": "/itemsKey"});
             expect(spyon).toBeCalledWith({
                 "Body": "obejct",
                 "Bucket": "bucket",
@@ -496,7 +555,19 @@ describe('StorageProvider test', () => {
             expect.assertions(3);
             expect(await storage.remove('key', {track: true})).toBe('data');
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
-            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "remove", "result": "success"}, metrics: null}, 'Storage');
+            expect(spyon2).toBeCalledWith(
+                'storage', 
+                {
+                    event: 'delete',
+                    data : {
+                        attrs: {"method": "remove", "result": "success"},
+                        metrics: null,
+                    },
+                    message: 'Deleted key successfully'
+                }, 
+                'Storage',
+                Symbol.for('amplify_default')
+            );
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
@@ -621,8 +692,17 @@ describe('StorageProvider test', () => {
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
             expect(spyon2).toBeCalledWith(
                 'storage',
-                {attrs: {"method": "list", "result": "success"}, metrics: null}, 'Storage');
-
+                {
+                    event: 'list',
+                    data: {
+                        attrs: { "method": "list", "result": "success" },
+                        metrics: null
+                    },
+                    message: '1 items returned from list operation'
+                },
+                'Storage',
+                Symbol.for('amplify_default')
+            );
             spyon.mockClear();
             curCredSpyOn.mockClear();
             spyon2.mockClear();

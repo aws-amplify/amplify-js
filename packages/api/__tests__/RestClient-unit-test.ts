@@ -12,13 +12,22 @@ jest.mock('axios', () => {
     return {
         default: (signed_params) => {
             return new Promise((res, rej) => {
+                const withCredentialsSuffix = signed_params && signed_params.withCredentials
+                  ? '-withCredentials'
+                  : '';
                 if (signed_params && signed_params.headers && signed_params.headers.reject) {
                     rej({
-                        data: 'error'
+                        data: 'error' + withCredentialsSuffix;
                     });
-                } else {
+                }
+                else if (signed_params && signed_params.responseType === 'blob') {
                     res({
-                        data: 'data'
+                        data: 'blob' + withCredentialsSuffix;
+                    });
+                }
+                else {
+                    res({
+                        data: 'data' + withCredentialsSuffix;
                     });
                 }
             });
@@ -115,6 +124,22 @@ describe('RestClient test', () => {
             expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual('data');
         });
 
+        test('ajax with custom responseType', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', { body: 'body', responseType: 'blob' })).toEqual('blob');
+        });
+
         test('ajax with Authorization header', async () => {
             const apiOptions = {
                 headers: {},
@@ -129,6 +154,22 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect(await restClient.ajax('url', 'method', { headers: { Authorization: 'authorization' } })).toEqual('data');
+        });
+
+        test('ajax with withCredentials set to true', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', { withCredentials: true })).toEqual('data-withCredentials');
         });
     });
 
@@ -148,11 +189,17 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect.assertions(2);
+            expect.assertions(5);
             await restClient.get('url', {});
 
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('GET');
+
+            await restClient.get('url', {withCredentials: true});
+
+            expect(spyon.mock.calls[1][0]).toBe('url');
+            expect(spyon.mock.calls[1][1]).toBe('GET');
+            expect(spyon.mock.calls[1][2]).toEqual({withCredentials: true});
 
             spyon.mockClear();
         });

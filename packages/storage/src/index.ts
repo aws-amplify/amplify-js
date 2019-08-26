@@ -24,15 +24,20 @@ if (!_instance) {
     logger.debug('Create Storage Instance');
     _instance = new StorageClass();
     _instance.vault = new StorageClass();
-    _instance.vault.configure({ level: 'private' });
-
+    
     const old_configure = _instance.configure;
     _instance.configure = (options) => {
-        logger.debug('configure called');
-        old_configure.call(_instance, options);
+        logger.debug('storage configure called');
+        const vaultConfig = {...old_configure.call(_instance, options)};
 
-        const vault_options = Object.assign({}, options, { level: 'private' });
-        _instance.vault.configure(vault_options);
+        // set level private for each provider for the vault
+        Object.keys(vaultConfig).forEach((providerName) => {
+            if (typeof vaultConfig[providerName] !== 'string') {
+                vaultConfig[providerName] = { ...vaultConfig[providerName], level: "private" };
+            }
+        });
+        logger.debug('storage vault configure called');
+        _instance.vault.configure(vaultConfig);
     };
 }
 

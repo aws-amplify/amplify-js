@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ProvidertOptions } from '../types';
+import { ProvidertOptions, SubscriptionObserver } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -78,6 +78,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected get clientsQueue() { return this._clientsQueue; }
 
+    protected get isSSLEnabled() {
+        return !this.options.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+    }
+    
     protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
 
     getProviderName() { return 'MqttOverWSProvider'; }
@@ -85,7 +89,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     public onDisconnect({ clientId, errorCode, ...args }) {
         if (errorCode !== 0) {
             logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+            this._topicObservers.forEach((observerForTopic, _observerTopic) => {
+                observerForTopic.forEach(observer => {
+                    observer.error('Disconnected, error code: ' + errorCode);
+                    observer.complete();
+                });
+            });
         }
+        this._topicObservers = new Map();
     }
 
     public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
@@ -99,10 +110,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         client.onConnectionLost = ({ errorCode, ...args }) => {
             this.onDisconnect({ clientId, errorCode, ...args });
         };
-
+        
         await new Promise((resolve, reject) => {
             client.connect({
-                useSSL: true,
+                useSSL: this.isSSLEnabled,
                 mqttVersion: 3,
                 onSuccess: () => resolve(client),
                 onFailure: reject,
@@ -137,7 +148,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         targetTopics.forEach(topic => client.send(topic, message));
     }
 
-    protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
+    protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
@@ -187,8 +198,12 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                     url = await this.endpoint,
                 } = options;
 
-                client = await this.connect(clientId, { url });
-                targetTopics.forEach(topic => { client.subscribe(topic); });
+                try {
+                    client = await this.connect(clientId, { url });
+                    targetTopics.forEach(topic => { client.subscribe(topic); });
+                } catch (e) {
+                    observer.error(e);
+                }
             })();
 
             return () => {
@@ -201,7 +216,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                         }
 
                         const observersForTopic = this._topicObservers.get(topic) ||
-                            (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
+                            (new Set() as Set<SubscriptionObserver<any>>);
 
                         observersForTopic.forEach(observer => observer.complete());
 

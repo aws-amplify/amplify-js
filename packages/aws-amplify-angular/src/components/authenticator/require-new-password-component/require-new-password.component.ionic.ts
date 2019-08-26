@@ -13,57 +13,76 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
-<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
+<div
+  class="amplify-authenticator amplify-authenticator-ionic"
+  *ngIf="_show"
+  data-test="${auth.requireNewPassword.section}"
+  >
+  <div class="amplify-form-body" data-test="${auth.requireNewPassword.bodySection}">
+    <div
+      class="amplify-form-header amplify-form-header-ionic"
+      data-test="${auth.requireNewPassword.headerSection}"
+      >
+      {{ this.amplifyService.i18n().get('Reset your password') }}
+    </div>
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
-        <ion-input 
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
+          {{ this.amplifyService.i18n().get('Password') }}
+        </ion-label>
+        <ion-input
           #password
           type="password"
           class="amplify-form-input"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
+          data-test="${auth.requireNewPassword.newPasswordInput}"
         ></ion-input>
       </ion-item>
 
     </ion-list>
 
-    <div class="amplify-form-row">
-    <ion-button
-      expand="block"
-      (click)="onSignIn()"
-    >Back to Sign In</ion-button>
-    <ion-button
-      expand="block"
-      (click)="onSubmit()"
-    >Submit</ion-button>
+    <div class="amplify-form-actions">
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSignIn()"
+          data-test="${auth.requireNewPassword.backToSignInLink}"
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</ion-button>
+      </div>
+      <div class="amplify-form-row">
+        <ion-button
+          expand="block"
+          (click)="onSubmit()"
+          data-test="${auth.requireNewPassword.submitButton}"
+        >Submit</ion-button>
+      </div>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
 </div>
-
 `;
 
 @Component({
   selector: 'amplify-auth-require-new-password-ionic',
-  template: template
+  template
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
 
-
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
-    
   }
-
-
 }

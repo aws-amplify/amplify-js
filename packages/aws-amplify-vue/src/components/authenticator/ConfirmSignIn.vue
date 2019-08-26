@@ -12,20 +12,20 @@
  */
 
 <template>
-  <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
-    <div v-bind:class="amplifyUI.sectionBody">
+  <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.confirmSignIn.section">
+    <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.confirmSignIn.headerSection">{{options.header}}</div>
+    <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.confirmSignIn.bodySection">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" v-bind:data-test="auth.confirmSignIn.codeInput" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code">{{$Amplify.I18n.get('Confirm')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!code" v-bind:data-test="auth.confirmSignIn.confirmButton">{{$Amplify.I18n.get('Confirm')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.confirmSignIn.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>      
       </span>
     </div>
     <div class="error" v-if="error">
@@ -38,6 +38,7 @@
 <script>
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
+import { auth } from '../../assets/data-test-attributes';
 
 export default {
   name: 'ConfirmSignIn',
@@ -48,7 +49,8 @@ export default {
       code: '',
       error: '',
       logger: {},
-      amplifyUI: AmplifyUI
+      amplifyUI: AmplifyUI,
+      auth
     }
   },
   computed: {
@@ -76,12 +78,12 @@ export default {
         .catch(e => this.setError(e));
     },
     signIn: function() {
-      AmplifyEventBus.$emit('authState', 'signedOut');
+      AmplifyEventBus.$emit('authState', 'signIn');
     },
     setError: function(e) {
       this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
-    }
+    },
   }
 }
 </script>

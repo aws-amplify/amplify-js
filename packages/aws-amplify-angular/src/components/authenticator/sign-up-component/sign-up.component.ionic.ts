@@ -13,23 +13,30 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { SignUpComponentCore } from './sign-up.component.core';
-import { countrylist, country }  from '../../../assets/countries';
+import { countrylist, country } from '../../../assets/countries';
+import { auth } from '../../../assets/data-test-attributes';
 
 
 const template = `
-<div class="amplify-authenticator" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">{{this.header}}</div>
+<div
+  class="amplify-authenticator"
+  *ngIf="_show"
+  data-test="${auth.signUp.section}"
+  >
+  <div class="amplify-form-body" data-test="${auth.signUp.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.signUp.headerSection}">
+      {{ this.amplifyService.i18n().get(this.header) }}</div>
     <ion-list lines="none">
       <ion-item lines="none" *ngFor="let field of signUpFields">
-        <ion-label class="amplify-input-label" 
-        position="stacked" 
+        <ion-label class="amplify-input-label"
+        position="stacked"
         *ngIf="field.key !== 'phone_number'"
         >
-          {{field.label}} 
+          {{ this.amplifyService.i18n().get(field.label) }}
           <span *ngIf="field.required">*</span>
         </ion-label>
         <ion-input
@@ -39,84 +46,56 @@ const template = `
           type="text"
           class="amplify-form-input"
           type={{field.type}}
-          placeholder={{field.label}}
+          [placeholder]="this.amplifyService.i18n().get(field.label)"
           (keyup)="setProp($event.target)"
           name={{field.key}}
+          data-test="${auth.signUp.nonPhoneNumberInput}"
         ></ion-input>
-       
         <ion-content *ngIf="field.key === 'phone_number'" class="amplify-phone-ion-content">
-          <ion-grid class="amplify-ionic-grid-padding-left">
-            <ion-row>
-              <ion-col col-6 class="amplify-ionic-grid-padding-left">
-                <ion-label class="amplify-input-label push-right" 
-                position="stacked" 
-                *ngIf="field.key === 'phone_number'"
-                >
-                  {{field.label}}
-                  <span *ngIf="field.required">*</span>
-                </ion-label>
-                <ion-select #countryCode
-                *ngIf="field.key === 'phone_number'"
-                name="countryCode" 
-                [value]="country_code"
-                class="amplify-select-phone-country" 
-                [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                (ionChange)="onCodeChange($event.target.value)">
-                  <ion-select-option *ngFor="let country of countries"  
-                  value={{country.value}}>
-                    {{country.label}} 
-                  </ion-select-option>
-                </ion-select>
-              </ion-col>
-
-              <ion-col col-6>
-                <ion-label class="amplify-input-label push-right">&nbsp;</ion-label>
-                <ion-input 
-                  #phone_number
-                  [ngClass]="{'amplify-input-invalid ': field.invalid}"
-                  *ngIf="field.key === 'phone_number'"
-                  type={{field.type}}
-                  class="amplify-form-input-phone-ionic"
-                  placeholder={{field.label}}
-                  (ionChange)="onNumberChange($event.target.value)"
-                  name="local_phone_number"
-                ></ion-input>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+          <amplify-auth-phone-field-ionic
+            [label]="field.label"
+            [required]="field.required"
+            [placeholder]="field.placeholder"
+            [defaultCountryCode]="country_code"
+            (phoneFieldChanged)="onPhoneFieldChanged($event)"
+          ></amplify-auth-phone-field-ionic>
         </ion-content>
-      </ion-item>    
+      </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
-      <div>
+      <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignUp()"
-        >Sign Up</ion-button>
+          data-test="${auth.signUp.createAccountButton}"
+        >{{ this.amplifyService.i18n().get('Create Account') }}</ion-button>
       </div>
-      <div class="amplify-form-cell-left">
+      <div class="amplify-form-row">
         <div class="amplify-form-signup">
-          Have an account? 
-          <a class="amplify-form-link" (click)="onSignIn()">Sign In</a>
+          {{ this.amplifyService.i18n().get('Have an account?') }}
+          <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInButton}">
+            {{ this.amplifyService.i18n().get('Sign In') }}
+          </a>
         </div>
-      </div>
-      <div class="amplify-form-cell-left">
-        <div class="amplify-form-signup">
-          Have an code?
-          <a class="amplify-form-link" (click)="onConfirmSignUp()">Confirm</a>
+        <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
+          {{ this.amplifyService.i18n().get('Have a code?') }}
+          <a
+            class="amplify-form-link"
+            (click)="onConfirmSignUp()"
+            data-test="${auth.signUp.confirmButton}"
+            >
+            {{ this.amplifyService.i18n().get('Confirm') }}
+          </a>
         </div>
       </div>
     </div>
-
   </div>
-
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
 `;
 
@@ -126,28 +105,11 @@ const template = `
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-
-    alert(err.message || err);
   }
 
   setProp(target){
     return this.user[target.name] = target.value;
-  }
-
-  onCodeChange(val) {
-    this.country_code = val;
-  }
-
-  onNumberChange(val) {
-    this.local_phone_number = val;
   }
 }

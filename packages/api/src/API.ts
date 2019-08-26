@@ -16,8 +16,10 @@ import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
@@ -54,7 +56,8 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
@@ -264,13 +267,17 @@ export default class APIClass {
 
     private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
+            aws_appsync_authenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
+        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || "AWS_IAM";
         let headers = {};
 
         switch (authenticationType) {
             case 'API_KEY':
+                if (!apiKey) {
+                    throw new Error('No api-key configured');
+                }
                 headers = {
                     Authorization: null,
                     'X-Api-Key': apiKey
@@ -289,14 +296,10 @@ export default class APIClass {
                 };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
-                if (Amplify.Auth && typeof Amplify.Auth.currentSession === 'function') {
-                    const session = await Amplify.Auth.currentSession();
-                    headers = {
-                        Authorization: session.getAccessToken().getJwtToken()
-                    };
-                } else {
-                    throw new Error('No Auth module registered in Amplify');
-                }
+                const session = await Auth.currentSession();
+                headers = {
+                    Authorization: session.getAccessToken().getJwtToken()
+                };
                 break;
             default:
                 headers = {
@@ -325,7 +328,7 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query: paramQuery, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
 
         const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
@@ -335,15 +338,15 @@ export default class APIClass {
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables });
+                return this._graphql({ query, variables, authMode });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables });
+                return this._graphqlSubscribe({ query, variables, authMode });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables }: GraphQLOptions, additionalHeaders = {})
+    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
         : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
@@ -358,9 +361,9 @@ export default class APIClass {
         } = this._options;
 
         const headers = {
-            ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
+            ...(!customGraphqlEndpoint && await this._headerBasedAuth(authMode)),
             ...(customGraphqlEndpoint &&
-                (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
+                (customEndpointRegion ? await this._headerBasedAuth(authMode) : { Authorization: null })
             ),
             ...additionalHeaders,
             ... await graphql_headers({ query, variables }),
@@ -414,7 +417,7 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -422,8 +425,9 @@ export default class APIClass {
 
                 (async () => {
                     const {
-                        aws_appsync_authenticationType: authenticationType,
+                        aws_appsync_authenticationType,
                     } = this._options;
+                    const authenticationType = authMode || aws_appsync_authenticationType;
                     const additionalheaders = {
                         ...(authenticationType === 'API_KEY' ? {
                             'x-amz-subscriber-id': this.clientIdentifier
@@ -434,14 +438,17 @@ export default class APIClass {
                         const {
                             extensions: { subscription },
 
-                        } = await this._graphql({ query, variables }, additionalheaders);
+                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
 
                         const { newSubscriptions } = subscription;
 
                         const newTopics =
                             Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
 
-                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const observable = Amplify.PubSub.subscribe(newTopics, {
+                            ...subscription,
+                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                        });
 
                         handle = observable.subscribe({
                             next: (data) => observer.next(data),

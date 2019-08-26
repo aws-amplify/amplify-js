@@ -41,7 +41,7 @@ export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
 
-Analytics.onHubCapsule = (capsule) => {
+const listener = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
@@ -61,14 +61,18 @@ Analytics.onHubCapsule = (capsule) => {
 };
 
 const storageEvent = (payload) => {
-    const { attrs, metrics } = payload;
+    const { data: { attrs, metrics }} = payload;
     if (!attrs) return;
 
-    Analytics.record({
-        name: 'Storage', 
-        attributes: attrs, 
-        metrics
-    });
+    if (analyticsConfigured) {
+        Analytics.record({
+            name: 'Storage', 
+            attributes: attrs, 
+            metrics
+        }).catch(e => {
+            logger.debug('Failed to send the storage event automatically', e);
+        });
+    }
 };
 
 const authEvent = (payload) => {
@@ -77,35 +81,38 @@ const authEvent = (payload) => {
 
     switch(event) {
         case 'signIn':
-            Analytics.record({
-                name: '_userauth.sign_in'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.sign_in'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign in event automatically', e);
+                });
+            }
             break;
         case 'signUp':
-            Analytics.record({
-                name: '_userauth.sign_up'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.sign_up'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign up event automatically', e);
+                });
+            }
             break;
         case 'signOut':
             break;
         case 'signIn_failure':
-            Analytics.record({
-                name: '_userauth.auth_fail'
-            });
+            if (authConfigured && analyticsConfigured) {
+                Analytics.record({
+                    name: '_userauth.auth_fail'
+                }).catch(e => {
+                    logger.debug('Failed to send the sign in failure event automatically', e);
+                });
+            }
             break;
         case 'configured':
             authConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: (Analytics.configure())['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
     }
@@ -119,21 +126,25 @@ const analyticsEvent = (payload) => {
          case 'pinpointProvider_configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured) {
-                const config = Analytics.configure();
-                if (!endpointUpdated && config['autoSessionRecord']) {
-                    Analytics.updateEndpoint({}).catch(e => {
-                        logger.debug('Failed to update the endpoint', e);
-                    });
-                }
-                Analytics.autoTrack('session', {
-                    enable: config['autoSessionRecord']
-                });
-                endpointUpdated = true;
+                sendEvents();
             }
             break;
      }
 };
 
-Hub.listen('auth', Analytics);
-Hub.listen('storage', Analytics);
-Hub.listen('analytics', Analytics);
+const sendEvents = () => {
+    const config = Analytics.configure();
+    if (!endpointUpdated && config['autoSessionRecord']) {
+        Analytics.updateEndpoint({ immediate: true }).catch(e => {
+            logger.debug('Failed to update the endpoint', e);
+        });
+        endpointUpdated = true;
+    }
+    Analytics.autoTrack('session', {
+        enable: config['autoSessionRecord']
+    });
+};
+
+Hub.listen('auth', listener);
+Hub.listen('storage', listener);
+Hub.listen('analytics', listener);

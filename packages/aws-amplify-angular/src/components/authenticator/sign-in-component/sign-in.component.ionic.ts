@@ -13,46 +13,65 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component, Input, Inject } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
 import { SignInComponentCore } from './sign-in.component.core';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
-<div class="amplify-authenticator" *ngIf="_show">
-  <div class="amplify-form-body">
-    <div class="amplify-form-header">Sign in to your account</div>
+<div
+  class="amplify-authenticator"
+  *ngIf="_show"
+  data-test="${auth.signIn.section}"
+  >
+  <div class="amplify-form-body" data-test="${auth.signIn.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.signIn.headerSection}">
+      {{ this.amplifyService.i18n().get('Sign in to your account') }}
+    </div>
     <ion-list lines="none">
+      <amplify-auth-username-field-ionic
+        [usernameAttributes]="_usernameAttributes"
+        (usernameFieldChanged)="onUsernameFieldChanged($event)"
+      ></amplify-auth-username-field-ionic>
       <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="username" position="stacked">Username *</ion-label>
-          <ion-input type="text" 
-          #username
-          class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item lines="none">
-        <ion-label class="amplify-input-label" for="password" position="stacked">Password *</ion-label>
-        <ion-input 
+        <ion-label class="amplify-input-label" for="password" position="stacked">
+          {{ this.amplifyService.i18n().get('Password *') }}
+        </ion-label>
+        <ion-input
           #password
-          type="password" 
+          type="password"
           class="amplify-form-input"
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
+          data-test="${auth.signIn.passwordInput}"
         ></ion-input>
       </ion-item>
     </ion-list>
     <div class="amplify-form-actions">
-      
       <div class="amplify-form-row">
         <ion-button expand="block" color="primary"
           (click)="onSignIn()"
-          >Sign In</ion-button>
+          data-test="${auth.signIn.signInButton}"
+          >{{ this.amplifyService.i18n().get('Sign In') }}</ion-button>
       </div>
-      
+
       <div class="amplify-form-row">
-        <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
-        <div class="amplify-form-signup"><a class="amplify-form-link" (click)="onForgotPassword()">Reset Password</a></div>
+        <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
+          {{ this.amplifyService.i18n().get('No account?') }}
+          <a
+            class="amplify-form-link"
+            (click)="onSignUp()"
+            data-test="${auth.signIn.createAccountLink}"
+            >
+            {{ this.amplifyService.i18n().get('Create account') }}
+          </a>
+        </div>
+        <div class="amplify-form-signup" *ngIf="!shouldHide('ForgotPassword')">
+          <a class="amplify-form-link" (click)="onForgotPassword()" data-test="${auth.signIn.forgotPasswordLink}">
+            {{ this.amplifyService.i18n().get('Reset Password') }}
+          </a>
+        </div>
       </div>
 
     </div>
@@ -61,32 +80,20 @@ const template = `
   <div class="amplify-alert" *ngIf="errorMessage">
     <div class="amplify-alert-body">
       <span class="amplify-alert-icon">&#9888;</span>
-      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <div class="amplify-alert-message">{{ this.amplifyService.i18n().get(errorMessage) }}</div>
       <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
     </div>
   </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-sign-in-ionic',
-  template: template
+  template
 })
 export class SignInComponentIonic extends SignInComponentCore {
 
-  constructor(amplifyService: AmplifyService) {
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
     super(amplifyService);    
   }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-
-    alert(err.message || err);
-  }
-  
 }

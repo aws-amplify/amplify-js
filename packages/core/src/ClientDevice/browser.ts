@@ -71,11 +71,11 @@ function browserType(userAgent) {
     const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
     if (operaMatch) { return { type: operaMatch[1], version: operaMatch[2]}; }
 
-    const cfMatch = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
-    if (cfMatch) { return { type: cfMatch[1], version: cfMatch[2]}; }
-
     const ieMatch = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
     if (ieMatch) { return { type: ieMatch[1], version: ieMatch[2]}; }
+    
+    const cfMatch = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
+    if (cfMatch) { return { type: cfMatch[1], version: cfMatch[2]}; }
 
     const sMatch = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
     if (sMatch) { return { type: sMatch[1], version: sMatch[2]}; }
@@ -87,23 +87,4 @@ function browserType(userAgent) {
     if (anyMatch) { return { type: anyMatch[1], version: anyMatch[2]}; }
 
     return { type: '', version: '' };
-}
-
-if (JS.browserOrNode().isBrowser && typeof window.addEventListener === 'function') {
-    window.addEventListener('resize', function() {
-        Hub.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
-    });
-
-    window.addEventListener('scroll', function() {
-        const pos = { x: window.scrollX, y: window.scrollY };
-        Hub.dispatch('window', { event: 'scroll', data: pos }, 'DeviceInfo');
-    });
-
-    window.addEventListener('offline', function() {
-        Hub.dispatch('window', { event: 'offline' }, 'DeviceInfor');
-    });
-
-    window.addEventListener('online', function() {
-        Hub.dispatch('window', { event: 'online' }, 'DeviceInfor');
-    });
 }

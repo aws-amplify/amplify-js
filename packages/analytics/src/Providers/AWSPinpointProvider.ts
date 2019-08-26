@@ -10,10 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { 
-    ConsoleLogger as Logger, 
-    ClientDevice, 
-    Platform, 
+import {
+    ConsoleLogger as Logger,
+    ClientDevice,
+    Platform,
     Credentials,
     Signer,
     JS,
@@ -24,15 +24,19 @@ import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 
 import Cache from '@aws-amplify/cache';
 
-import { AnalyticsProvider } from '../types';
+import { AnalyticsProvider, PromiseHandlers } from '../types';
 import { v1 as uuid } from 'uuid';
 
+const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
+    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+
 const dispatchAnalyticsEvent = (event, data) => {
-    Hub.dispatch('analytics', { event, data }, 'Analytics');
+    Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const logger = new Logger('AWSPinpointProvider');
-const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+const RETRYABLE_CODES = [429, 500];
+const ACCEPTED_CODES = [202];
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -40,7 +44,7 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
-// params: { event: {name: , .... }, timeStamp, config, resendLimits }
+// params: { event: {name: , .... }, timeStamp, config, resendLimit }
 export default class AWSPinpointProvider implements AnalyticsProvider {
     static category = 'Analytics';
     static providerName = 'AWSPinpoint';
@@ -52,8 +56,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private _sessionStartTimestamp;
     private _buffer;
     private _clientInfo;
-
     private _timer;
+    private _endpointGenerating = true;
 
     constructor(config?) {
         this._buffer = [];
@@ -75,9 +79,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             () => {
                 const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
                 for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    that._sendFromBuffer(params);
-                } 
+                    const { params, handlers } = this._buffer.shift();
+                    that._send(params, handlers);
+                    // If this is the first request sent by Analytics module, we should stop sending remaining requests
+                    // to prevent race condition of updating one endpoint when it's being created in the backend
+                    if (this._endpointGenerating) break;
+                }
             },
             flushInterval
         );
@@ -88,49 +95,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * @param params - params for the event recording
      * Put events into buffer
      */
-    private _putToBuffer(params) {
+    private _putToBuffer(params, handlers) {
         const { bufferSize } = this._config;
         if (this._buffer.length < bufferSize) {
-            this._buffer.push(params);
-            return Promise.resolve(true);
+            this._buffer.push({params, handlers});
         } else {
             logger.debug('exceed analytics events buffer size');
-            return Promise.reject(false);
-        }
-    }
-
-    private async _sendFromBuffer(params) {
-        const { event, config } = params;
-
-        const { appId, region, resendLimit } = config;
-
-        let success = true;
-        switch (event.name) {
-            case '_session.start':
-                success = await this._startSession(params);
-                break;
-            case '_session.stop':
-                success = await this._stopSession(params);
-                break;
-            case '_update_endpoint':
-                success = await this._updateEndpoint(params);
-                break;
-            default:
-                success = await this._recordCustomEvent(params);
-                break;
-        }
-        
-        if (!success) {
-            params.resendLimits = typeof params.resendLimits === 'number' ? 
-                params.resendLimits : resendLimit;
-            if (params.resendLimits > 0) {
-                logger.debug(
-                    `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
-                params.resendLimits -= 1;
-                this._putToBuffer(params);
-            } else {
-                logger.debug(`retry times used up for event ${params.eventName}`);
-            }
+            return handlers.reject(new Error('Exceed the size of analytics events buffer'));
         }
     }
 
@@ -169,7 +140,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 });
             } else {
                 dispatchAnalyticsEvent('pinpointProvider_configured', null);
-            }  
+            }
             this._setupTimer();
         } else {
             if (this._timer) { clearInterval(this._timer); }
@@ -181,23 +152,22 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * record an event
      * @param {Object} params - the params of an event
      */
-    public async record(params): Promise<boolean> {
+    public async record(params, handlers: PromiseHandlers) {
         const credentials = await this._getCredentials();
         if (!credentials || !this._config['appId'] || !this._config['region']){
             logger.debug('cannot send events without credentials, applicationId or region');
-            return Promise.resolve(false);
-        } 
+            return handlers.reject(new Error('No credentials, applicationId or region'));
+        }
         const timestamp = new Date().getTime();
         // attach the session and eventId
         this._generateSession(params);
         params.event.eventId = uuid();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-        // temporary solution, will refactor in the future
         if (params.event.immediate) {
-            return this._send(params);
+            return this._send(params, handlers);
         } else {
-            return this._putToBuffer(params);
+            this._putToBuffer(params, handlers);
         }
     }
 
@@ -239,18 +209,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         }
     }
 
-    private async _send(params) {
+    private async _send(params, handlers) {
         const { event, config } = params;
 
         switch (event.name) {
-            case '_session_start':
-                return this._startSession(params);
-            case '_session_stop':
-                return this._stopSession(params);
             case '_update_endpoint':
-                return this._updateEndpoint(params);
+                return this._updateEndpoint(params, handlers);
             default:
-                return this._recordCustomEvent(params);
+                return this._record(params, handlers);
         }
     }
 
@@ -283,87 +249,93 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return eventParams;
     }
 
-    private async _pinpointPutEvents(eventParams) {
+    private async _pinpointPutEvents(params, handlers) {
+        const { event : { eventId }, config : { endpointId } } = params;
+        const eventParams = this._generateBatchItemContext(params);
         logger.debug('pinpoint put events with params', eventParams);
-        return new Promise<any>((res, rej) => {
-            const request = this.pinpointClient.putEvents(eventParams);
-            // in order to keep backward compatiblity
-            // we are using a legacy api: /apps/{appid}/events/legacy
-            // so that users don't need to update their IAM Policy
-            // will use the formal one in the next break release
-            request.on('build', function() {
-                request.httpRequest.path = request.httpRequest.path + '/legacy';
-            });
 
-            request.send((err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    logger.error(
-                        'Please ensure you have updated your Pinpoint IAM Policy' +
-                        'with the Action: \"mobiletargeting:PutEvents\" in order to ' +
-                        'continue using AWS Pinpoint Service'
-                    );
-                    res(false);
-                }
-                else {
+        const request = this.pinpointClient.putEvents(eventParams);
+        // in order to keep backward compatiblity
+        // we are using a legacy api: /apps/{appid}/events/legacy
+        // so that users don't need to update their IAM Policy
+        // will use the formal one in the next break release
+        request.on('build', function() {
+            request.httpRequest.path = request.httpRequest.path + '/legacy';
+        });
+
+        request.send((err, data) => {
+            if (err) {
+                logger.error('record event failed. ', err);
+                logger.warn(
+                    'If you have not updated your Pinpoint IAM Policy' + 
+                    ' with the Action: \"mobiletargeting:PutEvents\" yet, please do it.' + 
+                    ' This action is not necessary for now' + 
+                    ' but in order to avoid breaking changes in the future,' + 
+                    ' please update it as soon as possible.'
+                );
+                return handlers.reject(err);
+            }
+            else {
+                const { 
+                    EventsResponse : { 
+                        Results : { 
+                            [endpointId] : { 
+                                EventsItemResponse: {
+                                    [eventId]: {
+                                        StatusCode,
+                                        Message
+                                    }
+                                }
+                            } 
+                        } 
+                    } 
+                } = data;
+                if ( ACCEPTED_CODES.includes(StatusCode)) {
+                    this._endpointGenerating = false;
                     logger.debug('record event success. ', data);
-                    res(true);
+                    return handlers.resolve(data);
+                } else {
+                    if (RETRYABLE_CODES.includes(StatusCode)) {
+                        this._retry(params, handlers);
+                    } else {
+                        logger.error(`Event ${eventId} is not accepted, the error is ${Message}`);
+                        return handlers.reject(data);
+                    }
                 }
-            });
+            }
         });
     }
 
-    /**
-     * @private
-     * @param params 
-     */
-    private async _startSession(params) {
+    private _retry(params, handlers) {
+        const { config : { resendLimit } } = params;
+        // For backward compatibility
+        params.resendLimit = typeof params.resendLimit === 'number' ?
+            params.resendLimit : resendLimit;
+        if (params.resendLimit-- > 0) {
+            logger.debug(
+                `resending event ${params.eventName} with ${params.resendLimit} retry times left`);
+            this._putToBuffer(params, handlers);
+        } else {
+            logger.debug(`retry times used up for event ${params.eventName}`);
+        }
+    }
+
+    private async _record(params, handlers) {
         // credentials updated
         const { event, timestamp, config, credentials } = params;
         this._initClients(config, credentials);
-
-        logger.debug('record session start');
-        const eventParams = this._generateBatchItemContext(params);
-        return this._pinpointPutEvents(eventParams);
+        return this._pinpointPutEvents(params, handlers);
     }
 
-    /**
-     * @private
-     * @param params 
-     */
-    private async _stopSession(params) {
-        // credentials updated
-        const { event, timestamp, config, credentials } = params;
-        this._initClients(config, credentials);
-
-        logger.debug('record session stop');
-        const eventParams = this._generateBatchItemContext(params);
-        return this._pinpointPutEvents(eventParams);
-    }
-
-    /**
-     * @private
-     * @param params 
-     */
-    private async _recordCustomEvent(params) {
-        // credentials updated
-        const { event, timestamp, config, credentials } = params;
-        this._initClients(config, credentials);
-        
-        logger.debug('record event with params');
-        const eventParams = this._generateBatchItemContext(params);
-        return this._pinpointPutEvents(eventParams);
-    }
-
-    private async _updateEndpoint(params) : Promise<boolean> {
+    private async _updateEndpoint(params, handlers) {
         // credentials updated
         const { timestamp, config, credentials, event } = params;
         const { appId, region, endpointId } = config;
 
         this._initClients(config, credentials);
-        
+
         const request = this._endpointRequest(
-            config, 
+            config,
             JS.transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
         );
         const update_params = {
@@ -374,29 +346,29 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         const that = this;
         logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise<boolean>((res, rej) => {
-            that.pinpointClient.updateEndpoint(update_params, (err, data) => {
-                if (err) {
-                    logger.debug('updateEndpoint failed', err);
-                    if (err.message === 'Exceeded maximum endpoint per user count 10') {
-                        this._removeUnusedEndpoints(appId, credentials.identityId)
-                        .then(() => {
-                            logger.debug('Remove the unused endpoints successfully');
-                            return res(false);
-                        }).catch(e => {
-                            logger.warn(`Failed to remove unused endpoints with error: ${e}`);
-                            logger.warn(`Please ensure you have updated you Pinpoint IAM Policy ` + 
-                                `with the Action: "mobiletargeting:GetUserEndpoints" ` +
-                                `in order to get endpoints info of the user`);
-                            return res(false);
-                        });
-                    }
-                    return res(false);
-                } else {
-                    logger.debug('updateEndpoint success', data);
-                    return res(true);
+
+        that.pinpointClient.updateEndpoint(update_params, (err, data) => {
+            if (err) {
+                logger.debug('updateEndpoint failed', err);
+                if (err.message.startsWith('Exceeded maximum endpoint per user count')) {
+                    this._removeUnusedEndpoints(appId, request.User.UserId)
+                    .then(() => {
+                        logger.debug('Remove the unused endpoints successfully');
+                        this._retry(params, handlers);
+                    }).catch(e => {
+                        logger.warn(`Failed to remove unused endpoints with error: ${e}`);
+                        logger.warn(`Please ensure you have updated your Pinpoint IAM Policy ` +
+                            `with the Action: "mobiletargeting:GetUserEndpoints" ` +
+                            `in order to get endpoints info of the user`);
+                        return handlers.reject(err);
+                    });
                 }
-            });
+                else return handlers.reject(err);
+            } else {
+                logger.debug('updateEndpoint success', data);
+                this._endpointGenerating = false;
+                return handlers.resolve(data);
+            }
         });
     }
 
@@ -406,7 +378,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 {
                     ApplicationId: appId,
                     UserId: userId
-                }, 
+                },
                 (err, data) => {
                     if (err) {
                         logger.debug(`Failed to get endpoints associated with the userId: ${userId} with error`, err);
@@ -448,18 +420,18 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                         });
             });
         });
-        
+
     }
 
     /**
      * @private
-     * @param config 
+     * @param config
      * Init the clients
      */
     private async _initClients(config, credentials) {
         logger.debug('init clients');
 
-        if (this.mobileAnalytics 
+        if (this.mobileAnalytics
             && this.pinpointClient
             && this._config.credentials
             && this._config.credentials.sessionToken === credentials.sessionToken
@@ -480,7 +452,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 });
             });
         }
-        
+
     }
 
     private async _getEndpointId(cacheKey) {
@@ -515,13 +487,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             platform: clientInfo.platform
         };
         // for backward compatibility
-        const { 
-            clientId, 
-            appTitle, 
-            appVersionName, 
-            appVersionCode, 
-            appPackageName, 
-            ...demographicByClientContext 
+        const {
+            clientId,
+            appTitle,
+            appVersionName,
+            appVersionCode,
+            appPackageName,
+            ...demographicByClientContext
         } = clientContext;
         const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {

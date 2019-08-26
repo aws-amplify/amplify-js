@@ -3,9 +3,10 @@ import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import SignUp from '../src/components/authenticator/SignUp.vue';
-import countries from '../src/assets/countries';
+import PhoneField from '../src/components/authenticator/PhoneField.vue';
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
+import signUpWithUsername, { signUpWithEmailFields, signUpWithPhoneNumberFields } from '../src/assets/default-sign-up-fields';
 /* eslint-enable */
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
@@ -18,11 +19,10 @@ describe('SignUp', () => {
   it('sets the correct default data', () => {
     expect(typeof SignUp.data).toBe('function');
     const defaultData = SignUp.data();
-    expect(defaultData.country).toEqual('USA (+1)');
-    expect(defaultData.countryCode).toEqual('1');
-    expect(defaultData.countries).toEqual(countries);
     expect(defaultData.logger).toEqual({});
     expect(defaultData.error).toEqual('');
+    expect(defaultData.phoneNumber).toEqual('');
+    expect(defaultData.defaultSignUpFields).toEqual(signUpWithUsername);
   });
 
   let wrapper;
@@ -70,40 +70,49 @@ describe('SignUp', () => {
       expect(wrapper.vm.setError).toBeTruthy();
     });
 
-    it('...it should watch the country variable', () => {
-      wrapper.vm.country = 'Algeria (+213)';
-      expect(wrapper.vm.countryCode).toEqual('213');
+    it('...shoud render a phone field component', () => {
+      const phoneField = wrapper.find(PhoneField);
+      expect(phoneField).toBeTruthy();
+      expect(phoneField.props()).toEqual({
+        "defaultCountryCode": undefined, 
+        "invalid": undefined, 
+        "placeholder": "Phone Number", 
+        "required": true
+      });
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('i18n Sign Up Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Create a new account');
       expect(wrapper.vm.options.signUpFields).toEqual([
         {
-          label: 'i18n Username',
+          label: 'Username',
           key: 'username',
           required: true,
-          type: 'string',
+          placeholder: 'Username',
           displayOrder: 1,
         },
         {
-          label: 'i18n Password',
+          label: 'Password',
           key: 'password',
           required: true,
+          placeholder: 'Password',
           type: 'password',
           displayOrder: 2,
         },
         {
-          label: 'i18n Email',
+          label: 'Email',
           key: 'email',
           required: true,
-          type: 'string',
-          displayOrder: 3,
+          placeholder: 'Email',
+          type: 'email',
+          displayOrder: 3
         },
         {
-          label: 'i18n Phone Number',
+          label: 'Phone Number',
           key: 'phone_number',
+          placeholder: 'Phone Number',
           required: true,
-          displayOrder: 4,
+          displayOrder: 4
         },
       ]);
     });
@@ -216,6 +225,58 @@ describe('SignUp', () => {
     it('...should overwrite existing fields from default array', () => {
       const email = wrapper.vm.options.signUpFields.find(x => x.key === 'email');
       expect(email.label).toEqual('Test Email');
+    });
+  });
+  describe('...when phone number field is customized...', () => {
+    const signUpFields = [
+      {
+        label: 'My Phone Number Field',
+        key: 'phone_number',
+        required: false,
+        type: 'string',
+        placeholder: 'the placeholder'
+      }
+    ];
+    beforeEach(() => {
+      wrapper = shallowMount(SignUp, {
+        methods: {
+          signIn: mockSignIn,
+          validate: mockValidate,
+          signUp: mockSignUp,
+          setError: mockSetError,
+          clear: mockClear,
+        },
+        propsData: {
+          signUpConfig: {
+            defaultCountryCode: '86',
+            hiddenDefaults: ['phone_number'],
+            signUpFields,
+          },
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockSignUp.mockReset();
+      mockValidate.mockReset();
+      mockSignIn.mockReset();
+      mockClear.mockReset();
+      mockSetError.mockReset();
+    });
+
+    it('...should accept new signUpFields an add them to the default Array', () => {
+      expect(wrapper.vm.options.signUpFields.length).toEqual(4);
+    });
+
+    it('...shoud pass props to phone field', () => {
+      const phoneField = wrapper.find(PhoneField);
+      expect(phoneField).toBeTruthy();
+      expect(phoneField.props()).toEqual({
+        "defaultCountryCode": "86", 
+        "invalid": undefined, 
+        "placeholder": "the placeholder", 
+        "required": false
+      });
     });
   });
 });

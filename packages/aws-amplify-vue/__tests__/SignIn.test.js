@@ -8,6 +8,7 @@ import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
 
+
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('SignIn', () => {
@@ -66,12 +67,28 @@ describe('SignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('i18n Sign In Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign in to your account');
       expect(wrapper.vm.options.username).toEqual('');
     });
+
+    it('...have default options', () => {
+      expect(wrapper.vm.options.header).toEqual('i18n Sign in to your account');
+      expect(wrapper.vm.options.username).toEqual('');
+    });
+
     it('...should call Auth.signIn when signIn function is called', () => {
       wrapper.vm.signIn();
       expect(wrapper.vm.$Amplify.Auth.signIn).toHaveBeenCalledTimes(1);
+    });
+    it('...should emit customConfirmSignIn state when signIn function is called and response indicates a custom challenge', async () => {
+      let customTestState = 0;
+      AmplifyEventBus.$on('authState', (val) => {
+        if (val === 'customConfirmSignIn') {
+          customTestState = 3;
+        }
+      });
+      await wrapper.vm.signIn();
+      expect(customTestState).toEqual(3);
     });
     it('...should emit authState when forgot method called', () => {
       testState = 0;

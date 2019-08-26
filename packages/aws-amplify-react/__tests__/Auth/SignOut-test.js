@@ -126,15 +126,15 @@ describe('SignOut', () => {
             expect(signOut.onHubCapsule).toBeTruthy();
         })
         test('onHubCapsule is called on a Hub event', () => {
-            const signOut = mount(<SignOut  />).instance();
-            const spy = jest.spyOn(signOut, 'onHubCapsule');
+            const spy = jest.spyOn(SignOut.prototype, 'onHubCapsule');
+            mount(<SignOut  />).instance();
             Hub.dispatch('auth', {event: 'test'});
             expect(spy).toHaveBeenCalled();
             spy.mockClear();
         })
         test('onHubCapsule should setState with authState = "signedIn" when "signIn" auth event fires', () => {
             const spy = jest.spyOn(SignOut.prototype, 'setState');
-            const signOut = mount(<SignOut  />).instance();
+            mount(<SignOut  />).instance();
             Hub.dispatch('auth', {event: 'signIn', data: {foo: 'bar'}});
             expect(spy).toHaveBeenCalledWith({
                 authState: 'signedIn',
@@ -144,7 +144,7 @@ describe('SignOut', () => {
         })
         test('onHubCapsule should setState with authState = "signIn" when "customSignOut" auth event fires', () => {
             const spy = jest.spyOn(SignOut.prototype, 'setState');
-            const signOut = mount(<SignOut  />).instance();
+            mount(<SignOut  />).instance();
             Hub.dispatch('auth', {event: 'signOut'});
             expect(spy).toHaveBeenCalledWith({
                 authState: 'signIn'
@@ -156,7 +156,7 @@ describe('SignOut', () => {
     describe('findState tests', () => {
         test('findState is called', () => {
             const spy = jest.spyOn(SignOut.prototype, 'findState');
-            const signOut = mount(<SignOut  />).instance();
+            mount(<SignOut  />).instance();
             expect(spy).toHaveBeenCalled();
             spy.mockClear();
         })
@@ -174,7 +174,7 @@ describe('SignOut', () => {
                 authData: {}
             };
             const wrapper = shallow(<SignOut {...props}/>);
-            const signOut = wrapper.instance();
+            wrapper.instance();
             expect(spy).not.toHaveBeenCalled();
             spy.mockClear();
         })
@@ -189,7 +189,7 @@ describe('SignOut', () => {
             });
             const props = {};
             const wrapper = shallow(<SignOut {...props}/>);
-            const signOut = wrapper.instance();
+            wrapper.instance();
             expect(spy).toHaveBeenCalled();
             spy.mockClear();
         })
