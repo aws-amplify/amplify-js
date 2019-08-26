@@ -32,6 +32,7 @@
   /* All of the variables below can be used within any application that does an @import inside of their application */
   --button-color: var(--white);
   --button-background-color: var(--amazon-orange);
+  --button-background-color-danger: var(--color-danger);
   --button-click: var(--dark-amazon-orange);
   --section-background-color: var(--white);
   --section-header-color: var(--deep-squid-ink);

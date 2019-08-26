@@ -17,7 +17,7 @@ describe('amplify-button e2e:', () => {
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
   });
 
-  it('fires its onButtonClicked callback upon being clicked', async () => {
+  it('fires its onButtonClick callback upon being clicked', async () => {
     const buttonElement = await page.find('amplify-button');
     expect(buttonElement).not.toBeNull();
 

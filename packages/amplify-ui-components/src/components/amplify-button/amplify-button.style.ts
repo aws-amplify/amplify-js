@@ -1,5 +1,13 @@
 import { css } from 'emotion';
 
+export const buttonTypeReset = css`
+  background-color: var(--button-background-color-danger);
+`;
+
+export const buttonTypeSafe = css`
+  background-color: var(--button-background-color);
+`;
+
 export const button = css`
   min-width: 153px;
   display: inline-block;
@@ -15,7 +23,6 @@ export const button = css`
   user-select: none;
   background-image: none;
   color: var(--button-color);
-  background-color: var(--button-background-color);
   border-color: #ccc;
   text-transform: uppercase;
   padding: 14px 0;
