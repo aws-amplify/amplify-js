@@ -1,7 +1,7 @@
 import { newE2EPage } from '@stencil/core/testing';
 import { pixelThreshold } from '../../common/testing';
 
-describe('amplify-checkbox:', () => {
+describe('amplify-checkbox e2e:', () => {
   it('should render amplify-checkbox with no label', async () => {
     const page = await newE2EPage();
     await page.setContent(`<amplify-checkbox></amplify-checkbox>`);

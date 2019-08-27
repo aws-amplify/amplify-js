@@ -13,8 +13,10 @@ async function snapshotTestIcon(iconName: string) {
 }
 
 /** Tests */
-describe('amplify-icon', () => {
-  Object.keys(icons).map(name => {
-    it(`renders ${name} correctly`, async () => snapshotTestIcon(name));
+describe('amplify-icon spec:', () => {
+  describe('Render logic ->', () => {
+    Object.keys(icons).map(name => {
+      it(`renders ${name} correctly`, async () => snapshotTestIcon(name));
+    });
   });
 });

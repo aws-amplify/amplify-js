@@ -1,8 +1,8 @@
 import { newE2EPage } from '@stencil/core/testing';
 import { pixelThreshold } from '../../common/testing';
 
-describe('amplify-input', () => {
-  it('renders', async () => {
+describe('amplify-input e2e:', () => {
+  it('renders with placeholder', async () => {
     const page = await newE2EPage();
 
     await page.setContent(

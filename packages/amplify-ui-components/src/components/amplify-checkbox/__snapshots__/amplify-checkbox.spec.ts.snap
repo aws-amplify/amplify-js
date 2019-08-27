@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkbox with an input type of checkbox and empty label 1`] = `
+exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and empty label by default 1`] = `
 <amplify-checkbox>
   <span class="amplify-ui--checkbox css-1teaxst">
     <input type="checkbox">
@@ -9,7 +9,7 @@ exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkb
 </amplify-checkbox>
 `;
 
-exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkbox with an input type of checkbox and label 1`] = `
+exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and label 1`] = `
 <amplify-checkbox label="Seattle">
   <span class="amplify-ui--checkbox css-1teaxst">
     <input type="checkbox">
@@ -20,7 +20,7 @@ exports[`amplify-checkbox: Default cases -> HTML logic -> should render a checkb
 </amplify-checkbox>
 `;
 
-exports[`amplify-checkbox: Default cases -> HTML logic -> should render with only a class of \`amplify-ui--checkbox\` when style override is true 1`] = `
+exports[`amplify-checkbox spec: Render logic -> should render with only a class of \`amplify-ui--checkbox\` when style override is true 1`] = `
 <amplify-checkbox style-override="true">
   <span class="amplify-ui--checkbox">
     <input type="checkbox">
