@@ -9,7 +9,7 @@ describe('amplify-label e2e:', () => {
     await page.setContent('<amplify-label>This is a label</amplify-label>');
   });
 
-  it(`renders with text 'This is a label'`, async () => {
+  it('renders with text `This is a label`', async () => {
     const element = await page.find('amplify-label');
     expect(element).not.toBeNull();
 
