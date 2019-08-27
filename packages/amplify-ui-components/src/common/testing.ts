@@ -38,5 +38,13 @@ export const knobs = {
 
     overrideStyleKnob () {
         return booleanKnob('Override style', false);
-    }
+    },
+
+    toggleKnob (toggleDefault: boolean) {
+        return booleanKnob('Toggle', toggleDefault);
+    },
+
+    disabledKnob (disabledDefault: boolean) {
+        return booleanKnob('Disabled', disabledDefault);
+    },
 }

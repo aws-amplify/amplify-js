@@ -1,5 +1,4 @@
 import { storiesOf } from '@storybook/html';
-import { boolean as booleanKnob } from '@storybook/addon-knobs';
 import { knobs } from '../../common/testing';
 
 const checkboxStories = storiesOf('amplify-checkbox', module);
@@ -13,7 +12,7 @@ checkboxStories.add('with label', () => {
 
 checkboxStories.add('toggle check box', () => {
   const label = knobs.labelKnob('Boise');
-  const toggle = booleanKnob('Checkbox toggle', false);
+  const toggle = knobs.toggleKnob(false);
   const override = knobs.overrideStyleKnob();
 
   return `<amplify-checkbox label=${label} name="boise" field-id="boise" value="boise" checked=${toggle} override-style=${override}></amplify-checkbox>`;
@@ -21,10 +20,10 @@ checkboxStories.add('toggle check box', () => {
 
 checkboxStories.add('disabled', () => {
   const label = knobs.labelKnob('Portland');
-  const toggle = booleanKnob('Disable', true);
+  const disabled = knobs.disabledKnob(true);
   const override = knobs.overrideStyleKnob();
 
-  return `<amplify-checkbox label=${label} name="portland" field-id="portland" value="portland" disabled=${toggle} override-style=${override}></amplify-checkbox>`;
+  return `<amplify-checkbox label=${label} name="portland" field-id="portland" value="portland" disabled=${disabled} override-style=${override}></amplify-checkbox>`;
 });
 
 
