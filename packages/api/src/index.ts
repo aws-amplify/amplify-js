@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,24 +11,13 @@
  * and limitations under the License.
  */
 
-import { APIClass, graphqlOperation } from './API';
-
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('API');
-
-let _instance: APIClass = null;
-
-if (!_instance) {
-    logger.debug('Create API Instance');
-    _instance = new APIClass(null);
-}
-
-const API = _instance;
-Amplify.register(API);
-
-/**
+/*
  * @deprecated use named import
  */
+import { API } from './API';
+
+export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
+export { RestAPI, RestAPIClass } from './RestAPI';
+export { API, APIClass } from './API';
+
 export default API;
-export { API, APIClass, graphqlOperation };
