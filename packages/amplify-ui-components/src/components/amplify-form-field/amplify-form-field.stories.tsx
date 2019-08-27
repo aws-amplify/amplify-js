@@ -1,6 +1,5 @@
 import { storiesOf } from '@storybook/html';
 import { knobs } from '../../common/testing';
-import { boolean as booleanKnob } from '@storybook/addon-knobs';
 
 const formFieldStories = storiesOf('amplify-form-field', module);
 
