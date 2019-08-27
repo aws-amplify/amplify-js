@@ -25,6 +25,7 @@ export const messages = {
     'Incorrect username or password': "用户名或密码错误",
     'Invalid password format': "密码格式错误",
     'Invalid phone number format': "电话格式错误，请使用格式 +12345678900",
+    'Loading...': "请稍候",
     'New Password': "新密码",
     'Password': "密码",
     'Phone Number': "电话",

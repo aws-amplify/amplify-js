@@ -35,6 +35,7 @@ export const messages = {
     "Invalid password format": "Formato della password non valido",
     "Invalid phone number format":
         "Utilizzo non valido Telefonummern formattare un numero nel formato :. 12.345.678,9 mille",
+    "Loading": "Caricamento in corso",
     "Lost your code?" : "Perso codice?",
     "New Password": "Nuova password",
     "No account? ": "Nessun account?",

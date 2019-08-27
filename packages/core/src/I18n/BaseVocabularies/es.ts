@@ -28,6 +28,7 @@ export const messages = {
     'Invalid phone number format':
         `Formato de número de teléfono inválido.
 Utilice el formato de número de teléfono +12345678900`,
+    'Loading...': "Espere por favor",
     'New Password': "Nueva contraseña",
     'Password': "Contraseña",
     'Phone Number': "Número de teléfono",

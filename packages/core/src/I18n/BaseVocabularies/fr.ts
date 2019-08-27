@@ -36,6 +36,7 @@ export const messages = {
     'Invalid phone number format':
         `Format de numéro de téléphone invalide.
 Veuillez utiliser un format de numéro de téléphone du +12345678900`,
+    'Loading...': "S'il vous plaît, attendez",
     'New Password': "nouveau mot de passe",
     'No account? ': "Pas de compte ? ",
     'Password': "Mot de passe",
