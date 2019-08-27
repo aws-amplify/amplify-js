@@ -45,7 +45,7 @@ export class AmplifyFormSection {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <amplify-section override-style={this.overrideStyle}>
+        <amplify-section overrideStyle={this.overrideStyle}>
           <AmplifyFormSectionHeader headerText={this.headerText} overrideStyle={this.overrideStyle} />
           <slot />
           <AmplifyFormSectionFooter submitButtonText={this.submitButtonText} overrideStyle={this.overrideStyle} />

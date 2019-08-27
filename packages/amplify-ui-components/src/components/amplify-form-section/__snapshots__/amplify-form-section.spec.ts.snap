@@ -60,7 +60,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 <amplify-form-section override-style="true">
   <!---->
   <form>
-    <amplify-section override-style="">
+    <amplify-section overridestyle="">
       <div>
         <slot-fb name="amplify-form-section-header">
           <div class="amplify-ui--section-header">
@@ -88,7 +88,7 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
 <amplify-form-section override-style="true">
   <!---->
   <form>
-    <amplify-section override-style="">
+    <amplify-section overridestyle="">
       <div>
         <slot-fb name="amplify-form-section-header">
           <div class="amplify-ui--section-header">
