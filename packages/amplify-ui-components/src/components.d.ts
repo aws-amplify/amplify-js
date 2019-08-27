@@ -192,7 +192,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle': boolean;
     /**
     * (Optional) Value of radio button
     */
@@ -599,7 +599,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) Value of radio button
     */

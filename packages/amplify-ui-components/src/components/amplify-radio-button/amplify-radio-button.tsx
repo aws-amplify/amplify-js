@@ -11,7 +11,7 @@ const STATIC_RADIO_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--radio-button`;
 })
 export class AmplifyRadioButton {
   /** (Optional) Overrides default styling */
-  @Prop() styleOverride?: boolean = false;
+  @Prop() overrideStyle: boolean = false;
   /** (Optional) Name of radio button */
   @Prop() name?: string;
   /** (Optional) Value of radio button */
@@ -27,7 +27,7 @@ export class AmplifyRadioButton {
 
   render() {
     return (
-      <span class={styleNuker(this.styleOverride, STATIC_RADIO_BUTTON_CLASS_NAME, radioButton)}>
+      <span class={styleNuker(this.overrideStyle, STATIC_RADIO_BUTTON_CLASS_NAME, radioButton)}>
         <input
           type="radio"
           name={this.name}
