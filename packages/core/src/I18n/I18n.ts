@@ -13,6 +13,7 @@
 
 import { I18nOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
+import { BaseVocabularies } from './BaseVocabularies';
 
 const logger = new Logger('I18n');
 
@@ -47,6 +48,8 @@ export class I18n {
         if (!this._lang && typeof window !== 'undefined' && window && window.navigator) {
             this._lang = window.navigator.language;
         }
+
+        this.putVocabularies(BaseVocabularies);
 
         logger.debug(this._lang);
     }
