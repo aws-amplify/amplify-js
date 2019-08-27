@@ -47,4 +47,12 @@ export const knobs = {
     disabledKnob (disabledDefault: boolean) {
         return booleanKnob('Disabled', disabledDefault);
     },
+
+    formSectionHeaderKnob (headerPlaceholder: string) {
+        return textKnob('Header text', headerPlaceholder);
+    },
+
+    formSectionSubmitKnob (submitPlaceholder: string) {
+        return textKnob('Submit button text', submitPlaceholder);
+    },
 }

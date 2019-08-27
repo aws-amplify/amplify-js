@@ -73,7 +73,35 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
       <div>
         <slot-fb name="amplify-form-section-footer">
           <div class="amplify-ui--section-footer">
-            <amplify-button type="submit">
+            <amplify-button overridestyle="" type="submit">
+              Submit
+            </amplify-button>
+          </div>
+        </slot-fb>
+      </div>
+    </amplify-section>
+  </form>
+</amplify-form-section>
+`;
+
+exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
+<amplify-form-section override-style="true">
+  <!---->
+  <form>
+    <amplify-section override-style="">
+      <div>
+        <slot-fb name="amplify-form-section-header">
+          <div class="amplify-ui--section-header">
+            <h2>
+              Amplify
+            </h2>
+          </div>
+        </slot-fb>
+      </div>
+      <div>
+        <slot-fb name="amplify-form-section-footer">
+          <div class="amplify-ui--section-footer">
+            <amplify-button overridestyle="" type="submit">
               Submit
             </amplify-button>
           </div>

@@ -12,6 +12,10 @@ describe('amplify-form-section spec:', () => {
     it('should render `Submit` for the button text', () => {
       expect(formSection.submitButtonText).toEqual('Submit');
     });
+
+    it('should have style override prop set to false by default', () => {
+      expect(formSection.overrideStyle).toBe(false);
+    });
   });
   describe('Render logic ->', () => {
     it('should render a form section with only a class of `amplify-ui--form-section` when style override is true', async () => {
@@ -36,6 +40,15 @@ describe('amplify-form-section spec:', () => {
       const page = await newSpecPage({
         components: [AmplifyFormSection],
         html: `<amplify-form-section></amplify-form-section>`
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
+
+    it('should render without Emotion CSS classes when style override is true', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyFormSection],
+        html: `<amplify-form-section override-style='true'></amplify-form-section>`
       });
 
       expect(page.root).toMatchSnapshot();
