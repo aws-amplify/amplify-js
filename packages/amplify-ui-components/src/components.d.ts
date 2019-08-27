@@ -62,7 +62,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle': boolean;
     /**
     * Value of the checkbox
     */
@@ -469,7 +469,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * Value of the checkbox
     */
