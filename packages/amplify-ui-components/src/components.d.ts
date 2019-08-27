@@ -219,7 +219,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
@@ -626,7 +626,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;
