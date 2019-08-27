@@ -150,7 +150,7 @@ export namespace Components {
     /**
     * (Optional) Override default styling
     */
-    'overrideStyle'?: boolean;
+    'overrideStyle': boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
