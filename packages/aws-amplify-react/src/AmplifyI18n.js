@@ -11,6 +11,10 @@
  * and limitations under the License.
  */
 
+/*
+This is a legacy file. Vocabularies are now located in packages/core/src/I18n/BaseVocabularies/
+*/
+
 const dict = {
     'de': {
         'Sign In': "Anmelden",
@@ -145,7 +149,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
             `Formato de número de teléfono inválido.
 Utilice el formato de número de teléfono +12345678900`
     },
-    'it': {    
+    'it': {
         "Account recovery requires verified contact information": "Ripristino del conto richiede un account verificati",
         "An account with the given email already exists.": "Un account con questa email esiste già.",
         "Back to Sign In": "Torna alla Accesso",
