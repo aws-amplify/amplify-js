@@ -5,3 +5,9 @@ exports[`amplify-input spec: Render logic -> renders correct HTML 1`] = `
   <input class="amplify-ui--input css-g9dmxw" type="text">
 </amplify-input>
 `;
+
+exports[`amplify-input spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
+<amplify-input override-style="true">
+  <input class="amplify-ui--input" type="text">
+</amplify-input>
+`;
