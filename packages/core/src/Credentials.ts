@@ -2,7 +2,6 @@ import { ConsoleLogger as Logger } from './Logger';
 import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
-import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
@@ -43,7 +42,7 @@ export class Credentials {
         if (!this._storage) {
             this._storage = new StorageHelper().getStorage();
         }
-        
+
         this._storageSync = Promise.resolve();
         if (typeof this._storage['sync'] === 'function') {
             this._storageSync = this._storage['sync']();
@@ -111,7 +110,7 @@ export class Credentials {
                     token = data.token;
                     identity_id = data.identity_id;
                     expires_at = data.expires_at;
-                    
+
                     return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
                 }).catch(e => {
                     logger.debug('refresh federated token failed', e);
@@ -153,7 +152,7 @@ export class Credentials {
             logger.debug('No Cognito Federated Identity pool provided');
             return Promise.reject('No Cognito Federated Identity pool provided');
         }
-        
+
         let identityId = undefined;
         try {
             await this._storageSync;
@@ -161,7 +160,7 @@ export class Credentials {
         } catch (e) {
             logger.debug('Failed to get the cached identityId', e);
         }
-        
+
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -177,7 +176,7 @@ export class Credentials {
          })
         .catch(async (e) => {
             // If identity id is deleted in the console, we make one attempt to recreate it
-            // and remove existing id from cache. 
+            // and remove existing id from cache.
             if (e.code === 'ResourceNotFoundException' &&
                 e.message === `Identity '${identityId}' not found.`
                 && !attempted) {
@@ -189,7 +188,7 @@ export class Credentials {
                     {
                         IdentityPoolId: identityPoolId,
                         IdentityId: undefined
-                    },  
+                    },
                     {
                         region
                     }
@@ -246,9 +245,9 @@ export class Credentials {
         });
 
         return this._loadCredentials(
-            credentials, 
-            'federated', 
-            true, 
+            credentials,
+            'federated',
+            true,
             params,
         );
     }
@@ -272,7 +271,6 @@ export class Credentials {
             region
         });
 
-        const that = this;
         return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
@@ -301,11 +299,11 @@ export class Credentials {
                         this._storage.setItem(
                             'aws-amplify-federatedInfo',
                             JSON.stringify({
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
+                                provider,
+                                token,
+                                user,
+                                expires_at,
+                                identity_id
                             })
                         );
                     } catch(e) {
@@ -315,14 +313,14 @@ export class Credentials {
                     // this is just for backward compatibility
                     if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
                         await Amplify.Cache.setItem(
-                            'federatedInfo', 
-                            { 
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            }, 
+                            'federatedInfo',
+                            {
+                                provider,
+                                token,
+                                user,
+                                expires_at,
+                                identity_id
+                            },
                             { priority: 1 }
                         );
                     } else {
@@ -333,7 +331,7 @@ export class Credentials {
                     try {
                         await this._storageSync;
                         this._storage.setItem(
-                            'CognitoIdentityId-' + identityPoolId, 
+                            'CognitoIdentityId-' + identityPoolId,
                             credentials.identityId
                         );
                     } catch (e) {
@@ -377,7 +375,7 @@ export class Credentials {
 
         // the Cache module no longer stores federated info
         // this is just for backward compatibility
-        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
+        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function') {
             await Amplify.Cache.removeItem('federatedInfo');
         } else {
             logger.debug('No Cache module registered in Amplify');
