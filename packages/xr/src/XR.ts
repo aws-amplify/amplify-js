@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { XRProvider, XROptions, SceneOptions } from './types';
 import { SumerianProvider } from './Providers/SumerianProvider';
 import { XRProviderNotConfigured } from './Errors';
@@ -39,6 +39,7 @@ export class XRClass {
 
         // Add default provider
         this.addPluggable(new SumerianProvider());
+        Amplify.register(this);
     }
 
     /**

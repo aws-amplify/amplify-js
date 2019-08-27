@@ -24,7 +24,6 @@ if (!_instance) {
 }
 
 export const XR = _instance;
-Amplify.register(XR);
 
 /**
  * @deprecated use named import

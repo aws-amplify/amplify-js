@@ -39,38 +39,13 @@ export {
 
 import { 
     Amplify, 
-    I18n, // Deprecated: Remove on major version bump
-    Logger, // Deprecated: Remove on major version bump
     ServiceWorker
 } from '@aws-amplify/core';
 
-/* Deprecated: Remove on major version bump */
-import Analytics from '@aws-amplify/analytics';
-import Auth from '@aws-amplify/auth';
-import Storage from '@aws-amplify/storage';
-import API from '@aws-amplify/api';
-import PubSub from '@aws-amplify/pubsub';
-import Cache from '@aws-amplify/cache';
-import Interactions from '@aws-amplify/interactions';
-import * as UI from '@aws-amplify/ui';
-import XR from '@aws-amplify/xr';
-import Predictions from '@aws-amplify/predictions';
-/* */
+import Cache from "@aws-amplify/cache";
 
-/* Deprecated: Remove on major version bump */
-Amplify.Auth = Auth;
-Amplify.Analytics = Analytics;
-Amplify.API = API;
-Amplify.Storage = Storage;
-Amplify.I18n = I18n;
 Amplify.Cache = Cache;
-Amplify.PubSub = PubSub;
-Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
-Amplify.Interactions = Interactions;
-Amplify.UI = UI;
-Amplify.XR = XR;
-Amplify.Predictions = Predictions;
 /* */
 
 export default Amplify;

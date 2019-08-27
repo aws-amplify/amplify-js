@@ -12,7 +12,7 @@
  */
 import { Interactions as InteractionsClass } from './Interactions';
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Interactions');
 
@@ -24,7 +24,6 @@ if (!_instance) {
 }
 
 const Interactions = _instance;
-Amplify.register(Interactions);
 
 /**
  * @deprecated use named import

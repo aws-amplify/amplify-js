@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 
@@ -46,6 +46,7 @@ export class Storage {
         this.put = this.put.bind(this);
         this.remove = this.remove.bind(this);
         this.list = this.list.bind(this);
+        Amplify.register(this);
     }
 
     public getModuleName() {

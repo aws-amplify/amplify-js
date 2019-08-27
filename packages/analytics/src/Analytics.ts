@@ -12,11 +12,10 @@
  */
 
 import {
+    Amplify,
     ConsoleLogger as Logger,
-    missingConfig,
     Hub,
-    Parser,
-    Platform
+    Parser
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
@@ -60,6 +59,7 @@ export class AnalyticsClass {
         this._trackers = {};
 
         this.record = this.record.bind(this);
+        Amplify.register(this);
     }
 
     public getModuleName() {

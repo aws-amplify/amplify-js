@@ -13,7 +13,7 @@
 
 import { Storage as StorageClass} from './Storage';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 
@@ -41,7 +41,6 @@ if (!_instance) {
 }
 
 const Storage = _instance;
-Amplify.register(Storage);
 
 export default Storage;
 export { Storage, StorageClass };

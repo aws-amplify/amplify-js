@@ -32,6 +32,7 @@ import {
 } from './types';
 
 import {
+    Amplify,
     AWS,
     ConsoleLogger as Logger,
     Constants,
@@ -121,6 +122,7 @@ export class AuthClass {
                     break;
             }
         });
+        Amplify.register(this);
     }
 
     public getModuleName() {

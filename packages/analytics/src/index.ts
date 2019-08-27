@@ -35,7 +35,6 @@ if (!_instance) {
 }
 
 const Analytics = _instance;
-Amplify.register(Analytics);
 
 /**
  * @deprecated use named import

@@ -25,7 +25,6 @@ if (!_instance) {
 }
 
 const Auth = _instance;
-Amplify.register(Auth);
 
 /**
  * @deprecated use named import

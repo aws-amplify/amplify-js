@@ -19,7 +19,7 @@ import {
     AbstractConvertPredictionsProvider, AbstractIdentifyPredictionsProvider,
     AbstractInterpretPredictionsProvider, AbstractPredictionsProvider
 } from "./types/Providers";
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Predictions');
 
@@ -39,6 +39,7 @@ export class Predictions {
         this._convertPluggables = [];
         this._identifyPluggables = [];
         this._interpretPluggables = [];
+        Amplify.register(this);
     }
 
     public getModuleName() {

@@ -12,7 +12,7 @@
  */
 import { PubSub as PubSubClass } from './PubSub';
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PubSub');
 
@@ -24,7 +24,6 @@ if (!_instance) {
 }
 
 const PubSub = _instance;
-Amplify.register(PubSub);
 
 export * from './Providers/AWSIotProvider';
 export { PubSub, PubSubClass };

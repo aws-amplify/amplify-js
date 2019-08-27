@@ -12,7 +12,7 @@
  */
 import { Predictions as PredictionsClass } from './Predictions';
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
     AmazonAIConvertPredictionsProvider, AmazonAIIdentifyPredictionsProvider,
     AmazonAIPredictionsProvider, AmazonAIInterpretPredictionsProvider,
@@ -29,7 +29,6 @@ if (!_instance) {
 }
 
 const Predictions = _instance;
-Amplify.register(Predictions);
 
 export {
     Predictions, AmazonAIIdentifyPredictionsProvider, AmazonAIConvertPredictionsProvider,
