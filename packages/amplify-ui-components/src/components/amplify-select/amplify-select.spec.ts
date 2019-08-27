@@ -59,7 +59,7 @@ describe('amplify-select spec:', () => {
   });
 
   describe('Render logic ->', () => {
-    it('should render an empty `placeholder` label and value of `1`', async () => {
+    it('should render an empty `placeholder` label and value of `1` by default', async () => {
 
       const page = await newSpecPage({
         components: [AmplifySelect],

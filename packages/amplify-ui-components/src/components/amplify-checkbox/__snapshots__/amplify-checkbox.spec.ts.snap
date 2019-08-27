@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and empty label 1`] = `
+exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and empty label by default 1`] = `
 <amplify-checkbox>
   <span class="amplify-ui--checkbox css-1teaxst">
     <input type="checkbox">
