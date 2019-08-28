@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-import { messages as en } from './en';
 import { messages as de } from './de';
 import { messages as es } from './es';
 import { messages as fr } from './fr';
@@ -20,7 +19,6 @@ import { messages as zh } from './zh';
 
 
 export const BaseVocabularies = {
-    en,
     de,
     es,
     fr,
