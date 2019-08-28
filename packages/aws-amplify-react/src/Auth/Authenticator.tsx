@@ -232,10 +232,12 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
             <Loading/>
         ];
 
+        // @ts-ignore
         const props_children_override =  React.Children.map(props_children, child => child.props.override);
         hide = hide.filter((component) => !props_children.find(child => child.type === component));
         
         const render_props_children = React.Children.map(props_children, (child, index) => {
+            // @ts-ignore
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
                     theme,
@@ -251,6 +253,7 @@ export default class Authenticator extends Component<IAuthenticatorProps, IAuthe
         });
        
         const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
+                // @ts-ignore
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
                     theme,

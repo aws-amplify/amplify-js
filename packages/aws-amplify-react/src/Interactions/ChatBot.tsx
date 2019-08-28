@@ -134,6 +134,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
         this.changeInputText = this.changeInputText.bind(this);
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
+        // @ts-ignore
         this.listItemsRef = React.createRef();
         this.onSilenceHandler = this.onSilenceHandler.bind(this)
         this.doneSpeakingHandler = this.doneSpeakingHandler.bind(this)

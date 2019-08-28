@@ -48,7 +48,7 @@ const logger = new Logger('SignUp');
 
 
 export interface ISignUpConfig {
-  defaultCountryCode?: number;
+  defaultCountryCode?: number | string;
   header?: string;
   hideAllDefaults?: boolean;
   hiddenDefaults?: string[];
