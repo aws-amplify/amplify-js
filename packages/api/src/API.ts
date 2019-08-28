@@ -16,7 +16,7 @@ import { GraphQLOptions } from './types';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as Observable from 'zen-observable';
 
-const logger = new Logger('API')
+const logger = new Logger('API');
 /**
  * @deprecated
  * Export Cloud Logic APIs

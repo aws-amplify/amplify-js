@@ -58,7 +58,7 @@ export class GraphQLAPIClass {
      */
     configure(options) {
         const { API = {}, ...otherOptions } = options || {};
-        let opt = { ...otherOptions, ...API };
+        const opt = { ...otherOptions, ...API };
         logger.debug('configure GraphQL API', { opt });
 
         if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {

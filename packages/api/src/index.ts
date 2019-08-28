@@ -11,13 +11,14 @@
  * and limitations under the License.
  */
 
-/*
- * @deprecated use named import
- */
+
 import { API } from './API';
 
 export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
 export { RestAPI, RestAPIClass } from './RestAPI';
 export { API, APIClass } from './API';
 
+/*
+ * @deprecated use named import
+ */
 export default API;

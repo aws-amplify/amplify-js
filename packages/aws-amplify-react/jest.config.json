@@ -1,0 +1,51 @@
+{
+  "globals": {
+    "ts-jest": {
+      "diagnostics": false,
+      "tsConfig": {
+        "lib": [
+          "es5",
+          "es2015",
+          "dom",
+          "esnext.asynciterable",
+          "es2017.object"
+        ],
+        "allowJs": true,
+        "jsx": "react"
+      }
+    }
+  },
+  "transform": {
+    "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+  },
+  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  "moduleFileExtensions": [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "json",
+    "node"
+  ],
+  "timers": "fake",
+  "setupTestFrameworkScriptFile": "./test_Setup/enzymeSetup.ts",
+  "snapshotSerializers": [
+    "enzyme-to-json/serializer"
+  ],
+  "testEnvironment": "jsdom",
+  "testURL": "http://localhost/",
+  "coverageThreshold": {
+    "global": {
+      "branches": 70,
+      "functions": 75,
+      "lines": 75,
+      "statements": 75
+    }
+  },
+  "coveragePathIgnorePatterns": [
+    "/node_modules/"
+  ],
+  "moduleNameMapper": {
+    "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/styleMock.js"
+  }
+}
