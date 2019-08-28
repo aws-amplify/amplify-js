@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { API } from '@aws-amplify/api';
+import { GraphQLAPI as API } from '@aws-amplify/api';
 
 export class Connect extends React.Component {
 
