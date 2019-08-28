@@ -18,7 +18,7 @@ describe('amplify-checkbox spec:', () => {
     });
 
     it('should have style override prop set to false by default', () => {
-      expect(checkbox.styleOverride).toBe(false);
+      expect(checkbox.overrideStyle).toBe(false);
     });
   });
   describe('Render logic ->', () => {
@@ -34,7 +34,7 @@ describe('amplify-checkbox spec:', () => {
     it('should render with only a class of `amplify-ui--checkbox` when style override is true', async () => {
       const page = await newSpecPage({
         components: [AmplifyCheckbox],
-        html: `<amplify-checkbox style-override='true'></amplify-checkbox>`
+        html: `<amplify-checkbox override-style='true'></amplify-checkbox>`
       });
 
       expect(page.root).toMatchSnapshot();

@@ -38,5 +38,21 @@ export const knobs = {
 
     overrideStyleKnob () {
         return booleanKnob('Override style', false);
-    }
+    },
+
+    toggleKnob (toggleDefault: boolean) {
+        return booleanKnob('Toggle', toggleDefault);
+    },
+
+    disabledKnob (disabledDefault: boolean) {
+        return booleanKnob('Disabled', disabledDefault);
+    },
+
+    formSectionHeaderKnob (headerPlaceholder: string) {
+        return textKnob('Header text', headerPlaceholder);
+    },
+
+    formSectionSubmitKnob (submitPlaceholder: string) {
+        return textKnob('Submit button text', submitPlaceholder);
+    },
 }

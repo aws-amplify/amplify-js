@@ -21,7 +21,7 @@ exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an
 `;
 
 exports[`amplify-checkbox spec: Render logic -> should render with only a class of \`amplify-ui--checkbox\` when style override is true 1`] = `
-<amplify-checkbox style-override="true">
+<amplify-checkbox override-style="true">
   <span class="amplify-ui--checkbox">
     <input type="checkbox">
     <amplify-label></amplify-label>

@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 
 export const label = css`
   color: var(--label-color);

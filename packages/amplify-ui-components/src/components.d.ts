@@ -62,7 +62,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle': boolean;
     /**
     * Value of the checkbox
     */
@@ -150,7 +150,7 @@ export namespace Components {
     /**
     * (Optional) Override default styling
     */
-    'overrideStyle'?: boolean;
+    'overrideStyle': boolean;
     /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
@@ -192,7 +192,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle': boolean;
     /**
     * (Optional) Value of radio button
     */
@@ -219,7 +219,7 @@ export namespace Components {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride': boolean;
+    'overrideStyle': boolean;
   }
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
@@ -469,7 +469,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * Value of the checkbox
     */
@@ -599,7 +599,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
     /**
     * (Optional) Value of radio button
     */
@@ -626,7 +626,7 @@ declare namespace LocalJSX {
     /**
     * (Optional) Overrides default styling
     */
-    'styleOverride'?: boolean;
+    'overrideStyle'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;

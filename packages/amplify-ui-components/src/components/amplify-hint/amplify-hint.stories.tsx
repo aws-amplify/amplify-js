@@ -1,7 +1,8 @@
 import { storiesOf } from '@storybook/html';
-import { text as textKnob } from '@storybook/addon-knobs';
+import { knobs } from '../../common/testing';
 
 storiesOf('amplify-hint', module).add('with text', () => {
-  const text = textKnob('Text', 'Hint placeholder');
-  return `<amplify-hint>${text}</amplify-hint>`;
+  const text = knobs.hintKnob('Hint placeholder');
+  const override = knobs.overrideStyleKnob();
+  return `<amplify-hint override-style=${override}>${text}</amplify-hint>`;
 });

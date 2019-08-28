@@ -13,7 +13,7 @@ const DEFAULT_SELECT_OPTION = [{label: '', value: 1}];
 })
 export class AmplifySelect {
   /** (Optional) Overrides default styling */
-  @Prop() styleOverride: boolean = false;
+  @Prop() overrideStyle: boolean = false;
   /** The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
   @Prop() options: SelectOptionsString | SelectOptionsNumber = DEFAULT_SELECT_OPTION;
   /** Used for id field */
@@ -28,7 +28,7 @@ export class AmplifySelect {
 
   render() {
     return (
-      <select id={this.fieldId} class={styleNuker(this.styleOverride, STATIC_SELECT_CLASS_NAME, select)}>
+      <select id={this.fieldId} class={styleNuker(this.overrideStyle, STATIC_SELECT_CLASS_NAME, select)}>
         {this.contructSelectOptions(this.options)}
       </select>
     );

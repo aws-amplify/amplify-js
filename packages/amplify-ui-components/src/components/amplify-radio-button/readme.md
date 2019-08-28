@@ -14,7 +14,7 @@
 | `fieldId`       | `field-id`       | Field ID used for the 'for' in the label | `string`  | `undefined` |
 | `label`         | `label`          | Label for the radio button               | `string`  | `undefined` |
 | `name`          | `name`           | (Optional) Name of radio button          | `string`  | `undefined` |
-| `styleOverride` | `style-override` | (Optional) Overrides default styling     | `boolean` | `false`     |
+| `overrideStyle` | `override-style` | (Optional) Overrides default styling     | `boolean` | `false`     |
 | `value`         | `value`          | (Optional) Value of radio button         | `string`  | `undefined` |
 
 
