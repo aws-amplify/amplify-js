@@ -1,4 +1,4 @@
-import { select as selectKnob, text as textKnob } from '@storybook/addon-knobs';
+import { boolean as booleanKnob, select as selectKnob, text as textKnob } from '@storybook/addon-knobs';
 
 export const pixelThreshold = 10;
 
@@ -26,5 +26,17 @@ export const knobs = {
 
     placeholderKnob (placeholderPlaceholder: string) {
         return textKnob('Placeholder', placeholderPlaceholder);
+    },
+
+    buttonTypeKnob (buttonTypePlaceholder: string) {
+        return selectKnob('Button type', ['button', 'submit', 'reset'], buttonTypePlaceholder);
+    },
+
+    buttonTextKnob (buttonTextPlaceholder: string) {
+        return textKnob('Button text', buttonTextPlaceholder);
+    },
+
+    overrideStyleKnob () {
+        return booleanKnob('Override style', false);
     }
 }

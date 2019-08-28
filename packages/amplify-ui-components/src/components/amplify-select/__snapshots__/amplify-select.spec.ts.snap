@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-select:  Default cases -> HTML logic -> should render an empty \`placeholder\` label and value of \`1\` 1`] = `
+exports[`amplify-select spec: Render logic -> should render an empty \`placeholder\` label and value of \`1\` by default 1`] = `
 <amplify-select>
   <select class="amplify-ui--amplify-select css-10dovbt">
     <option value="1"></option>

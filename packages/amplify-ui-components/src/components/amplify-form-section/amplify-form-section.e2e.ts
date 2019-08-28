@@ -8,6 +8,7 @@ describe('amplify-form-section e2e:', () => {
     page = await newE2EPage();
     await page.setContent(`<amplify-form-section></amplify-form-section>`);
   });
+
   it('should render amplify-form-section with a button text of `Submit`', async () => {
     const el = await page.find('amplify-form-section');
     expect(el).not.toBeNull();
