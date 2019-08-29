@@ -395,6 +395,85 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
     return result;
 };
 
+const signUrlWithBody = 
+  (request: any, accessInfo: any, serviceInfo?: any, expiration?: Number, method: String = 'POST') => {
+      
+    const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    const today = now.substr(0, 8);
+    // Intentionally discarding search
+    const {search, ...parsedUrl} = url.parse(request.url, true, true);
+    const { host } = parsedUrl;
+    const signedHeaders = { host };
+
+    const { region, service } = serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
+    const credentialScope = credential_scope(
+        today,
+        region,
+        service
+    );
+
+    // IoT service does not allow the session token in the canonical request
+    // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+    const sessionTokenRequired = accessInfo.session_token && service !== IOT_SERVICE_NAME;
+    const queryParams = {
+        'X-Amz-Algorithm': DEFAULT_ALGORITHM,
+        'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
+        'X-Amz-Date': now.substr(0, 16),
+        ...(sessionTokenRequired ? { 'X-Amz-Security-Token': `${accessInfo.session_token}` } : {}),
+        ...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
+        'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
+    };
+
+    const canonicalRequest = canonical_request({
+        method,
+        url: url.format({
+            ...parsedUrl,
+            query: {
+                ...parsedUrl.query,
+                ...queryParams
+            },
+        }),
+        headers: signedHeaders,
+        data: request.body
+    });
+
+    const stringToSign = string_to_sign(
+        DEFAULT_ALGORITHM,
+        canonicalRequest,
+        now,
+        credentialScope
+    );
+
+    const signing_key = get_signing_key(
+        accessInfo.secret_key,
+        today,
+        { region, service },
+    );
+    const signature = get_signature(signing_key, stringToSign);
+
+    const additionalQueryParams = {
+        'X-Amz-Signature': signature,
+        ...(accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }),
+    };
+
+    const result = url.format({
+        protocol: parsedUrl.protocol,
+        slashes: true,
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port,
+        pathname: parsedUrl.pathname,
+        query: {
+            ...parsedUrl.query,
+            ...queryParams,
+            ...additionalQueryParams,
+        }
+    });
+
+    return result;
+};
+
+
+
 /**
 * AWS request signer.
 * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
@@ -404,4 +483,5 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
 export default class Signer {
     static sign = sign;
     static signUrl = signUrl;
+    static signUrlWithBody = signUrlWithBody;
 }
