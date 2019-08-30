@@ -179,6 +179,8 @@ import Cache from '@aws-amplify/cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 import { Credentials, GoogleOAuth, StorageHelper } from '@aws-amplify/core';
+import { AuthError, NoUserPoolError } from '../src/Errors';
+import { AuthErrorTypes } from '../src/types/Auth';
 
 const authOptions : AuthOptions = {
     userPoolId: "awsUserPoolsId",
@@ -244,11 +246,7 @@ describe('auth unit test', () => {
                 }
             };
             expect.assertions(1);
-            try {
-                await auth.signUp(attrs);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect(auth.signUp(attrs).then()).rejects.toThrow(AuthError);
         });
 
         test('callback error', async () => {
@@ -278,49 +276,46 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('no user pool', async () => {
-            // @ts-ignore
-            const auth = new Auth(authOptionsWithNoUserPoolId);
+        test('no config', async () => {
+            const auth = new Auth(undefined);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.NoConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.signUp('username', 'password', 'email', 'phone');
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.signUp('username', 'password', 'email', 'phone').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.signUp('username', 'password', 'email', 'phone').then()).rejects.toEqual(errorMessage);
+        });
+
+        test('no user pool in config', async () => {
+            const auth = new Auth(authOptionsWithNoUserPoolId);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
+
+            expect.assertions(2);
+            expect(auth.signUp('username', 'password', 'email', 'phone').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.signUp('username', 'password', 'email', 'phone').then()).rejects.toEqual(errorMessage);
         });
 
         test('no username', async () => {
             const auth = new Auth(authOptions);
-
             expect.assertions(1);
-            try {
-                await auth.signUp(null, 'password', 'email', 'phone');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect(auth.signUp(null, 'password', 'email', 'phone').then()).rejects.toThrow(AuthError);
         });
 
         test('no password', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyPassword);
 
-            expect.assertions(1);
-            try {
-                await auth.signUp('username', null, 'email', 'phone');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.signUp('username', null, 'email', 'phone').then()).rejects.toThrow(AuthError);
+            expect(auth.signUp('username', null, 'email', 'phone').then()).rejects.toEqual(errorMessage);
         });
 
         test('only username', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyPassword);
 
-            expect.assertions(1);
-            try {
-                await auth.signUp('username');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.signUp('username').then()).rejects.toThrow(AuthError);
+            expect(auth.signUp('username').then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -363,38 +358,31 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('no user pool', async () => {
-            // @ts-ignore
+        test('no user pool in config', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.confirmSignUp('username', 'code');
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.confirmSignUp('username', 'code').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.confirmSignUp('username', 'code').then()).rejects.toEqual(errorMessage);
         });
 
         test('no user name', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyUsername);
 
-            expect.assertions(1);
-            try {
-                await auth.confirmSignUp(null, 'code');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.confirmSignUp(null, 'code').then()).rejects.toThrow(AuthError);
+            expect(auth.confirmSignUp(null, 'code').then()).rejects.toEqual(errorMessage);
         });
 
         test('no code', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyCode);
 
-            expect.assertions(1);
-            try {
-                await auth.confirmSignUp('username', null);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.confirmSignUp('username', null).then()).rejects.toThrow(AuthError);
+            expect(auth.confirmSignUp('username', null).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -427,27 +415,22 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('no user pool', async () => {
-            // @ts-ignore
+        test('no user pool in config', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.resendSignUp('username');
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.resendSignUp('username').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.resendSignUp('username').then()).rejects.toEqual(errorMessage);
         });
 
         test('no username', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyUsername);
 
-            expect.assertions(1);
-            try {
-                await auth.resendSignUp(null);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.resendSignUp(null).then()).rejects.toThrow(AuthError);
+            expect(auth.resendSignUp(null).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -467,6 +450,7 @@ describe('auth unit test', () => {
             const spyon2 = jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
                 return Promise.resolve(user);
             });
+
             expect.assertions(2);
             expect(await auth.signIn('username', 'password')).toEqual(user);
             expect(spyon2).toBeCalled();
@@ -492,7 +476,7 @@ describe('auth unit test', () => {
             });
             expect.assertions(2);
             try {
-                await auth.signIn('username', 'password')
+                await auth.signIn('username', 'password');
             } catch (e) {
                 expect(e).toBe('User is disabled');
                 expect(spyon2).toBeCalled();
@@ -504,7 +488,7 @@ describe('auth unit test', () => {
 
         test('happy case using cookie storage', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser')
-                .mockImplementationOnce((authenticationDetails, callback) => {
+                .mockImplementationOnce((_authenticationDetails, callback) => {
                     callback.onSuccess(session);
                 });
 
@@ -870,12 +854,11 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
 
-            expect.assertions(1);
-            try {
-                await auth.completeNewPassword(user, null, {});
-            } catch (e) {
-                expect(e).toBe('Password cannot be empty');
-            }
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyPassword);
+
+            expect.assertions(2);
+            await expect(auth.completeNewPassword(user, null, {}).then()).rejects.toThrow(AuthError);
+            await expect(auth.completeNewPassword(user, null, {}).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -1013,13 +996,11 @@ describe('auth unit test', () => {
                 identityPoolId: "awsCognitoIdentityPoolId",
                 mandatorySignIn: false
             });
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.currentSession();
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.currentSession().then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.currentSession().then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -1322,13 +1303,11 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyCode);
 
-            expect.assertions(1);
-            try {
-                await auth.verifyUserAttributeSubmit(user, {}, null);
-            } catch (e) {
-                expect(e).toBe('Code cannot be empty');
-            }
+            expect.assertions(2);
+            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toThrow(AuthError);
+            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -1586,15 +1565,13 @@ describe('auth unit test', () => {
         test('no user pool id', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, "forgotPassword");
 
-            // @ts-ignore
             const auth = new Auth(authOptionsWithNoUserPoolId);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.forgotPassword('username');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.forgotPassword('username').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.forgotPassword('username').then()).rejects.toEqual(errorMessage);
+
             spyon.mockClear();
         });
 
@@ -1643,49 +1620,40 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('no user pool', async () => {
-            // @ts-ignore
+        test('no user pool in config', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.forgotPasswordSubmit('username', 'code', 'password');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.forgotPasswordSubmit('username', 'code', 'password').then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.forgotPasswordSubmit('username', 'code', 'password').then()).rejects.toEqual(errorMessage);
         });
 
         test('no username', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyUsername);
 
-            expect.assertions(1);
-            try {
-                await auth.forgotPasswordSubmit(null, 'code', 'password');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.forgotPasswordSubmit(null, 'code', 'password').then()).rejects.toThrow(AuthError);
+            expect(auth.forgotPasswordSubmit(null, 'code', 'password').then()).rejects.toEqual(errorMessage);
         });
 
         test('no code', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyCode);
 
-            expect.assertions(1);
-            try {
-                await auth.forgotPasswordSubmit('username', null, 'password');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.forgotPasswordSubmit('username', null, 'password').then()).rejects.toThrow(AuthError);
+            expect(auth.forgotPasswordSubmit('username', null, 'password').then()).rejects.toEqual(errorMessage);
         });
 
         test('no password', async () => {
             const auth = new Auth(authOptions);
+            const errorMessage = new AuthError(AuthErrorTypes.EmptyPassword);
 
-            expect.assertions(1);
-            try {
-                await auth.forgotPasswordSubmit('username', 'code', null);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
+            expect.assertions(2);
+            expect(auth.forgotPasswordSubmit('username', 'code', null).then()).rejects.toThrow(AuthError);
+            expect(auth.forgotPasswordSubmit('username', 'code', null).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -2300,20 +2268,17 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
-        test('No userPool', async () => {
-            // @ts-ignore
+        test('No userPool in config', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
             });
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.EmptyCode);
 
-            expect.assertions(1);
-            try {
-                await auth.currentUserPoolUser();
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.currentUserPoolUser().then()).rejects.toThrow(NoUserPoolError);
+            expect(auth.currentUserPoolUser().then()).rejects.toEqual(errorMessage);
         });
 
         test('get session error', async () => {
@@ -2573,7 +2538,6 @@ describe('auth unit test', () => {
         test('no userPool', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, 'sendCustomChallengeAnswer');
 
-            // @ts-ignore
             const auth = new Auth(authOptionsWithNoUserPoolId);
             const userAfterCustomChallengeAnswer = Object.assign(
                 new CognitoUser({
@@ -2584,13 +2548,14 @@ describe('auth unit test', () => {
                     "challengeName": "CUSTOM_CHALLENGE",
                     "challengeParam": "challengeParam"
                 });
+            const errorMessage = new NoUserPoolError(AuthErrorTypes.MissingAuthConfig);
 
-            expect.assertions(1);
-            try {
-                await auth.sendCustomChallengeAnswer(userAfterCustomChallengeAnswer, 'challengeResponse');
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
+            expect.assertions(2);
+            expect(auth.sendCustomChallengeAnswer(userAfterCustomChallengeAnswer, 'challengeResponse')
+                .then()).rejects.toThrow(AuthError);
+
+            expect(auth.sendCustomChallengeAnswer(userAfterCustomChallengeAnswer, 'challengeResponse')
+                .then()).rejects.toEqual(errorMessage);
 
             spyon.mockClear();
         });
