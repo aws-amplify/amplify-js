@@ -11,76 +11,92 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute } from "amazon-cognito-identity-js";
+import {
+    ICookieStorageData,
+    ICognitoStorage,
+    CognitoUserAttribute
+} from 'amazon-cognito-identity-js';
 
 /**
-* Parameters for user sign up
-*/
+ * Parameters for user sign up
+ */
 export interface SignUpParams {
-    username: string,
-    password: string,
-    attributes?: object,
-    validationData?: CognitoUserAttribute[],
+    username: string;
+    password: string;
+    attributes?: object;
+    validationData?: CognitoUserAttribute[];
 }
 
 export interface AuthCache {
-    setItem(),
-    getItem(),
-    removeItem()
+    setItem();
+    getItem();
+    removeItem();
 }
 
 /**
  * Auth instance options
  */
 export interface AuthOptions {
-    userPoolId?: string,
-    userPoolWebClientId?: string,
-    identityPoolId?: string,
-    region?: string,
-    mandatorySignIn?: boolean
-    cookieStorage?: ICookieStorageData,
-    oauth?: OAuthOpts,
-    refreshHandlers?: object,
-    storage?: ICognitoStorage,
-    authenticationFlowType?: string,
-    identityPoolRegion?: string
+    userPoolId?: string;
+    userPoolWebClientId?: string;
+    identityPoolId?: string;
+    region?: string;
+    mandatorySignIn?: boolean;
+    cookieStorage?: ICookieStorageData;
+    oauth?: OAuthOpts;
+    refreshHandlers?: object;
+    storage?: ICognitoStorage;
+    authenticationFlowType?: string;
+    identityPoolRegion?: string;
 }
 
 export enum CognitoHostedUIIdentityProvider {
     Cognito = 'COGNITO',
     Google = 'Google',
     Facebook = 'Facebook',
-    Amazon = 'LoginWithAmazon',
+    Amazon = 'LoginWithAmazon'
 }
 
-export type LegacyProvider = 'google'|'facebook'|'amazon'|'developer'| string;
+export type LegacyProvider =
+    | 'google'
+    | 'facebook'
+    | 'amazon'
+    | 'developer'
+    | string;
 
 export type FederatedSignInOptions = {
-    provider: CognitoHostedUIIdentityProvider,
-    customState?: string
+    provider: CognitoHostedUIIdentityProvider;
+    customState?: string;
 };
 
 export type FederatedSignInOptionsCustom = {
-    customProvider: string,
-    customState?: string
+    customProvider: string;
+    customState?: string;
 };
 
-export function isFederatedSignInOptions(obj: any): obj is FederatedSignInOptions  {
+export function isFederatedSignInOptions(
+    obj: any
+): obj is FederatedSignInOptions {
     const keys: (keyof FederatedSignInOptions)[] = ['provider', 'customState'];
-    return obj && !!keys.find((k) => obj.hasOwnProperty(k));
+    return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
-export function isFederatedSignInOptionsCustom(obj:any): obj is FederatedSignInOptionsCustom  {
-    const keys: (keyof FederatedSignInOptionsCustom)[] = ['customProvider', 'customState'];
-    return obj && !!keys.find((k) => obj.hasOwnProperty(k));
+export function isFederatedSignInOptionsCustom(
+    obj: any
+): obj is FederatedSignInOptionsCustom {
+    const keys: (keyof FederatedSignInOptionsCustom)[] = [
+        'customProvider',
+        'customState'
+    ];
+    return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
 /**
  * Details for multi-factor authentication
  */
 export interface MfaRequiredDetails {
-    challengeName: any,
-    challengeParameters: any
+    challengeName: any;
+    challengeParameters: any;
 }
 
 /**
@@ -88,45 +104,46 @@ export interface MfaRequiredDetails {
  */
 export interface FederatedResponse {
     // access token
-    token: string,
+    token: string;
     // identity id
-    identity_id?: string,
+    identity_id?: string;
     // the universal time when token expired
-    expires_at: number
+    expires_at: number;
 }
 
 /**
  * interface for federatedUser
  */
 export interface FederatedUser {
-    name: string,
-    email?: string
+    name: string;
+    email?: string;
 }
 
 export interface AwsCognitoOAuthOpts {
-    domain: string,
-	scope: Array<string>,
-	redirectSignIn: string,
-	redirectSignOut: string,
-    responseType: string,
-    options?: object,
-    urlOpener?: (url:string, redirectUrl: string) => Promise<any>
+    domain: string;
+    scope: Array<string>;
+    redirectSignIn: string;
+    redirectSignOut: string;
+    responseType: string;
+    options?: object;
+    urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
-export function isCognitoHostedOpts(oauth: OAuthOpts): oauth is AwsCognitoOAuthOpts {
+export function isCognitoHostedOpts(
+    oauth: OAuthOpts
+): oauth is AwsCognitoOAuthOpts {
     return (<AwsCognitoOAuthOpts>oauth).redirectSignIn !== undefined;
 }
 
-
 export interface Auth0OAuthOpts {
-    domain: string,
-    clientID: string,
-	scope: string,
-    redirectUri: string,
-    audience: string,
-    responseType: string,
-    returnTo: string,
-    urlOpener?: (url:string, redirectUrl: string) => Promise<any>
+    domain: string;
+    clientID: string;
+    scope: string;
+    redirectUri: string;
+    audience: string;
+    responseType: string;
+    returnTo: string;
+    urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
 // Replacing to fix typings
@@ -138,26 +155,48 @@ export interface Auth0OAuthOpts {
 export type OAuthOpts = AwsCognitoOAuthOpts | Auth0OAuthOpts;
 
 export interface ConfirmSignUpOptions {
-    forceAliasCreation?: boolean
+    forceAliasCreation?: boolean;
 }
 
 export interface SignOutOpts {
-    global?: boolean
+    global?: boolean;
 }
 
 export interface CurrentUserOpts {
-    bypassCache: boolean
+    bypassCache: boolean;
 }
 
 export interface GetPreferredMFAOpts {
-    bypassCache: boolean
+    bypassCache: boolean;
 }
 
 export type UsernamePasswordOpts = {
-    username: string,
-    password: string,
-    validationData?: {[key:string]: any}
+    username: string;
+    password: string;
+    validationData?: { [key: string]: any };
 };
+
+export enum AuthErrorTypes {
+    NoConfig = 'noConfig',
+    MissingAuthConfig = 'missingAuthConfig',
+    EmptyUsername = 'emptyUsername',
+    InvalidUsername = 'invalidUsername',
+    EmptyPassword = 'emptyPassword',
+    EmptyCode = 'emptyCode',
+    SignUpError = 'signUpError',
+    NoMFA = 'noMFA',
+    InvalidMFA = 'invalidMFA',
+    EmptyChallengeResponse = 'emptyChallengeResponse',
+    NoUserSession = 'noUserSession',
+    Default = 'default'
+}
+
+export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
+
+export interface AuthErrorMessage {
+    message: string;
+    log?: string;
+}
 
 // We can extend this in the future if needed
 export type SignInOpts = UsernamePasswordOpts;

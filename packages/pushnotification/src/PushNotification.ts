@@ -328,7 +328,7 @@ export default class PushNotification {
         }
 
         let ret = null;
-        const dataPayload = dataObj.data;
+        const dataPayload = dataObj.data || {};
         if (dataPayload['pinpoint.campaign.campaign_id']) {
             ret = {
                 title: dataPayload['pinpoint.notification.title'],
