@@ -11,6 +11,7 @@ const STATIC_HINT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--hint`;
 })
 
 export class AmplifyHint {
+  /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
 
   render() {
