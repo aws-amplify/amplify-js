@@ -16,7 +16,7 @@
     <div v-bind:id="SCENE_DOM_ID" v-bind:class="amplifyUI.sumerianScene" v-bind:data-test="sumerianScene.sumerianScene">
       <div v-if="loading" v-bind:class="amplifyUI.loadingOverlay" v-bind:data-test="sumerianScene.loading">
         <div v-bind:class="amplifyUI.loadingContainer">
-          <div v-bind:class="amplifyUI.loadingLogo">
+          <div v-bind:class="amplifyUI.loadingLogo" v-bind:data-test="sumerianScene.loadingLogo">
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 2000 1195" style="enable-background:new 0 0 2000 1195;" xml:space="preserve">
               <g>
@@ -70,9 +70,9 @@
               </g>
             </svg>
           </div>
-          <div v-bind:class="amplifyUI.loadingSceneName">{{sceneName}}</div>
-          <div v-if="sceneError" v-bind:class="amplifyUI.sceneErrorText">{{sceneError}}</div>
-          <div v-if="!sceneError" v-bind:class="amplifyUI.loadingBar">
+          <div v-bind:class="amplifyUI.loadingSceneName" v-bind:data-test="sumerianScene.sceneName">{{sceneName}}</div>
+          <div v-if="sceneError" v-bind:class="amplifyUI.sceneErrorText" v-bind:data-test="sumerianScene.sceneError">{{sceneError}}</div>
+          <div v-if="!sceneError" v-bind:class="amplifyUI.loadingBar" v-bind:data-test="sumerianScene.loadingBar">
             <div v-bind:class="amplifyUI.loadingBarFill" v-bind:style="{ width: loadPercentage + '%'}"></div>
           </div>
         </div>

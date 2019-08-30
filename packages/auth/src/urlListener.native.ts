@@ -24,31 +24,23 @@ export default async callback => {
 
     let Linking: any;
     let AppState: any;
-    let Platform: any;
 
     try {
-        ({ Linking, AppState, Platform } = require('react-native'));
+        ({ Linking, AppState } = require('react-native'));
     } catch (error) { /* Keep webpack happy */ }
 
 
     handler = handler || (({ url, ...rest }: { url: string }) => {
-        logger.debug('addEventListener', { url, ...rest });
+        logger.debug('urlListener', { url, ...rest });
         callback({ url });
-
-        AppState.removeEventListener('change', handler);
-        Linking.removeEventListener('url', handler);
     });
 
     Linking.removeEventListener('url', handler);
     Linking.addEventListener('url', handler);
-    if (Platform.OS === 'android') {
-        AppState.removeEventListener('change', handler);
-        AppState.addEventListener('change', async newAppState => {
-            if (newAppState === 'active') {
-                const initialUrl = await Linking.getInitialURL();
-                handler({ url: initialUrl });
-            }
-        });
-    }
-
+    AppState.addEventListener('change', async newAppState => {
+        if (newAppState === 'active') {
+            const initialUrl = await Linking.getInitialURL();
+            handler({ url: initialUrl });
+        }
+    });
 };

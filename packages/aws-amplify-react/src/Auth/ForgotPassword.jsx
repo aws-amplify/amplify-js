@@ -92,22 +92,28 @@ export default class ForgotPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <Input
-                    placeholder={I18n.get('Code')}
-                    theme={theme}
-                    key="code"
-                    name="code"
-                    autoComplete="off"
-                    onChange={this.handleInputChange}
-                />
-                <Input
-                    placeholder={I18n.get('New Password')}
-                    theme={theme}
-                    type="password"
-                    key="password"
-                    name="password"
-                    onChange={this.handleInputChange}
-                />
+                <FormField theme={theme}>
+                    <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
+                    <Input
+                        placeholder={I18n.get('Code')}
+                        theme={theme}
+                        key="code"
+                        name="code"
+                        autoComplete="off"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
+                <FormField theme={theme}>
+                    <InputLabel theme={theme}>{I18n.get('New Password')} *</InputLabel>
+                    <Input
+                        placeholder={I18n.get('New Password')}
+                        theme={theme}
+                        type="password"
+                        key="password"
+                        name="password"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
             </div>
         );
     }

@@ -17,6 +17,8 @@ import IconButton from './IconButton';
 import Loading from './Loading';
 import * as AmplifyUI from '@aws-amplify/ui';
 
+import { sumerianScene } from '../Amplify-UI/data-test-attributes';
+
 const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 const SCENE_DOM_ID = 'scene-dom-id';
 
@@ -168,12 +170,12 @@ class SumerianScene extends React.Component {
     }
 
     return (
-      <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer}>
-        <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene}>
+      <div id={SCENE_CONTAINER_DOM_ID} className={AmplifyUI.sumerianSceneContainer} data-test={sumerianScene.container}>
+        <div id={SCENE_DOM_ID} className={AmplifyUI.sumerianScene} data-test={sumerianScene.sumerianScene}>
           {this.state.loading && <Loading sceneName={this.props.sceneName} percentage={this.state.percentage} sceneError={this.state.sceneError}/>}
         </div>
-        <div className={AmplifyUI.sceneBar}>
-          <span className={AmplifyUI.sceneActions}>
+        <div className={AmplifyUI.sceneBar} data-test={sumerianScene.bar}>
+          <span className={AmplifyUI.sceneActions} data-test={sumerianScene.actions}>
             {muteButton}
             {enterOrExitVRButton}
             {screenSizeButton}
