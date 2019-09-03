@@ -4,7 +4,7 @@ export const tooltip = css`
   display: inline;
   position: relative;
   font-size: 12px;
-  font-family: 'Amazon Ember';
+  font-family: var(--font-family);
   margin: 0 0 0 16px;
 
   :after {
