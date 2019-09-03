@@ -1,7 +1,6 @@
 import { Component, Prop, h } from '@stencil/core';
 import { button, buttonTypeReset, buttonTypeSafe } from './amplify-button.style';
-import { cx } from 'emotion';
-import { styleNuker } from '../../common/helpers';
+import { styleNuker, styleBranch } from '../../common/helpers';
 import { ButtonTypes } from '../../common/types';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
@@ -20,7 +19,7 @@ export class AmplifyButton {
   @Prop() overrideStyle: boolean = false;
 
   render() {
-    const emotionButtonClass = cx(button, this.type === 'reset' ? buttonTypeReset : buttonTypeSafe);
+    const emotionButtonClass = styleBranch(this.type === 'reset', button, buttonTypeReset, buttonTypeSafe);
     return (
       <button class={styleNuker(this.overrideStyle, STATIC_BUTTON_CLASS_NAME, emotionButtonClass)} type={this.type} onClick={this.onButtonClick}>
         <slot />
