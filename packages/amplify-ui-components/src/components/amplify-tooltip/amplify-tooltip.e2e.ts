@@ -9,7 +9,7 @@ describe('amplify-tooltip e2e:', () => {
   });
 
   it('renders a tooltip correctly', async () => {
-    await page.setContent('<div style="margin-bottom:60px"></div> <amplify-tooltip text="Tooltip">FOO</amplify-tooltip>');
+    await page.setContent('<div style="margin-bottom:60px"></div> <amplify-tooltip text="Tooltip" should-auto-show="true">FOO</amplify-tooltip>');
     const tooltip = await page.find('amplify-tooltip');
     expect(tooltip).not.toBeNull();
 
