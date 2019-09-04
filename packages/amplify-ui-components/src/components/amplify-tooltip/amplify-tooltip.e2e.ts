@@ -18,24 +18,44 @@ describe('amplify-tooltip e2e:', () => {
   });
 
   it(`renders an always-visible tooltip if 'shouldAutoShow' is true`, async () => {
-    await page.setContent('<amplify-tooltip text="Tooltip" should-auto-show="true">FOO</amplify-tooltip>');
+    await page.setContent(`
+      <amplify-tooltip text="Tooltip" should-auto-show="true">
+        <div id="toHover">FOO</div>
+      </amplify-tooltip>
+    `);
 
     const tooltip = await page.find('amplify-tooltip');
-    console.log((await tooltip.getComputedStyle(":after")).opacity);
-    expect(await tooltip.isVisible()).toBe(true);
 
-    // and then hover and do it again
+    // Move mouse away from div with tooltip -- should still be visible
+    await page.mouse.move(500, 500);
+    await page.waitFor(1500);
+    const tooltipInnerDiv = await tooltip.find('div');
+    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
+
+    // Hover div with tooltip -- should still be visible
+    await page.hover('#toHover');
+    await page.waitFor(1500);
+    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
   });
 
   it(`renders a tooltip that is only visible on hover if 'shouldAutoShow' is false`, async () => {
-    await page.setContent('<amplify-tooltip text="Tooltip" should-auto-show="false">FOO</amplify-tooltip>');
+    await page.setContent(`
+      <amplify-tooltip text="Tooltip" should-auto-show="false">
+        <div id="toHover">FOO</div>
+      </amplify-tooltip>
+    `);
 
     const tooltip = await page.find('amplify-tooltip');
 
+    // Move mouse away from div with tooltip -- should not be visible
     await page.mouse.move(500, 500);
-    console.log(tooltip.classList);
+    await page.waitFor(1500);
+    const tooltipInnerDiv = await tooltip.find('div');
+    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("0");
 
-    console.log((await tooltip.getComputedStyle(":after")).opacity);
-    // expect(await tooltip.isVisible()).toBe(false);
+    // Hover div with tooltip -- should become visible
+    await page.hover('#toHover');
+    await page.waitFor(1500);
+    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
   });
 });
