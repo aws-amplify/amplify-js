@@ -213,6 +213,22 @@ describe('PubSub', () => {
                     provider: 'AWSIoTProvider',
             })).rejects.toMatchObject({error: new Error('Failed to connect to the network')});
         });
+
+        test('trigger observer error when disconnected', (done) => {
+            const pubsub = new PubSub();
+
+            const awsIotProvider = new AWSIoTProvider({
+                aws_pubsub_region: 'region',
+                aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt'
+            });
+            pubsub.addPluggable(awsIotProvider);
+
+            pubsub.subscribe('topic').subscribe({
+                error: () => done()
+            });
+
+            awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
+        });
     });
 
     describe('MqttOverWSProvider local testing config', () => {
