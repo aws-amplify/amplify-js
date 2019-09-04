@@ -30,12 +30,14 @@ describe('amplify-tooltip e2e:', () => {
     await page.mouse.move(500, 500);
     await page.waitFor(1500);
     const tooltipInnerDiv = await tooltip.find('div');
-    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
+    const opacityNoHover = (await tooltipInnerDiv.getComputedStyle(':after')).opacity;
+    expect(opacityNoHover).toEqual("1");
 
     // Hover div with tooltip -- should still be visible
     await page.hover('#toHover');
     await page.waitFor(1500);
-    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
+    const opacityHover = (await tooltipInnerDiv.getComputedStyle(':after')).opacity;
+    expect(opacityHover).toEqual("1");
   });
 
   it(`renders a tooltip that is only visible on hover if 'shouldAutoShow' is false`, async () => {
@@ -51,11 +53,13 @@ describe('amplify-tooltip e2e:', () => {
     await page.mouse.move(500, 500);
     await page.waitFor(1500);
     const tooltipInnerDiv = await tooltip.find('div');
-    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("0");
+    const opacityNoHover = (await tooltipInnerDiv.getComputedStyle(':after')).opacity;
+    expect(opacityNoHover).toEqual("0");
 
     // Hover div with tooltip -- should become visible
     await page.hover('#toHover');
     await page.waitFor(1500);
-    expect((await tooltipInnerDiv.getComputedStyle(':after')).opacity).toBe("1");
+    const opacityHover = (await tooltipInnerDiv.getComputedStyle(':after')).opacity;
+    expect(opacityHover).toEqual("1");
   });
 });
