@@ -122,6 +122,9 @@ export namespace Components {
     'submitButtonText'?: string;
   }
   interface AmplifyHint {
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle': boolean;
   }
   interface AmplifyIcon {
@@ -266,6 +269,20 @@ export namespace Components {
     };
     'label': string | null;
   }
+  interface AmplifyTooltip {
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
+    */
+    'shouldAutoShow': boolean;
+    /**
+    * (Required) The text in the tooltip
+    */
+    'text': string;
+  }
   interface RockPaperScissor {
     'icon': Function;
   }
@@ -394,6 +411,12 @@ declare global {
     new (): HTMLAmplifyTextInputElement;
   };
 
+  interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
+  var HTMLAmplifyTooltipElement: {
+    prototype: HTMLAmplifyTooltipElement;
+    new (): HTMLAmplifyTooltipElement;
+  };
+
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
   var HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
@@ -420,6 +443,7 @@ declare global {
     'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
     'amplify-text-field': HTMLAmplifyTextFieldElement;
     'amplify-text-input': HTMLAmplifyTextInputElement;
+    'amplify-tooltip': HTMLAmplifyTooltipElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 }
@@ -529,6 +553,9 @@ declare namespace LocalJSX {
     'submitButtonText'?: string;
   }
   interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle'?: boolean;
   }
   interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
@@ -673,6 +700,20 @@ declare namespace LocalJSX {
     };
     'label'?: string | null;
   }
+  interface AmplifyTooltip extends JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement> {
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
+    */
+    'shouldAutoShow'?: boolean;
+    /**
+    * (Required) The text in the tooltip
+    */
+    'text'?: string;
+  }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
     'onIconChange'?: (event: CustomEvent<any>) => void;
@@ -699,6 +740,7 @@ declare namespace LocalJSX {
     'amplify-sign-in-username-field': AmplifySignInUsernameField;
     'amplify-text-field': AmplifyTextField;
     'amplify-text-input': AmplifyTextInput;
+    'amplify-tooltip': AmplifyTooltip;
     'rock-paper-scissor': RockPaperScissor;
   }
 }

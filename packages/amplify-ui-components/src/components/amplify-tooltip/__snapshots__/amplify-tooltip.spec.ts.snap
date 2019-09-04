@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-tooltip spec: Render logic -> should render a normal tooltip by default 1`] = `
+<amplify-tooltip>
+  <!---->
+  <div class="amplify-ui--tooltip css-w8fhyi"></div>
+</amplify-tooltip>
+`;
+
+exports[`amplify-tooltip spec: Render logic -> should render an automatically-shown tooltip 1`] = `
+<amplify-tooltip should-auto-show="true">
+  <!---->
+  <div class="amplify-ui--tooltip css-8zqv9r"></div>
+</amplify-tooltip>
+`;
+
+exports[`amplify-tooltip spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
+<amplify-tooltip override-style="true">
+  <!---->
+  <div class="amplify-ui--tooltip"></div>
+</amplify-tooltip>
+`;

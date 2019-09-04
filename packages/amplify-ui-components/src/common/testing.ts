@@ -55,4 +55,8 @@ export const knobs = {
     formSectionSubmitKnob (submitPlaceholder: string) {
         return textKnob('Submit button text', submitPlaceholder);
     },
+
+    tooltipAutoShowKnob (autoShowDefault: boolean) {
+        return booleanKnob('Tooltip autoshow', autoShowDefault);
+    }
 }

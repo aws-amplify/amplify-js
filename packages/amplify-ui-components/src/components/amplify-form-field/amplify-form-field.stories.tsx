@@ -10,7 +10,7 @@ formFieldStories.add('generalized', () => {
   const type = knobs.inputTypeKnob('text');
   const placeholder = knobs.placeholderKnob('Placeholder placeholder');
   const override = knobs.overrideStyleKnob();
-  return `<amplify-form-field field-id="id" label="${label}" description="${description}" hint="${hint}" type="${type}" placeholder="${placeholder}" override="${override}"/>`;
+  return `<amplify-form-field field-id="id" label="${label}" description="${description}" hint="${hint}" type="${type}" placeholder="${placeholder}" override-style="${override}"/>`;
 });
 
 formFieldStories.add('password example', () => {
