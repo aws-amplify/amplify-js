@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.24...@aws-amplify/analytics@1.2.25) (2019-09-05)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [1.2.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.2.23...@aws-amplify/analytics@1.2.24) (2019-09-04)
 
 **Note:** Version bump only for package @aws-amplify/analytics
