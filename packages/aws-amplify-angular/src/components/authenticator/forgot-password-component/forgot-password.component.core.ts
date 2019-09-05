@@ -24,7 +24,7 @@ const template = `
   <div class="amplify-form-container" data-test="${auth.forgotPassword.section}">
     <div class="amplify-form-body" data-test="${auth.forgotPassword.bodySection}">
     <div class="amplify-form-header" data-test="${auth.forgotPassword.headerSection}">
-      {{ this.amplifyService.i18n().get('Reset your password') }}
+      {{ this.amplifyService.i18n().get('Reset password') }}
     </div>
     <div class="amplify-form-text" *ngIf="!code_sent">
       {{ this.amplifyService.i18n().get('You will receive a verification code') }}
