@@ -14,6 +14,19 @@
 | `text`           | `text`             | (Required) The text in the tooltip                                                                       | `string`  | `undefined` |
 
 
+## Dependencies
+
+### Used by
+
+ - [amplify-sign-in](../amplify-sign-in)
+
+### Graph
+```mermaid
+graph TD;
+  amplify-sign-in --> amplify-tooltip
+  style amplify-tooltip fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

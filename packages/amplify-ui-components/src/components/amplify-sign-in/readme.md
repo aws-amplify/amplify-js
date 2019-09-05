@@ -22,18 +22,22 @@
 
 ### Depends on
 
-- [amplify-section](../amplify-section)
+- [amplify-form-section](../amplify-form-section)
 - [amplify-sign-in-username-field](../amplify-sign-in-username-field)
 - [amplify-sign-in-password-field](../amplify-sign-in-password-field)
-- [amplify-button](../amplify-button)
+- [amplify-tooltip](../amplify-tooltip)
+- [amplify-icon](../amplify-icon)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-sign-in --> amplify-section
+  amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-sign-in-username-field
   amplify-sign-in --> amplify-sign-in-password-field
-  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-tooltip
+  amplify-sign-in --> amplify-icon
+  amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
   amplify-form-field --> amplify-label

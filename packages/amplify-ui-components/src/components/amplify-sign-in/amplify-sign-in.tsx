@@ -10,15 +10,19 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <amplify-section overrideStyle={this.overrideStyle}>
-        <amplify-section-header overrideStyle={this.overrideStyle}>Sign in to your account</amplify-section-header>
-        <form onSubmit={this.handleSubmit}>
-          <amplify-sign-in-username-field />
-          <amplify-sign-in-password-field />
-          {this.validationErrors && <p>{this.validationErrors}</p>}
-          <amplify-button type="submit" overrideStyle={this.overrideStyle}>Submit</amplify-button>
-        </form>
-      </amplify-section>
+      <amplify-form-section handleSubmit={this.handleSubmit} headerText="Sign into your account" overrideStyle={this.overrideStyle}>
+        <amplify-sign-in-username-field hint="Hint: it's the name of your user" />
+        <amplify-sign-in-password-field />
+        {this.validationErrors &&
+          <div style={{display: "flex"}}>
+            <p style={{margin: "0"}}>{this.validationErrors}</p>
+            <amplify-tooltip text="Listen up, this validation error is important!">
+              <amplify-icon name="sound" overrideStyle={true}>
+              </amplify-icon>
+            </amplify-tooltip>
+          </div>
+        }
+      </amplify-form-section>
     );
   }
 }
