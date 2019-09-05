@@ -105,6 +105,7 @@ export default class ForgotPassword extends AuthPiece {
                     type="password"
                     key="password"
                     name="password"
+                    autoComplete="off"
                     onChange={this.handleInputChange}
                 />
                 <ButtonRow theme={theme} onClick={this.submit}>
