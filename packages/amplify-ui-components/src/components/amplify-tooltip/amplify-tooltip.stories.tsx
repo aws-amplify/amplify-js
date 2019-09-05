@@ -1,7 +1,9 @@
 import { storiesOf } from '@storybook/html';
 import { knobs } from '../../common/testing';
 
-storiesOf('amplify-tooltip', module).add('with text', () => {
+const tooltipStories = storiesOf('amplify-tooltip', module);
+
+tooltipStories.add('with text', () => {
   const text = knobs.buttonTextKnob('Foo');
   const autoShow = knobs.tooltipAutoShowKnob(true);
   const override = knobs.overrideStyleKnob();
