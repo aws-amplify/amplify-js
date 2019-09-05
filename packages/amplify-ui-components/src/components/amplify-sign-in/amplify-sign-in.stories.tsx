@@ -2,7 +2,7 @@ import { storiesOf } from '@storybook/html';
 import { knobs } from '../../common/testing';
 import { text as textKnob } from '@storybook/addon-knobs';
 
-const signInStories = storiesOf('mystery component...', module);
+const signInStories = storiesOf('amplify-sign-in', module);
 
 signInStories.add('default', () => {
   const override = knobs.overrideStyleKnob();
