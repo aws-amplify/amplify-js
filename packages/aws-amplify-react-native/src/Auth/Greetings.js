@@ -74,7 +74,7 @@ export default class Greetings extends AuthPiece {
 
         const content = signedIn ? (
             <View style={theme.navBar}>
-                <Text>{message}</Text>
+                <Text style={theme.greetingMessage}>{message}</Text>
                 <AmplifyButton
                     theme={theme}
                     text={I18n.get('Sign Out')}
@@ -83,7 +83,7 @@ export default class Greetings extends AuthPiece {
                 />
             </View>
         ) : (
-            <Text>{message}</Text>
+            <Text style={theme.greetingMessage}>{message}</Text>
         );
 
         return content;

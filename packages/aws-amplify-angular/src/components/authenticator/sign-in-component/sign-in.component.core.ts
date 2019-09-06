@@ -49,7 +49,7 @@ const template = `
           <a class="amplify-form-link"
             (click)="onForgotPassword()"
             data-test="${auth.signIn.forgotPasswordLink}"
-          >{{ this.amplifyService.i18n().get('Reset your password') }}</a>
+          >{{ this.amplifyService.i18n().get('Reset password') }}</a>
         </span>
       </div>
       <div class="amplify-form-actions">

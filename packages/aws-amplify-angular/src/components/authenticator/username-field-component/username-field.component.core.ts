@@ -117,7 +117,7 @@ export class UsernameFieldComponentCore implements OnInit {
     }
 
     getPlaceholder() {
-        return this.amplifyService.i18n().get(`Enter your ${this.getUsernameLabel()}` || this._placeholder);
+        return this.amplifyService.i18n().get(`${this.getUsernameLabel()}` || this._placeholder);
     }
 
     onPhoneFieldChanged(event: PhoneFieldOutput) {

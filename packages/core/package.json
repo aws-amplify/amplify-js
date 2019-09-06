@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/core",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Core category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -53,7 +53,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "aws-sdk": "2.474.0",
+    "aws-sdk": "2.518.0",
     "url": "^0.11.0"
   },
   "jest": {
