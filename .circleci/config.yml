@@ -56,7 +56,7 @@ jobs:
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
-  integration_test_setup:
+  integ_setup:
     <<: *defaults
     working_directory: ~/
     steps:
@@ -115,7 +115,7 @@ jobs:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
-  integration_test_react:
+  integ_react_auth:
     <<: *defaults
     working_directory: ~/
     steps:
@@ -160,7 +160,52 @@ jobs:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
-  integration_test_vue:
+  integ_angular_auth:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      - run:
+          name: "Install Angular Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
+            yarn
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link aws-amplify-angular"
+          command: |
+            cd amplify-js/packages/aws-amplify-angular
+            yarn link
+      - run:
+          name: "Install Angular Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link aws-amplify-angular
+      - run:
+          name: "Start Angular Authenticator Sample server in background"
+          command: |
+            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
+            yarn start
+          background: true
+      - run:
+          name: "Run cypress tests for Angular Authenticator Sample"
+          command: |
+            cd amplify-js-samples-staging
+            yarn cypress:angular --spec "cypress/integration/auth/authenticator.spec.js"
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging/cypress/screenshots
+  integ_vue_auth:
     <<: *defaults
     working_directory: ~/
     steps:
@@ -231,7 +276,7 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integration_test_setup:
+      - integ_setup:
           filters:
             branches:
               only:
@@ -246,23 +291,31 @@ workflows:
                 - release
                 - master
           requires:
-            - integration_test_setup
-      - integration_test_react:
+            - integ_setup
+      - integ_react_auth:
           filters:
             branches:
               only:
                 - release
                 - master
           requires:
-            - integration_test_setup
-      - integration_test_vue:
+            - integ_setup
+      - integ_angular_auth:
           filters:
             branches:
               only:
                 - release
                 - master
           requires:
-            - integration_test_setup
+            - integ_setup
+      - integ_vue_auth:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+          requires:
+            - integ_setup
       - deploy:
           filters:
             branches:
@@ -272,5 +325,7 @@ workflows:
                 - beta
           requires:
             - unit_test
-            - integration_test_react
-            - integration_test_vue
+            - integ_react_predictions
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
