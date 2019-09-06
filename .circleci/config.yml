@@ -282,7 +282,6 @@ workflows:
               only:
                 - release
                 - master
-                - ang-circleci
           requires:
             - build
       - integ_react_predictions:
@@ -291,7 +290,6 @@ workflows:
               only:
                 - release
                 - master
-                - ang-circleci
           requires:
             - integ_setup
       - integ_react_auth:
@@ -300,7 +298,6 @@ workflows:
               only:
                 - release
                 - master
-                - ang-circleci
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -309,7 +306,6 @@ workflows:
               only:
                 - release
                 - master
-                - ang-circleci
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -318,7 +314,6 @@ workflows:
               only:
                 - release
                 - master
-                - ang-circleci
           requires:
             - integ_setup
       - deploy:
