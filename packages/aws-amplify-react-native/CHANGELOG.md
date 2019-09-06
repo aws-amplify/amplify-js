@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.19](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.17...aws-amplify-react-native@2.1.19) (2019-09-05)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
+## [2.1.17](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.16...aws-amplify-react-native@2.1.17) (2019-09-04)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Add countryDialCodes to allow non USA phone numbers ([#3593](https://github.com/aws/aws-amplify/issues/3593)) ([9791966](https://github.com/aws/aws-amplify/commit/9791966))
+* **aws-amplify-react-native:** removing axios dependency on amplify-react-native ([4c5b7cf](https://github.com/aws/aws-amplify/commit/4c5b7cf))
+* **aws-amplify-react-native:** Use more compatible default export syntax ([#3102](https://github.com/aws/aws-amplify/issues/3102)) ([3ed0b74](https://github.com/aws/aws-amplify/commit/3ed0b74))
+
+
+
+
+
 ## [2.1.16](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.15...aws-amplify-react-native@2.1.16) (2019-07-30)
 
 **Note:** Version bump only for package aws-amplify-react-native
