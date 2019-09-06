@@ -1,6 +1,6 @@
 import Auth from '@aws-amplify/auth';
 import TOTPSetup from '../../src/Auth/TOTPSetup';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
@@ -24,7 +24,7 @@ describe('TOTPSetup', () => {
     describe('render test', () => {
         test('render correctly', () => {
             const wrapper = shallow(<TOTPSetup/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -36,7 +36,7 @@ describe('TOTPSetup', () => {
         test('render hidden', () => {
             const wrapper = shallow(<TOTPSetup/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -49,7 +49,7 @@ describe('TOTPSetup', () => {
         test('hide props', () => {
             const wrapper = shallow(<TOTPSetup hide={[TOTPSetup]}/>);
             
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -93,7 +93,7 @@ describe('TOTPSetup', () => {
                     verified: {
                         email: 'xxx@xxx.com'
                     }
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(totpSetup, 'changeState');
@@ -115,7 +115,7 @@ describe('TOTPSetup', () => {
             const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
                 return Promise.resolve({
                     verified: {}
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(totpSetup, 'changeState');
@@ -130,4 +130,4 @@ describe('TOTPSetup', () => {
             spyon2.mockClear();
         });
     });
-})
+});

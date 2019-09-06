@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
@@ -38,7 +39,7 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
                 if (Analytics && typeof Analytics.record === 'function') {
                     Analytics.record({
                         name: this.trackerName, 
-                        attributes: { event: event }
+                        attributes: { event }
                     });
                 } else {
                     throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
@@ -90,7 +91,7 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
 
         render() {
             this.track('render');
-            return <Comp {...this.props} />
+            return <Comp {...this.props} />;
         }
-    }
+    };
 }

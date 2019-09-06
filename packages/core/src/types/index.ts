@@ -1,1 +1,1 @@
-export * from './AmplifyConfig';
+export * from './types';

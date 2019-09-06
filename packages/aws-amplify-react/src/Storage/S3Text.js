@@ -11,18 +11,20 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { TextPicker } from '../Widget';
+import TextPicker from '../Widget/TextPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Text');
 
 export default class S3Text extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
 
@@ -34,19 +36,21 @@ export default class S3Text extends Component {
         const { text, textKey } = props;
         this.state = {
             text: text || '',
-            textKey: textKey || ''
+            textKey: textKey || '',
         };
     }
 
-    getText(key, level, track) {
+    getText(key, level, track, identityId) {
         if (!Storage || typeof Storage.get !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
-        Storage.get(key, { download: true, level: level? level : 'public', track })
+        Storage.get(key, { download: true, level: level ? level : 'public', track, identityId })
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
-                this.setState({ text: text });
+                if (this._isMounted) {
+                    this.setState({ text });
+                }
                 this.handleOnLoad(text);
             })
             .catch(err => {
@@ -56,10 +60,10 @@ export default class S3Text extends Component {
     }
 
     load() {
-        const { path, textKey, body, contentType, level, track } = this.props;
+        const { path, textKey, body, contentType, level, track, identityId } = this.props;
         if (!textKey && !path) {
             logger.debug('empty textKey and path');
-            return ;
+            return;
         }
 
         const that = this;
@@ -72,16 +76,16 @@ export default class S3Text extends Component {
             }
             const ret = Storage.put(key, body, {
                 contentType: type,
-                level: level? level : 'public',
+                level: level ? level : 'public',
                 track
             });
             ret.then(data => {
                 logger.debug(data);
-                that.getText(key, level, track);
+                that.getText(key, level, track, identityId);
             })
-            .catch(err => logger.debug(err));
+                .catch(err => logger.debug(err));
         } else {
-            that.getText(key, level, track);
+            that.getText(key, level, track, identityId);
         }
     }
 
@@ -99,20 +103,20 @@ export default class S3Text extends Component {
         const that = this;
 
         const path = this.props.path || '';
-        const { textKey, level, fileToKey, track } = this.props;
+        const { textKey, level, fileToKey, track, identityId } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
         if (!Storage || typeof Storage.put !== 'function') {
             throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
         }
         Storage.put(key, file, {
-            level: level? level: 'public',
+            level: level ? level : 'public',
             contentType: type,
             track
         })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.getText(key, level, track);
+                that.getText(key, level, track, identityId);
             })
             .catch(err => logger.debug('handle pick error', err));
     }
@@ -123,13 +127,18 @@ export default class S3Text extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.load();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     componentDidUpdate(prevProps) {
         const update = prevProps.path !== this.props.path ||
-                        prevProps.textKey !== this.props.textKey ||
-                        prevProps.body !== this.props.body
+            prevProps.textKey !== this.props.textKey ||
+            prevProps.body !== this.props.body
         if (update) {
             this.load();
         }
@@ -143,16 +152,16 @@ export default class S3Text extends Component {
         return (
             <div style={containerStyle} onClick={this.handleClick}>
                 <pre style={theme.pre}>{text}</pre>
-                <div style={selected? theme.overlaySelected : theme.overlay}></div>
+                <div style={selected ? theme.overlaySelected : theme.overlay}></div>
             </div>
-        )
+        );
     }
 
     render() {
         const { hidden, style, picker, translate, textKey } = this.props;
         let text = this.state.text;
         if (translate) {
-            text = (typeof translate === 'string')? translate : translate({
+            text = (typeof translate === 'string') ? translate : translate({
                 type: 'text',
                 key: textKey,
                 content: text
@@ -161,22 +170,22 @@ export default class S3Text extends Component {
         if (!text && !picker) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
-        const textStyle = hidden? AmplifyTheme.hidden
-                                : Object.assign({}, theme.text, style);
+        const textStyle = hidden ? AmplifyTheme.hidden
+            : Object.assign({}, theme.text, style);
 
         return (
             <div style={textStyle}>
-                { textStyle? this.textEl(text, theme) : null }
-                { picker? <div>
-                              <TextPicker
-                                  key="picker"
-                                  onPick={this.handlePick}
-                                  theme={theme}
-                              />
-                          </div>
-                        : null
+                {textStyle ? this.textEl(text, theme) : null}
+                {picker ? <div>
+                    <TextPicker
+                        key="picker"
+                        onPick={this.handlePick}
+                        theme={theme}
+                    />
+                </div>
+                    : null
                 }
             </div>
-        )
+        );
     }
 }

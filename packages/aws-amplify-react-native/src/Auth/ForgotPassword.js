@@ -14,9 +14,6 @@
 import React from 'react';
 import { 
     View, 
-    Text, 
-    TextInput, 
-    Button, 
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -25,11 +22,9 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import { 
-    Username, 
-    Password, 
-    ConfirmationCode, 
+    FormField, 
+    AmplifyButton, 
     LinkCell, 
     Header, 
     ErrorRow 
@@ -37,17 +32,6 @@ import {
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('ForgotPassword');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Back to Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
 
 export default class ForgotPassword extends AuthPiece {
     constructor(props) {
@@ -58,11 +42,10 @@ export default class ForgotPassword extends AuthPiece {
 
         this.send = this.send.bind(this);
         this.submit = this.submit.bind(this);
-
     }
 
     send() {
-        const { username } = this.state;
+        const username = this.getUsernameFromInput();
         if (!username) {
             this.error('Username cannot be empty');
             return;
@@ -76,7 +59,8 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     submit() {
-        const { username, code, password } = this.state;
+        const { code, password } = this.state;
+        const username = this.getUsernameFromInput();
         Auth.forgotPasswordSubmit(username, code, password)
             .then(data => {
                 logger.debug(data);
@@ -88,15 +72,12 @@ export default class ForgotPassword extends AuthPiece {
     forgotBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                <Username
+                {this.renderUsernameField(theme)}
+                <AmplifyButton
+                    text={I18n.get('Send').toUpperCase()}
                     theme={theme}
-                    onChangeText={(text) => this.setState({ username: text })}
-                />
-                <Button
-                    title="Send Code"
-                    style={theme.button}
                     onPress={this.send}
-                    disabled={!this.state.username}
+                    disabled={!this.getUsernameFromInput()}
                 />
             </View>
         )
@@ -105,20 +86,26 @@ export default class ForgotPassword extends AuthPiece {
     submitBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                <ConfirmationCode
+                <FormField
                     theme={theme}
                     onChangeText={(text) => this.setState({ code: text })}
+                    label={I18n.get('Confirmation Code')}
+                    placeholder={I18n.get('Enter your confirmation code')}
+                    required={true}
                 />
-                <Password
+                <FormField
                     theme={theme}
-                    placeholder="New Password"
                     onChangeText={(text) => this.setState({ password: text })}
+                    label={I18n.get('Password')}
+                    placeholder={I18n.get('Enter your new password')}
+                    secureTextEntry={true}
+                    required={true}
                 />
-                <Button
-                    title={I18n.get('Submit')}
-                    style={theme.button}
+                <AmplifyButton
+                    text={I18n.get('Submit')}
+                    theme={theme}
                     onPress={this.submit}
-                    disabled={!this.state.username}
+                    disabled={!(this.state.code && this.state.password)}
                 />
             </View>
         )
@@ -133,7 +120,11 @@ export default class ForgotPassword extends AuthPiece {
                         { !this.state.delivery && this.forgotBody(theme) }
                         { this.state.delivery && this.submitBody(theme) }
                     </View>
-                    <Footer theme={theme} onStateChange={this.changeState}/>
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>

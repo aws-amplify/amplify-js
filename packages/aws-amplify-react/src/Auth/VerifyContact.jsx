@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -22,12 +22,15 @@ import {
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
+    Input,
     RadioRow,
-    MessageRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('VerifyContact');
 
@@ -39,7 +42,7 @@ export default class VerifyContact extends AuthPiece {
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
 
-        this.state = { verifyAttr: null }
+        this.state = { verifyAttr: null };
     }
 
     verify() {
@@ -109,16 +112,15 @@ export default class VerifyContact extends AuthPiece {
                                     onChange={this.handleInputChange}
                                 /> : null
                 }
-                <ButtonRow theme={theme} onClick={this.verify}>{I18n.get('Verify')}</ButtonRow>
             </div>
-        )
+        );
     }
 
     submitView() {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
+                <Input
                     placeholder={I18n.get('Code')}
                     theme={theme}
                     key="code"
@@ -126,9 +128,8 @@ export default class VerifyContact extends AuthPiece {
                     autoComplete="off"
                     onChange={this.handleInputChange}
                 />
-                <ButtonRow theme={theme} onClick={this.submit}>{I18n.get('Submit')}</ButtonRow>
             </div>
-        )
+        );
     }
 
     showComponent(theme) {
@@ -136,20 +137,27 @@ export default class VerifyContact extends AuthPiece {
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Verify Contact')}</SectionHeader>
-                <SectionBody theme={theme}>
-                    <MessageRow theme={theme}>
-                        {I18n.get('Account recovery requires verified contact information')}
-                    </MessageRow>
-                    { this.state.verifyAttr? this.submitView() : this.verifyView() }
+            <FormSection theme={theme} data-test={auth.verifyContact.section}>
+                <SectionHeader theme={theme} data-test={auth.verifyContact.headerSection}>
+                    {I18n.get('Account recovery requires verified contact information')}
+                </SectionHeader>
+                <SectionBody theme={theme} data-test={auth.verifyContact.bodySection}>
+                    { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
-                        {I18n.get('Skip')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        { this.state.verifyAttr ?
+                            <Button theme={theme} onClick={this.submit} data-test={auth.verifyContact.submitButton}>{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.verify} data-test={auth.verifyContact.verifyButton}>{I18n.get('Verify')}</Button>
+                        }
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)} data-test={auth.verifyContact.skipLink}>
+                            {I18n.get('Skip')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

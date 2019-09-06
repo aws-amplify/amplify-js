@@ -1,19 +1,24 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
     FormSection,
     SectionBody,
-    ActionRow
-} from '../AmplifyUI';
+    Strike,
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
+
 import {
     GoogleButton,
     FacebookButton,
     AmazonButton,
-    OAuthButton
+    OAuthButton,
+    Auth0Button
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -27,7 +32,7 @@ export class FederatedButtons extends Component {
                 google_client_id={google_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
     }
 
     facebook(facebook_app_id) {
@@ -38,7 +43,7 @@ export class FederatedButtons extends Component {
                 facebook_app_id={facebook_app_id}
                 theme={theme}
                 onStateChange={onStateChange}
-                />
+                />;
     }
 
     amazon(amazon_client_id) {
@@ -49,7 +54,7 @@ export class FederatedButtons extends Component {
                 amazon_client_id={amazon_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
     }
 
     OAuth(oauth_config) {
@@ -59,7 +64,18 @@ export class FederatedButtons extends Component {
                 label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
-              />
+              />;
+    }
+
+    auth0(auth0) {
+        if (!auth0) { return null;}
+        const { theme, onStateChange } = this.props;
+        return <Auth0Button
+                label={auth0? auth0.label : undefined}
+                theme={theme}
+                onStateChange={onStateChange}
+                auth0={auth0}
+              />;
     }
 
     render() {
@@ -71,38 +87,64 @@ export class FederatedButtons extends Component {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        const config = Auth.configure();
-        if (config.oauth) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+        const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        }
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0 } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <ActionRow theme={theme}>
+            <div>
+                <div>
                 {this.google(google_client_id)}
+                </div>
+                <div>
                 {this.facebook(facebook_app_id)}
+                </div>
+                <div>
                 {this.amazon(amazon_client_id)}
+                </div>
+                <div>
                 {this.OAuth(oauth_config)}
-            </ActionRow>
-        )
+                </div>
+                <div>
+                {this.auth0(auth0)}
+                </div>
+                <Strike theme={theme}>{I18n.get('or')}</Strike>
+            </div>
+        );
     }
 }
 
 export default class FederatedSignIn extends Component {
     render() {
         const { authState, onStateChange } = this.props;
-        let federated = this.props.federated || {};
+        const federated = this.props.federated || {};
         if (!Auth || typeof Auth.configure !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         
-        const config = Auth.configure();
-        if (config.oauth) {
-            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+         const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, oauth.awsCognito);
+        }
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (!federated) {
@@ -114,16 +156,17 @@ export default class FederatedSignIn extends Component {
         logger.debug('federated Config is', federated);
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <FormSection theme={theme}>
-                <SectionBody theme={theme}>
+            <FormSection theme={theme} data-test={auth.federatedSignIn.section}>
+                <SectionBody theme={theme} data-test={auth.federatedSignIn.bodySection}>
                     <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
+                        data-test={auth.federatedSignIn.signInButtons}
                     />
                 </SectionBody>
             </FormSection>
-        )
+        );
     }
 }

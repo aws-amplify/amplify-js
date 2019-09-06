@@ -17,6 +17,9 @@ export default class Amplify {
     static PubSub = null;
     static Interactions = null;
     static Pushnotification = null;
+    static UI = null;
+    static XR = null;
+    static Predictions = null;
 
     static Logger = LoggerClass;
     static ServiceWorker = null;

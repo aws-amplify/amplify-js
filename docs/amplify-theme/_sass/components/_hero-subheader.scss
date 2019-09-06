@@ -5,7 +5,7 @@
 /* ----- General ----- */
 .hero-subheader {
 	color: $color-dark-blue;
-	background-image: url("../images/layout/background.jpg");
+	//background-image: url("{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/background.jpg");
 	padding: 3.75rem 0 (4.6875rem - 1.25rem) 0;
 	background-position: center;
     background-size: cover;

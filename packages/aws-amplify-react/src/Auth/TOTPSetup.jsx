@@ -11,23 +11,13 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import * as React from 'react';
+import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
-import {
-    FormSection,
-    SectionHeader,
-    SectionBody,
-    SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+import TOTPSetupComp from '../Widget/TOTPSetupComp';
 
-import QRCode from 'qrcode.react';
-import { TOTPSetupComp } from '../Widget';
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('TOTPSetup');
 
@@ -49,15 +39,15 @@ export default class TOTPSetup extends AuthPiece {
                 if (!JS.isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
+                    const newUser = Object.assign(user, data);
+                    this.changeState('verifyContact', newUser);
                 }
             });
     }
 
     onTOTPEvent(event, data, user) {
         logger.debug('on totp event', event, data);
-        //const user = this.props.authData;
+        // const user = this.props.authData;
         if (event === 'Setup TOTP') {
             if (data === 'SUCCESS') {
                 this.checkContact(user);
@@ -70,7 +60,7 @@ export default class TOTPSetup extends AuthPiece {
         if (hide && hide.includes(TOTPSetup)) { return null; }
 
         return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
-        )
+            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} data-test={auth.TOTPSetup.component} />
+        );
     }
 }

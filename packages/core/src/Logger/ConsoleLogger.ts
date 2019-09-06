@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -73,35 +73,21 @@ export class ConsoleLogger implements Logger {
         }
 
         let log = console.log.bind(console);
-        // if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
+        if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
         if (type === 'WARN' && console.warn) { log = console.warn.bind(console); }
 
+		const prefix = `[${type}] ${this._ts()} ${this.name}`;
+
         if (msg.length === 1 && typeof msg[0] === 'string') {
-            const output = [
-                '[' + type + ']',
-                this._ts(),
-                this.name,
-                '-',
-                msg[0]
-            ].join(' ');
-            log(output);
+            log(`${prefix} - ${msg[0]}`);
         } else if (msg.length === 1) {
-            const output = {};
-            const key = '[' + type + '] ' + this._ts() + ' ' + this.name;
-            output[key] = msg[0];
-            log(output);
+            log(prefix, msg[0]);
         } else if (typeof msg[0] === 'string') {
             let obj = msg.slice(1);
             if (obj.length === 1) { obj = obj[0]; }
-            const output = {};
-            const key = '[' + type + '] ' + this._ts() + ' ' + this.name + ' - ' + msg[0];
-            output[key] = obj;
-            log(output);
+            log(`${prefix} - ${msg[0]}`, obj);
         } else {
-            const output = {};
-            const key = '[' + type + '] ' + this._ts() + ' ' + this.name;
-            output[key] = msg;
-            log(output);
+            log(prefix, msg);
         }
     }
 

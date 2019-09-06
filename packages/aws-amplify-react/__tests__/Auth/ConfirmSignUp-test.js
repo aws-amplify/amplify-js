@@ -1,9 +1,9 @@
 import Auth from '@aws-amplify/auth';
 import ConfirmSignUp from '../../src/Auth/ConfirmSignUp';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow, Button } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'confirmSignUp'
@@ -24,7 +24,7 @@ describe('ConfirmSignIn', () => {
     describe('normal case', () => {
         test('render correctly with Props confirmSignUp', () => {
             const wrapper = shallow(<ConfirmSignUp/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -35,7 +35,7 @@ describe('ConfirmSignIn', () => {
 
         test('render correctly with hide', () => {
             const wrapper = shallow(<ConfirmSignUp/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme,
@@ -50,7 +50,7 @@ describe('ConfirmSignIn', () => {
                 .mockImplementation((user, code) => {
                     return new Promise((res, rej) => {
                         res();
-                    })
+                    });
                 });
 
             const spyon3 = jest.spyOn(ConfirmSignUp.prototype, "usernameFromAuthData")
@@ -71,9 +71,9 @@ describe('ConfirmSignIn', () => {
                     name: 'code',
                     value: '123456'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
+            wrapper.find(Input).at(0).simulate('change', event_code);
             await wrapper.find(Button).at(0).simulate('click');
 
             expect.assertions(2);
@@ -90,7 +90,7 @@ describe('ConfirmSignIn', () => {
                 .mockImplementation((user) => {
                     return new Promise((res, rej) => {
                         res();
-                    })
+                    });
                 });
 
             const spyon3 = jest.spyOn(ConfirmSignUp.prototype, "usernameFromAuthData")
@@ -111,16 +111,16 @@ describe('ConfirmSignIn', () => {
                     name: 'code',
                     value: '123456'
                 }
-            }
+            };
 
             const event_username = {
                 target: {
                     name: 'username',
                     value: 'user1'
                 }
-            }
+            };
 
-            await wrapper.find(Button).at(1).simulate('click');
+            await wrapper.find(Link).at(0).simulate('click');
             
             expect.assertions(1);
             expect(spyon).toBeCalledWith('user');
@@ -133,7 +133,7 @@ describe('ConfirmSignIn', () => {
         test('render corrently', () => {
             const wrapper = shallow(<ConfirmSignUp/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -143,4 +143,5 @@ describe('ConfirmSignIn', () => {
             }
         });
     });
-})
+});
+

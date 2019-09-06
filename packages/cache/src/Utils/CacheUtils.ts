@@ -12,7 +12,7 @@
  */
 
 import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
-
+import { StorageHelper } from '@aws-amplify/core';
 /**
 * Default cache config
 */
@@ -23,7 +23,9 @@ export const defaultConfig: CacheConfig = {
     defaultTTL: 259200000, // about 3 days
     defaultPriority: 5,
     warningThreshold: 0.8,
-    storage: window.localStorage
+    // the storage helper will check if localStorage exists,
+    // if not, will use a in-memory object instead
+    storage: new StorageHelper().getStorage()
 };
 
 /**
@@ -71,4 +73,26 @@ export function isInteger(value): boolean {
 
 function _isInteger(value): boolean {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+}
+
+/**
+ * provide an object as the in-memory cache
+ */
+let store = {};
+export class CacheObject {
+    static clear(): void {
+        store = {};
+    }
+
+    static getItem(key: string): string | null {
+        return store[key] || null;
+    }
+
+    static setItem(key: string, value: string): void {
+        store[key] = value;
+    }
+
+    static removeItem(key: string): void {
+        delete store[key];
+    }
 }

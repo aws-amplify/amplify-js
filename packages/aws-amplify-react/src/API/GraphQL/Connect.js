@@ -1,5 +1,5 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import API from '@aws-amplify/api';
 
 
@@ -9,8 +9,18 @@ export default class Connect extends Component {
     constructor(props) {
         super(props);
 
-        this.state = this.getDefaultState();
+        this.state = this.getInitialState();
         this.subSubscription = null;
+    }
+
+    getInitialState() {
+        const { query } = this.props;
+        return {
+            loading: query && !!query.query,
+            data: {},
+            errors: [],
+            mutation: () => console.warn('Not implemented'),
+        };
     }
 
     getDefaultState() {
@@ -79,7 +89,9 @@ export default class Connect extends Component {
                     next: ({ value: { data } }) => {
                         const { data: prevData } = this.state;
                         const newData = onSubscriptionMsg(prevData, data);
-                        this.setState({ data: newData });
+                        if (this.mounted) {
+                            this.setState({ data: newData });
+                        }
                     },
                     error: err => console.error(err),
                 });
@@ -94,15 +106,17 @@ export default class Connect extends Component {
     _unsubscribe() {
         if (this.subSubscription) {
             this.subSubscription.unsubscribe();
-        };
+        }
     }
 
     async componentDidMount() {
         this._fetchData();
+        this.mounted = true;
     }
 
     componentWillUnmount() {
         this._unsubscribe();
+        this.mounted = false;
     }
 
     componentDidUpdate(prevProps) {
@@ -114,12 +128,15 @@ export default class Connect extends Component {
         // query
         const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
         const { query: prevQuery, variables: prevQueryVariables } = prevQueryObj || {};
-        const queryChanged = prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
+        const queryChanged =
+            prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
 
         // mutation
         const { query: newMutation, variables: newMutationVariables } = newMutationObj || {};
         const { query: prevMutation, variables: prevMutationVariables } = prevMutationObj || {};
-        const mutationChanged = prevMutation !== newMutation || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
+        const mutationChanged =
+            prevMutation !== newMutation
+            || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
 
         if (!loading && (queryChanged || mutationChanged)) {
             this._fetchData();
@@ -128,7 +145,6 @@ export default class Connect extends Component {
 
     render() {
         const { data, loading, mutation, errors } = this.state;
-
         return this.props.children({ data, errors, loading, mutation }) || null;
     }
 }

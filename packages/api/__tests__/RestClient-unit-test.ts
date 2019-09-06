@@ -3,7 +3,7 @@ jest.mock('@aws-amplify/core/lib/Signer', () => {
         default: {
             sign: (request: any, access_info: any, service_info?: any) => {
                 return request;
-            }   
+            }
         }
     }
 });
@@ -12,13 +12,22 @@ jest.mock('axios', () => {
     return {
         default: (signed_params) => {
             return new Promise((res, rej) => {
-                if (signed_params.reject) {
+                const withCredentialsSuffix = signed_params && signed_params.withCredentials
+                  ? '-withCredentials'
+                  : '';
+                if (signed_params && signed_params.headers && signed_params.headers.reject) {
                     rej({
-                        data: 'error'
+                        data: 'error' + withCredentialsSuffix;
                     });
-                } else {
+                }
+                else if (signed_params && signed_params.responseType === 'blob') {
                     res({
-                        data: 'data'
+                        data: 'blob' + withCredentialsSuffix;
+                    });
+                }
+                else {
+                    res({
+                        data: 'data' + withCredentialsSuffix;
                     });
                 }
             });
@@ -27,19 +36,6 @@ jest.mock('axios', () => {
 });
 
 import { RestClient } from '../src/RestClient';
-import * as AWS from 'aws-sdk';
-import { Signer, Credentials }  from '@aws-amplify/core';
-import axios from 'axios';
-
-const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-    return new Promise((res, rej) => {
-        res({
-            secretAccessKey: 'secretAccessKey',
-            accessKeyId: 'accessKeyId',
-            sessionToken: 'sessionToken' 
-        });
-    })
-});
 
 describe('RestClient test', () => {
     describe('ajax', () => {
@@ -71,7 +67,14 @@ describe('RestClient test', () => {
             };
 
             const restClient = new RestClient(apiOptions);
-            expect(restClient.ajax('url', 'method', {reject: true})).rejects.toEqual({data: 'error'});
+
+            expect.assertions(1);
+
+            try {
+                await restClient.ajax('url', 'method', { headers: { reject: true } });
+            } catch (error) {
+                expect(error).toEqual({ data: 'error' });
+            }
         });
 
         test('fetch with signed request', async () => {
@@ -118,7 +121,23 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect(await restClient.ajax('url', 'method', {body: 'body'})).toEqual('data');
+            expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual('data');
+        });
+
+        test('ajax with custom responseType', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', { body: 'body', responseType: 'blob' })).toEqual('blob');
         });
 
         test('ajax with Authorization header', async () => {
@@ -134,7 +153,23 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect(await restClient.ajax('url', 'method', {headers: {Authorization: 'authorization'}})).toEqual('data');
+            expect(await restClient.ajax('url', 'method', { headers: { Authorization: 'authorization' } })).toEqual('data');
+        });
+
+        test('ajax with withCredentials set to true', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', { withCredentials: true })).toEqual('data-withCredentials');
         });
     });
 
@@ -154,11 +189,17 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect.assertions(2);
+            expect.assertions(5);
             await restClient.get('url', {});
-       
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('GET');
+
+            await restClient.get('url', {withCredentials: true});
+
+            expect(spyon.mock.calls[1][0]).toBe('url');
+            expect(spyon.mock.calls[1][1]).toBe('GET');
+            expect(spyon.mock.calls[1][2]).toEqual({withCredentials: true});
 
             spyon.mockClear();
         });
@@ -182,7 +223,7 @@ describe('RestClient test', () => {
 
             expect.assertions(3);
             await restClient.put('url', 'data');
-            
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('PUT');
             expect(spyon.mock.calls[0][2]).toBe('data');
@@ -208,7 +249,7 @@ describe('RestClient test', () => {
 
             expect.assertions(3);
             await restClient.patch('url', 'data');
-            
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('PATCH');
             expect(spyon.mock.calls[0][2]).toBe('data');
@@ -234,7 +275,7 @@ describe('RestClient test', () => {
 
             expect.assertions(3);
             await restClient.post('url', 'data');
-            
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('POST');
             expect(spyon.mock.calls[0][2]).toBe('data');
@@ -260,7 +301,7 @@ describe('RestClient test', () => {
 
             expect.assertions(2);
             await restClient.del('url', {});
-            
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('DELETE');
             spyon.mockClear();
@@ -285,7 +326,7 @@ describe('RestClient test', () => {
 
             expect.assertions(2);
             await restClient.head('url', {});
-            
+
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('HEAD');
             spyon.mockClear();
@@ -297,14 +338,14 @@ describe('RestClient test', () => {
             const apiOptions = {
                 headers: {},
                 endpoints: [
-                {
-                    name: 'myApi',
-                    endpoint: 'endpoint of myApi'
-                },
-                {
-                    name: 'otherApi',
-                    endpoint: 'endpoint of otherApi'
-                }
+                    {
+                        name: 'myApi',
+                        endpoint: 'endpoint of myApi'
+                    },
+                    {
+                        name: 'otherApi',
+                        endpoint: 'endpoint of otherApi'
+                    }
                 ],
                 credentials: {
                     accessKeyId: 'accessKeyId',
@@ -323,16 +364,16 @@ describe('RestClient test', () => {
             const apiOptions = {
                 headers: {},
                 endpoints: [
-                {
-                    name: 'myApi',
-                    endpoint: 'endpoint of myApi'
-                },
-                {
-                    name: 'otherApi',
-                    endpoint: 'endpoint of otherApi',
-                    region: 'myregion',
-                    service: 'myservice'
-                }
+                    {
+                        name: 'myApi',
+                        endpoint: 'endpoint of myApi'
+                    },
+                    {
+                        name: 'otherApi',
+                        endpoint: 'endpoint of otherApi',
+                        region: 'myregion',
+                        service: 'myservice'
+                    }
                 ],
                 credentials: {
                     accessKeyId: 'accessKeyId',

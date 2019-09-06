@@ -14,38 +14,25 @@
 import React from 'react';
 import {
     View,
-    Text,
-    TextInput,
-    Button,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    ScrollView
 } from 'react-native';
 import {
     Auth,
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import {
-    Password,
+    FormField,
+    AmplifyButton,
     LinkCell,
     Header,
     ErrorRow
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Back to Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
+const logger = new Logger('RequireNewPassword');
 
 export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
@@ -54,29 +41,18 @@ export default class RequireNewPassword extends AuthPiece {
         this._validAuthStates = ['requireNewPassword'];
         this.state = {
             password: null,
-            error: null
+            error: null,
+            requiredAttributes: {}
         }
 
         this.change = this.change.bind(this);
     }
-
-    checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
-    }
-
+    
     change() {
         const user = this.props.authData;
-        const { password } = this.state;
+        const { password, requiredAttributes } = this.state;
         logger.debug('Require new password for ' + user.username);
-        Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes)
+        Auth.completeNewPassword(user, password, requiredAttributes)
             .then(user => {
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
@@ -87,26 +63,68 @@ export default class RequireNewPassword extends AuthPiece {
             .catch(err => this.error(err));
     }
 
+    generateForm(attribute, theme){
+        return (
+            <FormField
+                theme={theme}
+                onChangeText={(text) => {
+                        const attributes = this.state.requiredAttributes;
+                        if (text !== '') attributes[attribute] = text;
+                        else delete attributes[attribute];
+                        this.setState({ requiredAttributes: attributes });
+                    }
+                }
+                label={I18n.get(convertToPlaceholder(attribute))}
+                key={I18n.get(convertToPlaceholder(attribute))}
+                placeholder={I18n.get(convertToPlaceholder(attribute))}
+                required={true}
+            />
+        );
+    }
+
     showComponent(theme) {
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
+                <ScrollView style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Change Password')}</Header>
                     <View style={theme.sectionBody}>
-                        <Password
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}
+                            label={I18n.get('Password')}
+                            placeholder={I18n.get('Enter your password')}
+                            secureTextEntry={true}
+                            required={true}
                         />
-                        <Button
-                            title={I18n.get('Change Password')}
+                        {requiredAttributes
+                            .map(attribute => {
+                                logger.debug('attributes', attribute);
+                                return this.generateForm(attribute, theme);
+                                }
+                            )}
+                        <AmplifyButton
+                            text={I18n.get('Change Password')}
                             onPress={this.change}
-                            disabled={!this.state.password}
+                            theme={theme}
+                            disabled={!(this.state.password && 
+                                Object.keys(this.state.requiredAttributes).length === 
+                                Object.keys(requiredAttributes).length)}
                         />
                     </View>
-                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-                </View>
+                </ScrollView>
             </TouchableWithoutFeedback>
         );
     }
+}
+
+function convertToPlaceholder(str) {
+    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
 }

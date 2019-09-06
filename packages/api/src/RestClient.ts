@@ -72,7 +72,9 @@ export class RestClient {
             host: parsed_url.host,
             path: parsed_url.path,
             headers: {},
-            data: null
+            data: null,
+            responseType: 'json',
+            timeout: 0
         };
 
         let libraryHeaders = {};
@@ -84,19 +86,28 @@ export class RestClient {
             };
         }
 
-        const extraParams = Object.assign({}, init);
-        const isAllResponse = init ? init.response : null;
-        if (extraParams.body) {
-            libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
-            params.data = JSON.stringify(extraParams.body);
+        const initParams = Object.assign({}, init);
+        const isAllResponse = initParams.response;
+        if (initParams.body) {
+            libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+            params.data = JSON.stringify(initParams.body);
+        }
+        if (initParams.responseType) {
+            params.responseType = initParams.responseType;
+        }
+        if (initParams.withCredentials) {
+            params['withCredentials'] = initParams.withCredentials;
+        }
+        if (initParams.timeout) {
+            params.timeout = initParams.timeout;
         }
 
-        params['signerServiceInfo'] = extraParams.signerServiceInfo;
+        params['signerServiceInfo'] = initParams.signerServiceInfo;
 
         // custom_header callback
         const custom_header = this._custom_header ? await this._custom_header() : undefined;
         
-        params.headers = { ...libraryHeaders, ...(custom_header),...extraParams.headers };
+        params.headers = { ...libraryHeaders, ...(custom_header),...initParams.headers };
 
         // Intentionally discarding search
         const { search, ...parsedUrl } = urlLib.parse(url, true, true);
@@ -104,7 +115,7 @@ export class RestClient {
             ...parsedUrl,
             query: {
                 ...parsedUrl.query,
-                ...(extraParams.queryStringParameters || {})
+                ...(initParams.queryStringParameters || {})
             }
         });
 
@@ -125,7 +136,7 @@ export class RestClient {
         // Signing the request in case there credentials are available
         return Credentials.get()
             .then(
-                credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse),
+                credentials => this._signed({ ...params }, credentials, isAllResponse),
                 err => {
                     logger.debug('No credentials available, the request will be unsigned');
                     return this._request(params, isAllResponse);
@@ -260,7 +271,6 @@ export class RestClient {
         logger.debug('Signed Request: ', signed_params);
 
         delete signed_params.headers['host'];
-
         return axios(signed_params)
             .then(response => isAllResponse ? response : response.data)
             .catch((error) => {

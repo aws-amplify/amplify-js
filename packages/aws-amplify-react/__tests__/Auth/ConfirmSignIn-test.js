@@ -1,9 +1,9 @@
 import Auth from '@aws-amplify/auth';
 import ConfirmSignIn from '../../src/Auth/ConfirmSignIn';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'confirmSignIn'
@@ -20,11 +20,15 @@ const deniedStates = [
     'verifyContact'
 ];
 
+const fakeEvent = {
+    preventDefault: jest.fn()
+};
+
 describe('ConfirmSignIn', () => {
     describe('render test', () => {
         test('render correctly with Props confirmSignIn', () => {
             const wrapper = shallow(<ConfirmSignIn/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
@@ -36,7 +40,7 @@ describe('ConfirmSignIn', () => {
         test('render corrently with other authstate', () => {
             const wrapper = shallow(<ConfirmSignIn/>);
             
-            for (var i = 0; i < deniedStates.length; i += 1){
+            for (let i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
                     theme: AmplifyTheme
@@ -91,7 +95,7 @@ describe('ConfirmSignIn', () => {
                 .mockImplementation((user, code) => {
                     return new Promise((res, rej) => {
                         res();
-                    })
+                    });
                 });
 
             const wrapper = shallow(<ConfirmSignIn/>);
@@ -107,10 +111,12 @@ describe('ConfirmSignIn', () => {
                     name: 'code',
                     value: '123456'
                 }
-            }
+            };
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
-            await wrapper.find(ButtonRow).at(0).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_code);
+            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            
+            await Promise.resolve();
 
             expect.assertions(3);
             expect(spyon.mock.calls[0][0]).toBe('user');
@@ -147,7 +153,7 @@ describe('ConfirmSignIn', () => {
                     verified: {
                         email: 'xxx@xxx.com'
                     }
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
@@ -169,7 +175,7 @@ describe('ConfirmSignIn', () => {
             const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
                 return Promise.resolve({
                     verified: {}
-                })
+                });
             });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');

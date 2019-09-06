@@ -37,7 +37,6 @@ export class BrowserStorageCache extends StorageCache implements ICache {
         this.getItem = this.getItem.bind(this);
         this.setItem = this.setItem.bind(this);
         this.removeItem = this.removeItem.bind(this);
-        logger.debug('Using AsyncStorageCache');
     }
 
     /**

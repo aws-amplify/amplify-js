@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>Icons/Medium/Down Arrow Grey</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons/Medium/Down-Arrow-Grey" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M15,17.3336502 L6.39264476,8.72629498 C5.86911841,8.20276864 5.86911841,7.35409681 6.39264476,6.83057047 C6.9161711,6.3074271 7.76484293,6.3074271 8.28836927,6.83057047 L15,13.5425842 L21.7116307,6.83057047 C22.2351571,6.3074271 23.0838289,6.3074271 23.6073552,6.83057047 C24.1308816,7.35409681 24.1308816,8.20276864 23.6073552,8.72629498 L15,17.3336502 Z" id="Fill-1" fill="#696767"></path>
+    </g>
+</svg>

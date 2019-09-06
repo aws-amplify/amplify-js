@@ -11,22 +11,29 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    InputLabel,
+    Button,
+    FormField,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ForgotPassword');
 
@@ -42,7 +49,8 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     send() {
-        const { username } = this.inputs;
+        const { authData={} } = this.props;
+        const username = this.getUsernameFromInput() || authData.username;
         if (!Auth || typeof Auth.forgotPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -55,7 +63,10 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     submit() {
-        const { username, code, password } = this.inputs;
+        const { authData={} } = this.props;
+        const { code, password } = this.inputs;
+        const username = this.getUsernameFromInput() || authData.username;
+        
         if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -72,65 +83,69 @@ export default class ForgotPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
-                    autoFocus
-                    placeholder={I18n.get('Username')}
-                    theme={theme}
-                    key="username"
-                    name="username"
-                    onChange={this.handleInputChange}
-                />
-                <ButtonRow theme={theme} onClick={this.send}>
-                    {I18n.get('Send Code')}
-                </ButtonRow>
+                {this.renderUsernameField(theme)}
             </div>
-        )
+        );
     }
 
     submitView() {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
-                    placeholder={I18n.get('Code')}
-                    theme={theme}
-                    key="code"
-                    name="code"
-                    autoComplete="off"
-                    onChange={this.handleInputChange}
-                />
-                <InputRow
-                    placeholder={I18n.get('New Password')}
-                    theme={theme}
-                    type="password"
-                    key="password"
-                    name="password"
-                    autoComplete="off"
-                    onChange={this.handleInputChange}
-                />
-                <ButtonRow theme={theme} onClick={this.submit}>
-                    {I18n.get('Submit')}
-                </ButtonRow>
+                <FormField theme={theme}>
+                    <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
+                    <Input
+                        placeholder={I18n.get('Code')}
+                        theme={theme}
+                        key="code"
+                        name="code"
+                        autoComplete="off"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
+                <FormField theme={theme}>
+                    <InputLabel theme={theme}>{I18n.get('New Password')} *</InputLabel>
+                    <Input
+                        placeholder={I18n.get('New Password')}
+                        theme={theme}
+                        type="password"
+                        key="password"
+                        name="password"
+                        autoComplete="off"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
             </div>
-        )
+        );
     }
 
     showComponent(theme) {
-        const { authState, hide } = this.props;
+        const { authState, hide, authData={} } = this.props;
         if (hide && hide.includes(ForgotPassword)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Forgot Password')}</SectionHeader>
-                <SectionBody>
-                    { this.state.delivery? this.submitView() : this.sendView() }
+            <FormSection theme={theme} data-test={auth.forgotPassword.section}>
+                <SectionHeader theme={theme} data-test={auth.forgotPassword.headerSection}>{I18n.get('Reset your password')}</SectionHeader>
+                <SectionBody theme={theme} data-test={auth.forgotPassword.bodySection}>
+                    { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        { this.state.delivery || authData.username ? 
+                            <Button theme={theme} onClick={this.submit} data-test={auth.forgotPassword.submitButton}>{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.send} data-test={auth.forgotPassword.sendCodeButton}>{I18n.get('Send Code')}</Button>
+                        }
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        { this.state.delivery || authData.username ?
+                            <Link theme={theme} onClick={this.send} data-test={auth.forgotPassword.resendCodeLink}>{I18n.get('Resend Code')}</Link> :
+                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.forgotPassword.backToSignInLink}>
+                                {I18n.get('Back to Sign In')}
+                            </Link>
+                        }
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

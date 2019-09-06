@@ -1,19 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SignOut normal case render correctly with authState signedIn 1`] = `""`;
-
-exports[`SignOut normal case render correctly with empty hide 1`] = `""`;
-
-exports[`SignOut normal case render correctly with hide 1`] = `""`;
-
-exports[`SignOut normal case render name from attributes 1`] = `
-<NavButton
+exports[`SignOut normal case render correctly with authState signedIn 1`] = `
+<Component
+  data-test="sign-out-button"
   onClick={[Function]}
   theme="theme"
 >
   Sign Out
-</NavButton>
+</Component>
 `;
+
+exports[`SignOut normal case render correctly with empty hide 1`] = `
+<Component
+  data-test="sign-out-button"
+  onClick={[Function]}
+  theme="theme"
+>
+  Sign Out
+</Component>
+`;
+
+exports[`SignOut normal case render correctly with hide 1`] = `""`;
 
 exports[`SignOut render correctly with other authStates 1`] = `""`;
 

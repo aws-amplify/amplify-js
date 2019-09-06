@@ -12,12 +12,13 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { 
     Auth, 
     Analytics,
     Logger,
-    Hub
+    Hub,
+    JS
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -59,6 +60,7 @@ class AuthDecorator {
 export default class Authenticator extends React.Component {
     constructor(props) {
         super(props);
+        this._initialAuthState = this.props.authState || 'signIn';
         this.state = {
             authState: props.authState || 'loading',
             authData: props.authData
@@ -67,8 +69,9 @@ export default class Authenticator extends React.Component {
         this.handleStateChange = this.handleStateChange.bind(this);
         this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.checkContact = this.checkContact.bind(this);
 
-        Hub.listen('auth', this);
+        Hub.listen('auth', this.onHubCapsule);
     }
 
     componentDidMount() {
@@ -104,6 +107,22 @@ export default class Authenticator extends React.Component {
         }
     }
 
+    async checkContact(user) {
+        try {
+            const data = await Auth.verifiedContact(user);
+            logger.debug('verified user attributes', data);
+            if (!JS.isEmpty(data.verified)) {
+                this.handleStateChange('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.handleStateChange('verifyContact', user);
+            }
+        } catch (e) {
+            logger.warn('Failed to verify contact', e);
+            this.handleStateChange('signedIn', user);
+        }
+    }
+
     checkUser() {
         const { authState } = this.state;
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
@@ -111,9 +130,11 @@ export default class Authenticator extends React.Component {
             .then(user => {
                 if (!this._isMounted) return;
                 if (user) {
-                    this.handleStateChange('signedIn', null);
+                    this.checkContact(user);
                 } else {
-                    if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+                    if (statesJumpToSignIn.includes(authState)) {
+                        this.handleStateChange(this._initialAuthState, null);
+                    } 
                 }
             })
             .catch(err => {
@@ -122,7 +143,7 @@ export default class Authenticator extends React.Component {
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
                         .then(() => {
-                            this.handleStateChange('signIn', null);
+                            this.handleStateChange(this._initialAuthState, null);
                         })
                         .catch(err => this.error(err));       
                 }
@@ -134,14 +155,14 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, federated } = this.props;
+        const { hideDefault, signUpConfig, usernameAttributes } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
-            <SignIn federated={federated} />,
+            <SignIn/>,
             <ConfirmSignIn/>,
             <VerifyContact/>,
-            <SignUp/>,
+            <SignUp signUpConfig={signUpConfig}/>,
             <ConfirmSignUp/>,
             <ForgotPassword/>,
             <RequireNewPassword />,
@@ -157,14 +178,15 @@ export default class Authenticator extends React.Component {
                     authState: authState,
                     authData: authData,
                     onStateChange: this.handleStateChange,
-                    Auth: new AuthDecorator(this.handleStateChange)
+                    Auth: new AuthDecorator(this.handleStateChange),
+                    usernameAttributes
                 });
             });
         return (
             
-                <View style={theme.container}>
+                <SafeAreaView style={theme.container}>
                     {children}
-                </View>
+                </SafeAreaView>
         );
     }
 }

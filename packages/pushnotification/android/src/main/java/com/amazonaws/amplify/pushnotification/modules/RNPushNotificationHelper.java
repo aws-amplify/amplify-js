@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -184,14 +185,6 @@ public class RNPushNotificationHelper {
 
             NotificationManager notificationManager = notificationManager();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
-                notificationChannel.enableLights(true);
-                notificationChannel.enableVibration(true);
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
@@ -264,15 +257,14 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(context, intentClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            bundle.putBoolean("userInteraction", true);
+            Intent intent = new Intent(NOTIFICATION_OPENED);
             intent.putExtra("notification", bundle);
-            intent.setAction(NOTIFICATION_OPENED);
 
+            Log.i(LOG_TAG, "sendNotification: " + intent);
+
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
-                Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                String soundName = bundle.getString("soundName");
+                String soundName = bundle.getString("pinpoint.notification.sound");
                 if (soundName != null) {
                     if (!"default".equalsIgnoreCase(soundName)) {
 
@@ -294,6 +286,21 @@ public class RNPushNotificationHelper {
                 notification.setSound(soundUri);
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notification.setSound(null);
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
+                notificationChannel.enableLights(true);
+                notificationChannel.enableVibration(true);
+                notificationChannel.setSound(soundUri, audioAttributes);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+
             if (bundle.containsKey("ongoing") || bundle.getBoolean("ongoing")) {
                 notification.setOngoing(bundle.getBoolean("ongoing"));
             }
@@ -309,11 +316,10 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            // broadcast event
-            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
-            //         PendingIntent.FLAG_ONE_SHOT);
+            // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(pendingIntent);
 
@@ -356,6 +362,10 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+
+        
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will

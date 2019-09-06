@@ -11,24 +11,27 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ActionRow,
-    MessageRow,
     Button,
-    Space,
-    Link
-} from '../AmplifyUI';
+    Link,
+    InputLabel,
+    Input,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+    FormField,
+    Hint,
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
+import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -70,45 +73,58 @@ export default class ConfirmSignUp extends AuthPiece {
         if (hide && hide.includes(ConfirmSignUp)) { return null; }
 
         return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme}>
-                    {I18n.get('Confirm')} {I18n.get('Sign Up')}
+            <FormSection theme={theme} data-test={auth.confirmSignUp.section}>
+                <SectionHeader theme={theme} data-test={auth.confirmSignUp.headerSection}>
+                    {I18n.get('Confirm Sign Up')}
                 </SectionHeader>
-                <SectionBody theme={theme}>
-                    { username? <MessageRow>{username}</MessageRow>
-                            : <InputRow
-                                placeholder={I18n.get('Username')}
-                                theme={theme}
-                                key="username"
-                                name="username"
-                                onChange={this.handleInputChange}
-                            />
-                    }
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Code')}
-                        theme={theme}
-                        key="code"
-                        name="code"
-                        autoComplete="off"
-                        onChange={this.handleInputChange}
-                    />
-                    <ActionRow theme={theme}>
-                        <Button theme={theme} onClick={this.confirm}>
-                            {I18n.get('Confirm')}
-                        </Button>
-                        <Space theme={theme} />
-                        <Button theme={theme} onClick={this.resend}>
-                            {I18n.get('Resend Code')}
-                        </Button>
-                    </ActionRow>
+                <SectionBody theme={theme} data-test={auth.confirmSignUp.bodySection}>
+                    <FormField theme={theme}>
+                        <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
+                        <Input
+                            placeholder={I18n.get('Username')}
+                            theme={theme}
+                            key="username"
+                            name="username"
+                            onChange={this.handleInputChange}
+                            disabled={username}
+                            value={username ? username : ""}
+                            data-test={auth.confirmSignUp.usernameInput}
+                        />
+                    </FormField>
+
+                    <FormField theme={theme}>
+                        <InputLabel theme={theme}>{I18n.get('Confirmation Code')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Enter your code')}
+                            theme={theme}
+                            key="code"
+                            name="code"
+                            autoComplete="off"
+                            onChange={this.handleInputChange}
+                            data-test={auth.confirmSignUp.confirmationCodeInput}
+                        />
+                        <Hint theme={theme}>
+                            {I18n.get('Lost your code? ')}
+                            <Link theme={theme} onClick={this.resend} data-test={auth.confirmSignUp.resendCodeLink}>
+                                {I18n.get('Resend Code')}
+                            </Link>
+                        </Hint>
+                    </FormField>
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.confirm} data-test={auth.confirmSignUp.confirmButton}>
+                            {I18n.get('Confirm')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.confirmSignUp.backToSignInLink}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }

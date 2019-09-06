@@ -16,8 +16,11 @@ import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
 
@@ -53,23 +56,24 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        let opt = options ? options.API || options : {};
+        const { API = {}, ...otherOptions } = options || {};
+        let opt = { ...otherOptions, ...API };
         logger.debug('configure API', { opt });
-        
+
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
                 opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
-            
+
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
             });
         }
-        
-        if(!Array.isArray(opt.endpoints)) {
+
+        if (!Array.isArray(opt.endpoints)) {
             opt.endpoints = [];
         }
 
@@ -103,7 +107,7 @@ export default class APIClass {
             this._api = new RestClass(this._options);
             return true;
         } else {
-            return Promise.reject('API no configured');
+            return Promise.reject('API not configured');
         }
     }
 
@@ -125,7 +129,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.get(endpoint + path, init);
     }
@@ -148,7 +152,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.post(endpoint + path, init);
     }
@@ -171,7 +175,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
     }
@@ -194,7 +198,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.patch(endpoint + path, init);
     }
@@ -217,7 +221,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.del(endpoint + path, init);
     }
@@ -240,7 +244,7 @@ export default class APIClass {
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
+            return Promise.reject('API ' + apiName + ' does not exist');
         }
         return this._api.head(endpoint + path, init);
     }
@@ -263,13 +267,17 @@ export default class APIClass {
 
     private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
+            aws_appsync_authenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
+        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || "AWS_IAM";
         let headers = {};
 
         switch (authenticationType) {
             case 'API_KEY':
+                if (!apiKey) {
+                    throw new Error('No api-key configured');
+                }
                 headers = {
                     Authorization: null,
                     'X-Api-Key': apiKey
@@ -288,14 +296,10 @@ export default class APIClass {
                 };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
-                if (Amplify.Auth && typeof Amplify.Auth.currentSession === 'function') {
-                    const session = await Amplify.Auth.currentSession();
-                    headers = {
-                        Authorization: session.getAccessToken().getJwtToken()
-                    };
-                } else {
-                    throw new Error('No Auth module registered in Amplify');
-                }
+                const session = await Auth.currentSession();
+                headers = {
+                    Authorization: session.getAccessToken().getJwtToken()
+                };
                 break;
             default:
                 headers = {
@@ -306,7 +310,7 @@ export default class APIClass {
 
         return headers;
     }
-    
+
     /**
      * to get the operation type
      * @param operation 
@@ -324,25 +328,26 @@ export default class APIClass {
      * @param {GraphQLOptions} GraphQL Options
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
-    graphql({ query, variables = {} }: GraphQLOptions) {
+    graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
 
-        const doc = parse(query);
+        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-        const [operationDef = {},] = doc.definitions.filter(def => def.kind === 'OperationDefinition');
+        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
         const { operation: operationType } = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
             case 'query':
             case 'mutation':
-                return this._graphql({ query, variables });
+                return this._graphql({ query, variables, authMode });
             case 'subscription':
-                return this._graphqlSubscribe({ query, variables });
+                return this._graphqlSubscribe({ query, variables, authMode });
         }
 
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions): Promise<GraphQLResult> {
+    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
+        : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -355,19 +360,17 @@ export default class APIClass {
             graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
-        const doc = parse(queryStr);
-        const query = print(doc);
-
         const headers = {
-            ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
+            ...(!customGraphqlEndpoint && await this._headerBasedAuth(authMode)),
             ...(customGraphqlEndpoint &&
-                (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
+                (customEndpointRegion ? await this._headerBasedAuth(authMode) : { Authorization: null })
             ),
-            ... await graphql_headers({ query: doc, variables })
+            ...additionalHeaders,
+            ... await graphql_headers({ query, variables }),
         };
 
         const body = {
-            query,
+            query: print(query),
             variables,
         };
 
@@ -412,8 +415,9 @@ export default class APIClass {
         return response;
     }
 
+    private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
@@ -421,16 +425,48 @@ export default class APIClass {
 
                 (async () => {
                     const {
-                        extensions: { subscription }
-                    } = await this._graphql({ query, variables });
+                        aws_appsync_authenticationType,
+                    } = this._options;
+                    const authenticationType = authMode || aws_appsync_authenticationType;
+                    const additionalheaders = {
+                        ...(authenticationType === 'API_KEY' ? {
+                            'x-amz-subscriber-id': this.clientIdentifier
+                        } : {})
+                    };
 
-                    const { newSubscriptions } = subscription;
+                    try {
+                        const {
+                            extensions: { subscription },
 
-                    const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
 
-                    const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const { newSubscriptions } = subscription;
 
-                    handle = observable.subscribe(observer);
+                        const newTopics =
+                            Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                        const observable = Amplify.PubSub.subscribe(newTopics, {
+                            ...subscription,
+                            provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+                        });
+
+                        handle = observable.subscribe({
+                            next: (data) => observer.next(data),
+                            complete: () => observer.complete(),
+                            error: (data) => {
+                                const error = { ...data };
+                                if (!error.errors) {
+                                    error.errors = [{
+                                        ...new GraphQLError('Network Error')
+                                    }];
+                                }
+                                observer.error(error);
+                            }
+                        });
+
+                    } catch (error) {
+                        observer.error(error);
+                    }
                 })();
 
                 return () => {
@@ -455,7 +491,7 @@ export default class APIClass {
                 const cred = Credentials.shear(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return credentials;
+                return true;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);

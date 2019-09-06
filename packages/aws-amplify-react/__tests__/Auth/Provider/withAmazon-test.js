@@ -1,5 +1,6 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import withAmazon, { AmazonButton } from '../../../src/Auth/Provider/withAmazon';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
 import { Logger } from '@aws-amplify/core';
@@ -13,7 +14,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();
@@ -26,7 +27,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             window.amazon = {
                 Login: {
@@ -34,7 +35,7 @@ describe('withAmazon test', () => {
                         callback('response');
                     }
                 }
-            }
+            };
             
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -54,7 +55,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             window.amazon = {
                 Login: {
@@ -62,7 +63,7 @@ describe('withAmazon test', () => {
                         callback({ error: 'error' });
                     }
                 }
-            }
+            };
     
 
             const Comp = withAmazon(MockComp);
@@ -79,7 +80,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: 'access_token',
@@ -96,7 +97,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
             
 
             const Comp = withAmazon(MockComp);
@@ -128,7 +129,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const mockFn = jest.fn();
             
@@ -146,7 +147,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
             
 
             const Comp = withAmazon(MockComp);
@@ -181,7 +182,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: null,
@@ -214,7 +215,7 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
             
             const response = {
                 access_token: 'access_token',
@@ -231,7 +232,7 @@ describe('withAmazon test', () => {
                         });
                     }
                 }
-            }
+            };
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -257,12 +258,12 @@ describe('withAmazon test', () => {
                 render() {
                     return <div />;
                 }
-            }
+            };
 
             const mockFn = jest.fn();
             const props = {
                 amazon_client_id: 'amazon_client_id'
-            }
+            };
             window.amazon = {
                 Login: {
                     setClientId: mockFn
@@ -276,6 +277,50 @@ describe('withAmazon test', () => {
 
             await comp.initAmazon();
             expect(mockFn).toBeCalledWith('amazon_client_id');
+        });
+    });
+
+    describe('amazon signOut', () => {
+        test('happy case', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+        
+            window.amazon = {
+                Login: {
+                    logout: mockFn
+                }
+            };
+            
+            const Comp = withAmazon(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signOut();
+            expect(mockFn).toBeCalled();
+        });
+
+        test('return if no amazon sdk', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            };
+
+            const mockFn = jest.fn();
+        
+            window.amazon = undefined;
+            
+            const Comp = withAmazon(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            comp.signOut();
+            expect(mockFn).not.toBeCalled();
         });
     });
 });

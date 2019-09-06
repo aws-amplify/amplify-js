@@ -97,4 +97,174 @@ describe('JS test', () => {
             expect(JS.isTextFile('text/*')).toEqual(true);
         });
     });
+
+    describe('transferKeyToLowerCase test', () => {
+        test('happy case', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj)).toEqual({
+                "a": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+
+        test('whiteList iteself', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj, ['A'])).toEqual({
+                "A": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+
+        test('whiteList children', () => {
+            const obj = {
+                A: {
+                    A1: {
+                        Val: 'val'
+                    }
+                },
+                B: {
+                    Val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToLowerCase(obj, [], ['A'])).toEqual({
+                "a": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "b": {
+                    "val": "val"
+                }
+            });
+        });
+    });
+
+    describe('transferKeyToUpperCase test', () => {
+        test('happy case', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj)).toEqual({
+                "A": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        });
+
+        test('whiteList iteself', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj, ['a'])).toEqual({
+                "a": {
+                    "A1": {
+                        "Val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        });
+
+        test('whiteList children', () => {
+            const obj = {
+                a: {
+                    a1: {
+                        val: 'val'
+                    }
+                },
+                b: {
+                    val: 'val'
+                }
+            }
+
+            expect(JS.transferKeyToUpperCase(obj, [], ['a'])).toEqual({
+                "A": {
+                    "a1": {
+                        "val": "val"
+                    }
+                }, 
+                "B": {
+                    "Val": "val"
+                }
+            });
+        })
+    });
+
+    describe('isStrictObject test', () => {
+        test('return true if the object is strict', () => {
+            expect(JS.isStrictObject({a: '1'})).toBeTruthy();
+        });
+
+        test('return false if the object is null or array', () => {
+            expect(JS.isStrictObject(null)).toBeFalsy();
+            expect(JS.isStrictObject([])).toBeFalsy();
+        });
+
+        test('return false if the input is undefined, number, boolean or string', () => {
+            expect(JS.isStrictObject(undefined)).toBeFalsy();
+            expect(JS.isStrictObject(1)).toBeFalsy();
+            expect(JS.isStrictObject(false)).toBeFalsy();
+            expect(JS.isStrictObject('string')).toBeFalsy();
+            expect(JS.isStrictObject(new Number(1))).toBeFalsy();
+            expect(JS.isStrictObject(new Boolean(true))).toBeFalsy();
+            expect(JS.isStrictObject(new String('string'))).toBeFalsy();
+            expect(JS.isStrictObject(function(){})).toBeFalsy();
+        });
+    });
 });

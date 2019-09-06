@@ -1,4 +1,5 @@
 import { Credentials } from '../src/Credentials';
+import { AWS } from '../src/Facet';
 import Amplify from '../src/Amplify';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
@@ -32,6 +33,12 @@ const options = {
     identityPoolId: "awsCognitoIdentityPoolId",
     mandatorySignIn: false
 }
+
+beforeAll(() => {
+    AWS.config.update({
+        credentials: null,
+    });
+});
 
 describe('Credentials test', () => {
     describe('configure test', () => {
