@@ -78,6 +78,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected get clientsQueue() { return this._clientsQueue; }
 
+    protected get isSSLEnabled() {
+        return !this.options.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+    }
+    
     protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
 
     getProviderName() { return 'MqttOverWSProvider'; }
@@ -85,7 +89,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     public onDisconnect({ clientId, errorCode, ...args }) {
         if (errorCode !== 0) {
             logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+            this._topicObservers.forEach((observerForTopic, _observerTopic) => {
+                observerForTopic.forEach(observer => {
+                    observer.error('Disconnected, error code: ' + errorCode);
+                    observer.complete();
+                });
+            });
         }
+        this._topicObservers = new Map();
     }
 
     public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
@@ -99,10 +110,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         client.onConnectionLost = ({ errorCode, ...args }) => {
             this.onDisconnect({ clientId, errorCode, ...args });
         };
-
+        
         await new Promise((resolve, reject) => {
             client.connect({
-                useSSL: true,
+                useSSL: this.isSSLEnabled,
                 mqttVersion: 3,
                 onSuccess: () => resolve(client),
                 onFailure: reject,

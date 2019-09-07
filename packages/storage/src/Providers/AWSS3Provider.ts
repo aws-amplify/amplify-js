@@ -27,17 +27,19 @@ const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 
 const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:any, message:string) => {
     if (track) {
         Hub.dispatch(
-            'storage', 
-            { 
+            'storage',
+            {
                 event,
                 data: { attrs, metrics },
                 message
-            }, 
-            'Storage', 
+            },
+            'Storage',
             AMPLIFY_SYMBOL
         );
     }
 };
+
+const localTestingStorageEndpoint = 'http://localhost:20005';
 
 /**
  * Provide storage methods to use AWS S3
@@ -101,7 +103,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._config, config);
-        const { bucket, region, credentials, level, download, track, expires } = opt;
+        const { bucket, download, track, expires } = opt;
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
         const s3 = this._createS3(opt);
@@ -119,8 +121,8 @@ export default class AWSS3Provider implements StorageProvider{
                         dispatchStorageEvent(
                             track,
                             'download',
-                            { 
-                                method: 'get', 
+                            {
+                                method: 'get',
                                 result: 'failed'
                             },
                             null,
@@ -150,7 +152,7 @@ export default class AWSS3Provider implements StorageProvider{
                     track,
                     'getSignedUrl',
                     { method: 'get', result: 'success' },
-                    null, 
+                    null,
                     `Signed URL: ${url}`
                 );
                 res(url);
@@ -181,7 +183,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._config, config);
-        const { bucket, region, credentials, level, track, progressCallback } = opt;
+        const { bucket, track, progressCallback } = opt;
         const { contentType, contentDisposition, cacheControl, expires, metadata, tagging } = opt;
         const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
@@ -261,7 +263,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._config, config, );
-        const { bucket, region, credentials, level, track } = opt;
+        const { bucket, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -309,7 +311,7 @@ export default class AWSS3Provider implements StorageProvider{
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._config, config);
-        const { bucket, region, credentials, level, download, track } = opt;
+        const { bucket, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_path = prefix + path;
@@ -403,14 +405,29 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     private _createS3(config) {
-        const { bucket, region, credentials } = config;
+        const {
+            bucket,
+            region,
+            credentials,
+            dangerouslyConnectToHttpEndpointForTesting
+        } = config;
+        let localTestingConfig = {};
         
+        if(dangerouslyConnectToHttpEndpointForTesting) {
+            localTestingConfig = {
+                endpoint: localTestingStorageEndpoint,
+                s3BucketEndpoint: true,
+                s3ForcePathStyle : true
+            };
+        }
+
         return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             signatureVersion: 'v4',
             region,
-            credentials
+            credentials,
+            ...localTestingConfig
         });
     }
 }
