@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 import { DocumentNode } from 'graphql/language/ast';
-import { CancelToken } from 'axios';
 
 /**
 * RestClient instance options
