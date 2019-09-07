@@ -21,7 +21,6 @@ import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
-import axios, { CancelTokenStatic } from 'axios';
 
 const logger = new Logger('API');
 
@@ -49,21 +48,6 @@ export default class APIClass {
 
     public getModuleName() {
         return 'API';
-    }
-
-    /**
-     * Create a new cancel token
-     * @return {CancelTokenStatic} - Axios cancel token
-     */
-    readonly CancelToken: CancelTokenStatic = axios.CancelToken;
-
-	/**
-    * Checks to see if an error thrown is a cancellation 
-    * @param {any} value - the exception thrown from an api call
-    * @return {boolean} - A boolean indicating if the exception was a cancellation
-    */
-    isCancel(value: any): boolean {
-        return axios.isCancel(value);
     }
 
     /**
