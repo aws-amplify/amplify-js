@@ -289,6 +289,7 @@ jobs:
           name: "Set registry to Verdaccio and verify"
           command: |
             yarn config set registry $NPM_REGISTRY
+            npm set registry $NPM_REGISTRY
             CURRENT_REGISTRY=$(yarn config get registry)
             if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
               exit 0
@@ -304,8 +305,9 @@ jobs:
             NPM_PASS: circleci
             NPM_EMAIL: circleci@amplify.js
           command: |
-            npm install -g npm-cli-login
-            npm-cli-login
+            npm install -g npm-cli-adduser
+            npm-cli-adduser
+            sleep 1
       - run:
           name: "Publish to Verdaccio"
           command: |
