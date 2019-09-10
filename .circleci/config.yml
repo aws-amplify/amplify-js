@@ -312,11 +312,16 @@ jobs:
       - run:
           name: "Publish to Verdaccio"
           command: |
+            echo "Before config"
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
+            echo "Before status"
             git status
+            echo "Before diff"
             git --no-pager diff
+            echo "Before get registry"
             yarn config get registry
+            echo "Before publish"
             yarn run publish:release
   
 # TODO: combine deploy workflow with testdeploy by using appropriate filters
