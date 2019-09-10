@@ -267,6 +267,53 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+  verdaccio:
+    docker:
+      - image: verdaccio/verdaccio
+
+  # This job
+  testdeploy:
+    docker:
+     - image: cypress/base:10
+       environment:
+         TERM: xterm
+     - image: verdaccio/verdaccio
+    environment:
+      NPM_REGISTRY: http://localhost:4873/
+    steps:
+      # npm-cli-login allows us to log in to verdaccio without having to use the interactive npm login
+      - run:
+          name: "Set registry to Verdaccio and verify"
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            CURRENT_REGISTRY=$(yarn config get registry)
+            if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
+              exit 0
+            fi
+            exit 1
+      # If the registry isn't set correctly, fail the job
+      - run: 
+          name: "Install and run npm-cli-login"
+          environment:
+            # These are only used to access the verdaccio server we create in this job
+            # TODO: move these values to env variables
+            NPM_USER: circleci
+            NPM_PASS: circleci
+            NPM_EMAIL: circleci@amplify.js
+          command: |
+            npm install -g npm-cli-login
+            npm-cli-login
+      - run:
+          name: "Publish to Verdaccio"
+          command: |
+            npm whoami
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git status
+            git --no-pager diff
+            yarn config get registry
+            # yarn run publish:$CIRCLE_BRANCH
+  
 
 workflows:
   version: 2
@@ -316,13 +363,11 @@ workflows:
                 - master
           requires:
             - integ_setup
-      - deploy:
+      - testdeploy:
           filters:
             branches:
               only:
-                - release
-                - master
-                - beta
+                - ops-beta
           requires:
             - unit_test
             - integ_react_predictions
