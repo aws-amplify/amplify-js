@@ -317,6 +317,7 @@ jobs:
             yarn config get registry
             # yarn run publish:$CIRCLE_BRANCH
   
+# TODO: combine deploy workflow with testdeploy by using appropriate filters
 
 workflows:
   version: 2
@@ -326,25 +327,25 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integ_setup:
-          requires:
-            - build
-      - integ_react_predictions:
-          requires:
-            - integ_setup
-      - integ_react_auth:
-          requires:
-            - integ_setup
-      - integ_angular_auth:
-          requires:
-            - integ_setup
-      - integ_vue_auth:
-          requires:
-            - integ_setup
+      # - integ_setup:
+      #     requires:
+      #       - build
+      # - integ_react_predictions:
+      #     requires:
+      #       - integ_setup
+      # - integ_react_auth:
+      #     requires:
+      #       - integ_setup
+      # - integ_angular_auth:
+      #     requires:
+      #       - integ_setup
+      # - integ_vue_auth:
+      #     requires:
+      #       - integ_setup
       - testdeploy:
           requires:
             - unit_test
-            - integ_react_predictions
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
+            # - integ_react_predictions
+            # - integ_react_auth
+            # - integ_angular_auth
+            # - integ_vue_auth
