@@ -11,37 +11,26 @@
 | ------------------ | ------------------- | ----------- | ---------------------- | ----------- |
 | `handleSubmit`     | --                  |             | `(Event: any) => void` | `undefined` |
 | `overrideStyle`    | `override-style`    |             | `boolean`              | `false`     |
-| `validationErrors` | `validation-errors` |             | `string`               | `undefined` |
+| `validationErrors` | `validation-errors` |             | `boolean`              | `false`     |
 
 
 ## Dependencies
 
-### Used by
-
- - [amplify-authenticator](../amplify-authenticator)
-
 ### Depends on
 
-- [amplify-section](../amplify-section)
-- [amplify-sign-in-username-field](../amplify-sign-in-username-field)
-- [amplify-sign-in-password-field](../amplify-sign-in-password-field)
-- [amplify-button](../amplify-button)
+- [amplify-form-section](../amplify-form-section)
+- [amplify-form-field](../amplify-form-field)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-sign-in-username-field
-  amplify-sign-in --> amplify-sign-in-password-field
-  amplify-sign-in --> amplify-button
-  amplify-sign-in-username-field --> amplify-form-field
-  amplify-sign-in-username-field --> context-consumer
+  amplify-sign-in --> amplify-form-section
+  amplify-sign-in --> amplify-form-field
+  amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
-  amplify-sign-in-password-field --> amplify-form-field
-  amplify-sign-in-password-field --> context-consumer
-  amplify-authenticator --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -22,7 +22,6 @@
 ### Used by
 
  - [amplify-examples](../amplify-examples)
- - [amplify-sign-in](../amplify-sign-in)
 
 ### Depends on
 
@@ -38,7 +37,6 @@ graph TD;
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
   amplify-examples --> amplify-sign-in-username-field
-  amplify-sign-in --> amplify-sign-in-username-field
   style amplify-sign-in-username-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

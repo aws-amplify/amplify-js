@@ -15,11 +15,9 @@
 - [amplify-select](../amplify-select)
 - [amplify-button](../amplify-button)
 - [amplify-link](../amplify-link)
-- [amplify-authenticator](../amplify-authenticator)
 - [amplify-sign-in-username-field](../amplify-sign-in-username-field)
 - [amplify-sign-in-password-field](../amplify-sign-in-password-field)
 - [amplify-button](../amplify-button)
-- [amplify-authenticator](../amplify-authenticator)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
 
@@ -32,11 +30,9 @@ graph TD;
   amplify-examples --> amplify-select
   amplify-examples --> amplify-button
   amplify-examples --> amplify-link
-  amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-sign-in-username-field
   amplify-examples --> amplify-sign-in-password-field
   amplify-examples --> amplify-button
-  amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-form-section --> amplify-section
@@ -44,12 +40,6 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
-  amplify-authenticator --> amplify-sign-in
-  amplify-authenticator --> context-consumer
-  amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-sign-in-username-field
-  amplify-sign-in --> amplify-sign-in-password-field
-  amplify-sign-in --> amplify-button
   amplify-sign-in-username-field --> amplify-form-field
   amplify-sign-in-username-field --> context-consumer
   amplify-sign-in-password-field --> amplify-form-field

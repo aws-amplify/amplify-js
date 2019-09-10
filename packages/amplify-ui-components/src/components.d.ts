@@ -19,11 +19,6 @@ import {
 } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
-  interface AmplifyAuthenticator {
-    'content': Function;
-    'override': boolean;
-    'signIn': Function;
-  }
   interface AmplifyButton {
     /**
     * (Optional) Callback called when a user clicks on the button
@@ -227,7 +222,7 @@ export namespace Components {
   interface AmplifySignIn {
     'handleSubmit': (Event) => void;
     'overrideStyle': boolean;
-    'validationErrors': string;
+    'validationErrors': boolean;
   }
   interface AmplifySignInPasswordField {
     'component': Function;
@@ -290,12 +285,6 @@ export namespace Components {
 
 declare global {
 
-
-  interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
-  var HTMLAmplifyAuthenticatorElement: {
-    prototype: HTMLAmplifyAuthenticatorElement;
-    new (): HTMLAmplifyAuthenticatorElement;
-  };
 
   interface HTMLAmplifyButtonElement extends Components.AmplifyButton, HTMLStencilElement {}
   var HTMLAmplifyButtonElement: {
@@ -423,7 +412,6 @@ declare global {
     new (): HTMLRockPaperScissorElement;
   };
   interface HTMLElementTagNameMap {
-    'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
@@ -449,12 +437,6 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
-    'content'?: Function;
-    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
-    'override'?: boolean;
-    'signIn'?: Function;
-  }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
     /**
     * (Optional) Callback called when a user clicks on the button
@@ -658,7 +640,7 @@ declare namespace LocalJSX {
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     'handleSubmit'?: (Event) => void;
     'overrideStyle'?: boolean;
-    'validationErrors'?: string;
+    'validationErrors'?: boolean;
   }
   interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
     'component'?: Function;
@@ -720,7 +702,6 @@ declare namespace LocalJSX {
   }
 
   interface IntrinsicElements {
-    'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-examples': AmplifyExamples;
