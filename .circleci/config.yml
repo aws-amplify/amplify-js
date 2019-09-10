@@ -276,7 +276,14 @@ jobs:
      - image: verdaccio/verdaccio
     environment:
       NPM_REGISTRY: http://localhost:4873/
+    working_directory: ~/amplify-js
     steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          keys: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       # npm-cli-login allows us to log in to verdaccio without having to use the interactive npm login
       - run:
           name: "Set registry to Verdaccio and verify"
