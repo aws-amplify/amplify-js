@@ -11,6 +11,9 @@ import {
   TextFieldTypes,
 } from './common/types';
 import {
+  CountryCodeDialOptions,
+} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
+import {
   IconNameType,
 } from './components/amplify-icon/icons';
 import {
@@ -67,6 +70,16 @@ export namespace Components {
     * Value of the checkbox
     */
     'value'?: string;
+  }
+  interface AmplifyCountryDialCode {
+    /**
+    * The options of the country dial code select input.
+    */
+    'options': CountryCodeDialOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
   }
   interface AmplifyExamples {}
   interface AmplifyFormField {
@@ -309,6 +322,12 @@ declare global {
     new (): HTMLAmplifyCheckboxElement;
   };
 
+  interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
+  var HTMLAmplifyCountryDialCodeElement: {
+    prototype: HTMLAmplifyCountryDialCodeElement;
+    new (): HTMLAmplifyCountryDialCodeElement;
+  };
+
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
   var HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
@@ -426,6 +445,7 @@ declare global {
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
+    'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
@@ -498,6 +518,16 @@ declare namespace LocalJSX {
     * Value of the checkbox
     */
     'value'?: string;
+  }
+  interface AmplifyCountryDialCode extends JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement> {
+    /**
+    * The options of the country dial code select input.
+    */
+    'options'?: CountryCodeDialOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
   }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
@@ -723,6 +753,7 @@ declare namespace LocalJSX {
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
+    'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
