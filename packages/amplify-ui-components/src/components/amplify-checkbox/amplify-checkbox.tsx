@@ -11,7 +11,7 @@ const STATIC_CHECKBOX_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--checkbox`;
 })
 export class AmplifyCheckbox {
   /** (Optional) Overrides default styling */
-  @Prop() styleOverride?: boolean = false;
+  @Prop() overrideStyle: boolean = false;
   /** Name of the checkbox */
   @Prop() name?: string;
   /** Value of the checkbox */
@@ -31,7 +31,7 @@ export class AmplifyCheckbox {
 
   render() {
     return (
-      <span class={styleNuker(this.styleOverride, STATIC_CHECKBOX_CLASS_NAME, checkbox)}>
+      <span class={styleNuker(this.overrideStyle, STATIC_CHECKBOX_CLASS_NAME, checkbox)}>
         <input
           onClick={this.onClick}
           type="checkbox"

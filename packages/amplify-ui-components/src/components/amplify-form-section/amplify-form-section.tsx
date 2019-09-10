@@ -22,7 +22,7 @@ const AmplifyFormSectionFooter: FC<AmplifyFormSectionFooterProps> = ({ submitBut
   <div>
     <slot name="amplify-form-section-footer">
       <div class={styleNuker(overrideStyle, STATIC_FORM_SECTION_FOOTER_CLASS_NAME, formSectionFooter)}>
-        <amplify-button type="submit">{submitButtonText}</amplify-button>
+        <amplify-button type="submit" overrideStyle={overrideStyle}>{submitButtonText}</amplify-button>
       </div>
     </slot>
   </div>
@@ -45,7 +45,7 @@ export class AmplifyFormSection {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <amplify-section override-style={this.overrideStyle}>
+        <amplify-section overrideStyle={this.overrideStyle}>
           <AmplifyFormSectionHeader headerText={this.headerText} overrideStyle={this.overrideStyle} />
           <slot />
           <AmplifyFormSectionFooter submitButtonText={this.submitButtonText} overrideStyle={this.overrideStyle} />

@@ -22,7 +22,7 @@ export class AmplifyInput {
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
   /** (Optional) Override default styling */
-  @Prop() overrideStyle?: boolean = false;
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (

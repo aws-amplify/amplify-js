@@ -10,16 +10,16 @@ describe('amplify-select spec:', () => {
     });
 
     it('should have style override set to false by default', () => {
-      expect(select.styleOverride).toBe(false);
+      expect(select.overrideStyle).toBe(false);
     });
 
     it('should have options be defined by default', () => {    
       expect(select.options).toBeDefined();
     });
 
-    it('should have style override set to true when style-override is passed as a prop from parent', () => {
-      select.styleOverride = true;
-      expect(select.styleOverride).toBe(true);
+    it('should have style override set to true when override-style is passed as a prop from parent', () => {
+      select.overrideStyle = true;
+      expect(select.overrideStyle).toBe(true);
     });
 
     it('should throw an error when there is a mixture of `string` and `number` values', () => {
