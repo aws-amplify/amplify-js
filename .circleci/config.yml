@@ -308,7 +308,7 @@ jobs:
           command: |
             npm install -g npm-cli-adduser
             npm-cli-adduser
-            sleep 1
+            # sleep 1
       - run:
           name: "Publish to Verdaccio"
           command: |
