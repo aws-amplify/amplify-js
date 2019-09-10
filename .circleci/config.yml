@@ -327,45 +327,21 @@ workflows:
           requires:
             - build
       - integ_setup:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - build
       - integ_react_predictions:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - integ_setup
       - integ_react_auth:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - integ_setup
       - integ_angular_auth:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - integ_setup
       - integ_vue_auth:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - integ_setup
       - testdeploy:
-          filters:
-            branches:
-              only:
-                - ops-beta
           requires:
             - unit_test
             - integ_react_predictions
