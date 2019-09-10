@@ -290,6 +290,7 @@ jobs:
           command: |
             yarn config set registry $NPM_REGISTRY
             npm set registry $NPM_REGISTRY
+
             CURRENT_REGISTRY=$(yarn config get registry)
             if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
               exit 0
@@ -311,13 +312,12 @@ jobs:
       - run:
           name: "Publish to Verdaccio"
           command: |
-            npm whoami
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
             yarn config get registry
-            # yarn run publish:$CIRCLE_BRANCH
+            yarn run publish:release
   
 # TODO: combine deploy workflow with testdeploy by using appropriate filters
 
