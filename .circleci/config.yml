@@ -267,11 +267,7 @@ jobs:
             else
               echo "Skipping deploy."
             fi
-  verdaccio:
-    docker:
-      - image: verdaccio/verdaccio
 
-  # This job
   testdeploy:
     docker:
      - image: cypress/base:10
