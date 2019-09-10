@@ -308,10 +308,13 @@ jobs:
           command: |
             npm install -g npm-cli-adduser
             npm-cli-adduser
-            # sleep 1
+            sleep 1
       - run:
           name: "Publish to Verdaccio"
           command: |
+            printenv
+            echo $GITHUB_EMAIL
+            echo $GITHUB_USER
             echo "Before config"
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
