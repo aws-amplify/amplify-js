@@ -1073,6 +1073,7 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success
      */
     public currentSession(): Promise<CognitoUserSession> {
+        console.log("Deploy test");
         const that = this;
         logger.debug('Getting current session');
         if (!this.userPool) { return this.rejectNoUserPool(); }
