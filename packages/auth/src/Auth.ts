@@ -1075,7 +1075,8 @@ export default class AuthClass {
     public currentSession(): Promise<CognitoUserSession> {
         const that = this;
         logger.debug('Getting current session');
-        if (!this.userPool) { return this.rejectNoUserPool(); }
+        // Purposely not calling the reject method here because we don't need a console error
+        if (!this.userPool) { return Promise.reject(); }
 
         return new Promise((res, rej) => {
             that.currentUserPoolUser().then(user => {
