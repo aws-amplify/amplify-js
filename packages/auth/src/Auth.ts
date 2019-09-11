@@ -94,6 +94,7 @@ export default class AuthClass {
     private _oAuthHandler: OAuth;
     private _storage;
     private _storageSync;
+    private _urlListener;
 
     /**
      * Initialize Auth with AWS configurations
@@ -202,7 +203,8 @@ export default class AuthClass {
                     redirectSignOut: cognitoHostedUIConfig['redirectSignOut'],
                     responseType: cognitoHostedUIConfig['responseType'],
                     Storage: this._storage,
-                    urlOpener: cognitoHostedUIConfig['urlOpener']
+                    urlOpener: cognitoHostedUIConfig['urlOpener'],
+                    urlListener: cognitoHostedUIConfig['urlListener']
                 },
                 cognitoHostedUIConfig['options']
             );
@@ -214,7 +216,8 @@ export default class AuthClass {
             });
 
             // **NOTE** - Remove this in a future major release as it is a breaking change
-            urlListener(({ url }) => {
+            this._urlListener = config.urlListener || urlListener;
+            this._urlListener(({ url }) => {
                 this._handleAuthResponse(url);
             });
         }
@@ -1536,7 +1539,7 @@ export default class AuthClass {
         }
 
         dispatchAuthEvent(
-            'parsingCallbackUrl', 
+            'parsingCallbackUrl',
             { url: URL },
             `The callback url is being parsed`
         );
@@ -1576,7 +1579,7 @@ export default class AuthClass {
                     logger.debug('AWS credentials', credentials);
                 }
 
-                /* 
+                /*
                 Prior to the request we do sign the custom state along with the state we set. This check will verify
                 if there is a dash indicated when setting custom state from the request. If a dash is contained
                 then there is custom state present on the state string.
@@ -1597,7 +1600,7 @@ export default class AuthClass {
                     currentUser,
                     `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
                 );
-                
+
                 if (isCustomStateIncluded) {
                     const [, customState] = state.split('-');
 
