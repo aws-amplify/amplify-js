@@ -163,8 +163,8 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyLink {
+    'overrideStyle': boolean;
     'role': string;
-    'styleOverride': boolean;
   }
   interface AmplifyRadioButton {
     /**
@@ -581,8 +581,8 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
+    'overrideStyle'?: boolean;
     'role'?: string;
-    'styleOverride'?: boolean;
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
