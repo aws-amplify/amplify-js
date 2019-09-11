@@ -216,6 +216,7 @@ export default class AuthClass {
             });
 
             // **NOTE** - Remove this in a future major release as it is a breaking change
+            // customize if needed
             this._urlListener = config.urlListener || urlListener;
             this._urlListener(({ url }) => {
                 this._handleAuthResponse(url);
