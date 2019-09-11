@@ -317,7 +317,8 @@ jobs:
             git status
             git --no-pager diff
             echo "Before publish"
-            yarn run publish:release
+            lerna publish --skip-git
+            # yarn run publish:test-release
   
 # TODO: combine deploy workflow with testdeploy by using appropriate filters
 
