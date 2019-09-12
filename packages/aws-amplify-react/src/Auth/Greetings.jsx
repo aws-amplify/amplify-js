@@ -134,14 +134,15 @@ export default class Greetings extends AuthPiece {
         const amazonClientId = amazon_client_id || config.amazonClientId;
         const auth0_config = auth0 || oauth.auth0;
 
-        if (googleClientId) SignOut = withGoogle(SignOut);
-        if (facebookAppId) SignOut = withFacebook(SignOut);
-        if (amazonClientId) SignOut = withAmazon(SignOut);
-        if (auth0_config) SignOut = withAuth0(SignOut);
+        let SignOutComponent = SignOut;
+        if (googleClientId) SignOutComponent = withGoogle(SignOut);
+        if (facebookAppId) SignOutComponent = withFacebook(SignOut);
+        if (amazonClientId) SignOutComponent = withAmazon(SignOut);
+        if (auth0_config) SignOutComponent = withAuth0(SignOut);
 
         const stateAndProps = Object.assign({}, this.props, this.state);
 
-        return <SignOut 
+        return <SignOutComponent 
             {...stateAndProps} 
             />;
     }
