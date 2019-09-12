@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-import { Signer, Credentials } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth'
 import API, { graphqlOperation } from '../src/API';
 import { GRAPHQL_AUTH_MODE } from '../src/types';
@@ -1703,5 +1702,3 @@ describe('API test', () => {
 
 
 });
-
-

@@ -2,22 +2,25 @@
   "name": "@aws-amplify/analytics",
   "version": "1.2.25",
   "description": "Analytics category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./index.js",
+  "module": "./lib-esm/index.js",
+  "typings": "./lib-esm/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build": "npm run clean && tsc && webpack",
-    "clean": "rimraf lib lib-esm dist",
-    "format": "echo \"Not implemented\"",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "node ./build es6",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "clean": "rimraf lib-esm lib dist",
+    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/trackers": "./lib/trackers/reactnative.js"
+    "./index": "./lib-esm/index.js",
+    "./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -29,35 +32,29 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
-  "devDependencies": {
-    "@types/jest": "^20.0.8",
-    "@types/node": "^8.10.15",
-    "awesome-typescript-loader": "^3.2.2",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "compression-webpack-plugin": "^1.1.3",
-    "find": "^0.2.7",
-    "jest": "^22.4.3",
-    "json-loader": "^0.5.7",
-    "prepend-file": "^1.3.1",
-    "rimraf": "^2.6.2",
-    "source-map-loader": "^0.2.1",
-    "ts-jest": "^22.0.0",
-    "tslint": "^5.7.0",
-    "tslint-config-airbnb": "^5.8.0",
-    "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
-  },
   "dependencies": {
     "@aws-amplify/cache": "^1.0.34",
     "@aws-amplify/core": "^1.1.2",
     "uuid": "^3.2.1"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
+    },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [

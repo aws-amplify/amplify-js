@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --coverage --passWithNoTests",
     "build-with-test": "npm run clean && npm test && tsc",
     "build": "npm run clean && tsc",
     "clean": "rimraf lib lib-esm dist",
