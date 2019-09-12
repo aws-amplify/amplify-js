@@ -24,7 +24,7 @@
     "rimraf": "^2.6.3",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.4.4",
-    "webpack": "^4.30.0",
+    "webpack": "4.39.3",
     "webpack-cli": "^3.3.1"
   },
   "postcss": {
