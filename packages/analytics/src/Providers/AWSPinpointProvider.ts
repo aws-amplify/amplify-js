@@ -16,7 +16,6 @@ import {
     ClientDevice,
     Platform,
     Credentials,
-    Constants,
     Signer,
     JS,
     Hub
@@ -28,8 +27,6 @@ import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider, PromiseHandlers } from '../types';
 import { v1 as uuid } from 'uuid';
-import { SSL_OP_TLS_BLOCK_PADDING_BUG } from 'constants';
-import { resolve } from 'url';
 
 const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
     Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
