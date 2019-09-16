@@ -32,7 +32,7 @@ export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { Platform } from './Platform';
-
+export * from './constants';
 
 export const Constants = {
     'userAgent': Platform.userAgent
@@ -55,4 +55,3 @@ if (AWS['util']) {
 } else {
     logger.warn('No AWS.config');
 }
-

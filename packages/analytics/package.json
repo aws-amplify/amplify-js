@@ -3,8 +3,8 @@
   "version": "1.2.24",
   "description": "Analytics category of aws-amplify",
   "main": "./index.js",
-  "module": "./esm/index.js",
-  "typings": "./esm/index.d.ts",
+  "module": "./lib-esm/index.js",
+  "typings": "./lib-esm/index.d.ts",
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
@@ -15,13 +15,13 @@
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf cjs esm dist",
+    "clean": "rimraf lib-esm lib dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./index": "./esm/index.js",
-    "./esm/trackers": "./esm/trackers/reactnative.js"
+    "./index": "./lib-esm/index.js",
+    "./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",

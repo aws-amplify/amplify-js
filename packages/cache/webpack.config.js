@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-cache.min': './esm/index.js'
+        'aws-amplify-cache.min': './lib-esm/index.js'
     },
     externals: [
         '@aws-amplify/core',

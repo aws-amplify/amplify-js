@@ -5,8 +5,8 @@ const ts = require("typescript");
 const externals = require('./rollup-externals');
 
 const currentPath = process.argv[1].slice(0,process.argv[1].lastIndexOf('/'));
-const tscES5OutDir = `/cjs`;
-const tscES6OutDir = `/esm`;
+const tscES5OutDir = `/lib`;
+const tscES6OutDir = `/lib-esm`;
 const packageInfo = require(`${currentPath}/package`);
 
 async function buildRollUp() {

@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./esm/index.js');
+module.exports = require('./lib-esm/index.js');

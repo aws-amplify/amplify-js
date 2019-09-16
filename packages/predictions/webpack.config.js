@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-predictions.min': './esm/index.js'
+        'aws-amplify-predictions.min': './lib-esm/index.js'
     },
     externals: [
         "@aws-amplify/core",

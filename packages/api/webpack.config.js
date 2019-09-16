@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        'aws-amplify-api.min': './esm/index.js'
+        'aws-amplify-api.min': './lib-esm/index.js'
     },
     externals: [
         'graphql',

@@ -1,6 +1,6 @@
 var config = require('./webpack.config.js');
 
 var entry = {
-    'aws-amplify-react': './cjs/index.js'
+    'aws-amplify-react': './lib/index.js'
 };
 module.exports = Object.assign(config, { entry, mode: 'development' });

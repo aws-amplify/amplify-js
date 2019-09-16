@@ -3,10 +3,10 @@
   "version": "1.0.36",
   "description": "Interactions category of aws-amplify",
   "main": "./index.js",
-  "module": "./esm/index.js",
-  "typings": "./esm/index.d.ts",
+  "module": "./lib-esm/index.js",
+  "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./esm/index.js"
+    "./index": "./lib-esm/index.js"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -18,7 +18,7 @@
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf esm cjs dist",
+    "clean": "rimraf lib-esm lib dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },

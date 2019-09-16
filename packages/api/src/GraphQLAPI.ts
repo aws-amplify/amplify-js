@@ -15,12 +15,11 @@ import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
-import { Amplify, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Credentials, INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/esm/constants';
 import { v4 as uuid } from 'uuid';
 import { RestClient as RestClass } from './RestClient';
 
