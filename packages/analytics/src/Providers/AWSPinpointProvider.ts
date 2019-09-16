@@ -312,8 +312,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private _pinpointSendStopSession(params, handlers): Promise<string> {
         const eventParams = this._generateBatchItemContext(params);
         
-        const {region} = this._config;
-        const {ApplicationId, EventsRequest} = eventParams;
+        const { region } = this._config;
+        const { ApplicationId, EventsRequest } = eventParams;
 
         const accessInfo = {
             secret_key: this._config.credentials.secretAccessKey,
@@ -340,7 +340,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         if (success) {
             return handlers.resolve('sendBeacon success');
         }
-        return handlers.reject("sendBeacon failure");
+        return handlers.reject('sendBeacon failure');
     }
 
     private _retry(params, handlers) {
