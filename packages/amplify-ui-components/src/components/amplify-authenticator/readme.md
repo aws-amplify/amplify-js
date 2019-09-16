@@ -37,17 +37,16 @@
 graph TD;
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
-  amplify-sign-in --> amplify-section
-  amplify-sign-in --> amplify-sign-in-username-field
-  amplify-sign-in --> amplify-sign-in-password-field
+  amplify-sign-in --> amplify-form-section
+  amplify-sign-in --> amplify-form-field
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
-  amplify-sign-in-username-field --> amplify-form-field
-  amplify-sign-in-username-field --> context-consumer
+  amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
-  amplify-sign-in-password-field --> amplify-form-field
-  amplify-sign-in-password-field --> context-consumer
   amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```

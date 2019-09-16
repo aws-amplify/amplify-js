@@ -43,8 +43,10 @@
   --input-color: var(--deep-squid-ink);
   --input-background-color: var(--white);
   --input-border-color: var(--light-grey);
+  --primary-font-size: 1em;
+  --secondary-font-size: 0.875em;
 
-  --font-family: "Amazon Ember","Helvetica Neue Light","Helvetica Neue","Helvetica" ,"Arial","sans-serif";
+  --font-family: "Amazon Ember","Helvetica Neue Light","Helvetica Neue","Helvetica" ,"Arial","sans-serif"; 
   --body-background: #F8F4F4;
 
   /** Angular Theme **/

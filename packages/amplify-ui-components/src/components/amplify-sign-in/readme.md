@@ -7,17 +7,18 @@
 
 ## Properties
 
-| Property           | Attribute           | Description | Type                   | Default     |
-| ------------------ | ------------------- | ----------- | ---------------------- | ----------- |
-| `handleSubmit`     | --                  |             | `(Event: any) => void` | `undefined` |
-| `overrideStyle`    | `override-style`    |             | `boolean`              | `false`     |
-| `validationErrors` | `validation-errors` |             | `boolean`              | `false`     |
+| Property           | Attribute           | Description                                                     | Type                   | Default     |
+| ------------------ | ------------------- | --------------------------------------------------------------- | ---------------------- | ----------- |
+| `handleSubmit`     | --                  | Fires when sign in form is submitted                            | `(Event: any) => void` | `undefined` |
+| `overrideStyle`    | `override-style`    | (Optional) Overrides default styling                            | `boolean`              | `false`     |
+| `validationErrors` | `validation-errors` | Engages when invalid actions occur, such as missing field, etc. | `string`               | `undefined` |
 
 
 ## Dependencies
 
 ### Used by
 
+ - [amplify-authenticator](../amplify-authenticator)
  - [amplify-examples](../amplify-examples)
 
 ### Depends on
@@ -41,6 +42,7 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
+  amplify-authenticator --> amplify-sign-in
   amplify-examples --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
