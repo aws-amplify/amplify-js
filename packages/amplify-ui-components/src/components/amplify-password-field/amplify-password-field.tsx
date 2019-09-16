@@ -14,10 +14,14 @@ const {
 export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldIdText: fieldIdTextTypes;
+  /** Used for the password label */
+  @Prop() passwordLabel: string = PASSWORD_LABEL;
+  /** Used for the placeholder label */
+  @Prop() passwordPlaceholderLabel: string = PASSWORD_PLACEHOLDER;
 
   render() {
     return (
-      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${PASSWORD_SUFFIX}` : PASSWORD_SUFFIX} label={PASSWORD_LABEL} placeholder={PASSWORD_PLACEHOLDER} />
+      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${PASSWORD_SUFFIX}` : PASSWORD_SUFFIX} label={this.passwordLabel} placeholder={this.passwordPlaceholderLabel} />
     );
   }
 }

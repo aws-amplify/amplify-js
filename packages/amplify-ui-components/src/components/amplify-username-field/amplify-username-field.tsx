@@ -15,10 +15,14 @@ const {
 export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldIdText: fieldIdTextTypes;
+  /** Used for the username label */
+  @Prop() usernameLabel: string = USERNAME_LABEL;
+  /** Used for the placeholder label */
+  @Prop() usernamePlaceholderLabel: string = USERNAME_PLACEHOLDER;
 
   render() {
     return (
-      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${USERNAME_SUFFIX}` : USERNAME_SUFFIX} label={USERNAME_LABEL} placeholder={USERNAME_PLACEHOLDER} />
+      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${USERNAME_SUFFIX}` : USERNAME_SUFFIX} label={this.usernameLabel} placeholder={this.usernamePlaceholderLabel} />
     );
   }
 }

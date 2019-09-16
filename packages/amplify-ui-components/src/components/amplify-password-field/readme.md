@@ -7,9 +7,11 @@
 
 ## Properties
 
-| Property      | Attribute       | Description                                                             | Type                                    | Default     |
-| ------------- | --------------- | ----------------------------------------------------------------------- | --------------------------------------- | ----------- |
-| `fieldIdText` | `field-id-text` | Based on the type of field e.g. sign in, sign up, forgot password, etc. | `"password" \| "sign-in" \| "username"` | `undefined` |
+| Property                   | Attribute                    | Description                                                             | Type                                    | Default                |
+| -------------------------- | ---------------------------- | ----------------------------------------------------------------------- | --------------------------------------- | ---------------------- |
+| `fieldIdText`              | `field-id-text`              | Based on the type of field e.g. sign in, sign up, forgot password, etc. | `"password" \| "sign-in" \| "username"` | `undefined`            |
+| `passwordLabel`            | `password-label`             | Used for the password label                                             | `string`                                | `PASSWORD_LABEL`       |
+| `passwordPlaceholderLabel` | `password-placeholder-label` | Used for the placeholder label                                          | `string`                                | `PASSWORD_PLACEHOLDER` |
 
 
 ## Dependencies

@@ -177,6 +177,14 @@ export namespace Components {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldIdText': fieldIdTextTypes;
+    /**
+    * Used for the password label
+    */
+    'passwordLabel': string;
+    /**
+    * Used for the placeholder label
+    */
+    'passwordPlaceholderLabel': string;
   }
   interface AmplifyRadioButton {
     /**
@@ -332,6 +340,14 @@ export namespace Components {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldIdText': fieldIdTextTypes;
+    /**
+    * Used for the username label
+    */
+    'usernameLabel': string;
+    /**
+    * Used for the placeholder label
+    */
+    'usernamePlaceholderLabel': string;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -671,6 +687,14 @@ declare namespace LocalJSX {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldIdText'?: fieldIdTextTypes;
+    /**
+    * Used for the password label
+    */
+    'passwordLabel'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'passwordPlaceholderLabel'?: string;
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
@@ -826,6 +850,14 @@ declare namespace LocalJSX {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldIdText'?: fieldIdTextTypes;
+    /**
+    * Used for the username label
+    */
+    'usernameLabel'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'usernamePlaceholderLabel'?: string;
   }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
