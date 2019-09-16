@@ -477,7 +477,7 @@ describe('Storage', () => {
 
 
     describe('put test', () => {
-        test('put object succefully', async () => {
+        test('put object successfully', async () => {
             const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
                 return;
             });

@@ -64,6 +64,8 @@ import {
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
+import { AuthError, NoUserPoolError } from './Errors';
+import { AuthErrorTypes } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -233,12 +235,13 @@ export class AuthClass {
      * @return - A promise resolves callback data if success
      */
     public signUp(params: string | SignUpParams, ...restOfAttrs: string[]): Promise<ISignUpResult> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
 
         let username: string = null;
         let password: string = null;
         const attributes: object[] = [];
         let validationData: object[] = null;
+
         if (params && typeof params === 'string') {
             username = params;
             password = restOfAttrs ? restOfAttrs[0] : null;
@@ -258,11 +261,11 @@ export class AuthClass {
             }
             validationData = params['validationData'] || null;
         } else {
-            return Promise.reject('The first parameter should either be non-null string or object');
+            return this.rejectAuthError(AuthErrorTypes.SignUpError);
         }
 
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
+        if (!password) { return this.rejectAuthError(AuthErrorTypes.EmptyPassword); }
 
         logger.debug('signUp attrs:', attributes);
         logger.debug('signUp validation data:', validationData);
@@ -297,9 +300,9 @@ export class AuthClass {
      * @return - A promise resolves callback data if success
      */
     public confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!code) { return Promise.reject('Code cannot be empty'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
+        if (!code) { return this.rejectAuthError(AuthErrorTypes.EmptyCode); }
 
         const user = this.createCognitoUser(username);
         const forceAliasCreation = options && typeof options.forceAliasCreation === 'boolean'
@@ -318,8 +321,8 @@ export class AuthClass {
      * @return - A promise resolves data if success
      */
     public resendSignUp(username: string): Promise<string> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
@@ -336,7 +339,7 @@ export class AuthClass {
      * @return - A promise resolves the CognitoUser
      */
     public signIn(usernameOrSignInOpts: string | SignInOpts, pw?: string): Promise<CognitoUser | any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
         let username = null;
         let password = null;
         let validationData = {};
@@ -352,9 +355,9 @@ export class AuthClass {
             password = usernameOrSignInOpts.password;
             validationData = usernameOrSignInOpts.validationData;
         } else {
-            return Promise.reject(new Error('The username should either be a string or one of the sign in types'));
+            return this.rejectAuthError(AuthErrorTypes.InvalidUsername);
         }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
         const authDetails = new AuthenticationDetails({
             Username: username,
             Password: password,
@@ -630,7 +633,7 @@ export class AuthClass {
                         Enabled: false
                     };
                 } else {
-                    return Promise.reject('invalid MFA type');
+                    return this.rejectAuthError(AuthErrorTypes.InvalidMFA);
                 }
                 // if there is a UserMFASettingList in the response
                 // we need to disable every mfa type in that list
@@ -653,7 +656,7 @@ export class AuthClass {
                 break;
             default:
                 logger.debug('no validmfa method provided');
-                return Promise.reject('no validmfa method provided');
+                return this.rejectAuthError(AuthErrorTypes.NoMFA);
         }
 
         const that = this;
@@ -779,7 +782,7 @@ export class AuthClass {
         code: string,
         mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null
     ): Promise<CognitoUser | any> {
-        if (!code) { return Promise.reject('Code cannot be empty'); }
+        if (!code) { return this.rejectAuthError(AuthErrorTypes.EmptyCode); }
 
         const that = this;
         return new Promise((resolve, reject) => {
@@ -818,7 +821,7 @@ export class AuthClass {
         password: string,
         requiredAttributes: any
     ): Promise<CognitoUser | any> {
-        if (!password) { return Promise.reject('Password cannot be empty'); }
+        if (!password) { return this.rejectAuthError(AuthErrorTypes.EmptyPassword); }
 
         const that = this;
         return new Promise((resolve, reject) => {
@@ -871,8 +874,8 @@ export class AuthClass {
      * @param {String} challengeResponses - The confirmation code
      */
     public sendCustomChallengeAnswer(user: CognitoUser | any, challengeResponses: string): Promise<CognitoUser | any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!challengeResponses) { return Promise.reject('Challenge response cannot be empty'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
+        if (!challengeResponses) { return this.rejectAuthError(AuthErrorTypes.EmptyChallengeResponse); }
 
         const that = this;
         return new Promise((resolve, reject) => {
@@ -954,7 +957,7 @@ export class AuthClass {
      * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
         const that = this;
         return new Promise((res, rej) => {
             this._storageSync.then(() => {
@@ -1029,7 +1032,7 @@ export class AuthClass {
      * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
-        logger.debug('getting current authenticted user');
+        logger.debug('getting current authenticated user');
         let federatedUser = null;
         try {
             await this._storageSync;
@@ -1073,7 +1076,8 @@ export class AuthClass {
     public currentSession(): Promise<CognitoUserSession> {
         const that = this;
         logger.debug('Getting current session');
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        // Purposely not calling the reject method here because we don't need a console error
+        if (!this.userPool) { return Promise.reject(); }
 
         return new Promise((res, rej) => {
             that.currentUserPoolUser().then(user => {
@@ -1101,7 +1105,7 @@ export class AuthClass {
     public userSession(user): Promise<CognitoUserSession> {
         if (!user) {
             logger.debug('the user is null');
-            return Promise.reject('Failed to get the session because the user is empty');
+            return this.rejectAuthError(AuthErrorTypes.NoUserSession);
         }
         return new Promise((resolve, reject) => {
             logger.debug('Getting the session from this user:', user);
@@ -1186,7 +1190,7 @@ export class AuthClass {
      * @return - A promise resolves to callback data if success
      */
     public verifyUserAttributeSubmit(user: CognitoUser | any, attr: string, code: string): Promise<string> {
-        if (!code) { return Promise.reject('Code cannot be empty'); }
+        if (!code) { return this.rejectAuthError(AuthErrorTypes.EmptyCode); }
 
         return new Promise((resolve, reject) => {
             user.verifyAttribute(attr, code, {
@@ -1338,8 +1342,8 @@ export class AuthClass {
      * @return - A promise resolves if success
      */
     public forgotPassword(username: string): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
@@ -1373,10 +1377,10 @@ export class AuthClass {
         code: string,
         password: string
     ): Promise<void> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!code) { return Promise.reject('Code cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }
+        if (!this.userPool) { return this.rejectNoUserPool(); }
+        if (!username) { return this.rejectAuthError(AuthErrorTypes.EmptyUsername); }
+        if (!code) { return this.rejectAuthError(AuthErrorTypes.EmptyCode); }
+        if (!password) { return this.rejectAuthError(AuthErrorTypes.EmptyPassword); }
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
@@ -1691,6 +1695,24 @@ export class AuthClass {
             typeof obj.setItem === 'function' &&
             typeof obj.removeItem === 'function' &&
             typeof obj.clear === 'function';
+    }
+
+    private noUserPoolErrorHandler(config: AuthOptions): AuthErrorTypes {
+        if (config) {
+            if (!config.userPoolId || !config.identityPoolId) {
+                return AuthErrorTypes.MissingAuthConfig;
+            }
+        }
+        return AuthErrorTypes.NoConfig;
+    }
+
+    private rejectAuthError(type: AuthErrorTypes): Promise<never> {
+        return Promise.reject(new AuthError(type));
+    }
+
+    private rejectNoUserPool(): Promise<never> {
+        const type = this.noUserPoolErrorHandler(this._config);
+        return Promise.reject(new NoUserPoolError(type));
     }
 }
 

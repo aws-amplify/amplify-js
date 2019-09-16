@@ -3,12 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.11...aws-amplify-angular@3.0.12) (2019-08-21)
+## [3.0.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.12...aws-amplify-angular@3.0.13) (2019-09-05)
+
+**Note:** Version bump only for package aws-amplify-angular
 
 
-### Bug Fixes
 
-* **aws-amplify-angular:** declare @aws-amplify/core as rollup external ([20a8bf8](https://github.com/aws-amplify/amplify-js/commit/20a8bf8))
+
+
+## [3.0.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.11...aws-amplify-angular@3.0.12) (2019-09-04)
+
+**Note:** Version bump only for package aws-amplify-angular
 
 
 

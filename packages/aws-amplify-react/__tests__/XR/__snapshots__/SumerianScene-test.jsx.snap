@@ -14,7 +14,7 @@ exports[`SumerianScene renders successfully 1`] = `
       data-test="sumerian-scene"
       id="scene-dom-id"
     >
-      <Component
+      <Loading
         percentage={0}
         sceneError={null}
         sceneName="TestSceneName"

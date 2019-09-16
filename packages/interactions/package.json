@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/interactions",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "Interactions category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "dependencies": {
-    "@aws-amplify/core": "1.2.0"
+    "@aws-amplify/core": "^1.1.2"
   },
   "jest": {
     "globals": {

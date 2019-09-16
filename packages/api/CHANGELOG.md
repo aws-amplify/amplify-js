@@ -3,18 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.42...@aws-amplify/api@1.1.0) (2019-08-21)
+## [1.1.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.1.0...@aws-amplify/api@1.1.1) (2019-09-05)
+
+**Note:** Version bump only for package @aws-amplify/api
 
 
-### Bug Fixes
 
-* **@aws-amplify/api:** expose tree-shaking for Webpack ([768a5f2](https://github.com/aws/aws-amplify/commit/768a5f2))
+
+
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.42...@aws-amplify/api@1.1.0) (2019-09-04)
 
 
 ### Features
 
-* **@aws-amplify/api:** publish ES2015/ESM artifacts ([68e0870](https://github.com/aws/aws-amplify/commit/68e0870))
-* **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws/aws-amplify/commit/d73d5e1))
+* **@aws-amplify/api:** Add ability to set withCredentials in API ([#3634](https://github.com/aws/aws-amplify/issues/3634)) ([8437578](https://github.com/aws/aws-amplify/commit/8437578))
 
 
 

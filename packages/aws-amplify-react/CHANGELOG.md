@@ -3,17 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.4.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.12...aws-amplify-react@2.4.0) (2019-08-21)
+## [2.4.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.13...aws-amplify-react@2.4.2) (2019-09-05)
+
+**Note:** Version bump only for package aws-amplify-react
 
 
-### Bug Fixes
-
-* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws/aws-amplify/commit/bdd162c))
 
 
-### Features
 
-* **aws-amplify-react): publish ES2015/ESM artifacts:** publish ES2015/ESM artifacts ([3a60350](https://github.com/aws/aws-amplify/commit/3a60350))
+## [2.3.13](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.3.12...aws-amplify-react@2.3.13) (2019-09-04)
+
+**Note:** Version bump only for package aws-amplify-react
 
 
 

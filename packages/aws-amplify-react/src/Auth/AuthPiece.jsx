@@ -44,6 +44,16 @@ export class AuthPiece extends React.Component {
         this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
     }
 
+    componentDidMount() {
+        if (window && window.location && window.location.search) {
+            if (!this.props.authData || !this.props.authData.username) {
+                const searchParams = new URLSearchParams(window.location.search);
+                const username = searchParams ? searchParams.get('username') : undefined;
+                this.setState({ username });
+            }
+        }
+    }
+
     getUsernameFromInput() {
         const { usernameAttributes = 'username' } = this.props;
         switch(usernameAttributes) {
@@ -52,7 +62,7 @@ export class AuthPiece extends React.Component {
             case UsernameAttributes.PHONE_NUMBER:
                 return this.phone_number;
             default:
-                return this.inputs.username;
+                return this.inputs.username || this.state.username;
         }
     }
 
@@ -82,16 +92,11 @@ export class AuthPiece extends React.Component {
                 <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
             );
         } else {
-            let value;
-            if (window && window.location && window.location.search) {
-                const searchParams = new URLSearchParams(window.location.search);
-                value = searchParams ? searchParams.get('username') : undefined
-            }
             return (
                 <FormField theme={theme}>           
                     <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
                     <Input
-                        value={value}
+                        defaultValue={this.state.username}
                         autoFocus
                         placeholder={I18n.get('Enter your username')}
                         theme={theme}

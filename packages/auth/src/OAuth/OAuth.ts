@@ -183,29 +183,33 @@ export default class OAuth {
   }
 
   public async handleAuthResponse(currentUrl?: string) {
-    const urlParams = currentUrl ? {
-      ...(parse(currentUrl).hash || '#').substr(1)
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k, v]) => (acc[k] = v, acc), {}),
-      ...(parse(currentUrl).query || '')
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k, v]) => (acc[k] = v, acc), {})
-    } as any : {};
-    const { error, error_description } = urlParams;
-
-    if (error) {
-      throw new Error(error_description);
-    }
-
-    const state: string = this._validateState(urlParams);
-
-    logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
-    if (this._config.responseType === 'code') {
-      return {...await this._handleCodeFlow(currentUrl), state};
-    } else {
-      return {...await this._handleImplicitFlow(currentUrl), state};
+    try {
+      const urlParams = currentUrl ? {
+        ...(parse(currentUrl).hash || '#').substr(1)
+          .split('&')
+          .map(entry => entry.split('='))
+          .reduce((acc, [k, v]) => (acc[k] = v, acc), {}),
+        ...(parse(currentUrl).query || '')
+          .split('&')
+          .map(entry => entry.split('='))
+          .reduce((acc, [k, v]) => (acc[k] = v, acc), {})
+      } as any : {};
+      const { error, error_description } = urlParams;
+  
+      if (error) {
+        throw new Error(error_description);
+      }
+  
+      const state: string = this._validateState(urlParams);
+  
+      logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
+      if (this._config.responseType === 'code') {
+        return {...await this._handleCodeFlow(currentUrl), state};
+      } else {
+        return {...await this._handleImplicitFlow(currentUrl), state};
+      }
+    } catch (e) {
+      logger.error(`Error handling auth response.`, e);
     }
   }
 
