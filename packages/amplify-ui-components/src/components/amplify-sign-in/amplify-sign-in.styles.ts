@@ -5,7 +5,7 @@ export const forgotPasswordLink = css`
   font-weight: 300;
   font-size: var(--third-font-size);
   color: var(--grey);
-  margin-bottom: 	2.625rem;
+  margin-bottom: 2.625rem;
 `;
 
 export const signInFormFooter = css`

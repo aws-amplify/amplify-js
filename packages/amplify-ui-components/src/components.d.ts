@@ -8,6 +8,7 @@
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   ButtonTypes,
+  fieldIdTextTypes,
   TextFieldTypes,
 } from './common/types';
 import {
@@ -171,6 +172,12 @@ export namespace Components {
     'overrideStyle': boolean;
     'role': string;
   }
+  interface AmplifyPasswordField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldIdText': fieldIdTextTypes;
+  }
   interface AmplifyRadioButton {
     /**
     * If `true`, the radio button is selected.
@@ -226,13 +233,41 @@ export namespace Components {
   }
   interface AmplifySignIn {
     /**
+    * Used for the create account text in sign in component
+    */
+    'createAccountText': string;
+    /**
+    * Based on the type of field e.g. sign-in
+    */
+    'fieldIdText': fieldIdTextTypes;
+    /**
+    * Used for the forgot password text in sign in component
+    */
+    'forgotPasswordText': string;
+    /**
     * Fires when sign in form is submitted
     */
     'handleSubmit': (Event) => void;
     /**
+    * Used for header text in sign in component
+    */
+    'headerText': string;
+    /**
+    * Used for the no account text in sign in component
+    */
+    'noAccountText': string;
+    /**
     * (Optional) Overrides default styling
     */
     'overrideStyle': boolean;
+    /**
+    * Used for the reset password text in sign in component
+    */
+    'resetPasswordText': string;
+    /**
+    * Used for the submit button text in sign in component
+    */
+    'submitButtonText': string;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -291,6 +326,12 @@ export namespace Components {
     * (Required) The text in the tooltip
     */
     'text': string;
+  }
+  interface AmplifyUsernameField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldIdText': fieldIdTextTypes;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -366,6 +407,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
+  var HTMLAmplifyPasswordFieldElement: {
+    prototype: HTMLAmplifyPasswordFieldElement;
+    new (): HTMLAmplifyPasswordFieldElement;
+  };
+
   interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
   var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
@@ -426,6 +473,12 @@ declare global {
     new (): HTMLAmplifyTooltipElement;
   };
 
+  interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
+  var HTMLAmplifyUsernameFieldElement: {
+    prototype: HTMLAmplifyUsernameFieldElement;
+    new (): HTMLAmplifyUsernameFieldElement;
+  };
+
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
   var HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
@@ -443,6 +496,7 @@ declare global {
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
@@ -453,6 +507,7 @@ declare global {
     'amplify-text-field': HTMLAmplifyTextFieldElement;
     'amplify-text-input': HTMLAmplifyTextInputElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
+    'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 }
@@ -611,6 +666,12 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
+  interface AmplifyPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldIdText'?: fieldIdTextTypes;
+  }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
     * If `true`, the radio button is selected.
@@ -666,13 +727,41 @@ declare namespace LocalJSX {
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     /**
+    * Used for the create account text in sign in component
+    */
+    'createAccountText'?: string;
+    /**
+    * Based on the type of field e.g. sign-in
+    */
+    'fieldIdText'?: fieldIdTextTypes;
+    /**
+    * Used for the forgot password text in sign in component
+    */
+    'forgotPasswordText'?: string;
+    /**
     * Fires when sign in form is submitted
     */
     'handleSubmit'?: (Event) => void;
     /**
+    * Used for header text in sign in component
+    */
+    'headerText'?: string;
+    /**
+    * Used for the no account text in sign in component
+    */
+    'noAccountText'?: string;
+    /**
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    /**
+    * Used for the reset password text in sign in component
+    */
+    'resetPasswordText'?: string;
+    /**
+    * Used for the submit button text in sign in component
+    */
+    'submitButtonText'?: string;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -732,6 +821,12 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
+  interface AmplifyUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldIdText'?: fieldIdTextTypes;
+  }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
     'onIconChange'?: (event: CustomEvent<any>) => void;
@@ -749,6 +844,7 @@ declare namespace LocalJSX {
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-password-field': AmplifyPasswordField;
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
@@ -759,6 +855,7 @@ declare namespace LocalJSX {
     'amplify-text-field': AmplifyTextField;
     'amplify-text-input': AmplifyTextInput;
     'amplify-tooltip': AmplifyTooltip;
+    'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
 }

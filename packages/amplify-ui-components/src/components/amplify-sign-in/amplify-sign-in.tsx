@@ -1,19 +1,27 @@
 import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
-import { AmplifyForgotPasswordLinkProps, SignInFormFooterProps } from './amplify-sign-interface';
+import { AmplifyForgotPasswordLinkProps, SignInFormFooterProps } from './amplify-sign-in-interface';
 import { forgotPasswordLink, signInFormFooter } from './amplify-sign-in.styles';
+import { fieldIdTextTypes } from '../../common/types';
+import { SIGN_IN_TEXT } from '../../common/constants';
 
-const SIGN_IN_FORM_HEADER = "Sign into your account";
+const {
+  HEADER_TEXT,
+  FORGOT_PASSWORD_TEXT,
+  RESET_PASSWORD_TEXT,
+  SUBMIT_BUTTON_TEXT,
+  CREATE_ACCOUNT_TEXT,
+  NO_ACCOUNT_TEXT
+} = SIGN_IN_TEXT;
 
 const AmplifyForgotPasswordLink: FC<AmplifyForgotPasswordLinkProps> = ({ forgotPasswordText, resetPasswordText }) => (
   <div class={forgotPasswordLink}>
-    <span>{forgotPasswordText} </span>
-    <span><amplify-link>{resetPasswordText}</amplify-link></span>
+    {forgotPasswordText} <amplify-link>{resetPasswordText}</amplify-link>
   </div>
 );
 
 const SignInFormFooter: FC<SignInFormFooterProps> = ({ submitButtonText, noAccountText, createAccountText, overrideStyle = false }) => (
   <div class={signInFormFooter}>
-    <span>{noAccountText} <amplify-link>{createAccountText}</amplify-link></span>
+    <div>{noAccountText} <amplify-link>{createAccountText}</amplify-link></div>
     <amplify-button type="submit" overrideStyle={overrideStyle}>{submitButtonText}</amplify-button>
   </div>
 );
@@ -27,17 +35,31 @@ export class AmplifySignIn {
   @Prop() handleSubmit: (Event) => void;
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
+  /** Used for header text in sign in component */
+  @Prop() headerText: string = HEADER_TEXT;
+  /** Based on the type of field e.g. sign-in */
+  @Prop() fieldIdText: fieldIdTextTypes = 'sign-in';
+  /** Used for the forgot password text in sign in component */
+  @Prop() forgotPasswordText: string = FORGOT_PASSWORD_TEXT;
+  /** Used for the reset password text in sign in component */
+  @Prop() resetPasswordText: string = RESET_PASSWORD_TEXT;
+  /** Used for the submit button text in sign in component */
+  @Prop() submitButtonText: string = SUBMIT_BUTTON_TEXT;
+  /** Used for the create account text in sign in component */
+  @Prop() createAccountText: string = CREATE_ACCOUNT_TEXT;
+  /** Used for the no account text in sign in component */
+  @Prop() noAccountText: string = NO_ACCOUNT_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
 
   render() {
     return (
-      <amplify-form-section headerText={SIGN_IN_FORM_HEADER} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
-        <amplify-form-field fieldId="sign-in-username" label="Username *" placeholder="Enter your username" />
-        <amplify-form-field fieldId="sign-in-password" label="Password *" placeholder="Enter your password" type="password" />
-        <AmplifyForgotPasswordLink forgotPasswordText="Forgot your password?" resetPasswordText="Reset password" />
+      <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
+        <amplify-username-field fieldIdText={this.fieldIdText} />
+        <amplify-password-field fieldIdText={this.fieldIdText} />
+        <AmplifyForgotPasswordLink forgotPasswordText={this.forgotPasswordText} resetPasswordText={this.resetPasswordText} />
         <div slot="amplify-form-section-footer">
-          <SignInFormFooter  submitButtonText="Sign in" createAccountText="Create account" noAccountText="No account?" />
+          <SignInFormFooter submitButtonText={this.submitButtonText} createAccountText={this.createAccountText} noAccountText={this.noAccountText} />
         </div>
       </amplify-form-section>
     );

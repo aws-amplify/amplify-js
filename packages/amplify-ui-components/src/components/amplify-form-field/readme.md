@@ -24,9 +24,10 @@
 ### Used by
 
  - [amplify-examples](../amplify-examples)
- - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-password-field](../amplify-password-field)
  - [amplify-sign-in-password-field](../amplify-sign-in-password-field)
  - [amplify-sign-in-username-field](../amplify-sign-in-username-field)
+ - [amplify-username-field](../amplify-username-field)
 
 ### Depends on
 
@@ -41,9 +42,10 @@ graph TD;
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
   amplify-examples --> amplify-form-field
-  amplify-sign-in --> amplify-form-field
+  amplify-password-field --> amplify-form-field
   amplify-sign-in-password-field --> amplify-form-field
   amplify-sign-in-username-field --> amplify-form-field
+  amplify-username-field --> amplify-form-field
   style amplify-form-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
