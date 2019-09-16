@@ -23,7 +23,7 @@ describe('ServiceWorker test', () => {
             try {
                 await (serviceWorker.register());
             } catch (e) {
-                expect(e).toBe('an error');
+                expect(e).toEqual('an error');
             }
         });
     });

@@ -17,7 +17,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws_amplify',
+        library: 'aws-amplify',
         libraryTarget: 'umd',
         umdNamedDefine: true,
         devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate
