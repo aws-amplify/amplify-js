@@ -2,8 +2,9 @@ import { css } from 'emotion';
 
 export const forgotPasswordLink = css`
   font-family: var(--font-family);
-  font-weight: lighter;
+  font-weight: 300;
   font-size: 14px;
+  color: var(--grey);
   margin-bottom: 	2.625rem;
 
   a:link {
@@ -24,8 +25,9 @@ export const forgotPasswordLink = css`
 
 export const signInFormFooter = css`
   font-family: var(--font-family);
-  font-weight: lighter;
+  font-weight: 300;
   font-size: 14px;
+  color: var(--grey);
   margin-bottom: 10px;
 
   a:link {
