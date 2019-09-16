@@ -9,7 +9,7 @@
 
 ### Depends on
 
-- [amplify-form-section](../amplify-form-section)
+- [amplify-sign-in](../amplify-sign-in)
 - [amplify-form-field](../amplify-form-field)
 - [amplify-form-field](../amplify-form-field)
 - [amplify-select](../amplify-select)
@@ -24,7 +24,7 @@
 ### Graph
 ```mermaid
 graph TD;
-  amplify-examples --> amplify-form-section
+  amplify-examples --> amplify-sign-in
   amplify-examples --> amplify-form-field
   amplify-examples --> amplify-form-field
   amplify-examples --> amplify-select
@@ -35,6 +35,11 @@ graph TD;
   amplify-examples --> amplify-button
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
+  amplify-sign-in --> amplify-form-section
+  amplify-sign-in --> amplify-form-field
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-field --> amplify-label
