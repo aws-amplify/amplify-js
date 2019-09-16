@@ -48,7 +48,7 @@ const template = `
             class="amplify-form-input-phone-ionic"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
             name="local_phone_number"
-            type="text"
+            type="tel"
             (ionChange)="setLocalPhoneNumber($event.target.value)"
             data-test="${auth.genericAttrs.phoneNumberInput}"
             ></ion-input>
