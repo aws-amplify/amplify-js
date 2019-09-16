@@ -322,18 +322,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         };
 
         const url = `https://pinpoint.${region}.amazonaws.com/v1/apps/${ApplicationId}/events`;
-
         const body = JSON.stringify(EventsRequest);
-
-        const reqOptions: any = {
-            url,
-            method: 'POST',
-            body,
-        };
+        const method = 'POST';
 
         const serviceInfo = { region, service: SERVICE_NAME };
 
-        const requestUrl: string = Signer.signUrlWithBody(reqOptions, accessInfo, serviceInfo, null, 'POST');
+        const requestUrl: string = Signer.signUrl(url, accessInfo, serviceInfo, null, body, method);
 
         const success: boolean = navigator.sendBeacon(requestUrl, body);
 
