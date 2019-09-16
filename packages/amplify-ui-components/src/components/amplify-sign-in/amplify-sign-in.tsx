@@ -24,8 +24,7 @@ const AmplifyForgotPasswordLink: FC<AmplifyForgotPasswordLinkProps> = ({ forgotP
 
 const SignInFormFooter: FC<SignInFormFooterProps> = ({ submitButtonText, noAccountText, createAccountText, overrideStyle = false }) => (
   <div class={signInFormFooter}>
-    <span>{noAccountText} </span>
-    <span><amplify-link>{createAccountText}</amplify-link> </span>
+    <span>{noAccountText} <amplify-link>{createAccountText}</amplify-link></span>
     <amplify-button type="submit" overrideStyle={overrideStyle}>{submitButtonText}</amplify-button>
   </div>
 );
