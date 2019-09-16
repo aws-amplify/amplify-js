@@ -34,8 +34,11 @@ const SignInFormFooter: FC<SignInFormFooterProps> = ({ submitButtonText, noAccou
   shadow: false,
 })
 export class AmplifySignIn {
+  /** Fires when sign in form is submitted */
   @Prop() handleSubmit: (Event) => void;
+  /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: boolean = false;
+  /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
 
   render() {
