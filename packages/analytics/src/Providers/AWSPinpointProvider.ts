@@ -27,7 +27,6 @@ import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider, PromiseHandlers } from '../types';
 import { v1 as uuid } from 'uuid';
-import { RequestParams } from './AmazonPersonalizeHelper/DataType';
 
 const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
     Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
