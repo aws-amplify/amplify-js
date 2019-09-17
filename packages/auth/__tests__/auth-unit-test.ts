@@ -1316,8 +1316,8 @@ describe('auth unit test', () => {
             const errorMessage = new AuthError(AuthErrorTypes.EmptyCode);
 
             expect.assertions(2);
-            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toThrow(AuthError);
-            expect(auth.verifyUserAttributeSubmit(user, {}, null).then()).rejects.toEqual(errorMessage);
+            expect(auth.verifyUserAttributeSubmit(user, 'email', null).then()).rejects.toThrow(AuthError);
+            expect(auth.verifyUserAttributeSubmit(user, 'email', null).then()).rejects.toEqual(errorMessage);
         });
     });
 
@@ -2581,7 +2581,3 @@ describe('auth unit test', () => {
         });
     });
 });
-
-
-    
-
