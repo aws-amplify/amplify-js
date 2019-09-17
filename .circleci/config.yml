@@ -285,7 +285,6 @@ workflows:
               only:
                 - release
                 - master
-                - modularization
           requires:
             - build
       - integ_react_predictions:
@@ -294,7 +293,6 @@ workflows:
               only:
                 - release
                 - master
-                - modularization
           requires:
             - integ_setup
       - integ_react_auth:
@@ -311,7 +309,6 @@ workflows:
               only:
                 - release
                 - master
-                - modularization
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -320,7 +317,6 @@ workflows:
               only:
                 - release
                 - master
-                - modularization
           requires:
             - integ_setup
       - deploy:
@@ -330,7 +326,6 @@ workflows:
                 - release
                 - master
                 - beta
-                - modularization
           requires:
             - unit_test
             - integ_react_predictions
