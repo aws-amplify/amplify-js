@@ -6,17 +6,17 @@ import Picker from '../../src/Widget/Picker';
 describe('PhotoPicker test', () => {
     describe('render test', () => {
         test('render with previewSrc', () => {
-            const wrapper = shallow(<PhotoPicker/>);
+            const wrapper = shallow(<PhotoPicker />);
 
-            wrapper.setState({previewSrc: true});
+            wrapper.setState({ previewSrc: true });
 
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render without previewSrc', () => {
-            const wrapper = shallow(<PhotoPicker/>);
+            const wrapper = shallow(<PhotoPicker />);
 
-            wrapper.setState({previewSrc: false});
+            wrapper.setState({ previewSrc: false });
 
             expect(wrapper).toMatchSnapshot();
         });
@@ -24,10 +24,12 @@ describe('PhotoPicker test', () => {
 
     describe('interaction test', () => {
         test('Picker pick test', () => {
-            const spyon = jest.spyOn(PhotoPicker.prototype, 'handlePick').mockImplementationOnce(() => {
-                return;
-            });
-            const wrapper = shallow(<PhotoPicker/>);
+            const spyon = jest
+                .spyOn(PhotoPicker.prototype, 'handlePick')
+                .mockImplementationOnce(() => {
+                    return;
+                });
+            const wrapper = shallow(<PhotoPicker />);
 
             wrapper.find(Picker).simulate('pick');
 
@@ -37,9 +39,11 @@ describe('PhotoPicker test', () => {
 
     describe('hanldePick test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(FileReader.prototype, 'readAsDataURL')
+                .mockImplementationOnce(() => {
+                    return;
+                });
             const onPickFn = jest.fn();
             const onLoadFn = jest.fn();
 
@@ -47,14 +51,14 @@ describe('PhotoPicker test', () => {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
             const props = {
                 preview: true,
                 onPick: onPickFn,
-                onLoad: onLoadFn
+                onLoad: onLoadFn,
             };
-            const wrapper = shallow(<PhotoPicker/>);
+            const wrapper = shallow(<PhotoPicker />);
             const photoPicker = wrapper.instance();
             wrapper.setProps(props);
 
@@ -67,9 +71,11 @@ describe('PhotoPicker test', () => {
         });
 
         test('with no onPick and no preview', () => {
-            const spyon = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(FileReader.prototype, 'readAsDataURL')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const onLoadFn = jest.fn();
 
@@ -77,13 +83,13 @@ describe('PhotoPicker test', () => {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
             const props = {
                 preview: false,
-                onLoad: onLoadFn
+                onLoad: onLoadFn,
             };
-            const wrapper = shallow(<PhotoPicker/>);
+            const wrapper = shallow(<PhotoPicker />);
             const photoPicker = wrapper.instance();
             wrapper.setProps(props);
 

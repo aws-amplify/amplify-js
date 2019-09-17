@@ -18,10 +18,10 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { facebookSignInButton } from '@aws-amplify/ui';
-import { 
+import {
     SignInButton,
     SignInButtonIcon,
-    SignInButtonContent
+    SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 import Constants from '../common/constants';
 
@@ -46,12 +46,18 @@ export default function withFacebook(Comp) {
 
             fb.getLoginStatus(response => {
                 const payload = {
-                    provider: Constants.FACEBOOK
+                    provider: Constants.FACEBOOK,
                 };
                 try {
-                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                    localStorage.setItem(
+                        Constants.AUTH_SOURCE_KEY,
+                        JSON.stringify(payload)
+                    );
                 } catch (e) {
-                    logger.debug('Failed to cache auth source into localStorage', e);
+                    logger.debug(
+                        'Failed to cache auth source into localStorage',
+                        e
+                    );
                 }
 
                 if (response.status === 'connected') {
@@ -65,7 +71,7 @@ export default function withFacebook(Comp) {
                             this.federatedSignIn(response.authResponse);
                         },
                         {
-                            scope: 'public_profile,email'
+                            scope: 'public_profile,email',
                         }
                     );
                 }
@@ -87,22 +93,31 @@ export default function withFacebook(Comp) {
             fb.api('/me', { fields: 'name,email' }, response => {
                 const user = {
                     name: response.name,
-                    email: response.email
+                    email: response.email,
                 };
-                if (!Auth || 
-                    typeof Auth.federatedSignIn !== 'function' || 
-                    typeof Auth.currentAuthenticatedUser !== 'function') {
-                    throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+                if (
+                    !Auth ||
+                    typeof Auth.federatedSignIn !== 'function' ||
+                    typeof Auth.currentAuthenticatedUser !== 'function'
+                ) {
+                    throw new Error(
+                        'No Auth module found, please ensure @aws-amplify/auth is imported'
+                    );
                 }
-                
-                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
-                .then(credentials => {
-                    return Auth.currentAuthenticatedUser();
-                }).then(authUser => {
-                    if (onStateChange) {
-                        onStateChange('signedIn', authUser);
-                    }
-                });
+
+                Auth.federatedSignIn(
+                    'facebook',
+                    { token: accessToken, expires_at },
+                    user
+                )
+                    .then(credentials => {
+                        return Auth.currentAuthenticatedUser();
+                    })
+                    .then(authUser => {
+                        if (onStateChange) {
+                            onStateChange('signedIn', authUser);
+                        }
+                    });
             });
         }
 
@@ -138,10 +153,10 @@ export default function withFacebook(Comp) {
             const { facebook_app_id } = this.props;
             const fb = window.FB;
             fb.init({
-                appId   : facebook_app_id,
-                cookie  : true,
-                xfbml   : true,
-                version : 'v2.11'
+                appId: facebook_app_id,
+                cookie: true,
+                xfbml: true,
+                version: 'v2.11',
             });
 
             fb.getLoginStatus(response => logger.debug(response));
@@ -165,13 +180,18 @@ export default function withFacebook(Comp) {
         render() {
             const fb = window.FB;
             return (
-                <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} facebookSignOut={this.signOut}/>
+                <Comp
+                    {...this.props}
+                    fb={fb}
+                    facebookSignIn={this.signIn}
+                    facebookSignOut={this.signOut}
+                />
             );
         }
     };
 }
 
-const Button = (props) => (
+const Button = props => (
     <SignInButton
         id={facebookSignInButton}
         onClick={props.facebookSignIn}
@@ -179,7 +199,16 @@ const Button = (props) => (
         variant={'facebookSignInButton'}
     >
         <SignInButtonIcon theme={props.theme || AmplifyTheme}>
-            <svg viewBox='0 0 279 538' xmlns='http://www.w3.org/2000/svg'><g id='Page-1' fill='none' fillRule='evenodd'><g id='Artboard' fill='#FFF'><path d='M82.3409742,538 L82.3409742,292.936652 L0,292.936652 L0,196.990154 L82.2410458,196.990154 L82.2410458,126.4295 C82.2410458,44.575144 132.205229,0 205.252865,0 C240.227794,0 270.306232,2.59855099 279,3.79788222 L279,89.2502322 L228.536175,89.2502322 C188.964542,89.2502322 181.270057,108.139699 181.270057,135.824262 L181.270057,196.89021 L276.202006,196.89021 L263.810888,292.836708 L181.16913,292.836708 L181.16913,538 L82.3409742,538 Z'id='Fill-1' /></g></g></svg>
+            <svg viewBox="0 0 279 538" xmlns="http://www.w3.org/2000/svg">
+                <g id="Page-1" fill="none" fillRule="evenodd">
+                    <g id="Artboard" fill="#FFF">
+                        <path
+                            d="M82.3409742,538 L82.3409742,292.936652 L0,292.936652 L0,196.990154 L82.2410458,196.990154 L82.2410458,126.4295 C82.2410458,44.575144 132.205229,0 205.252865,0 C240.227794,0 270.306232,2.59855099 279,3.79788222 L279,89.2502322 L228.536175,89.2502322 C188.964542,89.2502322 181.270057,108.139699 181.270057,135.824262 L181.270057,196.89021 L276.202006,196.89021 L263.810888,292.836708 L181.16913,292.836708 L181.16913,538 L82.3409742,538 Z"
+                            id="Fill-1"
+                        />
+                    </g>
+                </g>
+            </svg>
         </SignInButtonIcon>
         <SignInButtonContent theme={props.theme || AmplifyTheme}>
             {I18n.get('Sign In with Facebook')}

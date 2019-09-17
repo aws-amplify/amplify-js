@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { 
+import {
     FormField,
     Input,
     InputLabel,
-    SelectInput
- } from '../Amplify-UI/Amplify-UI-Components-React';
+    SelectInput,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import countryDialCodes from './common/country-dial-codes.js';
 import { I18n } from '@aws-amplify/core';
@@ -18,8 +18,8 @@ class PhoneField extends React.Component {
 
         this.inputs = {
             dial_code: this.props.defaultDialCode || '+1',
-            phone_line_number: ''
-        }
+            phone_line_number: '',
+        };
     }
 
     composePhoneNumber(dial_code, phone_line_number) {
@@ -32,36 +32,42 @@ class PhoneField extends React.Component {
 
         if (this.props.onChangeText) {
             this.props.onChangeText(
-                this.composePhoneNumber(this.inputs.dial_code, this.inputs.phone_line_number)
+                this.composePhoneNumber(
+                    this.inputs.dial_code,
+                    this.inputs.phone_line_number
+                )
             );
         }
     }
 
     render() {
-        const { 
-            theme=AmplifyTheme, 
-            required=true, 
-            defaultDialCode='+1', 
-            label='Phone Number',
-            placeholder='Enter your phone number'
+        const {
+            theme = AmplifyTheme,
+            required = true,
+            defaultDialCode = '+1',
+            label = 'Phone Number',
+            placeholder = 'Enter your phone number',
         } = this.props;
-        
+
         return (
             <FormField theme={theme} key="phone_number">
-            {
-                required ? 
-                <InputLabel theme={theme}>{I18n.get(label)} *</InputLabel> :
-                <InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
-            }
+                {required ? (
+                    <InputLabel theme={theme}>{I18n.get(label)} *</InputLabel>
+                ) : (
+                    <InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
+                )}
                 <SelectInput theme={theme}>
-                    <select name="dial_code" defaultValue={defaultDialCode} 
-                    onChange={this.handleInputChange}
-                    data-test={auth.genericAttrs.dialCodeSelect}>
-                        {countryDialCodes.map(dialCode =>
+                    <select
+                        name="dial_code"
+                        defaultValue={defaultDialCode}
+                        onChange={this.handleInputChange}
+                        data-test={auth.genericAttrs.dialCodeSelect}
+                    >
+                        {countryDialCodes.map(dialCode => (
                             <option key={dialCode} value={dialCode}>
                                 {dialCode}
                             </option>
-                        )}
+                        ))}
                     </select>
                     <Input
                         placeholder={I18n.get(placeholder)}
@@ -75,7 +81,7 @@ class PhoneField extends React.Component {
                     />
                 </SelectInput>
             </FormField>
-        )
+        );
     }
 }
 

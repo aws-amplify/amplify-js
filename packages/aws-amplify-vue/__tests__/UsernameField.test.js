@@ -29,11 +29,11 @@ describe('UsernameField', () => {
                 methods: {
                     phoneNumberChanged: mockPhoneNumberChanged,
                     usernameChanged: mockUsernameChanged,
-                    emailChanged: mockEmailChanged
+                    emailChanged: mockEmailChanged,
                 },
                 propsData: {
-                    usernameAttributes: 'email'
-                }
+                    usernameAttributes: 'email',
+                },
             });
         });
 
@@ -44,12 +44,15 @@ describe('UsernameField', () => {
         });
 
         it('only render email input', () => {
-            expect(wrapper.findAll('input').length).toBe(1); 
-            expect(wrapper.findAll(PhoneField).length).toBe(0); 
+            expect(wrapper.findAll('input').length).toBe(1);
+            expect(wrapper.findAll(PhoneField).length).toBe(0);
         });
 
         it('trigger emailChanged when input is filled', () => {
-            wrapper.findAll('input').at(0).trigger('keyup');
+            wrapper
+                .findAll('input')
+                .at(0)
+                .trigger('keyup');
             expect(mockEmailChanged).toBeCalled();
         });
     });
@@ -60,11 +63,11 @@ describe('UsernameField', () => {
                 methods: {
                     phoneNumberChanged: mockPhoneNumberChanged,
                     usernameChanged: mockUsernameChanged,
-                    emailChanged: mockEmailChanged
+                    emailChanged: mockEmailChanged,
                 },
                 propsData: {
-                    usernameAttributes: undefined
-                }
+                    usernameAttributes: undefined,
+                },
             });
         });
 
@@ -75,12 +78,15 @@ describe('UsernameField', () => {
         });
 
         it('only render email input', () => {
-            expect(wrapper.findAll('input').length).toBe(1); 
-            expect(wrapper.findAll(PhoneField).length).toBe(0); 
+            expect(wrapper.findAll('input').length).toBe(1);
+            expect(wrapper.findAll(PhoneField).length).toBe(0);
         });
 
         it('trigger emailChanged when input is filled', () => {
-            wrapper.findAll('input').at(0).trigger('keyup');
+            wrapper
+                .findAll('input')
+                .at(0)
+                .trigger('keyup');
             expect(mockUsernameChanged).toBeCalled();
         });
     });
@@ -91,11 +97,11 @@ describe('UsernameField', () => {
                 methods: {
                     phoneNumberChanged: mockPhoneNumberChanged,
                     usernameChanged: mockUsernameChanged,
-                    emailChanged: mockEmailChanged
+                    emailChanged: mockEmailChanged,
                 },
                 propsData: {
-                    usernameAttributes: 'phone_number'
-                }
+                    usernameAttributes: 'phone_number',
+                },
             });
         });
 
@@ -106,11 +112,14 @@ describe('UsernameField', () => {
         });
 
         it('only render email input', () => {
-            expect(wrapper.findAll(PhoneField).length).toBe(1); 
+            expect(wrapper.findAll(PhoneField).length).toBe(1);
         });
 
         it('trigger emailChanged when input is filled', () => {
-            wrapper.findAll(PhoneField).at(0).vm.$emit('phone-number-changed');
+            wrapper
+                .findAll(PhoneField)
+                .at(0)
+                .vm.$emit('phone-number-changed');
             expect(mockPhoneNumberChanged).toBeCalled();
         });
     });

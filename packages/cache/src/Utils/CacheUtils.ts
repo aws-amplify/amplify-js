@@ -14,8 +14,8 @@
 import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
 import { StorageHelper } from '@aws-amplify/core';
 /**
-* Default cache config
-*/
+ * Default cache config
+ */
 export const defaultConfig: CacheConfig = {
     keyPrefix: 'aws-amplify-cache',
     capacityInBytes: 1048576, // 1MB
@@ -25,7 +25,7 @@ export const defaultConfig: CacheConfig = {
     warningThreshold: 0.8,
     // the storage helper will check if localStorage exists,
     // if not, will use a in-memory object instead
-    storage: new StorageHelper().getStorage()
+    storage: new StorageHelper().getStorage(),
 };
 
 /**
@@ -44,7 +44,7 @@ export function getByteLength(str: string): number {
             ret += 2;
         }
         // trail surrogate
-        if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+        if (charCode >= 0xdc00 && charCode <= 0xdfff) {
             i -= 1;
         }
     }
@@ -72,7 +72,11 @@ export function isInteger(value): boolean {
 }
 
 function _isInteger(value): boolean {
-    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+    return (
+        typeof value === 'number' &&
+        isFinite(value) &&
+        Math.floor(value) === value
+    );
 }
 
 /**

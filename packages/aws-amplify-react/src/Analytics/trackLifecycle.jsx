@@ -20,10 +20,14 @@ const Default_Track_Events = [
     'componentDidUpdate',
     'compomentWillUnmount',
     'compomentDidCatch',
-    'render'
+    'render',
 ];
 
-export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
+export function trackLifecycle(
+    Comp,
+    trackerName,
+    events = Default_Track_Events
+) {
     return class WithTrackLifecycle extends Component {
         constructor(props) {
             super(props);
@@ -38,13 +42,14 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
             if (filtered.length > 0) {
                 if (Analytics && typeof Analytics.record === 'function') {
                     Analytics.record({
-                        name: this.trackerName, 
-                        attributes: { event }
+                        name: this.trackerName,
+                        attributes: { event },
                     });
                 } else {
-                    throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
+                    throw new Error(
+                        'No Analytics module found, please ensure @aws-amplify/analytics is imported'
+                    );
                 }
-                
             }
         }
 

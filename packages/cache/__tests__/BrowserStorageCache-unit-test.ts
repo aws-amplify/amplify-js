@@ -1,14 +1,22 @@
-import { CacheConfig, CacheItem, CacheItemOptions, ICache } from "../src/types/Cache";
-import { defaultConfig, getByteLength } from "../src/Utils/CacheUtils"
-import { default as cache, BrowserStorageCache } from "../src/BrowserStorageCache"
+import {
+    CacheConfig,
+    CacheItem,
+    CacheItemOptions,
+    ICache,
+} from '../src/types/Cache';
+import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
+import {
+    default as cache,
+    BrowserStorageCache,
+} from '../src/BrowserStorageCache';
 
-const config : CacheConfig = {
-    capacityInBytes : 3000,
-    itemMaxSize : 800,
-    defaultTTL : 3000000,
-    defaultPriority : 5,
-    warningThreshold : 0.8,
-    storage: window.localStorage
+const config: CacheConfig = {
+    capacityInBytes: 3000,
+    itemMaxSize: 800,
+    defaultTTL: 3000000,
+    defaultPriority: 5,
+    warningThreshold: 0.8,
+    storage: window.localStorage,
 };
 
 cache.configure(config);
@@ -23,39 +31,41 @@ function getItemSize(value: string): number {
         priority: 5,
         expires: currTime.getTime(),
         type: typeof value,
-        byteSize: 0
+        byteSize: 0,
     };
     ret.byteSize = getByteLength(JSON.stringify(ret));
     ret.byteSize = getByteLength(JSON.stringify(ret));
-    return ret.byteSize
+    return ret.byteSize;
 }
 
 describe('BrowserStorageCache', () => {
     const cache_size = config.capacityInBytes || defaultConfig.capacityInBytes;
     const default_ttl = config.defaultTTL || defaultConfig.defaultTTL;
     const item_max_size = config.itemMaxSize || defaultConfig.itemMaxSize;
-    const warningThreshold = config.warningThreshold || defaultConfig.warningThreshold;
+    const warningThreshold =
+        config.warningThreshold || defaultConfig.warningThreshold;
 
-    let regularItem : string = '';
-    for (let i  = 0; i < item_max_size / 2; i++) {
+    let regularItem: string = '';
+    for (let i = 0; i < item_max_size / 2; i++) {
         regularItem += 'a';
     }
 
-    const regularItemSize : number = getItemSize(regularItem);
-    
-    const maxItemNum : number = Math.floor(cache_size / regularItemSize);
-    const itemsNeedToPop : number = Math.ceil(cache_size
-         * (1 - warningThreshold) / regularItemSize);
+    const regularItemSize: number = getItemSize(regularItem);
+
+    const maxItemNum: number = Math.floor(cache_size / regularItemSize);
+    const itemsNeedToPop: number = Math.ceil(
+        (cache_size * (1 - warningThreshold)) / regularItemSize
+    );
 
     if (maxItemNum > default_ttl) {
         console.error('incorrect paratmeter for test!');
     }
 
-    const spyonConsoleWarn = jest.spyOn(console, "warn");
-    
+    const spyonConsoleWarn = jest.spyOn(console, 'warn');
+
     describe('setItem test', () => {
         test('put string, happy case', () => {
-            const key : string = 'a';
+            const key: string = 'a';
             cache.setItem(key, regularItem);
             const ret = cache.getItem(key);
 
@@ -64,8 +74,8 @@ describe('BrowserStorageCache', () => {
         });
 
         test('put object, happy case', () => {
-            const key : string = 'a';
-            const item : object = {abc: 123, edf: 456};
+            const key: string = 'a';
+            const item: object = { abc: 123, edf: 456 };
 
             cache.setItem(key, item);
             const ret = cache.getItem(key);
@@ -76,8 +86,8 @@ describe('BrowserStorageCache', () => {
         });
 
         test('put number, happy case', () => {
-            const key : string = 'a';
-            const item : number = 1234;
+            const key: string = 'a';
+            const item: number = 1234;
             cache.setItem(key, item);
             const ret = cache.getItem(key);
 
@@ -87,8 +97,8 @@ describe('BrowserStorageCache', () => {
         });
 
         test('put boolean, happy case', () => {
-            const key : string = 'a';
-            const item : boolean = true;
+            const key: string = 'a';
+            const item: boolean = true;
             cache.setItem(key, item);
             const ret = cache.getItem(key);
 
@@ -98,8 +108,8 @@ describe('BrowserStorageCache', () => {
         });
 
         test('abort and output console warning when trying to put one big item', () => {
-            let value : string;
-            let key : string = 'b';
+            let value: string;
+            let key: string = 'b';
             for (let i = 0; i < item_max_size * 2; i++) {
                 value += 'a';
             }
@@ -121,12 +131,12 @@ describe('BrowserStorageCache', () => {
         });
 
         test('abort and output console warning if wrong CacheConfigOptions', () => {
-            cache.setItem('a', 'abc', {priority: 0});
+            cache.setItem('a', 'abc', { priority: 0 });
             expect(spyonConsoleWarn).toBeCalled();
             expect(cache.getItem('a')).toBeNull();
             spyonConsoleWarn.mockReset();
 
-            cache.setItem('a', 'abc', {priority: 6});
+            cache.setItem('a', 'abc', { priority: 6 });
             expect(spyonConsoleWarn).toBeCalled();
             expect(cache.getItem('a')).toBeNull();
             spyonConsoleWarn.mockReset();
@@ -140,9 +150,9 @@ describe('BrowserStorageCache', () => {
         });
 
         test('update the cache content if same key in the cache when setItem invoked', () => {
-            const key : string = 'a';
-            const val1 : string = 'abc';
-            const val2 : string = 'cbaabc';
+            const key: string = 'a';
+            const val1: string = 'abc';
+            const val2: string = 'cbaabc';
 
             cache.setItem(key, val1);
             const cacheSizeBefore: number = cache.getCacheCurSize();
@@ -154,27 +164,27 @@ describe('BrowserStorageCache', () => {
             const ret2 = cache.getItem(key);
             expect(ret2).toBe(val2);
 
-            expect(cacheSizeAfter - cacheSizeBefore).toBe((getItemSize(val2) - getItemSize(val1)));
+            expect(cacheSizeAfter - cacheSizeBefore).toBe(
+                getItemSize(val2) - getItemSize(val1)
+            );
             cache.clear();
         });
 
         test('pop low priority items when cache is full', () => {
-            let key : string;
-            const ttl : number = 300;
+            let key: string;
+            const ttl: number = 300;
             // default priority is 5
-            const priority : number = 4;
+            const priority: number = 4;
 
-            let keysPoped : string[] = [];
+            let keysPoped: string[] = [];
             // fill the cache
             for (let i = 0; i < maxItemNum; i++) {
                 key = i.toString();
                 if (i < itemsNeedToPop) {
                     cache.setItem(key, regularItem);
                     keysPoped.push(key);
-                }
-                else cache.setItem(key, regularItem, {priority: priority});
+                } else cache.setItem(key, regularItem, { priority: priority });
             }
-
 
             for (let i = 0; i < keysPoped.length; i++) {
                 expect(cache.getItem(keysPoped[i])).not.toBeNull();
@@ -182,12 +192,11 @@ describe('BrowserStorageCache', () => {
 
             key = maxItemNum.toString();
             cache.setItem(key, regularItem);
-            
+
             for (let i = 0; i <= maxItemNum; i++) {
                 if (i < keysPoped.length) {
                     expect(cache.getItem(keysPoped[i])).toBeNull();
-                }
-                else {
+                } else {
                     expect(cache.getItem(i.toString())).not.toBeNull();
                 }
             }
@@ -196,9 +205,9 @@ describe('BrowserStorageCache', () => {
         });
 
         test('pop last visited items when same priority', () => {
-            let key : string = 'a';
+            let key: string = 'a';
             const dateSpy = jest.spyOn(Date.prototype, 'getTime');
-            let keysPoped : string[] = [];
+            let keysPoped: string[] = [];
 
             for (let i = 0; i < maxItemNum; i++) {
                 key = i.toString();
@@ -217,19 +226,17 @@ describe('BrowserStorageCache', () => {
             for (let i = 0; i <= maxItemNum; i++) {
                 if (i < keysPoped.length) {
                     expect(cache.getItem(keysPoped[i])).toBeNull();
-                }
-                else {
+                } else {
                     expect(cache.getItem(i.toString())).not.toBeNull();
                 }
             }
-         
+
             cache.clear();
             dateSpy.mockRestore();
-
         });
 
         test('wipe out expired items when cache is full and after that cache has enough room for the item', () => {
-            let key : string = 'a';
+            let key: string = 'a';
             const dateSpy = jest.spyOn(Date.prototype, 'getTime');
 
             for (let i = 0; i < maxItemNum; i++) {
@@ -238,7 +245,9 @@ describe('BrowserStorageCache', () => {
                     return 1434319925275 + i;
                 });
                 // set ttl to maxItemNum/2
-                cache.setItem(key, regularItem, {expires: (1434319925275 + i + maxItemNum / 2)});
+                cache.setItem(key, regularItem, {
+                    expires: 1434319925275 + i + maxItemNum / 2,
+                });
             }
 
             dateSpy.mockImplementation(() => {
@@ -249,10 +258,11 @@ describe('BrowserStorageCache', () => {
             cache.setItem(key, regularItem);
 
             for (let i = 0; i < maxItemNum; i++) {
-                if (i < (maxItemNum % 2? maxItemNum / 2 : maxItemNum / 2 + 1)) {
+                if (
+                    i < (maxItemNum % 2 ? maxItemNum / 2 : maxItemNum / 2 + 1)
+                ) {
                     expect(cache.getItem(i.toString())).toBeNull();
-                }
-                else {
+                } else {
                     expect(cache.getItem(i.toString())).not.toBeNull();
                 }
             }
@@ -263,7 +273,7 @@ describe('BrowserStorageCache', () => {
 
     describe('getItem test', () => {
         test('get item, happy case', () => {
-            let key : string = 'a';
+            let key: string = 'a';
 
             cache.setItem(key, regularItem);
             const ret = cache.getItem(key);
@@ -273,7 +283,7 @@ describe('BrowserStorageCache', () => {
 
         test('item get cleaned if it expires when trying to get it', () => {
             const timeSpy = jest.spyOn(Date.prototype, 'getTime');
-            let key : string = 'a';
+            let key: string = 'a';
 
             for (let i = 0; i < maxItemNum / 2; i++) {
                 key = i.toString();
@@ -291,12 +301,11 @@ describe('BrowserStorageCache', () => {
 
         test('return null when no such key in the cache', () => {
             expect(cache.getItem('abc')).toBeNull();
-
         });
 
         test('item get refreshed when fetched from cache', () => {
-            let key : string = 'a';
-            let keysPoped : string[] = [];
+            let key: string = 'a';
+            let keysPoped: string[] = [];
             const timeSpy = jest.spyOn(Date.prototype, 'getTime');
             for (let i = 0; i < maxItemNum; i++) {
                 key = i.toString();
@@ -315,12 +324,10 @@ describe('BrowserStorageCache', () => {
             key = maxItemNum.toString();
             cache.setItem(key, regularItem);
 
-
             for (let i = 0; i < keysPoped.length; i++) {
                 if (i == 0) {
                     expect(cache.getItem(keysPoped[0])).not.toBeNull();
-                }
-                else {
+                } else {
                     expect(cache.getItem(keysPoped[i])).toBeNull();
                 }
             }
@@ -330,14 +337,17 @@ describe('BrowserStorageCache', () => {
         });
 
         test('execute function if specified when no such key in cache', () => {
-            const execFunc: Function = (data) => {
+            const execFunc: Function = data => {
                 return data * 5;
             };
 
-            expect(cache.getItem('a', { callback: () => { 
-                return execFunc(5); 
-              }
-            })).toBe(25);
+            expect(
+                cache.getItem('a', {
+                    callback: () => {
+                        return execFunc(5);
+                    },
+                })
+            ).toBe(25);
 
             expect(cache.getItem('a')).toBe(25);
 
@@ -357,20 +367,20 @@ describe('BrowserStorageCache', () => {
 
     describe('removeItem test', () => {
         test('remove cache, happy case', () => {
-            let key : string = 'a';
+            let key: string = 'a';
             cache.setItem(key, regularItem);
             expect(cache.getItem(key)).not.toBeNull();
-            
+
             cache.removeItem(key);
             expect(cache.getItem(key)).toBeNull();
 
             cache.clear();
         });
     });
-    
+
     describe('clear test', () => {
         test('clear the cache, including the CurSize key', () => {
-            let key : string = 'a';
+            let key: string = 'a';
             for (let i = 0; i < maxItemNum / 2; i++) {
                 key = i.toString();
                 cache.setItem(key, regularItem);
@@ -393,17 +403,19 @@ describe('BrowserStorageCache', () => {
             expect(cache.getCacheCurSize()).toBe(0);
         });
 
-        test('will not remove other users\' item', () => {
+        test("will not remove other users' item", () => {
             window.sessionStorage.setItem('others-testb', 'abc');
 
             cache.setItem('a', 'abc');
             cache.clear();
 
             expect(cache.getItem('a')).toBeNull();
-            expect(window.sessionStorage.getItem('others-testb')).not.toBeNull();
+            expect(
+                window.sessionStorage.getItem('others-testb')
+            ).not.toBeNull();
         });
     });
-    
+
     describe('getCacheCurSize test', () => {
         test('return 0 if cache is empty', () => {
             expect(cache.getCacheCurSize()).toBe(0);
@@ -414,7 +426,7 @@ describe('BrowserStorageCache', () => {
                 let key = i.toString();
                 cache.setItem(key, regularItem);
             }
-           
+
             expect(cache.getCacheCurSize()).toBe(regularItemSize * maxItemNum);
             cache.clear();
         });
@@ -424,16 +436,18 @@ describe('BrowserStorageCache', () => {
         test('happy case', () => {
             cache.setItem('a', 123);
             cache.setItem('b', 'abc');
-            cache.setItem('c', {'abc': 123});
+            cache.setItem('c', { abc: 123 });
 
-            expect(cache.getAllKeys()).toEqual(['a','b','c']);
+            expect(cache.getAllKeys()).toEqual(['a', 'b', 'c']);
             cache.clear();
         });
     });
 
     describe('createInstance', () => {
         test('happy case, return new instance', () => {
-            expect(cache.createInstance({keyPrefix: 'abc'})).toBeInstanceOf(BrowserStorageCache);
+            expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(
+                BrowserStorageCache
+            );
         });
     });
 });

@@ -16,7 +16,6 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractXRProvider');
 
 export abstract class AbstractXRProvider implements XRProvider {
-
     private _config: ProviderOptions;
 
     constructor(options: ProviderOptions = {}) {
@@ -31,13 +30,21 @@ export abstract class AbstractXRProvider implements XRProvider {
         return this.options;
     }
 
-    getCategory() { return 'XR'; }
+    getCategory() {
+        return 'XR';
+    }
 
     abstract getProviderName(): string;
 
-    protected get options(): ProviderOptions { return { ...this._config }; }
+    protected get options(): ProviderOptions {
+        return { ...this._config };
+    }
 
-    public abstract loadScene(sceneName: string, domElementId: string, sceneOptions: SceneOptions): void;
+    public abstract loadScene(
+        sceneName: string,
+        domElementId: string,
+        sceneOptions: SceneOptions
+    ): void;
     public abstract isSceneLoaded(sceneName: string);
     public abstract getSceneController(sceneName: string): any;
     public abstract isVRCapable(sceneName: string): boolean;
@@ -47,6 +54,10 @@ export abstract class AbstractXRProvider implements XRProvider {
     public abstract exitVR(sceneName: string): void;
     public abstract isMuted(sceneName: string): boolean;
     public abstract setMuted(sceneName: string, muted: boolean): void;
-    public abstract onSceneEvent(sceneName: string, eventName: string, eventHandler: Function): void;
+    public abstract onSceneEvent(
+        sceneName: string,
+        eventName: string,
+        eventHandler: Function
+    ): void;
     public abstract enableAudio(sceneName: string): void;
 }

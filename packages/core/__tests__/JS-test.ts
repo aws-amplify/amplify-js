@@ -3,26 +3,26 @@ import JS from '../src/JS';
 describe('JS test', () => {
     describe('isEmpty test', () => {
         test('happy case', () => {
-            const obj = {a: 'a'};
+            const obj = { a: 'a' };
             expect(JS.isEmpty(obj)).toBe(false);
         });
     });
 
     describe('sortByField test', () => {
         test('happy case with ascending order', () => {
-            const arr = [{a: 2}, {a: 3}, {a: 1}];
+            const arr = [{ a: 2 }, { a: 3 }, { a: 1 }];
 
             JS.sortByField(arr, 'a', null);
 
-            expect(arr).toEqual([{a: 1}, {a: 2}, {a: 3}]);
+            expect(arr).toEqual([{ a: 1 }, { a: 2 }, { a: 3 }]);
         });
 
         test('happy case with descending order', () => {
-            const arr = [{a: 2}, {a: 3}, {a: 1}];
+            const arr = [{ a: 2 }, { a: 3 }, { a: 1 }];
 
             JS.sortByField(arr, 'a', 'desc');
 
-            expect(arr).toEqual([{a: 3}, {a: 2}, {a: 1}]);
+            expect(arr).toEqual([{ a: 3 }, { a: 2 }, { a: 1 }]);
         });
 
         test('no list do nothing', () => {
@@ -30,39 +30,39 @@ describe('JS test', () => {
         });
 
         test('undefined means less', () => {
-            const arr = [{a: 2}, {}, {a: 1}, {}];
+            const arr = [{ a: 2 }, {}, { a: 1 }, {}];
 
             JS.sortByField(arr, 'a', 'desc');
 
-            expect(arr).toEqual([{a: 2}, {a: 1}, {}, {}]);
+            expect(arr).toEqual([{ a: 2 }, { a: 1 }, {}, {}]);
         });
 
         test('equal no change', () => {
-            const arr = [{a: 1, b: 1}, {a: 1, b: 2}];
+            const arr = [{ a: 1, b: 1 }, { a: 1, b: 2 }];
 
             JS.sortByField(arr, 'a', 'desc');
 
-            expect(arr).toEqual([{a: 1, b: 1}, {a: 1, b: 2}]);
+            expect(arr).toEqual([{ a: 1, b: 1 }, { a: 1, b: 2 }]);
         });
     });
 
     describe('objectLessAttributes test', () => {
         test('happy case with nothing', () => {
-            const obj = {a: 3, b: 2};
+            const obj = { a: 3, b: 2 };
 
-            expect(JS.objectLessAttributes(obj)).toEqual({a: 3, b: 2});
+            expect(JS.objectLessAttributes(obj)).toEqual({ a: 3, b: 2 });
         });
 
         test('happy case with string', () => {
-            const obj = {a: 3, b: 2};
+            const obj = { a: 3, b: 2 };
 
-            expect(JS.objectLessAttributes(obj, 'a')).toEqual({b: 2});
+            expect(JS.objectLessAttributes(obj, 'a')).toEqual({ b: 2 });
         });
 
         test('happy case with array', () => {
-            const obj = {a: 3, b: 2, c: 1};
+            const obj = { a: 3, b: 2, c: 1 };
 
-            expect(JS.objectLessAttributes(obj, ['a', 'b'])).toEqual({c: 1});
+            expect(JS.objectLessAttributes(obj, ['a', 'b'])).toEqual({ c: 1 });
         });
     });
 
@@ -72,7 +72,9 @@ describe('JS test', () => {
         });
 
         test('unknown file type is application/octet-stream', () => {
-            expect(JS.filenameToContentType('a.xyz')).toEqual('application/octet-stream');
+            expect(JS.filenameToContentType('a.xyz')).toEqual(
+                'application/octet-stream'
+            );
         });
 
         test('unknown file type is default', () => {
@@ -103,23 +105,23 @@ describe('JS test', () => {
             const obj = {
                 A: {
                     A1: {
-                        Val: 'val'
-                    }
+                        Val: 'val',
+                    },
                 },
                 B: {
-                    Val: 'val'
-                }
-            }
+                    Val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToLowerCase(obj)).toEqual({
-                "a": {
-                    "a1": {
-                        "val": "val"
-                    }
-                }, 
-                "b": {
-                    "val": "val"
-                }
+                a: {
+                    a1: {
+                        val: 'val',
+                    },
+                },
+                b: {
+                    val: 'val',
+                },
             });
         });
 
@@ -127,23 +129,23 @@ describe('JS test', () => {
             const obj = {
                 A: {
                     A1: {
-                        Val: 'val'
-                    }
+                        Val: 'val',
+                    },
                 },
                 B: {
-                    Val: 'val'
-                }
-            }
+                    Val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToLowerCase(obj, ['A'])).toEqual({
-                "A": {
-                    "a1": {
-                        "val": "val"
-                    }
-                }, 
-                "b": {
-                    "val": "val"
-                }
+                A: {
+                    a1: {
+                        val: 'val',
+                    },
+                },
+                b: {
+                    val: 'val',
+                },
             });
         });
 
@@ -151,23 +153,23 @@ describe('JS test', () => {
             const obj = {
                 A: {
                     A1: {
-                        Val: 'val'
-                    }
+                        Val: 'val',
+                    },
                 },
                 B: {
-                    Val: 'val'
-                }
-            }
+                    Val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToLowerCase(obj, [], ['A'])).toEqual({
-                "a": {
-                    "A1": {
-                        "Val": "val"
-                    }
-                }, 
-                "b": {
-                    "val": "val"
-                }
+                a: {
+                    A1: {
+                        Val: 'val',
+                    },
+                },
+                b: {
+                    val: 'val',
+                },
             });
         });
     });
@@ -177,23 +179,23 @@ describe('JS test', () => {
             const obj = {
                 a: {
                     a1: {
-                        val: 'val'
-                    }
+                        val: 'val',
+                    },
                 },
                 b: {
-                    val: 'val'
-                }
-            }
+                    val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToUpperCase(obj)).toEqual({
-                "A": {
-                    "A1": {
-                        "Val": "val"
-                    }
-                }, 
-                "B": {
-                    "Val": "val"
-                }
+                A: {
+                    A1: {
+                        Val: 'val',
+                    },
+                },
+                B: {
+                    Val: 'val',
+                },
             });
         });
 
@@ -201,23 +203,23 @@ describe('JS test', () => {
             const obj = {
                 a: {
                     a1: {
-                        val: 'val'
-                    }
+                        val: 'val',
+                    },
                 },
                 b: {
-                    val: 'val'
-                }
-            }
+                    val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToUpperCase(obj, ['a'])).toEqual({
-                "a": {
-                    "A1": {
-                        "Val": "val"
-                    }
-                }, 
-                "B": {
-                    "Val": "val"
-                }
+                a: {
+                    A1: {
+                        Val: 'val',
+                    },
+                },
+                B: {
+                    Val: 'val',
+                },
             });
         });
 
@@ -225,30 +227,30 @@ describe('JS test', () => {
             const obj = {
                 a: {
                     a1: {
-                        val: 'val'
-                    }
+                        val: 'val',
+                    },
                 },
                 b: {
-                    val: 'val'
-                }
-            }
+                    val: 'val',
+                },
+            };
 
             expect(JS.transferKeyToUpperCase(obj, [], ['a'])).toEqual({
-                "A": {
-                    "a1": {
-                        "val": "val"
-                    }
-                }, 
-                "B": {
-                    "Val": "val"
-                }
+                A: {
+                    a1: {
+                        val: 'val',
+                    },
+                },
+                B: {
+                    Val: 'val',
+                },
             });
-        })
+        });
     });
 
     describe('isStrictObject test', () => {
         test('return true if the object is strict', () => {
-            expect(JS.isStrictObject({a: '1'})).toBeTruthy();
+            expect(JS.isStrictObject({ a: '1' })).toBeTruthy();
         });
 
         test('return false if the object is null or array', () => {
@@ -264,7 +266,7 @@ describe('JS test', () => {
             expect(JS.isStrictObject(new Number(1))).toBeFalsy();
             expect(JS.isStrictObject(new Boolean(true))).toBeFalsy();
             expect(JS.isStrictObject(new String('string'))).toBeFalsy();
-            expect(JS.isStrictObject(function(){})).toBeFalsy();
+            expect(JS.isStrictObject(function() {})).toBeFalsy();
         });
     });
 });

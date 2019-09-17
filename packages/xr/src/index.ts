@@ -30,6 +30,6 @@ export default XR;
 
 export * from './Providers/SumerianProvider';
 
-export {XRClass};
+export { XRClass };
 
 export * from './Errors';

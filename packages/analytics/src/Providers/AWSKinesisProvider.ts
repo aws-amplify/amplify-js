@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import * as Kinesis from 'aws-sdk/clients/kinesis';
 import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
@@ -21,11 +21,10 @@ const logger = new Logger('AWSKineisProvider');
 // events buffer
 const BUFFER_SIZE = 1000;
 const FLUSH_SIZE = 100;
-const FLUSH_INTERVAL = 5*1000; // 5s
+const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
 export default class AWSKinesisProvider implements AnalyticsProvider {
-
     private _config;
     private _kinesis;
     private _buffer;
@@ -33,16 +32,17 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
     constructor(config?) {
         this._buffer = [];
-        this._config = config? config : {};
+        this._config = config ? config : {};
         this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
         this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
-        this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
+        this._config.flushInterval =
+            this._config.flushInterval || FLUSH_INTERVAL;
         this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
 
         // events batch
         const that = this;
 
-         // flush event buffer
+        // flush event buffer
         this._setupTimer();
     }
 
@@ -52,18 +52,18 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         }
         const { flushSize, flushInterval } = this._config;
         const that = this;
-        this._timer = setInterval(
-            () => {
-                const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
-                const events = [];
-                for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    events.push(params);
-                } 
-                that._sendFromBuffer(events);
-            },
-            flushInterval
-        );
+        this._timer = setInterval(() => {
+            const size =
+                this._buffer.length < flushSize
+                    ? this._buffer.length
+                    : flushSize;
+            const events = [];
+            for (let i = 0; i < size; i += 1) {
+                const params = this._buffer.shift();
+                events.push(params);
+            }
+            that._sendFromBuffer(events);
+        }, flushInterval);
     }
 
     /**
@@ -86,7 +86,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
      */
     public configure(config): object {
         logger.debug('configure Analytics', config);
-        const conf = config? config : {};
+        const conf = config ? config : {};
         this._config = Object.assign({}, this._config, conf);
 
         this._setupTimer();
@@ -138,8 +138,13 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
                 group.push(events[i]);
                 preCred = cred;
             } else {
-                if (cred.sessionToken === preCred.sessionToken && cred.identityId === preCred.identityId) {
-                    logger.debug('no change for cred, put event in the same group');
+                if (
+                    cred.sessionToken === preCred.sessionToken &&
+                    cred.identityId === preCred.identityId
+                ) {
+                    logger.debug(
+                        'no change for cred, put event in the same group'
+                    );
                     group.push(events[i]);
                 } else {
                     eventsGroups.push(group);
@@ -178,20 +183,28 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
             }
 
             const Data = JSON.stringify(evt.data);
-            const PartitionKey = evt.partitionKey || ('partition-' + credentials.identityId);
+            const PartitionKey =
+                evt.partitionKey || 'partition-' + credentials.identityId;
             const record = { Data, PartitionKey };
             records[streamName].push(record);
         });
 
         Object.keys(records).map(streamName => {
-            logger.debug('putting records to kinesis with records', records[streamName]);
+            logger.debug(
+                'putting records to kinesis with records',
+                records[streamName]
+            );
             this._kinesis.putRecords(
                 {
                     Records: records[streamName],
-                    StreamName: streamName
-                }, 
-                (err, data)=> {
-                    if (err) logger.debug('Failed to upload records to Kinesis', err);
+                    StreamName: streamName,
+                },
+                (err, data) => {
+                    if (err)
+                        logger.debug(
+                            'Failed to upload records to Kinesis',
+                            err
+                        );
                     else logger.debug('Upload records to stream', streamName);
                 }
             );
@@ -201,11 +214,16 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
     private _init(config, credentials) {
         logger.debug('init clients');
 
-        if (this._kinesis
-            && this._config.credentials 
-            && this._config.credentials.sessionToken === credentials.sessionToken
-            && this._config.credentials.identityId === credentials.identityId) {
-            logger.debug('no change for analytics config, directly return from init');
+        if (
+            this._kinesis &&
+            this._config.credentials &&
+            this._config.credentials.sessionToken ===
+                credentials.sessionToken &&
+            this._config.credentials.identityId === credentials.identityId
+        ) {
+            logger.debug(
+                'no change for analytics config, directly return from init'
+            );
             return true;
         }
 
@@ -215,7 +233,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         this._kinesis = new Kinesis({
             apiVersion: '2013-12-02',
             region,
-            credentials
+            credentials,
         });
 
         return true;
@@ -230,7 +248,10 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return null;
-                logger.debug('set credentials for analytics', that._config.credentials);
+                logger.debug(
+                    'set credentials for analytics',
+                    that._config.credentials
+                );
                 return Credentials.shear(credentials);
             })
             .catch(err => {

@@ -1,9 +1,14 @@
 import Auth from '@aws-amplify/auth';
 import * as React from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
-import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import {
+    Header,
+    Footer,
+    Input,
+    Button,
+    Link,
+} from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
-
 
 describe('SelectMFAType test', () => {
     describe('render test', () => {
@@ -11,23 +16,23 @@ describe('SelectMFAType test', () => {
             const MFATypes = {
                 SMS: true,
                 TOTP: true,
-                Optional: true
+                Optional: true,
             };
-            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
+            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes} />);
 
-            wrapper.setState({TOTPSetup: false});
-            wrapper.setState({selectMessage: 'message'});
+            wrapper.setState({ TOTPSetup: false });
+            wrapper.setState({ selectMessage: 'message' });
 
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render without totpsetup and with less than 2 mfa types', () => {
             const MFATypes = {
-                SMS: true
+                SMS: true,
             };
-            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
+            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes} />);
 
-            wrapper.setState({TOTPSetup: false});
+            wrapper.setState({ TOTPSetup: false });
 
             expect(wrapper).toMatchSnapshot();
         });
@@ -35,11 +40,11 @@ describe('SelectMFAType test', () => {
         test('render without totpsetup and with 2 mfa types', () => {
             const MFATypes = {
                 SMS: true,
-                TOTP: true
+                TOTP: true,
             };
-            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
+            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes} />);
 
-            wrapper.setState({TOTPSetup: false});
+            wrapper.setState({ TOTPSetup: false });
 
             expect(wrapper).toMatchSnapshot();
         });
@@ -48,12 +53,12 @@ describe('SelectMFAType test', () => {
             const MFATypes = {
                 SMS: true,
                 TOTP: true,
-                Optional: true
+                Optional: true,
             };
-            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
+            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes} />);
 
-            wrapper.setState({TOTPSetup: true});
-            wrapper.setState({selectMessage: 'message'});
+            wrapper.setState({ TOTPSetup: true });
+            wrapper.setState({ selectMessage: 'message' });
 
             expect(wrapper).toMatchSnapshot();
         });
@@ -61,15 +66,17 @@ describe('SelectMFAType test', () => {
 
     describe('interaction test', () => {
         test('verify button click test', () => {
-            const spyon = jest.spyOn(SelectMFAType.prototype, 'verify').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(SelectMFAType.prototype, 'verify')
+                .mockImplementationOnce(() => {
+                    return;
+                });
             const MFATypes = {
                 SMS: true,
                 TOTP: true,
-                Optional: true
+                Optional: true,
             };
-            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
+            const wrapper = shallow(<SelectMFAType MFATypes={MFATypes} />);
 
             wrapper.find(Button).simulate('click');
 
@@ -79,16 +86,16 @@ describe('SelectMFAType test', () => {
 
     describe('hanldeInputChange test', () => {
         test('happy case', () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
-            
+
             const evt = {
                 target: {
                     name: 'name',
                     value: 'value',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
             instance.handleInputChange(evt);
         });
@@ -96,25 +103,27 @@ describe('SelectMFAType test', () => {
 
     describe('verify test', () => {
         test('happy case with SMS', async () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
-            
+
             const evt = {
                 target: {
                     name: 'MFAType',
                     value: 'SMS',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('data');
+            const spyon = jest
+                .spyOn(Auth, 'setPreferredMFA')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('data');
+                    });
                 });
-            });
-            
+
             await instance.verify();
             expect(spyon).toBeCalled();
 
@@ -122,25 +131,27 @@ describe('SelectMFAType test', () => {
         });
 
         test('happy case with SMS', async () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
-            
+
             const evt = {
                 target: {
                     name: 'MFAType',
                     value: 'NOMFA',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('data');
+            const spyon = jest
+                .spyOn(Auth, 'setPreferredMFA')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('data');
+                    });
                 });
-            });
-            
+
             await instance.verify();
             expect(spyon).toBeCalled();
 
@@ -148,15 +159,17 @@ describe('SelectMFAType test', () => {
         });
 
         test('happy case without inputs', async () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('data');
+            const spyon = jest
+                .spyOn(Auth, 'setPreferredMFA')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('data');
+                    });
                 });
-            });
-            
+
             await instance.verify();
             expect(spyon).not.toBeCalled();
 
@@ -164,27 +177,29 @@ describe('SelectMFAType test', () => {
         });
 
         test('happy case with TOTP not setup yet', async () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
-            
+
             const evt = {
                 target: {
                     name: 'MFAType',
                     value: 'TOTP',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej({
-                        message: 'User has not set up software token mfa'
+            const spyon = jest
+                .spyOn(Auth, 'setPreferredMFA')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        rej({
+                            message: 'User has not set up software token mfa',
+                        });
                     });
                 });
-            });
-            
+
             await instance.verify();
             expect(spyon).toBeCalled();
 
@@ -192,25 +207,27 @@ describe('SelectMFAType test', () => {
         });
 
         test('error case', async () => {
-            const wrapper = shallow(<SelectMFAType/>);
+            const wrapper = shallow(<SelectMFAType />);
             const instance = wrapper.instance();
-            
+
             const evt = {
                 target: {
                     name: 'MFAType',
                     value: 'SMS',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
+            const spyon = jest
+                .spyOn(Auth, 'setPreferredMFA')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        rej('err');
+                    });
                 });
-            });
-            
+
             await instance.verify();
             expect(spyon).toBeCalled();
 
@@ -218,5 +235,3 @@ describe('SelectMFAType test', () => {
         });
     });
 });
-
-

@@ -11,78 +11,92 @@ const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
 describe('S3Album test', () => {
     describe('render test', () => {
         test('render correctly if has images and texts', () => {
-            const wrapper = shallow(<S3Album picker/>);
+            const wrapper = shallow(<S3Album picker />);
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
             expect(wrapper).toMatchSnapshot();
         });
     });
 
     describe('interaction test', () => {
         test('S3Text onclick', () => {
-            const spyon = jest.spyOn(S3Album.prototype, 'handleClick')
+            const spyon = jest
+                .spyOn(S3Album.prototype, 'handleClick')
                 .mockImplementationOnce(() => {
                     return;
                 });
 
-            const wrapper = shallow(<S3Album picker/>);
+            const wrapper = shallow(<S3Album picker />);
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
 
             wrapper.find(S3Text).simulate('click');
 
             expect(spyon).toBeCalledWith({
                 path: 'path',
                 key: 'imageKey',
-                contentType: 'application/json'
+                contentType: 'application/json',
             });
 
             spyon.mockClear();
         });
 
         test('S3Image onclick', () => {
-            const spyon = jest.spyOn(S3Album.prototype, 'handleClick')
+            const spyon = jest
+                .spyOn(S3Album.prototype, 'handleClick')
                 .mockImplementationOnce(() => {
                     return;
                 });
 
-            const wrapper = shallow(<S3Album picker/>);
+            const wrapper = shallow(<S3Album picker />);
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
 
             wrapper.find(S3Image).simulate('click');
 
             expect(spyon).toBeCalledWith({
                 path: 'path',
                 key: 'textKey',
-                contentType: 'image'
+                contentType: 'image',
             });
 
             spyon.mockClear();
@@ -92,17 +106,17 @@ describe('S3Album test', () => {
     describe('getKey test', () => {
         test('happy case with string type', () => {
             const props = {
-                fileToKey: 'fileToKey'
+                fileToKey: 'fileToKey',
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
             const file = {
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
             expect(s3Album.getKey(file)).toBe('fileToKey');
@@ -112,17 +126,17 @@ describe('S3Album test', () => {
             const mockFn = jest.fn();
 
             const props = {
-                fileToKey: mockFn
+                fileToKey: mockFn,
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
             const file = {
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
             s3Album.getKey(file);
@@ -130,28 +144,28 @@ describe('S3Album test', () => {
             expect(mockFn).toBeCalledWith({
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             });
         });
 
         test('happy case with object type', () => {
             const props = {
                 fileToKey: {
-                    attr: 'attr'
-                }
+                    attr: 'attr',
+                },
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
             const file = {
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
-            expect(s3Album.getKey(file)).toBe("%7B%22attr%22:%22attr%22%7D");
+            expect(s3Album.getKey(file)).toBe('%7B%22attr%22:%22attr%22%7D');
         });
     });
 
@@ -160,18 +174,22 @@ describe('S3Album test', () => {
         const onLoad = jest.fn();
         const onError = jest.fn();
 
-        test('happy case with item updated', async  () => {
+        test('happy case with item updated', async () => {
             const data = {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
-            const spyon = jest.spyOn(S3Album.prototype, 'getKey')
-                .mockImplementationOnce(() => { return ''; });
+            const spyon = jest
+                .spyOn(S3Album.prototype, 'getKey')
+                .mockImplementationOnce(() => {
+                    return '';
+                });
 
-            const spyon2 = jest.spyOn(Storage, 'put')
+            const spyon2 = jest
+                .spyOn(Storage, 'put')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res('data');
@@ -182,25 +200,32 @@ describe('S3Album test', () => {
                 onPick,
                 onLoad,
                 onError,
-                path: 'path'
+                path: 'path',
             };
             const state = {
-                items: [{key: 'path'}]
+                items: [{ key: 'path' }],
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
             wrapper.setState(state);
-            
 
             await s3Album.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2)
-                .toBeCalledWith('path', 'file',{"contentType": "type", "level": "public", "track": undefined});
-        
+            expect(spyon).toBeCalledWith({
+                file: 'file',
+                name: 'name',
+                size: 'size',
+                type: 'type',
+            });
+            expect(spyon2).toBeCalledWith('path', 'file', {
+                contentType: 'type',
+                level: 'public',
+                track: undefined,
+            });
+
             spyon.mockClear();
             spyon2.mockClear();
             onPick.mockClear();
@@ -208,49 +233,64 @@ describe('S3Album test', () => {
             onError.mockClear();
         });
 
-        test('happy case with no item updated', async  () => {
+        test('happy case with no item updated', async () => {
             const data = {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
-            const spyon = jest.spyOn(S3Album.prototype, 'getKey')
-                .mockImplementationOnce(() => { return ''; });
+            const spyon = jest
+                .spyOn(S3Album.prototype, 'getKey')
+                .mockImplementationOnce(() => {
+                    return '';
+                });
 
-            const spyon2 = jest.spyOn(Storage, 'put')
+            const spyon2 = jest
+                .spyOn(Storage, 'put')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res('data');
                     });
                 });
 
-            const spyon3 = jest.spyOn(S3Album.prototype, 'marshal')
-                .mockImplementationOnce(() => { return; });
+            const spyon3 = jest
+                .spyOn(S3Album.prototype, 'marshal')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const props = {
                 onPick,
                 onLoad,
                 onError,
-                path: 'path'
+                path: 'path',
             };
 
             const state = {
-                items: [{key: 'path2'}]
+                items: [{ key: 'path2' }],
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
             wrapper.setState(state);
 
             await s3Album.handlePick(data);
 
-            expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2)
-                .toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
-        
+            expect(spyon).toBeCalledWith({
+                file: 'file',
+                name: 'name',
+                size: 'size',
+                type: 'type',
+            });
+            expect(spyon2).toBeCalledWith('path', 'file', {
+                contentType: 'type',
+                level: 'public',
+                track: undefined,
+            });
+
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
@@ -259,18 +299,22 @@ describe('S3Album test', () => {
             onError.mockClear();
         });
 
-        test('Storage put error', async  () => {
+        test('Storage put error', async () => {
             const data = {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
 
-            const spyon = jest.spyOn(S3Album.prototype, 'getKey')
-                .mockImplementationOnce(() => { return ''; });
+            const spyon = jest
+                .spyOn(S3Album.prototype, 'getKey')
+                .mockImplementationOnce(() => {
+                    return '';
+                });
 
-            const spyon2 = jest.spyOn(Storage, 'put')
+            const spyon2 = jest
+                .spyOn(Storage, 'put')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -281,13 +325,13 @@ describe('S3Album test', () => {
                 onPick,
                 onLoad,
                 onError,
-                path: 'path'
+                path: 'path',
             };
             const state = {
-                items: [{key: 'path'}]
+                items: [{ key: 'path' }],
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
             wrapper.setState(state);
@@ -295,10 +339,18 @@ describe('S3Album test', () => {
             await s3Album.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2)
-                .toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
-        
+            expect(spyon).toBeCalledWith({
+                file: 'file',
+                name: 'name',
+                size: 'size',
+                type: 'type',
+            });
+            expect(spyon2).toBeCalledWith('path', 'file', {
+                contentType: 'type',
+                level: 'public',
+                track: undefined,
+            });
+
             spyon.mockClear();
             spyon2.mockClear();
             onPick.mockClear();
@@ -312,42 +364,71 @@ describe('S3Album test', () => {
         const onSelect = jest.fn();
 
         test('happy case', () => {
-            const wrapper = shallow(<S3Album picker onClickItem={onClickItem} onSelect={onSelect} select/>);
+            const wrapper = shallow(
+                <S3Album
+                    picker
+                    onClickItem={onClickItem}
+                    onSelect={onSelect}
+                    select
+                />
+            );
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
 
             wrapper.find(S3Text).simulate('click');
-            
+
             expect(onSelect).toBeCalledWith(
-                {"contentType": "application/json", "key": "imageKey", "path": "path", "selected": true},
-                [{"contentType": "application/json", "key": "imageKey", "path": "path", "selected": true}]
+                {
+                    contentType: 'application/json',
+                    key: 'imageKey',
+                    path: 'path',
+                    selected: true,
+                },
+                [
+                    {
+                        contentType: 'application/json',
+                        key: 'imageKey',
+                        path: 'path',
+                        selected: true,
+                    },
+                ]
             );
 
             onSelect.mockClear();
         });
 
         test('no select props', () => {
-            const wrapper = shallow(<S3Album picker onClickItem={onClickItem} onSelect={onSelect}/>);
+            const wrapper = shallow(
+                <S3Album picker onClickItem={onClickItem} onSelect={onSelect} />
+            );
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
 
             wrapper.find(S3Text).simulate('click');
 
@@ -357,18 +438,24 @@ describe('S3Album test', () => {
         });
 
         test('no onselect func', () => {
-            const wrapper = shallow(<S3Album picker onClickItem={onClickItem} select/>);
+            const wrapper = shallow(
+                <S3Album picker onClickItem={onClickItem} select />
+            );
 
-            wrapper.setState({items: [{
-                path: 'path',
-                key: 'imageKey',
-                contentType: 'application/json'
-            },
-            {
-                path: 'path',
-                key: 'textKey',
-                contentType: 'image'
-            }]});
+            wrapper.setState({
+                items: [
+                    {
+                        path: 'path',
+                        key: 'imageKey',
+                        contentType: 'application/json',
+                    },
+                    {
+                        path: 'path',
+                        key: 'textKey',
+                        contentType: 'image',
+                    },
+                ],
+            });
 
             wrapper.find(S3Text).simulate('click');
 
@@ -384,27 +471,32 @@ describe('S3Album test', () => {
     describe('list test', () => {
         test('happy case', async () => {
             // this is for component did mount
-            const spyon = jest.spyOn(Storage, 'list')
+            const spyon = jest
+                .spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res('data');
                     });
                 });
 
-            const spyon2 = jest.spyOn(S3Album.prototype, 'marshal')
-                .mockImplementationOnce(() => { return; });
-            
+            const spyon2 = jest
+                .spyOn(S3Album.prototype, 'marshal')
+                .mockImplementationOnce(() => {
+                    return;
+                });
+
             const props = {
                 path: 'path',
                 level: 'public',
-                identityId: 'identityId'
+                identityId: 'identityId',
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
-            const spyon3 = jest.spyOn(Storage, 'list')
+            const spyon3 = jest
+                .spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res('data');
@@ -413,15 +505,19 @@ describe('S3Album test', () => {
 
             await s3Album.list();
 
-            expect(spyon3).toBeCalledWith('path', {level: 'public',identityId: 'identityId'});
+            expect(spyon3).toBeCalledWith('path', {
+                level: 'public',
+                identityId: 'identityId',
+            });
 
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
-        }); 
+        });
 
         test('storage list error', async () => {
-            const spyon = jest.spyOn(Storage, 'list')
+            const spyon = jest
+                .spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res('data');
@@ -430,14 +526,15 @@ describe('S3Album test', () => {
 
             const props = {
                 path: 'path',
-                level: 'public'
+                level: 'public',
             };
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
-            const spyon2 = jest.spyOn(Storage, 'list')
+            const spyon2 = jest
+                .spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -453,13 +550,15 @@ describe('S3Album test', () => {
 
     describe('contentType test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(JS, 'filenameToContentType').mockReturnValueOnce();
+            const spyon = jest
+                .spyOn(JS, 'filenameToContentType')
+                .mockReturnValueOnce();
 
-            const wrapper = shallow(<S3Album/>);
+            const wrapper = shallow(<S3Album />);
             const s3Album = wrapper.instance();
 
             s3Album.contentType({
-                key: 'key'
+                key: 'key',
             });
 
             expect(spyon).toBeCalledWith('key', 'image/*');
@@ -470,18 +569,21 @@ describe('S3Album test', () => {
 
     describe('marshal test', () => {
         test('happy case with contentType string', async () => {
-            const spyon = jest.spyOn(Storage, 'list').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res([{data: 'data', key: 'data-1'}]);
+            const spyon = jest
+                .spyOn(Storage, 'list')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res([{ data: 'data', key: 'data-1' }]);
+                    });
                 });
-            });
-            const wrapper = await mount(<S3Album contentType='string'/>);
+            const wrapper = await mount(<S3Album contentType="string" />);
 
-            expect(wrapper.state('items')).toEqual([{"contentType": "string", "data": "data", "key": "data-1"}]);
+            expect(wrapper.state('items')).toEqual([
+                { contentType: 'string', data: 'data', key: 'data-1' },
+            ]);
 
             spyon.mockClear();
             await wrapper.unmount();
         });
-           
     });
 });

@@ -1,6 +1,6 @@
 import { calcKey } from '../../src/Storage/Common';
 
-window.encodeURI = (name) => {
+window.encodeURI = name => {
     return name;
 };
 
@@ -9,7 +9,7 @@ describe('Storage Common test', () => {
         const file = {
             name: 'name',
             size: 'size',
-            type: 'type'
+            type: 'type',
         };
 
         test('happy case when fileToKey is a string', () => {
@@ -17,7 +17,7 @@ describe('Storage Common test', () => {
         });
 
         test('happy case when fileToKey is a function', () => {
-            const mockFn = jest.fn().mockImplementation((obj) => {
+            const mockFn = jest.fn().mockImplementation(obj => {
                 let str = '';
                 for (const k in obj) {
                     str += obj[k] + ' ';
@@ -29,13 +29,13 @@ describe('Storage Common test', () => {
         });
 
         test('happy case when fileToKey is a object', () => {
-            const fileToKey = {attr: 'attr'};
+            const fileToKey = { attr: 'attr' };
 
-            expect(calcKey(file, fileToKey)).toBe('{\"attr\":\"attr\"}');
+            expect(calcKey(file, fileToKey)).toBe('{"attr":"attr"}');
         });
 
         test('key is empty', () => {
-            const mockFn = jest.fn().mockImplementation((obj) => {
+            const mockFn = jest.fn().mockImplementation(obj => {
                 return null;
             });
 

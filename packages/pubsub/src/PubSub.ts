@@ -21,7 +21,6 @@ import { AWSAppSyncProvider } from './Providers';
 const logger = new Logger('PubSub');
 
 export default class PubSub {
-
     private _options: PubSubOptions;
 
     private _pluggables: PubSubProvider[];
@@ -43,7 +42,7 @@ export default class PubSub {
 
     /**
      * Initialize PubSub with AWS configurations
-     * 
+     *
      * @param {PubSubOptions} options - Configuration object for PubSub
      */
     constructor(options: PubSubOptions) {
@@ -59,7 +58,7 @@ export default class PubSub {
 
     /**
      * Configure PubSub part with configurations
-     * 
+     *
      * @param {PubSubOptions} config - Configuration for PubSub
      * @return {Object} - The current configuration
      */
@@ -69,7 +68,7 @@ export default class PubSub {
 
         this._options = Object.assign({}, this._options, opt);
 
-        this._pluggables.map((pluggable) => pluggable.configure(this._options));
+        this._pluggables.map(pluggable => pluggable.configure(this._options));
 
         return this._options;
     }
@@ -93,7 +92,9 @@ export default class PubSub {
             return this.awsAppSyncProvider;
         }
 
-        return this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
+        return this._pluggables.find(
+            pluggable => pluggable.getProviderName() === providerName
+        );
     }
 
     private getProviders(options: ProvidertOptions = {}) {
@@ -110,13 +111,22 @@ export default class PubSub {
         return [provider];
     }
 
-    async publish(topics: string[] | string, msg: any, options?: ProvidertOptions) {
+    async publish(
+        topics: string[] | string,
+        msg: any,
+        options?: ProvidertOptions
+    ) {
         return Promise.all(
-            this.getProviders(options).map(provider => provider.publish(topics, msg, options))
+            this.getProviders(options).map(provider =>
+                provider.publish(topics, msg, options)
+            )
         );
     }
 
-    subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any> {
+    subscribe(
+        topics: string[] | string,
+        options?: ProvidertOptions
+    ): Observable<any> {
         logger.debug('subscribe options', options);
 
         const providers = this.getProviders(options);
@@ -127,14 +137,19 @@ export default class PubSub {
                 observable: provider.subscribe(topics, options),
             }));
 
-            const subscriptions = observables.map(({ provider, observable }) => observable.subscribe({
-                start: console.error,
-                next: value => observer.next({ provider, value }),
-                error: error => observer.error({ provider, error }),
-                // complete: observer.complete, // TODO: when all completed, complete the outer one
-            }));
+            const subscriptions = observables.map(({ provider, observable }) =>
+                observable.subscribe({
+                    start: console.error,
+                    next: value => observer.next({ provider, value }),
+                    error: error => observer.error({ provider, error }),
+                    // complete: observer.complete, // TODO: when all completed, complete the outer one
+                })
+            );
 
-            return () => subscriptions.forEach(subscription => subscription.unsubscribe());
+            return () =>
+                subscriptions.forEach(subscription =>
+                    subscription.unsubscribe()
+                );
         });
     }
 }

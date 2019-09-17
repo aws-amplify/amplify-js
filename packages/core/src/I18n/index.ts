@@ -33,7 +33,9 @@ class I18n {
      */
     static configure(config) {
         logger.debug('configure I18n');
-        if (!config) { return _config; }
+        if (!config) {
+            return _config;
+        }
 
         _config = Object.assign({}, _config, config.I18n || config);
 
@@ -42,46 +44,50 @@ class I18n {
         return _config;
     }
 
-    static getModuleName(){
+    static getModuleName() {
         return 'I18n';
     }
 
-   /**
-    * @static
-    * @method
-    * Create an instance of I18n for the library
-    */
+    /**
+     * @static
+     * @method
+     * Create an instance of I18n for the library
+     */
     static createInstance() {
         logger.debug('create I18n instance');
-        if (_i18n) { return; }
+        if (_i18n) {
+            return;
+        }
         _i18n = new I18nClass(_config);
     }
 
     /**
      * @static @method
      * Explicitly setting language
-     * @param {String} lang 
+     * @param {String} lang
      */
     static setLanguage(lang) {
         I18n.checkConfig();
 
-        return _i18n.setLanguage(lang); 
+        return _i18n.setLanguage(lang);
     }
 
     /**
      * @static @method
      * Get value
-     * @param {String} key 
+     * @param {String} key
      * @param {String} defVal - Default value
      */
     static get(key, defVal?) {
-        if (!I18n.checkConfig()) { return (typeof defVal === 'undefined')? key : defVal; }
+        if (!I18n.checkConfig()) {
+            return typeof defVal === 'undefined' ? key : defVal;
+        }
 
-        return _i18n.get(key, defVal); 
+        return _i18n.get(key, defVal);
     }
 
     /**
-     * @static 
+     * @static
      * @method
      * Add vocabularies for one language
      * @param {String} langurage - Language of the dictionary
@@ -92,7 +98,7 @@ class I18n {
 
         return _i18n.putVocabulariesForLanguage(language, vocabularies);
     }
-    
+
     /**
      * @static
      * @method
@@ -107,7 +113,9 @@ class I18n {
     }
 
     public static checkConfig() {
-        if (!_i18n) { _i18n = new I18nClass(_config); }
+        if (!_i18n) {
+            _i18n = new I18nClass(_config);
+        }
 
         return true;
     }

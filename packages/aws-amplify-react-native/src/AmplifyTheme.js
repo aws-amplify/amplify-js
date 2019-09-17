@@ -36,12 +36,12 @@ export default StyleSheet.create({
     },
     sectionHeader: {
         width: '100%',
-        marginBottom: 32
+        marginBottom: 32,
     },
     sectionHeaderText: {
         color: deepSquidInk,
         fontSize: 20,
-        fontWeight: '500'
+        fontWeight: '500',
     },
     sectionFooter: {
         width: '100%',
@@ -49,41 +49,41 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 15,
-        marginBottom: 20
+        marginBottom: 20,
     },
     sectionFooterLink: {
         fontSize: 14,
         color: '#ff9900',
         alignItems: 'baseline',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     navBar: {
         marginTop: 35,
         padding: 15,
-        flexDirection:'row',
+        flexDirection: 'row',
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     navButton: {
         marginLeft: 12,
-        borderRadius: 4
+        borderRadius: 4,
     },
     cell: {
         flex: 1,
-        width: '50%'
+        width: '50%',
     },
     errorRow: {
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     errorRowText: {
-        marginLeft: 10
+        marginLeft: 10,
     },
     photo: {
-        width: '100%'
+        width: '100%',
     },
     album: {
-        width: '100%'
+        width: '100%',
     },
     button: {
         backgroundColor: '#ff9900',
@@ -98,19 +98,19 @@ export default StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 14,
-        fontWeight: '600'
+        fontWeight: '600',
     },
     formField: {
-        marginBottom: 22
+        marginBottom: 22,
     },
     input: {
         padding: 16,
         borderWidth: 1,
         borderRadius: 3,
-        borderColor: "#C4C4C4",
+        borderColor: '#C4C4C4',
     },
     inputLabel: {
-        marginBottom: 8
+        marginBottom: 8,
     },
     phoneContainer: {
         display: 'flex',
@@ -122,7 +122,7 @@ export default StyleSheet.create({
         padding: 16,
         borderWidth: 1,
         borderRadius: 3,
-        borderColor: "#C4C4C4",
+        borderColor: '#C4C4C4',
     },
     picker: {
         flex: 1,
@@ -132,4 +132,3 @@ export default StyleSheet.create({
         height: 44,
     },
 });
-

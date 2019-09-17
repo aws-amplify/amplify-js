@@ -3,47 +3,51 @@ import ConfirmSignIn from '../../src/Auth/ConfirmSignIn';
 import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import {
+    Header,
+    Footer,
+    Input,
+    Button,
+    Link,
+} from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
-const acceptedStates = [
-    'confirmSignIn'
-];
+const acceptedStates = ['confirmSignIn'];
 
 const deniedStates = [
-    'signIn',  
-    'signedUp', 
+    'signIn',
+    'signedUp',
     'signedOut',
     'signUp',
     'signedIn',
     'confirmSignUp',
     'forgotPassword',
-    'verifyContact'
+    'verifyContact',
 ];
 
 const fakeEvent = {
-    preventDefault: jest.fn()
+    preventDefault: jest.fn(),
 };
 
 describe('ConfirmSignIn', () => {
     describe('render test', () => {
         test('render correctly with Props confirmSignIn', () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
-            for (let i = 0; i < acceptedStates.length; i += 1){
+            const wrapper = shallow(<ConfirmSignIn />);
+            for (let i = 0; i < acceptedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: acceptedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
                 expect(wrapper).toMatchSnapshot();
             }
         });
 
         test('render corrently with other authstate', () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
-            
-            for (let i = 0; i < deniedStates.length; i += 1){
+            const wrapper = shallow(<ConfirmSignIn />);
+
+            for (let i = 0; i < deniedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: deniedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -51,32 +55,33 @@ describe('ConfirmSignIn', () => {
         });
 
         test('hidden if hide include confirmSignIn', () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
+            const wrapper = shallow(<ConfirmSignIn />);
             wrapper.setProps({
                 authState: acceptedStates[0],
-                hide: [ConfirmSignIn]
+                hide: [ConfirmSignIn],
             });
             expect(wrapper).toMatchSnapshot();
         });
-
     });
 
     describe('confirm test', () => {
         test('user with challengeName SOFTWARE_TOKEN_MFA', async () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
-           
-            const spyon = jest.spyOn(Auth, 'confirmSignIn').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            const wrapper = shallow(<ConfirmSignIn />);
+
+            const spyon = jest
+                .spyOn(Auth, 'confirmSignIn')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve();
+                });
 
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
                 authData: {
                     user: {
-                        challengeName: 'SOFTWARE_TOKEN_MFA'
-                    }
-                }
+                        challengeName: 'SOFTWARE_TOKEN_MFA',
+                    },
+                },
             });
 
             const confirmSignIn = wrapper.instance();
@@ -91,31 +96,38 @@ describe('ConfirmSignIn', () => {
 
     describe('normal case', () => {
         test('simulate clicking confirm button', async () => {
-            const spyon = jest.spyOn(Auth, 'confirmSignIn')
+            const spyon = jest
+                .spyOn(Auth, 'confirmSignIn')
                 .mockImplementation((user, code) => {
                     return new Promise((res, rej) => {
                         res();
                     });
                 });
 
-            const wrapper = shallow(<ConfirmSignIn/>);
+            const wrapper = shallow(<ConfirmSignIn />);
             const spyon2 = jest.spyOn(wrapper.instance(), 'checkContact');
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
-                authData: 'user'
+                authData: 'user',
             });
 
             const event_code = {
                 target: {
                     name: 'code',
-                    value: '123456'
-                }
+                    value: '123456',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_code);
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
-            
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_code);
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
+
             await Promise.resolve();
 
             expect.assertions(3);
@@ -128,15 +140,18 @@ describe('ConfirmSignIn', () => {
         });
 
         test('back to sign in', () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
+            const wrapper = shallow(<ConfirmSignIn />);
             const spyon2 = jest.spyOn(wrapper.instance(), 'changeState');
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
-                authData: 'user'
+                authData: 'user',
             });
 
-            wrapper.find(Link).at(0).simulate('click');
+            wrapper
+                .find(Link)
+                .at(0)
+                .simulate('click');
             expect(spyon2).toBeCalledWith('signIn');
 
             spyon2.mockClear();
@@ -145,46 +160,53 @@ describe('ConfirmSignIn', () => {
 
     describe('checkContact test', () => {
         test('contact verified', async () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
+            const wrapper = shallow(<ConfirmSignIn />);
             const confirmSignIn = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {
-                        email: 'xxx@xxx.com'
-                    }
+            const spyon = jest
+                .spyOn(Auth, 'verifiedContact')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve({
+                        verified: {
+                            email: 'xxx@xxx.com',
+                        },
+                    });
                 });
-            });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
 
             await confirmSignIn.checkContact({
-                user: 'user'
+                user: 'user',
             });
-            
-            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+
+            expect(spyon2).toBeCalledWith('signedIn', { user: 'user' });
 
             spyon.mockClear();
             spyon2.mockClear();
         });
 
         test('contact not verified', async () => {
-            const wrapper = shallow(<ConfirmSignIn/>);
+            const wrapper = shallow(<ConfirmSignIn />);
             const confirmSignIn = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {}
+            const spyon = jest
+                .spyOn(Auth, 'verifiedContact')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve({
+                        verified: {},
+                    });
                 });
-            });
 
             const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
 
             await confirmSignIn.checkContact({
-                user: 'user'
+                user: 'user',
             });
-            
-            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
+
+            expect(spyon2).toBeCalledWith('verifyContact', {
+                user: 'user',
+                verified: {},
+            });
 
             spyon.mockClear();
             spyon2.mockClear();

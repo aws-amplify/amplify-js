@@ -19,10 +19,13 @@ import { MqttOverWSProvider } from './MqttOverWSProvider';
 const logger = new Logger('AWSAppSyncProvider');
 
 export class AWSAppSyncProvider extends MqttOverWSProvider {
+    protected get endpoint() {
+        throw new Error('Not supported');
+    }
 
-    protected get endpoint() { throw new Error('Not supported'); }
-
-    getProviderName() { return 'AWSAppSyncProvider'; }
+    getProviderName() {
+        return 'AWSAppSyncProvider';
+    }
 
     public async publish(topics: string[] | string, msg: any, options?: any) {
         throw new Error('Operation not supported');
@@ -45,7 +48,7 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
         if (errorCode !== 0) {
             const topicsForClient = Array.from(this._topicClient.entries())
                 .filter(([, c]) => c.clientId === clientId)
-                .map(([t,]) => t);
+                .map(([t]) => t);
 
             topicsForClient.forEach(topic => {
                 if (this._topicObservers.has(topic)) {
@@ -76,7 +79,6 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
     }
 
     subscribe(topics: string[] | string, options: any = {}): Observable<any> {
-
         const result = new Observable<any>(observer => {
             const targetTopics = ([] as string[]).concat(topics);
             logger.debug('Subscribing to topic(s)', targetTopics.join(','));
@@ -94,22 +96,34 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                 const { mqttConnections = [], newSubscriptions } = options;
 
                 // creates a map of {"topic": "alias"}
-                const newAliases = Object.entries(newSubscriptions)
-                    .map(([alias, v]: [string, { topic: string }]) => [v.topic, alias]);
+                const newAliases = Object.entries(newSubscriptions).map(
+                    ([alias, v]: [string, { topic: string }]) => [
+                        v.topic,
+                        alias,
+                    ]
+                );
 
                 // Merge new aliases with old ones
                 this._topicAlias = new Map([
                     ...Array.from(this._topicAlias.entries()),
-                    ...(newAliases as [string, string][])
+                    ...(newAliases as [string, string][]),
                 ]);
 
                 // group by urls
-                const map: [string, { url: string, topics: Set<string> }][] = Object.entries(targetTopics.reduce(
-                    (acc, elem) => {
-                        const connectionInfoForTopic = mqttConnections.find(c => c.topics.indexOf(elem) > -1);
+                const map: [
+                    string,
+                    { url: string; topics: Set<string> }
+                ][] = Object.entries(
+                    targetTopics.reduce((acc, elem) => {
+                        const connectionInfoForTopic = mqttConnections.find(
+                            c => c.topics.indexOf(elem) > -1
+                        );
 
                         if (connectionInfoForTopic) {
-                            const { client: clientId, url } = connectionInfoForTopic;
+                            const {
+                                client: clientId,
+                                url,
+                            } = connectionInfoForTopic;
 
                             if (!acc[clientId]) {
                                 acc[clientId] = {
@@ -122,41 +136,48 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                         }
 
                         return acc;
-                    },
-                    {}
-                ));
+                    }, {})
+                );
 
                 // reconnect everything we have in the map
-                await Promise.all(map.map(async ([clientId, { url, topics }]) => {
-                    // connect to new client
-                    let client = null;
-                    try {
-                        client = await this.connect(clientId, {
-                            clientId,
-                            url,
-                        });
-                    } catch (err) {
-                        observer.error({ message: 'Failed to connect', error: err });
-                        observer.complete();
-                        return undefined;
-                    }
-
-                    // subscribe to all topics for this client
-                    // store topic-client mapping
-                    topics.forEach(topic => {
-                        if (client.isConnected()) {
-                            client.subscribe(topic);
-
-                            this._topicClient.set(topic, client);
+                await Promise.all(
+                    map.map(async ([clientId, { url, topics }]) => {
+                        // connect to new client
+                        let client = null;
+                        try {
+                            client = await this.connect(clientId, {
+                                clientId,
+                                url,
+                            });
+                        } catch (err) {
+                            observer.error({
+                                message: 'Failed to connect',
+                                error: err,
+                            });
+                            observer.complete();
+                            return undefined;
                         }
-                    });
 
-                    return client;
-                }));
+                        // subscribe to all topics for this client
+                        // store topic-client mapping
+                        topics.forEach(topic => {
+                            if (client.isConnected()) {
+                                client.subscribe(topic);
+
+                                this._topicClient.set(topic, client);
+                            }
+                        });
+
+                        return client;
+                    })
+                );
             })();
 
             return () => {
-                logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
+                logger.debug(
+                    'Unsubscribing from topic(s)',
+                    targetTopics.join(',')
+                );
 
                 targetTopics.forEach(t => {
                     const client = this._topicClient.get(t);
@@ -165,7 +186,11 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                         client.unsubscribe(t);
                         this._topicClient.delete(t);
 
-                        if (!Array.from(this._topicClient.values()).some(c => c === client)) {
+                        if (
+                            !Array.from(this._topicClient.values()).some(
+                                c => c === client
+                            )
+                        ) {
                             this.disconnect(client.clientId);
                         }
                     }
@@ -179,8 +204,12 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
             const topic = this.getTopicForValue(value);
             const alias = this._topicAlias.get(topic);
 
-            value.data = Object.entries(value.data)
-                .reduce((obj, [origKey, val]) => (obj[((alias || origKey) as string)] = val, obj), {});
+            value.data = Object.entries(value.data).reduce(
+                (obj, [origKey, val]) => (
+                    (obj[(alias || origKey) as string] = val), obj
+                ),
+                {}
+            );
 
             return value;
         });

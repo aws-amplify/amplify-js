@@ -1,21 +1,20 @@
-
 import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import { default as Storage } from "../src/Storage";
-import StorageCategory from "../src";
+import { default as Storage } from '../src/Storage';
+import StorageCategory from '../src';
 
 const credentials = {
     accessKeyId: 'accessKeyId',
     sessionToken: 'sessionToken',
     secretAccessKey: 'secretAccessKey',
     identityId: 'identityId',
-    authenticated: true
+    authenticated: true,
 };
 
 const options = {
     bucket: 'bucket',
     region: 'region',
     credentials,
-    level: 'level'
+    level: 'level',
 };
 
 describe('Storage', () => {
@@ -32,7 +31,9 @@ describe('Storage', () => {
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
 
-            expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSStorageProvider);
+            expect(
+                storage.getPluggable(provider.getProviderName())
+            ).toBeInstanceOf(AWSStorageProvider);
         });
     });
 
@@ -55,7 +56,7 @@ describe('Storage', () => {
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             const config = storage.configure(aws_options);
@@ -63,8 +64,8 @@ describe('Storage', () => {
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             });
         });
 
@@ -73,7 +74,7 @@ describe('Storage', () => {
 
             const aws_options = {
                 bucket: 'bucket',
-                region: 'region'
+                region: 'region',
             };
 
             const config = storage.configure(aws_options);
@@ -81,8 +82,8 @@ describe('Storage', () => {
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             });
         });
 
@@ -92,8 +93,8 @@ describe('Storage', () => {
             const aws_options = {
                 Storage: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             };
 
             const config = storage.configure(aws_options);
@@ -101,8 +102,8 @@ describe('Storage', () => {
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             });
         });
 
@@ -112,8 +113,8 @@ describe('Storage', () => {
             const aws_options = {
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             };
 
             const config = storage.configure(aws_options);
@@ -121,8 +122,8 @@ describe('Storage', () => {
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             });
         });
 
@@ -133,9 +134,9 @@ describe('Storage', () => {
                 Storage: {
                     AWSS3: {
                         bucket: 'bucket',
-                        region: 'region'
-                    }
-                }
+                        region: 'region',
+                    },
+                },
             };
 
             const config = storage.configure(aws_options);
@@ -143,8 +144,8 @@ describe('Storage', () => {
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
-                    region: 'region'
-                }
+                    region: 'region',
+                },
             });
         });
 
@@ -153,16 +154,16 @@ describe('Storage', () => {
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ bucket: "another-bucket" });
+            const config = storage.configure({ bucket: 'another-bucket' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
                     region: 'region',
-                }
+                },
             });
         });
 
@@ -171,16 +172,18 @@ describe('Storage', () => {
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ Storage: { bucket: "another-bucket", region: "another-region" } });
+            const config = storage.configure({
+                Storage: { bucket: 'another-bucket', region: 'another-region' },
+            });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-bucket',
                     region: 'another-region',
-                }
+                },
             });
         });
 
@@ -189,16 +192,21 @@ describe('Storage', () => {
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ AWSS3: { bucket: "another-s3-bucket", region: "another-s3-region" } });
+            const config = storage.configure({
+                AWSS3: {
+                    bucket: 'another-s3-bucket',
+                    region: 'another-s3-region',
+                },
+            });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'another-s3-bucket',
                     region: 'another-s3-region',
-                }
+                },
             });
         });
         test('backwards compatible issue, second configure call', () => {
@@ -206,73 +214,79 @@ describe('Storage', () => {
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            const config = storage.configure({ level: "private" });
+            const config = storage.configure({ level: 'private' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
                     region: 'region',
-                    level: 'private'
-                }
+                    level: 'private',
+                },
             });
         });
 
         test('vault level is always private', () => {
-
             const storage = StorageCategory;
             expect.assertions(3);
-            storage.vault.configure = jest.fn().mockImplementation((configure) => {
-                expect(configure).toEqual({"AWSS3": {"bucket": "bucket", "level": "private", "region": "region"}});
-            });
+            storage.vault.configure = jest
+                .fn()
+                .mockImplementation(configure => {
+                    expect(configure).toEqual({
+                        AWSS3: {
+                            bucket: 'bucket',
+                            level: 'private',
+                            region: 'region',
+                        },
+                    });
+                });
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
-
             storage.configure(aws_options);
-            storage.configure({ Storage: { level: "protected"} });
-            storage.configure({ Storage: { level: "public"} });
+            storage.configure({ Storage: { level: 'protected' } });
+            storage.configure({ Storage: { level: 'public' } });
         });
 
         test('normal storage level is public by default', () => {
-          const storage = StorageCategory;
+            const storage = StorageCategory;
 
-          storage.configure({
-            region: 'region',
-            bucket: 'bucket',
-          });
+            storage.configure({
+                region: 'region',
+                bucket: 'bucket',
+            });
 
-          expect(storage['_config']).toEqual({
-            AWSS3: {
-              bucket: 'bucket',
-              level: 'public',
-              region: 'region'
-            }
-          });
+            expect(storage['_config']).toEqual({
+                AWSS3: {
+                    bucket: 'bucket',
+                    level: 'public',
+                    region: 'region',
+                },
+            });
         });
 
-      test('backwards compatible issue, third configure call track', () => {
+        test('backwards compatible issue, third configure call track', () => {
             const storage = new Storage();
 
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "protected" });
+            storage.configure({ level: 'protected' });
             const config = storage.configure({ track: true });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
                     region: 'region',
                     level: 'protected',
-                    track: true
-                }
+                    track: true,
+                },
             });
         });
 
@@ -280,18 +294,18 @@ describe('Storage', () => {
             const storage = new Storage();
             const aws_options = {
                 aws_user_files_s3_bucket: 'bucket',
-                aws_user_files_s3_bucket_region: 'region'
+                aws_user_files_s3_bucket_region: 'region',
             };
 
             storage.configure(aws_options);
-            storage.configure({ level: "private" });
-            const config = storage.configure({ level: "protected" });
+            storage.configure({ level: 'private' });
+            const config = storage.configure({ level: 'protected' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket',
                     region: 'region',
                     level: 'protected',
-                }
+                },
             });
         });
 
@@ -303,7 +317,9 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ serverSideEncryption: 'iamencrypted'});
+            const config = storage.configure({
+                serverSideEncryption: 'iamencrypted',
+            });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'testBucket',
@@ -321,7 +337,9 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ SSECustomerAlgorithm: '23s2sc'});
+            const config = storage.configure({
+                SSECustomerAlgorithm: '23s2sc',
+            });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'thisIsABucket',
@@ -339,7 +357,7 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ SSECustomerKey: 'iamakey'});
+            const config = storage.configure({ SSECustomerKey: 'iamakey' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'buckbuckbucket',
@@ -357,7 +375,7 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ SSECustomerKeyMD5: 'somekey'});
+            const config = storage.configure({ SSECustomerKeyMD5: 'somekey' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'buckbuckbucaket',
@@ -375,7 +393,7 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ SSEKMSKeyId: 'giveMeAnId'});
+            const config = storage.configure({ SSEKMSKeyId: 'giveMeAnId' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket2',
@@ -393,17 +411,17 @@ describe('Storage', () => {
             };
 
             storage.configure(awsconfig);
-            const config = storage.configure({ randomKeyId: 'someRandomKey'});
+            const config = storage.configure({ randomKeyId: 'someRandomKey' });
             expect(config).toEqual({
                 AWSS3: {
                     bucket: 'bucket2',
                     region: 'region1',
-                }
+                },
             });
         });
 
         test('should add customPrefix to AWSS3 provider object if is defined', () => {
-            const storage = new Storage ();
+            const storage = new Storage();
             const awsconfig = {
                 aws_user_files_s3_bucket: 'i_am_a_bucket',
                 aws_user_files_s3_bucket_region: 'IAD',
@@ -440,7 +458,7 @@ describe('Storage', () => {
 
             storage.configure(awsconfig);
             const config = storage.configure({
-                customPrefix: undefined
+                customPrefix: undefined,
             });
 
             expect(config).toEqual({
@@ -448,16 +466,18 @@ describe('Storage', () => {
                     bucket: 'you_dont_know_this_bucket',
                     region: 'WD3',
                 },
-                customPrefix: {}
+                customPrefix: {},
             });
         });
     });
 
     describe('get test', async () => {
         test('get object without download', async () => {
-            const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-                return;
-            });
+            const get_spyon = jest
+                .spyOn(AWSStorageProvider.prototype, 'get')
+                .mockImplementation(() => {
+                    return;
+                });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -467,20 +487,21 @@ describe('Storage', () => {
                     AWSS3: {
                         bucket: 'bucket',
                         region: 'us-east-1',
-                    }
-                }
+                    },
+                },
             });
             expect(get_spyon).toBeCalled();
             get_spyon.mockClear();
         });
     });
 
-
     describe('put test', () => {
         test('put object successfully', async () => {
-            const put_spyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
-                return;
-            });
+            const put_spyon = jest
+                .spyOn(AWSStorageProvider.prototype, 'put')
+                .mockImplementation(() => {
+                    return;
+                });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -490,8 +511,8 @@ describe('Storage', () => {
                     AWSS3: {
                         bucket: 'bucket',
                         region: 'us-east-1',
-                    }
-                }
+                    },
+                },
             });
             expect(put_spyon).toBeCalled();
             put_spyon.mockClear();
@@ -500,9 +521,11 @@ describe('Storage', () => {
 
     describe('remove test', () => {
         test('remove object successfully', async () => {
-            const remove_spyon = jest.spyOn(AWSStorageProvider.prototype, 'remove').mockImplementation(() => {
-                return;
-            });
+            const remove_spyon = jest
+                .spyOn(AWSStorageProvider.prototype, 'remove')
+                .mockImplementation(() => {
+                    return;
+                });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -512,8 +535,8 @@ describe('Storage', () => {
                     AWSS3: {
                         bucket: 'bucket',
                         region: 'us-east-1',
-                    }
-                }
+                    },
+                },
             });
             expect(remove_spyon).toBeCalled();
             remove_spyon.mockClear();
@@ -522,9 +545,11 @@ describe('Storage', () => {
 
     describe('list test', () => {
         test('list object successfully', async () => {
-            const list_spyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => {
-                return;
-            });
+            const list_spyon = jest
+                .spyOn(AWSStorageProvider.prototype, 'list')
+                .mockImplementation(() => {
+                    return;
+                });
             const storage = new Storage();
             const provider = new AWSStorageProvider();
             storage.addPluggable(provider);
@@ -534,12 +559,11 @@ describe('Storage', () => {
                     AWSS3: {
                         bucket: 'bucket',
                         region: 'us-east-1',
-                    }
-                }
+                    },
+                },
             });
             expect(list_spyon).toBeCalled();
             list_spyon.mockClear();
         });
     });
 });
-

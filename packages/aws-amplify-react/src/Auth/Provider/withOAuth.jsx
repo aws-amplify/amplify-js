@@ -18,9 +18,9 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { oAuthSignInButton } from '@aws-amplify/ui';
-import { 
-    SignInButton, 
-    SignInButtonContent
+import {
+    SignInButton,
+    SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 
 export default function withOAuth(Comp) {
@@ -35,14 +35,12 @@ export default function withOAuth(Comp) {
         }
 
         render() {
-            return (
-                <Comp {...this.props} OAuthSignIn={this.signIn} />
-            );
+            return <Comp {...this.props} OAuthSignIn={this.signIn} />;
         }
     };
 }
 
-const Button = (props) => (
+const Button = props => (
     <SignInButton
         id={oAuthSignInButton}
         onClick={() => props.OAuthSignIn()}

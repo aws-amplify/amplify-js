@@ -12,23 +12,14 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
-import {
-    Auth,
-    I18n,
-    Logger,
-    JS
-} from 'aws-amplify';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import {
     AmplifyButton,
-    FormField, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+    FormField,
+    LinkCell,
+    Header,
+    ErrorRow,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -41,8 +32,8 @@ export default class ConfirmSignIn extends AuthPiece {
         this._validAuthStates = ['confirmSignIn'];
         this.state = {
             code: null,
-            error: null
-        }
+            error: null,
+        };
 
         this.confirm = this.confirm.bind(this);
         this.checkContact = this.checkContact.bind(this);
@@ -59,15 +50,20 @@ export default class ConfirmSignIn extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
                     <View style={theme.sectionBody}>
                         <FormField
                             theme={theme}
-                            onChangeText={(text) => this.setState({ code: text })}
+                            onChangeText={text => this.setState({ code: text })}
                             label={I18n.get('Confirmation Code')}
-                            placeholder={I18n.get('Enter your confirmation code')}
+                            placeholder={I18n.get(
+                                'Enter your confirmation code'
+                            )}
                             required={true}
                         />
                         <AmplifyButton
@@ -78,7 +74,10 @@ export default class ConfirmSignIn extends AuthPiece {
                         />
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signIn')}
+                        >
                             {I18n.get('Back to Sign In')}
                         </LinkCell>
                     </View>

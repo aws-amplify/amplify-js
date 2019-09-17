@@ -42,9 +42,16 @@ export default class S3Text extends Component {
 
     getText(key, level, track, identityId) {
         if (!Storage || typeof Storage.get !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            throw new Error(
+                'No Storage module found, please ensure @aws-amplify/storage is imported'
+            );
         }
-        Storage.get(key, { download: true, level: level ? level : 'public', track, identityId })
+        Storage.get(key, {
+            download: true,
+            level: level ? level : 'public',
+            track,
+            identityId,
+        })
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
@@ -60,7 +67,15 @@ export default class S3Text extends Component {
     }
 
     load() {
-        const { path, textKey, body, contentType, level, track, identityId } = this.props;
+        const {
+            path,
+            textKey,
+            body,
+            contentType,
+            level,
+            track,
+            identityId,
+        } = this.props;
         if (!textKey && !path) {
             logger.debug('empty textKey and path');
             return;
@@ -72,18 +87,19 @@ export default class S3Text extends Component {
         if (body) {
             const type = contentType || 'text/*';
             if (!Storage || typeof Storage.put !== 'function') {
-                throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+                throw new Error(
+                    'No Storage module found, please ensure @aws-amplify/storage is imported'
+                );
             }
             const ret = Storage.put(key, body, {
                 contentType: type,
                 level: level ? level : 'public',
-                track
+                track,
             });
             ret.then(data => {
                 logger.debug(data);
                 that.getText(key, level, track, identityId);
-            })
-                .catch(err => logger.debug(err));
+            }).catch(err => logger.debug(err));
         } else {
             that.getText(key, level, track, identityId);
         }
@@ -91,12 +107,16 @@ export default class S3Text extends Component {
 
     handleOnLoad(text) {
         const { onLoad } = this.props;
-        if (onLoad) { onLoad(text); }
+        if (onLoad) {
+            onLoad(text);
+        }
     }
 
     handleOnError(err) {
         const { onError } = this.props;
-        if (onError) { onError(err); }
+        if (onError) {
+            onError(err);
+        }
     }
 
     handlePick(data) {
@@ -105,14 +125,16 @@ export default class S3Text extends Component {
         const path = this.props.path || '';
         const { textKey, level, fileToKey, track, identityId } = this.props;
         const { file, name, size, type } = data;
-        const key = textKey || (path + calcKey(data, fileToKey));
+        const key = textKey || path + calcKey(data, fileToKey);
         if (!Storage || typeof Storage.put !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            throw new Error(
+                'No Storage module found, please ensure @aws-amplify/storage is imported'
+            );
         }
         Storage.put(key, file, {
             level: level ? level : 'public',
             contentType: type,
-            track
+            track,
         })
             .then(data => {
                 logger.debug('handle pick data', data);
@@ -123,7 +145,9 @@ export default class S3Text extends Component {
 
     handleClick(evt) {
         const { onClick } = this.props;
-        if (onClick) { onClick(evt); }
+        if (onClick) {
+            onClick(evt);
+        }
     }
 
     componentDidMount() {
@@ -136,23 +160,28 @@ export default class S3Text extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const update = prevProps.path !== this.props.path ||
+        const update =
+            prevProps.path !== this.props.path ||
             prevProps.textKey !== this.props.textKey ||
-            prevProps.body !== this.props.body
+            prevProps.body !== this.props.body;
         if (update) {
             this.load();
         }
     }
 
     textEl(text, theme) {
-        if (!text) { return null; }
+        if (!text) {
+            return null;
+        }
 
         const { selected } = this.props;
         const containerStyle = { position: 'relative' };
         return (
             <div style={containerStyle} onClick={this.handleClick}>
                 <pre style={theme.pre}>{text}</pre>
-                <div style={selected ? theme.overlaySelected : theme.overlay}></div>
+                <div
+                    style={selected ? theme.overlaySelected : theme.overlay}
+                ></div>
             </div>
         );
     }
@@ -161,30 +190,36 @@ export default class S3Text extends Component {
         const { hidden, style, picker, translate, textKey } = this.props;
         let text = this.state.text;
         if (translate) {
-            text = (typeof translate === 'string') ? translate : translate({
-                type: 'text',
-                key: textKey,
-                content: text
-            });
+            text =
+                typeof translate === 'string'
+                    ? translate
+                    : translate({
+                          type: 'text',
+                          key: textKey,
+                          content: text,
+                      });
         }
-        if (!text && !picker) { return null; }
+        if (!text && !picker) {
+            return null;
+        }
 
         const theme = this.props.theme || AmplifyTheme;
-        const textStyle = hidden ? AmplifyTheme.hidden
+        const textStyle = hidden
+            ? AmplifyTheme.hidden
             : Object.assign({}, theme.text, style);
 
         return (
             <div style={textStyle}>
                 {textStyle ? this.textEl(text, theme) : null}
-                {picker ? <div>
-                    <TextPicker
-                        key="picker"
-                        onPick={this.handlePick}
-                        theme={theme}
-                    />
-                </div>
-                    : null
-                }
+                {picker ? (
+                    <div>
+                        <TextPicker
+                            key="picker"
+                            onPick={this.handlePick}
+                            theme={theme}
+                        />
+                    </div>
+                ) : null}
             </div>
         );
     }

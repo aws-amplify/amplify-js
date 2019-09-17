@@ -20,7 +20,7 @@ const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
     enable: false,
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
 };
 
 let initialEventSent = false;
@@ -71,19 +71,18 @@ export default class SessionTracker {
     }
 
     private async _trackFunc() {
-        const customAttrs = typeof this._config.attributes === 'function' ?
-            await this._config.attributes() : this._config.attributes;
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
 
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+        const attributes = Object.assign({}, customAttrs);
 
         if (document.visibilityState === this._hidden) {
             this._tracker(
                 {
                     name: '_session.stop',
-                    attributes
+                    attributes,
                 },
                 this._config.provider
             ).catch(e => {
@@ -93,7 +92,7 @@ export default class SessionTracker {
             this._tracker(
                 {
                     name: '_session.start',
-                    attributes
+                    attributes,
                 },
                 this._config.provider
             ).catch(e => {
@@ -104,21 +103,19 @@ export default class SessionTracker {
 
     private _trackBeforeUnload(event) {
         // before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
-
-        const customAttrs = typeof this._config.attributes === 'function' ?
-            Promise.resolve(this._config.attributes()) : Promise.resolve(this._config.attributes);
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? Promise.resolve(this._config.attributes())
+                : Promise.resolve(this._config.attributes);
 
         customAttrs.then(custom => {
-            const attributes = Object.assign(
-                {},
-                custom
-            );
+            const attributes = Object.assign({}, custom);
 
             this._tracker(
                 {
                     name: '_session.stop',
                     attributes,
-                    immediate: true
+                    immediate: true,
                 },
                 this._config.provider
             ).catch(e => {
@@ -130,12 +127,15 @@ export default class SessionTracker {
     // to keep configure a synchronized function
     private async _sendInitialEvent() {
         if (initialEventSent) {
-            logger.debug('the start session has been sent when the page is loaded');
+            logger.debug(
+                'the start session has been sent when the page is loaded'
+            );
             return;
         } else {
             initialEventSent = true;
         }
 
+<<<<<<< HEAD
         const customAttrs = typeof this._config.attributes === 'function' 
             ? await this._config.attributes() 
             : this._config.attributes;
@@ -144,11 +144,18 @@ export default class SessionTracker {
             {},
             customAttrs
         );
+=======
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
+        const attributes = Object.assign({}, customAttrs);
+>>>>>>> Prettier format codebase
 
         this._tracker(
             {
                 name: '_session.start',
-                attributes
+                attributes,
             },
             this._config.provider
         ).catch(e => {
@@ -166,12 +173,28 @@ export default class SessionTracker {
             // send a start session as soon as it's enabled
             this._sendInitialEvent();
             // listen on events
-            document.addEventListener(this._visibilityChange, this._trackFunc, false);
-            window.addEventListener("beforeunload", this._trackBeforeUnload, false);
+            document.addEventListener(
+                this._visibilityChange,
+                this._trackFunc,
+                false
+            );
+            window.addEventListener(
+                'beforeunload',
+                this._trackBeforeUnload,
+                false
+            );
             this._hasEnabled = true;
         } else if (!this._config.enable && this._hasEnabled) {
-            document.removeEventListener(this._visibilityChange, this._trackFunc, false);
-            window.removeEventListener("beforeunload", this._trackBeforeUnload, false);
+            document.removeEventListener(
+                this._visibilityChange,
+                this._trackFunc,
+                false
+            );
+            window.removeEventListener(
+                'beforeunload',
+                this._trackBeforeUnload,
+                false
+            );
             this._hasEnabled = false;
         }
 

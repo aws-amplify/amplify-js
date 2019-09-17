@@ -16,31 +16,43 @@ import {
     missingConfig,
     Hub,
     Parser,
-    Platform
+    Platform,
 } from '@aws-amplify/core';
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
+import {
+    AnalyticsProvider,
+    EventAttributes,
+    EventMetrics,
+    pageViewTrackOpts,
+} from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
-const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
-    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
+typeof Symbol.for === 'function'
+    ? Symbol.for('amplify_default')
+    : '@@amplify_default') as Symbol;
 
-const dispatchAnalyticsEvent = (event:string, data:any, message:string) => {
-    Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
+const dispatchAnalyticsEvent = (event: string, data: any, message: string) => {
+    Hub.dispatch(
+        'analytics',
+        { event, data, message },
+        'Analytics',
+        AMPLIFY_SYMBOL
+    );
 };
 
 const trackers = {
-    'pageView': PageViewTracker,
-    'event': EventTracker,
-    'session': SessionTracker
+    pageView: PageViewTracker,
+    event: EventTracker,
+    session: SessionTracker,
 };
 
 /**
-* Provide mobile analytics client functions
-*/
+ * Provide mobile analytics client functions
+ */
 export default class AnalyticsClass {
     private _config;
     private _provider;
@@ -73,18 +85,29 @@ export default class AnalyticsClass {
         if (!config) return this._config;
         logger.debug('configure Analytics', config);
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
+        this._config = Object.assign(
+            {},
+            this._config,
+            amplifyConfig.Analytics,
+            config
+        );
 
         if (this._config['disabled']) {
             this._disabled = true;
         }
 
-        this._pluggables.forEach((pluggable) => {
+        this._pluggables.forEach(pluggable => {
             // for backward compatibility
-            const providerConfig = pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint'] ?
-                this._config : this._config[pluggable.getProviderName()];
-            
-            pluggable.configure({ disabled: this._config['disabled'], ...providerConfig} );
+            const providerConfig =
+                pluggable.getProviderName() === 'AWSPinpoint' &&
+                !this._config['AWSPinpoint']
+                    ? this._config
+                    : this._config[pluggable.getProviderName()];
+
+            pluggable.configure({
+                disabled: this._config['disabled'],
+                ...providerConfig,
+            });
         });
 
         if (this._pluggables.length === 0) {
@@ -97,13 +120,12 @@ export default class AnalyticsClass {
         }
 
         dispatchAnalyticsEvent(
-            'configured', 
+            'configured',
             null,
             `The Analytics category has been configured successfully`
         );
         logger.debug('current configuration', this._config);
 
-        
         return this._config;
     }
 
@@ -115,9 +137,15 @@ export default class AnalyticsClass {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
             // for backward compatibility
-            const providerConfig = pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint'] ?
-                this._config : this._config[pluggable.getProviderName()];
-            const config = { disabled: this._config['disabled'], ...providerConfig };
+            const providerConfig =
+                pluggable.getProviderName() === 'AWSPinpoint' &&
+                !this._config['AWSPinpoint']
+                    ? this._config
+                    : this._config[pluggable.getProviderName()];
+            const config = {
+                disabled: this._config['disabled'],
+                ...providerConfig,
+            };
             pluggable.configure(config);
             return config;
         }
@@ -125,7 +153,7 @@ export default class AnalyticsClass {
 
     /**
      * Get the plugin object
-     * @param providerName - the name of the plugin 
+     * @param providerName - the name of the plugin
      */
     public getPluggable(providerName) {
         for (let i = 0; i < this._pluggables.length; i += 1) {
@@ -134,7 +162,7 @@ export default class AnalyticsClass {
                 return pluggable;
             }
         }
-      
+
         logger.debug('No plugin found with providerName', providerName);
         return null;
     }
@@ -180,7 +208,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession(provider?: string) {
-        const params = { event: { name: '_session.start' },  provider };
+        const params = { event: { name: '_session.start' }, provider };
         return this._sendEvent(params);
     }
 
@@ -200,7 +228,11 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async record(event: string | object, provider? , metrics?: EventMetrics) {
+    public async record(
+        event: string | object,
+        provider?,
+        metrics?: EventMetrics
+    ) {
         if (!this.isAnalyticsConfigured()) {
             const errMsg = 'Analytics has not been configured';
             logger.debug(errMsg);
@@ -210,13 +242,13 @@ export default class AnalyticsClass {
         let params = null;
         // this is just for compatibility, going to be deprecated
         if (typeof event === 'string') {
-            params =  {
-                'event': {
-                    name: event, 
-                    attributes: provider, 
-                    metrics
-                }, 
-                provider: 'AWSPinpoint'
+            params = {
+                event: {
+                    name: event,
+                    attributes: provider,
+                    metrics,
+                },
+                provider: 'AWSPinpoint',
             };
         } else {
             params = { event, provider };
@@ -242,10 +274,10 @@ export default class AnalyticsClass {
             return Promise.resolve();
         }
 
-        const provider = params.provider? params.provider: 'AWSPinpoint';
-        
+        const provider = params.provider ? params.provider : 'AWSPinpoint';
+
         return new Promise((resolve, reject) => {
-            this._pluggables.forEach((pluggable) => {
+            this._pluggables.forEach(pluggable => {
                 if (pluggable.getProviderName() === provider) {
                     pluggable.record(params, { resolve, reject });
                 }
@@ -261,12 +293,15 @@ export default class AnalyticsClass {
 
         // to sync up two different configuration ways of auto session tracking
         if (trackerType === 'session') {
-           this._config['autoSessionRecord'] = opts['enable'];
+            this._config['autoSessionRecord'] = opts['enable'];
         }
-        
+
         const tracker = this._trackers[trackerType];
         if (!tracker) {
-            this._trackers[trackerType] = new (trackers[trackerType])(this.record, opts);
+            this._trackers[trackerType] = new trackers[trackerType](
+                this.record,
+                opts
+            );
         } else {
             tracker.configure(opts);
         }

@@ -3,12 +3,17 @@ import SignUp from '../../src/Auth/SignUp';
 import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, Input, Button, SelectInput, InputLabel } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import {
+    Header,
+    Footer,
+    Input,
+    Button,
+    SelectInput,
+    InputLabel,
+} from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import { PhoneField } from '../../src/Auth/PhoneField';
 
-const acceptedStates = [
-    'signUp'
-];
+const acceptedStates = ['signUp'];
 
 const deniedStates = [
     'signIn',
@@ -18,14 +23,14 @@ const deniedStates = [
     'signedIn',
     'confirmSignIn',
     'confirmSignUp',
-    'verifyContact'
+    'verifyContact',
 ];
 
 const mockResult = {
     user: {
-        username: 'testuser'
-    }
-}
+        username: 'testuser',
+    },
+};
 
 describe('signUp without signUpConfig prop', () => {
     describe('normal case', () => {
@@ -35,7 +40,7 @@ describe('signUp without signUpConfig prop', () => {
             for (let i = 0; i < acceptedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: acceptedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
                 expect(wrapper).toMatchSnapshot();
             }
@@ -46,7 +51,7 @@ describe('signUp without signUpConfig prop', () => {
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme,
-                    hide: [SignUp]
+                    hide: [SignUp],
                 });
                 expect(wrapper).toMatchSnapshot();
             }
@@ -56,47 +61,69 @@ describe('signUp without signUpConfig prop', () => {
             const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signUp')
+            const spyon = jest
+                .spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res(mockResult);
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
             const event_email = {
                 target: {
                     name: 'email',
-                    value: 'email@amazon.com'
-                }
+                    value: 'email@amazon.com',
+                },
             };
             const phone_number = '+12345678999';
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find(Input)
+                .at(2)
+                .simulate('change', event_email);
+            wrapper
+                .find(PhoneField)
+                .at(0)
+                .simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
 
-
-            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678999"}, "password": "abc", "username": "user1"});
+            expect(spyon).toBeCalledWith({
+                attributes: {
+                    email: 'email@amazon.com',
+                    phone_number: '+12345678999',
+                },
+                password: 'abc',
+                username: 'user1',
+            });
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
 
@@ -108,52 +135,70 @@ describe('signUp without signUpConfig prop', () => {
             const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signUp')
+            const spyon = jest
+                .spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res(mockResult);
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
             const event_email = {
                 target: {
                     name: 'email',
-                    value: 'email@amazon.com'
-                }
+                    value: 'email@amazon.com',
+                },
             };
 
             const phone_number = '+12345678901';
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find(Input)
+                .at(2)
+                .simulate('change', event_email);
+            wrapper
+                .find(PhoneField)
+                .at(0)
+                .simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
 
-            expect(spyon)
-                .toBeCalledWith({
-                    "attributes": { "email": "email@amazon.com", "phone_number": "+12345678901" },
-                    "password": "abc",
-                    "username": "user1"
-                });
+            expect(spyon).toBeCalledWith({
+                attributes: {
+                    email: 'email@amazon.com',
+                    phone_number: '+12345678901',
+                },
+                password: 'abc',
+                username: 'user1',
+            });
 
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
@@ -166,46 +211,61 @@ describe('signUp without signUpConfig prop', () => {
             const wrapper = shallow(<SignUp />);
             wrapper.setProps({
                 authState: 'signUp',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signUp')
+            const spyon = jest
+                .spyOn(Auth, 'signUp')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res(mockResult);
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
             const event_email = {
                 target: {
                     name: 'email',
-                    value: 'email@amazon.com'
-                }
+                    value: 'email@amazon.com',
+                },
             };
 
             const phone_number = undefined;
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find(Input).at(2).simulate('change', event_email);
-            wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find(Input)
+                .at(2)
+                .simulate('change', event_email);
+            wrapper
+                .find(PhoneField)
+                .at(0)
+                .simulate('changeText', phone_number);
             await wrapper.find(Button).simulate('click');
-
 
             expect(spyon).not.toBeCalled();
 
@@ -221,7 +281,7 @@ describe('signUp without signUpConfig prop', () => {
             for (let i = 0; i < deniedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: deniedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -233,11 +293,11 @@ describe('signUp without signUpConfig prop', () => {
 describe('signUp with signUpConfig', () => {
     let wrapper;
     beforeEach(() => {
-        wrapper = shallow(<SignUp/>);
-    })
+        wrapper = shallow(<SignUp />);
+    });
 
     test('render correctly with authState signUp', () => {
-        for (var i = 0; i < acceptedStates.length; i += 1){
+        for (var i = 0; i < acceptedStates.length; i += 1) {
             wrapper.setProps({
                 authState: acceptedStates[i],
                 theme: AmplifyTheme,
@@ -246,17 +306,17 @@ describe('signUp with signUpConfig', () => {
                         {
                             key: 'address',
                             label: 'Address',
-                            required: true
-                        }
-                    ]
-                }
+                            required: true,
+                        },
+                    ],
+                },
             });
             expect(wrapper).toMatchSnapshot();
         }
     });
 
     test('render correctly with hide', () => {
-        for (var i = 0; i < acceptedStates.length; i += 1){
+        for (var i = 0; i < acceptedStates.length; i += 1) {
             wrapper.setProps({
                 authState: acceptedStates[i],
                 theme: AmplifyTheme,
@@ -266,10 +326,10 @@ describe('signUp with signUpConfig', () => {
                         {
                             key: 'address',
                             label: 'Address',
-                            required: true
-                        }
-                    ]
-                }
+                            required: true,
+                        },
+                    ],
+                },
             });
             expect(wrapper).toMatchSnapshot();
         }
@@ -284,14 +344,16 @@ describe('signUp with signUpConfig', () => {
                     {
                         key: 'address',
                         label: 'Address',
-                        required: true
-                    }
-                ]
-            }
+                        required: true,
+                    },
+                ],
+            },
         });
-        const addressElementFound = wrapper.find({name: 'address'});
+        const addressElementFound = wrapper.find({ name: 'address' });
         const addressChildFound = wrapper.find(Input).at(3);
-        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+        expect(addressElementFound.props().name).toEqual(
+            addressChildFound.props().name
+        );
     });
 
     test('expect custom field to be first if display order is defined as 1, and it is prior to username alpabetically', () => {
@@ -304,14 +366,16 @@ describe('signUp with signUpConfig', () => {
                         key: 'address',
                         label: 'Address',
                         required: true,
-                        displayOrder: 1
-                    }
-                ]
-            }
+                        displayOrder: 1,
+                    },
+                ],
+            },
         });
-        const addressElementFound = wrapper.find({name: 'address'});
+        const addressElementFound = wrapper.find({ name: 'address' });
         const addressChildFound = wrapper.find(Input).at(0);
-        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+        expect(addressElementFound.props().name).toEqual(
+            addressChildFound.props().name
+        );
     });
 
     test('expect custom field to be second if display order is defined as 1, and it is after username alpabetically', () => {
@@ -324,14 +388,16 @@ describe('signUp with signUpConfig', () => {
                         key: 'z',
                         label: 'Z',
                         required: true,
-                        displayOrder: 1
-                    }
-                ]
-            }
+                        displayOrder: 1,
+                    },
+                ],
+            },
         });
-        const addressElementFound = wrapper.find({name: 'z'});
+        const addressElementFound = wrapper.find({ name: 'z' });
         const addressChildFound = wrapper.find(Input).at(1);
-        expect(addressElementFound.props().name).toEqual(addressChildFound.props().name);
+        expect(addressElementFound.props().name).toEqual(
+            addressChildFound.props().name
+        );
     });
 
     test('expect 5 fields to be present if hideAllDefaults is undefined', () => {
@@ -344,10 +410,10 @@ describe('signUp with signUpConfig', () => {
                         key: 'z',
                         label: 'Z',
                         required: true,
-                        displayOrder: 1
-                    }
-                ]
-            }
+                        displayOrder: 1,
+                    },
+                ],
+            },
         });
         expect(wrapper.find(Input).length).toEqual(4);
         expect(wrapper.find(PhoneField).length).toEqual(1);
@@ -364,10 +430,10 @@ describe('signUp with signUpConfig', () => {
                         key: 'z',
                         label: 'Z',
                         required: true,
-                        displayOrder: 1
-                    }
-                ]
-            }
+                        displayOrder: 1,
+                    },
+                ],
+            },
         });
         expect(wrapper.find(Input).length).toEqual(4);
         expect(wrapper.find(PhoneField).length).toEqual(1);
@@ -384,10 +450,10 @@ describe('signUp with signUpConfig', () => {
                         key: 'z',
                         label: 'Z',
                         required: true,
-                        displayOrder: 1
-                    }
-                ]
-            }
+                        displayOrder: 1,
+                    },
+                ],
+            },
         });
         expect(wrapper.find(Input).length).toEqual(1);
     });
@@ -407,21 +473,21 @@ describe('signUp with signUpConfig', () => {
                         key: 'username',
                         label: 'NEW USERNAME LABEL',
                         required: true,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
 
-        const signup = new SignUp;
-        const defaultUsernameLabel = signup.defaultSignUpFields.find((i) => {
-            return i.key === 'username'
+        const signup = new SignUp();
+        const defaultUsernameLabel = signup.defaultSignUpFields.find(i => {
+            return i.key === 'username';
         }).label;
 
-        const customUsername = wrapper.find(InputLabel).findWhere((el) => {
+        const customUsername = wrapper.find(InputLabel).findWhere(el => {
             return el.text() === 'NEW USERNAME LABEL';
         });
 
-        const originalUsername = wrapper.find(InputLabel).findWhere((el) => {
+        const originalUsername = wrapper.find(InputLabel).findWhere(el => {
             return el.text() === defaultUsernameLabel;
         });
 
@@ -429,7 +495,7 @@ describe('signUp with signUpConfig', () => {
         expect(originalUsername.length).toEqual(0);
     });
 
-   test('default dial code should be set to passed defaultCountryCode', () => {
+    test('default dial code should be set to passed defaultCountryCode', () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -445,16 +511,16 @@ describe('signUp with signUpConfig', () => {
                         key: 'username',
                         label: 'NEW USERNAME LABEL',
                         required: true,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
 
         let phoneField = wrapper.find(PhoneField).at(0);
         expect(phoneField.props().defaultDialCode).toEqual('+51');
-   });
+    });
 
-   test('signUp should not complete if required field is not filled out', async () => {
+    test('signUp should not complete if required field is not filled out', async () => {
         wrapper.setProps({
             authState: 'signUp',
             theme: AmplifyTheme,
@@ -470,61 +536,72 @@ describe('signUp with signUpConfig', () => {
                         key: 'username',
                         label: 'NEW USERNAME LABEL',
                         required: true,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
 
-        const spyon = jest.spyOn(Auth, 'signUp')
-        .mockImplementationOnce((user, password) => {
-            return new Promise((res, rej) => {
-                res(mockResult);
+        const spyon = jest
+            .spyOn(Auth, 'signUp')
+            .mockImplementationOnce((user, password) => {
+                return new Promise((res, rej) => {
+                    res(mockResult);
+                });
             });
-        });
 
         const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
 
         const event_username = {
             target: {
                 name: 'username',
-                value: 'user1'
-            }
-        }
+                value: 'user1',
+            },
+        };
         const event_password = {
             target: {
                 name: 'password',
-                value: 'abc'
-            }
-        }
+                value: 'abc',
+            },
+        };
 
         const event_email = {
             target: {
                 name: 'email',
-                value: 'email@amazon.com'
-            }
-        }
+                value: 'email@amazon.com',
+            },
+        };
         const event_phone = {
             target: {
                 name: 'phone_line_number',
-                value: '2345678999'
-            }
-        }
+                value: '2345678999',
+            },
+        };
         const dial_code = {
             target: {
                 name: 'dial_code',
-                value: '+1'
-            }
-        }
+                value: '+1',
+            },
+        };
 
-        wrapper.find(Input).at(0).simulate('change', event_username);
-        wrapper.find(Input).at(1).simulate('change', event_password);
-        wrapper.find(Input).at(2).simulate('change', event_email);
-        wrapper.find(Input).at(3).simulate('change', event_phone);
+        wrapper
+            .find(Input)
+            .at(0)
+            .simulate('change', event_username);
+        wrapper
+            .find(Input)
+            .at(1)
+            .simulate('change', event_password);
+        wrapper
+            .find(Input)
+            .at(2)
+            .simulate('change', event_email);
+        wrapper
+            .find(Input)
+            .at(3)
+            .simulate('change', event_phone);
         await wrapper.find(Button).simulate('click');
 
-
         expect(spyon).not.toBeCalled();
-
     });
 
     test('signUp should  complete if optional field is not filled out', async () => {
@@ -543,50 +620,61 @@ describe('signUp with signUpConfig', () => {
                         key: 'username',
                         label: 'NEW USERNAME LABEL',
                         required: true,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
 
-        const spyon = jest.spyOn(Auth, 'signUp')
-        .mockImplementationOnce((user, password) => {
-            return new Promise((res, rej) => {
-                res(mockResult);
+        const spyon = jest
+            .spyOn(Auth, 'signUp')
+            .mockImplementationOnce((user, password) => {
+                return new Promise((res, rej) => {
+                    res(mockResult);
+                });
             });
-        });
 
         const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
 
         const event_username = {
             target: {
                 name: 'username',
-                value: 'user1'
-            }
-        }
+                value: 'user1',
+            },
+        };
         const event_password = {
             target: {
                 name: 'password',
-                value: 'abc'
-            }
-        }
+                value: 'abc',
+            },
+        };
 
         const event_email = {
             target: {
                 name: 'email',
-                value: 'email@amazon.com'
-            }
-        }
+                value: 'email@amazon.com',
+            },
+        };
         const phone_number = '+12345678999';
 
-        wrapper.find(Input).at(0).simulate('change', event_username);
-        wrapper.find(Input).at(1).simulate('change', event_password);
-        wrapper.find(Input).at(2).simulate('change', event_email);
-        wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+        wrapper
+            .find(Input)
+            .at(0)
+            .simulate('change', event_username);
+        wrapper
+            .find(Input)
+            .at(1)
+            .simulate('change', event_password);
+        wrapper
+            .find(Input)
+            .at(2)
+            .simulate('change', event_email);
+        wrapper
+            .find(PhoneField)
+            .at(0)
+            .simulate('changeText', phone_number);
         await wrapper.find(Button).simulate('click');
 
-
         expect(spyon).toBeCalled();
-
     });
 
     test('signUp should  complete if required field is filled out', async () => {
@@ -605,97 +693,122 @@ describe('signUp with signUpConfig', () => {
                         key: 'username',
                         label: 'NEW USERNAME LABEL',
                         required: true,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
 
-        const spyon = jest.spyOn(Auth, 'signUp')
-        .mockImplementationOnce((user, password) => {
-            return new Promise((res, rej) => {
-                res(mockResult);
+        const spyon = jest
+            .spyOn(Auth, 'signUp')
+            .mockImplementationOnce((user, password) => {
+                return new Promise((res, rej) => {
+                    res(mockResult);
+                });
             });
-        });
 
         const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
 
         const event_username = {
             target: {
                 name: 'username',
-                value: 'user1'
-            }
-        }
+                value: 'user1',
+            },
+        };
         const event_password = {
             target: {
                 name: 'password',
-                value: 'abc'
-            }
-        }
+                value: 'abc',
+            },
+        };
 
         const event_email = {
             target: {
                 name: 'email',
-                value: 'email@amazon.com'
-            }
-        }
+                value: 'email@amazon.com',
+            },
+        };
         const phone_number = '+12345678999';
         const event_z = {
             target: {
                 name: 'z',
-                value: '1'
-            }
-        }
+                value: '1',
+            },
+        };
 
-        wrapper.find(Input).at(0).simulate('change', event_username);
-        wrapper.find(Input).at(1).simulate('change', event_password);
-        wrapper.find(Input).at(2).simulate('change', event_email);
-        wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
-        wrapper.find(Input).at(3).simulate('change', event_z);
+        wrapper
+            .find(Input)
+            .at(0)
+            .simulate('change', event_username);
+        wrapper
+            .find(Input)
+            .at(1)
+            .simulate('change', event_password);
+        wrapper
+            .find(Input)
+            .at(2)
+            .simulate('change', event_email);
+        wrapper
+            .find(PhoneField)
+            .at(0)
+            .simulate('changeText', phone_number);
+        wrapper
+            .find(Input)
+            .at(3)
+            .simulate('change', event_z);
         await wrapper.find(Button).simulate('click');
 
         expect(spyon).toBeCalled();
-
     });
 
     test('signUp should complete even if phone field is hidden', async () => {
         wrapper.setProps({
             authState: 'signUp',
             signUpConfig: {
-                hiddenDefaults: ["phone_number"]
-            }
+                hiddenDefaults: ['phone_number'],
+            },
         });
 
-        const spyon = jest.spyOn(Auth, 'signUp')
-        .mockImplementationOnce((user, password) => {
-            return new Promise((res, rej) => {
-                res(mockResult);
+        const spyon = jest
+            .spyOn(Auth, 'signUp')
+            .mockImplementationOnce((user, password) => {
+                return new Promise((res, rej) => {
+                    res(mockResult);
+                });
             });
-        });
 
         const event_username = {
             target: {
                 name: 'username',
-                value: 'user1'
-            }
-        }
+                value: 'user1',
+            },
+        };
 
         const event_password = {
             target: {
                 name: 'password',
-                value: 'abc'
-            }
-        }
+                value: 'abc',
+            },
+        };
 
         const event_email = {
             target: {
                 name: 'email',
-                value: 'email@amazon.com'
-            }
-        }
+                value: 'email@amazon.com',
+            },
+        };
 
-        wrapper.find(Input).at(0).simulate('change', event_username);
-        wrapper.find(Input).at(1).simulate('change', event_password);
-        wrapper.find(Input).at(2).simulate('change', event_email);
+        wrapper
+            .find(Input)
+            .at(0)
+            .simulate('change', event_username);
+        wrapper
+            .find(Input)
+            .at(1)
+            .simulate('change', event_password);
+        wrapper
+            .find(Input)
+            .at(2)
+            .simulate('change', event_email);
         await wrapper.find(Button).simulate('click');
 
         expect(spyon).toBeCalled();

@@ -18,10 +18,12 @@ const Linking = {};
 const AppState = {
     addEventListener(action, handler) {
         return;
-    }
+    },
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = JS.browserOrNode().isBrowser ? new MemoryStorage().getStorage() : undefined;
+const AsyncStorage = JS.browserOrNode().isBrowser
+    ? new MemoryStorage().getStorage()
+    : undefined;
 
 export { Linking, AppState, AsyncStorage };

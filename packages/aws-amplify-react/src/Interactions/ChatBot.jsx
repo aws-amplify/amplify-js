@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
-import { Input, Button } from "../AmplifyTheme";
+import {
+    Container,
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+} from '../AmplifyUI';
+import { Input, Button } from '../AmplifyTheme';
 
 import { I18n } from '@aws-amplify/core';
 import Interactions from '@aws-amplify/interactions';
@@ -16,11 +22,11 @@ const styles = {
         fontSize: 12,
         color: 'gray',
         marginTop: 4,
-        textAlign: 'right'
+        textAlign: 'right',
     },
     itemBot: {
         fontSize: 12,
-        textAlign: 'left'
+        textAlign: 'left',
     },
     list: {
         height: '300px',
@@ -37,22 +43,22 @@ const styles = {
     mic: Object.assign({}, Button, {
         width: '40px',
         float: 'right',
-    })
+    }),
 };
 
 const STATES = {
-    INITIAL: { MESSAGE: 'Type your message or click  🎤',  ICON: '🎤'},
-    LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴'},
-    SENDING: { MESSAGE: 'Please wait...', ICON: '🔊'},
-    SPEAKING: { MESSAGE: 'Speaking...', ICON: '...'}
+    INITIAL: { MESSAGE: 'Type your message or click  🎤', ICON: '🎤' },
+    LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴' },
+    SENDING: { MESSAGE: 'Please wait...', ICON: '🔊' },
+    SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' },
 };
 
 const defaultVoiceConfig = {
     silenceDetectionConfig: {
         time: 2000,
-        amplitude: 0.2
-    }   
-}
+        amplitude: 0.2,
+    },
+};
 
 let audioControl;
 
@@ -69,81 +75,93 @@ export class ChatBot extends Component {
             styles.textInput = Object.assign({}, Input, {
                 display: 'inline-block',
                 width: 'calc(100% - 40px - 15px)',
-            })
+            });
         }
         if (this.props.textEnabled && !this.props.voiceEnabled) {
             STATES.INITIAL.MESSAGE = 'Type a message';
             styles.textInput = Object.assign({}, Input, {
                 display: 'inline-block',
                 width: 'calc(100% - 60px - 15px)',
-            })
+            });
         }
         if (!this.props.voiceConfig.silenceDetectionConfig) {
-            throw new Error('voiceConfig prop is missing silenceDetectionConfig');
+            throw new Error(
+                'voiceConfig prop is missing silenceDetectionConfig'
+            );
         }
 
         this.state = {
-            dialog: [{
-                message: this.props.welcomeMessage || 'Welcome to Lex',
-                from: 'system'
-            }],
+            dialog: [
+                {
+                    message: this.props.welcomeMessage || 'Welcome to Lex',
+                    from: 'system',
+                },
+            ],
             inputText: '',
             currentVoiceState: STATES.INITIAL,
             inputDisabled: false,
             micText: STATES.INITIAL.ICON,
             continueConversation: false,
             micButtonDisabled: false,
-        }
-        this.micButtonHandler = this.micButtonHandler.bind(this)
+        };
+        this.micButtonHandler = this.micButtonHandler.bind(this);
         this.changeInputText = this.changeInputText.bind(this);
         this.listItems = this.listItems.bind(this);
         this.submit = this.submit.bind(this);
         this.listItemsRef = React.createRef();
-        this.onSilenceHandler = this.onSilenceHandler.bind(this)
-        this.doneSpeakingHandler = this.doneSpeakingHandler.bind(this)
-        this.lexResponseHandler = this.lexResponseHandler.bind(this)
+        this.onSilenceHandler = this.onSilenceHandler.bind(this);
+        this.doneSpeakingHandler = this.doneSpeakingHandler.bind(this);
+        this.lexResponseHandler = this.lexResponseHandler.bind(this);
     }
 
     async micButtonHandler() {
         if (this.state.continueConversation) {
             this.reset();
         } else {
-            this.setState({
-                inputDisabled: true,
-                continueConversation: true,
-                currentVoiceState: STATES.LISTENING,
-                micText: STATES.LISTENING.ICON,
-                micButtonDisabled: false,
-            }, () => {
-                audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
-            })
-            
+            this.setState(
+                {
+                    inputDisabled: true,
+                    continueConversation: true,
+                    currentVoiceState: STATES.LISTENING,
+                    micText: STATES.LISTENING.ICON,
+                    micButtonDisabled: false,
+                },
+                () => {
+                    audioControl.startRecording(
+                        this.onSilenceHandler,
+                        null,
+                        this.props.voiceConfig.silenceDetectionConfig
+                    );
+                }
+            );
         }
     }
-
 
     onSilenceHandler() {
         audioControl.stopRecording();
         if (!this.state.continueConversation) {
             return;
         }
-        audioControl.exportWAV((blob) => {
-            this.setState({
-                currentVoiceState: STATES.SENDING,
-                audioInput: blob,
-                micText: STATES.SENDING.ICON,
-                micButtonDisabled: true,
-            }, () => {
-                this.lexResponseHandler(); 
-            })
-            
+        audioControl.exportWAV(blob => {
+            this.setState(
+                {
+                    currentVoiceState: STATES.SENDING,
+                    audioInput: blob,
+                    micText: STATES.SENDING.ICON,
+                    micButtonDisabled: true,
+                },
+                () => {
+                    this.lexResponseHandler();
+                }
+            );
         });
     }
 
-
     async lexResponseHandler() {
         if (!Interactions || typeof Interactions.send !== 'function') {
-            throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+            throw new Error(
+                'No Interactions module found, please ensure @aws-amplify/interactions is imported'
+            );
         }
         if (!this.state.continueConversation) {
             return;
@@ -152,25 +170,32 @@ export class ChatBot extends Component {
         const interactionsMessage = {
             content: this.state.audioInput,
             options: {
-                messageType: 'voice'
-            }
+                messageType: 'voice',
+            },
         };
 
-        const response = await Interactions.send(this.props.botName, interactionsMessage);
-        this.setState({
-            lexResponse: response,
-            currentVoiceState: STATES.SPEAKING,
-            micText: STATES.SPEAKING.ICON,
-            micButtonDisabled: true,
-            dialog: [...this.state.dialog, 
-                { message: response.inputTranscript, from: 'me' }, 
-                response && { from: 'bot', message: response.message }],
-            inputText: ''
-        }, () => { 
-            this.doneSpeakingHandler();
-        }) 
+        const response = await Interactions.send(
+            this.props.botName,
+            interactionsMessage
+        );
+        this.setState(
+            {
+                lexResponse: response,
+                currentVoiceState: STATES.SPEAKING,
+                micText: STATES.SPEAKING.ICON,
+                micButtonDisabled: true,
+                dialog: [
+                    ...this.state.dialog,
+                    { message: response.inputTranscript, from: 'me' },
+                    response && { from: 'bot', message: response.message },
+                ],
+                inputText: '',
+            },
+            () => {
+                this.doneSpeakingHandler();
+            }
+        );
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
-        
     }
 
     doneSpeakingHandler() {
@@ -179,26 +204,35 @@ export class ChatBot extends Component {
         }
         if (this.state.lexResponse.contentType === 'audio/mpeg') {
             audioControl.play(this.state.lexResponse.audioStream, () => {
-                if (this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
+                if (
+                    this.state.lexResponse.dialogState ===
+                        'ReadyForFulfillment' ||
                     this.state.lexResponse.dialogState === 'Fulfilled' ||
                     this.state.lexResponse.dialogState === 'Failed' ||
-                    !this.props.conversationModeOn) {
+                    !this.props.conversationModeOn
+                ) {
                     this.setState({
                         inputDisabled: false,
                         currentVoiceState: STATES.INITIAL,
                         micText: STATES.INITIAL.ICON,
                         micButtonDisabled: false,
-                        continueConversation: false
-                    })
+                        continueConversation: false,
+                    });
                 } else {
-                    this.setState({
-                        currentVoiceState: STATES.LISTENING,
-                        micText: STATES.LISTENING.ICON,
-                        micButtonDisabled: false,
-                    }, () => {
-                        audioControl.startRecording(this.onSilenceHandler, null, this.props.voiceConfig.silenceDetectionConfig);
-                    })
-                    
+                    this.setState(
+                        {
+                            currentVoiceState: STATES.LISTENING,
+                            micText: STATES.LISTENING.ICON,
+                            micButtonDisabled: false,
+                        },
+                        () => {
+                            audioControl.startRecording(
+                                this.onSilenceHandler,
+                                null,
+                                this.props.voiceConfig.silenceDetectionConfig
+                            );
+                        }
+                    );
                 }
             });
         } else {
@@ -207,30 +241,48 @@ export class ChatBot extends Component {
                 currentVoiceState: STATES.INITIAL,
                 micText: STATES.INITIAL.ICON,
                 micButtonDisabled: false,
-                continueConversation: false
-            })
+                continueConversation: false,
+            });
         }
-
     }
 
     reset() {
-        this.setState({
-            inputText: '',
-            currentVoiceState: STATES.INITIAL,
-            inputDisabled: false,
-            micText: STATES.INITIAL.ICON,
-            continueConversation: false,
-            micButtonDisabled: false,
-        }, () => {
-            audioControl.clear();
-        });
+        this.setState(
+            {
+                inputText: '',
+                currentVoiceState: STATES.INITIAL,
+                inputDisabled: false,
+                micText: STATES.INITIAL.ICON,
+                continueConversation: false,
+                micButtonDisabled: false,
+            },
+            () => {
+                audioControl.clear();
+            }
+        );
     }
 
     listItems() {
         return this.state.dialog.map((m, i) => {
-            if (m.from === 'me') { return <div key={i} style={styles.itemMe}>{m.message}</div>; }
-            else if (m.from === 'system') { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
-            else { return <div key={i} style={styles.itemBot}>{m.message}</div>; }
+            if (m.from === 'me') {
+                return (
+                    <div key={i} style={styles.itemMe}>
+                        {m.message}
+                    </div>
+                );
+            } else if (m.from === 'system') {
+                return (
+                    <div key={i} style={styles.itemBot}>
+                        {m.message}
+                    </div>
+                );
+            } else {
+                return (
+                    <div key={i} style={styles.itemBot}>
+                        {m.message}
+                    </div>
+                );
+            }
         });
     }
 
@@ -241,22 +293,35 @@ export class ChatBot extends Component {
             return;
         }
 
-        await new Promise(resolve => this.setState({
-            dialog: [
-                ...this.state.dialog,
-                { message: this.state.inputText, from: 'me' },
-            ]
-        }, resolve));
+        await new Promise(resolve =>
+            this.setState(
+                {
+                    dialog: [
+                        ...this.state.dialog,
+                        { message: this.state.inputText, from: 'me' },
+                    ],
+                },
+                resolve
+            )
+        );
 
         if (!Interactions || typeof Interactions.send !== 'function') {
-            throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+            throw new Error(
+                'No Interactions module found, please ensure @aws-amplify/interactions is imported'
+            );
         }
 
-        const response = await Interactions.send(this.props.botName, this.state.inputText);
+        const response = await Interactions.send(
+            this.props.botName,
+            this.state.inputText
+        );
 
         this.setState({
-            dialog: [...this.state.dialog, response && { from: 'bot', message: response.message }],
-            inputText: ''
+            dialog: [
+                ...this.state.dialog,
+                response && { from: 'bot', message: response.message },
+            ],
+            inputText: '',
         });
         this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
     }
@@ -266,7 +331,7 @@ export class ChatBot extends Component {
     }
 
     getOnComplete(fn) {
-        return  (...args) => {
+        return (...args) => {
             const { clearOnComplete } = this.props;
             const message = fn(...args);
 
@@ -274,7 +339,7 @@ export class ChatBot extends Component {
                 {
                     dialog: [
                         ...(!clearOnComplete && this.state.dialog),
-                        message && { from: 'bot', message }
+                        message && { from: 'bot', message },
                     ].filter(Boolean),
                 },
                 () => {
@@ -285,24 +350,40 @@ export class ChatBot extends Component {
     }
 
     componentDidMount() {
-        const {onComplete, botName} = this.props;
+        const { onComplete, botName } = this.props;
 
-        if(onComplete && botName) {
-            if (!Interactions || typeof Interactions.onComplete !== 'function') {
-                throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+        if (onComplete && botName) {
+            if (
+                !Interactions ||
+                typeof Interactions.onComplete !== 'function'
+            ) {
+                throw new Error(
+                    'No Interactions module found, please ensure @aws-amplify/interactions is imported'
+                );
             }
-            Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
+            Interactions.onComplete(
+                botName,
+                this.getOnComplete(onComplete, this)
+            );
         }
     }
 
     componentDidUpdate(prevProps) {
-        const {onComplete, botName} = this.props;
+        const { onComplete, botName } = this.props;
 
         if (botName && this.props.onComplete !== prevProps.onComplete) {
-            if (!Interactions || typeof Interactions.onComplete !== 'function') {
-                throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+            if (
+                !Interactions ||
+                typeof Interactions.onComplete !== 'function'
+            ) {
+                throw new Error(
+                    'No Interactions module found, please ensure @aws-amplify/interactions is imported'
+                );
             }
-            Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
+            Interactions.onComplete(
+                botName,
+                this.getOnComplete(onComplete, this)
+            );
         }
     }
 
@@ -311,24 +392,30 @@ export class ChatBot extends Component {
 
         return (
             <FormSection theme={theme}>
-                {title && <SectionHeader theme={theme}>{I18n.get(title)}</SectionHeader>}
+                {title && (
+                    <SectionHeader theme={theme}>
+                        {I18n.get(title)}
+                    </SectionHeader>
+                )}
                 <SectionBody theme={theme}>
-                    <div ref={this.listItemsRef} style={styles.list}>{this.listItems()}</div>
-                   </SectionBody>
+                    <div ref={this.listItemsRef} style={styles.list}>
+                        {this.listItems()}
+                    </div>
+                </SectionBody>
                 <SectionFooter theme={theme}>
                     <ChatBotInputs
-                        micText={this.state.micText} 
-                        voiceEnabled={this.props.voiceEnabled} 
-                        textEnabled={this.props.textEnabled} 
-                        styles={styles} 
+                        micText={this.state.micText}
+                        voiceEnabled={this.props.voiceEnabled}
+                        textEnabled={this.props.textEnabled}
+                        styles={styles}
                         onChange={this.changeInputText}
                         inputText={this.state.inputText}
                         onSubmit={this.submit}
                         inputDisabled={this.state.inputDisabled}
                         micButtonDisabled={this.state.micButtonDisabled}
                         handleMicButton={this.micButtonHandler}
-                        currentVoiceState={this.state.currentVoiceState}>
-                    </ChatBotInputs>
+                        currentVoiceState={this.state.currentVoiceState}
+                    ></ChatBotInputs>
                 </SectionFooter>
             </FormSection>
         );
@@ -336,22 +423,22 @@ export class ChatBot extends Component {
 }
 
 function ChatBotTextInput(props) {
-    const styles=props.styles
-    const onChange=props.onChange
-    const inputText=props.inputText
-    const inputDisabled=props.inputDisabled
-    const currentVoiceState=props.currentVoiceState
+    const styles = props.styles;
+    const onChange = props.onChange;
+    const inputText = props.inputText;
+    const inputDisabled = props.inputDisabled;
+    const currentVoiceState = props.currentVoiceState;
 
-    return(
+    return (
         <input
             style={styles.textInput}
-            type='text'
+            type="text"
             placeholder={I18n.get(currentVoiceState.MESSAGE)}
             onChange={onChange}
             value={inputText}
-            disabled={inputDisabled}>
-        </input>
-    )
+            disabled={inputDisabled}
+        ></input>
+    );
 }
 
 function ChatBotMicButton(props) {
@@ -362,17 +449,18 @@ function ChatBotMicButton(props) {
     const micText = props.micText;
 
     if (!voiceEnabled) {
-        return null
+        return null;
     }
 
-    return(
-        <button 
-            style={styles.mic} 
-            disabled={micButtonDisabled} 
-            onClick={handleMicButton}>
-            {micText}    
+    return (
+        <button
+            style={styles.mic}
+            disabled={micButtonDisabled}
+            onClick={handleMicButton}
+        >
+            {micText}
         </button>
-    )
+    );
 }
 
 function ChatBotTextButton(props) {
@@ -384,14 +472,11 @@ function ChatBotTextButton(props) {
         return null;
     }
 
-    return(
-        <button 
-            type="submit" 
-            style={styles.button} 
-            disabled={inputDisabled}>
+    return (
+        <button type="submit" style={styles.button} disabled={inputDisabled}>
             {I18n.get('Send')}
         </button>
-    )
+    );
 }
 
 function ChatBotInputs(props) {
@@ -405,22 +490,27 @@ function ChatBotInputs(props) {
     const onSubmit = props.onSubmit;
     const handleMicButton = props.handleMicButton;
     const micText = props.micText;
-    const currentVoiceState = props.currentVoiceState
+    const currentVoiceState = props.currentVoiceState;
 
     if (voiceEnabled && !textEnabled) {
         inputDisabled = true;
     }
 
     if (!voiceEnabled && !textEnabled) {
-        return(<div>No Chatbot inputs enabled. Set at least one of voiceEnabled or textEnabled in the props. </div>)
+        return (
+            <div>
+                No Chatbot inputs enabled. Set at least one of voiceEnabled or
+                textEnabled in the props.{' '}
+            </div>
+        );
     }
-    
+
     return (
         <form onSubmit={onSubmit}>
             <ChatBotTextInput
                 onSubmit={onSubmit}
                 styles={styles}
-                type='text'
+                type="text"
                 currentVoiceState={currentVoiceState}
                 onChange={onChange}
                 inputText={inputText}
@@ -428,19 +518,20 @@ function ChatBotInputs(props) {
             />
             <ChatBotTextButton
                 onSubmit={onSubmit}
-                type="submit" 
+                type="submit"
                 styles={styles}
                 inputDisabled={inputDisabled}
                 textEnabled={textEnabled}
             />
             <ChatBotMicButton
                 styles={styles}
-                micButtonDisabled={micButtonDisabled} 
-                handleMicButton={handleMicButton}  
+                micButtonDisabled={micButtonDisabled}
+                handleMicButton={handleMicButton}
                 micText={micText}
                 voiceEnabled={voiceEnabled}
             />
-        </form>);
+        </form>
+    );
 }
 
 ChatBot.defaultProps = {
@@ -451,7 +542,7 @@ ChatBot.defaultProps = {
     voiceConfig: defaultVoiceConfig,
     conversationModeOn: false,
     voiceEnabled: false,
-    textEnabled: true
+    textEnabled: true,
 };
 
 export default ChatBot;

@@ -45,17 +45,18 @@ export default class RequireNewPassword extends AuthPiece {
 
     checkContact(user) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
+        Auth.verifiedContact(user).then(data => {
+            if (!JS.isEmpty(data.verified)) {
+                this.changeState('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.changeState('verifyContact', user);
+            }
+        });
     }
 
     change() {
@@ -65,7 +66,9 @@ export default class RequireNewPassword extends AuthPiece {
         const attrs = objectWithProperties(this.inputs, requiredAttributes);
 
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.completeNewPassword(user, password, attrs)
             .then(user => {
@@ -84,15 +87,28 @@ export default class RequireNewPassword extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
-        if (hide && hide.includes(RequireNewPassword)) { return null; }
+        if (hide && hide.includes(RequireNewPassword)) {
+            return null;
+        }
 
         const user = this.props.authData;
         const { requiredAttributes } = user.challengeParam;
 
         return (
-            <FormSection theme={theme} data-test={auth.requireNewPassword.section}>
-                <SectionHeader theme={theme} data-test={auth.requireNewPassword.headerSection}>{I18n.get('Change Password')}</SectionHeader>
-                <SectionBody theme={theme} data-test={auth.requireNewPassword.bodySection}>
+            <FormSection
+                theme={theme}
+                data-test={auth.requireNewPassword.section}
+            >
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.requireNewPassword.headerSection}
+                >
+                    {I18n.get('Change Password')}
+                </SectionHeader>
+                <SectionBody
+                    theme={theme}
+                    data-test={auth.requireNewPassword.bodySection}
+                >
                     <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
@@ -104,18 +120,18 @@ export default class RequireNewPassword extends AuthPiece {
                         data-test={auth.requireNewPassword.newPasswordInput}
                     />
 
-                    {requiredAttributes
-                        .map(attribute => (
-                            <Input
-                                placeholder={I18n.get(convertToPlaceholder(attribute))}
-                                theme={theme}
-                                key={attribute}
-                                name={attribute}
-                                type="text"
-                                onChange={this.handleInputChange}
-                            />
-                        ))}
-
+                    {requiredAttributes.map(attribute => (
+                        <Input
+                            placeholder={I18n.get(
+                                convertToPlaceholder(attribute)
+                            )}
+                            theme={theme}
+                            key={attribute}
+                            name={attribute}
+                            type="text"
+                            onChange={this.handleInputChange}
+                        />
+                    ))}
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
@@ -128,18 +144,23 @@ export default class RequireNewPassword extends AuthPiece {
                             theme={theme}
                             onClick={() => this.changeState('signIn')}
                             data-test={auth.requireNewPassword.backToSignInLink}
-                            >
+                        >
                             {I18n.get('Back to Sign In')}
                         </Link>
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
-        )
+        );
     }
 }
 
 function convertToPlaceholder(str) {
-    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+    return str
+        .split('_')
+        .map(
+            part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()
+        )
+        .join(' ');
 }
 
 function objectWithProperties(obj, keys) {

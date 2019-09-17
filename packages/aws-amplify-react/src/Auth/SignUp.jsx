@@ -35,16 +35,15 @@ import {
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 import countryDialCodes from './common/country-dial-codes.js';
-import signUpWithUsernameFields, { 
-    signUpWithEmailFields, 
-    signUpWithPhoneNumberFields
- } from './common/default-sign-up-fields'
+import signUpWithUsernameFields, {
+    signUpWithEmailFields,
+    signUpWithPhoneNumberFields,
+} from './common/default-sign-up-fields';
 import { UsernameAttributes } from './common/types';
 import { valid } from 'semver';
 import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
-
 
 export default class SignUp extends AuthPiece {
     constructor(props) {
@@ -56,11 +55,15 @@ export default class SignUp extends AuthPiece {
         this.getDefaultDialCode = this.getDefaultDialCode.bind(this);
         this.checkCustomSignUpFields = this.checkCustomSignUpFields.bind(this);
         this.needPrefix = this.needPrefix.bind(this);
-        this.header = (this.props && 
-            this.props.signUpConfig && 
-            this.props.signUpConfig.header) ? this.props.signUpConfig.header : 'Create a new account';
-            
-        const { usernameAttributes=UsernameAttributes.USERNAME } = this.props || {};
+        this.header =
+            this.props &&
+            this.props.signUpConfig &&
+            this.props.signUpConfig.header
+                ? this.props.signUpConfig.header
+                : 'Create a new account';
+
+        const { usernameAttributes = UsernameAttributes.USERNAME } =
+            this.props || {};
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             this.defaultSignUpFields = signUpWithEmailFields;
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
@@ -72,107 +75,117 @@ export default class SignUp extends AuthPiece {
 
     validate() {
         const invalids = [];
-        this.signUpFields.map((el) => {
-          if (el.key !== 'phone_number') {
-            if (el.required && !this.inputs[el.key]) {
-              el.invalid = true;
-              invalids.push(el.label);
+        this.signUpFields.map(el => {
+            if (el.key !== 'phone_number') {
+                if (el.required && !this.inputs[el.key]) {
+                    el.invalid = true;
+                    invalids.push(el.label);
+                } else {
+                    el.invalid = false;
+                }
             } else {
-              el.invalid = false;
-            }        
-          } else {
-            if (el.required && (!this.phone_number)) {
-              el.invalid = true;
-              invalids.push(el.label);
-            } else {
-              el.invalid = false;
+                if (el.required && !this.phone_number) {
+                    el.invalid = true;
+                    invalids.push(el.label);
+                } else {
+                    el.invalid = false;
+                }
             }
-          }
         });
         return invalids;
     }
 
     sortFields() {
-
-        if (this.props.signUpConfig && this.props.signUpConfig.hiddenDefaults && this.props.signUpConfig.hiddenDefaults.length > 0){
-            this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
-              return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
+        if (
+            this.props.signUpConfig &&
+            this.props.signUpConfig.hiddenDefaults &&
+            this.props.signUpConfig.hiddenDefaults.length > 0
+        ) {
+            this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
+                return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
             });
         }
 
         if (this.checkCustomSignUpFields()) {
+            if (
+                !this.props.signUpConfig ||
+                !this.props.signUpConfig.hideAllDefaults
+            ) {
+                // see if fields passed to component should override defaults
+                this.defaultSignUpFields.forEach((f, i) => {
+                    const matchKey = this.signUpFields.findIndex(d => {
+                        return d.key === f.key;
+                    });
+                    if (matchKey === -1) {
+                        this.signUpFields.push(f);
+                    }
+                });
+            }
 
-          if (!this.props.signUpConfig || !this.props.signUpConfig.hideAllDefaults) {
-            // see if fields passed to component should override defaults
-            this.defaultSignUpFields.forEach((f, i) => {
-              const matchKey = this.signUpFields.findIndex((d) => {
-                return d.key === f.key;
-              });
-              if (matchKey === -1) {
-                this.signUpFields.push(f);
-              }
-            });
-          }
-    
-          /* 
+            /* 
             sort fields based on following rules:
             1. Fields with displayOrder are sorted before those without displayOrder
             2. Fields with conflicting displayOrder are sorted alphabetically by key
             3. Fields without displayOrder are sorted alphabetically by key
           */
-          this.signUpFields.sort((a, b) => {
-            if (a.displayOrder && b.displayOrder) {
-              if (a.displayOrder < b.displayOrder) {
-                return -1;
-              } else if (a.displayOrder > b.displayOrder) {
-                return 1;
-              } else {
-                if (a.key < b.key) {
-                  return -1;
-                } else {
-                  return 1;
+            this.signUpFields.sort((a, b) => {
+                if (a.displayOrder && b.displayOrder) {
+                    if (a.displayOrder < b.displayOrder) {
+                        return -1;
+                    } else if (a.displayOrder > b.displayOrder) {
+                        return 1;
+                    } else {
+                        if (a.key < b.key) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                } else if (!a.displayOrder && b.displayOrder) {
+                    return 1;
+                } else if (a.displayOrder && !b.displayOrder) {
+                    return -1;
+                } else if (!a.displayOrder && !b.displayOrder) {
+                    if (a.key < b.key) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
                 }
-              }
-            } else if (!a.displayOrder && b.displayOrder) {
-              return 1;
-            } else if (a.displayOrder && !b.displayOrder) {
-              return -1;
-            } else if (!a.displayOrder && !b.displayOrder) {
-              if (a.key < b.key) {
-                return -1;
-              } else {
-                return 1;
-              }
-            }
-          });
+            });
         } else {
-          this.signUpFields = this.defaultSignUpFields;
+            this.signUpFields = this.defaultSignUpFields;
         }
     }
 
     needPrefix(key) {
         const field = this.signUpFields.find(e => e.key === key);
         if (key.indexOf('custom:') !== 0) {
-          return field.custom ;
+            return field.custom;
         } else if (key.indexOf('custom:') === 0 && field.custom === false) {
-            logger.warn('Custom prefix prepended to key but custom field flag is set to false; retaining manually entered prefix');
-          
+            logger.warn(
+                'Custom prefix prepended to key but custom field flag is set to false; retaining manually entered prefix'
+            );
         }
         return null;
     }
 
     getDefaultDialCode() {
         return this.props.signUpConfig &&
-        this.props.signUpConfig.defaultCountryCode  &&
-        countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== '-1' ?
-        `+${this.props.signUpConfig.defaultCountryCode}` :
-        "+1"
+            this.props.signUpConfig.defaultCountryCode &&
+            countryDialCodes.indexOf(
+                `+${this.props.signUpConfig.defaultCountryCode}`
+            ) !== '-1'
+            ? `+${this.props.signUpConfig.defaultCountryCode}`
+            : '+1';
     }
 
     checkCustomSignUpFields() {
-        return this.props.signUpConfig &&
-        this.props.signUpConfig.signUpFields &&
-        this.props.signUpConfig.signUpFields.length > 0
+        return (
+            this.props.signUpConfig &&
+            this.props.signUpConfig.signUpFields &&
+            this.props.signUpConfig.signUpFields.length > 0
+        );
     }
 
     signUp() {
@@ -181,37 +194,57 @@ export default class SignUp extends AuthPiece {
         }
         const validation = this.validate();
         if (validation && validation.length > 0) {
-          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
+            return this.error(
+                `The following fields need to be filled out: ${validation.join(
+                    ', '
+                )}`
+            );
         }
         if (!Auth || typeof Auth.signUp !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
 
         const signup_info = {
             username: this.inputs.username,
             password: this.inputs.password,
-            attributes: {}
+            attributes: {},
         };
 
         const inputKeys = Object.keys(this.inputs);
         const inputVals = Object.values(this.inputs);
 
         inputKeys.forEach((key, index) => {
-            if (!['username', 'password', 'checkedValue', 'dial_code'].includes(key)) {
-                if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
-                    const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
+            if (
+                !['username', 'password', 'checkedValue', 'dial_code'].includes(
+                    key
+                )
+            ) {
+                if (
+                    key !== 'phone_line_number' &&
+                    key !== 'dial_code' &&
+                    key !== 'error'
+                ) {
+                    const newKey = `${
+                        this.needPrefix(key) ? 'custom:' : ''
+                    }${key}`;
                     signup_info.attributes[newKey] = inputVals[index];
                 }
             }
         });
 
-        if (this.phone_number) signup_info.attributes['phone_number'] = this.phone_number;
-        
+        if (this.phone_number)
+            signup_info.attributes['phone_number'] = this.phone_number;
+
         let labelCheck = false;
         this.signUpFields.forEach(field => {
             if (field.label === this.getUsernameLabel()) {
-                logger.debug(`Changing the username to the value of ${field.label}`);
-                signup_info.username = signup_info.attributes[field.key] || signup_info.username;
+                logger.debug(
+                    `Changing the username to the value of ${field.label}`
+                );
+                signup_info.username =
+                    signup_info.attributes[field.key] || signup_info.username;
                 labelCheck = true;
             }
         });
@@ -219,72 +252,97 @@ export default class SignUp extends AuthPiece {
             // if the customer customized the username field in the sign up form
             // He needs to either set the key of that field to 'username'
             // Or make the label of the field the same as the 'usernameAttributes'
-            throw new Error(`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`);
-        } 
-        Auth.signUp(signup_info).then((data) => {
-            this.changeState('confirmSignUp', data.user.username)
-        })
-        .catch(err => this.error(err));
+            throw new Error(
+                `Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`
+            );
+        }
+        Auth.signUp(signup_info)
+            .then(data => {
+                this.changeState('confirmSignUp', data.user.username);
+            })
+            .catch(err => this.error(err));
     }
 
     showComponent(theme) {
         const { hide } = this.props;
-        if (hide && hide.includes(SignUp)) { return null; }
+        if (hide && hide.includes(SignUp)) {
+            return null;
+        }
         if (this.checkCustomSignUpFields()) {
             this.signUpFields = this.props.signUpConfig.signUpFields;
         }
         this.sortFields();
         return (
             <FormSection theme={theme} data-test={auth.signUp.section}>
-                <SectionHeader theme={theme} data-test={auth.signUp.headerSection}>{I18n.get(this.header)}</SectionHeader>
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.signUp.headerSection}
+                >
+                    {I18n.get(this.header)}
+                </SectionHeader>
                 <SectionBody theme={theme} data-test={auth.signUp.bodySection}>
-                    {
-                        this.signUpFields.map((field) => {
-                            return field.key !== 'phone_number' ? (
-                                <FormField theme={theme} key={field.key}>
-                                {
-                                    field.required ? 
-                                    <InputLabel theme={theme}>{I18n.get(field.label)} *</InputLabel> :
-                                    <InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
-                                }
-                                    <Input
-                                        autoFocus={
-                                            this.signUpFields.findIndex((f) => {
-                                                return f.key === field.key
-                                            }) === 0 ? true : false
-                                        }
-                                        placeholder={I18n.get(field.placeholder)}
-                                        theme={theme}
-                                        type={field.type}
-                                        name={field.key}
-                                        key={field.key}
-                                        onChange={this.handleInputChange}
-                                        data-test={auth.signUp.nonPhoneNumberInput}
-                                    />
-                                </FormField>
-                            ) : (
-                                <PhoneField 
-                                    theme={theme} 
-                                    required={field.required}
-                                    defaultDialCode={this.getDefaultDialCode()}
-                                    label={field.label}
-                                    placeholder={field.placeholder}
-                                    onChangeText={this.onPhoneNumberChanged}
-                                    key="phone_number"
+                    {this.signUpFields.map(field => {
+                        return field.key !== 'phone_number' ? (
+                            <FormField theme={theme} key={field.key}>
+                                {field.required ? (
+                                    <InputLabel theme={theme}>
+                                        {I18n.get(field.label)} *
+                                    </InputLabel>
+                                ) : (
+                                    <InputLabel theme={theme}>
+                                        {I18n.get(field.label)}
+                                    </InputLabel>
+                                )}
+                                <Input
+                                    autoFocus={
+                                        this.signUpFields.findIndex(f => {
+                                            return f.key === field.key;
+                                        }) === 0
+                                            ? true
+                                            : false
+                                    }
+                                    placeholder={I18n.get(field.placeholder)}
+                                    theme={theme}
+                                    type={field.type}
+                                    name={field.key}
+                                    key={field.key}
+                                    onChange={this.handleInputChange}
+                                    data-test={auth.signUp.nonPhoneNumberInput}
                                 />
-                            )
-                        })
-                    }
+                            </FormField>
+                        ) : (
+                            <PhoneField
+                                theme={theme}
+                                required={field.required}
+                                defaultDialCode={this.getDefaultDialCode()}
+                                label={field.label}
+                                placeholder={field.placeholder}
+                                onChangeText={this.onPhoneNumberChanged}
+                                key="phone_number"
+                            />
+                        );
+                    })}
                 </SectionBody>
-                <SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
+                <SectionFooter
+                    theme={theme}
+                    data-test={auth.signUp.footerSection}
+                >
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button onClick={this.signUp} theme={theme} data-test={auth.signUp.createAccountButton}>
+                        <Button
+                            onClick={this.signUp}
+                            theme={theme}
+                            data-test={auth.signUp.createAccountButton}
+                        >
                             {I18n.get('Create Account')}
                         </Button>
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
                         {I18n.get('Have an account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.signUp.signInLink}>
+                        <Link
+                            theme={theme}
+                            onClick={() => this.changeState('signIn')}
+                            data-test={auth.signUp.signInLink}
+                        >
                             {I18n.get('Sign in')}
                         </Link>
                     </SectionFooterSecondaryContent>
@@ -292,5 +350,4 @@ export default class SignUp extends AuthPiece {
             </FormSection>
         );
     }
-
 }

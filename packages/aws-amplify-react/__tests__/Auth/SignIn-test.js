@@ -3,36 +3,41 @@ import SignIn from '../../src/Auth/SignIn';
 import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import {
+    Header,
+    Footer,
+    Input,
+    Button,
+} from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
-    'signIn',  
-    'signedUp', 
+    'signIn',
+    'signedUp',
     'signedOut',
-    'customConfirmSignIn'
+    'customConfirmSignIn',
 ];
 
 const deniedStates = [
     'signUp',
-    'signedIn', 
+    'signedIn',
     'comfirmSignIn',
     'confirmSignUp',
     'forgotPassword',
-    'verifyContact'
+    'verifyContact',
 ];
 
 const fakeEvent = {
-    preventDefault: jest.fn()
+    preventDefault: jest.fn(),
 };
 
 describe('SignIn', () => {
     describe('normal case', () => {
         test('render correctly with Props signIn, signedOut or signedUp', () => {
-            for (let i = 0; i < acceptedStates.length; i += 1){
-                const wrapper = shallow(<SignIn/>);
+            for (let i = 0; i < acceptedStates.length; i += 1) {
+                const wrapper = shallow(<SignIn />);
                 wrapper.setProps({
                     authState: acceptedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -40,12 +45,12 @@ describe('SignIn', () => {
         });
 
         test('render correctly with hide', () => {
-            for (let i = 0; i < acceptedStates.length; i += 1){
-                const wrapper = shallow(<SignIn/>);
+            for (let i = 0; i < acceptedStates.length; i += 1) {
+                const wrapper = shallow(<SignIn />);
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme,
-                    hide: [SignIn]
+                    hide: [SignIn],
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -53,151 +58,198 @@ describe('SignIn', () => {
         });
 
         test('when clicking signIn and new password required', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             wrapper.setProps({
                 authState: 'signIn',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signIn')
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res({
-                            challengeName: 'NEW_PASSWORD_REQUIRED'
+                            challengeName: 'NEW_PASSWORD_REQUIRED',
                         });
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
 
             await Promise.resolve();
-           
+
             expect(spyon.mock.calls.length).toBe(1);
             expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
             expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
 
             expect(spyon_changeState).toBeCalled();
-            expect(spyon_changeState.mock.calls[0][0]).toBe('requireNewPassword');
+            expect(spyon_changeState.mock.calls[0][0]).toBe(
+                'requireNewPassword'
+            );
 
             spyon.mockClear();
             spyon_changeState.mockClear();
         });
 
         test('when clicking signIn and trigger-based custom auth challenge present required', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             wrapper.setProps({
                 authState: 'signIn',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signIn')
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res({
                             challengeName: 'CUSTOM_CHALLENGE',
-                            challengeParam: { trigger: 'true' }
+                            challengeParam: { trigger: 'true' },
                         });
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
 
             await Promise.resolve();
-           
+
             expect(spyon.mock.calls.length).toBe(1);
             expect(spyon.mock.calls[0][0]).toBe(event_username.target.value);
             expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
 
             expect(spyon_changeState).toBeCalled();
-            expect(spyon_changeState.mock.calls[0][0]).toBe('customConfirmSignIn');
+            expect(spyon_changeState.mock.calls[0][0]).toBe(
+                'customConfirmSignIn'
+            );
 
             spyon.mockClear();
             spyon_changeState.mockClear();
         });
 
         test('when clicking signIn and user session null, need verification of email and phone', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             wrapper.setProps({
                 authState: 'signIn',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signIn')
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res({
-                            Session: null
+                            Session: null,
                         });
                     });
                 });
 
-            const spyon2 = jest.spyOn(Auth, 'userAttributes')
+            const spyon2 = jest
+                .spyOn(Auth, 'userAttributes')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
-                        res([{
-                            Name: 'email',
-                            Value: 'email_val'
-                        }, {
-                            Name: 'phone_number',
-                            Value: 'phone_number'
-                        }]);
+                        res([
+                            {
+                                Name: 'email',
+                                Value: 'email_val',
+                            },
+                            {
+                                Name: 'phone_number',
+                                Value: 'phone_number',
+                            },
+                        ]);
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
 
-           // expect(spyon_changeState).toBeCalled();
+            // expect(spyon_changeState).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -205,54 +257,71 @@ describe('SignIn', () => {
         });
 
         test('when clicking signIn and user session null, dont need verification', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             wrapper.setProps({
                 authState: 'signIn',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signIn')
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res({
-                            Session: null
+                            Session: null,
                         });
                     });
                 });
 
-            const spyon2 = jest.spyOn(Auth, 'userAttributes')
+            const spyon2 = jest
+                .spyOn(Auth, 'userAttributes')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
-                        res([{
-                            Name: 'email_verfied',
-                            Value: true
-                        }, {
-                            Name: 'phone_number_verified',
-                            Value: true
-                        }]);
+                        res([
+                            {
+                                Name: 'email_verfied',
+                                Value: true,
+                            },
+                            {
+                                Name: 'phone_number_verified',
+                                Value: true,
+                            },
+                        ]);
                     });
                 });
 
-            const spyon_changeState = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon_changeState = jest.spyOn(
+                wrapper.instance(),
+                'changeState'
+            );
 
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
 
-           // expect(spyon_changeState).toBeCalled();
+            // expect(spyon_changeState).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -260,13 +329,14 @@ describe('SignIn', () => {
         });
 
         test('when clicking signIn and error happend', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             wrapper.setProps({
                 authState: 'signIn',
-                theme: AmplifyTheme
+                theme: AmplifyTheme,
             });
 
-            const spyon = jest.spyOn(Auth, 'signIn')
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -278,20 +348,29 @@ describe('SignIn', () => {
             const event_username = {
                 target: {
                     name: 'username',
-                    value: 'user1'
-                }
+                    value: 'user1',
+                },
             };
             const event_password = {
                 target: {
                     name: 'password',
-                    value: 'abc'
-                }
+                    value: 'abc',
+                },
             };
 
-            wrapper.find(Input).at(0).simulate('change', event_username);
-            wrapper.find(Input).at(1).simulate('change', event_password);
-        
-            wrapper.find('form').at(0).simulate('submit', fakeEvent);
+            wrapper
+                .find(Input)
+                .at(0)
+                .simulate('change', event_username);
+            wrapper
+                .find(Input)
+                .at(1)
+                .simulate('change', event_password);
+
+            wrapper
+                .find('form')
+                .at(0)
+                .simulate('submit', fakeEvent);
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -300,30 +379,31 @@ describe('SignIn', () => {
 
     describe('null case with other authState', () => {
         test('render corrently', () => {
-            const wrapper = shallow(<SignIn/>);
-            
-            for (let i = 0; i < deniedStates.length; i += 1){
+            const wrapper = shallow(<SignIn />);
+
+            for (let i = 0; i < deniedStates.length; i += 1) {
                 wrapper.setProps({
                     authState: deniedStates[i],
-                    theme: AmplifyTheme
+                    theme: AmplifyTheme,
                 });
 
                 expect(wrapper).toMatchSnapshot();
             }
         });
-        
     });
 
     describe('sign in test', () => {
         test('UserNotConfirmedException, change state to confirmSignUp', async () => {
-            const wrapper = shallow(<SignIn/>);
+            const wrapper = shallow(<SignIn />);
             const signIn = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'signIn').mockImplementationOnce(() => {
-                return Promise.reject({
-                    code: 'UserNotConfirmedException'
+            const spyon = jest
+                .spyOn(Auth, 'signIn')
+                .mockImplementationOnce(() => {
+                    return Promise.reject({
+                        code: 'UserNotConfirmedException',
+                    });
                 });
-            });
 
             const spyon2 = jest.spyOn(signIn, 'changeState');
             await signIn.signIn(fakeEvent);
@@ -333,4 +413,3 @@ describe('SignIn', () => {
         });
     });
 });
-

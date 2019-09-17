@@ -12,7 +12,7 @@ describe('trackLifecycle test', () => {
             }
         };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-        const wrapper = shallow(<CompWithAuth/>);
+        const wrapper = shallow(<CompWithAuth />);
 
         expect(wrapper).toMatchSnapshot();
         expect(spyon).toBeCalled();
@@ -28,8 +28,8 @@ describe('trackLifecycle test', () => {
             }
         };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-        const wrapper = mount(<CompWithAuth/>);
-        
+        const wrapper = mount(<CompWithAuth />);
+
         expect(spyon.mock.calls.length).toBe(2);
 
         spyon.mockClear();
@@ -44,8 +44,8 @@ describe('trackLifecycle test', () => {
             }
         };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-        const wrapper = shallow(<CompWithAuth/>);
-        
+        const wrapper = shallow(<CompWithAuth />);
+
         wrapper.unmount();
         expect(spyon.mock.calls.length).toBe(2);
 
@@ -60,10 +60,10 @@ describe('trackLifecycle test', () => {
             }
         };
         const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-        const wrapper = shallow(<CompWithAuth/>);
+        const wrapper = shallow(<CompWithAuth />);
 
         wrapper.update();
-        
+
         expect(spyon.mock.calls.length).toBe(2);
 
         spyon.mockClear();

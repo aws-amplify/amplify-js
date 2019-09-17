@@ -12,10 +12,10 @@ describe('RequireNewPassword test', () => {
                 authState: 'requireNewPassword',
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
+                        requiredAttributes: [],
+                    },
                 },
-                hide: false
+                hide: false,
             });
 
             expect(wrapper).toMatchSnapshot();
@@ -28,10 +28,10 @@ describe('RequireNewPassword test', () => {
                 authState: 'requireNewPassword',
                 authData: {
                     challengeParam: {
-                        requiredAttributes: ['given_name', 'family_name']
-                    }
+                        requiredAttributes: ['given_name', 'family_name'],
+                    },
                 },
-                hide: false
+                hide: false,
             });
 
             expect(wrapper).toMatchSnapshot();
@@ -42,7 +42,7 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps({
                 authState: 'signIn',
-                hide: false
+                hide: false,
             });
 
             expect(wrapper).toMatchSnapshot();
@@ -53,7 +53,7 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps({
                 authState: 'requireNewPassword',
-                hide: [RequireNewPassword]
+                hide: [RequireNewPassword],
             });
 
             expect(wrapper).toMatchSnapshot();
@@ -62,7 +62,11 @@ describe('RequireNewPassword test', () => {
 
     describe('interaction test', () => {
         test('ButtonRow clicked', () => {
-            const spyon = jest.spyOn(RequireNewPassword.prototype, 'change').mockImplementationOnce(() => { return; });
+            const spyon = jest
+                .spyOn(RequireNewPassword.prototype, 'change')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
 
@@ -70,10 +74,10 @@ describe('RequireNewPassword test', () => {
                 authState: 'requireNewPassword',
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
+                        requiredAttributes: [],
+                    },
                 },
-                hide: false
+                hide: false,
             });
 
             wrapper.find(Button).simulate('click');
@@ -86,7 +90,9 @@ describe('RequireNewPassword test', () => {
         test('Link clicked', () => {
             const spyon = jest
                 .spyOn(RequireNewPassword.prototype, 'changeState')
-                .mockImplementationOnce(() => { return; });
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
 
@@ -94,10 +100,10 @@ describe('RequireNewPassword test', () => {
                 authState: 'requireNewPassword',
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
+                        requiredAttributes: [],
+                    },
                 },
-                hide: false
+                hide: false,
             });
 
             wrapper.find(Link).simulate('click');
@@ -113,32 +119,36 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
-                }
+                        requiredAttributes: [],
+                    },
+                },
             };
 
-            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('user');
+            const spyon = jest
+                .spyOn(Auth, 'completeNewPassword')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('user');
+                    });
                 });
-            });
             const spyon2 = jest
                 .spyOn(RequireNewPassword.prototype, 'checkContact')
-                .mockImplementationOnce(() => { return; });
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
             const requireNewPassword = wrapper.instance();
 
             wrapper.setProps(props);
             requireNewPassword.inputs = {
-                password: 'password'
+                password: 'password',
             };
 
             await requireNewPassword.change();
 
             expect(spyon).toBeCalledWith(
-                { "challengeParam": { "requiredAttributes": [] } },
+                { challengeParam: { requiredAttributes: [] } },
                 'password',
                 {}
             );
@@ -151,39 +161,45 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
-                }
+                        requiredAttributes: [],
+                    },
+                },
             };
 
-            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res({
-                        challengeName: 'SMS_MFA'
+            const spyon = jest
+                .spyOn(Auth, 'completeNewPassword')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            challengeName: 'SMS_MFA',
+                        });
                     });
                 });
-            });
             const spyon2 = jest
                 .spyOn(RequireNewPassword.prototype, 'changeState')
-                .mockImplementationOnce(() => { return; });
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
             const requireNewPassword = wrapper.instance();
 
             wrapper.setProps(props);
             requireNewPassword.inputs = {
-                password: 'password'
+                password: 'password',
             };
 
             await requireNewPassword.change();
 
             expect(spyon).toBeCalledWith(
-                { "challengeParam": { "requiredAttributes": [] } },
+                { challengeParam: { requiredAttributes: [] } },
                 'password',
                 {}
             );
 
-            expect(spyon2).toBeCalledWith('confirmSignIn', { challengeName: 'SMS_MFA' });
+            expect(spyon2).toBeCalledWith('confirmSignIn', {
+                challengeName: 'SMS_MFA',
+            });
             spyon.mockClear();
         });
 
@@ -191,39 +207,45 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: []
-                    }
-                }
+                        requiredAttributes: [],
+                    },
+                },
             };
 
-            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res({
-                        challengeName: 'MFA_SETUP'
+            const spyon = jest
+                .spyOn(Auth, 'completeNewPassword')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            challengeName: 'MFA_SETUP',
+                        });
                     });
                 });
-            });
             const spyon2 = jest
                 .spyOn(RequireNewPassword.prototype, 'changeState')
-                .mockImplementationOnce(() => { return; });
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
             const requireNewPassword = wrapper.instance();
 
             wrapper.setProps(props);
             requireNewPassword.inputs = {
-                password: 'password'
+                password: 'password',
             };
 
             await requireNewPassword.change();
 
             expect(spyon).toBeCalledWith(
-                { "challengeParam": { "requiredAttributes": [] } },
+                { challengeParam: { requiredAttributes: [] } },
                 'password',
                 {}
             );
 
-            expect(spyon2).toBeCalledWith('TOTPSetup', { challengeName: 'MFA_SETUP' });
+            expect(spyon2).toBeCalledWith('TOTPSetup', {
+                challengeName: 'MFA_SETUP',
+            });
             spyon.mockClear();
         });
 
@@ -231,24 +253,30 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: 'requiredAttributes'
-                    }
-                }
+                        requiredAttributes: 'requiredAttributes',
+                    },
+                },
             };
 
-            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
+            const spyon = jest
+                .spyOn(Auth, 'completeNewPassword')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        rej('err');
+                    });
                 });
-            });
-            const spyon2 = jest.spyOn(RequireNewPassword.prototype, 'error').mockImplementationOnce(() => { return; });
+            const spyon2 = jest
+                .spyOn(RequireNewPassword.prototype, 'error')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
             const requireNewPassword = wrapper.instance();
 
             wrapper.setProps(props);
             requireNewPassword.inputs = {
-                password: 'password'
+                password: 'password',
             };
 
             await requireNewPassword.change();
@@ -261,19 +289,23 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: ['given_name', 'family_name']
-                    }
-                }
+                        requiredAttributes: ['given_name', 'family_name'],
+                    },
+                },
             };
 
-            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('user');
+            const spyon = jest
+                .spyOn(Auth, 'completeNewPassword')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('user');
+                    });
                 });
-            });
             const spyon2 = jest
                 .spyOn(RequireNewPassword.prototype, 'checkContact')
-                .mockImplementationOnce(() => { return; });
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const wrapper = shallow(<RequireNewPassword />);
             const requireNewPassword = wrapper.instance();
@@ -282,13 +314,17 @@ describe('RequireNewPassword test', () => {
             requireNewPassword.inputs = {
                 password: 'password',
                 given_name: 'Max',
-                family_name: 'Power'
+                family_name: 'Power',
             };
 
             await requireNewPassword.change();
 
             expect(spyon).toBeCalledWith(
-                { "challengeParam": { "requiredAttributes": ['given_name', 'family_name'] } },
+                {
+                    challengeParam: {
+                        requiredAttributes: ['given_name', 'family_name'],
+                    },
+                },
                 'password',
                 { given_name: 'Max', family_name: 'Power' }
             );
@@ -303,18 +339,20 @@ describe('RequireNewPassword test', () => {
             const wrapper = shallow(<RequireNewPassword />);
             const rnp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {
-                        email: 'xxx@xxx.com'
-                    }
+            const spyon = jest
+                .spyOn(Auth, 'verifiedContact')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve({
+                        verified: {
+                            email: 'xxx@xxx.com',
+                        },
+                    });
                 });
-            });
 
             const spyon2 = jest.spyOn(rnp, 'changeState');
 
             await rnp.checkContact({
-                user: 'user'
+                user: 'user',
             });
 
             expect(spyon2).toBeCalledWith('signedIn', { user: 'user' });
@@ -327,23 +365,27 @@ describe('RequireNewPassword test', () => {
             const wrapper = shallow(<RequireNewPassword />);
             const rnp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {}
+            const spyon = jest
+                .spyOn(Auth, 'verifiedContact')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve({
+                        verified: {},
+                    });
                 });
-            });
 
             const spyon2 = jest.spyOn(rnp, 'changeState');
 
             await rnp.checkContact({
-                user: 'user'
+                user: 'user',
             });
 
-            expect(spyon2).toBeCalledWith('verifyContact', { user: 'user', 'verified': {} });
+            expect(spyon2).toBeCalledWith('verifyContact', {
+                user: 'user',
+                verified: {},
+            });
 
             spyon.mockClear();
             spyon2.mockClear();
         });
     });
 });
-

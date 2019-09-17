@@ -94,99 +94,106 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-up-core',
-  template
+    selector: 'amplify-auth-confirm-sign-up-core',
+    template,
 })
-
 export class ConfirmSignUpComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  _usernameAttributes: string = 'username';
-  username: string;
-  code: string;
-  errorMessage: string;
-  protected logger: any;
+    _authState: AuthState;
+    _show: boolean;
+    _usernameAttributes: string = 'username';
+    username: string;
+    code: string;
+    errorMessage: string;
+    protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
-  }
-
-  @Input()
-  set data(data: any) {
-    this.hide = data.hide ? data.hide : this.hide;
-    this._authState = data.authState;
-    this._show = data.authState.state === 'confirmSignUp';
-    this.username = data.authState.user? data.authState.user.username || '' : '';
-  }
-
-  @Input() hide: string[] = [];
-
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'confirmSignUp';
-
-    this.username = authState.user? authState.user.username || '' : '';
-  }
-
-  @Input()
-  set usernameAttributes(usernameAttributes: string) {
-    this._usernameAttributes = usernameAttributes;
-  }
-
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    }
-  }
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-      .length > 0;
-  }
-
-  setUsername(username: string) {
-    this.username = username;
-  }
-
-  setCode(code: string) {
-    this.code = code;
-  }
-
-  onConfirm() {
-    this.amplifyService.auth()
-      .confirmSignUp(
-        this.username,
-        this.code
-      )
-      .then(() => this.logger.info('confirm success'))
-      .catch(err => this._setError(err));
-  }
-
-  onResend() {
-    this.amplifyService.auth().resendSignUp(this.username)
-      .then(() => this.logger.info('code resent'))
-      .catch(err => this._setError(err));
-  }
-
-  onSignIn() {
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signIn', user: null });
-  }
-
-  onAlertClose() {
-    this._setError(null);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
+        this.logger = this.amplifyService.logger('ConfirmSignUpComponent');
     }
 
-    this.errorMessage = err.message || err;
-  }
+    @Input()
+    set data(data: any) {
+        this.hide = data.hide ? data.hide : this.hide;
+        this._authState = data.authState;
+        this._show = data.authState.state === 'confirmSignUp';
+        this.username = data.authState.user
+            ? data.authState.user.username || ''
+            : '';
+    }
 
-  getUsernameLabel() {
-    return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
-  }
+    @Input() hide: string[] = [];
+
+    @Input()
+    set authState(authState: AuthState) {
+        this._authState = authState;
+        this._show = authState.state === 'confirmSignUp';
+
+        this.username = authState.user ? authState.user.username || '' : '';
+    }
+
+    @Input()
+    set usernameAttributes(usernameAttributes: string) {
+        this._usernameAttributes = usernameAttributes;
+    }
+
+    ngOnInit() {
+        if (!this.amplifyService.auth()) {
+            throw new Error(
+                'Auth module not registered on AmplifyService provider'
+            );
+        }
+    }
+    shouldHide(comp) {
+        return this.hide.filter(item => item === comp).length > 0;
+    }
+
+    setUsername(username: string) {
+        this.username = username;
+    }
+
+    setCode(code: string) {
+        this.code = code;
+    }
+
+    onConfirm() {
+        this.amplifyService
+            .auth()
+            .confirmSignUp(this.username, this.code)
+            .then(() => this.logger.info('confirm success'))
+            .catch(err => this._setError(err));
+    }
+
+    onResend() {
+        this.amplifyService
+            .auth()
+            .resendSignUp(this.username)
+            .then(() => this.logger.info('code resent'))
+            .catch(err => this._setError(err));
+    }
+
+    onSignIn() {
+        this.onAlertClose();
+        this.amplifyService.setAuthState({ state: 'signIn', user: null });
+    }
+
+    onAlertClose() {
+        this._setError(null);
+    }
+
+    _setError(err) {
+        if (!err) {
+            this.errorMessage = null;
+            return;
+        }
+
+        this.errorMessage = err.message || err;
+    }
+
+    getUsernameLabel() {
+        return (
+            labelMap[this._usernameAttributes as string] ||
+            this._usernameAttributes
+        );
+    }
 }

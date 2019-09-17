@@ -11,7 +11,14 @@
  * and limitations under the License.
  */
 
-import { NativeModules, DeviceEventEmitter, AsyncStorage, PushNotificationIOS, Platform, AppState } from 'react-native';
+import {
+    NativeModules,
+    DeviceEventEmitter,
+    AsyncStorage,
+    PushNotificationIOS,
+    Platform,
+    AppState,
+} from 'react-native';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
@@ -38,18 +45,24 @@ export default class PushNotification {
         this.updateEndpoint = this.updateEndpoint.bind(this);
         this.handleCampaignPush = this.handleCampaignPush.bind(this);
         this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
-        this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
+        this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(
+            this
+        );
         this._currentState = AppState.currentState;
         this._androidInitialized = false;
         this._iosInitialized = false;
 
         if (Platform.OS === 'ios') {
-            AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);
+            AppState.addEventListener(
+                'change',
+                this._checkIfOpenedByCampaign,
+                false
+            );
         }
     }
 
     getModuleName() {
-        return "Pushnotification";
+        return 'Pushnotification';
     }
 
     configure(config) {
@@ -62,18 +75,18 @@ export default class PushNotification {
         }
 
         this._config = Object.assign(
-            { // defaults
+            {
+                // defaults
                 requestIOSPermissions: true, // for backwards compatibility
             },
             this._config,
-            conf,
+            conf
         );
 
         if (Platform.OS === 'android' && !this._androidInitialized) {
             this.initializeAndroid();
             this._androidInitialized = true;
-        }
-        else if (Platform.OS === 'ios' && !this._iosInitialized) {
+        } else if (Platform.OS === 'ios' && !this._iosInitialized) {
             this.initializeIOS();
             this._iosInitialized = true;
         }
@@ -83,9 +96,15 @@ export default class PushNotification {
         if (typeof handler === 'function') {
             // check platform
             if (Platform.OS === 'ios') {
-                this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, handler);
+                this.addEventListenerForIOS(
+                    REMOTE_NOTIFICATION_RECEIVED,
+                    handler
+                );
             } else {
-                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, handler);
+                this.addEventListenerForAndroid(
+                    REMOTE_NOTIFICATION_RECEIVED,
+                    handler
+                );
             }
         }
     }
@@ -94,7 +113,10 @@ export default class PushNotification {
         if (typeof handler === 'function') {
             // check platform
             if (Platform.OS === 'android') {
-                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
+                this.addEventListenerForAndroid(
+                    REMOTE_NOTIFICATION_OPENED,
+                    handler
+                );
             }
         }
     }
@@ -111,16 +133,25 @@ export default class PushNotification {
     }
 
     async initializeAndroid() {
-        this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this.handleCampaignOpened);
-        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
+        this.addEventListenerForAndroid(
+            REMOTE_TOKEN_RECEIVED,
+            this.updateEndpoint
+        );
+        this.addEventListenerForAndroid(
+            REMOTE_NOTIFICATION_OPENED,
+            this.handleCampaignOpened
+        );
+        this.addEventListenerForAndroid(
+            REMOTE_NOTIFICATION_RECEIVED,
+            this.handleCampaignPush
+        );
         RNPushNotification.initialize();
 
         // check if the token is cached properly
         if (!(await this._registerTokenCached())) {
             const { appId } = this._config;
             const cacheKey = 'push_token' + appId;
-            RNPushNotification.getToken((token) => {
+            RNPushNotification.getToken(token => {
                 logger.debug('Get the token from Firebase Service', token);
                 // resend the token in case it's missing in the Pinpoint service
                 // the token will also be cached locally
@@ -132,7 +163,7 @@ export default class PushNotification {
     async _registerTokenCached(): Promise<boolean> {
         const { appId } = this._config;
         const cacheKey = 'push_token' + appId;
-        return AsyncStorage.getItem(cacheKey).then((lastToken) => {
+        return AsyncStorage.getItem(cacheKey).then(lastToken => {
             if (lastToken) return true;
             else return false;
         });
@@ -147,19 +178,27 @@ export default class PushNotification {
             this.requestIOSPermissions();
         }
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
+        this.addEventListenerForIOS(
+            REMOTE_NOTIFICATION_RECEIVED,
+            this.handleCampaignPush
+        );
     }
 
     _checkIfOpenedByCampaign(nextAppState) {
         // the app is turned from background to foreground
-        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
-            PushNotificationIOS.getInitialNotification().then(data => {
-                if (data) {
-                    this.handleCampaignOpened(data);
-                }
-            }).catch(e => {
-                logger.debug('Failed to get the initial notification.', e);
-            });
+        if (
+            this._currentState.match(/inactive|background/) &&
+            nextAppState === 'active'
+        ) {
+            PushNotificationIOS.getInitialNotification()
+                .then(data => {
+                    if (data) {
+                        this.handleCampaignOpened(data);
+                    }
+                })
+                .catch(e => {
+                    logger.debug('Failed to get the initial notification.', e);
+                });
         }
         this._currentState = nextAppState;
     }
@@ -169,13 +208,17 @@ export default class PushNotification {
         let campaign = null;
         if (Platform.OS === 'ios') {
             message = this.parseMessageFromIOS(rawMessage);
-            campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign : null;
+            campaign =
+                message && message.data && message.data.pinpoint
+                    ? message.data.pinpoint.campaign
+                    : null;
         } else if (Platform.OS === 'android') {
             const { data } = rawMessage;
             campaign = {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
-                campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
-                treatment_id: data['pinpoint.campaign.treatment_id']
+                campaign_activity_id:
+                    data['pinpoint.campaign.campaign_activity_id'],
+                treatment_id: data['pinpoint.campaign.treatment_id'],
             };
         }
 
@@ -188,16 +231,21 @@ export default class PushNotification {
             campaign_activity_id: campaign['campaign_activity_id'],
             isAppInForeground: message.foreground ? 'true' : 'false',
             treatment_id: campaign['treatment_id'],
-            campaign_id: campaign['campaign_id']
+            campaign_id: campaign['campaign_id'],
         };
 
-        const eventType = (message.foreground) ? '_campaign.received_foreground' : '_campaign.received_background';
+        const eventType = message.foreground
+            ? '_campaign.received_foreground'
+            : '_campaign.received_background';
 
-        if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+        if (
+            Amplify.Analytics &&
+            typeof Amplify.Analytics.record === 'function'
+        ) {
             Amplify.Analytics.record({
                 name: eventType,
                 attributes,
-                immediate: true
+                immediate: true,
             });
         } else {
             logger.debug('Analytics module is not registered into Amplify');
@@ -209,13 +257,17 @@ export default class PushNotification {
         let campaign = null;
         if (Platform.OS === 'ios') {
             const message = this.parseMessageFromIOS(rawMessage);
-            campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign : null;
+            campaign =
+                message && message.data && message.data.pinpoint
+                    ? message.data.pinpoint.campaign
+                    : null;
         } else if (Platform.OS === 'android') {
             const data = rawMessage;
             campaign = {
                 campaign_id: data['pinpoint.campaign.campaign_id'],
-                campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
-                treatment_id: data['pinpoint.campaign.treatment_id']
+                campaign_activity_id:
+                    data['pinpoint.campaign.campaign_activity_id'],
+                treatment_id: data['pinpoint.campaign.treatment_id'],
             };
         }
 
@@ -227,16 +279,19 @@ export default class PushNotification {
         const attributes = {
             campaign_activity_id: campaign['campaign_activity_id'],
             treatment_id: campaign['treatment_id'],
-            campaign_id: campaign['campaign_id']
+            campaign_id: campaign['campaign_id'],
         };
 
         const eventType = '_campaign.opened_notification';
 
-        if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+        if (
+            Amplify.Analytics &&
+            typeof Amplify.Analytics.record === 'function'
+        ) {
             Amplify.Analytics.record({
                 name: eventType,
                 attributes,
-                immediate: true
+                immediate: true,
             });
         } else {
             logger.debug('Analytics module is not registered into Amplify');
@@ -252,34 +307,45 @@ export default class PushNotification {
         const { appId } = this._config;
         const cacheKey = 'push_token' + appId;
         logger.debug('update endpoint in push notification', token);
-        AsyncStorage.getItem(cacheKey).then((lastToken) => {
-            if (!lastToken || lastToken !== token) {
-                logger.debug('refresh the device token with', token);
-                const config = {
-                    Address: token,
-                    OptOut: 'NONE'
-                };
-                if (Amplify.Analytics && typeof Amplify.Analytics.updateEndpoint === 'function') {
-                    Amplify.Analytics.updateEndpoint(config).then((data) => {
-                        logger.debug('update endpoint success, setting token into cache');
-                        AsyncStorage.setItem(cacheKey, token);
-                    }).catch(e => {
-                        // ........
-                        logger.debug('update endpoint failed', e);
-                    });
-                } else {
-                    logger.debug('Analytics module is not registered into Amplify');
+        AsyncStorage.getItem(cacheKey)
+            .then(lastToken => {
+                if (!lastToken || lastToken !== token) {
+                    logger.debug('refresh the device token with', token);
+                    const config = {
+                        Address: token,
+                        OptOut: 'NONE',
+                    };
+                    if (
+                        Amplify.Analytics &&
+                        typeof Amplify.Analytics.updateEndpoint === 'function'
+                    ) {
+                        Amplify.Analytics.updateEndpoint(config)
+                            .then(data => {
+                                logger.debug(
+                                    'update endpoint success, setting token into cache'
+                                );
+                                AsyncStorage.setItem(cacheKey, token);
+                            })
+                            .catch(e => {
+                                // ........
+                                logger.debug('update endpoint failed', e);
+                            });
+                    } else {
+                        logger.debug(
+                            'Analytics module is not registered into Amplify'
+                        );
+                    }
                 }
-            }
-        }).catch(e => {
-            logger.debug('set device token in cache failed', e);
-        });
+            })
+            .catch(e => {
+                logger.debug('set device token in cache failed', e);
+            });
     }
 
     // only for android
     addEventListenerForAndroid(event, handler) {
         const that = this;
-        const listener = DeviceEventEmitter.addListener(event, (data) => {
+        const listener = DeviceEventEmitter.addListener(event, data => {
             // for on notification
             if (event === REMOTE_NOTIFICATION_RECEIVED) {
                 handler(that.parseMessagefromAndroid(data));
@@ -300,7 +366,7 @@ export default class PushNotification {
     addEventListenerForIOS(event, handler) {
         const that = this;
         if (event === REMOTE_TOKEN_RECEIVED) {
-            PushNotificationIOS.addEventListener('register', (data) => {
+            PushNotificationIOS.addEventListener('register', data => {
                 handler(data);
             });
         }
@@ -334,7 +400,7 @@ export default class PushNotification {
                 title: dataPayload['pinpoint.notification.title'],
                 body: dataPayload['pinpoint.notification.body'],
                 data: dataPayload,
-                foreground: dataObj.foreground
+                foreground: dataObj.foreground,
             };
         }
         return ret;
@@ -355,10 +421,8 @@ export default class PushNotification {
         ret = {
             title,
             body,
-            data
+            data,
         };
         return ret;
     }
-
-
 }

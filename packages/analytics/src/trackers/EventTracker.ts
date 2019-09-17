@@ -21,7 +21,7 @@ const defaultOpts: EventTrackOpts = {
     enable: false,
     events: ['click'],
     selectorPrefix: 'data-amplify-analytics-',
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
 };
 
 export default class EventTracker {
@@ -41,10 +41,10 @@ export default class EventTracker {
         this._trackFunc = this._trackFunc.bind(this);
 
         logger.debug('initialize pageview tracker with opts', this._config);
-    
+
         this.configure(this._config);
     }
-    
+
     configure(opts?: EventTrackOpts) {
         Object.assign(this._config, opts);
 
@@ -54,15 +54,21 @@ export default class EventTracker {
                     this._delegates[key].destroy();
             });
             this._delegates = {};
-        } else if (this._config.enable && Object.keys(this._delegates).length === 0) {
+        } else if (
+            this._config.enable &&
+            Object.keys(this._delegates).length === 0
+        ) {
             const selector = '[' + this._config.selectorPrefix + 'on]';
-            this._config.events.forEach((evt) => {
+            this._config.events.forEach(evt => {
                 this._delegates[evt] = delegate(
                     document,
                     evt,
                     selector,
                     this._trackFunc,
-                    {composed: true, useCapture: true}
+                    {
+                        composed: true,
+                        useCapture: true,
+                    }
                 );
             });
         }
@@ -76,25 +82,30 @@ export default class EventTracker {
         const events = element
             .getAttribute(this._config.selectorPrefix + 'on')
             .split(/\s*,\s*/);
-        const eventName = element.getAttribute(this._config.selectorPrefix + 'name');
+        const eventName = element.getAttribute(
+            this._config.selectorPrefix + 'name'
+        );
 
-        const attrs = element.getAttribute(this._config.selectorPrefix + 'attrs');
+        const attrs = element.getAttribute(
+            this._config.selectorPrefix + 'attrs'
+        );
         if (attrs) {
-            attrs.split(/\s*,\s*/)
-                .forEach(attr => {
-                    const tmp = attr.trim().split(/\s*:\s*/);
-                    customAttrs[tmp[0]] = tmp[1];
-                });
+            attrs.split(/\s*,\s*/).forEach(attr => {
+                const tmp = attr.trim().split(/\s*:\s*/);
+                customAttrs[tmp[0]] = tmp[1];
+            });
         }
 
-        const defaultAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
+        const defaultAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
 
         const attributes = Object.assign(
             {
                 type: event.type,
-                target: `${event.target.localName} with id ${event.target.id}`
-            }, 
+                target: `${event.target.localName} with id ${event.target.id}`,
+            },
             defaultAttrs,
             customAttrs
         );
@@ -109,12 +120,11 @@ export default class EventTracker {
         this._tracker(
             {
                 name: eventName || 'event',
-                attributes
+                attributes,
             },
             this._config.provider
         ).catch(e => {
             logger.debug(`Failed to record the ${event.type} event', ${e}`);
         });
     }
-
 }

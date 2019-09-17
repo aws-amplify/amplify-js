@@ -71,82 +71,83 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-in-core',
-  template
+    selector: 'amplify-auth-confirm-sign-in-core',
+    template,
 })
 export class ConfirmSignInComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  code: string;
-  errorMessage: string;
-  protected logger: any;
+    _authState: AuthState;
+    _show: boolean;
+    code: string;
+    errorMessage: string;
+    protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('ConfiSignInComponent');
-  }
-
-  @Input()
-  set data(data: any) {
-    this.hide = data.hide ? data.hide : this.hide;
-    this._authState = data.authState;
-    this._show = data.authState.state === 'confirmSignIn';
-  }
-
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'confirmSignIn';
-  }
-
-  @Input() hide: string[] = [];
-
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
+        this.logger = this.amplifyService.logger('ConfiSignInComponent');
     }
-  }
 
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-            .length > 0;
-  }
+    @Input()
+    set data(data: any) {
+        this.hide = data.hide ? data.hide : this.hide;
+        this._authState = data.authState;
+        this._show = data.authState.state === 'confirmSignIn';
+    }
 
-  setCode(code: string) {
-    this.code = code;
-  }
+    @Input()
+    set authState(authState: AuthState) {
+        this._authState = authState;
+        this._show = authState.state === 'confirmSignIn';
+    }
 
-  onConfirm() {
-    const { user } = this._authState;
-    const { challengeName } = user;
-    const mfaType = challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
-    this.amplifyService.auth()
-      .confirmSignIn(
-        user,
-        this.code,
-        mfaType
-      )
-      .then(() => {
+    @Input() hide: string[] = [];
+
+    ngOnInit() {
+        if (!this.amplifyService.auth()) {
+            throw new Error(
+                'Auth module not registered on AmplifyService provider'
+            );
+        }
+    }
+
+    shouldHide(comp) {
+        return this.hide.filter(item => item === comp).length > 0;
+    }
+
+    setCode(code: string) {
+        this.code = code;
+    }
+
+    onConfirm() {
+        const { user } = this._authState;
+        const { challengeName } = user;
+        const mfaType =
+            challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
+        this.amplifyService
+            .auth()
+            .confirmSignIn(user, this.code, mfaType)
+            .then(() => {
+                this.onAlertClose();
+                this.amplifyService.setAuthState({ state: 'signedIn', user });
+            })
+            .catch(err => this._setError(err));
+    }
+
+    onSignIn() {
         this.onAlertClose();
-        this.amplifyService.setAuthState({ state: 'signedIn', user });
-      })
-      .catch(err => this._setError(err));
-  }
-
-  onSignIn() {
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signIn', user: null });
-  }
-
-  onAlertClose() {
-    this._setError(null);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
+        this.amplifyService.setAuthState({ state: 'signIn', user: null });
     }
 
-    this.errorMessage = err.message || err;
-  }
+    onAlertClose() {
+        this._setError(null);
+    }
+
+    _setError(err) {
+        if (!err) {
+            this.errorMessage = null;
+            return;
+        }
+
+        this.errorMessage = err.message || err;
+    }
 }

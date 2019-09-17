@@ -27,7 +27,7 @@ import {
     Button,
     Link,
     SectionFooterPrimaryContent,
-    SectionFooterSecondaryContent
+    SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
@@ -53,7 +53,9 @@ export default class VerifyContact extends AuthPiece {
         }
 
         if (!Auth || typeof Auth.verifyCurrentUserAttribute !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
 
         Auth.verifyCurrentUserAttribute(checkedValue)
@@ -67,8 +69,13 @@ export default class VerifyContact extends AuthPiece {
     submit() {
         const attr = this.state.verifyAttr;
         const { code } = this.inputs;
-        if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        if (
+            !Auth ||
+            typeof Auth.verifyCurrentUserAttributeSubmit !== 'function'
+        ) {
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.verifyCurrentUserAttributeSubmit(attr, code)
             .then(data => {
@@ -94,24 +101,26 @@ export default class VerifyContact extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                { email? <RadioRow
-                            placeholder={I18n.get('Email')}
-                            theme={theme}
-                            key="email"
-                            name="contact"
-                            value="email"
-                            onChange={this.handleInputChange}
-                         /> : null
-                }
-                { phone_number? <RadioRow
-                                    placeholder={I18n.get('Phone Number')}
-                                    theme={theme}
-                                    key="phone_number"
-                                    name="contact"
-                                    value="phone_number"
-                                    onChange={this.handleInputChange}
-                                /> : null
-                }
+                {email ? (
+                    <RadioRow
+                        placeholder={I18n.get('Email')}
+                        theme={theme}
+                        key="email"
+                        name="contact"
+                        value="email"
+                        onChange={this.handleInputChange}
+                    />
+                ) : null}
+                {phone_number ? (
+                    <RadioRow
+                        placeholder={I18n.get('Phone Number')}
+                        theme={theme}
+                        key="phone_number"
+                        name="contact"
+                        value="phone_number"
+                        onChange={this.handleInputChange}
+                    />
+                ) : null}
             </div>
         );
     }
@@ -134,25 +143,56 @@ export default class VerifyContact extends AuthPiece {
 
     showComponent(theme) {
         const { authData, hide } = this.props;
-        if (hide && hide.includes(VerifyContact)) { return null; }
+        if (hide && hide.includes(VerifyContact)) {
+            return null;
+        }
 
         return (
             <FormSection theme={theme} data-test={auth.verifyContact.section}>
-                <SectionHeader theme={theme} data-test={auth.verifyContact.headerSection}>
-                    {I18n.get('Account recovery requires verified contact information')}
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.verifyContact.headerSection}
+                >
+                    {I18n.get(
+                        'Account recovery requires verified contact information'
+                    )}
                 </SectionHeader>
-                <SectionBody theme={theme} data-test={auth.verifyContact.bodySection}>
-                    { this.state.verifyAttr ? this.submitView() : this.verifyView() }
+                <SectionBody
+                    theme={theme}
+                    data-test={auth.verifyContact.bodySection}
+                >
+                    {this.state.verifyAttr
+                        ? this.submitView()
+                        : this.verifyView()}
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        { this.state.verifyAttr ?
-                            <Button theme={theme} onClick={this.submit} data-test={auth.verifyContact.submitButton}>{I18n.get('Submit')}</Button> :
-                            <Button theme={theme} onClick={this.verify} data-test={auth.verifyContact.verifyButton}>{I18n.get('Verify')}</Button>
-                        }
+                        {this.state.verifyAttr ? (
+                            <Button
+                                theme={theme}
+                                onClick={this.submit}
+                                data-test={auth.verifyContact.submitButton}
+                            >
+                                {I18n.get('Submit')}
+                            </Button>
+                        ) : (
+                            <Button
+                                theme={theme}
+                                onClick={this.verify}
+                                data-test={auth.verifyContact.verifyButton}
+                            >
+                                {I18n.get('Verify')}
+                            </Button>
+                        )}
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)} data-test={auth.verifyContact.skipLink}>
+                        <Link
+                            theme={theme}
+                            onClick={() =>
+                                this.changeState('signedIn', authData)
+                            }
+                            data-test={auth.verifyContact.skipLink}
+                        >
                             {I18n.get('Skip')}
                         </Link>
                     </SectionFooterSecondaryContent>

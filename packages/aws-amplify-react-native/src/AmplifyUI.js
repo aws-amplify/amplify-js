@@ -12,17 +12,29 @@
  */
 
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableHighlight, TouchableOpacity, Picker } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableHighlight,
+    TouchableOpacity,
+    Picker,
+} from 'react-native';
 import { I18n } from 'aws-amplify';
-import AmplifyTheme, { linkUnderlayColor, errorIconColor } from './AmplifyTheme';
+import AmplifyTheme, {
+    linkUnderlayColor,
+    errorIconColor,
+} from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
 
-export const FormField = (props) => {
+export const FormField = props => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.formField}>
-            <Text style={theme.inputLabel}>{props.label} {props.required ? '*' : ''}</Text>
+            <Text style={theme.inputLabel}>
+                {props.label} {props.required ? '*' : ''}
+            </Text>
             <TextInput
                 style={theme.input}
                 autoCapitalize="none"
@@ -30,8 +42,8 @@ export const FormField = (props) => {
                 {...props}
             />
         </View>
-    )
-}
+    );
+};
 
 export class PhoneField extends Component {
     constructor(props) {
@@ -46,7 +58,8 @@ export class PhoneField extends Component {
     onChangeText() {
         const { dialCode, phone } = this.state;
         const cleanedPhone = phone.replace(/[^0-9.]/g, '') || '';
-        const phoneNumber = cleanedPhone === '' ? '' : `${dialCode}${cleanedPhone}`;
+        const phoneNumber =
+            cleanedPhone === '' ? '' : `${dialCode}${cleanedPhone}`;
         this.props.onChangeText(phoneNumber);
     }
 
@@ -56,27 +69,34 @@ export class PhoneField extends Component {
 
         return (
             <View style={theme.formField}>
-                <Text style={theme.inputLabel}>{label} {required ? '*' : ''}</Text>
+                <Text style={theme.inputLabel}>
+                    {label} {required ? '*' : ''}
+                </Text>
                 <View style={theme.phoneContainer}>
                     <Picker
                         style={theme.picker}
                         selectedValue={this.state.dialCode}
                         itemStyle={theme.pickerItem}
-                        onValueChange={(dialCode) => {
+                        onValueChange={dialCode => {
                             this.setState({ dialCode }, () => {
                                 this.onChangeText();
                             });
-                        }}>
-                        {countryDialCodes.map(dialCode =>
-                            <Picker.Item key={dialCode} value={dialCode} label={dialCode} />
-                        )}
+                        }}
+                    >
+                        {countryDialCodes.map(dialCode => (
+                            <Picker.Item
+                                key={dialCode}
+                                value={dialCode}
+                                label={dialCode}
+                            />
+                        ))}
                     </Picker>
                     <TextInput
                         style={theme.phoneInput}
                         autoCapitalize="none"
                         autoCorrect={false}
                         {...this.props}
-                        onChangeText={(phone) => {
+                        onChangeText={phone => {
                             this.setState({ phone }, () => {
                                 this.onChangeText();
                             });
@@ -84,45 +104,51 @@ export class PhoneField extends Component {
                     />
                 </View>
             </View>
-        )
+        );
     }
 }
 
-export const SectionFooter = (props) => {
+export const SectionFooter = props => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
+            <LinkCell
+                theme={theme}
+                onPress={() => onStateChange('confirmSignUp')}
+            >
                 {I18n.get('Confirm a Code')}
             </LinkCell>
             <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
                 {I18n.get('Sign In')}
             </LinkCell>
         </View>
-    )
-}
+    );
+};
 
-export const LinkCell = (props) => {
+export const LinkCell = props => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.cell}>
-            <TouchableHighlight onPress={props.onPress} underlayColor={linkUnderlayColor}>
+            <TouchableHighlight
+                onPress={props.onPress}
+                underlayColor={linkUnderlayColor}
+            >
                 <Text style={theme.sectionFooterLink}>{props.children}</Text>
             </TouchableHighlight>
         </View>
-    )
-}
+    );
+};
 
-export const Header = (props) => {
+export const Header = props => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.sectionHeader}>
             <Text style={theme.sectionHeaderText}>{props.children}</Text>
         </View>
-    )
-}
+    );
+};
 
-export const ErrorRow = (props) => {
+export const ErrorRow = props => {
     const theme = props.theme || AmplifyTheme;
     if (!props.children) return null;
     return (
@@ -130,10 +156,10 @@ export const ErrorRow = (props) => {
             <Icon name="warning" color={errorIconColor} />
             <Text style={theme.errorRowText}>{props.children}</Text>
         </View>
-    )
-}
+    );
+};
 
-export const AmplifyButton = (props) => {
+export const AmplifyButton = props => {
     const theme = props.theme || AmplifyTheme;
     let style = theme.button;
     if (props.disabled) {
@@ -148,5 +174,5 @@ export const AmplifyButton = (props) => {
         <TouchableOpacity {...props} style={style}>
             <Text style={theme.buttonText}>{props.text}</Text>
         </TouchableOpacity>
-    )
-}
+    );
+};

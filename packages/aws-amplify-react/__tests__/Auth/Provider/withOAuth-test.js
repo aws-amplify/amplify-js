@@ -14,12 +14,12 @@ describe('withOAuth test', () => {
             };
 
             const Comp = withOAuth(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render correctly with button', () => {
-            const wrapper = shallow(<OAuthButton/>);
+            const wrapper = shallow(<OAuthButton />);
             expect(wrapper).toMatchSnapshot();
         });
     });
@@ -33,9 +33,9 @@ describe('withOAuth test', () => {
             };
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            
+
             const Comp = withOAuth(MockComp);
-            const wrapper = mount(<Comp/>);
+            const wrapper = mount(<Comp />);
             const comp = wrapper.instance();
 
             comp.signIn();
@@ -52,14 +52,14 @@ describe('withOAuth test', () => {
             };
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            
+
             const Comp = withOAuth(MockComp);
-            const wrapper = mount(<Comp/>);
+            const wrapper = mount(<Comp />);
             const comp = wrapper.instance();
 
             comp.signIn(expect.anything(), 'Facebook');
 
-            expect(spyon).toBeCalledWith({"provider": "Facebook"});
+            expect(spyon).toBeCalledWith({ provider: 'Facebook' });
             spyon.mockClear();
         });
     });

@@ -84,129 +84,178 @@ const template = `
 `;
 
 @Component({
-  selector: 'sumerian-scene-core',
-  template
+    selector: 'sumerian-scene-core',
+    template,
 })
 export class SumerianSceneComponentCore implements OnInit, OnDestroy {
-  @Input() sceneName: string;
+    @Input() sceneName: string;
 
-  loading = false;
-  loadPercentage = 0;
-  muted = false;
-  showEnableAudio = false;
-  isVRCapable = false;
-  isVRPresentationActive = false;
-  isFullscreen = false;
-  sceneError = null;
-  amplifyUI: any;
-  protected logger: any;
+    loading = false;
+    loadPercentage = 0;
+    muted = false;
+    showEnableAudio = false;
+    isVRCapable = false;
+    isVRPresentationActive = false;
+    isFullscreen = false;
+    sceneError = null;
+    amplifyUI: any;
+    protected logger: any;
 
-  @Input()
-  set data(data: any) {
-    this.sceneName = data.sceneName;
-  }
-
-  constructor(protected amplifyService: AmplifyService) {
-    this.amplifyUI = AmplifyUI;
-    this.logger = this.amplifyService.logger('SumerianSceneComponentCore');
-  }
-
-  ngOnInit() {   
-    document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
-
-    if (!this.amplifyService.xr()){
-      throw new Error('XR module not registered on AmplifyService provider');
+    @Input()
+    set data(data: any) {
+        this.sceneName = data.sceneName;
     }
 
-    this.loadAndStartScene();
+    constructor(protected amplifyService: AmplifyService) {
+        this.amplifyUI = AmplifyUI;
+        this.logger = this.amplifyService.logger('SumerianSceneComponentCore');
+    }
 
+    ngOnInit() {
+        document.addEventListener(
+            'fullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.addEventListener(
+            'webkitfullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.addEventListener(
+            'mozfullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.addEventListener(
+            'MSFullscreenChange',
+            this.onFullscreenChange.bind(this)
+        );
 
-  }
+        if (!this.amplifyService.xr()) {
+            throw new Error(
+                'XR module not registered on AmplifyService provider'
+            );
+        }
 
-  ngOnDestroy() {
-    document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
-  }
+        this.loadAndStartScene();
+    }
 
-  progressCallback = (progress) => {
-    const percentage = progress * 100;
-    this.loadPercentage = percentage;
-  }
+    ngOnDestroy() {
+        document.removeEventListener(
+            'fullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.removeEventListener(
+            'webkitfullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.removeEventListener(
+            'mozfullscreenchange',
+            this.onFullscreenChange.bind(this)
+        );
+        document.removeEventListener(
+            'MSFullscreenChange',
+            this.onFullscreenChange.bind(this)
+        );
+    }
 
-  async loadAndStartScene() {
-    this.loading = true;
-    const sceneOptions = { 
-      progressCallback: this.progressCallback
+    progressCallback = progress => {
+        const percentage = progress * 100;
+        this.loadPercentage = percentage;
     };
-    try {
-      await this.amplifyService.xr()
-      .loadScene(this.sceneName, "sumerian-scene-dom-id", sceneOptions);
-    } catch (e) {
-      this.sceneError = 'Failed to load scene';
-      this.logger.error(this.sceneError, e);
-      return;
+
+    async loadAndStartScene() {
+        this.loading = true;
+        const sceneOptions = {
+            progressCallback: this.progressCallback,
+        };
+        try {
+            await this.amplifyService
+                .xr()
+                .loadScene(
+                    this.sceneName,
+                    'sumerian-scene-dom-id',
+                    sceneOptions
+                );
+        } catch (e) {
+            this.sceneError = 'Failed to load scene';
+            this.logger.error(this.sceneError, e);
+            return;
+        }
+        this.amplifyService.xr().start(this.sceneName);
+
+        this.loading = false;
+        this.muted = this.amplifyService.xr().isMuted(this.sceneName);
+
+        this.isVRCapable = this.amplifyService.xr().isVRCapable(this.sceneName);
+        this.isVRPresentationActive = this.amplifyService
+            .xr()
+            .isVRPresentationActive(this.sceneName);
+
+        this.amplifyService
+            .xr()
+            .onSceneEvent(
+                this.sceneName,
+                'AudioEnabled',
+                () => (this.showEnableAudio = false)
+            );
+        this.amplifyService
+            .xr()
+            .onSceneEvent(
+                this.sceneName,
+                'AudioDisabled',
+                () => (this.showEnableAudio = true)
+            );
     }
-    this.amplifyService.xr().start(this.sceneName);
 
-    this.loading = false;
-    this.muted = this.amplifyService.xr().isMuted(this.sceneName);
-
-    this.isVRCapable = this.amplifyService.xr().isVRCapable(this.sceneName);
-    this.isVRPresentationActive = this.amplifyService.xr().isVRPresentationActive(this.sceneName);
-
-    this.amplifyService.xr()
-    .onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-    this.amplifyService.xr()
-    .onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
-  }
-  
-  setMuted(muted) {
-    this.muted = muted;
-    this.amplifyService.xr().setMuted(this.sceneName, muted);
-    if (this.showEnableAudio) {
-      this.amplifyService.xr().enableAudio(this.sceneName);
-      this.showEnableAudio = false;
+    setMuted(muted) {
+        this.muted = muted;
+        this.amplifyService.xr().setMuted(this.sceneName, muted);
+        if (this.showEnableAudio) {
+            this.amplifyService.xr().enableAudio(this.sceneName);
+            this.showEnableAudio = false;
+        }
     }
-  }
-  
-  toggleVRPresentation() {
-    try {
-      if (this.isVRPresentationActive) {
-        this.amplifyService.xr().exitVR(this.sceneName);
-      } else {
-        this.amplifyService.xr().enterVR(this.sceneName);
-      }
-    } catch(e) {
-      this.logger.error('Unable to start/stop WebVR System: ' + e.message);
-      return;
+
+    toggleVRPresentation() {
+        try {
+            if (this.isVRPresentationActive) {
+                this.amplifyService.xr().exitVR(this.sceneName);
+            } else {
+                this.amplifyService.xr().enterVR(this.sceneName);
+            }
+        } catch (e) {
+            this.logger.error(
+                'Unable to start/stop WebVR System: ' + e.message
+            );
+            return;
+        }
+        this.isVRPresentationActive = !this.isVRPresentationActive;
     }
-    this.isVRPresentationActive = !this.isVRPresentationActive;
-  }
 
-  onFullscreenChange() {
-    const doc: any = document;
-    this.isFullscreen = doc.fullscreenElement !== null;
-  }
-
-  async maximize() {
-    const sceneDomElement: any = document.getElementById("sumerian-scene-container");
-    const requestFullScreen = sceneDomElement.requestFullscreen || sceneDomElement.msRequestFullscreen || sceneDomElement.mozRequestFullScreen || sceneDomElement.webkitRequestFullscreen;
-    requestFullScreen.call(sceneDomElement);
-  }
-
-  async minimize() {
-    const doc: any = document;
-    if(doc.exitFullscreen) {
-      doc.exitFullscreen();
-    } else if(doc.mozCancelFullScreen) {
-      doc.mozCancelFullScreen();
-    } else if(doc.webkitExitFullscreen) {
-      doc.webkitExitFullscreen();
+    onFullscreenChange() {
+        const doc: any = document;
+        this.isFullscreen = doc.fullscreenElement !== null;
     }
-  }
+
+    async maximize() {
+        const sceneDomElement: any = document.getElementById(
+            'sumerian-scene-container'
+        );
+        const requestFullScreen =
+            sceneDomElement.requestFullscreen ||
+            sceneDomElement.msRequestFullscreen ||
+            sceneDomElement.mozRequestFullScreen ||
+            sceneDomElement.webkitRequestFullscreen;
+        requestFullScreen.call(sceneDomElement);
+    }
+
+    async minimize() {
+        const doc: any = document;
+        if (doc.exitFullscreen) {
+            doc.exitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+            doc.mozCancelFullScreen();
+        } else if (doc.webkitExitFullscreen) {
+            doc.webkitExitFullscreen();
+        }
+    }
 }

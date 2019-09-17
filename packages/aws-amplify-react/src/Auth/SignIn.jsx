@@ -32,7 +32,7 @@ import {
     Input,
     InputLabel,
     SectionFooterPrimaryContent,
-    SectionFooterSecondaryContent
+    SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
@@ -52,17 +52,18 @@ export default class SignIn extends AuthPiece {
 
     checkContact(user) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
+        Auth.verifiedContact(user).then(data => {
+            if (!JS.isEmpty(data.verified)) {
+                this.changeState('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.changeState('verifyContact', user);
+            }
+        });
     }
 
     async signIn(event) {
@@ -75,13 +76,18 @@ export default class SignIn extends AuthPiece {
         const password = this.inputs.password;
 
         if (!Auth || typeof Auth.signIn !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
-        this.setState({loading: true});
+        this.setState({ loading: true });
         try {
             const user = await Auth.signIn(username, password);
             logger.debug(user);
-            if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+            if (
+                user.challengeName === 'SMS_MFA' ||
+                user.challengeName === 'SOFTWARE_TOKEN_MFA'
+            ) {
                 logger.debug('confirm user with ' + user.challengeName);
                 this.changeState('confirmSignIn', user);
             } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -90,7 +96,8 @@ export default class SignIn extends AuthPiece {
             } else if (user.challengeName === 'MFA_SETUP') {
                 logger.debug('TOTP setup', user.challengeParam);
                 this.changeState('TOTPSetup', user);
-            } else if (user.challengeName === 'CUSTOM_CHALLENGE' &&
+            } else if (
+                user.challengeName === 'CUSTOM_CHALLENGE' &&
                 user.challengeParam &&
                 user.challengeParam.trigger === 'true'
             ) {
@@ -102,81 +109,112 @@ export default class SignIn extends AuthPiece {
         } catch (err) {
             if (err.code === 'UserNotConfirmedException') {
                 logger.debug('the user is not confirmed');
-                this.changeState('confirmSignUp', {username});
+                this.changeState('confirmSignUp', { username });
             } else if (err.code === 'PasswordResetRequiredException') {
                 logger.debug('the user requires a new password');
-                this.changeState('forgotPassword', {username});
+                this.changeState('forgotPassword', { username });
             } else {
                 this.error(err);
             }
         } finally {
-            this.setState({loading: false})
+            this.setState({ loading: false });
         }
     }
-    
+
     showComponent(theme) {
-        const { authState, hide = [], federated, onStateChange, onAuthEvent, override=[] } = this.props;
-        if (hide && hide.includes(SignIn)) { return null; }
-        const hideSignUp = !override.includes('SignUp') && hide.some(component => component === SignUp);
-        const hideForgotPassword = !override.includes('ForgotPassword') && hide.some(component => component === ForgotPassword);
+        const {
+            authState,
+            hide = [],
+            federated,
+            onStateChange,
+            onAuthEvent,
+            override = [],
+        } = this.props;
+        if (hide && hide.includes(SignIn)) {
+            return null;
+        }
+        const hideSignUp =
+            !override.includes('SignUp') &&
+            hide.some(component => component === SignUp);
+        const hideForgotPassword =
+            !override.includes('ForgotPassword') &&
+            hide.some(component => component === ForgotPassword);
         return (
             <FormSection theme={theme} data-test={auth.signIn.section}>
-                <SectionHeader theme={theme} data-test={auth.signIn.headerSection}>{I18n.get('Sign in to your account')}</SectionHeader>
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.signIn.headerSection}
+                >
+                    {I18n.get('Sign in to your account')}
+                </SectionHeader>
                 <FederatedButtons
-                        federated={federated}
-                        theme={theme}
-                        authState={authState}
-                        onStateChange={onStateChange}
-                        onAuthEvent={onAuthEvent}
-                    />
+                    federated={federated}
+                    theme={theme}
+                    authState={authState}
+                    onStateChange={onStateChange}
+                    onAuthEvent={onAuthEvent}
+                />
                 <form onSubmit={this.signIn}>
-                <SectionBody theme={theme}>
-                    {this.renderUsernameField(theme)}
-                    <FormField theme={theme}>
-                        <InputLabel theme={theme}>{I18n.get('Password')} *</InputLabel>
-                        <Input
-                            placeholder={I18n.get('Enter your password')}
-                            theme={theme}
-                            key="password"
-                            type="password"
-                            name="password"
-                            onChange={this.handleInputChange}
-                            data-test={auth.signIn.passwordInput}
-                        />
-                        {
-                            !hideForgotPassword && <Hint theme={theme}>
-                                {I18n.get('Forget your password? ')}
-                                <Link theme={theme} onClick={() => this.changeState('forgotPassword')} data-test={auth.signIn.forgotPasswordLink}>
-                                    {I18n.get('Reset password')}
-                                </Link>
-                            </Hint>
-                        }
-                    </FormField>
-                </SectionBody>
-                <SectionFooter theme={theme} data-test={auth.signIn.footerSection}>
-                    <SectionFooterPrimaryContent theme={theme}>
-                        <Button
-                            theme={theme}
-                            type="submit"
-                            disabled={this.state.loading}
-                            data-test={auth.signIn.signInButton}
-                            >
-                            {I18n.get('Sign In')}
-                        </Button>
-                    </SectionFooterPrimaryContent>
-                    {
-                        !hideSignUp && <SectionFooterSecondaryContent theme={theme}>
-                            {I18n.get('No account? ')}
-                            <Link
+                    <SectionBody theme={theme}>
+                        {this.renderUsernameField(theme)}
+                        <FormField theme={theme}>
+                            <InputLabel theme={theme}>
+                                {I18n.get('Password')} *
+                            </InputLabel>
+                            <Input
+                                placeholder={I18n.get('Enter your password')}
                                 theme={theme}
-                                onClick={() => this.changeState('signUp')}
-                                data-test={auth.signIn.createAccountLink}
+                                key="password"
+                                type="password"
+                                name="password"
+                                onChange={this.handleInputChange}
+                                data-test={auth.signIn.passwordInput}
+                            />
+                            {!hideForgotPassword && (
+                                <Hint theme={theme}>
+                                    {I18n.get('Forget your password? ')}
+                                    <Link
+                                        theme={theme}
+                                        onClick={() =>
+                                            this.changeState('forgotPassword')
+                                        }
+                                        data-test={
+                                            auth.signIn.forgotPasswordLink
+                                        }
+                                    >
+                                        {I18n.get('Reset password')}
+                                    </Link>
+                                </Hint>
+                            )}
+                        </FormField>
+                    </SectionBody>
+                    <SectionFooter
+                        theme={theme}
+                        data-test={auth.signIn.footerSection}
+                    >
+                        <SectionFooterPrimaryContent theme={theme}>
+                            <Button
+                                theme={theme}
+                                type="submit"
+                                disabled={this.state.loading}
+                                data-test={auth.signIn.signInButton}
+                            >
+                                {I18n.get('Sign In')}
+                            </Button>
+                        </SectionFooterPrimaryContent>
+                        {!hideSignUp && (
+                            <SectionFooterSecondaryContent theme={theme}>
+                                {I18n.get('No account? ')}
+                                <Link
+                                    theme={theme}
+                                    onClick={() => this.changeState('signUp')}
+                                    data-test={auth.signIn.createAccountLink}
                                 >
-                                {I18n.get('Create account')}
-                            </Link>
-                        </SectionFooterSecondaryContent>
-                    }
-                </SectionFooter>
+                                    {I18n.get('Create account')}
+                                </Link>
+                            </SectionFooterSecondaryContent>
+                        )}
+                    </SectionFooter>
                 </form>
             </FormSection>
         );

@@ -1,20 +1,26 @@
 import {
-    TranslateTextInput, TextToSpeechInput,
-    SpeechToTextInput, isTranslateTextInput,
-    isTextToSpeechInput, isSpeechToTextInput, TranslateTextOutput, TextToSpeechOutput, SpeechToTextOutput
-} from "../Predictions";
-import { AbstractPredictionsProvider } from ".";
+    TranslateTextInput,
+    TextToSpeechInput,
+    SpeechToTextInput,
+    isTranslateTextInput,
+    isTextToSpeechInput,
+    isSpeechToTextInput,
+    TranslateTextOutput,
+    TextToSpeechOutput,
+    SpeechToTextOutput,
+} from '../Predictions';
+import { AbstractPredictionsProvider } from '.';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractConvertPredictionsProvider');
 
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
-
     getCategory(): string {
-        return "Convert";
+        return 'Convert';
     }
 
-    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
-        : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
+    convert(
+        input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
+    ): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         if (isTranslateTextInput(input)) {
             logger.debug('translateText');
             return this.translateText(input);
@@ -27,15 +33,25 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
         }
     }
 
-    protected translateText(translateTextInput: TranslateTextInput): Promise<TranslateTextOutput> {
-        throw new Error("convertText is not implemented by this provider");
+    protected translateText(
+        translateTextInput: TranslateTextInput
+    ): Promise<TranslateTextOutput> {
+        throw new Error('convertText is not implemented by this provider');
     }
 
-    protected convertTextToSpeech(textToSpeechInput: TextToSpeechInput): Promise<TextToSpeechOutput> {
-        throw new Error("convertTextToSpeech is not implemented by this provider");
+    protected convertTextToSpeech(
+        textToSpeechInput: TextToSpeechInput
+    ): Promise<TextToSpeechOutput> {
+        throw new Error(
+            'convertTextToSpeech is not implemented by this provider'
+        );
     }
 
-    protected convertSpeechToText(speechToTextInput: SpeechToTextInput): Promise<SpeechToTextOutput> {
-        throw new Error("convertSpeechToText is not implemented by this provider");
+    protected convertSpeechToText(
+        speechToTextInput: SpeechToTextInput
+    ): Promise<SpeechToTextOutput> {
+        throw new Error(
+            'convertSpeechToText is not implemented by this provider'
+        );
     }
 }

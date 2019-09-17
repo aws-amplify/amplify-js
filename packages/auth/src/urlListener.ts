@@ -10,9 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-    JS,
-} from '@aws-amplify/core';
+import { JS } from '@aws-amplify/core';
 
 export default callback => {
     if (JS.browserOrNode().isBrowser && window.location) {

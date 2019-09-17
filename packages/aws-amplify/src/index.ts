@@ -11,12 +11,13 @@
  * and limitations under the License.
  */
 
-import Analytics, { 
-    AnalyticsClass, 
-    AnalyticsProvider, 
-    AWSPinpointProvider, 
+import Analytics, {
+    AnalyticsClass,
+    AnalyticsProvider,
+    AWSPinpointProvider,
     AWSKinesisProvider,
-    AmazonPersonalizeProvider } from '@aws-amplify/analytics';
+    AmazonPersonalizeProvider,
+} from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
@@ -25,7 +26,9 @@ import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import * as UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
-import Predictions, { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
+import Predictions, {
+    AmazonAIPredictionsProvider,
+} from '@aws-amplify/predictions';
 
 import Amplify, {
     ConsoleLogger as Logger,
@@ -34,7 +37,7 @@ import Amplify, {
     ClientDevice,
     Signer,
     I18n,
-    ServiceWorker
+    ServiceWorker,
 } from '@aws-amplify/core';
 
 export default Amplify;
@@ -53,37 +56,37 @@ Amplify.UI = UI;
 Amplify.XR = XR;
 Amplify.Predictions = Predictions;
 
-export { 
-    Auth, 
-    Analytics, 
+export {
+    Auth,
+    Analytics,
     Storage,
-    API, 
-    PubSub, 
-    I18n, 
-    Logger, 
-    Hub, 
-    Cache, 
-    JS, 
-    ClientDevice, 
-    Signer, 
-    ServiceWorker, 
+    API,
+    PubSub,
+    I18n,
+    Logger,
+    Hub,
+    Cache,
+    JS,
+    ClientDevice,
+    Signer,
+    ServiceWorker,
     Interactions,
     UI,
     XR,
-    Predictions
+    Predictions,
 };
 
-export { 
-    AuthClass, 
-    AnalyticsClass, 
-    APIClass, 
+export {
+    AuthClass,
+    AnalyticsClass,
+    APIClass,
     StorageClass,
     PubSubClass,
     InteractionsClass,
     XRClass,
-    AnalyticsProvider, 
+    AnalyticsProvider,
     AWSPinpointProvider,
     AWSKinesisProvider,
-    AmazonPersonalizeProvider
+    AmazonPersonalizeProvider,
 };
 export { graphqlOperation };

@@ -26,10 +26,8 @@ const getUrl = () => {
 const defaultOpts: pageViewTrackOpts = {
     enable: false,
     provider: 'AWSPinpoint',
-    getUrl
+    getUrl,
 };
-
-
 
 export default class PageViewTracker {
     private _config: pageViewTrackOpts;
@@ -63,26 +61,31 @@ export default class PageViewTracker {
 
     private _isSameUrl() {
         const prevUrl = sessionStorage.getItem(PREV_URL_KEY);
-        const curUrl = this._config.getUrl(); 
+        const curUrl = this._config.getUrl();
 
-        if (prevUrl === curUrl){
+        if (prevUrl === curUrl) {
             logger.debug('the url is same');
             return true;
-        } 
-        else return false;
+        } else return false;
     }
 
     private async _pageViewTrackDefault() {
-        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !window.sessionStorage) {
+        if (
+            !JS.browserOrNode().isBrowser ||
+            !window.addEventListener ||
+            !window.sessionStorage
+        ) {
             logger.debug('not in the supported web enviroment');
             return;
         }
         const url = this._config.getUrl();
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
         const attributes = Object.assign(
             {
-                url
+                url,
             },
             customAttrs
         );
@@ -91,8 +94,8 @@ export default class PageViewTracker {
             this._tracker(
                 {
                     name: this._config.eventName || 'pageView',
-                    attributes
-                }, 
+                    attributes,
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
@@ -102,38 +105,48 @@ export default class PageViewTracker {
     }
 
     private async _trackFunc() {
-        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !history.pushState || !window.sessionStorage) {
+        if (
+            !JS.browserOrNode().isBrowser ||
+            !window.addEventListener ||
+            !history.pushState ||
+            !window.sessionStorage
+        ) {
             logger.debug('not in the supported web enviroment');
             return;
         }
 
         const url = this._config.getUrl();
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
         const attributes = Object.assign(
             {
-                url
+                url,
             },
             customAttrs
         );
 
-        if (!this._isSameUrl()){
+        if (!this._isSameUrl()) {
             this._tracker(
                 {
                     name: this._config.eventName || 'pageView',
-                    attributes
+                    attributes,
                 },
-                this._config.provider  
+                this._config.provider
             ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
             });
             sessionStorage.setItem(PREV_URL_KEY, url);
         }
     }
-    
 
     private _pageViewTrackSPA() {
-        if (!JS.browserOrNode().isBrowser || !window.addEventListener || !history.pushState) {
+        if (
+            !JS.browserOrNode().isBrowser ||
+            !window.addEventListener ||
+            !history.pushState
+        ) {
             logger.debug('not in the supported web enviroment');
             return;
         }

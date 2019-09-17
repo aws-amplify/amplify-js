@@ -12,24 +12,24 @@ describe('UsernameFieldComponentCore: ', () => {
     let service: AmplifyService;
     let fixture;
 
-    beforeEach(() => { 
+    beforeEach(() => {
         service = new AmplifyService(authModule);
         component = new UsernameFieldComponentCore(service);
         TestBed.configureTestingModule({
-        declarations: [
-            UsernameFieldComponentCore,
-            MockComponent(PhoneFieldComponentCore)
-        ],
-        providers: [
-            {
-            provide: AmplifyService,
-            useFactory: () => {
-                return AmplifyModules({
-                ...authModule
-                });
-            }
-            }
-        ]
+            declarations: [
+                UsernameFieldComponentCore,
+                MockComponent(PhoneFieldComponentCore),
+            ],
+            providers: [
+                {
+                    provide: AmplifyService,
+                    useFactory: () => {
+                        return AmplifyModules({
+                            ...authModule,
+                        });
+                    },
+                },
+            ],
         }).compileComponents();
         fixture = TestBed.createComponent(UsernameFieldComponentCore);
         fixtureComponent = fixture.componentInstance;

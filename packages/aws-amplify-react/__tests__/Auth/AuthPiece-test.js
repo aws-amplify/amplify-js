@@ -6,9 +6,7 @@ class TestPiece extends AuthPiece {
         super(props);
     }
     render() {
-        return (
-            <div/>
-        );
+        return <div />;
     }
 }
 
@@ -16,9 +14,9 @@ describe('AuthPiece test', () => {
     describe('usernameFromAuthData test', () => {
         test('happy case with string type authdata', () => {
             const props = {
-                authData: 'username'
+                authData: 'username',
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
 
@@ -28,17 +26,17 @@ describe('AuthPiece test', () => {
         test('happy case with object type authdata', () => {
             const props = {
                 authData: {
-                    username: 'username'
-                }
+                    username: 'username',
+                },
             };
             const props2 = {
                 authData: {
                     user: {
-                        username: 'username'
-                    }
-                }
+                        username: 'username',
+                    },
+                },
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
 
@@ -50,27 +48,29 @@ describe('AuthPiece test', () => {
         });
 
         test('no authData', () => {
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
-            
+
             expect(testPiece.usernameFromAuthData()).toBe('');
         });
     });
 
     describe('errorMessage test', () => {
         test('happy case', () => {
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
             expect(testPiece.errorMessage('err')).toBe('err');
         });
-        
+
         test('happy case with object param', () => {
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
-            expect(testPiece.errorMessage({message:'err'})).toBe('err');
-            expect(testPiece.errorMessage({something: 'something'})).toBe(JSON.stringify({something: 'something'}));
+            expect(testPiece.errorMessage({ message: 'err' })).toBe('err');
+            expect(testPiece.errorMessage({ something: 'something' })).toBe(
+                JSON.stringify({ something: 'something' })
+            );
         });
     });
 
@@ -79,9 +79,9 @@ describe('AuthPiece test', () => {
             const mockFn = jest.fn();
             const props = {
                 authState: 'state',
-                onAuthEvent: mockFn
+                onAuthEvent: mockFn,
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
 
@@ -92,9 +92,9 @@ describe('AuthPiece test', () => {
 
         test('no onAuthEvent', () => {
             const props = {
-                authState: 'state'
+                authState: 'state',
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
 
@@ -104,35 +104,45 @@ describe('AuthPiece test', () => {
 
     describe('changeState test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(AuthPiece.prototype, 'triggerAuthEvent').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(AuthPiece.prototype, 'triggerAuthEvent')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const mockFn = jest.fn();
             const props = {
-                onStateChange: mockFn
+                onStateChange: mockFn,
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
             wrapper.setProps(props);
 
             testPiece.changeState('state', 'data');
 
             expect(mockFn).toBeCalledWith('state', 'data');
-            expect(spyon).toBeCalledWith({"data": "state", "type": "stateChange"});
+            expect(spyon).toBeCalledWith({
+                data: 'state',
+                type: 'stateChange',
+            });
 
             spyon.mockClear();
         });
 
         test('happy case', () => {
-            const spyon = jest.spyOn(AuthPiece.prototype, 'triggerAuthEvent').mockImplementationOnce(() => {
-                return;
-            });
-            const wrapper = shallow(<TestPiece/>);
+            const spyon = jest
+                .spyOn(AuthPiece.prototype, 'triggerAuthEvent')
+                .mockImplementationOnce(() => {
+                    return;
+                });
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
             testPiece.changeState('state', 'data');
-            expect(spyon).toBeCalledWith({"data": "state", "type": "stateChange"});
+            expect(spyon).toBeCalledWith({
+                data: 'state',
+                type: 'stateChange',
+            });
 
             spyon.mockClear();
         });
@@ -140,20 +150,24 @@ describe('AuthPiece test', () => {
 
     describe('error test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(AuthPiece.prototype, 'triggerAuthEvent').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(AuthPiece.prototype, 'triggerAuthEvent')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
-            const spyon2 = jest.spyOn(AuthPiece.prototype, 'errorMessage').mockImplementationOnce(() => {
-                return 'errMessage';
-            });
+            const spyon2 = jest
+                .spyOn(AuthPiece.prototype, 'errorMessage')
+                .mockImplementationOnce(() => {
+                    return 'errMessage';
+                });
 
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
             testPiece.error('err');
 
-            expect(spyon).toBeCalledWith({data: 'errMessage', type: 'error'});
+            expect(spyon).toBeCalledWith({ data: 'errMessage', type: 'error' });
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -167,15 +181,18 @@ describe('AuthPiece test', () => {
                     name: 'name',
                     value: 'value',
                     type: 'radio',
-                    checked: true
-                }
+                    checked: true,
+                },
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
             testPiece.handleInputChange(event);
 
-            expect(testPiece.inputs).toEqual( {"checkedValue": "value", "name": true});
+            expect(testPiece.inputs).toEqual({
+                checkedValue: 'value',
+                name: true,
+            });
         });
 
         test('happy case without checke_type', () => {
@@ -184,15 +201,18 @@ describe('AuthPiece test', () => {
                     name: 'name',
                     value: 'value',
                     type: 'other_type',
-                    checked: ''
-                }
+                    checked: '',
+                },
             };
-            const wrapper = shallow(<TestPiece/>);
+            const wrapper = shallow(<TestPiece />);
             const testPiece = wrapper.instance();
 
             testPiece.handleInputChange(event);
 
-            expect(testPiece.inputs).toEqual({"checkedValue": null, "name": "value"});
+            expect(testPiece.inputs).toEqual({
+                checkedValue: null,
+                name: 'value',
+            });
         });
     });
 });

@@ -60,7 +60,7 @@ export const authErrorMessages: AuthErrorMessages = {
             
             2. There might be multiple conflicting versions of aws-amplify or amplify packages in your node_modules.
                 Try deleting your node_modules folder and reinstalling the dependencies with \`yarn install\`
-        `
+        `,
     },
     missingAuthConfig: {
         message: DEFAULT_MSG,
@@ -69,39 +69,39 @@ export const authErrorMessages: AuthErrorMessages = {
             The configuration object is missing required auth properties. 
             Did you run \`amplify push\` after adding auth via \`amplify add auth\`?
             See https://aws-amplify.github.io/docs/js/authentication#amplify-project-setup for more information
-        `
+        `,
     },
     emptyUsername: {
-        message: 'Username cannot be empty'
+        message: 'Username cannot be empty',
     },
     // TODO: should include a list of valid sign-in types
     invalidUsername: {
         message:
-            'The username should either be a string or one of the sign in types'
+            'The username should either be a string or one of the sign in types',
     },
     emptyPassword: {
-        message: 'Password cannot be empty'
+        message: 'Password cannot be empty',
     },
     emptyCode: {
-        message: 'Confirmation code cannot be empty'
+        message: 'Confirmation code cannot be empty',
     },
     signUpError: {
         message: 'Error creating account',
-        log: 'The first parameter should either be non-null string or object'
+        log: 'The first parameter should either be non-null string or object',
     },
     noMFA: {
-        message: 'No valid MFA method provided'
+        message: 'No valid MFA method provided',
     },
     invalidMFA: {
-        message: 'Invalid MFA type'
+        message: 'Invalid MFA type',
     },
     emptyChallengeResponse: {
-        message: 'Challenge response cannot be empty'
+        message: 'Challenge response cannot be empty',
     },
     noUserSession: {
-        message: 'Failed to get the session because the user is empty'
+        message: 'Failed to get the session because the user is empty',
     },
     default: {
-        message: DEFAULT_MSG
-    }
+        message: DEFAULT_MSG,
+    },
 };

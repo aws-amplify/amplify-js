@@ -1,18 +1,35 @@
-import { AbstractPredictionsProvider } from "../types/Providers";
+import { AbstractPredictionsProvider } from '../types/Providers';
 import {
     AmazonAIConvertPredictionsProvider,
     AmazonAIInterpretPredictionsProvider,
-    AmazonAIIdentifyPredictionsProvider
-} from ".";
-import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, PredictionsOptions, IdentifyTextInput, 
-    IdentifyTextOutput, IdentifyLabelsInput, IdentifyLabelsOutput, IdentifyEntitiesInput, IdentifyEntitiesOutput, 
-    isIdentifyTextInput, isIdentifyLabelsInput, isIdentifyEntitiesInput, TranslateTextOutput,
-    TextToSpeechOutput, isTranslateTextInput, SpeechToTextOutput, isTextToSpeechInput, isSpeechToTextInput,
-    InterpretTextInput, InterpretTextOutput, isInterpretTextInput
- } from "../types";
+    AmazonAIIdentifyPredictionsProvider,
+} from '.';
+import {
+    TranslateTextInput,
+    TextToSpeechInput,
+    SpeechToTextInput,
+    PredictionsOptions,
+    IdentifyTextInput,
+    IdentifyTextOutput,
+    IdentifyLabelsInput,
+    IdentifyLabelsOutput,
+    IdentifyEntitiesInput,
+    IdentifyEntitiesOutput,
+    isIdentifyTextInput,
+    isIdentifyLabelsInput,
+    isIdentifyEntitiesInput,
+    TranslateTextOutput,
+    TextToSpeechOutput,
+    isTranslateTextInput,
+    SpeechToTextOutput,
+    isTextToSpeechInput,
+    isSpeechToTextInput,
+    InterpretTextInput,
+    InterpretTextOutput,
+    isInterpretTextInput,
+} from '../types';
 
 export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
-
     private convertProvider: AmazonAIConvertPredictionsProvider;
     private identifyProvider: AmazonAIIdentifyPredictionsProvider;
     private interpretProvider: AmazonAIInterpretPredictionsProvider;
@@ -25,11 +42,11 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
     }
 
     getCategory(): string {
-        return "Predictions";
+        return 'Predictions';
     }
 
     getProviderName(): string {
-        return "AmazonAIPredictionsProvider";
+        return 'AmazonAIPredictionsProvider';
     }
 
     configure(config: PredictionsOptions) {
@@ -43,14 +60,17 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
         return this.interpretProvider.interpret(input);
     }
 
-    convert(input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput)
-        : Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
+    convert(
+        input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
+    ): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
         return this.convertProvider.convert(input);
     }
 
-    identify(input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput)
-        : Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
+    identify(
+        input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+    ): Promise<
+        IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
+    > {
         return this.identifyProvider.identify(input);
     }
-
 }

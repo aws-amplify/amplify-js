@@ -6,9 +6,9 @@ jest.mock('react-native', () => {
         AppState: {
             currentState: 'inactive',
             addEventListener: mockAddEventListener,
-            removeEventListener: mockRemoveEventListener
-        }
-    }
+            removeEventListener: mockRemoveEventListener,
+        },
+    };
 });
 
 import SessionTracker from '../../src/trackers/SessionTracker-rn';
@@ -24,13 +24,16 @@ describe('SessionTracker test', () => {
             tracker.mockClear();
 
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                {
+                    name: '_session.start',
+                    attributes: {},
+                },
+                'AWSPinpoint'
+            );
             expect(mockAddEventListener).toBeCalled();
 
             mockAddEventListener.mockClear();
@@ -40,33 +43,35 @@ describe('SessionTracker test', () => {
     describe('configure test', () => {
         test('happy case', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
-            expect(sessionTracker.configure({
+            expect(
+                sessionTracker.configure({
+                    enable: true,
+                    attributes: {
+                        attr1: 'val1',
+                    },
+                    provider: 'myProvider',
+                })
+            ).toEqual({
                 enable: true,
                 attributes: {
-                    attr1: 'val1'
+                    attr1: 'val1',
                 },
-                provider: 'myProvider'
-            })).toEqual({
-                enable: true,
-                attributes: {
-                    attr1: 'val1'
-                },
-                provider: 'myProvider'
+                provider: 'myProvider',
             });
         });
 
         test('autoTrack disabled', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
             mockRemoveEventListener.mockClear();
 
             sessionTracker.configure({
-                enable: false
+                enable: false,
             });
 
             expect(mockRemoveEventListener).toBeCalled();
@@ -77,7 +82,7 @@ describe('SessionTracker test', () => {
     describe('track function test', () => {
         test('if the app turns to be active', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
             tracker.mockClear();
 
@@ -85,21 +90,27 @@ describe('SessionTracker test', () => {
             sessionTracker._currentState = 'inactive';
             sessionTracker._trackFunc('active');
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                {
+                    name: '_session.start',
+                    attributes: {},
+                },
+                'AWSPinpoint'
+            );
         });
 
         test('if app turns into background', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
             tracker.mockClear();
 
             sessionTracker._trackFunc('inactive');
 
-            expect(tracker).toBeCalledWith({"attributes": {}, "immediate": true, "name": "_session.stop"}, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                { attributes: {}, immediate: true, name: '_session.stop' },
+                'AWSPinpoint'
+            );
         });
     });
 });

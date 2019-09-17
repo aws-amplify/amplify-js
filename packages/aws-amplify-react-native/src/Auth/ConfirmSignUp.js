@@ -12,22 +12,14 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import {
-    Auth,
-    I18n,
-    Logger
-} from 'aws-amplify';
-import { 
-    FormField, 
-    LinkCell, 
-    Header, 
+    FormField,
+    LinkCell,
+    Header,
     ErrorRow,
-    AmplifyButton
+    AmplifyButton,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -41,8 +33,8 @@ export default class ConfirmSignUp extends AuthPiece {
         this.state = {
             username: null,
             code: null,
-            error: null
-        }
+            error: null,
+        };
 
         this.confirm = this.confirm.bind(this);
         this.resend = this.resend.bind(this);
@@ -66,18 +58,25 @@ export default class ConfirmSignUp extends AuthPiece {
 
     componentWillReceiveProps(nextProps) {
         const username = nextProps.authData;
-        if (username && !this.state.username) { this.setState({ username }); }
+        if (username && !this.state.username) {
+            this.setState({ username });
+        }
     }
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
                     <View style={theme.sectionBody}>
                         <FormField
                             theme={theme}
-                            onChangeText={(text) => this.setState({ username: text })}
+                            onChangeText={text =>
+                                this.setState({ username: text })
+                            }
                             label={I18n.get(this.getUsernameLabel())}
                             placeholder={I18n.get('Enter your username')}
                             required={true}
@@ -85,9 +84,11 @@ export default class ConfirmSignUp extends AuthPiece {
                         />
                         <FormField
                             theme={theme}
-                            onChangeText={(text) => this.setState({ code: text })}
+                            onChangeText={text => this.setState({ code: text })}
                             label={I18n.get('Confirmation Code')}
-                            placeholder={I18n.get('Enter your confirmation code')}
+                            placeholder={I18n.get(
+                                'Enter your confirmation code'
+                            )}
                             required={true}
                         />
                         <AmplifyButton
@@ -98,10 +99,17 @@ export default class ConfirmSignUp extends AuthPiece {
                         />
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={this.resend} disabled={!this.state.username}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={this.resend}
+                            disabled={!this.state.username}
+                        >
                             {I18n.get('Resend code')}
                         </LinkCell>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signIn')}
+                        >
                             {I18n.get('Back to Sign In')}
                         </LinkCell>
                     </View>

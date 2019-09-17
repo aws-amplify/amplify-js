@@ -12,24 +12,22 @@ describe('PhoneFieldComponentCore: ', () => {
     let service: AmplifyService;
     let fixture;
 
-    beforeEach(() => { 
+    beforeEach(() => {
         service = new AmplifyService(authModule);
         component = new PhoneFieldComponentCore(service);
         TestBed.configureTestingModule({
-        declarations: [
-            PhoneFieldComponentCore
-        ],
-        imports: [FormsModule],
-        providers: [
-            {
-            provide: AmplifyService,
-            useFactory: () => {
-                return AmplifyModules({
-                ...authModule
-                });
-            }
-            }
-        ]
+            declarations: [PhoneFieldComponentCore],
+            imports: [FormsModule],
+            providers: [
+                {
+                    provide: AmplifyService,
+                    useFactory: () => {
+                        return AmplifyModules({
+                            ...authModule,
+                        });
+                    },
+                },
+            ],
         }).compileComponents();
         fixture = TestBed.createComponent(PhoneFieldComponentCore);
         fixtureComponent = fixture.componentInstance;

@@ -1,9 +1,10 @@
 import Auth from '@aws-amplify/auth';
 import * as React from 'react';
 import { Component } from 'react';
-import withFacebook, { FacebookButton } from '../../../src/Auth/Provider/withFacebook';
+import withFacebook, {
+    FacebookButton,
+} from '../../../src/Auth/Provider/withFacebook';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-
 
 describe('withFacebook test', () => {
     describe('render test', () => {
@@ -15,7 +16,7 @@ describe('withFacebook test', () => {
             };
             window.FB = 'fb';
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             expect(wrapper).toMatchSnapshot();
         });
     });
@@ -30,23 +31,25 @@ describe('withFacebook test', () => {
             const fbResponse = {
                 status: 'connected',
                 authResponse: {
-                    token: 'token'
-                }
+                    token: 'token',
+                },
             };
 
-   
-            window.FB =  {
+            window.FB = {
                 getLoginStatus(callback) {
                     callback(fbResponse);
-                }
+                },
             };
-            
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
+            const spyon = jest
+                .spyOn(comp, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             comp.signIn();
 
@@ -63,32 +66,34 @@ describe('withFacebook test', () => {
             };
             const fbResponse = {
                 authResponse: { token: null },
-                status: 'not connected'
+                status: 'not connected',
             };
 
             const fbResponse2 = {
                 authResponse: {
                     authResponse: { token: 'token' },
-                    status: 'connected'
-                }
+                    status: 'connected',
+                },
             };
 
-            
             window.FB = {
                 getLoginStatus(callback) {
                     callback(fbResponse);
                 },
                 login(callback, option) {
                     callback(fbResponse2);
-                }
+                },
             };
-            
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
+            const spyon = jest
+                .spyOn(comp, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             comp.signIn();
 
@@ -105,29 +110,31 @@ describe('withFacebook test', () => {
             };
             const fbResponse = {
                 authResponse: { token: null },
-                status: 'not connected'
+                status: 'not connected',
             };
 
             const fbResponse2 = {
-                authResponse: null
+                authResponse: null,
             };
 
-            
             window.FB = {
                 getLoginStatus(callback) {
                     callback(fbResponse);
                 },
                 login(callback, option) {
                     callback(fbResponse2);
-                }
+                },
             };
-            
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
+            const spyon = jest
+                .spyOn(comp, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             comp.signIn();
 
@@ -146,39 +153,45 @@ describe('withFacebook test', () => {
             };
             const fbResponse = {
                 name: 'username',
-                email: 'user@example.com'
+                email: 'user@example.com',
             };
 
             window.FB = {
-                    api(path, {}, callback) {
-                        callback(fbResponse);
-                    }
-                };
-            
+                api(path, {}, callback) {
+                    callback(fbResponse);
+                },
+            };
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
                 });
-            });
-            const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
+            const spyon2 = jest
+                .spyOn(Date.prototype, 'getTime')
+                .mockReturnValue(0);
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            });
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve('user');
+                });
 
             await comp.federatedSignIn({
                 accessToken: 'accessToken',
-                expiresIn: 0
+                expiresIn: 0,
             });
 
             expect(spyon).toBeCalledWith(
                 'facebook',
-                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+                { token: 'accessToken', expires_at: 0 },
+                { name: 'username', email: 'user@example.com' }
             );
 
             spyon.mockClear();
@@ -194,44 +207,51 @@ describe('withFacebook test', () => {
             };
             const fbResponse = {
                 name: 'username',
-                email: 'user@example.com'
+                email: 'user@example.com',
             };
 
             window.FB = {
                 api(path, {}, callback) {
                     callback(fbResponse);
-                }
+                },
             };
-            
+
             const mockFn = jest.fn();
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return 'user';
-            });
-
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return 'user';
                 });
-            });
-            const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
+
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
+                });
+            const spyon2 = jest
+                .spyOn(Date.prototype, 'getTime')
+                .mockReturnValue(0);
 
             wrapper.setProps({
-                onStateChange: mockFn
+                onStateChange: mockFn,
             });
 
             await comp.federatedSignIn({
                 accessToken: 'accessToken',
-                expiresIn: 0
+                expiresIn: 0,
             });
 
             expect(spyon).toBeCalledWith(
                 'facebook',
-                { token: 'accessToken', expires_at: 0 }, { name: 'username', email: 'user@example.com' }
+                { token: 'accessToken', expires_at: 0 },
+                { name: 'username', email: 'user@example.com' }
             );
 
             spyon.mockClear();
@@ -246,29 +266,32 @@ describe('withFacebook test', () => {
                 }
             };
             const fbResponse = {
-                name: 'username'
+                name: 'username',
             };
 
             window.FB = {
                 api(path, callback) {
                     callback(fbResponse);
-                }
+                },
             };
-            
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
                 });
-            });
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            });
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve('user');
+                });
 
             await comp.federatedSignIn({
                 accessToken: null,
@@ -288,18 +311,18 @@ describe('withFacebook test', () => {
                     return <div />;
                 }
             };
-            
-            const mockFn = jest.fn().mockImplementationOnce((callback) => {
+
+            const mockFn = jest.fn().mockImplementationOnce(callback => {
                 callback('response');
             });
             const mockFn2 = jest.fn();
             window.FB = {
                 getLoginStatus: mockFn,
-                init: mockFn2
+                init: mockFn2,
             };
-            
+
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
             comp.fbAsyncInit();
@@ -322,14 +345,14 @@ describe('withFacebook test', () => {
             window.FB = {
                 getLoginStatus(callback) {
                     callback({
-                        status: 'connected'
+                        status: 'connected',
                     });
                 },
-                logout: mockFn
+                logout: mockFn,
             };
 
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
             await comp.signOut();
@@ -347,15 +370,15 @@ describe('withFacebook test', () => {
             window.FB = {
                 getLoginStatus(callback) {
                     callback({
-                        status: 'not connected'
+                        status: 'not connected',
                     });
                 },
-                logout: mockFn
+                logout: mockFn,
             };
             const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
-            
+
             await comp.signOut();
             expect(mockFn).not.toBeCalled();
         });
@@ -366,8 +389,8 @@ describe('FacebookButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
             window.FB = 'fb';
-            const wrapper = shallow(<FacebookButton/>);
-            
+            const wrapper = shallow(<FacebookButton />);
+
             expect(wrapper).toMatchSnapshot();
         });
     });

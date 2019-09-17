@@ -1,7 +1,5 @@
 {
     "source": {
-        "exclude": [
-            "./src/lib"
-        ]
+        "exclude": ["./src/lib"]
     }
 }

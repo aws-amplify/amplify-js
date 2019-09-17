@@ -10,9 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-    ConsoleLogger as Logger,
-} from '../Logger';
+import { ConsoleLogger as Logger } from '../Logger';
 import JS from '../JS';
 
 const logger = new Logger('CognitoCredentials');
@@ -22,19 +20,16 @@ const waitForInit = new Promise((res, rej) => {
         logger.debug('not in the browser, directly resolved');
         return res();
     }
-    const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+    const ga =
+        window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
     if (ga) {
         logger.debug('google api already loaded');
         return res();
     } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
+        setTimeout(() => {
+            return res();
+        }, 2000);
     }
-    
 });
 
 export default class GoogleOAuth {
@@ -58,41 +53,46 @@ export default class GoogleOAuth {
 
     private _refreshGoogleTokenImpl() {
         let ga = null;
-        if (JS.browserOrNode().isBrowser) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (JS.browserOrNode().isBrowser)
+            ga =
+                window['gapi'] && window['gapi'].auth2
+                    ? window['gapi'].auth2
+                    : null;
         if (!ga) {
             logger.debug('no gapi auth2 available');
             return Promise.reject('no gapi auth2 available');
         }
 
         return new Promise((res, rej) => {
-            ga.getAuthInstance().then((googleAuth) => {
-                if (!googleAuth) {
-                    console.log('google Auth undefiend');
-                    rej('google Auth undefiend');
-                }
+            ga.getAuthInstance()
+                .then(googleAuth => {
+                    if (!googleAuth) {
+                        console.log('google Auth undefiend');
+                        rej('google Auth undefiend');
+                    }
 
-                const googleUser = googleAuth.currentUser.get();
-                // refresh the token
-                if (googleUser.isSignedIn()) {
-                    logger.debug('refreshing the google access token');
-                    googleUser.reloadAuthResponse()
-                        .then((authResponse) => {
+                    const googleUser = googleAuth.currentUser.get();
+                    // refresh the token
+                    if (googleUser.isSignedIn()) {
+                        logger.debug('refreshing the google access token');
+                        googleUser.reloadAuthResponse().then(authResponse => {
                             const { id_token, expires_at } = authResponse;
                             const profile = googleUser.getBasicProfile();
                             const user = {
                                 email: profile.getEmail(),
-                                name: profile.getName()
+                                name: profile.getName(),
                             };
 
                             res({ token: id_token, expires_at });
                         });
-                } else {
-                    rej('User is not signed in with Google');
-                }
-            }).catch(err => {
-                logger.debug('Failed to refresh google token', err);
-                rej('Failed to refresh google token');
-            });
+                    } else {
+                        rej('User is not signed in with Google');
+                    }
+                })
+                .catch(err => {
+                    logger.debug('Failed to refresh google token', err);
+                    rej('Failed to refresh google token');
+                });
         });
     }
 }

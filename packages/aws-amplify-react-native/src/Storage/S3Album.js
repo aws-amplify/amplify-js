@@ -12,15 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { 
-    ScrollView, 
-    Dimensions, 
-    StyleSheet 
-} from 'react-native';
-import {
-    Storage,
-    Logger
-} from 'aws-amplify';
+import { ScrollView, Dimensions, StyleSheet } from 'react-native';
+import { Storage, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import S3Image from './S3Image';
 
@@ -36,10 +29,12 @@ export default class S3Album extends Component {
     componentDidMount() {
         const { path, level, filter } = this.props;
         logger.debug(path);
-        Storage.list(path, { level: level? level : 'public' })
+        Storage.list(path, { level: level ? level : 'public' })
             .then(data => {
                 logger.debug(data);
-                if (filter) { data = filter(data); }
+                if (filter) {
+                    data = filter(data);
+                }
                 this.setState({ images: data });
             })
             .catch(err => logger.warn(err));
@@ -47,28 +42,31 @@ export default class S3Album extends Component {
 
     render() {
         const { images } = this.state;
-        if (!images) { return null; }
+        if (!images) {
+            return null;
+        }
 
         const { width, height } = Dimensions.get('window');
         const theme = this.props.theme || AmplifyTheme;
-        const albumStyle = Object.assign(
-            {},
-            StyleSheet.flatten(theme.album),
-            { width: '100%', height: height }
-        );
+        const albumStyle = Object.assign({}, StyleSheet.flatten(theme.album), {
+            width: '100%',
+            height: height,
+        });
         const list = this.state.images.map(image => {
-            return <S3Image
-                        key={image.key}
-                        imgKey={image.key}
-                        resizeMode="cover"
-                        style={{ width: '100%', height: width }}
-                        theme={theme}
-                   />
+            return (
+                <S3Image
+                    key={image.key}
+                    imgKey={image.key}
+                    resizeMode="cover"
+                    style={{ width: '100%', height: width }}
+                    theme={theme}
+                />
+            );
         });
         return (
             <ScrollView {...this.props} style={albumStyle}>
                 {list}
             </ScrollView>
-        )
+        );
     }
 }

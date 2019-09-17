@@ -25,7 +25,7 @@ import {
     InputLabel,
     Input,
     Button,
-    Toast
+    Toast,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { totpQrcode } from '@aws-amplify/ui';
@@ -40,13 +40,13 @@ export default class TOTPSetupComp extends Component {
 
         this.setup = this.setup.bind(this);
         this.showSecretCode = this.showSecretCode.bind(this);
-        this.verifyTotpToken= this.verifyTotpToken.bind(this);
+        this.verifyTotpToken = this.verifyTotpToken.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.triggerTOTPEvent = this.triggerTOTPEvent.bind(this);
 
         this.state = {
             code: null,
-            setupMessage: null
+            setupMessage: null,
         };
     }
 
@@ -59,28 +59,40 @@ export default class TOTPSetupComp extends Component {
             this.props.onTOTPEvent(event, data, user);
         }
     }
-    
+
     handleInputChange(evt) {
-        this.setState({setupMessage: null});
+        this.setState({ setupMessage: null });
         this.inputs = {};
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
-        this.inputs[name] = check_type? checked : value;
+        this.inputs[name] = check_type ? checked : value;
     }
 
     setup() {
-        this.setState({setupMessage: null});
+        this.setState({ setupMessage: null });
         const user = this.props.authData;
         const issuer = encodeURI(I18n.get('AWSCognito'));
         if (!Auth || typeof Auth.setupTOTP !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
 
-        Auth.setupTOTP(user).then((data) => {
-            logger.debug('secret key', data);
-            const code = "otpauth://totp/" + issuer + ":" + user.username + "?secret=" + data + "&issuer=" + issuer;
-            this.setState({code});
-        }).catch((err) => logger.debug('totp setup failed', err));
+        Auth.setupTOTP(user)
+            .then(data => {
+                logger.debug('secret key', data);
+                const code =
+                    'otpauth://totp/' +
+                    issuer +
+                    ':' +
+                    user.username +
+                    '?secret=' +
+                    data +
+                    '&issuer=' +
+                    issuer;
+                this.setState({ code });
+            })
+            .catch(err => logger.debug('totp setup failed', err));
     }
 
     verifyTotpToken() {
@@ -90,19 +102,25 @@ export default class TOTPSetupComp extends Component {
         }
         const user = this.props.authData;
         const { totpCode } = this.inputs;
-        if (!Auth || typeof Auth.verifyTotpToken !== 'function' || typeof Auth.setPreferredMFA !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        if (
+            !Auth ||
+            typeof Auth.verifyTotpToken !== 'function' ||
+            typeof Auth.setPreferredMFA !== 'function'
+        ) {
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.verifyTotpToken(user, totpCode)
             .then(() => {
                 // set it to preferred mfa
                 Auth.setPreferredMFA(user, 'TOTP');
-                this.setState({setupMessage: 'Setup TOTP successfully!'});
+                this.setState({ setupMessage: 'Setup TOTP successfully!' });
                 logger.debug('set up totp success!');
                 this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
             })
             .catch(err => {
-                this.setState({setupMessage: 'Setup TOTP failed!'});
+                this.setState({ setupMessage: 'Setup TOTP failed!' });
                 logger.error(err);
             });
     }
@@ -114,7 +132,9 @@ export default class TOTPSetupComp extends Component {
                 <div className={totpQrcode}>
                     <QRCode value={code} />
                 </div>
-                <InputLabel theme={theme}>{I18n.get('Enter Security Code:')}</InputLabel>
+                <InputLabel theme={theme}>
+                    {I18n.get('Enter Security Code:')}
+                </InputLabel>
                 <Input
                     autoFocus
                     theme={theme}
@@ -127,26 +147,29 @@ export default class TOTPSetupComp extends Component {
     }
 
     render() {
-        const theme = this.props.theme ? this.props.theme: AmplifyTheme;
+        const theme = this.props.theme ? this.props.theme : AmplifyTheme;
         const code = this.state.code;
 
         return (
             <FormSection theme={theme}>
-                {this.state.setupMessage && 
-                    <Toast>
-                        { I18n.get(this.state.setupMessage) }
-                    </Toast>
-                }
-                <SectionHeader theme={theme}>{I18n.get('Scan then enter verification code')}</SectionHeader>
+                {this.state.setupMessage && (
+                    <Toast>{I18n.get(this.state.setupMessage)}</Toast>
+                )}
+                <SectionHeader theme={theme}>
+                    {I18n.get('Scan then enter verification code')}
+                </SectionHeader>
                 <SectionBody theme={theme}>
                     {this.showSecretCode(code, theme)}
                     {this.state.setupMessage &&
-                        I18n.get(this.state.setupMessage)
-                    }
+                        I18n.get(this.state.setupMessage)}
                 </SectionBody>
 
                 <SectionFooter theme={theme}>
-                    <Button theme={theme} onClick={this.verifyTotpToken} style={{width: '100%'}}>
+                    <Button
+                        theme={theme}
+                        onClick={this.verifyTotpToken}
+                        style={{ width: '100%' }}
+                    >
                         {I18n.get('Verify Security Token')}
                     </Button>
                 </SectionFooter>

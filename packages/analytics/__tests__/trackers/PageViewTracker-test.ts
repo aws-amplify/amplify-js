@@ -19,17 +19,16 @@ class SessionStorageMock {
     }
 
     getByteLength(str) {
-        var ret = str.length
-        
+        var ret = str.length;
+
         for (var i = str.length; i >= 0; i--) {
             var charCode = str.charCodeAt(i);
             if (charCode > 0x7f && charCode <= 0x7ff) {
                 ++ret;
-            }
-            else if (charCode > 0x7ff && charCode <= 0xffff) {
+            } else if (charCode > 0x7ff && charCode <= 0xffff) {
                 ret += 2;
             }
-            if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+            if (charCode >= 0xdc00 && charCode <= 0xdfff) {
                 i--; //trail surrogate
             }
         }
@@ -47,16 +46,18 @@ class SessionStorageMock {
 
     setItem(key, value) {
         if (key in this.store) {
-        this.removeItem(key);
+            this.removeItem(key);
         }
-        if (this.curSize + this.getByteLength(value.toString()) > this.maxSize) {
-        throw new Error('session storage is full!');
-        }
-        else {
-        this.store[key] = value.toString();
-        this.curSize += this.getByteLength(this.store[key]);
-        ++this.length;
-        //console.log('current size in session storage: ' + this.curSize);
+        if (
+            this.curSize + this.getByteLength(value.toString()) >
+            this.maxSize
+        ) {
+            throw new Error('session storage is full!');
+        } else {
+            this.store[key] = value.toString();
+            this.curSize += this.getByteLength(this.store[key]);
+            ++this.length;
+            //console.log('current size in session storage: ' + this.curSize);
         }
     }
 
@@ -68,8 +69,8 @@ class SessionStorageMock {
 
     showItems() {
         var str = '';
-        for (var key in this.store){
-        str += key + '\n';
+        for (var key in this.store) {
+            str += key + '\n';
         }
         str = 'show items in mock cache: \n' + str;
         console.log(str);
@@ -87,27 +88,31 @@ class SessionStorageMock {
         var keys = Object.keys(this.store);
         return keys[i];
     }
-};
+}
 
-window.sessionStorage = new SessionStorageMock;
+window.sessionStorage = new SessionStorageMock();
 
 describe('PageViewTracker test', () => {
     describe('constructor test', () => {
         test('happy case with type SPA', () => {
-            const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
-                return;
-            });
-            const spyon2 = jest.spyOn(window, 'addEventListener').mockImplementation(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(MethodEmbed, 'add')
+                .mockImplementation(() => {
+                    return;
+                });
+            const spyon2 = jest
+                .spyOn(window, 'addEventListener')
+                .mockImplementation(() => {
+                    return;
+                });
             const pageViewTracer = new PageViewTracker(tracker, {
                 enable: true,
-                type: 'SPA'
+                type: 'SPA',
             });
 
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
-            
+
             spyon.mockClear();
             spyon2.mockClear();
         });
@@ -116,13 +121,15 @@ describe('PageViewTracker test', () => {
             let tmp = window.addEventListener;
             window.addEventListener = undefined;
 
-            const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(MethodEmbed, 'add')
+                .mockImplementation(() => {
+                    return;
+                });
 
             const pageViewTracer = new PageViewTracker(tracker, {
                 enable: true,
-                type: 'SPA'
+                type: 'SPA',
             });
 
             expect(spyon).not.toBeCalled();
@@ -135,16 +142,20 @@ describe('PageViewTracker test', () => {
         test.skip('happy case with type default', () => {
             tracker.mockClear();
 
-            const spyon = jest.spyOn(sessionStorage, 'getItem').mockImplementation(() => {
-                return 'url1';
-            });
+            const spyon = jest
+                .spyOn(sessionStorage, 'getItem')
+                .mockImplementation(() => {
+                    return 'url1';
+                });
 
-            const spyon2 = jest.spyOn(sessionStorage, 'setItem').mockImplementation(() => {
-                return;
-            });
+            const spyon2 = jest
+                .spyOn(sessionStorage, 'setItem')
+                .mockImplementation(() => {
+                    return;
+                });
 
             const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
             expect(tracker).toBeCalled();
@@ -159,7 +170,7 @@ describe('PageViewTracker test', () => {
             window.addEventListener = undefined;
 
             const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
             expect(tracker).not.toBeCalled();
@@ -170,46 +181,52 @@ describe('PageViewTracker test', () => {
     describe('configure test', () => {
         test('happy case', () => {
             const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
             const getUrlMock = jest.fn();
-            expect(pageViewTracer.configure({
+            expect(
+                pageViewTracer.configure({
+                    enable: true,
+                    attributes: {
+                        attr: 'attr',
+                    },
+                    provider: 'myProvider',
+                    getUrl: getUrlMock,
+                })
+            ).toEqual({
                 enable: true,
                 attributes: {
-                    attr: 'attr'
+                    attr: 'attr',
                 },
                 provider: 'myProvider',
-                getUrl: getUrlMock
-            })).toEqual({
-                enable: true,
-                attributes: {
-                    attr: 'attr'
-                },
-                provider: 'myProvider',
-                getUrl: getUrlMock
+                getUrl: getUrlMock,
             });
         });
 
         test('turn off autoTrack', () => {
-            const spyon = jest.spyOn(MethodEmbed, 'remove').mockImplementation(() => {
-                return;
-            });
-            const spyon2 = jest.spyOn(window, 'removeEventListener').mockImplementation(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(MethodEmbed, 'remove')
+                .mockImplementation(() => {
+                    return;
+                });
+            const spyon2 = jest
+                .spyOn(window, 'removeEventListener')
+                .mockImplementation(() => {
+                    return;
+                });
             const pageViewTracer = new PageViewTracker(tracker, {
                 enable: true,
-                type: 'SPA'
+                type: 'SPA',
             });
 
             pageViewTracer.configure({
-                enable: false
+                enable: false,
             });
 
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
-            
+
             spyon.mockClear();
             spyon2.mockClear();
         });

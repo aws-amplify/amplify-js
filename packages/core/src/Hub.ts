@@ -15,29 +15,31 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Hub');
 
-const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
-    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
+typeof Symbol.for === 'function'
+    ? Symbol.for('amplify_default')
+    : '@@amplify_default') as Symbol;
 interface IPattern {
-    pattern: RegExp,
-    callback: HubCallback
+    pattern: RegExp;
+    callback: HubCallback;
 }
 
 interface IListener {
-    name: string,
-    callback: HubCallback
+    name: string;
+    callback: HubCallback;
 }
 
 export type HubCapsule = {
-    channel: string,
-    payload: HubPayload,
-    source: string,
-    patternInfo?: string[]
+    channel: string;
+    payload: HubPayload;
+    source: string;
+    patternInfo?: string[];
 };
 
 export type HubPayload = {
-    event: string,
-    data?: any,
-    message?: string
+    event: string;
+    data?: any;
+    message?: string;
 };
 
 export type HubCallback = (capsule: HubCapsule) => void;
@@ -53,7 +55,16 @@ export class HubClass {
     private listeners: IListener[] = [];
     private patterns: IPattern[] = [];
 
-    protectedChannels = ['core', 'auth', 'api', 'analytics', 'interactions', 'pubsub', 'storage', 'xr'];
+    protectedChannels = [
+        'core',
+        'auth',
+        'api',
+        'analytics',
+        'interactions',
+        'pubsub',
+        'storage',
+        'xr',
+    ];
 
     constructor(name: string) {
         this.name = name;
@@ -62,7 +73,9 @@ export class HubClass {
     // Note - Need to pass channel as a reference for removal to work and not anonymous function
     remove(channel: string | RegExp, listener: HubCallback) {
         if (channel instanceof RegExp) {
-            const pattern = this.patterns.find(({ pattern }) => pattern.source === channel.source);
+            const pattern = this.patterns.find(
+                ({ pattern }) => pattern.source === channel.source
+            );
             if (!pattern) {
                 logger.warn(`No listeners for ${channel}`);
                 return;
@@ -74,17 +87,25 @@ export class HubClass {
                 logger.warn(`No listeners for ${channel}`);
                 return;
             }
-            this.listeners[channel] = [...holder.filter(({ callback }) => callback !== listener)];
+            this.listeners[channel] = [
+                ...holder.filter(({ callback }) => callback !== listener),
+            ];
         }
     }
 
-    dispatch(channel: string, payload: HubPayload, source: string = '', ampSymbol?: Symbol) {
-
+    dispatch(
+        channel: string,
+        payload: HubPayload,
+        source: string = '',
+        ampSymbol?: Symbol
+    ) {
         if (this.protectedChannels.indexOf(channel) > -1) {
             const hasAccess = ampSymbol === AMPLIFY_SYMBOL;
 
             if (!hasAccess) {
-                logger.warn(`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`);
+                logger.warn(
+                    `WARNING: ${channel} is protected and dispatching on it can have unintended consequences`
+                );
             }
         }
 
@@ -92,19 +113,27 @@ export class HubClass {
             channel,
             payload: { ...payload },
             source,
-            patternInfo: []
+            patternInfo: [],
         };
 
         try {
             this._toListeners(capsule);
-        } catch (e) { logger.error(e); }
+        } catch (e) {
+            logger.error(e);
+        }
     }
 
-    listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
+    listen(
+        channel: string | RegExp,
+        callback?: HubCallback | LegacyCallback,
+        listenerName = 'noname'
+    ) {
         let cb: HubCallback;
         // Check for legacy onHubCapsule callback for backwards compatability
         if (isLegacyCallback(callback)) {
-            logger.warn(`WARNING onHubCapsule is Deprecated. Please pass in a callback.`);
+            logger.warn(
+                `WARNING onHubCapsule is Deprecated. Please pass in a callback.`
+            );
             cb = callback.onHubCapsule.bind(callback);
         } else if (typeof callback !== 'function') {
             throw new Error('No callback supplied to Hub');
@@ -115,7 +144,7 @@ export class HubClass {
         if (channel instanceof RegExp) {
             this.patterns.push({
                 pattern: channel,
-                callback: cb
+                callback: cb,
             });
         } else {
             let holder = this.listeners[channel];
@@ -127,10 +156,9 @@ export class HubClass {
 
             holder.push({
                 name: listenerName,
-                callback: cb
+                callback: cb,
             });
         }
-
     }
 
     private _toListeners(capsule: HubCapsule) {
@@ -142,14 +170,17 @@ export class HubClass {
                 logger.debug(`Dispatching to ${channel} with `, payload);
                 try {
                     listener.callback(capsule);
-                } catch (e) { logger.error(e); }
+                } catch (e) {
+                    logger.error(e);
+                }
             });
         }
 
         if (this.patterns.length > 0) {
-
             if (!payload.message) {
-                logger.warn(`Cannot perform pattern matching without a message key`);
+                logger.warn(
+                    `Cannot perform pattern matching without a message key`
+                );
                 return;
             }
 
@@ -159,10 +190,15 @@ export class HubClass {
                 const match = payloadStr.match(pattern.pattern);
                 if (match) {
                     const [, ...groups] = match;
-                    const dispatchingCapsule: HubCapsule = { ...capsule, patternInfo: groups };
+                    const dispatchingCapsule: HubCapsule = {
+                        ...capsule,
+                        patternInfo: groups,
+                    };
                     try {
                         pattern.callback(dispatchingCapsule);
-                    } catch (e) { logger.error(e); }
+                    } catch (e) {
+                        logger.error(e);
+                    }
                 }
             });
         }

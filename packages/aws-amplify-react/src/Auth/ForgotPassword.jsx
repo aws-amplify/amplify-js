@@ -49,26 +49,30 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     send() {
-        const { authData={} } = this.props;
+        const { authData = {} } = this.props;
         const username = this.getUsernameFromInput() || authData.username;
         if (!Auth || typeof Auth.forgotPassword !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.forgotPassword(username)
             .then(data => {
-                logger.debug(data)
+                logger.debug(data);
                 this.setState({ delivery: data.CodeDeliveryDetails });
             })
             .catch(err => this.error(err));
     }
 
     submit() {
-        const { authData={} } = this.props;
+        const { authData = {} } = this.props;
         const { code, password } = this.inputs;
         const username = this.getUsernameFromInput() || authData.username;
-        
+
         if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.forgotPasswordSubmit(username, code, password)
             .then(data => {
@@ -81,11 +85,7 @@ export default class ForgotPassword extends AuthPiece {
 
     sendView() {
         const theme = this.props.theme || AmplifyTheme;
-        return (
-            <div>
-                {this.renderUsernameField(theme)}
-            </div>
-        );
+        return <div>{this.renderUsernameField(theme)}</div>;
     }
 
     submitView() {
@@ -104,7 +104,9 @@ export default class ForgotPassword extends AuthPiece {
                     />
                 </FormField>
                 <FormField theme={theme}>
-                    <InputLabel theme={theme}>{I18n.get('New Password')} *</InputLabel>
+                    <InputLabel theme={theme}>
+                        {I18n.get('New Password')} *
+                    </InputLabel>
                     <Input
                         placeholder={I18n.get('New Password')}
                         theme={theme}
@@ -120,29 +122,65 @@ export default class ForgotPassword extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide, authData={} } = this.props;
-        if (hide && hide.includes(ForgotPassword)) { return null; }
+        const { authState, hide, authData = {} } = this.props;
+        if (hide && hide.includes(ForgotPassword)) {
+            return null;
+        }
 
         return (
             <FormSection theme={theme} data-test={auth.forgotPassword.section}>
-                <SectionHeader theme={theme} data-test={auth.forgotPassword.headerSection}>{I18n.get('Reset your password')}</SectionHeader>
-                <SectionBody theme={theme} data-test={auth.forgotPassword.bodySection}>
-                    { this.state.delivery || authData.username ? this.submitView() : this.sendView() }
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.forgotPassword.headerSection}
+                >
+                    {I18n.get('Reset your password')}
+                </SectionHeader>
+                <SectionBody
+                    theme={theme}
+                    data-test={auth.forgotPassword.bodySection}
+                >
+                    {this.state.delivery || authData.username
+                        ? this.submitView()
+                        : this.sendView()}
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        { this.state.delivery || authData.username ? 
-                            <Button theme={theme} onClick={this.submit} data-test={auth.forgotPassword.submitButton}>{I18n.get('Submit')}</Button> :
-                            <Button theme={theme} onClick={this.send} data-test={auth.forgotPassword.sendCodeButton}>{I18n.get('Send Code')}</Button>
-                        }
+                        {this.state.delivery || authData.username ? (
+                            <Button
+                                theme={theme}
+                                onClick={this.submit}
+                                data-test={auth.forgotPassword.submitButton}
+                            >
+                                {I18n.get('Submit')}
+                            </Button>
+                        ) : (
+                            <Button
+                                theme={theme}
+                                onClick={this.send}
+                                data-test={auth.forgotPassword.sendCodeButton}
+                            >
+                                {I18n.get('Send Code')}
+                            </Button>
+                        )}
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        { this.state.delivery || authData.username ?
-                            <Link theme={theme} onClick={this.send} data-test={auth.forgotPassword.resendCodeLink}>{I18n.get('Resend Code')}</Link> :
-                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.forgotPassword.backToSignInLink}>
+                        {this.state.delivery || authData.username ? (
+                            <Link
+                                theme={theme}
+                                onClick={this.send}
+                                data-test={auth.forgotPassword.resendCodeLink}
+                            >
+                                {I18n.get('Resend Code')}
+                            </Link>
+                        ) : (
+                            <Link
+                                theme={theme}
+                                onClick={() => this.changeState('signIn')}
+                                data-test={auth.forgotPassword.backToSignInLink}
+                            >
                                 {I18n.get('Back to Sign In')}
                             </Link>
-                        }
+                        )}
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>

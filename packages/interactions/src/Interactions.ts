@@ -1,29 +1,33 @@
 /*
-* Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
-* the License. A copy of the License is located at
-*
-*     http://aws.amazon.com/apache2.0/
-*
-* or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
-* and limitations under the License.
-*/
-import { InteractionsOptions, InteractionsProviders, InteractionsResponse, InteractionsProvider } from './types';
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+import {
+    InteractionsOptions,
+    InteractionsProviders,
+    InteractionsResponse,
+    InteractionsProvider,
+} from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
 const logger = new Logger('Interactions');
 
 export default class Interactions {
-
     private _options: InteractionsOptions;
 
     private _pluggables: InteractionsProviders;
 
     /**
      * Initialize PubSub with AWS configurations
-     * 
+     *
      * @param {InteractionsOptions} options - Configuration object for Interactions
      */
     constructor(options: InteractionsOptions) {
@@ -37,7 +41,7 @@ export default class Interactions {
     }
 
     /**
-     * 
+     *
      * @param {InteractionsOptions} options - Configuration object for Interactions
      * @return {Object} - The current configuration
      */
@@ -59,10 +63,17 @@ export default class Interactions {
         }
 
         // Check if AWSLex provider is already on pluggables
-        if (!this._pluggables.AWSLexProvider && bots_config &&
-            Object.keys(bots_config).
-                map(key => bots_config[key]).
-                find(bot => !bot.providerName || bot.providerName === 'AWSLexProvider')) {
+        if (
+            !this._pluggables.AWSLexProvider &&
+            bots_config &&
+            Object.keys(bots_config)
+                .map(key => bots_config[key])
+                .find(
+                    bot =>
+                        !bot.providerName ||
+                        bot.providerName === 'AWSLexProvider'
+                )
+        ) {
             this._pluggables.AWSLexProvider = new AWSLexProvider();
         }
 
@@ -80,7 +91,9 @@ export default class Interactions {
                 this._pluggables[pluggable.getProviderName()] = pluggable;
                 return;
             } else {
-                throw new Error('Bot ' + pluggable.getProviderName() + ' already plugged');
+                throw new Error(
+                    'Bot ' + pluggable.getProviderName() + ' already plugged'
+                );
             }
         }
     }
@@ -90,27 +103,36 @@ export default class Interactions {
             throw new Error('Bot ' + botname + ' does not exist');
         }
 
-        const botProvider = this._options.bots[botname].providerName || 'AWSLexProvider';
+        const botProvider =
+            this._options.bots[botname].providerName || 'AWSLexProvider';
 
         if (!this._pluggables[botProvider]) {
-            throw new Error('Bot ' + botProvider +
-                ' does not have valid pluggin did you try addPluggable first?');
+            throw new Error(
+                'Bot ' +
+                    botProvider +
+                    ' does not have valid pluggin did you try addPluggable first?'
+            );
         }
-        return await this._pluggables[botProvider].sendMessage(botname, message);
-
+        return await this._pluggables[botProvider].sendMessage(
+            botname,
+            message
+        );
     }
 
     public onComplete(botname: string, callback: (err, confirmation) => void) {
         if (!this._options.bots || !this._options.bots[botname]) {
             throw new Error('Bot ' + botname + ' does not exist');
         }
-        const botProvider = this._options.bots[botname].providerName || 'AWSLexProvider';
+        const botProvider =
+            this._options.bots[botname].providerName || 'AWSLexProvider';
 
         if (!this._pluggables[botProvider]) {
-            throw new Error('Bot ' + botProvider +
-                ' does not have valid pluggin did you try addPluggable first?');
+            throw new Error(
+                'Bot ' +
+                    botProvider +
+                    ' does not have valid pluggin did you try addPluggable first?'
+            );
         }
         this._pluggables[botProvider].onComplete(botname, callback);
-
     }
 }

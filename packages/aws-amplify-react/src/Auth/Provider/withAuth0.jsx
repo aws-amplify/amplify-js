@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
- import * as React from 'react';
- import { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -22,10 +22,9 @@ import { auth0SignInButton } from '@aws-amplify/ui';
 import {
     SignInButton,
     SignInButtonIcon,
-    SignInButtonContent
+    SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 import Constants from '../common/constants';
-
 
 const logger = new Logger('withAuth0');
 
@@ -59,7 +58,12 @@ export default function withAuth0(Comp, options) {
         initialize() {
             const { oauth = {} } = Auth.configure();
             const config = this.props.auth0 || options || oauth.auth0;
-            const { onError, onStateChange, authState, onAuthEvent } = this.props;
+            const {
+                onError,
+                onStateChange,
+                authState,
+                onAuthEvent,
+            } = this.props;
             if (!config) {
                 logger.debug('Auth0 is not configured');
                 return;
@@ -71,7 +75,7 @@ export default function withAuth0(Comp, options) {
                 this._auth0 = new window['auth0'].WebAuth(config);
                 window.auth0_client = this._auth0;
             }
-            
+
             if (authState !== 'signedIn') {
                 this._auth0.parseHash((err, authResult) => {
                     if (err || !authResult) {
@@ -83,44 +87,65 @@ export default function withAuth0(Comp, options) {
                         opts: {
                             returnTo: config.returnTo,
                             clientID: config.clientID,
-                            federated: config.federated
-                        }
+                            federated: config.federated,
+                        },
                     };
 
                     try {
-                        localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                        localStorage.setItem(
+                            Constants.AUTH_SOURCE_KEY,
+                            JSON.stringify(payload)
+                        );
                     } catch (e) {
-                        logger.debug('Failed to cache auth source into localStorage', e);
+                        logger.debug(
+                            'Failed to cache auth source into localStorage',
+                            e
+                        );
                     }
-              
-                    this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
-                        let username = undefined;
-                        let email = undefined;
-                        if (err) {
-                            logger.debug('Failed to get the user info', err);
-                        } else {
-                            username = user.name;
-                            email = user.email;
-                        }
 
-                        Auth.federatedSignIn(
-                            config.domain,
-                            {
-                                token: authResult.idToken,
-                                expires_at: authResult.expiresIn * 1000 + new Date().getTime()
-                            },
-                            { name: username, email }
-                        ).then((cred) => {
-                            if (onStateChange) {
-                                Auth.currentAuthenticatedUser().then(user => {
-                                    onStateChange('signedIn', user);
-                                });
+                    this._auth0.client.userInfo(
+                        authResult.accessToken,
+                        (err, user) => {
+                            let username = undefined;
+                            let email = undefined;
+                            if (err) {
+                                logger.debug(
+                                    'Failed to get the user info',
+                                    err
+                                );
+                            } else {
+                                username = user.name;
+                                email = user.email;
                             }
-                        }).catch((e) => {
-                            logger.debug('Failed to get the aws credentials', e);
-                            if (onError) onError(e);
-                        });
-                    });
+
+                            Auth.federatedSignIn(
+                                config.domain,
+                                {
+                                    token: authResult.idToken,
+                                    expires_at:
+                                        authResult.expiresIn * 1000 +
+                                        new Date().getTime(),
+                                },
+                                { name: username, email }
+                            )
+                                .then(cred => {
+                                    if (onStateChange) {
+                                        Auth.currentAuthenticatedUser().then(
+                                            user => {
+                                                onStateChange('signedIn', user);
+                                            }
+                                        );
+                                    }
+                                })
+                                .catch(e => {
+                                    logger.debug(
+                                        'Failed to get the aws credentials',
+                                        e
+                                    );
+                                    if (onError) onError(e);
+                                });
+                        }
+                    );
                 });
             }
         }
@@ -132,7 +157,7 @@ export default function withAuth0(Comp, options) {
             }
         }
 
-        signOut(opts={}) {
+        signOut(opts = {}) {
             const auth0 = window.auth0_client;
             const { returnTo, clientID, federated } = opts;
             if (!auth0) {
@@ -142,12 +167,19 @@ export default function withAuth0(Comp, options) {
             auth0.logout({
                 returnTo,
                 clientID,
-                federated
+                federated,
             });
         }
 
         render() {
-            return <Comp {...this.props} auth0={this._auth0} auth0SignIn={this.signIn} auth0SignOut={this.signOut}/>;
+            return (
+                <Comp
+                    {...this.props}
+                    auth0={this._auth0}
+                    auth0SignIn={this.signIn}
+                    auth0SignOut={this.signOut}
+                />
+            );
         }
     };
 }
@@ -160,8 +192,16 @@ const Button = props => (
         variant={'auth0SignInButton'}
     >
         <SignInButtonIcon theme={props.theme || AmplifyTheme}>
-            <svg id='artwork' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 193.7 216.6'>
-                <path id='NEW' className='st0' d='M189,66.9L167.2,0H96.8l21.8,66.9H189z M96.8,0H26.5L4.8,66.9h70.4L96.8,0z M4.8,66.9L4.8,66.9	c-13,39.9,1.2,83.6,35.2,108.3l21.7-66.9L4.8,66.9z M189,66.9L189,66.9l-57,41.4l21.7,66.9l0,0C187.7,150.6,201.9,106.8,189,66.9	L189,66.9z M39.9,175.2L39.9,175.2l56.9,41.4l56.9-41.4l-56.9-41.4L39.9,175.2z'/>
+            <svg
+                id="artwork"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 193.7 216.6"
+            >
+                <path
+                    id="NEW"
+                    className="st0"
+                    d="M189,66.9L167.2,0H96.8l21.8,66.9H189z M96.8,0H26.5L4.8,66.9h70.4L96.8,0z M4.8,66.9L4.8,66.9	c-13,39.9,1.2,83.6,35.2,108.3l21.7-66.9L4.8,66.9z M189,66.9L189,66.9l-57,41.4l21.7,66.9l0,0C187.7,150.6,201.9,106.8,189,66.9	L189,66.9z M39.9,175.2L39.9,175.2l56.9,41.4l56.9-41.4l-56.9-41.4L39.9,175.2z"
+                />
             </svg>
         </SignInButtonIcon>
         <SignInButtonContent theme={props.theme || AmplifyTheme}>

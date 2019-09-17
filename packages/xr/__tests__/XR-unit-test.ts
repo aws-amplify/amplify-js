@@ -33,8 +33,10 @@ describe('XR', () => {
             const xr = new XR({});
             try {
                 xr.getSceneController('scene1', 'ThreeJSProvider');
-            } catch(e) {
-                expect(e.message).toEqual("Provider 'ThreeJSProvider' not configured");
+            } catch (e) {
+                expect(e.message).toEqual(
+                    "Provider 'ThreeJSProvider' not configured"
+                );
                 expect(e).toBeInstanceOf(Error);
             }
         });
@@ -49,21 +51,25 @@ describe('XR', () => {
             expect.assertions(2);
             try {
                 await xr.loadScene('scene1', 'dom-element-id');
-            } catch(e) {
-                expect(e.message).toEqual("No scenes were defined in the configuration");
+            } catch (e) {
+                expect(e.message).toEqual(
+                    'No scenes were defined in the configuration'
+                );
                 expect(e).toBeInstanceOf(Error);
             }
         });
 
         test('loadScene throws error when dom element does not exist', async () => {
-            const xr = new XR({ scenes: { 'scene1': {} } });
+            const xr = new XR({ scenes: { scene1: {} } });
 
-            document.body.innerHTML = "";
+            document.body.innerHTML = '';
             expect.assertions(2);
             try {
                 await xr.loadScene('scene1', 'dom-element-id');
-            } catch(e) {
-                expect(e.message).toEqual('DOM element id, dom-element-id not found');
+            } catch (e) {
+                expect(e.message).toEqual(
+                    'DOM element id, dom-element-id not found'
+                );
                 expect(e).toBeInstanceOf(Error);
             }
         });
@@ -76,8 +82,10 @@ describe('XR', () => {
             expect.assertions(2);
             try {
                 await xr.loadScene(undefined, 'dom-element-id');
-            } catch(e) {
-                expect(e.message).toEqual("No scene name passed into loadScene");
+            } catch (e) {
+                expect(e.message).toEqual(
+                    'No scene name passed into loadScene'
+                );
                 expect(e).toBeInstanceOf(Error);
             }
         });
@@ -90,22 +98,24 @@ describe('XR', () => {
             expect.assertions(2);
             try {
                 await xr.loadScene('scene2', 'dom-element-id');
-            } catch(e) {
+            } catch (e) {
                 expect(e.message).toEqual("Scene 'scene2' is not configured");
                 expect(e).toBeInstanceOf(Error);
             }
         });
 
         test('loadScene throws error when region is not configured', async () => {
-            const xr = new XR({scenes:{scene2:{sceneConfig:{}}}});
+            const xr = new XR({ scenes: { scene2: { sceneConfig: {} } } });
 
             // Mock dom
             document.body.innerHTML = "<div id='dom-element-id'></div>";
             expect.assertions(2);
             try {
                 await xr.loadScene('scene2', 'dom-element-id');
-            } catch(e) {
-                expect(e.message).toEqual("No region configured for scene: scene2");
+            } catch (e) {
+                expect(e.message).toEqual(
+                    'No region configured for scene: scene2'
+                );
                 expect(e).toBeInstanceOf(Error);
             }
         });
@@ -113,12 +123,12 @@ describe('XR', () => {
         test('isMuted returns muted boolean on scene controller', () => {
             const xr = new XR({
                 scenes: {
-                    'scene1': {
+                    scene1: {
                         sceneController: {
-                            muted: false
-                        }
-                    }
-                }
+                            muted: false,
+                        },
+                    },
+                },
             });
 
             const muted = xr.isMuted('scene1');
@@ -129,14 +139,14 @@ describe('XR', () => {
         test('setMuted sets muted value on scene controller', () => {
             const xr = new XR({
                 scenes: {
-                    'scene1': {
+                    scene1: {
                         sceneController: {
-                            muted: false
-                        }
-                    }
-                }
+                            muted: false,
+                        },
+                    },
+                },
             });
-            
+
             expect.assertions(1);
             xr.setMuted('scene1', true);
             const muted = xr.isMuted('scene1');
@@ -146,14 +156,14 @@ describe('XR', () => {
         test('isVRCapable returns vrCapable boolean on scene controller', () => {
             const xr = new XR({
                 scenes: {
-                    'scene1': {
+                    scene1: {
                         sceneController: {
-                            vrCapable: false
-                        }
-                    }
-                }
+                            vrCapable: false,
+                        },
+                    },
+                },
             });
-            
+
             expect.assertions(1);
             const isVRCapable = xr.isVRCapable('scene1');
             expect(isVRCapable).toBe(false);
@@ -162,12 +172,12 @@ describe('XR', () => {
         test('isSceneLoaded returns isLoaded value on scene object', () => {
             const xr = new XR({
                 scenes: {
-                    'scene1': {
-                        isLoaded: true
-                    }
-                }
+                    scene1: {
+                        isLoaded: true,
+                    },
+                },
             });
-            
+
             expect.assertions(1);
             const isLoaded = xr.isSceneLoaded('scene1');
             expect(isLoaded).toBe(true);
@@ -176,21 +186,21 @@ describe('XR', () => {
         test('getSceneController returns a sceneController', () => {
             const xr = new XR({
                 scenes: {
-                    'scene1': {
+                    scene1: {
                         sceneController: {
-                            muted: false
-                        }
-                    }
-                }
+                            muted: false,
+                        },
+                    },
+                },
             });
 
             const mockSceneController = {
-                muted: false
+                muted: false,
             };
-            
+
             expect.assertions(1);
             const sceneController = xr.getSceneController('scene1');
             expect(sceneController).toEqual(mockSceneController);
         });
-    })
+    });
 });

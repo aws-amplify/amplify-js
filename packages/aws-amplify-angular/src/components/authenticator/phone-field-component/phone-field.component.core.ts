@@ -13,10 +13,17 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, 	EventEmitter, Inject, Output } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    EventEmitter,
+    Inject,
+    Output,
+} from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { PhoneFieldOutput } from '../types';
-import { countrylist, country }  from '../../../assets/countries';
+import { countrylist, country } from '../../../assets/countries';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
@@ -57,11 +64,11 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-phone-field-core',
-  template,
+    selector: 'amplify-auth-phone-field-core',
+    template,
 })
 export class PhoneFieldComponentCore implements OnInit {
-    _placeholder : string = '';
+    _placeholder: string = '';
     _label: string = 'Phone Number';
     _required: boolean = true;
     _country_code: string = '1';
@@ -77,7 +84,8 @@ export class PhoneFieldComponentCore implements OnInit {
         this._placeholder = data.placeholder || this._placeholder;
         this._label = data.label || this._label;
         this._country_code = data.defaultCountryCode || this._country_code;
-        this._required = data.required === undefined? this._required : data.required;
+        this._required =
+            data.required === undefined ? this._required : data.required;
     }
 
     @Input()
@@ -101,7 +109,9 @@ export class PhoneFieldComponentCore implements OnInit {
     }
 
     @Output()
-	phoneFieldChanged: EventEmitter<PhoneFieldOutput> = new EventEmitter<PhoneFieldOutput>();
+    phoneFieldChanged: EventEmitter<PhoneFieldOutput> = new EventEmitter<
+        PhoneFieldOutput
+    >();
 
     ngOnInit() {}
 
@@ -111,7 +121,7 @@ export class PhoneFieldComponentCore implements OnInit {
         this._country_code = country_code;
         this.phoneFieldChanged.emit({
             country_code: this._country_code,
-            local_phone_number: this._local_phone_number
+            local_phone_number: this._local_phone_number,
         });
     }
 
@@ -119,11 +129,13 @@ export class PhoneFieldComponentCore implements OnInit {
         this._local_phone_number = local_phone_number;
         this.phoneFieldChanged.emit({
             country_code: this._country_code,
-            local_phone_number: this._local_phone_number
+            local_phone_number: this._local_phone_number,
         });
     }
 
     getPlaceholder() {
-        return this.amplifyService.i18n().get(`Enter your phone number` || this._placeholder);
+        return this.amplifyService
+            .i18n()
+            .get(`Enter your phone number` || this._placeholder);
     }
 }

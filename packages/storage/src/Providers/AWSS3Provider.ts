@@ -14,24 +14,32 @@ import {
     ConsoleLogger as Logger,
     Hub,
     Credentials,
-    Parser
+    Parser,
 } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions, StorageProvider } from '../types';
 
 const logger = new Logger('AWSS3Provider');
 
-const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
-    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
+typeof Symbol.for === 'function'
+    ? Symbol.for('amplify_default')
+    : '@@amplify_default') as Symbol;
 
-const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:any, message:string) => {
+const dispatchStorageEvent = (
+    track: boolean,
+    event: string,
+    attrs: any,
+    metrics: any,
+    message: string
+) => {
     if (track) {
         Hub.dispatch(
             'storage',
             {
                 event,
                 data: { attrs, metrics },
-                message
+                message,
             },
             'Storage',
             AMPLIFY_SYMBOL
@@ -44,8 +52,7 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
 /**
  * Provide storage methods to use AWS S3
  */
-export default class AWSS3Provider implements StorageProvider{
-
+export default class AWSS3Provider implements StorageProvider {
     static CATEGORY = 'Storage';
     static PROVIDER_NAME = 'AWSS3';
 
@@ -59,7 +66,7 @@ export default class AWSS3Provider implements StorageProvider{
      * @param {Object} config - Configuration object for storage
      */
     constructor(config?: StorageOptions) {
-        this._config = config ? config: {};
+        this._config = config ? config : {};
         logger.debug('Storage Options', this._config);
     }
 
@@ -87,20 +94,24 @@ export default class AWSS3Provider implements StorageProvider{
         if (!config) return this._config;
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         this._config = Object.assign({}, this._config, amplifyConfig.Storage);
-        if (!this._config.bucket) { logger.debug('Do not have bucket yet'); }
+        if (!this._config.bucket) {
+            logger.debug('Do not have bucket yet');
+        }
         return this._config;
     }
 
     /**
-    * Get a presigned URL of the file or the object data when download:true
-    *
-    * @param {String} key - key of the object
-    * @param {Object} [config] - { level : private|protected|public, download: true|false }
-    * @return - A promise resolves to Amazon S3 presigned URL on success
-    */
-    public async get(key: string, config?): Promise<String|Object> {
+     * Get a presigned URL of the file or the object data when download:true
+     *
+     * @param {String} key - key of the object
+     * @param {Object} [config] - { level : private|protected|public, download: true|false }
+     * @return - A promise resolves to Amazon S3 presigned URL on success
+     */
+    public async get(key: string, config?): Promise<String | Object> {
         const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
+        if (!credentialsOK) {
+            return Promise.reject('No credentials');
+        }
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, download, track, expires } = opt;
@@ -111,7 +122,7 @@ export default class AWSS3Provider implements StorageProvider{
 
         const params: any = {
             Bucket: bucket,
-            Key: final_key
+            Key: final_key,
         };
 
         if (download === true) {
@@ -123,7 +134,7 @@ export default class AWSS3Provider implements StorageProvider{
                             'download',
                             {
                                 method: 'get',
-                                result: 'failed'
+                                result: 'failed',
                             },
                             null,
                             `Download failed with ${err.message}`
@@ -136,14 +147,16 @@ export default class AWSS3Provider implements StorageProvider{
                             { method: 'get', result: 'success' },
                             { fileSize: Number(data.Body['length']) },
                             `Download success for ${key}`
-                            );
+                        );
                         res(data);
                     }
                 });
             });
         }
 
-        if (expires) { params.Expires = expires; }
+        if (expires) {
+            params.Expires = expires;
+        }
 
         return new Promise<string>((res, rej) => {
             try {
@@ -180,12 +193,27 @@ export default class AWSS3Provider implements StorageProvider{
      */
     public async put(key: string, object, config?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
+        if (!credentialsOK) {
+            return Promise.reject('No credentials');
+        }
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, track, progressCallback } = opt;
-        const { contentType, contentDisposition, cacheControl, expires, metadata, tagging } = opt;
-        const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
+        const {
+            contentType,
+            contentDisposition,
+            cacheControl,
+            expires,
+            metadata,
+            tagging,
+        } = opt;
+        const {
+            serverSideEncryption,
+            SSECustomerAlgorithm,
+            SSECustomerKey,
+            SSECustomerKeyMD5,
+            SSEKMSKeyId,
+        } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -197,19 +225,37 @@ export default class AWSS3Provider implements StorageProvider{
             Bucket: bucket,
             Key: final_key,
             Body: object,
-            ContentType: type
+            ContentType: type,
         };
-        if (cacheControl) { params.CacheControl = cacheControl; }
-        if (contentDisposition) { params.ContentDisposition = contentDisposition; }
-        if (expires) { params.Expires = expires; }
-        if (metadata) { params.Metadata = metadata; }
-        if (tagging) { params.Tagging = tagging; }
+        if (cacheControl) {
+            params.CacheControl = cacheControl;
+        }
+        if (contentDisposition) {
+            params.ContentDisposition = contentDisposition;
+        }
+        if (expires) {
+            params.Expires = expires;
+        }
+        if (metadata) {
+            params.Metadata = metadata;
+        }
+        if (tagging) {
+            params.Tagging = tagging;
+        }
         if (serverSideEncryption) {
             params.ServerSideEncryption = serverSideEncryption;
-            if (SSECustomerAlgorithm) { params.SSECustomerAlgorithm = SSECustomerAlgorithm; }
-            if (SSECustomerKey) { params.SSECustomerKey = SSECustomerKey; }
-            if (SSECustomerKeyMD5) { params.SSECustomerKeyMD5 = SSECustomerKeyMD5; }
-            if (SSEKMSKeyId) { params.SSEKMSKeyId = SSEKMSKeyId; }
+            if (SSECustomerAlgorithm) {
+                params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+            }
+            if (SSECustomerKey) {
+                params.SSECustomerKey = SSECustomerKey;
+            }
+            if (SSECustomerKeyMD5) {
+                params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+            }
+            if (SSEKMSKeyId) {
+                params.SSEKMSKeyId = SSEKMSKeyId;
+            }
         }
 
         try {
@@ -220,7 +266,10 @@ export default class AWSS3Provider implements StorageProvider{
                         if (typeof progressCallback === 'function') {
                             progressCallback(progress);
                         } else {
-                            logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+                            logger.warn(
+                                'progressCallback should be a function, not a ' +
+                                    typeof progressCallback
+                            );
                         }
                     }
                 });
@@ -236,10 +285,10 @@ export default class AWSS3Provider implements StorageProvider{
             );
 
             return {
-                key: data.Key.substr(prefix.length)
+                key: data.Key.substr(prefix.length),
             };
         } catch (e) {
-            logger.warn("error uploading", e);
+            logger.warn('error uploading', e);
             dispatchStorageEvent(
                 track,
                 'upload',
@@ -260,9 +309,11 @@ export default class AWSS3Provider implements StorageProvider{
      */
     public async remove(key: string, config?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
+        if (!credentialsOK) {
+            return Promise.reject('No credentials');
+        }
 
-        const opt = Object.assign({}, this._config, config, );
+        const opt = Object.assign({}, this._config, config);
         const { bucket, track } = opt;
 
         const prefix = this._prefix(opt);
@@ -272,7 +323,7 @@ export default class AWSS3Provider implements StorageProvider{
 
         const params = {
             Bucket: bucket,
-            Key: final_key
+            Key: final_key,
         };
 
         return new Promise<any>((res, rej) => {
@@ -308,7 +359,9 @@ export default class AWSS3Provider implements StorageProvider{
      */
     public async list(path, config?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
+        if (!credentialsOK) {
+            return Promise.reject('No credentials');
+        }
 
         const opt = Object.assign({}, this._config, config);
         const { bucket, track } = opt;
@@ -320,7 +373,7 @@ export default class AWSS3Provider implements StorageProvider{
 
         const params = {
             Bucket: bucket,
-            Prefix: final_path
+            Prefix: final_path,
         };
 
         return new Promise<any>((res, rej) => {
@@ -341,7 +394,7 @@ export default class AWSS3Provider implements StorageProvider{
                             key: item.Key.substr(prefix.length),
                             eTag: item.ETag,
                             lastModified: item.LastModified,
-                            size: item.Size
+                            size: item.Size,
                         };
                     });
                     dispatchStorageEvent(
@@ -362,7 +415,6 @@ export default class AWSS3Provider implements StorageProvider{
      * @private
      */
     _ensureCredentials() {
-
         return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;
@@ -386,10 +438,20 @@ export default class AWSS3Provider implements StorageProvider{
 
         const customPrefix = config.customPrefix || {};
         const identityId = config.identityId || credentials.identityId;
-        const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
-        const protectedPath = (customPrefix.protected !== undefined ?
-            customPrefix.protected : 'protected/') + identityId + '/';
-        const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
+        const privatePath =
+            (customPrefix.private !== undefined
+                ? customPrefix.private
+                : 'private/') +
+            identityId +
+            '/';
+        const protectedPath =
+            (customPrefix.protected !== undefined
+                ? customPrefix.protected
+                : 'protected/') +
+            identityId +
+            '/';
+        const publicPath =
+            customPrefix.public !== undefined ? customPrefix.public : 'public/';
 
         switch (level) {
             case 'private':
@@ -409,15 +471,15 @@ export default class AWSS3Provider implements StorageProvider{
             bucket,
             region,
             credentials,
-            dangerouslyConnectToHttpEndpointForTesting
+            dangerouslyConnectToHttpEndpointForTesting,
         } = config;
         let localTestingConfig = {};
-        
-        if(dangerouslyConnectToHttpEndpointForTesting) {
+
+        if (dangerouslyConnectToHttpEndpointForTesting) {
             localTestingConfig = {
                 endpoint: localTestingStorageEndpoint,
                 s3BucketEndpoint: true,
-                s3ForcePathStyle : true
+                s3ForcePathStyle: true,
             };
         }
 
@@ -427,7 +489,7 @@ export default class AWSS3Provider implements StorageProvider{
             signatureVersion: 'v4',
             region,
             credentials,
-            ...localTestingConfig
+            ...localTestingConfig,
         });
     }
 }

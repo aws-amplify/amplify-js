@@ -15,7 +15,10 @@ import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
-import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import Amplify, {
+    ConsoleLogger as Logger,
+    Credentials,
+} from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
@@ -24,7 +27,10 @@ import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
 
-export const graphqlOperation = (query, variables = {}) => ({ query, variables });
+export const graphqlOperation = (query, variables = {}) => ({
+    query,
+    variables,
+});
 
 /**
  * Export Cloud Logic APIs
@@ -63,8 +69,8 @@ export default class APIClass {
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
-                opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
-                    : custom;
+                opt.endpoints =
+                    typeof custom === 'string' ? JSON.parse(custom) : custom;
             }
 
             opt = Object.assign({}, opt, {
@@ -78,14 +84,24 @@ export default class APIClass {
         }
 
         // Check if endpoints has custom_headers and validate if is a function
-        opt.endpoints.forEach((endpoint) => {
-            if (typeof endpoint.custom_header !== 'undefined' && typeof endpoint.custom_header !== 'function') {
-                logger.warn('API ' + endpoint.name + ', custom_header should be a function');
+        opt.endpoints.forEach(endpoint => {
+            if (
+                typeof endpoint.custom_header !== 'undefined' &&
+                typeof endpoint.custom_header !== 'function'
+            ) {
+                logger.warn(
+                    'API ' +
+                        endpoint.name +
+                        ', custom_header should be a function'
+                );
                 endpoint.custom_header = undefined;
             }
         });
 
-        if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
+        if (
+            typeof opt.graphql_headers !== 'undefined' &&
+            typeof opt.graphql_headers !== 'function'
+        ) {
             logger.warn('graphql_headers should be a function');
             opt.graphql_headers = undefined;
         }
@@ -250,10 +266,10 @@ export default class APIClass {
     }
 
     /**
-    * Getting endpoint for API
-    * @param {string} apiName - The name of the api
-    * @return {string} - The endpoint of the api
-    */
+     * Getting endpoint for API
+     * @param {string} apiName - The name of the api
+     * @return {string} - The endpoint of the api
+     */
     async endpoint(apiName) {
         if (!this._api) {
             try {
@@ -270,7 +286,10 @@ export default class APIClass {
             aws_appsync_authenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
-        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || "AWS_IAM";
+        const authenticationType =
+            defaultAuthenticationType ||
+            aws_appsync_authenticationType ||
+            'AWS_IAM';
         let headers = {};
 
         switch (authenticationType) {
@@ -280,25 +299,29 @@ export default class APIClass {
                 }
                 headers = {
                     Authorization: null,
-                    'X-Api-Key': apiKey
+                    'X-Api-Key': apiKey,
                 };
                 break;
             case 'AWS_IAM':
                 const credentialsOK = await this._ensureCredentials();
-                if (!credentialsOK) { throw new Error('No credentials'); }
+                if (!credentialsOK) {
+                    throw new Error('No credentials');
+                }
                 break;
             case 'OPENID_CONNECT':
                 const federatedInfo = await Cache.getItem('federatedInfo');
 
-                if (!federatedInfo || !federatedInfo.token) { throw new Error('No federated jwt'); }
+                if (!federatedInfo || !federatedInfo.token) {
+                    throw new Error('No federated jwt');
+                }
                 headers = {
-                    Authorization: federatedInfo.token
+                    Authorization: federatedInfo.token,
                 };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
                 const session = await Auth.currentSession();
                 headers = {
-                    Authorization: session.getAccessToken().getJwtToken()
+                    Authorization: session.getAccessToken().getJwtToken(),
                 };
                 break;
             default:
@@ -313,11 +336,13 @@ export default class APIClass {
 
     /**
      * to get the operation type
-     * @param operation 
+     * @param operation
      */
     getGraphqlOperationType(operation) {
         const doc = parse(operation);
-        const { definitions: [{ operation: operationType },] } = doc;
+        const {
+            definitions: [{ operation: operationType }],
+        } = doc;
 
         return operationType;
     }
@@ -329,11 +354,17 @@ export default class APIClass {
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
     graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
+        const query =
+            typeof paramQuery === 'string'
+                ? parse(paramQuery)
+                : parse(print(paramQuery));
 
-        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
-
-        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
-        const { operation: operationType } = operationDef as OperationDefinitionNode;
+        const [operationDef = {}] = query.definitions.filter(
+            def => def.kind === 'OperationDefinition'
+        );
+        const {
+            operation: operationType,
+        } = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
             case 'query':
@@ -346,8 +377,10 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query, variables, authMode }: GraphQLOptions, additionalHeaders = {})
-        : Promise<GraphQLResult> {
+    private async _graphql(
+        { query, variables, authMode }: GraphQLOptions,
+        additionalHeaders = {}
+    ): Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -357,16 +390,18 @@ export default class APIClass {
             aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
             graphql_headers = () => ({}),
             graphql_endpoint: customGraphqlEndpoint,
-            graphql_endpoint_iam_region: customEndpointRegion
+            graphql_endpoint_iam_region: customEndpointRegion,
         } = this._options;
 
         const headers = {
-            ...(!customGraphqlEndpoint && await this._headerBasedAuth(authMode)),
+            ...(!customGraphqlEndpoint &&
+                (await this._headerBasedAuth(authMode))),
             ...(customGraphqlEndpoint &&
-                (customEndpointRegion ? await this._headerBasedAuth(authMode) : { Authorization: null })
-            ),
+                (customEndpointRegion
+                    ? await this._headerBasedAuth(authMode)
+                    : { Authorization: null })),
             ...additionalHeaders,
-            ... await graphql_headers({ query, variables }),
+            ...(await graphql_headers({ query, variables })),
         };
 
         const body = {
@@ -379,8 +414,8 @@ export default class APIClass {
             body,
             signerServiceInfo: {
                 service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
-                region: !customGraphqlEndpoint ? region : customEndpointRegion
-            }
+                region: !customGraphqlEndpoint ? region : customEndpointRegion,
+            },
         };
 
         const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
@@ -400,9 +435,7 @@ export default class APIClass {
         } catch (err) {
             response = {
                 data: {},
-                errors: [
-                    new GraphQLError(err.message)
-                ]
+                errors: [new GraphQLError(err.message)],
             };
         }
 
@@ -417,33 +450,40 @@ export default class APIClass {
 
     private clientIdentifier = uuid();
 
-    private _graphqlSubscribe({ query, variables, authMode }: GraphQLOptions): Observable<object> {
+    private _graphqlSubscribe({
+        query,
+        variables,
+        authMode,
+    }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
-
                 let handle = null;
 
                 (async () => {
-                    const {
-                        aws_appsync_authenticationType,
-                    } = this._options;
-                    const authenticationType = authMode || aws_appsync_authenticationType;
+                    const { aws_appsync_authenticationType } = this._options;
+                    const authenticationType =
+                        authMode || aws_appsync_authenticationType;
                     const additionalheaders = {
-                        ...(authenticationType === 'API_KEY' ? {
-                            'x-amz-subscriber-id': this.clientIdentifier
-                        } : {})
+                        ...(authenticationType === 'API_KEY'
+                            ? {
+                                  'x-amz-subscriber-id': this.clientIdentifier,
+                              }
+                            : {}),
                     };
 
                     try {
                         const {
                             extensions: { subscription },
-
-                        } = await this._graphql({ query, variables, authMode }, additionalheaders);
+                        } = await this._graphql(
+                            { query, variables, authMode },
+                            additionalheaders
+                        );
 
                         const { newSubscriptions } = subscription;
 
-                        const newTopics =
-                            Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+                        const newTopics = Object.getOwnPropertyNames(
+                            newSubscriptions
+                        ).map(p => newSubscriptions[p].topic);
 
                         const observable = Amplify.PubSub.subscribe(newTopics, {
                             ...subscription,
@@ -451,19 +491,22 @@ export default class APIClass {
                         });
 
                         handle = observable.subscribe({
-                            next: (data) => observer.next(data),
+                            next: data => observer.next(data),
                             complete: () => observer.complete(),
-                            error: (data) => {
+                            error: data => {
                                 const error = { ...data };
                                 if (!error.errors) {
-                                    error.errors = [{
-                                        ...new GraphQLError('Network Error')
-                                    }];
+                                    error.errors = [
+                                        {
+                                            ...new GraphQLError(
+                                                'Network Error'
+                                            ),
+                                        },
+                                    ];
                                 }
                                 observer.error(error);
-                            }
+                            },
                         });
-
                     } catch (error) {
                         observer.error(error);
                     }

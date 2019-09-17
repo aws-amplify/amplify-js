@@ -23,7 +23,14 @@ export interface PubSubProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    publish(topics: string[] | string, msg: any, options?: ProvidertOptions): void;
+    publish(
+        topics: string[] | string,
+        msg: any,
+        options?: ProvidertOptions
+    ): void;
 
-    subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any>;
+    subscribe(
+        topics: string[] | string,
+        options?: ProvidertOptions
+    ): Observable<any>;
 }

@@ -1,10 +1,13 @@
-import { AbstractPredictionsProvider } from ".";
-import { InterpretTextInput, InterpretTextOutput, isInterpretTextInput } from "../Predictions";
+import { AbstractPredictionsProvider } from '.';
+import {
+    InterpretTextInput,
+    InterpretTextOutput,
+    isInterpretTextInput,
+} from '../Predictions';
 
 export abstract class AbstractInterpretPredictionsProvider extends AbstractPredictionsProvider {
-
     getCategory(): string {
-        return "Interpret";
+        return 'Interpret';
     }
 
     interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
@@ -13,7 +16,9 @@ export abstract class AbstractInterpretPredictionsProvider extends AbstractPredi
         }
     }
 
-    protected interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
+    protected interpretText(
+        input: InterpretTextInput
+    ): Promise<InterpretTextOutput> {
         throw new Error('interpretText is not implement by this provider');
     }
 }

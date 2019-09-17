@@ -1,10 +1,11 @@
 import Auth from '@aws-amplify/auth';
 import * as React from 'react';
 import { Component } from 'react';
-import withAmazon, { AmazonButton } from '../../../src/Auth/Provider/withAmazon';
+import withAmazon, {
+    AmazonButton,
+} from '../../../src/Auth/Provider/withAmazon';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
 import { Logger } from '@aws-amplify/core';
-
 
 describe('withAmazon test', () => {
     describe('render test', () => {
@@ -16,7 +17,7 @@ describe('withAmazon test', () => {
                 }
             };
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             expect(wrapper).toMatchSnapshot();
         });
     });
@@ -28,20 +29,24 @@ describe('withAmazon test', () => {
                     return <div />;
                 }
             };
-            
+
             window.amazon = {
                 Login: {
                     authorize(options, callback) {
                         callback('response');
-                    }
-                }
+                    },
+                },
             };
-            
+
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
+            const spyon = jest
+                .spyOn(comp, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             await comp.signIn();
 
@@ -61,13 +66,12 @@ describe('withAmazon test', () => {
                 Login: {
                     authorize(options, callback) {
                         callback({ error: 'error' });
-                    }
-                }
+                    },
+                },
             };
-    
 
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
             await comp.signIn();
@@ -81,43 +85,51 @@ describe('withAmazon test', () => {
                     return <div />;
                 }
             };
-            
+
             const response = {
                 access_token: 'access_token',
-                expires_in: 0
+                expires_in: 0,
             };
 
-            
             window.amazon = {
                 Login: {
                     retrieveProfile(callback) {
                         callback({
                             success: true,
-                            profile: {Name: 'name'}
+                            profile: { Name: 'name' },
                         });
-                    }
-                }
+                    },
+                },
             };
-            
 
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            });
-            
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve('user');
                 });
-            });
-            const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
-           
+
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
+                });
+            const spyon2 = jest
+                .spyOn(Date.prototype, 'getTime')
+                .mockReturnValue(0);
+
             await comp.federatedSignIn(response);
 
-            expect(spyon).toBeCalledWith('amazon', { expires_at: 0, token: 'access_token' }, {name: 'name' });
+            expect(spyon).toBeCalledWith(
+                'amazon',
+                { expires_at: 0, token: 'access_token' },
+                { name: 'name' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -132,10 +144,10 @@ describe('withAmazon test', () => {
             };
 
             const mockFn = jest.fn();
-            
+
             const response = {
                 access_token: 'access_token',
-                expires_in: 0
+                expires_in: 0,
             };
 
             window.amazon = {
@@ -143,34 +155,43 @@ describe('withAmazon test', () => {
                     retrieveProfile(callback) {
                         callback({
                             success: true,
-                            profile: {Name: 'name'}
+                            profile: { Name: 'name' },
                         });
-                    }
-                }
+                    },
+                },
             };
-            
 
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
             wrapper.setProps({
-                onStateChange: mockFn
+                onStateChange: mockFn,
             });
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            });
-
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve('user');
                 });
-            });
-            const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
-           
+
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
+                });
+            const spyon2 = jest
+                .spyOn(Date.prototype, 'getTime')
+                .mockReturnValue(0);
+
             await comp.federatedSignIn(response);
 
-            expect(spyon).toBeCalledWith('amazon', { expires_at: 0, token: 'access_token' }, {name: 'name' });
+            expect(spyon).toBeCalledWith(
+                'amazon',
+                { expires_at: 0, token: 'access_token' },
+                { name: 'name' }
+            );
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -183,26 +204,30 @@ describe('withAmazon test', () => {
                     return <div />;
                 }
             };
-            
+
             const response = {
                 access_token: null,
-                expires_in: 0
+                expires_in: 0,
             };
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
                 });
-            });
 
-            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            });
+            const spyon_currentUser = jest
+                .spyOn(Auth, 'currentAuthenticatedUser')
+                .mockImplementationOnce(() => {
+                    return Promise.resolve('user');
+                });
 
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
-           
+
             await comp.federatedSignIn(response);
 
             expect(spyon).not.toBeCalled();
@@ -216,34 +241,35 @@ describe('withAmazon test', () => {
                     return <div />;
                 }
             };
-            
+
             const response = {
                 access_token: 'access_token',
-                expires_in: 0
+                expires_in: 0,
             };
 
-            
             window.amazon = {
                 Login: {
                     retrieveProfile(callback) {
                         callback({
                             success: false,
-                            profile: {Name: 'name'}
+                            profile: { Name: 'name' },
                         });
-                    }
-                }
+                    },
+                },
             };
 
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
-                return new Promise((res, rej) => {
-                    res('credentials');
+            const spyon = jest
+                .spyOn(Auth, 'federatedSignIn')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('credentials');
+                    });
                 });
-            });
-           
+
             await comp.federatedSignIn(response);
 
             expect(spyon).not.toBeCalled();
@@ -262,16 +288,16 @@ describe('withAmazon test', () => {
 
             const mockFn = jest.fn();
             const props = {
-                amazon_client_id: 'amazon_client_id'
+                amazon_client_id: 'amazon_client_id',
             };
             window.amazon = {
                 Login: {
-                    setClientId: mockFn
-                }
+                    setClientId: mockFn,
+                },
             };
-            
+
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
             wrapper.setProps(props);
 
@@ -289,15 +315,15 @@ describe('withAmazon test', () => {
             };
 
             const mockFn = jest.fn();
-        
+
             window.amazon = {
                 Login: {
-                    logout: mockFn
-                }
+                    logout: mockFn,
+                },
             };
-            
+
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
             comp.signOut();
@@ -312,11 +338,11 @@ describe('withAmazon test', () => {
             };
 
             const mockFn = jest.fn();
-        
+
             window.amazon = undefined;
-            
+
             const Comp = withAmazon(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             const comp = wrapper.instance();
 
             comp.signOut();
@@ -329,10 +355,9 @@ describe('AmazonButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
             window.amazon = 'amz';
-            const wrapper = shallow(<AmazonButton/>);
+            const wrapper = shallow(<AmazonButton />);
 
             expect(wrapper).toMatchSnapshot();
         });
     });
 });
-

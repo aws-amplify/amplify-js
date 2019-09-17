@@ -46,7 +46,7 @@ const MIME_MAP = [
     { type: 'application/vnd.ms-excel', ext: 'xls' },
     { type: 'application/vnd.ms-excel', ext: 'xlsx' },
 
-    { type: 'message/rfc822', ext: 'eml' }
+    { type: 'message/rfc822', ext: 'eml' },
 ];
 
 export default class JS {
@@ -55,23 +55,29 @@ export default class JS {
     }
 
     static sortByField(list, field, dir) {
-        if (!list || !list.sort) { return false; }
+        if (!list || !list.sort) {
+            return false;
+        }
 
-        const dirX = (dir && dir === 'desc')? -1 : 1;
+        const dirX = dir && dir === 'desc' ? -1 : 1;
         list.sort(function(a, b) {
             const a_val = a[field];
             const b_val = b[field];
 
             if (typeof b_val === 'undefined') {
-                return (typeof a_val === 'undefined')? 0 : 1 * dirX;
+                return typeof a_val === 'undefined' ? 0 : 1 * dirX;
             }
 
             if (typeof a_val === 'undefined') {
                 return -1 * dirX;
             }
 
-            if (a_val < b_val) { return -1 * dirX; }
-            if (a_val > b_val) { return 1 * dirX; }
+            if (a_val < b_val) {
+                return -1 * dirX;
+            }
+            if (a_val > b_val) {
+                return 1 * dirX;
+            }
 
             return 0;
         });
@@ -94,19 +100,26 @@ export default class JS {
         return ret;
     }
 
-    static filenameToContentType(filename, defVal='application/octet-stream') {
+    static filenameToContentType(
+        filename,
+        defVal = 'application/octet-stream'
+    ) {
         const name = filename.toLowerCase();
 
         const filtered = MIME_MAP.filter(mime => name.endsWith('.' + mime.ext));
-        return filtered.length > 0? filtered[0].type : defVal;
+        return filtered.length > 0 ? filtered[0].type : defVal;
     }
 
     static isTextFile(contentType) {
         const type = contentType.toLowerCase();
-        if (type.startsWith('text/')) { return true; }
-        return ('application/json' === type ||
-                'application/xml' === type ||
-                'application/sh' === type);
+        if (type.startsWith('text/')) {
+            return true;
+        }
+        return (
+            'application/json' === type ||
+            'application/xml' === type ||
+            'application/sh' === type
+        );
     }
 
     /**
@@ -114,11 +127,12 @@ export default class JS {
      */
     static generateRandomString() {
         let result = '';
-        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    	for (let i = 32; i > 0; i -= 1) {
+        const chars =
+            '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let i = 32; i > 0; i -= 1) {
             result += chars[Math.floor(Math.random() * chars.length)];
         }
-    	return result;
+        return result;
     }
 
     static makeQuerablePromise(promise) {
@@ -129,27 +143,35 @@ export default class JS {
         let isFullfilled = false;
 
         const result = promise.then(
-            (data) => {
+            data => {
                 isFullfilled = true;
                 isPending = false;
                 return data;
             },
-            (e) => {
+            e => {
                 isRejected = true;
                 isPending = false;
                 throw e;
             }
         );
 
-        result.isFullfilled = () => { return isFullfilled; };
-        result.isPending = () => { return isPending; };
-        result.isRejected = () => { return isRejected; };
+        result.isFullfilled = () => {
+            return isFullfilled;
+        };
+        result.isPending = () => {
+            return isPending;
+        };
+        result.isRejected = () => {
+            return isRejected;
+        };
 
         return result;
     }
 
     static browserOrNode() {
-        const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+        const isBrowser =
+            typeof window !== 'undefined' &&
+            typeof window.document !== 'undefined';
         const isNode =
             typeof process !== 'undefined' &&
             process.versions != null &&
@@ -157,7 +179,7 @@ export default class JS {
 
         return {
             isBrowser,
-            isNode
+            isNode,
         };
     }
 
@@ -167,26 +189,30 @@ export default class JS {
      * @param {Array} whiteListForItself - whitelist itself from being transferred
      * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
      */
-    static transferKeyToLowerCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
-       if (!JS.isStrictObject(obj)) return obj;
+    static transferKeyToLowerCase(
+        obj,
+        whiteListForItself = [],
+        whiteListForChildren = []
+    ) {
+        if (!JS.isStrictObject(obj)) return obj;
         const ret = {};
 
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                const transferedKey = whiteListForItself.includes(key)? 
-                    key : key[0].toLowerCase() + key.slice(1);
+                const transferedKey = whiteListForItself.includes(key)
+                    ? key
+                    : key[0].toLowerCase() + key.slice(1);
 
-                ret[transferedKey] = whiteListForChildren.includes(key)?
-                    obj[key] 
-                    : 
-                    JS.transferKeyToLowerCase(
-                        obj[key], 
-                        whiteListForItself, 
-                        whiteListForChildren
-                    );
+                ret[transferedKey] = whiteListForChildren.includes(key)
+                    ? obj[key]
+                    : JS.transferKeyToLowerCase(
+                          obj[key],
+                          whiteListForItself,
+                          whiteListForChildren
+                      );
             }
         }
-        
+
         return ret;
     }
 
@@ -196,26 +222,30 @@ export default class JS {
      * @param {Array} whiteListForItself - whitelist itself from being transferred
      * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
      */
-    static transferKeyToUpperCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
+    static transferKeyToUpperCase(
+        obj,
+        whiteListForItself = [],
+        whiteListForChildren = []
+    ) {
         if (!JS.isStrictObject(obj)) return obj;
         const ret = {};
 
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                const transferedKey = whiteListForItself.includes(key)? 
-                    key : key[0].toUpperCase() + key.slice(1);
+                const transferedKey = whiteListForItself.includes(key)
+                    ? key
+                    : key[0].toUpperCase() + key.slice(1);
 
-                ret[transferedKey] = whiteListForChildren.includes(key)?
-                    obj[key] 
-                    : 
-                    JS.transferKeyToUpperCase(
-                        obj[key], 
-                        whiteListForItself, 
-                        whiteListForChildren
-                    );
+                ret[transferedKey] = whiteListForChildren.includes(key)
+                    ? obj[key]
+                    : JS.transferKeyToUpperCase(
+                          obj[key],
+                          whiteListForItself,
+                          whiteListForChildren
+                      );
             }
         }
-        
+
         return ret;
     }
 
@@ -224,8 +254,9 @@ export default class JS {
      * which means it's not Array, Function, Number, String, Boolean or Null
      * @param obj the Object
      */
-    static isStrictObject(obj) { 
-        return ((obj instanceof Object) && 
+    static isStrictObject(obj) {
+        return (
+            obj instanceof Object &&
             !(obj instanceof Array) &&
             !(obj instanceof Function) &&
             !(obj instanceof Number) &&

@@ -11,24 +11,22 @@ describe('PhoneFieldComponentIonic: ', () => {
     let service: AmplifyService;
     let fixture;
 
-    beforeEach(() => { 
+    beforeEach(() => {
         service = new AmplifyService(authModule);
         component = new PhoneFieldComponentIonic(service);
         TestBed.configureTestingModule({
-        declarations: [
-            PhoneFieldComponentIonic
-        ],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: [
-            {
-            provide: AmplifyService,
-            useFactory: () => {
-                return AmplifyModules({
-                ...authModule
-                });
-            }
-            }
-        ]
+            declarations: [PhoneFieldComponentIonic],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            providers: [
+                {
+                    provide: AmplifyService,
+                    useFactory: () => {
+                        return AmplifyModules({
+                            ...authModule,
+                        });
+                    },
+                },
+            ],
         }).compileComponents();
         fixture = TestBed.createComponent(PhoneFieldComponentIonic);
         fixtureComponent = fixture.componentInstance;

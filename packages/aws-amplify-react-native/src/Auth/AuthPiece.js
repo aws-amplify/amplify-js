@@ -13,26 +13,18 @@
 
 import React from 'react';
 
-import {
-    Auth,
-    Logger,
-    JS,
-    I18n
-} from 'aws-amplify';
+import { Auth, Logger, JS, I18n } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
-import {
-    FormField,
-    PhoneField
-} from '../AmplifyUI';
+import { FormField, PhoneField } from '../AmplifyUI';
 
 const logger = new Logger('AuthPiece');
 
 const labelMap = {
     email: 'Email',
     phone_number: 'Phone Number',
-    username: 'Username'
+    username: 'Username',
 };
 
 export default class AuthPiece extends React.Component {
@@ -50,7 +42,7 @@ export default class AuthPiece extends React.Component {
 
     getUsernameFromInput() {
         const { usernameAttributes = 'username' } = this.props;
-        switch(usernameAttributes) {
+        switch (usernameAttributes) {
             case 'email':
                 return this.state.email;
             case 'phone_number':
@@ -66,7 +58,7 @@ export default class AuthPiece extends React.Component {
             return (
                 <FormField
                     theme={theme}
-                    onChangeText={(text) => this.setState({ email: text })}
+                    onChangeText={text => this.setState({ email: text })}
                     label={I18n.get('Email')}
                     placeholder={I18n.get('Enter your email')}
                     required={true}
@@ -76,8 +68,8 @@ export default class AuthPiece extends React.Component {
             return (
                 <PhoneField
                     theme={theme}
-                    key = {'phone_number'}
-                    onChangeText={(text) => this.setState({ phone_number: text })}
+                    key={'phone_number'}
+                    onChangeText={text => this.setState({ phone_number: text })}
                     label={I18n.get('Phone Number')}
                     placeholder={I18n.get('Enter your phone number')}
                     keyboardType="phone-pad"
@@ -88,7 +80,7 @@ export default class AuthPiece extends React.Component {
             return (
                 <FormField
                     theme={theme}
-                    onChangeText={(text) => this.setState({ username: text })}
+                    onChangeText={text => this.setState({ username: text })}
                     label={I18n.get(this.getUsernameLabel())}
                     placeholder={I18n.get('Enter your username')}
                     required={true}
@@ -109,16 +101,15 @@ export default class AuthPiece extends React.Component {
     }
 
     checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                logger.debug('verified user attributes', data);
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
+        Auth.verifiedContact(user).then(data => {
+            logger.debug('verified user attributes', data);
+            if (!JS.isEmpty(data.verified)) {
+                this.changeState('signedIn', user);
+            } else {
+                user = Object.assign(user, data);
+                this.changeState('verifyContact', user);
+            }
+        });
     }
 
     error(err) {
@@ -133,8 +124,11 @@ export default class AuthPiece extends React.Component {
             msg = JSON.stringify(err);
         }
 
-        const map = this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
-        msg = (typeof map === 'string')? map : map(msg);
+        const map =
+            this.props.errorMessage ||
+            this.props.messageMap ||
+            AmplifyMessageMap;
+        msg = typeof map === 'string' ? map : map(msg);
         this.setState({ error: msg });
     }
 
@@ -154,6 +148,6 @@ export default class AuthPiece extends React.Component {
     }
 
     showComponent(theme) {
-        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+        throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
     }
 }

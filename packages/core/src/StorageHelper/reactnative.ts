@@ -37,7 +37,9 @@ class MemoryStorage {
      * @returns {string} the data item
      */
     static getItem(key) {
-        return Object.prototype.hasOwnProperty.call(dataMemory, key) ? dataMemory[key] : undefined;
+        return Object.prototype.hasOwnProperty.call(dataMemory, key)
+            ? dataMemory[key]
+            : undefined;
     }
 
     /**
@@ -61,20 +63,25 @@ class MemoryStorage {
 
     /**
      * Will sync the MemoryStorage data from AsyncStorage to storageWindow MemoryStorage
-    * @returns {void}
-    */
+     * @returns {void}
+     */
     static sync() {
         if (!MemoryStorage.syncPromise) {
-            MemoryStorage.syncPromise =  new Promise((res, rej) => {
+            MemoryStorage.syncPromise = new Promise((res, rej) => {
                 AsyncStorage.getAllKeys((errKeys, keys) => {
                     if (errKeys) rej(errKeys);
-                    const memoryKeys = keys.filter((key) => key.startsWith(MEMORY_KEY_PREFIX));
+                    const memoryKeys = keys.filter(key =>
+                        key.startsWith(MEMORY_KEY_PREFIX)
+                    );
                     AsyncStorage.multiGet(memoryKeys, (err, stores) => {
                         if (err) rej(err);
                         stores.map((result, index, store) => {
                             const key = store[index][0];
                             const value = store[index][1];
-                            const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
+                            const memoryKey = key.replace(
+                                MEMORY_KEY_PREFIX,
+                                ''
+                            );
                             dataMemory[memoryKey] = value;
                         });
                         res();

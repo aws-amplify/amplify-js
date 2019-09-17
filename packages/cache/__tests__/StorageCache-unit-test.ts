@@ -9,10 +9,8 @@ const config: CacheConfig = {
     itemMaxSize: 600,
     defaultTTL: 3000000,
     defaultPriority: 5,
-    warningThreshold: 0.8
+    warningThreshold: 0.8,
 };
-
-
 
 describe('StorageCache', () => {
     describe('constructor', () => {
@@ -20,15 +18,9 @@ describe('StorageCache', () => {
             const tmp = config.capacityInBytes;
             config.capacityInBytes = 1048576;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
-            config.capacityInBytes = tmp;
-        });
-        
-        test('set to default if config capacityInBytes is not integer', () => {
-            const tmp = config.capacityInBytes;
-            config.capacityInBytes = 1048576;
-            const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            expect(storage.configure().capacityInBytes).toBe(
+                defaultConfig.capacityInBytes
+            );
             config.capacityInBytes = tmp;
         });
 
@@ -36,7 +28,19 @@ describe('StorageCache', () => {
             const tmp = config.capacityInBytes;
             config.capacityInBytes = 1048576;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            expect(storage.configure().capacityInBytes).toBe(
+                defaultConfig.capacityInBytes
+            );
+            config.capacityInBytes = tmp;
+        });
+
+        test('set to default if config capacityInBytes is not integer', () => {
+            const tmp = config.capacityInBytes;
+            config.capacityInBytes = 1048576;
+            const storage: StorageCache = new StorageCache(config);
+            expect(storage.configure().capacityInBytes).toBe(
+                defaultConfig.capacityInBytes
+            );
             config.capacityInBytes = tmp;
         });
 
@@ -44,7 +48,9 @@ describe('StorageCache', () => {
             const tmp = config.itemMaxSize;
             config.itemMaxSize = 210000;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().itemMaxSize).toBe(defaultConfig.itemMaxSize);
+            expect(storage.configure().itemMaxSize).toBe(
+                defaultConfig.itemMaxSize
+            );
             config.itemMaxSize = tmp;
         });
 
@@ -52,7 +58,9 @@ describe('StorageCache', () => {
             const tmp = config.defaultTTL;
             config.defaultTTL = 259200000;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().defaultTTL).toBe(defaultConfig.defaultTTL);
+            expect(storage.configure().defaultTTL).toBe(
+                defaultConfig.defaultTTL
+            );
             config.defaultTTL = tmp;
         });
 
@@ -60,7 +68,9 @@ describe('StorageCache', () => {
             const tmp = config.defaultPriority;
             config.defaultPriority = 5;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
+            expect(storage.configure().defaultPriority).toBe(
+                defaultConfig.defaultPriority
+            );
             config.defaultPriority = tmp;
         });
 
@@ -68,7 +78,9 @@ describe('StorageCache', () => {
             const tmp = config.itemMaxSize;
             config.itemMaxSize = config.capacityInBytes * 2;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().itemMaxSize).toBe(defaultConfig.itemMaxSize);
+            expect(storage.configure().itemMaxSize).toBe(
+                defaultConfig.itemMaxSize
+            );
             config.itemMaxSize = tmp;
         });
 
@@ -76,10 +88,14 @@ describe('StorageCache', () => {
             const tmp = config.defaultPriority;
             config.defaultPriority = 0;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
+            expect(storage.configure().defaultPriority).toBe(
+                defaultConfig.defaultPriority
+            );
             config.defaultPriority = 6;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
+            expect(storage.configure().defaultPriority).toBe(
+                defaultConfig.defaultPriority
+            );
             config.defaultPriority = tmp;
         });
 
@@ -87,40 +103,42 @@ describe('StorageCache', () => {
             const tmp = config.warningThreshold;
             config.warningThreshold = Math.random() + 1;
             const storage: StorageCache = new StorageCache(config);
-            expect(storage.configure().warningThreshold).toBe(defaultConfig.warningThreshold);
+            expect(storage.configure().warningThreshold).toBe(
+                defaultConfig.warningThreshold
+            );
             config.warningThreshold = tmp;
-        })
+        });
     });
 
-    describe("config test", () => {
-        test("happy case", () => {
+    describe('config test', () => {
+        test('happy case', () => {
             const storage: StorageCache = new StorageCache(config);
 
             const customizedConfig: CacheConfig = {
-                itemMaxSize : 1000
-            }
+                itemMaxSize: 1000,
+            };
 
             const verifiedConfig = storage.configure(customizedConfig);
 
             expect(verifiedConfig.itemMaxSize).toBe(1000);
             expect(verifiedConfig).toEqual({
-                "capacityInBytes": 3000,
-                "defaultPriority": 5,
-                "defaultTTL": 3000000,
-                "itemMaxSize": 1000,
-                "keyPrefix": "aws-amplify#$#",
-                "storage": undefined,
-                "warningThreshold": 0.8,
+                capacityInBytes: 3000,
+                defaultPriority: 5,
+                defaultTTL: 3000000,
+                itemMaxSize: 1000,
+                keyPrefix: 'aws-amplify#$#',
+                storage: undefined,
+                warningThreshold: 0.8,
             });
         });
 
-        test("give a error message if config has the keyPrefix", () => {
+        test('give a error message if config has the keyPrefix', () => {
             const spyon = jest.spyOn(Logger.prototype, 'warn');
             const storage: StorageCache = new StorageCache(config);
 
             const customizedConfig: CacheConfig = {
-                keyPrefix: 'abcc'
-            }
+                keyPrefix: 'abcc',
+            };
             const new_config = storage.configure(customizedConfig);
 
             expect(spyon).toBeCalled();

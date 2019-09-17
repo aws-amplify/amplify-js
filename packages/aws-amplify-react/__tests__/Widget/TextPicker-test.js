@@ -5,17 +5,17 @@ import Picker from '../../src/Widget/Picker';
 describe('TextPicker test', () => {
     describe('render test', () => {
         test('render with previewSrc', () => {
-            const wrapper = shallow(<TextPicker/>);
+            const wrapper = shallow(<TextPicker />);
 
-            wrapper.setState({previewText: true});
+            wrapper.setState({ previewText: true });
 
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render without previewText', () => {
-            const wrapper = shallow(<TextPicker/>);
+            const wrapper = shallow(<TextPicker />);
 
-            wrapper.setState({previewText: false});
+            wrapper.setState({ previewText: false });
 
             expect(wrapper).toMatchSnapshot();
         });
@@ -23,10 +23,12 @@ describe('TextPicker test', () => {
 
     describe('interaction test', () => {
         test('Picker pick test', () => {
-            const spyon = jest.spyOn(TextPicker.prototype, 'handlePick').mockImplementationOnce(() => {
-                return;
-            });
-            const wrapper = shallow(<TextPicker/>);
+            const spyon = jest
+                .spyOn(TextPicker.prototype, 'handlePick')
+                .mockImplementationOnce(() => {
+                    return;
+                });
+            const wrapper = shallow(<TextPicker />);
 
             wrapper.find(Picker).simulate('pick');
 
@@ -36,9 +38,11 @@ describe('TextPicker test', () => {
 
     describe('hanldePick test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(FileReader.prototype, 'readAsText').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(FileReader.prototype, 'readAsText')
+                .mockImplementationOnce(() => {
+                    return;
+                });
             const onPickFn = jest.fn();
             const onLoadFn = jest.fn();
 
@@ -46,14 +50,14 @@ describe('TextPicker test', () => {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
             const props = {
                 preview: true,
                 onPick: onPickFn,
-                onLoad: onLoadFn
+                onLoad: onLoadFn,
             };
-            const wrapper = shallow(<TextPicker/>);
+            const wrapper = shallow(<TextPicker />);
             const textPicker = wrapper.instance();
             wrapper.setProps(props);
 
@@ -66,9 +70,11 @@ describe('TextPicker test', () => {
         });
 
         test('with no onPick and no preview', () => {
-            const spyon = jest.spyOn(FileReader.prototype, 'readAsText').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(FileReader.prototype, 'readAsText')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const onLoadFn = jest.fn();
 
@@ -76,13 +82,13 @@ describe('TextPicker test', () => {
                 file: 'file',
                 name: 'name',
                 size: 'size',
-                type: 'type'
+                type: 'type',
             };
             const props = {
                 preview: false,
-                onLoad: onLoadFn
+                onLoad: onLoadFn,
             };
-            const wrapper = shallow(<TextPicker/>);
+            const wrapper = shallow(<TextPicker />);
             const textPicker = wrapper.instance();
             wrapper.setProps(props);
 
@@ -94,5 +100,3 @@ describe('TextPicker test', () => {
         });
     });
 });
-
-

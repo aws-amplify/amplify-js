@@ -31,11 +31,17 @@ export default class AuthStateWrapper extends Component {
 
     handleStateChange(state, data) {
         logger.debug('authStateWrapper state change ' + state, data);
-        if (state === this.state.authState) { return; }
+        if (state === this.state.authState) {
+            return;
+        }
 
-        if (state === 'signedOut') { state = 'signIn'; }
+        if (state === 'signedOut') {
+            state = 'signIn';
+        }
         this.setState({ authState: state, authData: data, error: null });
-        if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+        if (this.props.onStateChange) {
+            this.props.onStateChange(state, data);
+        }
     }
 
     handleAuthEvent(state, event) {
@@ -46,11 +52,13 @@ export default class AuthStateWrapper extends Component {
 
     checkUser() {
         if (!Auth || typeof Auth.currentUser !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         return Auth.currentUser()
             .then(user => {
-                const state = user? 'signedIn' : 'signIn';
+                const state = user ? 'signedIn' : 'signIn';
                 this.handleStateChange(state, user);
             })
             .catch(err => logger.error(err));
@@ -59,28 +67,33 @@ export default class AuthStateWrapper extends Component {
     render() {
         const { authState, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
-        const render_children = React.Children.map(this.props.children, (child) => {
-                if (!child) { return null; }
+        const render_children = React.Children.map(
+            this.props.children,
+            child => {
+                if (!child) {
+                    return null;
+                }
                 return React.cloneElement(child, {
                     authState,
                     authData,
                     theme,
                     onStateChange: this.handleStateChange,
-                    onAuthEvent: this.handleAuthEvent
+                    onAuthEvent: this.handleAuthEvent,
                 });
-            });
+            }
+        );
 
         return (
             <div className="amplify-state-wrapper" style={theme.stateWrapper}>
                 {render_children}
-                {this.state.error &&
+                {this.state.error && (
                     <div
                         className="amplify-error-section"
                         style={theme.errorSection}
                     >
                         {this.state.error}
                     </div>
-                }
+                )}
             </div>
         );
     }

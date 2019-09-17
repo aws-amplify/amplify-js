@@ -16,19 +16,15 @@ import {
     View,
     TouchableWithoutFeedback,
     Keyboard,
-    ScrollView
+    ScrollView,
 } from 'react-native';
-import {
-    Auth,
-    I18n,
-    Logger
-} from 'aws-amplify';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import {
     FormField,
     AmplifyButton,
     LinkCell,
     Header,
-    ErrorRow
+    ErrorRow,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -42,12 +38,12 @@ export default class RequireNewPassword extends AuthPiece {
         this.state = {
             password: null,
             error: null,
-            requiredAttributes: {}
-        }
+            requiredAttributes: {},
+        };
 
         this.change = this.change.bind(this);
     }
-    
+
     change() {
         const user = this.props.authData;
         const { password, requiredAttributes } = this.state;
@@ -63,17 +59,16 @@ export default class RequireNewPassword extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    generateForm(attribute, theme){
+    generateForm(attribute, theme) {
         return (
             <FormField
                 theme={theme}
-                onChangeText={(text) => {
-                        const attributes = this.state.requiredAttributes;
-                        if (text !== '') attributes[attribute] = text;
-                        else delete attributes[attribute];
-                        this.setState({ requiredAttributes: attributes });
-                    }
-                }
+                onChangeText={text => {
+                    const attributes = this.state.requiredAttributes;
+                    if (text !== '') attributes[attribute] = text;
+                    else delete attributes[attribute];
+                    this.setState({ requiredAttributes: attributes });
+                }}
                 label={I18n.get(convertToPlaceholder(attribute))}
                 key={I18n.get(convertToPlaceholder(attribute))}
                 placeholder={I18n.get(convertToPlaceholder(attribute))}
@@ -86,35 +81,46 @@ export default class RequireNewPassword extends AuthPiece {
         const user = this.props.authData;
         const { requiredAttributes } = user.challengeParam;
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <ScrollView style={theme.section}>
                     <Header theme={theme}>{I18n.get('Change Password')}</Header>
                     <View style={theme.sectionBody}>
                         <FormField
                             theme={theme}
-                            onChangeText={(text) => this.setState({ password: text })}
+                            onChangeText={text =>
+                                this.setState({ password: text })
+                            }
                             label={I18n.get('Password')}
                             placeholder={I18n.get('Enter your password')}
                             secureTextEntry={true}
                             required={true}
                         />
-                        {requiredAttributes
-                            .map(attribute => {
-                                logger.debug('attributes', attribute);
-                                return this.generateForm(attribute, theme);
-                                }
-                            )}
+                        {requiredAttributes.map(attribute => {
+                            logger.debug('attributes', attribute);
+                            return this.generateForm(attribute, theme);
+                        })}
                         <AmplifyButton
                             text={I18n.get('Change Password')}
                             onPress={this.change}
                             theme={theme}
-                            disabled={!(this.state.password && 
-                                Object.keys(this.state.requiredAttributes).length === 
-                                Object.keys(requiredAttributes).length)}
+                            disabled={
+                                !(
+                                    this.state.password &&
+                                    Object.keys(this.state.requiredAttributes)
+                                        .length ===
+                                        Object.keys(requiredAttributes).length
+                                )
+                            }
                         />
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signIn')}
+                        >
                             {I18n.get('Back to Sign In')}
                         </LinkCell>
                     </View>
@@ -126,5 +132,10 @@ export default class RequireNewPassword extends AuthPiece {
 }
 
 function convertToPlaceholder(str) {
-    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+    return str
+        .split('_')
+        .map(
+            part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()
+        )
+        .join(' ');
 }

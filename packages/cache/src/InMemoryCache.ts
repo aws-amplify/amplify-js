@@ -11,12 +11,7 @@
  * and limitations under the License.
  */
 
-import {
-    CacheList,
-    defaultConfig,
-    getCurrTime,
-    CacheObject
-} from './Utils';
+import { CacheList, defaultConfig, getCurrTime, CacheObject } from './Utils';
 
 import StorageCache from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
@@ -40,11 +35,13 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * initialize the cache
-     * 
+     *
      * @param config - the configuration of the cache
      */
     constructor(config?: CacheConfig) {
-        const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
+        const cacheConfig = config
+            ? Object.assign({}, defaultConfig, config)
+            : defaultConfig;
         super(cacheConfig);
         logger.debug('now we start!');
         this.cacheList = [];
@@ -63,7 +60,7 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * decrease current size of the cache
-     * 
+     *
      * @param amount - the amount of the cache size which needs to be decreased
      */
     private _decreaseCurSizeInBytes(amount: number): void {
@@ -72,7 +69,7 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * increase current size of the cache
-     * 
+     *
      * @param amount - the amount of the cache szie which need to be increased
      */
     private _increaseCurSizeInBytes(amount: number): void {
@@ -81,9 +78,9 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * check whether item is expired
-     * 
+     *
      * @param key - the key of the item
-     * 
+     *
      * @return true if the item is expired.
      */
     private _isExpired(key: string): boolean {
@@ -97,7 +94,7 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * delete item from cache
-     * 
+     *
      * @param prefixedKey - the key of the item
      * @param listIdx - indicates which cache list the key belongs to
      */
@@ -105,20 +102,26 @@ export class InMemoryCache extends StorageCache implements ICache {
         // delete the key from the list
         this.cacheList[listIdx].removeItem(prefixedKey);
         // decrease the current size of the cache
-        this._decreaseCurSizeInBytes(JSON.parse(CacheObject.getItem(prefixedKey)).byteSize);
+        this._decreaseCurSizeInBytes(
+            JSON.parse(CacheObject.getItem(prefixedKey)).byteSize
+        );
         // finally remove the item from memory
         CacheObject.removeItem(prefixedKey);
     }
 
     /**
      * put item into cache
-     * 
+     *
      * @param prefixedKey - the key of the item
      * @param itemData - the value of the item
      * @param itemSizeInBytes - the byte size of the item
      * @param listIdx - indicates which cache list the key belongs to
      */
-    private _setItem(prefixedKey: string, item: CacheItem, listIdx: number): void {
+    private _setItem(
+        prefixedKey: string,
+        item: CacheItem,
+        listIdx: number
+    ): void {
         // insert the key into the list
         this.cacheList[listIdx].insertItem(prefixedKey);
         // increase the current size of the cache
@@ -129,9 +132,9 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * see whether cache is full
-     * 
-     * @param itemSize 
-     * 
+     *
+     * @param itemSize
+     *
      * @return true if cache is full
      */
     private _isCacheFull(itemSize: number): boolean {
@@ -140,8 +143,8 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * check whether the cache contains the key
-     * 
-     * @param key 
+     *
+     * @param key
      */
     private containsKey(key: string): number {
         const prefixedKey: string = this.config.keyPrefix + key;
@@ -164,45 +167,63 @@ export class InMemoryCache extends StorageCache implements ICache {
      * If the value is undefined
      * If incorrect cache item configuration
      * If error happened with browser storage
-     * 
+     *
      * @param key - the key of the item
      * @param value - the value of the item
      * @param options - optional, the specified meta-data
-     * 
+     *
      * @throws if the item is too big which exceeds the limit of single item size
      * @throws if the key is invalid
      */
     public setItem(
-        key: string, value: object | string | number | boolean,
-        options?: CacheItemOptions): void {
+        key: string,
+        value: object | string | number | boolean,
+        options?: CacheItemOptions
+    ): void {
         const prefixedKey: string = this.config.keyPrefix + key;
         // invalid keys
-        if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
+        if (
+            prefixedKey === this.config.keyPrefix ||
+            prefixedKey === this.cacheCurSizeKey
+        ) {
             logger.warn(`Invalid key: should not be empty or 'CurSize'`);
             return;
         }
 
-        if ((typeof value) === 'undefined') {
+        if (typeof value === 'undefined') {
             logger.warn(`The value of item should not be undefined!`);
             return;
         }
 
         const cacheItemOptions: CacheItemOptions = {
-            priority: options && options.priority !== undefined ? options.priority : this.config.defaultPriority,
-            expires: options && options.expires !== undefined ?
-                options.expires : (this.config.defaultTTL + getCurrTime())
+            priority:
+                options && options.priority !== undefined
+                    ? options.priority
+                    : this.config.defaultPriority,
+            expires:
+                options && options.expires !== undefined
+                    ? options.expires
+                    : this.config.defaultTTL + getCurrTime(),
         };
 
         if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
-            logger.warn(`Invalid parameter: priority due to out or range. It should be within 1 and 5.`);
+            logger.warn(
+                `Invalid parameter: priority due to out or range. It should be within 1 and 5.`
+            );
             return;
         }
 
-        const item: CacheItem = this.fillCacheItem(prefixedKey, value, cacheItemOptions);
+        const item: CacheItem = this.fillCacheItem(
+            prefixedKey,
+            value,
+            cacheItemOptions
+        );
 
         // check wether this item is too big;
         if (item.byteSize > this.config.itemMaxSize) {
-            logger.warn(`Item with key: ${key} you are trying to put into is too big!`);
+            logger.warn(
+                `Item with key: ${key} you are trying to put into is too big!`
+            );
             return;
         }
 
@@ -229,13 +250,13 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * Get item from cache. It will return null if item doesn’t exist or it has been expired.
-     * If you specified callback function in the options, 
-     * then the function will be executed if no such item in the cache 
-     * and finally put the return value into cache. 
+     * If you specified callback function in the options,
+     * then the function will be executed if no such item in the cache
+     * and finally put the return value into cache.
      * Please make sure the callback function will return the value you want to put into the cache.
      * The cache will abort output a warning:
      * If the key is invalid
-     * 
+     *
      * @param key - the key of the item
      * @param options - the options of callback function
      */
@@ -243,7 +264,10 @@ export class InMemoryCache extends StorageCache implements ICache {
         let ret: string | null = null;
         const prefixedKey: string = this.config.keyPrefix + key;
 
-        if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
+        if (
+            prefixedKey === this.config.keyPrefix ||
+            prefixedKey === this.cacheCurSizeKey
+        ) {
             logger.warn(`Invalid key: should not be empty or 'CurSize'`);
             return null;
         }
@@ -275,7 +299,7 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * remove item from the cache
-     * 
+     *
      * @param key - the key of the item
      */
     public removeItem(key: string): void {
@@ -315,7 +339,7 @@ export class InMemoryCache extends StorageCache implements ICache {
 
     /**
      * return the current size of the cache
-     * 
+     *
      * @return the current size of the cache
      */
     public getCacheCurSize(): number {

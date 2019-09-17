@@ -12,23 +12,14 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Picker, 
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
+import { View, Picker, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import {
-    Auth,
-    I18n,
-    Logger
-} from 'aws-amplify';
-import { 
     AmplifyButton,
-    FormField, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+    FormField,
+    LinkCell,
+    Header,
+    ErrorRow,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -41,8 +32,8 @@ export default class VerifyContact extends AuthPiece {
         this._validAuthStates = ['verifyContact'];
         this.state = {
             verifyAttr: null,
-            error: null
-        }
+            error: null,
+        };
 
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
@@ -61,14 +52,13 @@ export default class VerifyContact extends AuthPiece {
                 return {
                     pickAttr: 'email',
                 };
-            } else if (phone_number &&  !state.pickAttr) {
+            } else if (phone_number && !state.pickAttr) {
                 return {
                     pickAttr: 'phone_number',
                 };
             } else {
                 return null;
             }
-            
         } else {
             return null;
         }
@@ -113,28 +103,40 @@ export default class VerifyContact extends AuthPiece {
             return (
                 <Picker
                     selectedValue={this.state.pickAttr}
-                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                    onValueChange={(value, index) =>
+                        this.setState({ pickAttr: value })
+                    }
                 >
-                    <Picker.Item label={I18n.get('Email')} value="email"/>
-                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                    <Picker.Item label={I18n.get('Email')} value="email" />
+                    <Picker.Item
+                        label={I18n.get('Phone Number')}
+                        value="phone_number"
+                    />
                 </Picker>
             );
         } else if (email) {
             return (
                 <Picker
                     selectedValue={this.state.pickAttr}
-                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                    onValueChange={(value, index) =>
+                        this.setState({ pickAttr: value })
+                    }
                 >
-                    <Picker.Item label={I18n.get('Email')} value="email"/>
+                    <Picker.Item label={I18n.get('Email')} value="email" />
                 </Picker>
             );
         } else if (phone_number) {
             return (
                 <Picker
                     selectedValue={this.state.pickAttr}
-                    onValueChange={(value, index) => this.setState({pickAttr: value})}
+                    onValueChange={(value, index) =>
+                        this.setState({ pickAttr: value })
+                    }
                 >
-                    <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/>
+                    <Picker.Item
+                        label={I18n.get('Phone Number')}
+                        value="phone_number"
+                    />
                 </Picker>
             );
         } else {
@@ -160,7 +162,7 @@ export default class VerifyContact extends AuthPiece {
                     disabled={!this.state.pickAttr}
                 />
             </View>
-        )
+        );
     }
 
     submitBody(theme) {
@@ -168,7 +170,7 @@ export default class VerifyContact extends AuthPiece {
             <View style={theme.sectionBody}>
                 <FormField
                     theme={theme}
-                    onChangeText={(text) => this.setState({ code: text })}
+                    onChangeText={text => this.setState({ code: text })}
                     label={I18n.get('Confirmation Code')}
                     placeholder={I18n.get('Enter your confirmation code')}
                     required={true}
@@ -180,18 +182,24 @@ export default class VerifyContact extends AuthPiece {
                     disabled={!this.state.code}
                 />
             </View>
-        )
+        );
     }
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-                    { !this.state.verifyAttr && this.verifyBody(theme) }
-                    { this.state.verifyAttr && this.submitBody(theme) }
+                    {!this.state.verifyAttr && this.verifyBody(theme)}
+                    {this.state.verifyAttr && this.submitBody(theme)}
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signedIn')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signedIn')}
+                        >
                             {I18n.get('Skip')}
                         </LinkCell>
                     </View>

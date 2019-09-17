@@ -10,9 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-    ConsoleLogger as Logger,
-} from '../Logger';
+import { ConsoleLogger as Logger } from '../Logger';
 import JS from '../JS';
 
 const logger = new Logger('CognitoCredentials');
@@ -27,12 +25,9 @@ const waitForInit = new Promise((res, rej) => {
         logger.debug('FB SDK already loaded');
         return res();
     } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
+        setTimeout(() => {
+            return res();
+        }, 2000);
     }
 });
 
@@ -41,7 +36,9 @@ export default class FacebookOAuth {
 
     constructor() {
         this.refreshFacebookToken = this.refreshFacebookToken.bind(this);
-        this._refreshFacebookTokenImpl = this._refreshFacebookTokenImpl.bind(this);
+        this._refreshFacebookTokenImpl = this._refreshFacebookTokenImpl.bind(
+            this
+        );
     }
 
     public async refreshFacebookToken() {
@@ -67,8 +64,12 @@ export default class FacebookOAuth {
             fb.getLoginStatus(
                 fbResponse => {
                     if (!fbResponse || !fbResponse.authResponse) {
-                        logger.debug('no response from facebook when refreshing the jwt token');
-                        rej('no response from facebook when refreshing the jwt token');
+                        logger.debug(
+                            'no response from facebook when refreshing the jwt token'
+                        );
+                        rej(
+                            'no response from facebook when refreshing the jwt token'
+                        );
                     }
 
                     const response = fbResponse.authResponse;
@@ -79,9 +80,9 @@ export default class FacebookOAuth {
                         logger.debug('the jwtToken is undefined');
                         rej('the jwtToken is undefined');
                     }
-                    res({token: accessToken, expires_at });
-                }, 
-                {scope: 'public_profile,email' }
+                    res({ token: accessToken, expires_at });
+                },
+                { scope: 'public_profile,email' }
             );
         });
     }

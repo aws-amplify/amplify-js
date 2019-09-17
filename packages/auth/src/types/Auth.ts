@@ -14,7 +14,7 @@
 import {
     ICookieStorageData,
     ICognitoStorage,
-    CognitoUserAttribute
+    CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -54,7 +54,7 @@ export enum CognitoHostedUIIdentityProvider {
     Cognito = 'COGNITO',
     Google = 'Google',
     Facebook = 'Facebook',
-    Amazon = 'LoginWithAmazon'
+    Amazon = 'LoginWithAmazon',
 }
 
 export type LegacyProvider =
@@ -86,7 +86,7 @@ export function isFederatedSignInOptionsCustom(
 ): obj is FederatedSignInOptionsCustom {
     const keys: (keyof FederatedSignInOptionsCustom)[] = [
         'customProvider',
-        'customState'
+        'customState',
     ];
     return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
@@ -188,7 +188,7 @@ export enum AuthErrorTypes {
     InvalidMFA = 'invalidMFA',
     EmptyChallengeResponse = 'emptyChallengeResponse',
     NoUserSession = 'noUserSession',
-    Default = 'default'
+    Default = 'default',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };

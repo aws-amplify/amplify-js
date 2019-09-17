@@ -34,7 +34,7 @@ export { default as Platform } from './Platform';
 
 import Platform from './Platform';
 export const Constants = {
-    'userAgent': Platform.userAgent
+    userAgent: Platform.userAgent,
 };
 
 export default Amplify;
@@ -46,7 +46,7 @@ if (AWS['util']) {
         return Constants.userAgent;
     };
 } else if (AWS.config) {
-    AWS.config.update({'customUserAgent': Constants.userAgent});
+    AWS.config.update({ customUserAgent: Constants.userAgent });
 } else {
     logger.warn('No AWS.config');
 }

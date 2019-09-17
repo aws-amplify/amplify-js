@@ -12,25 +12,25 @@ describe('UsernameFieldComponentCore: ', () => {
     let service: AmplifyService;
     let fixture;
 
-    beforeEach(() => { 
+    beforeEach(() => {
         service = new AmplifyService(authModule);
         component = new UsernameFieldComponentIonic(service);
         TestBed.configureTestingModule({
-        declarations: [
-            UsernameFieldComponentIonic,
-            MockComponent(PhoneFieldComponentIonic)
-        ],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: [
-            {
-            provide: AmplifyService,
-            useFactory: () => {
-                return AmplifyModules({
-                ...authModule
-                });
-            }
-            }
-        ]
+            declarations: [
+                UsernameFieldComponentIonic,
+                MockComponent(PhoneFieldComponentIonic),
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            providers: [
+                {
+                    provide: AmplifyService,
+                    useFactory: () => {
+                        return AmplifyModules({
+                            ...authModule,
+                        });
+                    },
+                },
+            ],
         }).compileComponents();
         fixture = TestBed.createComponent(UsernameFieldComponentIonic);
         fixtureComponent = fixture.componentInstance;

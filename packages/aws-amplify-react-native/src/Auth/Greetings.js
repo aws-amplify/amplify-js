@@ -12,16 +12,8 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    Button 
-} from 'react-native';
-import {
-    Auth,
-    I18n,
-    Logger
-} from 'aws-amplify';
+import { View, Text, Button } from 'react-native';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece from './AuthPiece';
@@ -43,24 +35,26 @@ export default class Greetings extends AuthPiece {
 
     render() {
         const { authState, authData } = this.props;
-        const signedIn = (authState === 'signedIn');
+        const signedIn = authState === 'signedIn';
         const theme = this.props.theme || AmplifyTheme;
 
-        let defaultMessage = "";
+        let defaultMessage = '';
         const user = authData;
         if (user) {
             const { usernameAttributes = [] } = this.props;
             let name = '';
             if (usernameAttributes === 'email') {
                 // Email as Username
-                name = user.attributes? user.attributes.email : user.username;
+                name = user.attributes ? user.attributes.email : user.username;
                 defaultMessage = `${name}`;
             } else if (usernameAttributes === 'phone_number') {
                 // Phone number as Username
-                name = user.attributes? user.attributes.phone_number : user.username;
+                name = user.attributes
+                    ? user.attributes.phone_number
+                    : user.username;
                 defaultMessage = `${name}`;
             } else {
-                name = user.username || "unknown user";
+                name = user.username || 'unknown user';
                 defaultMessage = `${I18n.get('Hello')} ${name}`;
             }
         }
@@ -69,7 +63,9 @@ export default class Greetings extends AuthPiece {
         if (signedIn) {
             message = this.props.signedInMessage || defaultMessage;
         } else {
-            message = this.props.signedOutMessage || I18n.get("Please Sign In / Sign Up");
+            message =
+                this.props.signedOutMessage ||
+                I18n.get('Please Sign In / Sign Up');
         }
 
         const content = signedIn ? (

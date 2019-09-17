@@ -12,22 +12,14 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import {
-    Auth,
-    I18n,
-    Logger
-} from 'aws-amplify';
-import { 
-    FormField, 
-    AmplifyButton, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+    FormField,
+    AmplifyButton,
+    LinkCell,
+    Header,
+    ErrorRow,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -52,7 +44,7 @@ export default class ForgotPassword extends AuthPiece {
         }
         Auth.forgotPassword(username)
             .then(data => {
-                logger.debug(data)
+                logger.debug(data);
                 this.setState({ delivery: data.CodeDeliveryDetails });
             })
             .catch(err => this.error(err));
@@ -80,7 +72,7 @@ export default class ForgotPassword extends AuthPiece {
                     disabled={!this.getUsernameFromInput()}
                 />
             </View>
-        )
+        );
     }
 
     submitBody(theme) {
@@ -88,14 +80,14 @@ export default class ForgotPassword extends AuthPiece {
             <View style={theme.sectionBody}>
                 <FormField
                     theme={theme}
-                    onChangeText={(text) => this.setState({ code: text })}
+                    onChangeText={text => this.setState({ code: text })}
                     label={I18n.get('Confirmation Code')}
                     placeholder={I18n.get('Enter your confirmation code')}
                     required={true}
                 />
                 <FormField
                     theme={theme}
-                    onChangeText={(text) => this.setState({ password: text })}
+                    onChangeText={text => this.setState({ password: text })}
                     label={I18n.get('Password')}
                     placeholder={I18n.get('Enter your new password')}
                     secureTextEntry={true}
@@ -108,26 +100,32 @@ export default class ForgotPassword extends AuthPiece {
                     disabled={!(this.state.code && this.state.password)}
                 />
             </View>
-        )
+        );
     }
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Forgot Password')}</Header>
                     <View style={theme.sectionBody}>
-                        { !this.state.delivery && this.forgotBody(theme) }
-                        { this.state.delivery && this.submitBody(theme) }
+                        {!this.state.delivery && this.forgotBody(theme)}
+                        {this.state.delivery && this.submitBody(theme)}
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signIn')}
+                        >
                             {I18n.get('Back to Sign In')}
                         </LinkCell>
                     </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>
-        )
+        );
     }
 }

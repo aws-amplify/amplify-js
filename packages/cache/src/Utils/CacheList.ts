@@ -28,7 +28,7 @@ class DoubleLinkedNode {
  * each key in the cache stored as a node in the list
  * recently visited node will be rotated to the head
  * so the Last Recently Visited node will be at the tail
- * 
+ *
  * @member head - dummy head of the linked list
  * @member tail - dummy tail of the linked list
  * @member hashtable - the hashtable which maps cache key to list node
@@ -51,13 +51,12 @@ export default class CacheList {
 
         this.head.nextNode = this.tail;
         this.tail.prevNode = this.head;
-
     }
 
     /**
      * insert node to the head of the list
-     * 
-     * @param node 
+     *
+     * @param node
      */
     private insertNodeToHead(node: DoubleLinkedNode) {
         const tmp: DoubleLinkedNode = this.head.nextNode;
@@ -71,8 +70,8 @@ export default class CacheList {
 
     /**
      * remove node
-     * 
-     * @param node 
+     *
+     * @param node
      */
     private removeNode(node: DoubleLinkedNode): void {
         node.prevNode.nextNode = node.nextNode;
@@ -93,7 +92,7 @@ export default class CacheList {
 
     /**
      * refresh node so it is rotated to the head
-     * 
+     *
      * @param key - key of the node
      */
     public refresh(key: string): void {
@@ -104,7 +103,7 @@ export default class CacheList {
 
     /**
      * insert new node to the head and add it in the hashtable
-     * 
+     *
      * @param key - the key of the node
      */
     public insertItem(key: string): void {
@@ -139,7 +138,7 @@ export default class CacheList {
 
     /**
      * @return true if the key is in the hashtable
-     * @param key 
+     * @param key
      */
     public containsKey(key: string): boolean {
         return key in this.hashtable;
@@ -168,25 +167,23 @@ export default class CacheList {
 
     /**
      * mainly for test
-     * 
-     * @param key 
+     *
+     * @param key
      * @return true if key is the head node
      */
     public isHeadNode(key: string): boolean {
         const node = this.hashtable[key];
-        return (node.prevNode === this.head);
+        return node.prevNode === this.head;
     }
 
     /**
      * mainly for test
-     * 
-     * @param key 
+     *
+     * @param key
      * @return true if key is the tail node
      */
     public isTailNode(key: string): boolean {
         const node = this.hashtable[key];
-        return (node.nextNode === this.tail);
+        return node.nextNode === this.tail;
     }
 }
-
-

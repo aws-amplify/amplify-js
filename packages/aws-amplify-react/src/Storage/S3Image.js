@@ -41,13 +41,15 @@ export default class S3Image extends Component {
 
     getImageSource(key, level, track, identityId) {
         if (!Storage || typeof Storage.get !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            throw new Error(
+                'No Storage module found, please ensure @aws-amplify/storage is imported'
+            );
         }
         Storage.get(key, { level: level ? level : 'public', track, identityId })
             .then(url => {
                 if (this._isMounted) {
                     this.setState({
-                        src: url
+                        src: url,
                     });
                 }
             })
@@ -55,7 +57,15 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { imgKey, path, body, contentType, level, track, identityId } = this.props;
+        const {
+            imgKey,
+            path,
+            body,
+            contentType,
+            level,
+            track,
+            identityId,
+        } = this.props;
         if (!imgKey && !path) {
             logger.debug('empty imgKey and path');
             return;
@@ -67,18 +77,19 @@ export default class S3Image extends Component {
         if (body) {
             const type = contentType || 'binary/octet-stream';
             if (!Storage || typeof Storage.put !== 'function') {
-                throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+                throw new Error(
+                    'No Storage module found, please ensure @aws-amplify/storage is imported'
+                );
             }
             const ret = Storage.put(key, body, {
                 contentType: type,
                 level: level ? level : 'public',
-                track
+                track,
             });
             ret.then(data => {
                 logger.debug(data);
                 that.getImageSource(key, level, track, identityId);
-            })
-                .catch(err => logger.debug(err));
+            }).catch(err => logger.debug(err));
         } else {
             that.getImageSource(key, level, track, identityId);
         }
@@ -86,12 +97,16 @@ export default class S3Image extends Component {
 
     handleOnLoad(evt) {
         const { onLoad } = this.props;
-        if (onLoad) { onLoad(this.state.src); }
+        if (onLoad) {
+            onLoad(this.state.src);
+        }
     }
 
     handleOnError(evt) {
         const { onError } = this.props;
-        if (onError) { onError(this.state.src); }
+        if (onError) {
+            onError(this.state.src);
+        }
     }
 
     handlePick(data) {
@@ -100,14 +115,16 @@ export default class S3Image extends Component {
         const path = this.props.path || '';
         const { imgKey, level, fileToKey, track, identityId } = this.props;
         const { file, name, size, type } = data;
-        const key = imgKey || (path + calcKey(data, fileToKey));
+        const key = imgKey || path + calcKey(data, fileToKey);
         if (!Storage || typeof Storage.put !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            throw new Error(
+                'No Storage module found, please ensure @aws-amplify/storage is imported'
+            );
         }
         Storage.put(key, file, {
             level: level ? level : 'public',
             contentType: type,
-            track
+            track,
         })
             .then(data => {
                 logger.debug('handle pick data', data);
@@ -118,7 +135,9 @@ export default class S3Image extends Component {
 
     handleClick(evt) {
         const { onClick } = this.props;
-        if (onClick) { onClick(evt); }
+        if (onClick) {
+            onClick(evt);
+        }
     }
 
     componentDidMount() {
@@ -131,7 +150,8 @@ export default class S3Image extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const update = prevProps.path !== this.props.path ||
+        const update =
+            prevProps.path !== this.props.path ||
             prevProps.imgKey !== this.props.imgKey ||
             prevProps.body !== this.props.body ||
             prevProps.level !== this.props.level;
@@ -141,7 +161,9 @@ export default class S3Image extends Component {
     }
 
     imageEl(src, theme) {
-        if (!src) { return null; }
+        if (!src) {
+            return null;
+        }
 
         const { selected } = this.props;
         const containerStyle = { position: 'relative' };
@@ -153,7 +175,9 @@ export default class S3Image extends Component {
                     onLoad={this.handleOnLoad}
                     onError={this.handleOnError}
                 />
-                <div style={selected ? theme.overlaySelected : theme.overlay}></div>
+                <div
+                    style={selected ? theme.overlaySelected : theme.overlay}
+                ></div>
             </div>
         );
     }
@@ -162,29 +186,36 @@ export default class S3Image extends Component {
         const { hidden, style, picker, translate, imgKey } = this.props;
         let src = this.state.src;
         if (translate) {
-            src = (typeof translate === 'string') ? translate : translate({
-                type: 'image',
-                key: imgKey,
-                content: src
-            });
+            src =
+                typeof translate === 'string'
+                    ? translate
+                    : translate({
+                          type: 'image',
+                          key: imgKey,
+                          content: src,
+                      });
         }
-        if (!src && !picker) { return null; }
+        if (!src && !picker) {
+            return null;
+        }
 
         const theme = this.props.theme || AmplifyTheme;
-        const photoStyle = hidden ? AmplifyTheme.hidden
+        const photoStyle = hidden
+            ? AmplifyTheme.hidden
             : Object.assign({}, theme.photo, style);
 
         return (
             <div style={photoStyle}>
                 {photoStyle ? this.imageEl(src, theme) : null}
-                {picker ? <div>
-                    <PhotoPicker
-                        key="picker"
-                        onPick={this.handlePick}
-                        theme={theme}
-                    />
-                </div> : null
-                }
+                {picker ? (
+                    <div>
+                        <PhotoPicker
+                            key="picker"
+                            onPick={this.handlePick}
+                            theme={theme}
+                        />
+                    </div>
+                ) : null}
             </div>
         );
     }

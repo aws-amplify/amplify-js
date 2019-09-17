@@ -11,14 +11,17 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import { Linking } from "react-native";
+import { Linking } from 'react-native';
 
 import { Logger, Hub } from '@aws-amplify/core';
-import { default as Auth, CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
+import {
+    default as Auth,
+    CognitoHostedUIIdentityProvider,
+} from '@aws-amplify/auth';
 
 const logger = new Logger('withOAuth');
 
-export default (Comp) => {
+export default Comp => {
     let listeners = [];
 
     return class WithOAuth extends React.Component {
@@ -27,9 +30,7 @@ export default (Comp) => {
             this._isMounted = false;
             const config = this._getOAuthConfig();
 
-            const {
-                urlOpener = defaultUrlOpener,
-            } = config;
+            const { urlOpener = defaultUrlOpener } = config;
 
             this.urlOpener = urlOpener;
 
@@ -52,12 +53,14 @@ export default (Comp) => {
         componentDidMount() {
             this._isMounted = true;
             this.setState({ loading: true }, () => {
-                Auth.currentAuthenticatedUser().then(user => {
-                    this.setState({ user, loading: false })
-                }).catch(error => {
-                    logger.debug(error);
-                    this.setState({ user: null, loading: false });
-                });
+                Auth.currentAuthenticatedUser()
+                    .then(user => {
+                        this.setState({ user, loading: false });
+                    })
+                    .catch(error => {
+                        logger.debug(error);
+                        this.setState({ user: null, loading: false });
+                    });
             });
         }
         componentWillUnmount() {
@@ -75,19 +78,31 @@ export default (Comp) => {
                     case 'cognitoHostedUI': {
                         Auth.currentAuthenticatedUser().then(user => {
                             logger.debug('signed in');
-                            this.setState({ user, error: null, loading: false });
+                            this.setState({
+                                user,
+                                error: null,
+                                loading: false,
+                            });
                         });
                         break;
                     }
                     case 'signOut': {
                         logger.debug('signed out');
-                        this.setState({ user: null, error: null, loading: false });
+                        this.setState({
+                            user: null,
+                            error: null,
+                            loading: false,
+                        });
                         break;
                     }
                     case 'signIn_failure':
                     case 'cognitoHostedUI_failure': {
                         logger.debug('not signed in');
-                        this.setState({ user: null, error: decodeURIComponent(payload.data), loading: false });
+                        this.setState({
+                            user: null,
+                            error: decodeURIComponent(payload.data),
+                            loading: false,
+                        });
                         break;
                     }
                     default:
@@ -98,20 +113,25 @@ export default (Comp) => {
 
         _getOAuthConfig() {
             if (!Auth || typeof Auth.configure !== 'function') {
-                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+                throw new Error(
+                    'No Auth module found, please ensure @aws-amplify/auth is imported'
+                );
             }
 
             const { oauth = undefined } = Auth.configure();
 
             // to keep backward compatibility
-            const cognitoHostedUIConfig = oauth && (oauth.domain ? oauth : oauth.awsCognito);
+            const cognitoHostedUIConfig =
+                oauth && (oauth.domain ? oauth : oauth.awsCognito);
             const config = this.props.oauth_config || cognitoHostedUIConfig;
 
             return config;
         }
 
         hostedUISignIn(provider) {
-            this.setState({ loading: true },  () => Auth.federatedSignIn({ provider }));
+            this.setState({ loading: true }, () =>
+                Auth.federatedSignIn({ provider })
+            );
         }
 
         signOut() {
@@ -126,21 +146,33 @@ export default (Comp) => {
                 loading,
                 oAuthUser,
                 oAuthError,
-                hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),
-                facebookSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Facebook),
-                amazonSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Amazon),
-                googleSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Google),
+                hostedUISignIn: this.hostedUISignIn.bind(
+                    this,
+                    CognitoHostedUIIdentityProvider.Cognito
+                ),
+                facebookSignIn: this.hostedUISignIn.bind(
+                    this,
+                    CognitoHostedUIIdentityProvider.Facebook
+                ),
+                amazonSignIn: this.hostedUISignIn.bind(
+                    this,
+                    CognitoHostedUIIdentityProvider.Amazon
+                ),
+                googleSignIn: this.hostedUISignIn.bind(
+                    this,
+                    CognitoHostedUIIdentityProvider.Google
+                ),
                 customProviderSignIn: provider => this.hostedUISignIn(provider),
                 signOut: this.signOut,
             };
 
             return <Comp {...oAuthProps} {...otherProps} />;
         }
-    }
+    };
 };
 
 const defaultUrlOpener = (url, redirectUrl) => {
     logger.debug(`opening url: ${url}, redirectUrl: ${redirectUrl}`);
 
     return Linking.openURL(url);
-}
+};

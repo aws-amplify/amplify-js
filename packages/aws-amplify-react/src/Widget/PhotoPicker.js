@@ -17,11 +17,15 @@ import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Picker from './Picker';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import { FormSection, SectionHeader, SectionBody, PhotoPlaceholder } from '../Amplify-UI/Amplify-UI-Components-React';
-
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    PhotoPlaceholder,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerPreview = {
-    maxWidth: '100%'
+    maxWidth: '100%',
 };
 
 const logger = new Logger('PhotoPicker');
@@ -33,7 +37,7 @@ export default class PhotoPicker extends Component {
         this.handlePick = this.handlePick.bind(this);
 
         this.state = {
-            previewSrc: props.previewSrc
+            previewSrc: props.previewSrc,
         };
     }
 
@@ -42,14 +46,18 @@ export default class PhotoPicker extends Component {
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
 
-        if (onPick) { onPick(data); }
+        if (onPick) {
+            onPick(data);
+        }
 
         if (preview) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const url = e.target.result;
                 that.setState({ previewSrc: url });
-                if (onLoad) { onLoad(url); }
+                if (onLoad) {
+                    onLoad(url);
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -60,7 +68,8 @@ export default class PhotoPicker extends Component {
         const { previewSrc } = this.state;
 
         const headerText = this.props.headerText || 'Photos';
-        const headerHint = this.props.headerHint || 'Add your photos by clicking below';
+        const headerHint =
+            this.props.headerHint || 'Add your photos by clicking below';
         const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;
@@ -74,15 +83,19 @@ export default class PhotoPicker extends Component {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
+                <SectionHeader theme={theme} hint={headerHint}>
+                    {I18n.get(headerText)}
+                </SectionHeader>
                 <SectionBody theme={theme}>
-                    { previewSrc ? 
-                        (previewHidden ? 
-                            'The image has been selected':
+                    {previewSrc ? (
+                        previewHidden ? (
+                            'The image has been selected'
+                        ) : (
                             <img src={previewSrc} style={previewStyle} />
-                        ):
-                        <PhotoPlaceholder theme={theme}/>
-                    }
+                        )
+                    ) : (
+                        <PhotoPlaceholder theme={theme} />
+                    )}
                 </SectionBody>
                 <Picker
                     title={title}

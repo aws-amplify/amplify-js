@@ -26,12 +26,14 @@ export function trackUpdate(Comp, trackerName) {
             const attributes = Object.assign({}, this.props, this.state);
             if (Analytics && typeof Analytics.record === 'function') {
                 Analytics.record({
-                    name: this.trackerName, 
-                    attributes
+                    name: this.trackerName,
+                    attributes,
                 });
             } else {
-                throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
-            }   
+                throw new Error(
+                    'No Analytics module found, please ensure @aws-amplify/analytics is imported'
+                );
+            }
         }
 
         render() {

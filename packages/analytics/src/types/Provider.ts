@@ -12,9 +12,9 @@
  */
 
 export interface PromiseHandlers {
-    resolve: Function,
-    reject: Function
-} 
+    resolve: Function;
+    reject: Function;
+}
 
 export interface AnalyticsProvider {
     // you need to implement those  methods
@@ -27,7 +27,7 @@ export interface AnalyticsProvider {
 
     // return 'Analytics';
     getCategory(): string;
-    
+
     // return the name of you provider
     getProviderName(): string;
 }

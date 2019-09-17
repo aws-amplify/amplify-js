@@ -12,14 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { 
-    Image, 
-    StyleSheet 
-} from 'react-native';
-import {
-    Storage,
-    Logger
-} from 'aws-amplify';
+import { Image, StyleSheet } from 'react-native';
+import { Storage, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Storage.S3Image');
@@ -33,11 +27,11 @@ export default class S3Image extends Component {
 
     getImageSource() {
         const { imgKey, level } = this.props;
-        Storage.get(imgKey, { level : level? level : 'public'})
+        Storage.get(imgKey, { level: level ? level : 'public' })
             .then(url => {
                 logger.debug(url);
                 this.setState({
-                    src: { uri: url }
+                    src: { uri: url },
                 });
             })
             .catch(err => logger.warn(err));
@@ -47,23 +41,22 @@ export default class S3Image extends Component {
         const { imgKey, body, contentType, level } = this.props;
         if (!imgKey) {
             logger.debug('empty imgKey');
-            return ;
+            return;
         }
 
         const that = this;
         logger.debug('loading ' + imgKey + '...');
         if (body) {
-            const type = contentType? contentType : 'binary/octet-stream';
+            const type = contentType ? contentType : 'binary/octet-stream';
             const opt = {
                 contentType: type,
-                level: level? level : 'public'
-            }
+                level: level ? level : 'public',
+            };
             const ret = Storage.put(imgKey, body, opt);
             ret.then(data => {
                 logger.debug(data);
                 that.getImageSource();
-            })
-            .catch(err => logger.warn(err));
+            }).catch(err => logger.warn(err));
         } else {
             that.getImageSource();
         }
@@ -74,19 +67,30 @@ export default class S3Image extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.imgKey !== this.props.imgKey || prevProps.body !== this.props.body) {
+        if (
+            prevProps.imgKey !== this.props.imgKey ||
+            prevProps.body !== this.props.body
+        ) {
             this.load();
         }
     }
 
     render() {
         const { src } = this.state;
-        if (!src) { return null; }
+        if (!src) {
+            return null;
+        }
 
-        const { style, resizeMode} = this.props;
+        const { style, resizeMode } = this.props;
         const theme = this.props.theme || AmplifyTheme;
-        const photoStyle = Object.assign({}, StyleSheet.flatten(theme.photo), style);
+        const photoStyle = Object.assign(
+            {},
+            StyleSheet.flatten(theme.photo),
+            style
+        );
 
-        return <Image source={src} resizeMode={resizeMode} style={photoStyle} />
+        return (
+            <Image source={src} resizeMode={resizeMode} style={photoStyle} />
+        );
     }
 }

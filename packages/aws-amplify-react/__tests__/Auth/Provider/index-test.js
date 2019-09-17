@@ -13,7 +13,7 @@ describe('withFederated test', () => {
                 }
             };
             const Comp = withFederated(MockComp);
-            const wrapper = shallow(<Comp/>);
+            const wrapper = shallow(<Comp />);
             expect(wrapper).toMatchSnapshot();
         });
     });

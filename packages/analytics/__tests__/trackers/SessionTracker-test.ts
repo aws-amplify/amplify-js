@@ -4,25 +4,28 @@ const tracker = jest.fn().mockImplementation(() => {
     return Promise.resolve();
 });
 
-
-
 describe('SessionTracker test', () => {
     describe('constructor test', () => {
         test('happy case', () => {
             tracker.mockClear();
 
-            const spyon = jest.spyOn(document, 'addEventListener').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(document, 'addEventListener')
+                .mockImplementationOnce(() => {
+                    return;
+                });
 
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                {
+                    name: '_session.start',
+                    attributes: {},
+                },
+                'AWSPinpoint'
+            );
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
@@ -33,17 +36,17 @@ describe('SessionTracker test', () => {
             let tmp = document;
             Object.defineProperty(window.document, 'hidden', {
                 writable: true,
-                value: undefined
+                value: undefined,
             });
 
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
             expect(tracker).not.toBeCalled();
-             Object.defineProperty(window.document, 'hidden', {
+            Object.defineProperty(window.document, 'hidden', {
                 writable: true,
-                value: false
+                value: false,
             });
         });
     });
@@ -51,34 +54,38 @@ describe('SessionTracker test', () => {
     describe('configure test', () => {
         test('happy case', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
-            expect(sessionTracker.configure({
+            expect(
+                sessionTracker.configure({
+                    enable: true,
+                    attributes: {
+                        attr1: 'val1',
+                    },
+                    provider: 'myProvider',
+                })
+            ).toEqual({
                 enable: true,
                 attributes: {
-                    attr1: 'val1'
+                    attr1: 'val1',
                 },
-                provider: 'myProvider'
-            })).toEqual({
-                enable: true,
-                attributes: {
-                    attr1: 'val1'
-                },
-                provider: 'myProvider'
+                provider: 'myProvider',
             });
         });
 
         test('autoTrack disabled', () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
 
-            const spyon = jest.spyOn(document, 'removeEventListener').mockImplementationOnce(() => {
-                return;
-            });
+            const spyon = jest
+                .spyOn(document, 'removeEventListener')
+                .mockImplementationOnce(() => {
+                    return;
+                });
             sessionTracker.configure({
-                enable: false
+                enable: false,
             });
 
             expect(spyon).toBeCalled();
@@ -89,13 +96,13 @@ describe('SessionTracker test', () => {
     describe('track function test', () => {
         test('if the page is hidden', async () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
             tracker.mockClear();
 
             Object.defineProperty(window.document, 'hidden', {
                 writable: true,
-                value: true
+                value: true,
             });
 
             Object.defineProperty(window.document, 'visibilityState', {
@@ -105,21 +112,24 @@ describe('SessionTracker test', () => {
 
             await sessionTracker._trackFunc();
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.stop',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                {
+                    name: '_session.stop',
+                    attributes: {},
+                },
+                'AWSPinpoint'
+            );
         });
 
         test('if the page is not hidden', async () => {
             const sessionTracker = new SessionTracker(tracker, {
-                enable: true
+                enable: true,
             });
             tracker.mockClear();
 
             Object.defineProperty(window.document, 'hidden', {
                 writable: true,
-                value: false
+                value: false,
             });
 
             Object.defineProperty(window.document, 'visibilityState', {
@@ -129,10 +139,13 @@ describe('SessionTracker test', () => {
 
             await sessionTracker._trackFunc();
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
+            expect(tracker).toBeCalledWith(
+                {
+                    name: '_session.start',
+                    attributes: {},
+                },
+                'AWSPinpoint'
+            );
         });
     });
 });

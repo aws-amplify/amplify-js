@@ -13,9 +13,20 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, 	EventEmitter, Inject, Output } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    EventEmitter,
+    Inject,
+    Output,
+} from '@angular/core';
 import { labelMap } from '../common';
-import { UsernameAttributes, UsernameFieldOutput, PhoneFieldOutput } from '../types';
+import {
+    UsernameAttributes,
+    UsernameFieldOutput,
+    PhoneFieldOutput,
+} from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { auth } from '../../../assets/data-test-attributes';
 
@@ -53,15 +64,17 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-username-field-core',
-  template,
+    selector: 'amplify-auth-username-field-core',
+    template,
 })
 export class UsernameFieldComponentCore implements OnInit {
-    _usernameAttributes : string = UsernameAttributes.USERNAME;
-    _placeholder : string = '';
+    _usernameAttributes: string = UsernameAttributes.USERNAME;
+    _placeholder: string = '';
     username: string;
 
-    constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
         this.onPhoneFieldChanged = this.onPhoneFieldChanged.bind(this);
     }
 
@@ -82,47 +95,57 @@ export class UsernameFieldComponentCore implements OnInit {
     }
 
     @Output()
-	usernameFieldChanged: EventEmitter<UsernameFieldOutput> = new EventEmitter<UsernameFieldOutput>();
+    usernameFieldChanged: EventEmitter<UsernameFieldOutput> = new EventEmitter<
+        UsernameFieldOutput
+    >();
 
     ngOnInit() {
-        if (window &&
+        if (
+            window &&
             window.location &&
             window.location.search &&
             this._usernameAttributes !== 'email' &&
             this._usernameAttributes !== 'phone_number'
         ) {
             const searchParams = new URLSearchParams(window.location.search);
-            const username = searchParams ? searchParams.get('username') : undefined;
+            const username = searchParams
+                ? searchParams.get('username')
+                : undefined;
             this.setUsername(username);
             this.username = username;
-          }
+        }
     }
 
     ngOnDestroy() {}
 
     setUsername(username: string) {
         this.usernameFieldChanged.emit({
-            username
+            username,
         });
     }
 
     setEmail(email: string) {
         this.usernameFieldChanged.emit({
-            email
+            email,
         });
     }
 
     getUsernameLabel() {
-        return labelMap[this._usernameAttributes as string] || this._usernameAttributes;
+        return (
+            labelMap[this._usernameAttributes as string] ||
+            this._usernameAttributes
+        );
     }
 
     getPlaceholder() {
-        return this.amplifyService.i18n().get(`${this.getUsernameLabel()}` || this._placeholder);
+        return this.amplifyService
+            .i18n()
+            .get(`${this.getUsernameLabel()}` || this._placeholder);
     }
 
     onPhoneFieldChanged(event: PhoneFieldOutput) {
         this.usernameFieldChanged.emit({
-            ...event
+            ...event,
         });
     }
 }

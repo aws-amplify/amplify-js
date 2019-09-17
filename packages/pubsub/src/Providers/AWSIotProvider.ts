@@ -16,10 +16,13 @@ import { Signer, Credentials } from '@aws-amplify/core';
 const SERVICE_NAME = 'iotdevicegateway';
 
 export class AWSIoTProvider extends MqttOverWSProvider {
+    protected get region() {
+        return this.options.aws_pubsub_region;
+    }
 
-    protected get region() { return this.options.aws_pubsub_region; }
-
-    public getProviderName() { return 'AWSIoTProvider'; }
+    public getProviderName() {
+        return 'AWSIoTProvider';
+    }
 
     protected get endpoint() {
         return (async () => {
@@ -27,17 +30,21 @@ export class AWSIoTProvider extends MqttOverWSProvider {
 
             const serviceInfo = {
                 service: SERVICE_NAME,
-                region: this.region
+                region: this.region,
             };
-            const { accessKeyId: access_key,
+            const {
+                accessKeyId: access_key,
                 secretAccessKey: secret_key,
                 sessionToken: session_token,
             } = await Credentials.get();
 
-            const result = Signer.signUrl(endpoint, { access_key, secret_key, session_token }, serviceInfo);
+            const result = Signer.signUrl(
+                endpoint,
+                { access_key, secret_key, session_token },
+                serviceInfo
+            );
 
             return result;
         })();
     }
-
 }

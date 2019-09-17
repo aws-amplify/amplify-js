@@ -12,24 +12,15 @@
  */
 
 import React from 'react';
-import {
-    View,
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
-import {
-    Auth,
-    I18n,
-    Logger,
-    JS
-} from 'aws-amplify';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import {
     AmplifyButton,
     FormField,
     LinkCell,
     Header,
-    ErrorRow
+    ErrorRow,
 } from '../AmplifyUI';
 
 const logger = new Logger('SignIn');
@@ -42,8 +33,8 @@ export default class SignIn extends AuthPiece {
         this.state = {
             username: null,
             password: null,
-            error: null
-        }
+            error: null,
+        };
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
@@ -56,7 +47,7 @@ export default class SignIn extends AuthPiece {
         Auth.signIn(username, password)
             .then(user => {
                 logger.debug(user);
-                const requireMFA = (user.Session !== null);
+                const requireMFA = user.Session !== null;
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
                 } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -71,14 +62,21 @@ export default class SignIn extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+            >
                 <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
+                    <Header theme={theme}>
+                        {I18n.get('Sign in to your account')}
+                    </Header>
                     <View style={theme.sectionBody}>
                         {this.renderUsernameField(theme)}
                         <FormField
                             theme={theme}
-                            onChangeText={(text) => this.setState({ password: text })}
+                            onChangeText={text =>
+                                this.setState({ password: text })
+                            }
                             label={I18n.get('Password')}
                             placeholder={I18n.get('Enter your password')}
                             secureTextEntry={true}
@@ -88,14 +86,23 @@ export default class SignIn extends AuthPiece {
                             text={I18n.get('Sign In').toUpperCase()}
                             theme={theme}
                             onPress={this.signIn}
-                            disabled={!this.getUsernameFromInput() && this.state.password}
+                            disabled={
+                                !this.getUsernameFromInput() &&
+                                this.state.password
+                            }
                         />
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('forgotPassword')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('forgotPassword')}
+                        >
                             {I18n.get('Forgot Password')}
                         </LinkCell>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signUp')}>
+                        <LinkCell
+                            theme={theme}
+                            onPress={() => this.changeState('signUp')}
+                        >
                             {I18n.get('Sign Up')}
                         </LinkCell>
                     </View>

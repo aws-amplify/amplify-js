@@ -43,35 +43,41 @@ export default class ConfirmSignIn extends AuthPiece {
         this.confirm = this.confirm.bind(this);
         this.checkContact = this.checkContact.bind(this);
         this.state = {
-            mfaType: 'SMS'
+            mfaType: 'SMS',
         };
     }
 
     checkContact(user) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
 
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    const newUser = Object.assign(user, data);
-                    this.changeState('verifyContact', newUser);
-                }
-            });
+        Auth.verifiedContact(user).then(data => {
+            if (!JS.isEmpty(data.verified)) {
+                this.changeState('signedIn', user);
+            } else {
+                const newUser = Object.assign(user, data);
+                this.changeState('verifyContact', newUser);
+            }
+        });
     }
 
     confirm(event) {
-        if (event) { 
+        if (event) {
             event.preventDefault();
-        };
+        }
         const user = this.props.authData;
         const { code } = this.inputs;
-        const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+        const mfaType =
+            user.challengeName === 'SOFTWARE_TOKEN_MFA'
+                ? 'SOFTWARE_TOKEN_MFA'
+                : null;
         if (!Auth || typeof Auth.confirmSignIn !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
 
         Auth.confirmSignIn(user, code, mfaType)
@@ -84,22 +90,36 @@ export default class ConfirmSignIn extends AuthPiece {
     componentDidUpdate() {
         // logger.debug('component did update with props', this.props);
         const user = this.props.authData;
-        const mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA'?
-            'TOTP' : 'SMS';
+        const mfaType =
+            user && user.challengeName === 'SOFTWARE_TOKEN_MFA'
+                ? 'TOTP'
+                : 'SMS';
         if (this.state.mfaType !== mfaType) this.setState({ mfaType });
     }
 
     showComponent(theme) {
         const { hide, authData } = this.props;
-        if (hide && hide.includes(ConfirmSignIn)) { return null; }
+        if (hide && hide.includes(ConfirmSignIn)) {
+            return null;
+        }
 
         return (
             <FormSection theme={theme} data-test={auth.confirmSignIn.section}>
-                <SectionHeader theme={theme} data-test={auth.confirmSignIn.headerSection}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
-                <form onSubmit={this.confirm} data-test={auth.confirmSignIn.bodySection}>
+                <SectionHeader
+                    theme={theme}
+                    data-test={auth.confirmSignIn.headerSection}
+                >
+                    {I18n.get('Confirm ' + this.state.mfaType + ' Code')}
+                </SectionHeader>
+                <form
+                    onSubmit={this.confirm}
+                    data-test={auth.confirmSignIn.bodySection}
+                >
                     <SectionBody theme={theme}>
                         <FormField theme={theme}>
-                            <InputLabel theme={theme}>{I18n.get('Code')} *</InputLabel>
+                            <InputLabel theme={theme}>
+                                {I18n.get('Code')} *
+                            </InputLabel>
                             <Input
                                 autoFocus
                                 placeholder={I18n.get('Code')}
@@ -113,13 +133,20 @@ export default class ConfirmSignIn extends AuthPiece {
                         </FormField>
                     </SectionBody>
                     <SectionFooter theme={theme}>
-                        <SectionFooterPrimaryContent theme={theme} data-test={auth.confirmSignIn.confirmButton}>
+                        <SectionFooterPrimaryContent
+                            theme={theme}
+                            data-test={auth.confirmSignIn.confirmButton}
+                        >
                             <Button theme={theme} type="submit">
                                 {I18n.get('Confirm')}
                             </Button>
                         </SectionFooterPrimaryContent>
                         <SectionFooterSecondaryContent theme={theme}>
-                            <Link theme={theme} onClick={() => this.changeState('signIn')} data-test={auth.confirmSignIn.backToSignInLink}>
+                            <Link
+                                theme={theme}
+                                onClick={() => this.changeState('signIn')}
+                                data-test={auth.confirmSignIn.backToSignInLink}
+                            >
                                 {I18n.get('Back to Sign In')}
                             </Link>
                         </SectionFooterSecondaryContent>

@@ -13,13 +13,7 @@
 
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { 
-    Auth, 
-    Analytics,
-    Logger,
-    Hub,
-    JS
-} from 'aws-amplify';
+import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import Loading from './Loading';
@@ -41,19 +35,17 @@ class AuthDecorator {
 
     signIn(username, password) {
         const that = this;
-        return Auth.signIn(username, password)
-            .then(data => {
-                that.onStateChange('signedIn');
-                return data;
-            });
+        return Auth.signIn(username, password).then(data => {
+            that.onStateChange('signedIn');
+            return data;
+        });
     }
 
     signOut() {
         const that = this;
-        return Auth.signOut()
-            .then(() => {
-                that.onStateChange('signedOut');
-            });
+        return Auth.signOut().then(() => {
+            that.onStateChange('signedOut');
+        });
     }
 }
 
@@ -63,7 +55,7 @@ export default class Authenticator extends React.Component {
         this._initialAuthState = this.props.authState || 'signIn';
         this.state = {
             authState: props.authState || 'loading',
-            authData: props.authData
+            authData: props.authData,
         };
 
         this.handleStateChange = this.handleStateChange.bind(this);
@@ -85,19 +77,27 @@ export default class Authenticator extends React.Component {
 
     onHubCapsule(capsule) {
         const { channel, payload, source } = capsule;
-        if (channel === 'auth') { this.checkUser(); }
+        if (channel === 'auth') {
+            this.checkUser();
+        }
     }
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state);
         if (!this._isMounted) return;
-        if (state === this.state.authState) { return; }
+        if (state === this.state.authState) {
+            return;
+        }
 
-        if (state === 'signedOut') { state = 'signIn'; }
+        if (state === 'signedOut') {
+            state = 'signIn';
+        }
         this.setState({ authState: state, authData: data, error: null });
-        if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+        if (this.props.onStateChange) {
+            this.props.onStateChange(state, data);
+        }
 
-        switch(state) {
+        switch (state) {
             case 'signedIn':
                 Analytics.record('_userauth.sign_in');
                 break;
@@ -134,7 +134,7 @@ export default class Authenticator extends React.Component {
                 } else {
                     if (statesJumpToSignIn.includes(authState)) {
                         this.handleStateChange(this._initialAuthState, null);
-                    } 
+                    }
                 }
             })
             .catch(err => {
@@ -143,9 +143,12 @@ export default class Authenticator extends React.Component {
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
                         .then(() => {
-                            this.handleStateChange(this._initialAuthState, null);
+                            this.handleStateChange(
+                                this._initialAuthState,
+                                null
+                            );
                         })
-                        .catch(err => this.error(err));       
+                        .catch(err => this.error(err));
                 }
             });
     }
@@ -158,17 +161,17 @@ export default class Authenticator extends React.Component {
         const { hideDefault, signUpConfig, usernameAttributes } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
-            <Loading/>,
-            <SignIn/>,
-            <ConfirmSignIn/>,
-            <VerifyContact/>,
-            <SignUp signUpConfig={signUpConfig}/>,
-            <ConfirmSignUp/>,
-            <ForgotPassword/>,
+            <Loading />,
+            <SignIn />,
+            <ConfirmSignIn />,
+            <VerifyContact />,
+            <SignUp signUpConfig={signUpConfig} />,
+            <ConfirmSignUp />,
+            <ForgotPassword />,
             <RequireNewPassword />,
-            <Greetings/>
+            <Greetings />,
         ];
-        const children = (hideDefault? [] : default_children)
+        const children = (hideDefault ? [] : default_children)
             .concat(props_children)
             .map((child, index) => {
                 return React.cloneElement(child, {
@@ -179,14 +182,9 @@ export default class Authenticator extends React.Component {
                     authData: authData,
                     onStateChange: this.handleStateChange,
                     Auth: new AuthDecorator(this.handleStateChange),
-                    usernameAttributes
+                    usernameAttributes,
                 });
             });
-        return (
-            
-                <SafeAreaView style={theme.container}>
-                    {children}
-                </SafeAreaView>
-        );
+        return <SafeAreaView style={theme.container}>{children}</SafeAreaView>;
     }
 }

@@ -28,7 +28,6 @@ export default class StorageClass {
     private _config;
     private _pluggables: StorageProvider[];
 
-
     /**
      * @public
      */
@@ -61,9 +60,11 @@ export default class StorageClass {
         if (pluggable && pluggable.getCategory() === 'Storage') {
             this._pluggables.push(pluggable);
             let config = {};
-            
-            config = pluggable.configure(this._config[pluggable.getProviderName()]);
-            
+
+            config = pluggable.configure(
+                this._config[pluggable.getProviderName()]
+            );
+
             return config;
         }
     }
@@ -73,12 +74,13 @@ export default class StorageClass {
      * @param providerName - the name of the plugin
      */
     public getPluggable(providerName: string) {
-        const pluggable = this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
+        const pluggable = this._pluggables.find(
+            pluggable => pluggable.getProviderName() === providerName
+        );
         if (pluggable === undefined) {
             logger.debug('No plugin found with providerName', providerName);
             return null;
-        } else
-            return pluggable;
+        } else return pluggable;
     }
 
     /**
@@ -86,7 +88,9 @@ export default class StorageClass {
      * @param providerName - the name of the plugin
      */
     public removePluggable(providerName: string) {
-        this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
+        this._pluggables = this._pluggables.filter(
+            pluggable => pluggable.getProviderName() !== providerName
+        );
         return;
     }
 
@@ -113,11 +117,13 @@ export default class StorageClass {
             'SSECustomerAlgorithm',
             'SSECustomerKey',
             'SSECustomerKeyMD5',
-            'SSEKMSKeyId'
+            'SSEKMSKeyId',
         ];
 
-        const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
-        const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
+        const isInStorageArrayKeys = (k: string) =>
+            storageArrayKeys.some(x => x === k);
+        const checkConfigKeysFromArray = (k: string[]) =>
+            k.find(k => isInStorageArrayKeys(k));
 
         if (
             storageKeysFromConfig &&
@@ -135,13 +141,16 @@ export default class StorageClass {
         });
 
         // only update new values for each provider
-        Object.keys(amplifyConfig.Storage).forEach((providerName) => {
+        Object.keys(amplifyConfig.Storage).forEach(providerName => {
             if (typeof amplifyConfig.Storage[providerName] !== 'string') {
-                this._config[providerName] = { ...this._config[providerName], ...amplifyConfig.Storage[providerName] };
+                this._config[providerName] = {
+                    ...this._config[providerName],
+                    ...amplifyConfig.Storage[providerName],
+                };
             }
         });
 
-        this._pluggables.forEach((pluggable) => {
+        this._pluggables.forEach(pluggable => {
             pluggable.configure(this._config[pluggable.getProviderName()]);
         });
 
@@ -153,16 +162,17 @@ export default class StorageClass {
     }
 
     /**
-    * Get a presigned URL of the file or the object data when download:true
-    *
-    * @param {String} key - key of the object
-    * @param {Object} [config] - { level : private|protected|public, download: true|false }
-    * @return - A promise resolves to either a presigned url or the object
-    */
+     * Get a presigned URL of the file or the object data when download:true
+     *
+     * @param {String} key - key of the object
+     * @param {Object} [config] - { level : private|protected|public, download: true|false }
+     * @return - A promise resolves to either a presigned url or the object
+     */
     public async get(key: string, config?): Promise<String | Object> {
-
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        const prov = this._pluggables.find(
+            pluggable => pluggable.getProviderName() === provider
+        );
         if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
@@ -180,7 +190,9 @@ export default class StorageClass {
      */
     public async put(key: string, object, config?): Promise<Object> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        const prov = this._pluggables.find(
+            pluggable => pluggable.getProviderName() === provider
+        );
         if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
@@ -196,7 +208,9 @@ export default class StorageClass {
      */
     public async remove(key: string, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        const prov = this._pluggables.find(
+            pluggable => pluggable.getProviderName() === provider
+        );
         if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');
@@ -212,7 +226,9 @@ export default class StorageClass {
      */
     public async list(path, config?): Promise<any> {
         const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
+        const prov = this._pluggables.find(
+            pluggable => pluggable.getProviderName() === provider
+        );
         if (prov === undefined) {
             logger.debug('No plugin found with providerName', provider);
             Promise.reject('No plugin found in Storage for the provider');

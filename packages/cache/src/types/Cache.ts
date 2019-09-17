@@ -12,8 +12,8 @@
  */
 
 /**
-* Cache Interface
-*/
+ * Cache Interface
+ */
 export interface ICache {
     /** Put item into cache */
     setItem(key: string, value: any, options?: CacheItemOptions): void;
@@ -41,8 +41,8 @@ export interface ICache {
 }
 
 /**
-* Cache instance options
-*/
+ * Cache instance options
+ */
 export interface CacheConfig {
     /** Prepend to key to avoid conflicts */
     keyPrefix?: string;

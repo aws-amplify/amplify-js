@@ -15,14 +15,25 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
-import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
+import {
+    NavBar,
+    Nav,
+    NavRight,
+    NavItem,
+    NavButton,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import Constants from './common/constants';
 import SignOut from './SignOut';
-import { withGoogle, withAmazon, withFacebook, withOAuth, withAuth0 } from './Provider';
+import {
+    withGoogle,
+    withAmazon,
+    withFacebook,
+    withOAuth,
+    withAuth0,
+} from './Provider';
 import { UsernameAttributes } from './common/types';
-
 
 const logger = new Logger('Greetings');
 
@@ -34,7 +45,6 @@ export default class Greetings extends AuthPiece {
         this.inGreeting = this.inGreeting.bind(this);
         Hub.listen('auth', this.onHubCapsule);
         this._validAuthStates = ['signedIn'];
-
     }
 
     componentDidMount() {
@@ -46,18 +56,17 @@ export default class Greetings extends AuthPiece {
         this._isMounted = false;
     }
 
-    
-    findState(){
+    findState() {
         if (!this.props.authState && !this.props.authData) {
             Auth.currentAuthenticatedUser()
-            .then(user => {
-                this.setState({
-                    authState: 'signedIn',
-                    authData: user,
-                    stateFromStorage: true
+                .then(user => {
+                    this.setState({
+                        authState: 'signedIn',
+                        authData: user,
+                        stateFromStorage: true,
+                    });
                 })
-            })
-            .catch(err => logger.debug(err));
+                .catch(err => logger.debug(err));
         }
     }
 
@@ -67,26 +76,34 @@ export default class Greetings extends AuthPiece {
             if (channel === 'auth' && payload.event === 'signIn') {
                 this.setState({
                     authState: 'signedIn',
-                    authData: payload.data
-                })
-                if  (!this.props.authState) {
-                    this.setState({stateFromStorage: true})
+                    authData: payload.data,
+                });
+                if (!this.props.authState) {
+                    this.setState({ stateFromStorage: true });
                 }
-            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
+            } else if (
+                channel === 'auth' &&
+                payload.event === 'signOut' &&
+                !this.props.authState
+            ) {
                 this.setState({
-                    authState: 'signIn'
-                }); 
-            } 
+                    authState: 'signIn',
+                });
+            }
         }
     }
 
-    inGreeting(name) { 
+    inGreeting(name) {
         const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
-        const prefix = usernameAttributes === UsernameAttributes.USERNAME? `${I18n.get('Hello')} ` : '';
-        return `${prefix}${name}`; 
+        const prefix =
+            usernameAttributes === UsernameAttributes.USERNAME
+                ? `${I18n.get('Hello')} `
+                : '';
+        return `${prefix}${name}`;
     }
-    outGreeting() { return ''; }
-
+    outGreeting() {
+        return '';
+    }
 
     userGreetings(theme) {
         const user = this.props.authData || this.state.authData;
@@ -97,23 +114,29 @@ export default class Greetings extends AuthPiece {
         switch (usernameAttributes) {
             case UsernameAttributes.EMAIL:
                 // Email as Username
-                name = user.attributes? user.attributes.email : user.username;
+                name = user.attributes ? user.attributes.email : user.username;
                 break;
             case UsernameAttributes.PHONE_NUMBER:
                 // Phone number as Username
-                name = user.attributes? user.attributes.phone_number : user.username;
+                name = user.attributes
+                    ? user.attributes.phone_number
+                    : user.username;
                 break;
             default:
-                const nameFromAttr = user.attributes? 
-                    (user.attributes.name || 
-                    (user.attributes.given_name? 
-                        (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
+                const nameFromAttr = user.attributes
+                    ? user.attributes.name ||
+                      (user.attributes.given_name
+                          ? user.attributes.given_name +
+                            ' ' +
+                            user.attributes.family_name
+                          : undefined)
                     : undefined;
                 name = nameFromAttr || user.name || user.username;
                 break;
         }
 
-        const message = (typeof greeting === 'function')? greeting(name) : greeting;
+        const message =
+            typeof greeting === 'function' ? greeting(name) : greeting;
         const { federated } = this.props;
 
         return (
@@ -125,10 +148,15 @@ export default class Greetings extends AuthPiece {
     }
 
     renderSignOutButton() {
-        const { federated={} } = this.props;
-        const { google_client_id, facebook_app_id, amazon_client_id, auth0 } = federated;
+        const { federated = {} } = this.props;
+        const {
+            google_client_id,
+            facebook_app_id,
+            amazon_client_id,
+            auth0,
+        } = federated;
         const config = Auth.configure();
-        const { oauth={} } = config;
+        const { oauth = {} } = config;
         const googleClientId = google_client_id || config.googleClientId;
         const facebookAppId = facebook_app_id || config.facebookClientId;
         const amazonClientId = amazon_client_id || config.amazonClientId;
@@ -141,27 +169,31 @@ export default class Greetings extends AuthPiece {
 
         const stateAndProps = Object.assign({}, this.props, this.state);
 
-        return <SignOut 
-            {...stateAndProps} 
-            />;
+        return <SignOut {...stateAndProps} />;
     }
 
     noUserGreetings(theme) {
         const greeting = this.props.outGreeting || this.outGreeting;
-        const message = (typeof greeting === 'function')? greeting() : greeting;
-        return message? <NavItem theme={theme}>{message}</NavItem> : null;
+        const message = typeof greeting === 'function' ? greeting() : greeting;
+        return message ? <NavItem theme={theme}>{message}</NavItem> : null;
     }
 
     render() {
         const { hide } = this.props;
-        if (hide && hide.includes(Greetings)) { return null; }
+        if (hide && hide.includes(Greetings)) {
+            return null;
+        }
 
-        const authState  = this.props.authState || this.state.authState;
-        const signedIn = (authState === 'signedIn');
+        const authState = this.props.authState || this.state.authState;
+        const signedIn = authState === 'signedIn';
 
         const theme = this.props.theme || AmplifyTheme;
-        const greeting = signedIn? this.userGreetings(theme) : this.noUserGreetings(theme);
-        if (!greeting) { return null; }
+        const greeting = signedIn
+            ? this.userGreetings(theme)
+            : this.noUserGreetings(theme);
+        if (!greeting) {
+            return null;
+        }
 
         return (
             <NavBar theme={theme} data-test={auth.greetings.navBar}>

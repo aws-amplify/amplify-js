@@ -32,17 +32,18 @@ export default class TOTPSetup extends AuthPiece {
 
     checkContact(user) {
         if (!Auth || typeof Auth.verifiedContact !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    const newUser = Object.assign(user, data);
-                    this.changeState('verifyContact', newUser);
-                }
-            });
+        Auth.verifiedContact(user).then(data => {
+            if (!JS.isEmpty(data.verified)) {
+                this.changeState('signedIn', user);
+            } else {
+                const newUser = Object.assign(user, data);
+                this.changeState('verifyContact', newUser);
+            }
+        });
     }
 
     onTOTPEvent(event, data, user) {
@@ -57,10 +58,16 @@ export default class TOTPSetup extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
-        if (hide && hide.includes(TOTPSetup)) { return null; }
+        if (hide && hide.includes(TOTPSetup)) {
+            return null;
+        }
 
         return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} data-test={auth.TOTPSetup.component} />
+            <TOTPSetupComp
+                {...this.props}
+                onTOTPEvent={this.onTOTPEvent}
+                data-test={auth.TOTPSetup.component}
+            />
         );
     }
 }

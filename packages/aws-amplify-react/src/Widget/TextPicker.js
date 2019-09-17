@@ -18,11 +18,10 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../AmplifyTheme';
 import Picker from './Picker';
 
-const Container = {
-};
+const Container = {};
 
 const PickerPreview = {
-    maxWidth: '100%'
+    maxWidth: '100%',
 };
 
 const logger = new Logger('TextPicker');
@@ -34,7 +33,7 @@ export default class TextPicker extends Component {
         this.handlePick = this.handlePick.bind(this);
 
         this.state = {
-            previewText: props.previewText
+            previewText: props.previewText,
         };
     }
 
@@ -43,14 +42,18 @@ export default class TextPicker extends Component {
         const { file, name, size, type } = data;
         const { preview, onPick, onLoad } = this.props;
 
-        if (onPick) { onPick(data); }
+        if (onPick) {
+            onPick(data);
+        }
 
         if (preview) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text  = e.target.result;
+                const text = e.target.result;
                 that.setState({ previewText: text });
-                if (onLoad) { onLoad(text); }
+                if (onLoad) {
+                    onLoad(text);
+                }
             };
             reader.readAsText(file);
         }
@@ -69,16 +72,16 @@ export default class TextPicker extends Component {
             PickerPreview,
             theme.pickerPreview,
             theme.halfHeight,
-            (preview && preview !== 'hidden')? {} : AmplifyTheme.hidden
+            preview && preview !== 'hidden' ? {} : AmplifyTheme.hidden
         );
 
         return (
             <div style={containerStyle}>
-                { previewText? <div style={previewStyle}>
-                                <pre style={theme.pre}>{previewText}</pre>
-                              </div>
-                             : null
-                }
+                {previewText ? (
+                    <div style={previewStyle}>
+                        <pre style={theme.pre}>{previewText}</pre>
+                    </div>
+                ) : null}
                 <Picker
                     title={title}
                     accept="text/*"

@@ -30,8 +30,8 @@ export default class SignOut extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
-        this.onHubCapsule = this.onHubCapsule.bind(this)
-        Hub.listen('auth', this.onHubCapsule)
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        Hub.listen('auth', this.onHubCapsule);
         this.state = {};
     }
 
@@ -44,21 +44,21 @@ export default class SignOut extends AuthPiece {
         this._isMounted = false;
     }
 
-    findState(){
+    findState() {
         if (!this.props.authState && !this.props.authData) {
             Auth.currentAuthenticatedUser()
-            .then(user => {
-                this.setState({
-                    authState: 'signedIn',
-                    authData: user,
-                    stateFromStorage: true
+                .then(user => {
+                    this.setState({
+                        authState: 'signedIn',
+                        authData: user,
+                        stateFromStorage: true,
+                    });
                 })
-            })
-            .catch(err => logger.error(err));
+                .catch(err => logger.error(err));
         } else if (this.props.stateFromStorage) {
             this.setState({
-                stateFromStorage: true
-            })
+                stateFromStorage: true,
+            });
         }
     }
 
@@ -68,16 +68,24 @@ export default class SignOut extends AuthPiece {
             if (channel === 'auth' && payload.event === 'signIn') {
                 this.setState({
                     authState: 'signedIn',
-                    authData: payload.data
-                })
-            } else if (channel === 'auth' && payload.event === 'signOut' && (!this.props.authState)) {
+                    authData: payload.data,
+                });
+            } else if (
+                channel === 'auth' &&
+                payload.event === 'signOut' &&
+                !this.props.authState
+            ) {
                 this.setState({
-                    authState: 'signIn'
-                })
+                    authState: 'signIn',
+                });
             }
-    
-            if (channel === 'auth' && payload.event === 'signIn' && (!this.props.authState)) {
-                this.setState({stateFromStorage: true})
+
+            if (
+                channel === 'auth' &&
+                payload.event === 'signIn' &&
+                !this.props.authState
+            ) {
+                this.setState({ stateFromStorage: true });
             }
         }
     }
@@ -85,13 +93,22 @@ export default class SignOut extends AuthPiece {
     signOut() {
         let payload = {};
         try {
-            payload = JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY)) || {};
+            payload =
+                JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY)) ||
+                {};
             localStorage.removeItem(Constants.AUTH_SOURCE_KEY);
         } catch (e) {
-            logger.debug(`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
+            logger.debug(
+                `Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`
+            );
         }
         logger.debug('sign out from the source', payload);
-        const { googleSignOut, facebookSignOut, amazonSignOut, auth0SignOut } = this.props;
+        const {
+            googleSignOut,
+            facebookSignOut,
+            amazonSignOut,
+            auth0SignOut,
+        } = this.props;
         switch (payload.provider) {
             case Constants.GOOGLE:
                 if (googleSignOut) googleSignOut();
@@ -114,7 +131,9 @@ export default class SignOut extends AuthPiece {
         }
 
         if (!Auth || typeof Auth.signOut !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            throw new Error(
+                'No Auth module found, please ensure @aws-amplify/auth is imported'
+            );
         }
         Auth.signOut()
             .then(() => {
@@ -122,18 +141,25 @@ export default class SignOut extends AuthPiece {
                     this.changeState('signedOut');
                 }
             })
-            .catch(err => { logger.debug(err); this.error(err); });
+            .catch(err => {
+                logger.debug(err);
+                this.error(err);
+            });
     }
 
     render() {
         const { hide } = this.props;
-        if (hide && hide.includes(SignOut)) { return null; }
+        if (hide && hide.includes(SignOut)) {
+            return null;
+        }
 
         const authState = this.props.authState || this.state.authState;
-        const signedIn = (authState === 'signedIn');
+        const signedIn = authState === 'signedIn';
 
         const theme = this.props.theme || AmplifyTheme;
-        if (!signedIn) { return null; }
+        if (!signedIn) {
+            return null;
+        }
 
         return (
             <NavButton

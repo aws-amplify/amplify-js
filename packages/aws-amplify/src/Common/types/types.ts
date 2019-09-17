@@ -10,9 +10,9 @@ export interface AmplifyConfig {
 }
 
 export interface ICredentials {
-    accessKeyId: string,
-    sessionToken: string,
-    secretAccessKey: string,
-    identityId: string,
-    authenticated: boolean
+    accessKeyId: string;
+    sessionToken: string;
+    secretAccessKey: string;
+    identityId: string;
+    authenticated: boolean;
 }

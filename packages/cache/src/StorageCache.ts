@@ -11,12 +11,7 @@
  * and limitations under the License.
  */
 
-import {
-    getCurrTime,
-    getByteLength,
-    defaultConfig,
-    isInteger
-} from './Utils';
+import { getCurrTime, getByteLength, defaultConfig, isInteger } from './Utils';
 
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
@@ -48,22 +43,30 @@ export default class StorageCache {
     private checkConfig(): void {
         // check configuration
         if (!isInteger(this.config.capacityInBytes)) {
-            logger.error('Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.');
+            logger.error(
+                'Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.'
+            );
             this.config.capacityInBytes = defaultConfig.capacityInBytes;
         }
 
         if (!isInteger(this.config.itemMaxSize)) {
-            logger.error('Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.');
+            logger.error(
+                'Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.'
+            );
             this.config.itemMaxSize = defaultConfig.itemMaxSize;
         }
 
         if (!isInteger(this.config.defaultTTL)) {
-            logger.error('Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.');
+            logger.error(
+                'Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.'
+            );
             this.config.defaultTTL = defaultConfig.defaultTTL;
         }
 
         if (!isInteger(this.config.defaultPriority)) {
-            logger.error('Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.');
+            logger.error(
+                'Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.'
+            );
             this.config.defaultPriority = defaultConfig.defaultPriority;
         }
 
@@ -74,33 +77,47 @@ export default class StorageCache {
             this.config.itemMaxSize = defaultConfig.itemMaxSize;
         }
 
-        if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
-            logger.error('Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.');
+        if (
+            this.config.defaultPriority > 5 ||
+            this.config.defaultPriority < 1
+        ) {
+            logger.error(
+                'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
+            );
             this.config.defaultPriority = defaultConfig.defaultPriority;
         }
 
-        if (Number(this.config.warningThreshold) > 1 || Number(this.config.warningThreshold) < 0) {
-            logger.error('Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.');
+        if (
+            Number(this.config.warningThreshold) > 1 ||
+            Number(this.config.warningThreshold) < 0
+        ) {
+            logger.error(
+                'Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.'
+            );
             this.config.warningThreshold = defaultConfig.warningThreshold;
         }
         // set 5MB limit
         const cacheLimit: number = 5 * 1024 * 1024;
         if (this.config.capacityInBytes > cacheLimit) {
-            logger.error('Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.');
+            logger.error(
+                'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.'
+            );
             this.config.capacityInBytes = defaultConfig.capacityInBytes;
         }
     }
 
     /**
-    * produce a JSON object with meta-data and data value
-    * @param value - the value of the item
-    * @param options - optional, the specified meta-data
-    *
-    * @return - the item which has the meta-data and the value
-    */
+     * produce a JSON object with meta-data and data value
+     * @param value - the value of the item
+     * @param options - optional, the specified meta-data
+     *
+     * @return - the item which has the meta-data and the value
+     */
     protected fillCacheItem(
-        key: string, value: object | number | string | boolean,
-        options: CacheItemOptions): CacheItem {
+        key: string,
+        value: object | number | string | boolean,
+        options: CacheItemOptions
+    ): CacheItem {
         const ret: CacheItem = {
             key,
             data: value,
@@ -109,7 +126,7 @@ export default class StorageCache {
             priority: options.priority,
             expires: options.expires,
             type: typeof value,
-            byteSize: 0
+            byteSize: 0,
         };
 
         ret.byteSize = getByteLength(JSON.stringify(ret));

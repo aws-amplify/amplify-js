@@ -26,27 +26,27 @@ export const Container = {
     color: '#212529',
     textAlign: 'left',
     paddingLeft: '15px',
-    paddingRight: '15px'
+    paddingRight: '15px',
 };
 
 export const NavBar = {
     position: 'relative',
     border: '1px solid transparent',
-    borderColor: '#e7e7e7'
+    borderColor: '#e7e7e7',
 };
 
 export const NavRight = {
-    textAlign: 'right'
+    textAlign: 'right',
 };
 
 export const Nav = {
-    margin: '7.5px'
+    margin: '7.5px',
 };
 
 export const NavItem = {
     display: 'inline-block',
     padding: '10px 5px',
-    lineHeight: '20px'
+    lineHeight: '20px',
 };
 
 export const NavButton = {
@@ -68,11 +68,11 @@ export const NavButton = {
     borderRadius: '4px',
     color: '#333',
     backgroundColor: '#fff',
-    borderColor: '#ccc'
+    borderColor: '#ccc',
 };
 
 export const FormContainer = {
-    textAlign: 'center'
+    textAlign: 'center',
 };
 
 export const FormSection = {
@@ -82,7 +82,7 @@ export const FormSection = {
     borderRadius: '4px',
     textAlign: 'left',
     width: '400px',
-    display: 'inline-block'
+    display: 'inline-block',
 };
 
 export const ErrorSection = {
@@ -91,7 +91,7 @@ export const ErrorSection = {
     backgroundColor: '#f0ad4e',
     border: '1px solid #eea236',
     borderRadius: '4px',
-    textAlign: 'left'
+    textAlign: 'left',
 };
 
 export const SectionHeader = {
@@ -102,7 +102,7 @@ export const SectionHeader = {
     borderBottom: '1px solid transparent',
     borderTopLeftRadius: '3px',
     borderTopRightRadius: '3px',
-    textAlign: 'center'
+    textAlign: 'center',
 };
 
 export const SectionFooter = {
@@ -111,19 +111,19 @@ export const SectionFooter = {
     padding: '10px 15px',
     borderTop: '1px solid #ddd',
     borderTopLeftRadius: '3px',
-    borderTopRightRadius: '3px'
+    borderTopRightRadius: '3px',
 };
 
 export const SectionBody = {
-    padding: '15px'
+    padding: '15px',
 };
 
 export const FormRow = {
-    marginBottom: '15px'
+    marginBottom: '15px',
 };
 
 export const ActionRow = {
-    marginBottom: '15px'
+    marginBottom: '15px',
 };
 
 export const Input = {
@@ -140,7 +140,7 @@ export const Input = {
     borderRadius: '4px',
     boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
     boxSizing: 'border-box',
-    transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s'
+    transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s',
 };
 
 export const Button = {
@@ -161,7 +161,7 @@ export const Button = {
     borderRadius: '4px',
     color: '#333',
     backgroundColor: '#fff',
-    borderColor: '#ccc'
+    borderColor: '#ccc',
 };
 
 export const SignInButton = {
@@ -184,17 +184,17 @@ export const SignInButton = {
         color: '#fff',
         backgroundColor: '#3b5998',
         borderColor: 'rgba(0,0,0,0.2)',
-    }
+    },
 };
 
 export const Space = {
     display: 'inline-block',
-    width: '20px'
+    width: '20px',
 };
 
 export const A = {
     color: '#007bff',
-    cursor: 'pointer'
+    cursor: 'pointer',
 };
 
 export const Pre = {
@@ -214,71 +214,71 @@ export const Pre = {
     wordWrap: 'break-word',
     backgroundColor: '#f5f5f5',
     border: '1px solid #ccc',
-    borderRadius: '4px'
+    borderRadius: '4px',
 };
 
 export const Col1 = {
     display: 'inline-block',
-    width: '8.33333333%'
+    width: '8.33333333%',
 };
 
 export const Col2 = {
     display: 'inline-block',
-    width: '16.66666667%'
+    width: '16.66666667%',
 };
 
 export const Col3 = {
     display: 'inline-block',
-    width: '25%'
+    width: '25%',
 };
 
 export const Col4 = {
     display: 'inline-block',
-    width: '33.33333333%'
+    width: '33.33333333%',
 };
 
 export const Col5 = {
     display: 'inline-block',
-    width: '41.66666667%'
+    width: '41.66666667%',
 };
 
 export const Col6 = {
     display: 'inline-block',
-    width: '50%'
+    width: '50%',
 };
 
 export const Col7 = {
     display: 'inline-block',
-    width: '58.33333333%'
+    width: '58.33333333%',
 };
 
 export const Col8 = {
     display: 'inline-block',
-    width: '66.66666667%'
+    width: '66.66666667%',
 };
 
 export const Col9 = {
     display: 'inline-block',
-    width: '75%'
+    width: '75%',
 };
 
 export const Col10 = {
     display: 'inline-block',
-    width: '83.33333333%'
+    width: '83.33333333%',
 };
 
 export const Col11 = {
     display: 'inline-block',
-    width: '91.66666667%'
+    width: '91.66666667%',
 };
 
 export const Col12 = {
     display: 'inline-block',
-    width: '100%'
+    width: '100%',
 };
 
 export const Hidden = {
-    display: 'none'
+    display: 'none',
 };
 
 const Bootstrap = {

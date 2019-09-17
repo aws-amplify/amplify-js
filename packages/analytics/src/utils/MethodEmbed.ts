@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-const lists : MethodEmbed[] = [];
+const lists: MethodEmbed[] = [];
 
 export default class MethodEmbed {
     public context;
@@ -46,8 +46,9 @@ export default class MethodEmbed {
 }
 
 function getInstance(context, methodName): MethodEmbed {
-    let instance = lists
-      .filter((h) => h.context === context && h.methodName === methodName)[0];
+    let instance = lists.filter(
+        h => h.context === context && h.methodName === methodName
+    )[0];
 
     if (!instance) {
         instance = new MethodEmbed(context, methodName);

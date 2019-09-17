@@ -22,7 +22,9 @@ describe('I18n test', () => {
             const i18n = new I18n(null);
 
             i18n._lang = 'en';
-            const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockReturnValueOnce('val');
+            const spyon = jest
+                .spyOn(I18n.prototype, 'getByLanguage')
+                .mockReturnValueOnce('val');
 
             expect(i18n.get('key')).toBe('val');
 
@@ -33,10 +35,12 @@ describe('I18n test', () => {
             const i18n = new I18n(null);
 
             i18n._lang = 'en-val';
-            const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockImplementationOnce((key, lang) => {
-                if (lang ==='en-val') return null;
-                else if (lang === 'en') return 'val';
-            });
+            const spyon = jest
+                .spyOn(I18n.prototype, 'getByLanguage')
+                .mockImplementationOnce((key, lang) => {
+                    if (lang === 'en-val') return null;
+                    else if (lang === 'en') return 'val';
+                });
 
             expect(i18n.get('key')).toBe('key');
 
@@ -47,7 +51,9 @@ describe('I18n test', () => {
             const i18n = new I18n(null);
 
             i18n._lang = 'other';
-            const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockReturnValueOnce(null);
+            const spyon = jest
+                .spyOn(I18n.prototype, 'getByLanguage')
+                .mockReturnValueOnce(null);
 
             expect(i18n.get('key')).toBe('key');
 
@@ -64,9 +70,11 @@ describe('I18n test', () => {
 
         test('has dict', () => {
             const i18n = new I18n(null);
-            i18n._dict = {en: {
-                key: 'val'
-            }};
+            i18n._dict = {
+                en: {
+                    key: 'val',
+                },
+            };
 
             expect(i18n.getByLanguage('key', 'en', 'defval')).toBe('val');
         });
@@ -84,13 +92,13 @@ describe('I18n test', () => {
             const i18n = new I18n(null);
 
             i18n.putVocabulariesForLanguage('cn', {
-                'hello': '你好',
-                'exciting': '+1s'
+                hello: '你好',
+                exciting: '+1s',
             });
 
             i18n._dict = {
-                cn: {}
-            }
+                cn: {},
+            };
         });
     });
 });

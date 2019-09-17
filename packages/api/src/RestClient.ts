@@ -11,7 +11,12 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Signer, Platform, Credentials } from '@aws-amplify/core';
+import {
+    ConsoleLogger as Logger,
+    Signer,
+    Platform,
+    Credentials,
+} from '@aws-amplify/core';
 
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
@@ -38,8 +43,8 @@ export class RestClient {
     private _service: string = 'execute-api'; // this can be updated by endpoint function
     private _custom_header = undefined; // this can be updated by endpoint function
     /**
-    * @param {RestClientOptions} [options] - Instance options
-    */
+     * @param {RestClientOptions} [options] - Instance options
+     */
     constructor(options: apiOptions) {
         const { endpoints } = options;
         this._options = options;
@@ -55,12 +60,12 @@ export class RestClient {
     }
 */
     /**
-    * Basic HTTP request. Customizable
-    * @param {string} url - Full request URL
-    * @param {string} method - Request HTTP method
-    * @param {json} [init] - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * Basic HTTP request. Customizable
+     * @param {string} url - Full request URL
+     * @param {string} method - Request HTTP method
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     async ajax(url: string, method: string, init) {
         logger.debug(method + ' ' + url);
 
@@ -74,7 +79,7 @@ export class RestClient {
             headers: {},
             data: null,
             responseType: 'json',
-            timeout: 0
+            timeout: 0,
         };
 
         let libraryHeaders = {};
@@ -82,7 +87,7 @@ export class RestClient {
         if (Platform.isReactNative) {
             const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
             libraryHeaders = {
-                'User-Agent': userAgent
+                'User-Agent': userAgent,
             };
         }
 
@@ -105,9 +110,15 @@ export class RestClient {
         params['signerServiceInfo'] = initParams.signerServiceInfo;
 
         // custom_header callback
-        const custom_header = this._custom_header ? await this._custom_header() : undefined;
-        
-        params.headers = { ...libraryHeaders, ...(custom_header),...initParams.headers };
+        const custom_header = this._custom_header
+            ? await this._custom_header()
+            : undefined;
+
+        params.headers = {
+            ...libraryHeaders,
+            ...custom_header,
+            ...initParams.headers,
+        };
 
         // Intentionally discarding search
         const { search, ...parsedUrl } = urlLib.parse(url, true, true);
@@ -115,8 +126,8 @@ export class RestClient {
             ...parsedUrl,
             query: {
                 ...parsedUrl.query,
-                ...(initParams.queryStringParameters || {})
-            }
+                ...(initParams.queryStringParameters || {}),
+            },
         });
 
         // Do not sign the request if client has added 'Authorization' header,
@@ -130,94 +141,95 @@ export class RestClient {
                 // tslint:disable-next-line:align
             }, {});
             return this._request(params, isAllResponse);
-
         }
-        
+
         // Signing the request in case there credentials are available
-        return Credentials.get()
-            .then(
-                credentials => this._signed({ ...params }, credentials, isAllResponse),
-                err => {
-                    logger.debug('No credentials available, the request will be unsigned');
-                    return this._request(params, isAllResponse);
-                }
+        return Credentials.get().then(
+            credentials =>
+                this._signed({ ...params }, credentials, isAllResponse),
+            err => {
+                logger.debug(
+                    'No credentials available, the request will be unsigned'
                 );
+                return this._request(params, isAllResponse);
+            }
+        );
     }
 
     /**
-    * GET HTTP request
-    * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * GET HTTP request
+     * @param {string} url - Full request URL
+     * @param {JSON} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     get(url: string, init) {
         return this.ajax(url, 'GET', init);
     }
 
     /**
-    * PUT HTTP request
-    * @param {string} url - Full request URL
-    * @param {json} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * PUT HTTP request
+     * @param {string} url - Full request URL
+     * @param {json} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     put(url: string, init) {
         return this.ajax(url, 'PUT', init);
     }
 
     /**
-    * PATCH HTTP request
-    * @param {string} url - Full request URL
-    * @param {json} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * PATCH HTTP request
+     * @param {string} url - Full request URL
+     * @param {json} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     patch(url: string, init) {
         return this.ajax(url, 'PATCH', init);
     }
 
     /**
-    * POST HTTP request
-    * @param {string} url - Full request URL
-    * @param {json} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * POST HTTP request
+     * @param {string} url - Full request URL
+     * @param {json} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     post(url: string, init) {
         return this.ajax(url, 'POST', init);
     }
 
     /**
-    * DELETE HTTP request
-    * @param {string} url - Full request URL
-    * @param {json} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * DELETE HTTP request
+     * @param {string} url - Full request URL
+     * @param {json} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     del(url: string, init) {
         return this.ajax(url, 'DELETE', init);
     }
 
     /**
-    * HEAD HTTP request
-    * @param {string} url - Full request URL
-    * @param {json} init - Request extra params
-    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-    */
+     * HEAD HTTP request
+     * @param {string} url - Full request URL
+     * @param {json} init - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
     head(url: string, init) {
         return this.ajax(url, 'HEAD', init);
     }
 
     /**
-    * Getting endpoint for API
-    * @param {string} apiName - The name of the api
-    * @return {string} - The endpoint of the api
-    */
+     * Getting endpoint for API
+     * @param {string} apiName - The name of the api
+     * @return {string} - The endpoint of the api
+     */
     endpoint(apiName: string) {
         const cloud_logic_array = this._options.endpoints;
         let response = '';
-        
-        if(!Array.isArray(cloud_logic_array)) {
+
+        if (!Array.isArray(cloud_logic_array)) {
             return response;
         }
 
-        cloud_logic_array.forEach((v) => {
+        cloud_logic_array.forEach(v => {
             if (v.name === apiName) {
                 response = v.endpoint;
                 if (typeof v.region === 'string') {
@@ -243,8 +255,10 @@ export class RestClient {
     /** private methods **/
 
     private _signed(params, credentials, isAllResponse) {
-
-        const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
+        const {
+            signerServiceInfo: signerServiceInfoParams,
+            ...otherParams
+        } = params;
 
         const endpoint_region: string = this._region || this._options.region;
         const endpoint_service: string = this._service || this._options.service;
@@ -260,9 +274,16 @@ export class RestClient {
             service: endpoint_service,
         };
 
-        const signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
+        const signerServiceInfo = Object.assign(
+            endpointInfo,
+            signerServiceInfoParams
+        );
 
-        const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
+        const signed_params = Signer.sign(
+            otherParams,
+            creds,
+            signerServiceInfo
+        );
 
         if (signed_params.data) {
             signed_params.body = signed_params.data;
@@ -272,8 +293,8 @@ export class RestClient {
 
         delete signed_params.headers['host'];
         return axios(signed_params)
-            .then(response => isAllResponse ? response : response.data)
-            .catch((error) => {
+            .then(response => (isAllResponse ? response : response.data))
+            .catch(error => {
                 logger.debug(error);
                 throw error;
             });
@@ -281,8 +302,8 @@ export class RestClient {
 
     private _request(params, isAllResponse = false) {
         return axios(params)
-            .then(response => isAllResponse ? response : response.data)
-            .catch((error) => {
+            .then(response => (isAllResponse ? response : response.data))
+            .catch(error => {
                 logger.debug(error);
                 throw error;
             });
@@ -293,7 +314,7 @@ export class RestClient {
 
         return {
             host: parts[2],
-            path: '/' + parts.slice(3).join('/')
+            path: '/' + parts.slice(3).join('/'),
         };
     }
 }

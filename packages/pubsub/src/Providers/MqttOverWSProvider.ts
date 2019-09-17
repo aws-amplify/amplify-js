@@ -35,8 +35,8 @@ export function mqttTopicMatch(filter: string, topic: string) {
 }
 
 export interface MqttProvidertOptions extends ProvidertOptions {
-    clientId?: string,
-    url?: string,
+    clientId?: string;
+    url?: string;
 }
 
 class ClientsQueue {
@@ -55,7 +55,9 @@ class ClientsQueue {
         return promise;
     }
 
-    get allClients() { return Array.from(this.promises.keys()); }
+    get allClients() {
+        return Array.from(this.promises.keys());
+    }
 
     remove(clientId) {
         this.promises.delete(clientId);
@@ -65,30 +67,43 @@ class ClientsQueue {
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
 export class MqttOverWSProvider extends AbstractPubSubProvider {
-
     private _clientsQueue = new ClientsQueue();
 
     constructor(options: MqttProvidertOptions = {}) {
-        super({ ...options, clientId: options.clientId || uuid(), });
+        super({ ...options, clientId: options.clientId || uuid() });
     }
 
-    protected get clientId() { return this.options.clientId; }
+    protected get clientId() {
+        return this.options.clientId;
+    }
 
-    protected get endpoint() { return this.options.aws_pubsub_endpoint; }
+    protected get endpoint() {
+        return this.options.aws_pubsub_endpoint;
+    }
 
-    protected get clientsQueue() { return this._clientsQueue; }
+    protected get clientsQueue() {
+        return this._clientsQueue;
+    }
 
     protected get isSSLEnabled() {
-        return !this.options.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+        return !this.options
+            .aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
     }
-    
-    protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
 
-    getProviderName() { return 'MqttOverWSProvider'; }
+    protected getTopicForValue(value) {
+        return typeof value === 'object' && value[topicSymbol];
+    }
+
+    getProviderName() {
+        return 'MqttOverWSProvider';
+    }
 
     public onDisconnect({ clientId, errorCode, ...args }) {
         if (errorCode !== 0) {
-            logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+            logger.warn(
+                clientId,
+                JSON.stringify({ errorCode, ...args }, null, 2)
+            );
             this._topicObservers.forEach((observerForTopic, _observerTopic) => {
                 observerForTopic.forEach(observer => {
                     observer.error('Disconnected, error code: ' + errorCode);
@@ -99,18 +114,24 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         this._topicObservers = new Map();
     }
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
+    public async newClient({
+        url,
+        clientId,
+    }: MqttProvidertOptions): Promise<any> {
         logger.debug('Creating new MQTT client', clientId);
 
         const client = new Paho.Client(url, clientId);
         // client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
-        client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
+        client.onMessageArrived = ({
+            destinationName: topic,
+            payloadString: msg,
+        }) => {
             this._onMessage(topic, msg);
         };
         client.onConnectionLost = ({ errorCode, ...args }) => {
             this.onDisconnect({ clientId, errorCode, ...args });
         };
-        
+
         await new Promise((resolve, reject) => {
             client.connect({
                 useSSL: this.isSSLEnabled,
@@ -123,8 +144,13 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         return client;
     }
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<any> {
-        return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
+    protected async connect(
+        clientId: string,
+        options: MqttProvidertOptions = {}
+    ): Promise<any> {
+        return await this.clientsQueue.get(clientId, clientId =>
+            this.newClient({ ...options, clientId })
+        );
     }
 
     protected async disconnect(clientId: string): Promise<void> {
@@ -148,7 +174,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         targetTopics.forEach(topic => client.send(topic, message));
     }
 
-    protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> = new Map();
+    protected _topicObservers: Map<
+        string,
+        Set<SubscriptionObserver<any>>
+    > = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
@@ -164,20 +193,24 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                 parsedMessage[topicSymbol] = topic;
             }
 
-            matchedTopicObservers.forEach(observersForTopic =>{
-                observersForTopic.forEach(observer => observer.next(parsedMessage));
+            matchedTopicObservers.forEach(observersForTopic => {
+                observersForTopic.forEach(observer =>
+                    observer.next(parsedMessage)
+                );
             });
         } catch (error) {
             logger.warn('Error handling message', error, msg);
         }
     }
 
-    subscribe(topics: string[] | string, options: MqttProvidertOptions = {}): Observable<any> {
+    subscribe(
+        topics: string[] | string,
+        options: MqttProvidertOptions = {}
+    ): Observable<any> {
         const targetTopics = ([] as string[]).concat(topics);
         logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
         return new Observable(observer => {
-
             targetTopics.forEach(topic => {
                 let observersForTopic = this._topicObservers.get(topic);
 
@@ -194,20 +227,23 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             const { clientId = this.clientId } = options;
 
             (async () => {
-                const {
-                    url = await this.endpoint,
-                } = options;
+                const { url = await this.endpoint } = options;
 
                 try {
                     client = await this.connect(clientId, { url });
-                    targetTopics.forEach(topic => { client.subscribe(topic); });
+                    targetTopics.forEach(topic => {
+                        client.subscribe(topic);
+                    });
                 } catch (e) {
                     observer.error(e);
                 }
             })();
 
             return () => {
-                logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
+                logger.debug(
+                    'Unsubscribing from topic(s)',
+                    targetTopics.join(',')
+                );
 
                 if (client) {
                     targetTopics.forEach(topic => {
@@ -215,10 +251,13 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                             client.unsubscribe(topic);
                         }
 
-                        const observersForTopic = this._topicObservers.get(topic) ||
+                        const observersForTopic =
+                            this._topicObservers.get(topic) ||
                             (new Set() as Set<SubscriptionObserver<any>>);
 
-                        observersForTopic.forEach(observer => observer.complete());
+                        observersForTopic.forEach(observer =>
+                            observer.complete()
+                        );
 
                         observersForTopic.clear();
                     });

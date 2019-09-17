@@ -18,7 +18,7 @@ import Amplify, {
     ConsoleLogger as Logger,
     Hub,
     Linking,
-    Platform
+    Platform,
 } from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
@@ -41,11 +41,11 @@ export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
 
-const listener = (capsule) => {
+const listener = capsule => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
-    switch(channel) {
+    switch (channel) {
         case 'auth':
             authEvent(payload);
             break;
@@ -60,41 +60,51 @@ const listener = (capsule) => {
     }
 };
 
-const storageEvent = (payload) => {
-    const { data: { attrs, metrics }} = payload;
+const storageEvent = payload => {
+    const {
+        data: { attrs, metrics },
+    } = payload;
     if (!attrs) return;
 
     if (analyticsConfigured) {
         Analytics.record({
-            name: 'Storage', 
-            attributes: attrs, 
-            metrics
+            name: 'Storage',
+            attributes: attrs,
+            metrics,
         }).catch(e => {
             logger.debug('Failed to send the storage event automatically', e);
         });
     }
 };
 
-const authEvent = (payload) => {
+const authEvent = payload => {
     const { event } = payload;
-    if (!event) { return; }
+    if (!event) {
+        return;
+    }
 
-    switch(event) {
+    switch (event) {
         case 'signIn':
             if (authConfigured && analyticsConfigured) {
                 Analytics.record({
-                    name: '_userauth.sign_in'
+                    name: '_userauth.sign_in',
                 }).catch(e => {
-                    logger.debug('Failed to send the sign in event automatically', e);
+                    logger.debug(
+                        'Failed to send the sign in event automatically',
+                        e
+                    );
                 });
             }
             break;
         case 'signUp':
             if (authConfigured && analyticsConfigured) {
                 Analytics.record({
-                    name: '_userauth.sign_up'
+                    name: '_userauth.sign_up',
                 }).catch(e => {
-                    logger.debug('Failed to send the sign up event automatically', e);
+                    logger.debug(
+                        'Failed to send the sign up event automatically',
+                        e
+                    );
                 });
             }
             break;
@@ -103,9 +113,12 @@ const authEvent = (payload) => {
         case 'signIn_failure':
             if (authConfigured && analyticsConfigured) {
                 Analytics.record({
-                    name: '_userauth.auth_fail'
+                    name: '_userauth.auth_fail',
                 }).catch(e => {
-                    logger.debug('Failed to send the sign in failure event automatically', e);
+                    logger.debug(
+                        'Failed to send the sign in failure event automatically',
+                        e
+                    );
                 });
             }
             break;
@@ -118,18 +131,18 @@ const authEvent = (payload) => {
     }
 };
 
-const analyticsEvent = (payload) => {
+const analyticsEvent = payload => {
     const { event } = payload;
     if (!event) return;
 
-     switch(event) {
-         case 'pinpointProvider_configured':
+    switch (event) {
+        case 'pinpointProvider_configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured) {
                 sendEvents();
             }
             break;
-     }
+    }
 };
 
 const sendEvents = () => {
@@ -141,7 +154,7 @@ const sendEvents = () => {
         endpointUpdated = true;
     }
     Analytics.autoTrack('session', {
-        enable: config['autoSessionRecord']
+        enable: config['autoSessionRecord'],
     });
 };
 

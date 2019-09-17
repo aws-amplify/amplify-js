@@ -26,7 +26,7 @@ const PickerInput = {
     left: 0,
     top: 0,
     opacity: 0,
-    cursor: 'pointer'
+    cursor: 'pointer',
 };
 
 const logger = new Logger('Picker');
@@ -36,7 +36,9 @@ export default class Picker extends Component {
         const that = this;
 
         const file = e.target.files[0];
-        if (!file) { return; }
+        if (!file) {
+            return;
+        }
 
         const { name, size, type } = file;
         logger.debug(file);
@@ -47,7 +49,7 @@ export default class Picker extends Component {
                 file,
                 name,
                 size,
-                type
+                type,
             });
         }
     }
@@ -69,7 +71,7 @@ export default class Picker extends Component {
                     type="file"
                     accept={accept}
                     style={inputStyle}
-                    onChange={(e) => this.handleInput(e)}
+                    onChange={e => this.handleInput(e)}
                 />
             </div>
         );

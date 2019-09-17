@@ -16,20 +16,20 @@ import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import countryDialCodes from './common/country-dial-codes.js';
-import { 
+import {
     FormField,
     Input,
     InputLabel,
-    SelectInput
- } from '../Amplify-UI/Amplify-UI-Components-React';
+    SelectInput,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 import { UsernameAttributes } from './common/types';
 import { PhoneField } from './PhoneField';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 const labelMap = {
-  [UsernameAttributes.EMAIL]: 'Email',
-  [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
-  [UsernameAttributes.USERNAME]: 'Username'
+    [UsernameAttributes.EMAIL]: 'Email',
+    [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
+    [UsernameAttributes.USERNAME]: 'Username',
 };
 
 export default class AuthPiece extends React.Component {
@@ -52,8 +52,12 @@ export default class AuthPiece extends React.Component {
     componentDidMount() {
         if (window && window.location && window.location.search) {
             if (!this.props.authData || !this.props.authData.username) {
-                const searchParams = new URLSearchParams(window.location.search);
-                const username = searchParams ? searchParams.get('username') : undefined;
+                const searchParams = new URLSearchParams(
+                    window.location.search
+                );
+                const username = searchParams
+                    ? searchParams.get('username')
+                    : undefined;
                 this.setState({ username });
             }
         }
@@ -61,7 +65,7 @@ export default class AuthPiece extends React.Component {
 
     getUsernameFromInput() {
         const { usernameAttributes = 'username' } = this.props;
-        switch(usernameAttributes) {
+        switch (usernameAttributes) {
             case UsernameAttributes.EMAIL:
                 return this.inputs.email;
             case UsernameAttributes.PHONE_NUMBER:
@@ -79,7 +83,7 @@ export default class AuthPiece extends React.Component {
         const { usernameAttributes = [] } = this.props;
         if (usernameAttributes === UsernameAttributes.EMAIL) {
             return (
-                <FormField theme={theme}>           
+                <FormField theme={theme}>
                     <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
                     <Input
                         autoFocus
@@ -94,12 +98,17 @@ export default class AuthPiece extends React.Component {
             );
         } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
             return (
-                <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
+                <PhoneField
+                    theme={theme}
+                    onChangeText={this.onPhoneNumberChanged}
+                />
             );
         } else {
             return (
-                <FormField theme={theme}>           
-                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
+                <FormField theme={theme}>
+                    <InputLabel theme={theme}>
+                        {I18n.get(this.getUsernameLabel())} *
+                    </InputLabel>
                     <Input
                         defaultValue={this.state.username}
                         autoFocus
@@ -123,11 +132,16 @@ export default class AuthPiece extends React.Component {
     // extract username from authData
     usernameFromAuthData() {
         const { authData } = this.props;
-        if (!authData) { return ''; }
+        if (!authData) {
+            return '';
+        }
 
         let username = '';
-        if (typeof authData === 'object') { // user object
-            username = authData.user? authData.user.username : authData.username;
+        if (typeof authData === 'object') {
+            // user object
+            username = authData.user
+                ? authData.user.username
+                : authData.username;
         } else {
             username = authData; // username string
         }
@@ -136,28 +150,34 @@ export default class AuthPiece extends React.Component {
     }
 
     errorMessage(err) {
-        if (typeof err === 'string') { return err; }
-        return err.message? err.message : JSON.stringify(err);
+        if (typeof err === 'string') {
+            return err;
+        }
+        return err.message ? err.message : JSON.stringify(err);
     }
 
     triggerAuthEvent(event) {
         const state = this.props.authState;
-        if (this.props.onAuthEvent) { this.props.onAuthEvent(state, event); }
+        if (this.props.onAuthEvent) {
+            this.props.onAuthEvent(state, event);
+        }
     }
 
     changeState(state, data) {
-        if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+        if (this.props.onStateChange) {
+            this.props.onStateChange(state, data);
+        }
 
         this.triggerAuthEvent({
             type: 'stateChange',
-            data: state
+            data: state,
         });
     }
 
     error(err) {
         this.triggerAuthEvent({
             type: 'error',
-            data: this.errorMessage(err)
+            data: this.errorMessage(err),
         });
     }
 
@@ -165,8 +185,8 @@ export default class AuthPiece extends React.Component {
         this.inputs = this.inputs || {};
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
-        this.inputs[name] = check_type? checked : value;
-        this.inputs['checkedValue'] = check_type? value: null;
+        this.inputs[name] = check_type ? checked : value;
+        this.inputs['checkedValue'] = check_type ? value : null;
     }
 
     render() {
@@ -187,6 +207,6 @@ export default class AuthPiece extends React.Component {
     }
 
     showComponent(theme) {
-        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+        throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
     }
 }

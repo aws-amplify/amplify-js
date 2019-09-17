@@ -23,7 +23,11 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(sceneName: string, domElementId: string, sceneOptions: SceneOptions);
+    loadScene(
+        sceneName: string,
+        domElementId: string,
+        sceneOptions: SceneOptions
+    );
     isSceneLoaded(sceneName): boolean;
     getSceneController(sceneName: string): any;
     isVRCapable(sceneName: string): boolean;
@@ -33,6 +37,10 @@ export interface XRProvider {
     exitVR(sceneName: string): void;
     isMuted(sceneName: string): boolean;
     setMuted(sceneName: string, muted: boolean): void;
-    onSceneEvent(sceneName: string, eventName: string, eventHandler: Function): void;
+    onSceneEvent(
+        sceneName: string,
+        eventName: string,
+        eventHandler: Function
+    ): void;
     enableAudio(sceneName: string): void;
 }

@@ -2,10 +2,7 @@ import regeneratorRuntime from 'regenerator-runtime/runtime';
 import { Component } from 'react';
 import API from '@aws-amplify/api';
 
-
-
 export default class Connect extends Component {
-
     constructor(props) {
         super(props);
 
@@ -40,18 +37,28 @@ export default class Connect extends Component {
             query: { query, variables = {} } = {},
             mutation: { query: mutation, mutationVariables = {} } = {},
             subscription,
-            onSubscriptionMsg = (prevData) => prevData,
+            onSubscriptionMsg = prevData => prevData,
         } = this.props;
 
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
-        if (!API || typeof API.graphql !== 'function' || typeof API.getGraphqlOperationType !== 'function') {
-            throw new Error('No API module found, please ensure @aws-amplify/api is imported');
+        if (
+            !API ||
+            typeof API.graphql !== 'function' ||
+            typeof API.getGraphqlOperationType !== 'function'
+        ) {
+            throw new Error(
+                'No API module found, please ensure @aws-amplify/api is imported'
+            );
         }
 
-        const hasValidQuery = query && API.getGraphqlOperationType(query) === 'query';
-        const hasValidMutation = mutation && API.getGraphqlOperationType(mutation) === 'mutation';
-        const hasValidSubscription = subscription && API.getGraphqlOperationType(subscription.query) === 'subscription';
+        const hasValidQuery =
+            query && API.getGraphqlOperationType(query) === 'query';
+        const hasValidMutation =
+            mutation && API.getGraphqlOperationType(mutation) === 'mutation';
+        const hasValidSubscription =
+            subscription &&
+            API.getGraphqlOperationType(subscription.query) === 'subscription';
 
         if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
             console.warn('No query, mutation or subscription was specified');
@@ -71,8 +78,11 @@ export default class Connect extends Component {
         }
 
         if (hasValidMutation) {
-            mutationProp = async (variables) => {
-                const result = await API.graphql({ query: mutation, variables });
+            mutationProp = async variables => {
+                const result = await API.graphql({
+                    query: mutation,
+                    variables,
+                });
 
                 this.forceUpdate();
                 return result;
@@ -83,7 +93,10 @@ export default class Connect extends Component {
             const { query: subsQuery, variables: subsVars } = subscription;
 
             try {
-                const observable = API.graphql({ query: subsQuery, variables: subsVars });
+                const observable = API.graphql({
+                    query: subsQuery,
+                    variables: subsVars,
+                });
 
                 this.subSubscription = observable.subscribe({
                     next: ({ value: { data } }) => {
@@ -126,17 +139,24 @@ export default class Connect extends Component {
         const { query: prevQueryObj, mutation: prevMutationObj } = prevProps;
 
         // query
-        const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
-        const { query: prevQuery, variables: prevQueryVariables } = prevQueryObj || {};
+        const { query: newQuery, variables: newQueryVariables } =
+            newQueryObj || {};
+        const { query: prevQuery, variables: prevQueryVariables } =
+            prevQueryObj || {};
         const queryChanged =
-            prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
+            prevQuery !== newQuery ||
+            JSON.stringify(prevQueryVariables) !==
+                JSON.stringify(newQueryVariables);
 
         // mutation
-        const { query: newMutation, variables: newMutationVariables } = newMutationObj || {};
-        const { query: prevMutation, variables: prevMutationVariables } = prevMutationObj || {};
+        const { query: newMutation, variables: newMutationVariables } =
+            newMutationObj || {};
+        const { query: prevMutation, variables: prevMutationVariables } =
+            prevMutationObj || {};
         const mutationChanged =
-            prevMutation !== newMutation
-            || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
+            prevMutation !== newMutation ||
+            JSON.stringify(prevMutationVariables) !==
+                JSON.stringify(newMutationVariables);
 
         if (!loading && (queryChanged || mutationChanged)) {
             this._fetchData();

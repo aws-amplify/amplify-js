@@ -41,7 +41,7 @@ export {
     RequireNewPassword,
     VerifyContact,
     Greetings,
-    withOAuth
+    withOAuth,
 };
 
 export function withAuthenticator(
@@ -62,25 +62,33 @@ export function withAuthenticator(
 
             this.authConfig = {};
 
-            if (typeof includeGreetings === 'object' && includeGreetings !== null){
-                this.authConfig = Object.assign(this.authConfig, includeGreetings)
+            if (
+                typeof includeGreetings === 'object' &&
+                includeGreetings !== null
+            ) {
+                this.authConfig = Object.assign(
+                    this.authConfig,
+                    includeGreetings
+                );
             } else {
                 this.authConfig = {
                     includeGreetings,
                     authenticatorComponents,
-                    signUpConfig
-                }
+                    signUpConfig,
+                };
             }
         }
 
         handleAuthStateChange(state, data) {
             this.setState({ authState: state, authData: data });
-            if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+            if (this.props.onStateChange) {
+                this.props.onStateChange(state, data);
+            }
         }
 
         render() {
             const { authState, authData } = this.state;
-            const signedIn = (authState === 'signedIn');
+            const signedIn = authState === 'signedIn';
             if (signedIn) {
                 if (!this.authConfig.includeGreetings) {
                     return (
@@ -90,17 +98,19 @@ export function withAuthenticator(
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                    )
+                    );
                 }
 
                 return (
-                    <View style={{flex: 1}}>
+                    <View style={{ flex: 1 }}>
                         <Greetings
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                             theme={theme}
-                            usernameAttributes={this.authConfig.usernameAttributes}
+                            usernameAttributes={
+                                this.authConfig.usernameAttributes
+                            }
                         />
                         <Comp
                             {...this.props}
@@ -109,18 +119,23 @@ export function withAuthenticator(
                             onStateChange={this.handleAuthStateChange}
                         />
                     </View>
-                )
+                );
             }
 
-            return <Authenticator
-                {...this.props}
-                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
-                signUpConfig={this.authConfig.signUpConfig}
-                onStateChange={this.handleAuthStateChange}
-                children={this.authConfig.authenticatorComponents}
-                usernameAttributes={this.authConfig.usernameAttributes}
-                theme={theme}
-            />
+            return (
+                <Authenticator
+                    {...this.props}
+                    hideDefault={
+                        this.authConfig.authenticatorComponents &&
+                        this.authConfig.authenticatorComponents.length > 0
+                    }
+                    signUpConfig={this.authConfig.signUpConfig}
+                    onStateChange={this.handleAuthStateChange}
+                    children={this.authConfig.authenticatorComponents}
+                    usernameAttributes={this.authConfig.usernameAttributes}
+                    theme={theme}
+                />
+            );
         }
     }
 
@@ -128,14 +143,13 @@ export function withAuthenticator(
         // Copy static properties in order to be as close to Comp as possible.
         // One particular case is navigationOptions
         try {
-            const excludes = [
-                'displayName',
-                'childContextTypes'
-            ];
-            if (excludes.includes(key)) { return; }
+            const excludes = ['displayName', 'childContextTypes'];
+            if (excludes.includes(key)) {
+                return;
+            }
 
             Wrapper[key] = Comp[key];
-        } catch(err) {
+        } catch (err) {
             logger.warn('not able to assign ' + key, err);
         }
     });

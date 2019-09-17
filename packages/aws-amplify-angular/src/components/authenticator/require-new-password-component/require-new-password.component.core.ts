@@ -65,81 +65,81 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-require-new-password-core',
-  template
+    selector: 'amplify-auth-require-new-password-core',
+    template,
 })
 export class RequireNewPasswordComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  password: string;
-  errorMessage: string;
-  protected logger: any;
+    _authState: AuthState;
+    _show: boolean;
+    password: string;
+    errorMessage: string;
+    protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
-  }
-
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'requireNewPassword';
-  }
-
-  @Input() hide: string[] = [];
-
-  @Input()
-  set data(data: any) {
-    this._authState = data.authState;
-    this._show = data.authState.state === 'requireNewPassword';
-    this.hide = data.hide ? data.hide : this.hide;
-  }
-
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
+        this.logger = this.amplifyService.logger('RequireNewPasswordComponent');
     }
-  }
 
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-            .length > 0;
-  }
+    @Input()
+    set authState(authState: AuthState) {
+        this._authState = authState;
+        this._show = authState.state === 'requireNewPassword';
+    }
 
-  setPassword(password: string) {
-    this.password = password;
-  }
+    @Input() hide: string[] = [];
 
-  onSubmit() {
-    const { user } = this._authState;
-    const { requiredAttributes } = user.challengeParam;
-    this.amplifyService.auth()
-      .completeNewPassword(
-        user,
-        this.password,
-        requiredAttributes
-      )
-      .then(() => {
+    @Input()
+    set data(data: any) {
+        this._authState = data.authState;
+        this._show = data.authState.state === 'requireNewPassword';
+        this.hide = data.hide ? data.hide : this.hide;
+    }
+
+    ngOnInit() {
+        if (!this.amplifyService.auth()) {
+            throw new Error(
+                'Auth module not registered on AmplifyService provider'
+            );
+        }
+    }
+
+    shouldHide(comp) {
+        return this.hide.filter(item => item === comp).length > 0;
+    }
+
+    setPassword(password: string) {
+        this.password = password;
+    }
+
+    onSubmit() {
+        const { user } = this._authState;
+        const { requiredAttributes } = user.challengeParam;
+        this.amplifyService
+            .auth()
+            .completeNewPassword(user, this.password, requiredAttributes)
+            .then(() => {
+                this.onAlertClose();
+                this.amplifyService.setAuthState({ state: 'signIn', user });
+            })
+            .catch(err => this._setError(err));
+    }
+
+    onSignIn() {
         this.onAlertClose();
-        this.amplifyService.setAuthState({ state: 'signIn', user });
-      })
-      .catch(err => this._setError(err));
-  }
-
-  onSignIn() {
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signIn', user: null });
-  }
-
-  onAlertClose() {
-    this._setError(null);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
+        this.amplifyService.setAuthState({ state: 'signIn', user: null });
     }
 
-    this.errorMessage = err.message || err;
-  }
+    onAlertClose() {
+        this._setError(null);
+    }
+
+    _setError(err) {
+        if (!err) {
+            this.errorMessage = null;
+            return;
+        }
+
+        this.errorMessage = err.message || err;
+    }
 }

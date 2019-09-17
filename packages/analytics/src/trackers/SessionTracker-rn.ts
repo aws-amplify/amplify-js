@@ -11,17 +11,17 @@
  * and limitations under the License.
  */
 
- // the session tracker for react native
+// the session tracker for react native
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
-import { AppState } from 'react-native'; 
+import { AppState } from 'react-native';
 
 const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
     enable: false,
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
 };
 
 let initialEventSent = false;
@@ -35,7 +35,7 @@ export default class SessionTracker {
     constructor(tracker, opts) {
         this._config = Object.assign({}, defaultOpts, opts);
         this._tracker = tracker;
-        
+
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
         this._currentState = AppState.currentState;
@@ -51,32 +51,41 @@ export default class SessionTracker {
     }
 
     private async _trackFunc(nextAppState) {
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
+        const attributes = Object.assign({}, customAttrs);
 
-        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
-            logger.debug('App has come to the foreground, recording start session');
+        if (
+            this._currentState.match(/inactive|background/) &&
+            nextAppState === 'active'
+        ) {
+            logger.debug(
+                'App has come to the foreground, recording start session'
+            );
             this._tracker(
                 {
                     name: '_session.start',
-                    attributes
+                    attributes,
                 },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session start event failed.', e);
             });
         }
-        if (this._currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
-            logger.debug('App has come to inactive/background, recording stop session');
+        if (
+            this._currentState.match(/active/) &&
+            nextAppState.match(/inactive|background/)
+        ) {
+            logger.debug(
+                'App has come to inactive/background, recording stop session'
+            );
             this._tracker(
-                { 
+                {
                     name: '_session.stop',
                     attributes,
-                    immediate: true
+                    immediate: true,
                 },
                 this._config.provider
             ).catch(e => {
@@ -90,23 +99,24 @@ export default class SessionTracker {
     // to keep configure a synchronized function
     private async _sendInitialEvent() {
         if (initialEventSent) {
-            logger.debug('the start session has been sent when the page is loaded');
+            logger.debug(
+                'the start session has been sent when the page is loaded'
+            );
             return;
         } else {
             initialEventSent = true;
         }
 
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+        const customAttrs =
+            typeof this._config.attributes === 'function'
+                ? await this._config.attributes()
+                : this._config.attributes;
+        const attributes = Object.assign({}, customAttrs);
 
         this._tracker(
-            { 
+            {
                 name: '_session.start',
-                attributes
+                attributes,
             },
             this._config.provider
         ).catch(e => {
