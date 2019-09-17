@@ -25,6 +25,7 @@
                >{{_country.label}}</option> 
         </select>
         <input
+            type="tel"
             v-model="local_phone_number"
             v-bind:class="[amplifyUI.input, isInvalid ? 'invalid': '']"
             :placeholder="$Amplify.I18n.get(getPlaceholder)"

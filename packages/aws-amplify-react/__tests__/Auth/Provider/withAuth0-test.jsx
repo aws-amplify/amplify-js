@@ -219,4 +219,3 @@ describe('Auth0Button test', () => {
         });
     });
 });
-

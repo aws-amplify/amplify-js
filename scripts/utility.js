@@ -15,7 +15,7 @@ function iterateFiles(source) {
 
             Promise.all(
                 files.map((file) => {
-                    var filePath = path.join(source, file);
+                    const filePath = path.join(source, file);
                     return new Promise((res, rej) => {
                         fs.stat(filePath, (error, stat) => {
                             if (error) {

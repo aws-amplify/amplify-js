@@ -18,9 +18,8 @@ async function buildRollUp() {
 
     const input = `${currentPath}${tscES5OutDir}/index.js`;
     const file = `${currentPath}${packageInfo.main.slice(packageInfo.main.indexOf('/'))}`;
-    const onwarn = function(warning) {
+    const onwarn = (warning) => {
         if ( warning.code === 'THIS_IS_UNDEFINED' ) { return; }
-        // console.warn everything else
         console.warn( warning.message );
     }
 
@@ -50,7 +49,6 @@ async function buildRollUp() {
     try {
         const bundle = await rollup.rollup(inputOptions);
         await bundle.write(outputOptions);
-        // console.log(result);
     } catch (e) {
         console.log(e);
     }
@@ -98,9 +96,9 @@ async function buildES5() {
     console.log(compilerOptions);
 
     let fileList = [];
-    Promise.all(include.map(function(source) {
-        return utility.iterateFiles(source)
-        .then(list => fileList=fileList.concat(list));
+    Promise.all(include.map(async (source) => {
+        const list = await utility.iterateFiles(source);
+        return fileList = fileList.concat(list);
     })).then(() => {
         console.log("Files to be transpiled by tsc:");
         console.log(fileList);
@@ -141,9 +139,9 @@ function buildES6() {
     console.log(compilerOptions);
 
     let fileList = [];
-    Promise.all(include.map(function(source) {
-        return utility.iterateFiles(source)
-        .then(list => fileList=fileList.concat(list));
+    Promise.all(include.map(async (source) => {
+        const list = await utility.iterateFiles(source);
+        return fileList = fileList.concat(list);
     })).then(() => {
         console.log("Files to be transpiled by tsc:");
         console.log(fileList);

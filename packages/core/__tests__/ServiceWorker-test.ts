@@ -22,8 +22,8 @@ describe('ServiceWorker test', () => {
 
             try {
                 await (serviceWorker.register());
-            } catch (e){
-                expect(e).toBe('an error');
+            } catch (e) {
+                expect(e).toEqual('an error');
             }
         });
     });
