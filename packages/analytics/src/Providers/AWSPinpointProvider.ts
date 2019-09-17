@@ -38,7 +38,7 @@ const dispatchAnalyticsEvent = (event, data) => {
 const logger = new Logger('AWSPinpointProvider');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
-const SERVICE_NAME = "mobiletargeting";
+const MOBILE_SERVICE_NAME = "mobiletargeting";
 
 // events buffer
 const BUFFER_SIZE = 1000;
