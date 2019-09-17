@@ -98,6 +98,11 @@ describe('SessionTracker test', () => {
                 value: true
             });
 
+            Object.defineProperty(window.document, 'visibilityState', {
+                writable: true,
+                value: 'hidden'
+            });
+
             await sessionTracker._trackFunc();
 
             expect(tracker).toBeCalledWith({
@@ -115,6 +120,11 @@ describe('SessionTracker test', () => {
             Object.defineProperty(window.document, 'hidden', {
                 writable: true,
                 value: false
+            });
+
+            Object.defineProperty(window.document, 'visibilityState', {
+                writable: true,
+                value: 'visible'
             });
 
             await sessionTracker._trackFunc();
