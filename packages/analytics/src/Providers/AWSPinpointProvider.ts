@@ -27,6 +27,7 @@ import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider, PromiseHandlers } from '../types';
 import { v1 as uuid } from 'uuid';
+import { RequestParams } from './AmazonPersonalizeHelper/DataType';
 
 const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
     Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
@@ -325,9 +326,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const body = JSON.stringify(EventsRequest);
         const method = 'POST';
 
+        const request = {
+            url,
+            body,
+            method,
+        };
+
         const serviceInfo = { region, service: SERVICE_NAME };
 
-        const requestUrl: string = Signer.signUrl(url, accessInfo, serviceInfo, null, body, method);
+        const requestUrl: string = Signer.signUrl(request, accessInfo, serviceInfo, null);
 
         const success: boolean = navigator.sendBeacon(requestUrl, body);
 
