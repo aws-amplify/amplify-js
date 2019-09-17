@@ -333,9 +333,9 @@ export default class Signer {
     static signUrl(request: any, accessInfo: any, serviceInfo?: any, expiration?: number): string;
     static signUrl(urlOrRequest: string | any, accessInfo: any, serviceInfo?: any, expiration?: number): string {
 
-        const urlToSign: string = typeof urlOrRequest === 'string' ? urlOrRequest : urlOrRequest.url;
-        const method: string = typeof urlOrRequest === 'string' ? 'GET' : urlOrRequest.method;
-        const body: any = typeof urlOrRequest === 'string' ? undefined : urlOrRequest.body;
+        const urlToSign: string = typeof urlOrRequest === ‘object' ? urlOrRequest.url : urlOrRequest;
+        const method: string = typeof urlOrRequest === ‘object' ? urlOrRequest.method : 'GET';
+        const body: any = typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
 
         const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
         const today = now.substr(0, 8);
