@@ -333,8 +333,8 @@ export default class Signer {
     static signUrl(request: any, accessInfo: any, serviceInfo?: any, expiration?: number): string;
     static signUrl(urlOrRequest: string | any, accessInfo: any, serviceInfo?: any, expiration?: number): string {
 
-        const urlToSign: string = typeof urlOrRequest === ‘object' ? urlOrRequest.url : urlOrRequest;
-        const method: string = typeof urlOrRequest === ‘object' ? urlOrRequest.method : 'GET';
+        const urlToSign: string = typeof urlOrRequest === 'object' ? urlOrRequest.url : urlOrRequest;
+        const method: string = typeof urlOrRequest === 'object' ? urlOrRequest.method : 'GET';
         const body: any = typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
 
         const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
