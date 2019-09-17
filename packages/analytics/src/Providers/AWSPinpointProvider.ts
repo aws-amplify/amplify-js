@@ -331,7 +331,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             method,
         };
 
-        const serviceInfo = { region, service: SERVICE_NAME };
+        const serviceInfo = { region, service: MOBILE_SERVICE_NAME };
 
         const requestUrl: string = Signer.signUrl(request, accessInfo, serviceInfo, null);
 
