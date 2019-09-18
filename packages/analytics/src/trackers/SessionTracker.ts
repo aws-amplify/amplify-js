@@ -40,7 +40,7 @@ export default class SessionTracker {
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
         this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
-        
+
         this.configure(this._config);
     }
 
@@ -135,22 +135,11 @@ export default class SessionTracker {
             initialEventSent = true;
         }
 
-<<<<<<< HEAD
-        const customAttrs = typeof this._config.attributes === 'function' 
-            ? await this._config.attributes() 
-            : this._config.attributes;
-        
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
-=======
         const customAttrs =
             typeof this._config.attributes === 'function'
                 ? await this._config.attributes()
                 : this._config.attributes;
         const attributes = Object.assign({}, customAttrs);
->>>>>>> Prettier format codebase
 
         this._tracker(
             {
