@@ -324,24 +324,6 @@ export namespace Components {
     */
     'validationErrors': string;
   }
-  interface AmplifyTextField {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextInput {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -502,18 +484,6 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
-  interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
-  var HTMLAmplifyTextFieldElement: {
-    prototype: HTMLAmplifyTextFieldElement;
-    new (): HTMLAmplifyTextFieldElement;
-  };
-
-  interface HTMLAmplifyTextInputElement extends Components.AmplifyTextInput, HTMLStencilElement {}
-  var HTMLAmplifyTextInputElement: {
-    prototype: HTMLAmplifyTextInputElement;
-    new (): HTMLAmplifyTextInputElement;
-  };
-
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
@@ -552,8 +522,6 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
-    'amplify-text-field': HTMLAmplifyTextFieldElement;
-    'amplify-text-input': HTMLAmplifyTextInputElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
@@ -861,24 +829,6 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
-  interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
   interface AmplifyTooltip extends JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement> {
     /**
     * (Optional) Override default styling
@@ -937,8 +887,6 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
-    'amplify-text-field': AmplifyTextField;
-    'amplify-text-input': AmplifyTextInput;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
