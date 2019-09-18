@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.1.1...@aws-amplify/storage@1.1.2) (2019-09-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [1.1.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.1.0...@aws-amplify/storage@1.1.1) (2019-09-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** fix typo ([#3828](https://github.com/aws/aws-amplify/issues/3828)) ([b93af35](https://github.com/aws/aws-amplify/commit/b93af35))
+
+
+
+
+
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.36...@aws-amplify/storage@1.1.0) (2019-08-05)
 
 

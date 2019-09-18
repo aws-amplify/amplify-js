@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.23...@aws-amplify/ui@1.0.25) (2019-09-13)
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+
+
+
+
 ## [1.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.22...@aws-amplify/ui@1.0.23) (2019-07-30)
 
 **Note:** Version bump only for package @aws-amplify/ui

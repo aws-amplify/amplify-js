@@ -50,4 +50,3 @@ if (AWS['util']) {
 } else {
     logger.warn('No AWS.config');
 }
-

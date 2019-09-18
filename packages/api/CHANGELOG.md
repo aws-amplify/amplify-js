@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.1.1...@aws-amplify/api@1.1.3) (2019-09-13)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
+## [1.1.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.1.0...@aws-amplify/api@1.1.1) (2019-09-05)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.42...@aws-amplify/api@1.1.0) (2019-09-04)
+
+
+### Features
+
+* **@aws-amplify/api:** Add ability to set withCredentials in API ([#3634](https://github.com/aws/aws-amplify/issues/3634)) ([8437578](https://github.com/aws/aws-amplify/commit/8437578))
+
+
+
+
+
 ## [1.0.42](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.41...@aws-amplify/api@1.0.42) (2019-08-05)
 
 **Note:** Version bump only for package @aws-amplify/api

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.40](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.38...aws-amplify@1.1.40) (2019-09-13)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [1.1.38](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.37...aws-amplify@1.1.38) (2019-09-05)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [1.1.37](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.36...aws-amplify@1.1.37) (2019-09-04)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
 ## [1.1.36](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.35...aws-amplify@1.1.36) (2019-08-05)
 
 **Note:** Version bump only for package aws-amplify

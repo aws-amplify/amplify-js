@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -50,7 +50,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.1.0",
+    "@aws-amplify/core": "^1.1.2",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },

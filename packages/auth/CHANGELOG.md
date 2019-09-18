@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.3.1...@aws-amplify/auth@1.3.3) (2019-09-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [1.3.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.3.0...@aws-amplify/auth@1.3.1) (2019-09-05)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [1.3.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.31...@aws-amplify/auth@1.3.0) (2019-09-04)
+
+
+### Features
+
+* **@aws-amplify/auth:** Error messaging ([47ec74d](https://github.com/aws/aws-amplify/commit/47ec74d))
+
+
+
+
+
 ## [1.2.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.30...@aws-amplify/auth@1.2.31) (2019-08-05)
 
 

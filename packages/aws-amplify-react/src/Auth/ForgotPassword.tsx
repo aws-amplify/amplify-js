@@ -116,6 +116,7 @@ export default class ForgotPassword extends AuthPiece<IAuthPieceProps, IForgotPa
                         type="password"
                         key="password"
                         name="password"
+                        autoComplete="off"
                         onChange={this.handleInputChange}
                     />
                 </FormField>
