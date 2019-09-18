@@ -16,7 +16,14 @@ import {
     Credentials,
     Parser
 } from '@aws-amplify/core';
-import * as S3 from 'aws-sdk/clients/s3';
+import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
+import { formatUrl } from "@aws-sdk/util-format-url";
+import { createRequest } from "@aws-sdk/util-create-request";
+import { GetObjectCommand } from '@aws-sdk/client-s3-browser/commands/GetObjectCommand';
+import { PutObjectCommand } from '@aws-sdk/client-s3-browser/commands/PutObjectCommand';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3-browser/commands/DeleteObjectCommand';
+import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObjectsCommand';
+import { S3RequestPresigner } from "@aws-sdk/s3-request-presigner";
 import { StorageOptions, StorageProvider } from '../types';
 
 const logger = new Logger('AWSS3Provider');
@@ -24,7 +31,7 @@ const logger = new Logger('AWSS3Provider');
 const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
     Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
 
-const dispatchStorageEvent = (track:boolean, event:string, attrs:any, metrics:any, message:string) => {
+const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string) => {
     if (track) {
         Hub.dispatch(
             'storage',
@@ -58,7 +65,7 @@ export class AWSS3Provider implements StorageProvider {
      * @param {Object} config - Configuration object for storage
      */
     constructor(config?: StorageOptions) {
-        this._config = config ? config: {};
+        this._config = config ? config : {};
         logger.debug('Storage Options', this._config);
     }
 
@@ -97,7 +104,7 @@ export class AWSS3Provider implements StorageProvider {
     * @param {Object} [config] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, config?): Promise<string|Object> {
+    public async get(key: string, config?): Promise<string | Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -105,7 +112,7 @@ export class AWSS3Provider implements StorageProvider {
         const { bucket, download, track, expires } = opt;
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
-        const s3 = this._createS3(opt);
+        const s3 = this._createNewS3Client(opt);
         logger.debug('get ' + key + ' from ' + final_key);
 
         const params: any = {
@@ -115,7 +122,8 @@ export class AWSS3Provider implements StorageProvider {
 
         if (download === true) {
             return new Promise<any>((res, rej) => {
-                s3.getObject(params, (err, data) => {
+                const getObjectCommand = new GetObjectCommand(params);
+                s3.send(getObjectCommand, (err, data) => {
                     if (err) {
                         dispatchStorageEvent(
                             track,
@@ -135,18 +143,21 @@ export class AWSS3Provider implements StorageProvider {
                             { method: 'get', result: 'success' },
                             { fileSize: Number(data.Body['length']) },
                             `Download success for ${key}`
-                            );
+                        );
                         res(data);
                     }
                 });
             });
         }
 
-        if (expires) { params.Expires = expires; }
+        params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
+        params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
 
-        return new Promise<string>((res, rej) => {
+        return new Promise<string>(async (res, rej) => {
             try {
-                const url = s3.getSignedUrl('getObject', params);
+                const signer = new S3RequestPresigner({ ...s3.config });
+                const request = await createRequest(s3, new GetObjectCommand(params));
+                const url = formatUrl(await signer.presignRequest(request, params.Expires) as any);
                 dispatchStorageEvent(
                     track,
                     'getSignedUrl',
@@ -189,7 +200,7 @@ export class AWSS3Provider implements StorageProvider {
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
-        const s3 = this._createS3(opt);
+        const s3 = this._createNewS3Client(opt);
         logger.debug('put ' + key + ' to ' + final_key);
 
         const params: any = {
@@ -210,46 +221,46 @@ export class AWSS3Provider implements StorageProvider {
             if (SSECustomerKeyMD5) { params.SSECustomerKeyMD5 = SSECustomerKeyMD5; }
             if (SSEKMSKeyId) { params.SSEKMSKeyId = SSEKMSKeyId; }
         }
-
-        try {
-            const upload = s3
-                .upload(params)
-                .on('httpUploadProgress', progress => {
-                    if (progressCallback) {
-                        if (typeof progressCallback === 'function') {
-                            progressCallback(progress);
-                        } else {
-                            logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
-                        }
-                    }
-                });
-            const data = await upload.promise();
-
-            logger.debug('upload result', data);
-            dispatchStorageEvent(
-                track,
-                'upload',
-                { method: 'put', result: 'success' },
-                null,
-                `Upload success for ${key}`
-            );
-
-            return {
-                key: data.Key.substr(prefix.length)
-            };
-        } catch (e) {
-            logger.warn("error uploading", e);
-            dispatchStorageEvent(
-                track,
-                'upload',
-                { method: 'put', result: 'failed' },
-                null,
-                `Error uploading ${key}`
-            );
-
-            throw e;
-        }
+        return new Promise<any>((res, rej) => {
+            const putObjectCommand = new PutObjectCommand(params);
+            s3.send(putObjectCommand, (err, data) => {
+                if (err) {
+                    logger.warn("error uploading", err);
+                    dispatchStorageEvent(
+                        track,
+                        'upload',
+                        { method: 'put', result: 'failed' },
+                        null,
+                        `Error uploading ${key}`
+                    );
+                    rej(err);
+                } else {
+                    logger.debug('upload result', data);
+                    dispatchStorageEvent(
+                        track,
+                        'upload',
+                        { method: 'put', result: 'success' },
+                        null,
+                        `Upload success for ${key}`
+                    );
+                    res({
+                        key
+                    });
+                }
+            });
+            // This functionality is not available in V3 SDK. Amplify needs to implement it.
+            // .on('httpUploadProgress', progress => {
+            //     if (progressCallback) {
+            //         if (typeof progressCallback === 'function') {
+            //             progressCallback(progress);
+            //         } else {
+            //             logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+            //         }
+            //     }
+            // });
+        });
     }
+
 
     /**
      * Remove the object for specified key
@@ -261,12 +272,12 @@ export class AWSS3Provider implements StorageProvider {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
-        const opt = Object.assign({}, this._config, config, );
+        const opt = Object.assign({}, this._config, config);
         const { bucket, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
-        const s3 = this._createS3(opt);
+        const s3 = this._createNewS3Client(opt);
         logger.debug('remove ' + key + ' from ' + final_key);
 
         const params = {
@@ -274,8 +285,10 @@ export class AWSS3Provider implements StorageProvider {
             Key: final_key
         };
 
+        const deleteObjectCommand = new DeleteObjectCommand(params);
+
         return new Promise<any>((res, rej) => {
-            s3.deleteObject(params, (err, data) => {
+            s3.send(deleteObjectCommand, (err, data) => {
                 if (err) {
                     dispatchStorageEvent(
                         track,
@@ -314,7 +327,7 @@ export class AWSS3Provider implements StorageProvider {
 
         const prefix = this._prefix(opt);
         const final_path = prefix + path;
-        const s3 = this._createS3(opt);
+        const s3 = this._createNewS3Client(opt);
         logger.debug('list ' + path + ' from ' + final_path);
 
         const params = {
@@ -322,8 +335,10 @@ export class AWSS3Provider implements StorageProvider {
             Prefix: final_path
         };
 
+        const listObjectsCommand = new ListObjectsCommand(params);
+
         return new Promise<any>((res, rej) => {
-            s3.listObjects(params, (err, data) => {
+            s3.send(listObjectsCommand, (err, data) => {
                 if (err) {
                     logger.warn('list error', err);
                     dispatchStorageEvent(
@@ -401,29 +416,25 @@ export class AWSS3Provider implements StorageProvider {
     }
 
     /**
-     * @private
-     */
-    private _createS3(config) {
+    * @private creates an S3 client with new V3 aws sdk
+    */
+    private _createNewS3Client(config) {
         const {
-            bucket,
             region,
             credentials,
             dangerouslyConnectToHttpEndpointForTesting
         } = config;
         let localTestingConfig = {};
-        
-        if(dangerouslyConnectToHttpEndpointForTesting) {
+
+        if (dangerouslyConnectToHttpEndpointForTesting) {
             localTestingConfig = {
                 endpoint: localTestingStorageEndpoint,
                 s3BucketEndpoint: true,
-                s3ForcePathStyle : true
+                s3ForcePathStyle: true
             };
         }
 
-        return new S3({
-            apiVersion: '2006-03-01',
-            params: { Bucket: bucket },
-            signatureVersion: 'v4',
+        return new S3Client({
             region,
             credentials,
             ...localTestingConfig
