@@ -324,28 +324,6 @@ export namespace Components {
     */
     'validationErrors': string;
   }
-  interface AmplifySignInPasswordField {
-    'component': Function;
-    'description': string | null;
-    'fieldId': string;
-    'hint': string | null;
-    'inputProps': {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifySignInUsernameField {
-    'component': Function;
-    'description': string | null;
-    'fieldId': string;
-    'hint': string | null;
-    'inputProps': {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label': string | null;
-  }
   interface AmplifyTextField {
     'description': string | null;
     'fieldId': string;
@@ -524,18 +502,6 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
-  interface HTMLAmplifySignInPasswordFieldElement extends Components.AmplifySignInPasswordField, HTMLStencilElement {}
-  var HTMLAmplifySignInPasswordFieldElement: {
-    prototype: HTMLAmplifySignInPasswordFieldElement;
-    new (): HTMLAmplifySignInPasswordFieldElement;
-  };
-
-  interface HTMLAmplifySignInUsernameFieldElement extends Components.AmplifySignInUsernameField, HTMLStencilElement {}
-  var HTMLAmplifySignInUsernameFieldElement: {
-    prototype: HTMLAmplifySignInUsernameFieldElement;
-    new (): HTMLAmplifySignInUsernameFieldElement;
-  };
-
   interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
   var HTMLAmplifyTextFieldElement: {
     prototype: HTMLAmplifyTextFieldElement;
@@ -586,8 +552,6 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
-    'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
-    'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
     'amplify-text-field': HTMLAmplifyTextFieldElement;
     'amplify-text-input': HTMLAmplifyTextInputElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
@@ -897,28 +861,6 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
-  interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifySignInUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifySignInUsernameFieldElement> {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
   interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
     'description'?: string | null;
     'fieldId'?: string;
@@ -995,8 +937,6 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
-    'amplify-sign-in-password-field': AmplifySignInPasswordField;
-    'amplify-sign-in-username-field': AmplifySignInUsernameField;
     'amplify-text-field': AmplifyTextField;
     'amplify-text-input': AmplifyTextInput;
     'amplify-tooltip': AmplifyTooltip;

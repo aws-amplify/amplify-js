@@ -1,21 +1,5 @@
 import { h } from '@stencil/core';
 
-const CustomPasswordField = ({ inputProps }) => (
-  <div>
-    <p>
-      <strong>
-        <label htmlFor="my-custom-password-field">This is a custom password field</label>
-      </strong>
-    </p>
-    <p>
-      <i>
-        some extra content here and maybe a <a href="javascript:void(0);">link to documentation</a>
-      </i>
-    </p>
-    <input id="my-custom-password-field" placeholder="Type your password" {...inputProps} />
-  </div>
-);
-
 const CustomSignIn = ({ handleSubmit }) => (
   <form onSubmit={handleSubmit}>
     <fieldset>
@@ -23,16 +7,6 @@ const CustomSignIn = ({ handleSubmit }) => (
       <div>
         <strong>Form header content here</strong>
       </div>
-      <p>
-        <amplify-sign-in-username-field
-          fieldId="custom-sign-in-username"
-          label="Custom username field"
-          description="insert your username"
-        />
-      </p>
-      <p>
-        <amplify-sign-in-password-field component={props => <CustomPasswordField {...props} />} />
-      </p>
     </fieldset>
     <div>
       <a href="javascript:void(0)">Custom link here</a> <amplify-button type="submit">Submit</amplify-button>
