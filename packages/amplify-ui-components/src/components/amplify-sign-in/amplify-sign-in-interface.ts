@@ -1,4 +1,4 @@
-export interface AmplifyForgotPasswordLinkProps {
+export interface AmplifyForgotPasswordHintProps {
   forgotPasswordText: string;
   resetPasswordText: string;
 }

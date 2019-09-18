@@ -1,5 +1,5 @@
 import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
-import { AmplifyForgotPasswordLinkProps, SignInFormFooterProps } from './amplify-sign-in-interface';
+import { AmplifyForgotPasswordHintProps, SignInFormFooterProps } from './amplify-sign-in-interface';
 import { signInFormFooter } from './amplify-sign-in.styles';
 import { SIGN_IN_TEXT, COMMON_PASSWORD_TEXT } from '../../common/constants';
 
@@ -16,7 +16,7 @@ const {
 } = COMMON_PASSWORD_TEXT;
 
 
-const AmplifyForgotPasswordLink: FC<AmplifyForgotPasswordLinkProps> = ({ forgotPasswordText, resetPasswordText }) => (
+const AmplifyForgotPasswordHint: FC<AmplifyForgotPasswordHintProps> = ({ forgotPasswordText, resetPasswordText }) => (
   <div>
     {forgotPasswordText} <amplify-link>{resetPasswordText}</amplify-link>
   </div>
@@ -36,7 +36,7 @@ const signInComponents = [
   },
   {
     type: 'password',
-    hint: <AmplifyForgotPasswordLink forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />,
+    hint: <AmplifyForgotPasswordHint forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />,
     required: true,
   },
 ];
