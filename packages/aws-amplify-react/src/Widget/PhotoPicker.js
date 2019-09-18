@@ -17,80 +17,89 @@ import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Picker from './Picker';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import { FormSection, SectionHeader, SectionBody, PhotoPlaceholder } from '../Amplify-UI/Amplify-UI-Components-React';
-
+import {
+	FormSection,
+	SectionHeader,
+	SectionBody,
+	PhotoPlaceholder,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerPreview = {
-    maxWidth: '100%'
+	maxWidth: '100%',
 };
 
 const logger = new Logger('PhotoPicker');
 
 export default class PhotoPicker extends Component {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.handlePick = this.handlePick.bind(this);
+		this.handlePick = this.handlePick.bind(this);
 
-        this.state = {
-            previewSrc: props.previewSrc
-        };
-    }
+		this.state = {
+			previewSrc: props.previewSrc,
+		};
+	}
 
-    handlePick(data) {
-        const that = this;
-        const { file, name, size, type } = data;
-        const { preview, onPick, onLoad } = this.props;
+	handlePick(data) {
+		const that = this;
+		const { file, name, size, type } = data;
+		const { preview, onPick, onLoad } = this.props;
 
-        if (onPick) { onPick(data); }
+		if (onPick) {
+			onPick(data);
+		}
 
-        if (preview) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const url = e.target.result;
-                that.setState({ previewSrc: url });
-                if (onLoad) { onLoad(url); }
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+		if (preview) {
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				const url = e.target.result;
+				that.setState({ previewSrc: url });
+				if (onLoad) {
+					onLoad(url);
+				}
+			};
+			reader.readAsDataURL(file);
+		}
+	}
 
-    render() {
-        const { preview } = this.props;
-        const { previewSrc } = this.state;
+	render() {
+		const { preview } = this.props;
+		const { previewSrc } = this.state;
 
-        const headerText = this.props.headerText || 'Photos';
-        const headerHint = this.props.headerHint || 'Add your photos by clicking below';
-        const title = this.props.title || 'Select a Photo';
+		const headerText = this.props.headerText || 'Photos';
+		const headerHint =
+			this.props.headerHint || 'Add your photos by clicking below';
+		const title = this.props.title || 'Select a Photo';
 
-        const theme = this.props.theme || AmplifyTheme;
-        const previewStyle = Object.assign(
-            {},
-            PickerPreview,
-            theme.pickerPreview
-        );
+		const theme = this.props.theme || AmplifyTheme;
+		const previewStyle = Object.assign({}, PickerPreview, theme.pickerPreview);
 
-        const previewHidden = !(preview && preview !== 'hidden');
+		const previewHidden = !(preview && preview !== 'hidden');
 
-        return (
-            <FormSection theme={theme}>
-                <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
-                <SectionBody theme={theme}>
-                    { previewSrc ? 
-                        (previewHidden ? 
-                            'The image has been selected':
-                            <img src={previewSrc} style={previewStyle} />
-                        ):
-                        <PhotoPlaceholder theme={theme}/>
-                    }
-                </SectionBody>
-                <Picker
-                    title={title}
-                    accept="image/*"
-                    theme={theme}
-                    onPick={this.handlePick}
-                />
-            </FormSection>
-        );
-    }
+		return (
+			<FormSection theme={theme}>
+				<SectionHeader theme={theme} hint={headerHint}>
+					{I18n.get(headerText)}
+				</SectionHeader>
+				<SectionBody theme={theme}>
+					{previewSrc ? (
+						previewHidden ? (
+							'The image has been selected'
+						) : (
+							<img src={previewSrc} style={previewStyle} />
+						)
+					) : (
+						<PhotoPlaceholder theme={theme} />
+					)}
+				</SectionBody>
+				<Picker
+					title={title}
+					accept="image/*"
+					theme={theme}
+					onPick={this.handlePick}
+				/>
+			</FormSection>
+		);
+	}
 }

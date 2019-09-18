@@ -14,16 +14,23 @@ import * as Observable from 'zen-observable';
 import { ProvidertOptions } from './PubSub';
 
 export interface PubSubProvider {
-    // configure your provider
-    configure(config: object): object;
+	// configure your provider
+	configure(config: object): object;
 
-    // return 'Analytics';
-    getCategory(): string;
+	// return 'Analytics';
+	getCategory(): string;
 
-    // return the name of you provider
-    getProviderName(): string;
+	// return the name of you provider
+	getProviderName(): string;
 
-    publish(topics: string[] | string, msg: any, options?: ProvidertOptions): void;
+	publish(
+		topics: string[] | string,
+		msg: any,
+		options?: ProvidertOptions
+	): void;
 
-    subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any>;
+	subscribe(
+		topics: string[] | string,
+		options?: ProvidertOptions
+	): Observable<any>;
 }
