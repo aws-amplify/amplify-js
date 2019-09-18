@@ -23,7 +23,7 @@
 		"one-variable-per-declaration": [false, "ignore-for-loop"],
 		"triple-equals": [true, "allow-null-check"],
 		"comment-format": [true, "check-space"],
-		"indent": [true, "tabs"],
+		"indent": [false],
 		"whitespace": [
 			false,
 			"check-branch",
