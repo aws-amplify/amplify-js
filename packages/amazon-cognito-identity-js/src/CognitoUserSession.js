@@ -17,78 +17,78 @@
 
 /** @class */
 export default class CognitoUserSession {
-    /**
-     * Constructs a new CognitoUserSession object
-     * @param {CognitoIdToken} IdToken The session's Id token.
-     * @param {CognitoRefreshToken=} RefreshToken The session's refresh token.
-     * @param {CognitoAccessToken} AccessToken The session's access token.
-     * @param {int} ClockDrift The saved computer's clock drift or undefined to force calculation.
-     */
-    constructor({ IdToken, RefreshToken, AccessToken, ClockDrift } = {}) {
-        if (AccessToken == null || IdToken == null) {
-            throw new Error('Id token and Access Token must be present.');
-        }
-
-        this.idToken = IdToken;
-        this.refreshToken = RefreshToken;
-        this.accessToken = AccessToken;
-        this.clockDrift =
-            ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
+  /**
+   * Constructs a new CognitoUserSession object
+   * @param {CognitoIdToken} IdToken The session's Id token.
+   * @param {CognitoRefreshToken=} RefreshToken The session's refresh token.
+   * @param {CognitoAccessToken} AccessToken The session's access token.
+   * @param {int} ClockDrift The saved computer's clock drift or undefined to force calculation.
+   */
+  constructor({ IdToken, RefreshToken, AccessToken, ClockDrift } = {}) {
+    if (AccessToken == null || IdToken == null) {
+      throw new Error('Id token and Access Token must be present.');
     }
 
-    /**
-     * @returns {CognitoIdToken} the session's Id token
-     */
-    getIdToken() {
-        return this.idToken;
-    }
+    this.idToken = IdToken;
+    this.refreshToken = RefreshToken;
+    this.accessToken = AccessToken;
+    this.clockDrift =
+      ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
+  }
 
-    /**
-     * @returns {CognitoRefreshToken} the session's refresh token
-     */
-    getRefreshToken() {
-        return this.refreshToken;
-    }
+  /**
+   * @returns {CognitoIdToken} the session's Id token
+   */
+  getIdToken() {
+    return this.idToken;
+  }
 
-    /**
-     * @returns {CognitoAccessToken} the session's access token
-     */
-    getAccessToken() {
-        return this.accessToken;
-    }
+  /**
+   * @returns {CognitoRefreshToken} the session's refresh token
+   */
+  getRefreshToken() {
+    return this.refreshToken;
+  }
 
-    /**
-     * @returns {int} the session's clock drift
-     */
-    getClockDrift() {
-        return this.clockDrift;
-    }
+  /**
+   * @returns {CognitoAccessToken} the session's access token
+   */
+  getAccessToken() {
+    return this.accessToken;
+  }
 
-    /**
-     * @returns {int} the computer's clock drift
-     */
-    calculateClockDrift() {
-        const now = Math.floor(new Date() / 1000);
-        const iat = Math.min(
-            this.accessToken.getIssuedAt(),
-            this.idToken.getIssuedAt()
-        );
+  /**
+   * @returns {int} the session's clock drift
+   */
+  getClockDrift() {
+    return this.clockDrift;
+  }
 
-        return now - iat;
-    }
+  /**
+   * @returns {int} the computer's clock drift
+   */
+  calculateClockDrift() {
+    const now = Math.floor(new Date() / 1000);
+    const iat = Math.min(
+      this.accessToken.getIssuedAt(),
+      this.idToken.getIssuedAt()
+    );
 
-    /**
-     * Checks to see if the session is still valid based on session expiry information found
-     * in tokens and the current time (adjusted with clock drift)
-     * @returns {boolean} if the session is still valid
-     */
-    isValid() {
-        const now = Math.floor(new Date() / 1000);
-        const adjusted = now - this.clockDrift;
+    return now - iat;
+  }
 
-        return (
-            adjusted < this.accessToken.getExpiration() &&
-            adjusted < this.idToken.getExpiration()
-        );
-    }
+  /**
+   * Checks to see if the session is still valid based on session expiry information found
+   * in tokens and the current time (adjusted with clock drift)
+   * @returns {boolean} if the session is still valid
+   */
+  isValid() {
+    const now = Math.floor(new Date() / 1000);
+    const adjusted = now - this.clockDrift;
+
+    return (
+      adjusted < this.accessToken.getExpiration() &&
+      adjusted < this.idToken.getExpiration()
+    );
+  }
 }

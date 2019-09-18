@@ -11,19 +11,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/storage:** fix typo ([#3828](https://github.com/aws/aws-amplify/issues/3828)) ([b93af35](https://github.com/aws/aws-amplify/commit/b93af35))
+- **@aws-amplify/storage:** fix typo ([#3828](https://github.com/aws/aws-amplify/issues/3828)) ([b93af35](https://github.com/aws/aws-amplify/commit/b93af35))
 
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.36...@aws-amplify/storage@1.1.0) (2019-08-05)
 
 ### Features
 
--   Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
+- Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
 
 ## [1.0.36](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.35...@aws-amplify/storage@1.0.36) (2019-08-01)
 
 ### Bug Fixes
 
--   **@aws-amplify/storage:** removed not using variables ([#3768](https://github.com/aws/aws-amplify/issues/3768)) ([4164cf5](https://github.com/aws/aws-amplify/commit/4164cf5))
+- **@aws-amplify/storage:** removed not using variables ([#3768](https://github.com/aws/aws-amplify/issues/3768)) ([4164cf5](https://github.com/aws/aws-amplify/commit/4164cf5))
 
 ## [1.0.35](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.34...@aws-amplify/storage@1.0.35) (2019-07-31)
 
@@ -43,8 +43,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   allow SSE to be passed in global configure of storage ([9ee76cc](https://github.com/aws/aws-amplify/commit/9ee76cc))
--   allow SSE to be passed in global configure of storage ([8fb26c4](https://github.com/aws/aws-amplify/commit/8fb26c4))
+- allow SSE to be passed in global configure of storage ([9ee76cc](https://github.com/aws/aws-amplify/commit/9ee76cc))
+- allow SSE to be passed in global configure of storage ([8fb26c4](https://github.com/aws/aws-amplify/commit/8fb26c4))
 
 <a name="1.0.31"></a>
 
@@ -64,7 +64,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.30"></a>
 
@@ -84,7 +84,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/storage:** The issue was when configuring Amplify or Storage more than once, e.g. `Amplify.configure(...)` or `Storage.configure(...)` the default level was set to `private`. The default level will always be `public` except when you configure it to something different like `Storage.configure({ level: 'protected' })` ([#3222](https://github.com/aws/aws-amplify/issues/3222)) ([8b46eb8](https://github.com/aws/aws-amplify/commit/8b46eb8))
+- **@aws-amplify/storage:** The issue was when configuring Amplify or Storage more than once, e.g. `Amplify.configure(...)` or `Storage.configure(...)` the default level was set to `private`. The default level will always be `public` except when you configure it to something different like `Storage.configure({ level: 'protected' })` ([#3222](https://github.com/aws/aws-amplify/issues/3222)) ([8b46eb8](https://github.com/aws/aws-amplify/commit/8b46eb8))
 
 <a name="1.0.29"></a>
 
@@ -146,7 +146,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
+- **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
 
 <a name="1.0.27-unstable.1"></a>
 
@@ -178,7 +178,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **storage:** Added tagging support on put request (S3) ([#2606](https://github.com/aws/aws-amplify/issues/2606)) ([50243b7](https://github.com/aws/aws-amplify/commit/50243b7)), closes [#2594](https://github.com/aws/aws-amplify/issues/2594)
+- **storage:** Added tagging support on put request (S3) ([#2606](https://github.com/aws/aws-amplify/issues/2606)) ([50243b7](https://github.com/aws/aws-amplify/commit/50243b7)), closes [#2594](https://github.com/aws/aws-amplify/issues/2594)
 
 <a name="1.0.26-unstable.2"></a>
 
@@ -228,7 +228,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/storage:** Explicitly declare signatureVersion 'v4' ([#2379](https://github.com/aws/aws-amplify/issues/2379)) ([32d439a](https://github.com/aws/aws-amplify/commit/32d439a))
+- **@aws-amplify/storage:** Explicitly declare signatureVersion 'v4' ([#2379](https://github.com/aws/aws-amplify/issues/2379)) ([32d439a](https://github.com/aws/aws-amplify/commit/32d439a))
 
 <a name="1.0.23"></a>
 
@@ -356,7 +356,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **storage:** Update JSDoc to clarify that Storage.get can return a Promise<String|Object> ([#1913](https://github.com/aws/aws-amplify/issues/1913)) ([dfc3bb7](https://github.com/aws/aws-amplify/commit/dfc3bb7)), closes [#1912](https://github.com/aws/aws-amplify/issues/1912)
+- **storage:** Update JSDoc to clarify that Storage.get can return a Promise<String|Object> ([#1913](https://github.com/aws/aws-amplify/issues/1913)) ([dfc3bb7](https://github.com/aws/aws-amplify/commit/dfc3bb7)), closes [#1912](https://github.com/aws/aws-amplify/issues/1912)
 
 <a name="1.0.17-unstable.0"></a>
 
@@ -364,7 +364,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/storage:** Added ability to track progress of S3 uploads ([#1830](https://github.com/aws/aws-amplify/issues/1830)) ([5aef207](https://github.com/aws/aws-amplify/commit/5aef207))
+- **@aws-amplify/storage:** Added ability to track progress of S3 uploads ([#1830](https://github.com/aws/aws-amplify/issues/1830)) ([5aef207](https://github.com/aws/aws-amplify/commit/5aef207))
 
 <a name="1.0.16"></a>
 
@@ -486,7 +486,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
+- **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
 
 <a name="1.0.8"></a>
 
@@ -518,7 +518,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.5"></a>
 

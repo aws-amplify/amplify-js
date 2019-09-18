@@ -21,7 +21,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/ui:** Fix the issue that window is not defined in [@aws-amplify](https://github.com/aws-amplify)/ui in NodeJS ([#3512](https://github.com/aws-amplify/amplify-js/issues/3512)) ([f290a00](https://github.com/aws-amplify/amplify-js/commit/f290a00))
+- **@aws-amplify/ui:** Fix the issue that window is not defined in [@aws-amplify](https://github.com/aws-amplify)/ui in NodeJS ([#3512](https://github.com/aws-amplify/amplify-js/issues/3512)) ([f290a00](https://github.com/aws-amplify/amplify-js/commit/f290a00))
 
 <a name="1.0.20"></a>
 
@@ -129,7 +129,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
+- **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
 
 <a name="1.0.11"></a>
 
@@ -155,7 +155,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react:** disable sign in button while loading ([#2216](https://github.com/aws-amplify/amplify-js/issues/2216)) ([b196b7f](https://github.com/aws-amplify/amplify-js/commit/b196b7f))
+- **aws-amplify-react:** disable sign in button while loading ([#2216](https://github.com/aws-amplify/amplify-js/issues/2216)) ([b196b7f](https://github.com/aws-amplify/amplify-js/commit/b196b7f))
 
 <a name="1.0.10-unstable.0"></a>
 
@@ -202,7 +202,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react:** Add Auth0 button ([b16ded3](https://github.com/aws-amplify/amplify-js/commit/b16ded3))
+- **aws-amplify-react:** Add Auth0 button ([b16ded3](https://github.com/aws-amplify/amplify-js/commit/b16ded3))
 
 <a name="1.0.7"></a>
 
@@ -264,9 +264,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** authState visibility issues on initial load ([#1657](https://github.com/aws-amplify/amplify-js/issues/1657)) ([50611fe](https://github.com/aws-amplify/amplify-js/commit/50611fe))
--   **aws-amplify-angular:** responsive styles for components ([650ddf2](https://github.com/aws-amplify/amplify-js/commit/650ddf2))
--   **aws-amplify-angular:** updates to responsive ui ([a036278](https://github.com/aws-amplify/amplify-js/commit/a036278))
+- **aws-amplify-angular:** authState visibility issues on initial load ([#1657](https://github.com/aws-amplify/amplify-js/issues/1657)) ([50611fe](https://github.com/aws-amplify/amplify-js/commit/50611fe))
+- **aws-amplify-angular:** responsive styles for components ([650ddf2](https://github.com/aws-amplify/amplify-js/commit/650ddf2))
+- **aws-amplify-angular:** updates to responsive ui ([a036278](https://github.com/aws-amplify/amplify-js/commit/a036278))
 
 <a name="1.0.2"></a>
 
@@ -278,8 +278,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 1.0.1-unstable.0 (2018-08-28)
 
--   Amplify ui migration (#1517) ([41d3184](https://github.com/aws-amplify/amplify-js/commit/41d3184)), closes [#1517](https://github.com/aws-amplify/amplify-js/issues/1517)
+- Amplify ui migration (#1517) ([41d3184](https://github.com/aws-amplify/amplify-js/commit/41d3184)), closes [#1517](https://github.com/aws-amplify/amplify-js/issues/1517)
 
 ### BREAKING CHANGES
 
--   UI Components
+- UI Components

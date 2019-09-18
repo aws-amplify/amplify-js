@@ -22,10 +22,10 @@ const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
     <div class="amplify-form-body" data-test="${
-        auth.confirmSignIn.bodySection
+      auth.confirmSignIn.bodySection
     }">
     <div class="amplify-form-header" data-test="${
-        auth.confirmSignIn.headerSection
+      auth.confirmSignIn.headerSection
     }">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
         <label class="amplify-input-label" for="code">
@@ -75,83 +75,81 @@ const template = `
 `;
 
 @Component({
-    selector: 'amplify-auth-confirm-sign-in-core',
-    template,
+  selector: 'amplify-auth-confirm-sign-in-core',
+  template,
 })
 export class ConfirmSignInComponentCore implements OnInit {
-    _authState: AuthState;
-    _show: boolean;
-    code: string;
-    errorMessage: string;
-    protected logger: any;
+  _authState: AuthState;
+  _show: boolean;
+  code: string;
+  errorMessage: string;
+  protected logger: any;
 
-    constructor(
-        @Inject(AmplifyService) protected amplifyService: AmplifyService
-    ) {
-        this.logger = this.amplifyService.logger('ConfiSignInComponent');
+  constructor(
+    @Inject(AmplifyService) protected amplifyService: AmplifyService
+  ) {
+    this.logger = this.amplifyService.logger('ConfiSignInComponent');
+  }
+
+  @Input()
+  set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
+    this._authState = data.authState;
+    this._show = data.authState.state === 'confirmSignIn';
+  }
+
+  @Input()
+  set authState(authState: AuthState) {
+    this._authState = authState;
+    this._show = authState.state === 'confirmSignIn';
+  }
+
+  @Input() hide: string[] = [];
+
+  ngOnInit() {
+    if (!this.amplifyService.auth()) {
+      throw new Error('Auth module not registered on AmplifyService provider');
     }
+  }
 
-    @Input()
-    set data(data: any) {
-        this.hide = data.hide ? data.hide : this.hide;
-        this._authState = data.authState;
-        this._show = data.authState.state === 'confirmSignIn';
-    }
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp).length > 0;
+  }
 
-    @Input()
-    set authState(authState: AuthState) {
-        this._authState = authState;
-        this._show = authState.state === 'confirmSignIn';
-    }
+  setCode(code: string) {
+    this.code = code;
+  }
 
-    @Input() hide: string[] = [];
-
-    ngOnInit() {
-        if (!this.amplifyService.auth()) {
-            throw new Error(
-                'Auth module not registered on AmplifyService provider'
-            );
-        }
-    }
-
-    shouldHide(comp) {
-        return this.hide.filter(item => item === comp).length > 0;
-    }
-
-    setCode(code: string) {
-        this.code = code;
-    }
-
-    onConfirm() {
-        const { user } = this._authState;
-        const { challengeName } = user;
-        const mfaType =
-            challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
-        this.amplifyService
-            .auth()
-            .confirmSignIn(user, this.code, mfaType)
-            .then(() => {
-                this.onAlertClose();
-                this.amplifyService.setAuthState({ state: 'signedIn', user });
-            })
-            .catch(err => this._setError(err));
-    }
-
-    onSignIn() {
+  onConfirm() {
+    const { user } = this._authState;
+    const { challengeName } = user;
+    const mfaType =
+      challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
+    this.amplifyService
+      .auth()
+      .confirmSignIn(user, this.code, mfaType)
+      .then(() => {
         this.onAlertClose();
-        this.amplifyService.setAuthState({ state: 'signIn', user: null });
+        this.amplifyService.setAuthState({ state: 'signedIn', user });
+      })
+      .catch(err => this._setError(err));
+  }
+
+  onSignIn() {
+    this.onAlertClose();
+    this.amplifyService.setAuthState({ state: 'signIn', user: null });
+  }
+
+  onAlertClose() {
+    this._setError(null);
+  }
+
+  _setError(err) {
+    if (!err) {
+      this.errorMessage = null;
+      return;
     }
 
-    onAlertClose() {
-        this._setError(null);
-    }
-
-    _setError(err) {
-        if (!err) {
-            this.errorMessage = null;
-            return;
-        }
-
-        this.errorMessage = err.message || err;
-    }
+    this.errorMessage = err.message || err;
+  }
 }

@@ -12,8 +12,8 @@
  */
 
 export function missingConfig(name) {
-    return new Error('Missing config value of ' + name);
+  return new Error('Missing config value of ' + name);
 }
 export function invalidParameter(name) {
-    return new Error('Invalid parameter value of ' + name);
+  return new Error('Invalid parameter value of ' + name);
 }

@@ -45,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.27"></a>
 
@@ -371,7 +371,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/cache:** check if window object exists for browser usage ([988e553](https://github.com/aws/aws-amplify/commit/988e553))
+- **@aws-amplify/cache:** check if window object exists for browser usage ([988e553](https://github.com/aws/aws-amplify/commit/988e553))
 
 <a name="1.0.8-unstable.2"></a>
 
@@ -379,7 +379,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/cache:** check if window object exists for browser usage ([988e553](https://github.com/aws/aws-amplify/commit/988e553))
+- **@aws-amplify/cache:** check if window object exists for browser usage ([988e553](https://github.com/aws/aws-amplify/commit/988e553))
 
 <a name="1.0.8-unstable.1"></a>
 
@@ -411,7 +411,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.5"></a>
 

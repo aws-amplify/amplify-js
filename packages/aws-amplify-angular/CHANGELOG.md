@@ -101,7 +101,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws-amplify/amplify-js/commit/9ce5a72))
+- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws-amplify/amplify-js/commit/9ce5a72))
 
 <a name="3.0.3"></a>
 
@@ -121,7 +121,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws-amplify/amplify-js/commit/49eae14))
+- add a todo to the greeting object in order to adjust the Angular Greeting Component to match React, fix typo in requireNewPassword ([49eae14](https://github.com/aws-amplify/amplify-js/commit/49eae14))
 
 <a name="3.0.3-unstable.2"></a>
 
@@ -219,7 +219,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** clears error message on state change ([b19de01](https://github.com/aws-amplify/amplify-js/commit/b19de01))
+- **aws-amplify-angular:** clears error message on state change ([b19de01](https://github.com/aws-amplify/amplify-js/commit/b19de01))
 
 <a name="3.0.2-unstable.3"></a>
 
@@ -227,7 +227,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** moves rxjs-compat to dependencies ([83e1cc2](https://github.com/aws-amplify/amplify-js/commit/83e1cc2))
+- **aws-amplify-angular:** moves rxjs-compat to dependencies ([83e1cc2](https://github.com/aws-amplify/amplify-js/commit/83e1cc2))
 
 <a name="3.0.2-unstable.2"></a>
 
@@ -253,7 +253,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** preparing release ([84f261a](https://github.com/aws-amplify/amplify-js/commit/84f261a))
+- **aws-amplify-angular:** preparing release ([84f261a](https://github.com/aws-amplify/amplify-js/commit/84f261a))
 
 <a name="3.0.0"></a>
 
@@ -537,7 +537,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/aws-amplify-angular:** added labels for inputs in the forgot password component. ([38d44be](https://github.com/aws-amplify/amplify-js/commit/38d44be))
+- **@aws-amplify/aws-amplify-angular:** added labels for inputs in the forgot password component. ([38d44be](https://github.com/aws-amplify/amplify-js/commit/38d44be))
 
 <a name="2.1.7-unstable.2"></a>
 
@@ -663,7 +663,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
+- **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws-amplify/amplify-js/issues/2121)) ([938d2a5](https://github.com/aws-amplify/amplify-js/commit/938d2a5))
 
 <a name="2.1.1"></a>
 
@@ -1191,7 +1191,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   bumping version for deploying on unstable tag ([#1706](https://github.com/aws-amplify/amplify-js/issues/1706)) ([b5d6468](https://github.com/aws-amplify/amplify-js/commit/b5d6468))
+- bumping version for deploying on unstable tag ([#1706](https://github.com/aws-amplify/amplify-js/issues/1706)) ([b5d6468](https://github.com/aws-amplify/amplify-js/commit/b5d6468))
 
 <a name="2.0.5"></a>
 
@@ -1229,7 +1229,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** authState visibility issues on initial load ([#1657](https://github.com/aws-amplify/amplify-js/issues/1657)) ([50611fe](https://github.com/aws-amplify/amplify-js/commit/50611fe))
+- **aws-amplify-angular:** authState visibility issues on initial load ([#1657](https://github.com/aws-amplify/amplify-js/issues/1657)) ([50611fe](https://github.com/aws-amplify/amplify-js/commit/50611fe))
 
 <a name="2.0.3"></a>
 
@@ -1273,21 +1273,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   UI Components ([1ff1abd](https://github.com/aws-amplify/amplify-js/commit/1ff1abd))
+- UI Components ([1ff1abd](https://github.com/aws-amplify/amplify-js/commit/1ff1abd))
 
 ### BREAKING CHANGES
 
--   UI Components
+- UI Components
 
 <a name="1.0.4-unstable.3"></a>
 
 ## [1.0.4-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@1.0.4-unstable.2...aws-amplify-angular@1.0.4-unstable.3) (2018-08-28)
 
--   Amplify ui migration (#1517) ([41d3184](https://github.com/aws-amplify/amplify-js/commit/41d3184)), closes [#1517](https://github.com/aws-amplify/amplify-js/issues/1517)
+- Amplify ui migration (#1517) ([41d3184](https://github.com/aws-amplify/amplify-js/commit/41d3184)), closes [#1517](https://github.com/aws-amplify/amplify-js/issues/1517)
 
 ### BREAKING CHANGES
 
--   UI Components
+- UI Components
 
 <a name="1.0.4-unstable.2"></a>
 
@@ -1307,7 +1307,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws-amplify/amplify-js/issues/1441)) ([eb84e01](https://github.com/aws-amplify/amplify-js/commit/eb84e01))
+- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws-amplify/amplify-js/issues/1441)) ([eb84e01](https://github.com/aws-amplify/amplify-js/commit/eb84e01))
 
 <a name="1.0.3"></a>
 

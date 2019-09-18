@@ -12,11 +12,11 @@
  */
 
 import Analytics, {
-    AnalyticsClass,
-    AnalyticsProvider,
-    AWSPinpointProvider,
-    AWSKinesisProvider,
-    AmazonPersonalizeProvider,
+  AnalyticsClass,
+  AnalyticsProvider,
+  AWSPinpointProvider,
+  AWSKinesisProvider,
+  AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
@@ -27,17 +27,17 @@ import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import * as UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
 import Predictions, {
-    AmazonAIPredictionsProvider,
+  AmazonAIPredictionsProvider,
 } from '@aws-amplify/predictions';
 
 import Amplify, {
-    ConsoleLogger as Logger,
-    Hub,
-    JS,
-    ClientDevice,
-    Signer,
-    I18n,
-    ServiceWorker,
+  ConsoleLogger as Logger,
+  Hub,
+  JS,
+  ClientDevice,
+  Signer,
+  I18n,
+  ServiceWorker,
 } from '@aws-amplify/core';
 
 export default Amplify;
@@ -57,36 +57,36 @@ Amplify.XR = XR;
 Amplify.Predictions = Predictions;
 
 export {
-    Auth,
-    Analytics,
-    Storage,
-    API,
-    PubSub,
-    I18n,
-    Logger,
-    Hub,
-    Cache,
-    JS,
-    ClientDevice,
-    Signer,
-    ServiceWorker,
-    Interactions,
-    UI,
-    XR,
-    Predictions,
+  Auth,
+  Analytics,
+  Storage,
+  API,
+  PubSub,
+  I18n,
+  Logger,
+  Hub,
+  Cache,
+  JS,
+  ClientDevice,
+  Signer,
+  ServiceWorker,
+  Interactions,
+  UI,
+  XR,
+  Predictions,
 };
 
 export {
-    AuthClass,
-    AnalyticsClass,
-    APIClass,
-    StorageClass,
-    PubSubClass,
-    InteractionsClass,
-    XRClass,
-    AnalyticsProvider,
-    AWSPinpointProvider,
-    AWSKinesisProvider,
-    AmazonPersonalizeProvider,
+  AuthClass,
+  AnalyticsClass,
+  APIClass,
+  StorageClass,
+  PubSubClass,
+  InteractionsClass,
+  XRClass,
+  AnalyticsProvider,
+  AWSPinpointProvider,
+  AWSKinesisProvider,
+  AmazonPersonalizeProvider,
 };
 export { graphqlOperation };

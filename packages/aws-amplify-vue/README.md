@@ -83,11 +83,11 @@ To call the Amplify library, simply use `this.$Amplify.` followed by whichever m
 
 The Authenticator component provides basic basic login/logout functionality for your application, as well confirmation steps for new user registration and user login. It uses the following components as children:
 
--   SignIn
--   ConfirmSignIn
--   SignUp
--   ConfirmSignUp
--   ForgotPassword
+- SignIn
+- ConfirmSignIn
+- SignUp
+- ConfirmSignUp
+- ForgotPassword
 
 Usage: `<amplify-authenticator></amplify-authenticator>`
 
@@ -128,10 +128,10 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'signedIn')`: Emitted when a user successfully signs in without answering an MFA challenge.
--   `AmplifyEventBus.$emit('authState', 'confirmSignIn')`: Emitted when a user successfully provides their credentials but is then asked to answer and MFA challenge.
--   `AmplifyEventBus.$emit('authState', 'forgotPassword')`: Emitted when a user clicks the 'Forgot Password' button.
--   `AmplifyEventBus.$emit('authState', 'signUp')`: Emitted when a user clicks 'Back to Sign Up'.
+- `AmplifyEventBus.$emit('authState', 'signedIn')`: Emitted when a user successfully signs in without answering an MFA challenge.
+- `AmplifyEventBus.$emit('authState', 'confirmSignIn')`: Emitted when a user successfully provides their credentials but is then asked to answer and MFA challenge.
+- `AmplifyEventBus.$emit('authState', 'forgotPassword')`: Emitted when a user clicks the 'Forgot Password' button.
+- `AmplifyEventBus.$emit('authState', 'signUp')`: Emitted when a user clicks 'Back to Sign Up'.
 
 ### ConfirmSignIn
 
@@ -152,8 +152,8 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'signedIn')`: Emitted when a user successfully answers their MFA challenge.
--   `AmplifyEventBus.$emit('authState', 'signIn');`: Emitted when a user clicks 'Back to Sign In'.
+- `AmplifyEventBus.$emit('authState', 'signedIn')`: Emitted when a user successfully answers their MFA challenge.
+- `AmplifyEventBus.$emit('authState', 'signIn');`: Emitted when a user clicks 'Back to Sign In'.
 
 ### SignUp
 
@@ -174,8 +174,8 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'confirmSignUp')`: Emitted when a user successfully enters their information but has not yet completed a required verification step.
--   `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully provides their information and does not need to complete a required verfication step, or when they click 'Back to Sign In'.
+- `AmplifyEventBus.$emit('authState', 'confirmSignUp')`: Emitted when a user successfully enters their information but has not yet completed a required verification step.
+- `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully provides their information and does not need to complete a required verfication step, or when they click 'Back to Sign In'.
 
 ### ConfirmSignUp
 
@@ -196,7 +196,7 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully completes their verification step or clicks 'Back to Sign In'.
+- `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully completes their verification step or clicks 'Back to Sign In'.
 
 ### ForgotPassword
 
@@ -216,7 +216,7 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully resets their password or clicks 'Back to Sign In'.
+- `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully resets their password or clicks 'Back to Sign In'.
 
 ### SignOut
 
@@ -237,7 +237,7 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('authState', 'signedOut')`: Emitted when a user successfully signs out.
+- `AmplifyEventBus.$emit('authState', 'signedOut')`: Emitted when a user successfully signs out.
 
 ### SetMFA
 
@@ -478,7 +478,7 @@ Config:
 
 Events:
 
--   `AmplifyEventBus.$emit('fileUpload', img)`: Emitted when a file is uploaded (includes the image path)
+- `AmplifyEventBus.$emit('fileUpload', img)`: Emitted when a file is uploaded (includes the image path)
 
 ### S3Album
 
@@ -540,4 +540,4 @@ If not in your aws.exports file, the bot can also be defined in the AWS configur
 
 Events:
 
--   `AmplifyEventBus.$emit('chatComplete', this.options.botTitle)`: Emitted when a chat session has been completed (only if the clearComplete options is 'true')
+- `AmplifyEventBus.$emit('chatComplete', this.options.botTitle)`: Emitted when a chat session has been completed (only if the clearComplete options is 'true')

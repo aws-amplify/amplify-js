@@ -11,9 +11,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** Add countryDialCodes to allow non USA phone numbers ([#3593](https://github.com/aws/aws-amplify/issues/3593)) ([9791966](https://github.com/aws/aws-amplify/commit/9791966))
--   **aws-amplify-react-native:** removing axios dependency on amplify-react-native ([4c5b7cf](https://github.com/aws/aws-amplify/commit/4c5b7cf))
--   **aws-amplify-react-native:** Use more compatible default export syntax ([#3102](https://github.com/aws/aws-amplify/issues/3102)) ([3ed0b74](https://github.com/aws/aws-amplify/commit/3ed0b74))
+- **aws-amplify-react-native:** Add countryDialCodes to allow non USA phone numbers ([#3593](https://github.com/aws/aws-amplify/issues/3593)) ([9791966](https://github.com/aws/aws-amplify/commit/9791966))
+- **aws-amplify-react-native:** removing axios dependency on amplify-react-native ([4c5b7cf](https://github.com/aws/aws-amplify/commit/4c5b7cf))
+- **aws-amplify-react-native:** Use more compatible default export syntax ([#3102](https://github.com/aws/aws-amplify/issues/3102)) ([3ed0b74](https://github.com/aws/aws-amplify/commit/3ed0b74))
 
 ## [2.1.16](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.1.15...aws-amplify-react-native@2.1.16) (2019-07-30)
 
@@ -47,7 +47,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** Remove console log ([#3305](https://github.com/aws/aws-amplify/issues/3305)) ([f03b09c](https://github.com/aws/aws-amplify/commit/f03b09c))
+- **aws-amplify-react-native:** Remove console log ([#3305](https://github.com/aws/aws-amplify/issues/3305)) ([f03b09c](https://github.com/aws/aws-amplify/commit/f03b09c))
 
 <a name="2.1.13-unstable.2"></a>
 
@@ -55,7 +55,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** Fix awSignUpConfig.defaultCountryCode not being used ([9cec669](https://github.com/aws/aws-amplify/commit/9cec669))
+- **aws-amplify-react-native:** Fix awSignUpConfig.defaultCountryCode not being used ([9cec669](https://github.com/aws/aws-amplify/commit/9cec669))
 
 <a name="2.1.13-unstable.1"></a>
 
@@ -81,7 +81,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react-native:** withOAuth Loading ([97ff79c](https://github.com/aws/aws-amplify/commit/97ff79c)), closes [#3021](https://github.com/aws/aws-amplify/issues/3021)
+- **aws-amplify-react-native:** withOAuth Loading ([97ff79c](https://github.com/aws/aws-amplify/commit/97ff79c)), closes [#3021](https://github.com/aws/aws-amplify/issues/3021)
 
 <a name="2.1.11"></a>
 
@@ -95,7 +95,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** Fix funky background ([f6bc2ba](https://github.com/aws/aws-amplify/commit/f6bc2ba)), closes [#2618](https://github.com/aws/aws-amplify/issues/2618)
+- **aws-amplify-react-native:** Fix funky background ([f6bc2ba](https://github.com/aws/aws-amplify/commit/f6bc2ba)), closes [#2618](https://github.com/aws/aws-amplify/issues/2618)
 
 <a name="2.1.11-unstable.2"></a>
 
@@ -109,7 +109,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** sets inital value of pickAttr to email or phone_number so that verify button is enabled and passes the correct value to verification method ([3cf4915](https://github.com/aws/aws-amplify/commit/3cf4915))
+- **aws-amplify-react-native:** sets inital value of pickAttr to email or phone_number so that verify button is enabled and passes the correct value to verification method ([3cf4915](https://github.com/aws/aws-amplify/commit/3cf4915))
 
 <a name="2.1.11-unstable.0"></a>
 
@@ -117,7 +117,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** catch the error when verifying contact ([f8c9972](https://github.com/aws/aws-amplify/commit/f8c9972))
+- **aws-amplify-react-native:** catch the error when verifying contact ([f8c9972](https://github.com/aws/aws-amplify/commit/f8c9972))
 
 <a name="2.1.10"></a>
 
@@ -131,7 +131,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
+- **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
 
 <a name="2.1.9"></a>
 
@@ -157,7 +157,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+- **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
 
 <a name="2.1.8-unstable.1"></a>
 
@@ -195,7 +195,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/react-native:** React Native chatbot voice interactions ([#2355](https://github.com/aws/aws-amplify/issues/2355)) ([2a4f4bc](https://github.com/aws/aws-amplify/commit/2a4f4bc))
+- **@aws-amplify/react-native:** React Native chatbot voice interactions ([#2355](https://github.com/aws/aws-amplify/issues/2355)) ([2a4f4bc](https://github.com/aws/aws-amplify/commit/2a4f4bc))
 
 <a name="2.1.5"></a>
 
@@ -235,7 +235,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws/aws-amplify/issues/2121)) ([938d2a5](https://github.com/aws/aws-amplify/commit/938d2a5))
+- **@aws-amplify/interactions @aws-amplify/react @aws-amplify/react-native @aws-amplify/angular @aws-amplify/vue:** Update interactions to include voice ([#2121](https://github.com/aws/aws-amplify/issues/2121)) ([938d2a5](https://github.com/aws/aws-amplify/commit/938d2a5))
 
 <a name="2.1.1"></a>
 
@@ -315,7 +315,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/react-native:** Add dial code selector to sign-up ([ab5efc3](https://github.com/aws/aws-amplify/commit/ab5efc3))
+- **@aws-amplify/react-native:** Add dial code selector to sign-up ([ab5efc3](https://github.com/aws/aws-amplify/commit/ab5efc3))
 
 <a name="2.0.9-unstable.1"></a>
 
@@ -323,7 +323,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** render required attributes when requiring new passwords ([faa502f](https://github.com/aws/aws-amplify/commit/faa502f))
+- **aws-amplify-react-native:** render required attributes when requiring new passwords ([faa502f](https://github.com/aws/aws-amplify/commit/faa502f))
 
 <a name="2.0.9-unstable.0"></a>
 
@@ -331,7 +331,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react:** add I18n in Greetings ([e549db7](https://github.com/aws/aws-amplify/commit/e549db7))
+- **aws-amplify-react:** add I18n in Greetings ([e549db7](https://github.com/aws/aws-amplify/commit/e549db7))
 
 **Note:** Version bump only for package aws-amplify-react-native
 
@@ -371,7 +371,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react aws-amplify-react-native:** Connect component ([#1868](https://github.com/aws/aws-amplify/issues/1868)) ([8dd6b55](https://github.com/aws/aws-amplify/commit/8dd6b55))
+- **aws-amplify-react aws-amplify-react-native:** Connect component ([#1868](https://github.com/aws/aws-amplify/issues/1868)) ([8dd6b55](https://github.com/aws/aws-amplify/commit/8dd6b55))
 
 <a name="2.0.7"></a>
 
@@ -385,7 +385,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react:** jump to the initial state if not signed in ([d8779eb](https://github.com/aws/aws-amplify/commit/d8779eb))
+- **aws-amplify-react:** jump to the initial state if not signed in ([d8779eb](https://github.com/aws/aws-amplify/commit/d8779eb))
 
 <a name="2.0.7-unstable.0"></a>
 
@@ -429,7 +429,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** check contact before getting signed in ([5707577](https://github.com/aws/aws-amplify/commit/5707577))
+- **aws-amplify-react-native:** check contact before getting signed in ([5707577](https://github.com/aws/aws-amplify/commit/5707577))
 
 <a name="2.0.3"></a>
 
@@ -467,7 +467,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
+- **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
 
 <a name="2.0.1-unstable.1"></a>
 
@@ -475,7 +475,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
+- **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
 
 <a name="2.0.0"></a>
 
@@ -483,21 +483,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   UI Components ([1ff1abd](https://github.com/aws/aws-amplify/commit/1ff1abd))
+- UI Components ([1ff1abd](https://github.com/aws/aws-amplify/commit/1ff1abd))
 
 ### BREAKING CHANGES
 
--   UI Components
+- UI Components
 
 <a name="1.0.7-unstable.26"></a>
 
 ## [1.0.7-unstable.26](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.25...aws-amplify-react-native@1.0.7-unstable.26) (2018-08-28)
 
--   Amplify ui migration (#1517) ([41d3184](https://github.com/aws/aws-amplify/commit/41d3184)), closes [#1517](https://github.com/aws/aws-amplify/issues/1517)
+- Amplify ui migration (#1517) ([41d3184](https://github.com/aws/aws-amplify/commit/41d3184)), closes [#1517](https://github.com/aws/aws-amplify/issues/1517)
 
 ### BREAKING CHANGES
 
--   UI Components
+- UI Components
 
 <a name="1.0.7-unstable.25"></a>
 
@@ -649,7 +649,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** fix the Authenticator to only call async functions when mounted ([8352bdb](https://github.com/aws/aws-amplify/commit/8352bdb))
+- **aws-amplify-react-native:** fix the Authenticator to only call async functions when mounted ([8352bdb](https://github.com/aws/aws-amplify/commit/8352bdb))
 
 <a name="1.0.7-unstable.0"></a>
 
@@ -669,7 +669,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** move keyboard dismiss from authenticator to child components ([5d2b77a](https://github.com/aws/aws-amplify/commit/5d2b77a))
+- **aws-amplify-react-native:** move keyboard dismiss from authenticator to child components ([5d2b77a](https://github.com/aws/aws-amplify/commit/5d2b77a))
 
 <a name="1.0.6-unstable.4"></a>
 
@@ -713,7 +713,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** fix the footer of confirmSignIn component ([a3443ee](https://github.com/aws/aws-amplify/commit/a3443ee))
+- **aws-amplify-react-native:** fix the footer of confirmSignIn component ([a3443ee](https://github.com/aws/aws-amplify/commit/a3443ee))
 
 <a name="1.0.5-unstable.6"></a>
 
@@ -793,7 +793,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** currentAuthenticatedUser throws error when the user is disabled/deleted ([1b09e2f](https://github.com/aws/aws-amplify/commit/1b09e2f))
+- **@aws-amplify/auth:** currentAuthenticatedUser throws error when the user is disabled/deleted ([1b09e2f](https://github.com/aws/aws-amplify/commit/1b09e2f))
 
 <a name="1.0.3-unstable.11"></a>
 
@@ -975,7 +975,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **interactions:** Interactions UI components for react and react native ([#1105](https://github.com/aws/aws-amplify/issues/1105)) ([57de248](https://github.com/aws/aws-amplify/commit/57de248))
+- **interactions:** Interactions UI components for react and react native ([#1105](https://github.com/aws/aws-amplify/issues/1105)) ([57de248](https://github.com/aws/aws-amplify/commit/57de248))
 
 <a name="0.2.18"></a>
 
@@ -983,7 +983,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **interactions:** Interactions UI components for react and react native ([#1105](https://github.com/aws/aws-amplify/issues/1105)) ([57de248](https://github.com/aws/aws-amplify/commit/57de248))
+- **interactions:** Interactions UI components for react and react native ([#1105](https://github.com/aws/aws-amplify/issues/1105)) ([57de248](https://github.com/aws/aws-amplify/commit/57de248))
 
 <a name="0.2.18-unstable.2"></a>
 
@@ -991,7 +991,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **integration tests:** CircleCI workflows and Cypress integration testing ([#1071](https://github.com/aws/aws-amplify/issues/1071)) ([bfa4776](https://github.com/aws/aws-amplify/commit/bfa4776))
+- **integration tests:** CircleCI workflows and Cypress integration testing ([#1071](https://github.com/aws/aws-amplify/issues/1071)) ([bfa4776](https://github.com/aws/aws-amplify/commit/bfa4776))
 
 <a name="0.2.18-unstable.1"></a>
 
@@ -999,7 +999,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-react-native:** firebase-messaging and firebase-core version update ([a1031ec](https://github.com/aws/aws-amplify/commit/a1031ec))
+- **aws-amplify-react-native:** firebase-messaging and firebase-core version update ([a1031ec](https://github.com/aws/aws-amplify/commit/a1031ec))
 
 <a name="0.2.18-unstable.0"></a>
 
@@ -1041,8 +1041,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="0.2.15"></a>
 
@@ -1138,8 +1138,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="0.2.14"></a>
 

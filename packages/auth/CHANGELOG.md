@@ -15,13 +15,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** Error messaging ([47ec74d](https://github.com/aws/aws-amplify/commit/47ec74d))
+- **@aws-amplify/auth:** Error messaging ([47ec74d](https://github.com/aws/aws-amplify/commit/47ec74d))
 
 ## [1.2.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.30...@aws-amplify/auth@1.2.31) (2019-08-05)
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** Encode customState when storing to compare against incoming state for federated sign in ([#3784](https://github.com/aws/aws-amplify/issues/3784)) ([1824134](https://github.com/aws/aws-amplify/commit/1824134))
+- **@aws-amplify/auth:** Encode customState when storing to compare against incoming state for federated sign in ([#3784](https://github.com/aws/aws-amplify/issues/3784)) ([1824134](https://github.com/aws/aws-amplify/commit/1824134))
 
 ## [1.2.30](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.29...@aws-amplify/auth@1.2.30) (2019-07-31)
 
@@ -31,7 +31,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** Improve OAuth flow in react native ([#3698](https://github.com/aws/aws-amplify/issues/3698)) ([799a1cf](https://github.com/aws/aws-amplify/commit/799a1cf)), closes [#3681](https://github.com/aws/aws-amplify/issues/3681)
+- **@aws-amplify/auth:** Improve OAuth flow in react native ([#3698](https://github.com/aws/aws-amplify/issues/3698)) ([799a1cf](https://github.com/aws/aws-amplify/commit/799a1cf)), closes [#3681](https://github.com/aws/aws-amplify/issues/3681)
 
 ## [1.2.28](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.26...@aws-amplify/auth@1.2.28) (2019-07-18)
 
@@ -43,7 +43,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth, aws-amplify-react-native:** Fix OAuth flow in react native ([#3633](https://github.com/aws/aws-amplify/issues/3633)) ([82e74fc](https://github.com/aws/aws-amplify/commit/82e74fc)), closes [#3399](https://github.com/aws/aws-amplify/issues/3399) [#3576](https://github.com/aws/aws-amplify/issues/3576) [#3247](https://github.com/aws/aws-amplify/issues/3247) [#3592](https://github.com/aws/aws-amplify/issues/3592) [#3210](https://github.com/aws/aws-amplify/issues/3210)
+- **@aws-amplify/auth, aws-amplify-react-native:** Fix OAuth flow in react native ([#3633](https://github.com/aws/aws-amplify/issues/3633)) ([82e74fc](https://github.com/aws/aws-amplify/commit/82e74fc)), closes [#3399](https://github.com/aws/aws-amplify/issues/3399) [#3576](https://github.com/aws/aws-amplify/issues/3576) [#3247](https://github.com/aws/aws-amplify/issues/3247) [#3592](https://github.com/aws/aws-amplify/issues/3592) [#3210](https://github.com/aws/aws-amplify/issues/3210)
 
 <a name="1.2.27-unstable.0"></a>
 
@@ -63,7 +63,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** Handle case when `signOut()` promise is rejected ([#3179](https://github.com/aws/aws-amplify/issues/3179)) ([0a2efd4](https://github.com/aws/aws-amplify/commit/0a2efd4))
+- **@aws-amplify/auth:** Handle case when `signOut()` promise is rejected ([#3179](https://github.com/aws/aws-amplify/issues/3179)) ([0a2efd4](https://github.com/aws/aws-amplify/commit/0a2efd4))
 
 <a name="1.2.25"></a>
 
@@ -89,8 +89,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** check if storage object is valid or not ([d93d36d](https://github.com/aws/aws-amplify/commit/d93d36d))
--   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+- **@aws-amplify/auth:** check if storage object is valid or not ([d93d36d](https://github.com/aws/aws-amplify/commit/d93d36d))
+- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.2.24"></a>
 
@@ -110,7 +110,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
+- **@aws-amplify/auth:** react-native - guard for window ([9254312](https://github.com/aws/aws-amplify/commit/9254312))
 
 <a name="1.2.23"></a>
 
@@ -130,7 +130,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** User may not be fully signed out ([#3172](https://github.com/aws/aws-amplify/issues/3172)) ([2678cc3](https://github.com/aws/aws-amplify/commit/2678cc3)), closes [#3117](https://github.com/aws/aws-amplify/issues/3117)
+- **@aws-amplify/auth:** User may not be fully signed out ([#3172](https://github.com/aws/aws-amplify/issues/3172)) ([2678cc3](https://github.com/aws/aws-amplify/commit/2678cc3)), closes [#3117](https://github.com/aws/aws-amplify/issues/3117)
 
 <a name="1.2.23-unstable.6"></a>
 
@@ -144,11 +144,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** Always bypass the cache on setPreferredMFA method ([3b28c98](https://github.com/aws/aws-amplify/commit/3b28c98))
+- **@aws-amplify/auth:** Always bypass the cache on setPreferredMFA method ([3b28c98](https://github.com/aws/aws-amplify/commit/3b28c98))
 
 ### Features
 
--   **@aws-amplify/auth:** Allow bypassing cache on setPreferredMFA and getPreferredMFA methods ([83a8ccf](https://github.com/aws/aws-amplify/commit/83a8ccf))
+- **@aws-amplify/auth:** Allow bypassing cache on setPreferredMFA and getPreferredMFA methods ([83a8ccf](https://github.com/aws/aws-amplify/commit/83a8ccf))
 
 <a name="1.2.23-unstable.4"></a>
 
@@ -156,7 +156,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** fix 'Not Supported' error on SSR ([7f7e93d](https://github.com/aws/aws-amplify/commit/7f7e93d))
+- **@aws-amplify/auth:** fix 'Not Supported' error on SSR ([7f7e93d](https://github.com/aws/aws-amplify/commit/7f7e93d))
 
 <a name="1.2.23-unstable.3"></a>
 
@@ -170,7 +170,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
+- **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
 
 <a name="1.2.23-unstable.1"></a>
 
@@ -196,7 +196,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** Valide OAuth state only when generated by Amlify ([#3069](https://github.com/aws/aws-amplify/issues/3069)) ([30e828f](https://github.com/aws/aws-amplify/commit/30e828f)), closes [#3054](https://github.com/aws/aws-amplify/issues/3054) [#3055](https://github.com/aws/aws-amplify/issues/3055)
+- **@aws-amplify/auth:** Valide OAuth state only when generated by Amlify ([#3069](https://github.com/aws/aws-amplify/issues/3069)) ([30e828f](https://github.com/aws/aws-amplify/commit/30e828f)), closes [#3054](https://github.com/aws/aws-amplify/issues/3054) [#3055](https://github.com/aws/aws-amplify/issues/3055)
 
 <a name="1.2.21"></a>
 
@@ -210,7 +210,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
+- **@aws-amplify/auth:** Easier Federation with OAuth ([#3005](https://github.com/aws/aws-amplify/issues/3005)) ([76cde59](https://github.com/aws/aws-amplify/commit/76cde59))
 
 <a name="1.2.21-unstable.0"></a>
 
@@ -248,7 +248,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
+- **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
 
 <a name="1.2.19-unstable.4"></a>
 
@@ -256,7 +256,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **auth:** Remove react-native related peerDependencies ([#2871](https://github.com/aws/aws-amplify/issues/2871)) ([72f3d94](https://github.com/aws/aws-amplify/commit/72f3d94))
+- **auth:** Remove react-native related peerDependencies ([#2871](https://github.com/aws/aws-amplify/issues/2871)) ([72f3d94](https://github.com/aws/aws-amplify/commit/72f3d94))
 
 <a name="1.2.19-unstable.3"></a>
 
@@ -264,7 +264,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** get the user attributes after signing in ([c024263](https://github.com/aws/aws-amplify/commit/c024263))
+- **@aws-amplify/auth:** get the user attributes after signing in ([c024263](https://github.com/aws/aws-amplify/commit/c024263))
 
 <a name="1.2.19-unstable.2"></a>
 
@@ -278,7 +278,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** check if has the right scope to send the request GetUserData ([20bd92b](https://github.com/aws/aws-amplify/commit/20bd92b))
+- **@aws-amplify/auth:** check if has the right scope to send the request GetUserData ([20bd92b](https://github.com/aws/aws-amplify/commit/20bd92b))
 
 <a name="1.2.19-unstable.0"></a>
 
@@ -298,7 +298,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **auth:** Split urlListener into web/react-native ([b33fee0](https://github.com/aws/aws-amplify/commit/b33fee0)), closes [#2808](https://github.com/aws/aws-amplify/issues/2808)
+- **auth:** Split urlListener into web/react-native ([b33fee0](https://github.com/aws/aws-amplify/commit/b33fee0)), closes [#2808](https://github.com/aws/aws-amplify/issues/2808)
 
 <a name="1.2.18-unstable.0"></a>
 
@@ -324,7 +324,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+- **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
 
 <a name="1.2.16-unstable.7"></a>
 
@@ -380,7 +380,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** wait for cached data loaded into memory before calling getItem ([5fc6d77](https://github.com/aws/aws-amplify/commit/5fc6d77))
+- **@aws-amplify/auth:** wait for cached data loaded into memory before calling getItem ([5fc6d77](https://github.com/aws/aws-amplify/commit/5fc6d77))
 
 <a name="1.2.15-unstable.0"></a>
 
@@ -406,7 +406,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** typo ([2f411ad](https://github.com/aws/aws-amplify/commit/2f411ad))
+- **@aws-amplify/auth:** typo ([2f411ad](https://github.com/aws/aws-amplify/commit/2f411ad))
 
 <a name="1.2.14-unstable.0"></a>
 
@@ -414,7 +414,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** put warning message in the federatedSignIn method ([9fff76a](https://github.com/aws/aws-amplify/commit/9fff76a))
+- **@aws-amplify/auth:** put warning message in the federatedSignIn method ([9fff76a](https://github.com/aws/aws-amplify/commit/9fff76a))
 
 <a name="1.2.13"></a>
 
@@ -428,7 +428,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** add the option to pass validation data when signing in ([13093e9](https://github.com/aws/aws-amplify/commit/13093e9))
+- **@aws-amplify/auth:** add the option to pass validation data when signing in ([13093e9](https://github.com/aws/aws-amplify/commit/13093e9))
 
 <a name="1.2.13-unstable.2"></a>
 
@@ -460,7 +460,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **amazon-cognito-identity-js:** cache the user data ([f4dd225](https://github.com/aws/aws-amplify/commit/f4dd225))
+- **amazon-cognito-identity-js:** cache the user data ([f4dd225](https://github.com/aws/aws-amplify/commit/f4dd225))
 
 <a name="1.2.11"></a>
 
@@ -546,7 +546,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react:** adding loading page ([c47f72a](https://github.com/aws/aws-amplify/commit/c47f72a))
+- **aws-amplify-react:** adding loading page ([c47f72a](https://github.com/aws/aws-amplify/commit/c47f72a))
 
 <a name="1.2.10-unstable.0"></a>
 
@@ -602,7 +602,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** throw error when failed to sync items from AsyncStorage into Memory ([85c3f32](https://github.com/aws/aws-amplify/commit/85c3f32))
+- **@aws-amplify/auth:** throw error when failed to sync items from AsyncStorage into Memory ([85c3f32](https://github.com/aws/aws-amplify/commit/85c3f32))
 
 <a name="1.2.7-unstable.1"></a>
 
@@ -742,7 +742,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** fix typescript declaration for backward compatibility ([f43bbf4](https://github.com/aws/aws-amplify/commit/f43bbf4))
+- **@aws-amplify/auth:** fix typescript declaration for backward compatibility ([f43bbf4](https://github.com/aws/aws-amplify/commit/f43bbf4))
 
 <a name="1.2.3-unstable.0"></a>
 
@@ -750,7 +750,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+- bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
 
 <a name="1.2.2"></a>
 
@@ -788,7 +788,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** add typescript declartions to Auth ([6f02a18](https://github.com/aws/aws-amplify/commit/6f02a18))
+- **@aws-amplify/auth:** add typescript declartions to Auth ([6f02a18](https://github.com/aws/aws-amplify/commit/6f02a18))
 
 <a name="1.1.2"></a>
 
@@ -826,7 +826,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** allow globalSignOut ([b8b24c7](https://github.com/aws/aws-amplify/commit/b8b24c7))
+- **@aws-amplify/auth:** allow globalSignOut ([b8b24c7](https://github.com/aws/aws-amplify/commit/b8b24c7))
 
 <a name="1.0.9-unstable.2"></a>
 
@@ -834,8 +834,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** allow return sub attribute to user ([fc48010](https://github.com/aws/aws-amplify/commit/fc48010))
--   **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
+- **@aws-amplify/auth:** allow return sub attribute to user ([fc48010](https://github.com/aws/aws-amplify/commit/fc48010))
+- **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
 
 <a name="1.0.9-unstable.1"></a>
 
@@ -843,7 +843,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
+- **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
 
 <a name="1.0.8"></a>
 
@@ -977,7 +977,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** check if window object exists for browser usage ([17d6a3d](https://github.com/aws/aws-amplify/commit/17d6a3d))
+- **@aws-amplify/auth:** check if window object exists for browser usage ([17d6a3d](https://github.com/aws/aws-amplify/commit/17d6a3d))
 
 <a name="1.0.7-unstable.5"></a>
 
@@ -997,7 +997,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.7-unstable.2"></a>
 
@@ -1035,7 +1035,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** dispatching failure event when hosted UI and documentation enhancement for hosted UI ([b13e937](https://github.com/aws/aws-amplify/commit/b13e937))
+- **@aws-amplify/auth:** dispatching failure event when hosted UI and documentation enhancement for hosted UI ([b13e937](https://github.com/aws/aws-amplify/commit/b13e937))
 
 <a name="1.0.6-unstable.3"></a>
 
@@ -1079,7 +1079,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** for currentUserPoolUser, only throws error when the user is disabled or deleted ([a800747](https://github.com/aws/aws-amplify/commit/a800747))
+- **@aws-amplify/auth:** for currentUserPoolUser, only throws error when the user is disabled or deleted ([a800747](https://github.com/aws/aws-amplify/commit/a800747))
 
 <a name="1.0.5-unstable.5"></a>
 
@@ -1087,7 +1087,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** fix getPreferredMfa and setPreferredMFA ([c5785b0](https://github.com/aws/aws-amplify/commit/c5785b0))
+- **@aws-amplify/auth:** fix getPreferredMfa and setPreferredMFA ([c5785b0](https://github.com/aws/aws-amplify/commit/c5785b0))
 
 <a name="1.0.5-unstable.3"></a>
 
@@ -1101,7 +1101,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** revert break changes in currentAuthenticatedUser ([7c806bd](https://github.com/aws/aws-amplify/commit/7c806bd))
+- **@aws-amplify/auth:** revert break changes in currentAuthenticatedUser ([7c806bd](https://github.com/aws/aws-amplify/commit/7c806bd))
 
 <a name="1.0.5-unstable.1"></a>
 
@@ -1157,7 +1157,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** currentAuthenticatedUser throws error when the user is disabled/deleted ([1b09e2f](https://github.com/aws/aws-amplify/commit/1b09e2f))
+- **@aws-amplify/auth:** currentAuthenticatedUser throws error when the user is disabled/deleted ([1b09e2f](https://github.com/aws/aws-amplify/commit/1b09e2f))
 
 <a name="1.0.3-unstable.11"></a>
 
@@ -1219,7 +1219,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** give the option to set Federated Identity Pool region ([f370b33](https://github.com/aws/aws-amplify/commit/f370b33))
+- **@aws-amplify/auth:** give the option to set Federated Identity Pool region ([f370b33](https://github.com/aws/aws-amplify/commit/f370b33))
 
 <a name="1.0.3-unstable.1"></a>
 
@@ -1233,7 +1233,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** fix issue [#1165](https://github.com/aws/aws-amplify/issues/1165) and adds an api to get current preferred mfa type ([6f8a100](https://github.com/aws/aws-amplify/commit/6f8a100))
+- **@aws-amplify/auth:** fix issue [#1165](https://github.com/aws/aws-amplify/issues/1165) and adds an api to get current preferred mfa type ([6f8a100](https://github.com/aws/aws-amplify/commit/6f8a100))
 
 <a name="1.0.2"></a>
 
@@ -1247,8 +1247,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** add try cache for operations of auth storage ([96c100e](https://github.com/aws/aws-amplify/commit/96c100e))
--   **@aws-amplify/core:** add try cache for operations of auth storage ([2bf8364](https://github.com/aws/aws-amplify/commit/2bf8364))
+- **@aws-amplify/auth:** add try cache for operations of auth storage ([96c100e](https://github.com/aws/aws-amplify/commit/96c100e))
+- **@aws-amplify/core:** add try cache for operations of auth storage ([2bf8364](https://github.com/aws/aws-amplify/commit/2bf8364))
 
 <a name="1.0.2-unstable.0"></a>
 

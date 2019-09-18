@@ -23,7 +23,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@amazon-cognito-identity-js:** Adds sendMFASelectionAnswer to types ([6c32ef3](https://github.com/aws/aws-amplify/commit/6c32ef3))
+- **@amazon-cognito-identity-js:** Adds sendMFASelectionAnswer to types ([6c32ef3](https://github.com/aws/aws-amplify/commit/6c32ef3))
 
 <a name="3.0.12"></a>
 
@@ -37,7 +37,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/amazon-cognito-identity-js:** for signUp, returns CodeDeliveryDetails from response ([7728e11](https://github.com/aws/aws-amplify/commit/7728e11))
+- **@aws-amplify/amazon-cognito-identity-js:** for signUp, returns CodeDeliveryDetails from response ([7728e11](https://github.com/aws/aws-amplify/commit/7728e11))
 
 <a name="3.0.12-unstable.2"></a>
 
@@ -45,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
+- **@aws-amplify/auth:** throw error when passing empty object to storage or cookieStorage in configuration ([816a827](https://github.com/aws/aws-amplify/commit/816a827))
 
 <a name="3.0.12-unstable.1"></a>
 
@@ -119,7 +119,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **build:** Prevent tree-shaking of crypto-js/lib-typedarrays ([#2718](https://github.com/aws/aws-amplify/issues/2718)) ([3134a64](https://github.com/aws/aws-amplify/commit/3134a64)), closes [#1181](https://github.com/aws/aws-amplify/issues/1181)
+- **build:** Prevent tree-shaking of crypto-js/lib-typedarrays ([#2718](https://github.com/aws/aws-amplify/issues/2718)) ([3134a64](https://github.com/aws/aws-amplify/commit/3134a64)), closes [#1181](https://github.com/aws/aws-amplify/issues/1181)
 
 <a name="3.0.8-unstable.1"></a>
 
@@ -139,8 +139,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** return error instead of undefined ([19c3c4e](https://github.com/aws/aws-amplify/commit/19c3c4e))
--   **amazon-cognito-identity-js:** Update Android Gradle Config ([a08f100](https://github.com/aws/aws-amplify/commit/a08f100))
+- **amazon-cognito-identity-js:** return error instead of undefined ([19c3c4e](https://github.com/aws/aws-amplify/commit/19c3c4e))
+- **amazon-cognito-identity-js:** Update Android Gradle Config ([a08f100](https://github.com/aws/aws-amplify/commit/a08f100))
 
 <a name="3.0.6"></a>
 
@@ -154,7 +154,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **@aws-amplify/auth:** add the option to pass validation data when signing in ([13093e9](https://github.com/aws/aws-amplify/commit/13093e9))
+- **@aws-amplify/auth:** add the option to pass validation data when signing in ([13093e9](https://github.com/aws/aws-amplify/commit/13093e9))
 
 <a name="3.0.6-unstable.1"></a>
 
@@ -180,7 +180,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **amazon-cognito-identity-js:** cache the user data ([f4dd225](https://github.com/aws/aws-amplify/commit/f4dd225))
+- **amazon-cognito-identity-js:** cache the user data ([f4dd225](https://github.com/aws/aws-amplify/commit/f4dd225))
 
 <a name="3.0.4"></a>
 
@@ -194,7 +194,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** Added missing type declarations for setting MFA preferences and token payloads ([080630d](https://github.com/aws/aws-amplify/commit/080630d))
+- **amazon-cognito-identity-js:** Added missing type declarations for setting MFA preferences and token payloads ([080630d](https://github.com/aws/aws-amplify/commit/080630d))
 
 <a name="3.0.4-unstable.4"></a>
 
@@ -262,7 +262,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** replace crypto-browserify with crypto-js ([4d2409a](https://github.com/aws/aws-amplify/commit/4d2409a))
+- **amazon-cognito-identity-js:** replace crypto-browserify with crypto-js ([4d2409a](https://github.com/aws/aws-amplify/commit/4d2409a))
 
 <a name="2.0.31-unstable.1"></a>
 
@@ -348,7 +348,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** clean clockDrift item when signing out ([f07d800](https://github.com/aws/aws-amplify/commit/f07d800))
+- **amazon-cognito-identity-js:** clean clockDrift item when signing out ([f07d800](https://github.com/aws/aws-amplify/commit/f07d800))
 
 <a name="2.0.29-unstable.0"></a>
 
@@ -356,7 +356,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+- bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
 
 <a name="2.0.28"></a>
 
@@ -676,7 +676,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** throw network error if in the offline ([d5808f1](https://github.com/aws/aws-amplify/commit/d5808f1))
+- **amazon-cognito-identity-js:** throw network error if in the offline ([d5808f1](https://github.com/aws/aws-amplify/commit/d5808f1))
 
 <a name="2.0.21-unstable.2"></a>
 
@@ -828,7 +828,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** add mfa setting type and fix setUserMfaPreference method ([0f8f9aa](https://github.com/aws/aws-amplify/commit/0f8f9aa))
+- **amazon-cognito-identity-js:** add mfa setting type and fix setUserMfaPreference method ([0f8f9aa](https://github.com/aws/aws-amplify/commit/0f8f9aa))
 
 <a name="2.0.17-unstable.4"></a>
 
@@ -920,8 +920,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **amazon-cognito-identity-js:** attach raw message for unknown errors ([203d50b](https://github.com/aws/aws-amplify/commit/203d50b))
--   **amazon-cognito-identity-js:** attach raw message for unknown errors ([69be072](https://github.com/aws/aws-amplify/commit/69be072))
+- **amazon-cognito-identity-js:** attach raw message for unknown errors ([203d50b](https://github.com/aws/aws-amplify/commit/203d50b))
+- **amazon-cognito-identity-js:** attach raw message for unknown errors ([69be072](https://github.com/aws/aws-amplify/commit/69be072))
 
 <a name="2.0.14-unstable.0"></a>
 
@@ -1029,7 +1029,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="2.0.9"></a>
 
@@ -1037,7 +1037,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="2.0.8"></a>
 

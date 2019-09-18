@@ -5,13 +5,13 @@ You can now use Amazon Cognito to easily add user sign-up and sign-in to your mo
 We welcome developer feedback on this project. You can reach us by creating an issue on the
 GitHub repository or posting to the Amazon Cognito Identity forums and the below blog post:
 
--   https://github.com/aws-amplify/amplify-js
--   https://forums.aws.amazon.com/forum.jspa?forumID=173
--   https://aws.amazon.com/blogs/mobile/accessing-your-user-pools-using-the-amazon-cognito-identity-sdk-for-javascript/
+- https://github.com/aws-amplify/amplify-js
+- https://forums.aws.amazon.com/forum.jspa?forumID=173
+- https://aws.amazon.com/blogs/mobile/accessing-your-user-pools-using-the-amazon-cognito-identity-sdk-for-javascript/
 
 For an overview of the Cognito authentication flow, refer to the following blog post:
 
--   https://aws.amazon.com/blogs/mobile/customizing-your-user-pool-authentication-flow/
+- https://aws.amazon.com/blogs/mobile/customizing-your-user-pool-authentication-flow/
 
 # Introduction
 
@@ -24,9 +24,9 @@ Your users will benefit from a number of security features including SMS-based M
 There are two ways to install the Amazon Cognito Identity SDK for JavaScript and its dependencies,
 depending on your project setup and experience with modern JavaScript build tools:
 
--   Download the bundle file from npm and include it in your HTML, or
+- Download the bundle file from npm and include it in your HTML, or
 
--   Install the dependencies with npm and use a bundler like webpack.
+- Install the dependencies with npm and use a bundler like webpack.
 
 **Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
 
@@ -69,89 +69,89 @@ if you are using a transpiler such as [Babel](https://babeljs.io/).) If your pro
 may wish to use [Webpack's module shimming features](http://webpack.github.io/docs/shimming-modules.html) to ease
 migration.
 
--   Install [Node.js](https://nodejs.org) on your development machine (this will not be needed on your server.)
+- Install [Node.js](https://nodejs.org) on your development machine (this will not be needed on your server.)
 
--   In your project add a `package.json`, either use `npm init` or the minimal:
+- In your project add a `package.json`, either use `npm init` or the minimal:
 
-    ```json
-    {
-        "private": true
-    }
-    ```
+  ```json
+  {
+    "private": true
+  }
+  ```
 
--   Install the Amazon Cognito Identity SDK for JavaScript and the Webpack tool into your project with `npm` (the Node
-    Package Manager, which is installed with Node.js):
+- Install the Amazon Cognito Identity SDK for JavaScript and the Webpack tool into your project with `npm` (the Node
+  Package Manager, which is installed with Node.js):
 
-    ```
-    > npm install --save-dev webpack json-loader
-    > npm install --save amazon-cognito-identity-js
-    ```
+  ```
+  > npm install --save-dev webpack json-loader
+  > npm install --save amazon-cognito-identity-js
+  ```
 
-    These will add a `node_modules` directory containing these tools and dependencies into your
-    project, you will probably want to exclude this directory from source control. Adding the `--save`
-    parameters will update the `package.json` file with instructions on what should be installed, so
-    you can simply call `npm install` without any parameters to recreate this folder later.
+  These will add a `node_modules` directory containing these tools and dependencies into your
+  project, you will probably want to exclude this directory from source control. Adding the `--save`
+  parameters will update the `package.json` file with instructions on what should be installed, so
+  you can simply call `npm install` without any parameters to recreate this folder later.
 
--   Create the configuration file for `webpack`, named `webpack.config.js`:
+- Create the configuration file for `webpack`, named `webpack.config.js`:
 
-    ```js
-    module.exports = {
-        // Example setup for your project:
-        // The entry module that requires or imports the rest of your project.
-        // Must start with `./`!
-        entry: './src/entry.js',
-        // Place output files in `./dist/my-app.js`
-        output: {
-            path: __dirname + '/dist',
-            filename: 'my-app.js',
+  ```js
+  module.exports = {
+    // Example setup for your project:
+    // The entry module that requires or imports the rest of your project.
+    // Must start with `./`!
+    entry: './src/entry.js',
+    // Place output files in `./dist/my-app.js`
+    output: {
+      path: __dirname + '/dist',
+      filename: 'my-app.js',
+    },
+    module: {
+      rules: [
+        {
+          test: /\.json$/,
+          loader: 'json-loader',
         },
-        module: {
-            rules: [
-                {
-                    test: /\.json$/,
-                    loader: 'json-loader',
-                },
-            ],
-        },
-    };
-    ```
+      ],
+    },
+  };
+  ```
 
--   Create the following directory where `webpack.config.js` resides, and create the entry file:
+- Create the following directory where `webpack.config.js` resides, and create the entry file:
 
-    ```
-    > mkdir -p src
-    > touch src/entry.js
-    ```
+  ```
+  > mkdir -p src
+  > touch src/entry.js
+  ```
 
--   Add the following into your `package.json`
+- Add the following into your `package.json`
 
-    ```json
-    {
-        "scripts": {
-            "build": "webpack"
-        }
+  ```json
+  {
+    "scripts": {
+      "build": "webpack"
     }
-    ```
+  }
+  ```
 
--   Build your application bundle with `npm run build`
+- Build your application bundle with `npm run build`
 
 ## Install for React Native
 
 See [Using NPM and Webpack](https://github.com/aws/amazon-cognito-identity-js#using-npm-and-webpack) for more information on NPM.
 
--   Install and add to your dependencies the Amazon Cognito Identity SDK for JavaScript:
+- Install and add to your dependencies the Amazon Cognito Identity SDK for JavaScript:
 
 ```
 npm install --save amazon-cognito-identity-js
 ```
 
--   Install react-native-cli if you have not already:
+- Install react-native-cli if you have not already:
 
 ```
 npm install -g react-native-cli
 ```
 
--   Link the native modules to your project:
+- Link the native modules to your project:
 
 ```
 react-native link amazon-cognito-identity-js
@@ -162,10 +162,10 @@ react-native link amazon-cognito-identity-js
 The Amazon Cognito Identity SDK for JavaScript requires two configuration values from your AWS
 Account in order to access your Cognito User Pool:
 
--   The User Pool Id, e.g. `us-east-1_aB12cDe34`
--   A User Pool App Client Id, e.g. `7ghr5379orhbo88d52vphda6s9`
-    -   When creating the App, the generate client secret box must be **unchecked** because the
-        JavaScript SDK doesn't support apps that have a client secret.
+- The User Pool Id, e.g. `us-east-1_aB12cDe34`
+- A User Pool App Client Id, e.g. `7ghr5379orhbo88d52vphda6s9`
+  - When creating the App, the generate client secret box must be **unchecked** because the
+    JavaScript SDK doesn't support apps that have a client secret.
 
 The [AWS Console for Cognito User Pools](https://console.aws.amazon.com/cognito/users/) can be used to get or create these values.
 
@@ -181,8 +181,8 @@ For a working example using angular, see [cognito-angular2-quickstart](https://g
 
 For a working example using ember.js, see:
 
--   [aws-serverless-ember](https://github.com/awslabs/aws-serverless-ember).
--   [aws-mobilehub-ember](https://github.com/awslabs/aws-mobilehub-ember).
+- [aws-serverless-ember](https://github.com/awslabs/aws-serverless-ember).
+- [aws-mobilehub-ember](https://github.com/awslabs/aws-mobilehub-ember).
 
 If you are having issues when using Aurelia, please see the following [Stack Overflow post](http://stackoverflow.com/questions/39714424/how-can-i-get-the-amazon-cognito-identity-sdk-working-in-aurelia).
 
@@ -200,9 +200,9 @@ var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
 
 // ES Modules, e.g. transpiling with Babel
 import {
-    CognitoUserPool,
-    CognitoUserAttribute,
-    CognitoUser,
+  CognitoUserPool,
+  CognitoUserAttribute,
+  CognitoUser,
 } from 'amazon-cognito-identity-js';
 ```
 
@@ -210,40 +210,40 @@ import {
 
 ```javascript
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
 var attributeList = [];
 
 var dataEmail = {
-    Name: 'email',
-    Value: 'email@mydomain.com',
+  Name: 'email',
+  Value: 'email@mydomain.com',
 };
 
 var dataPhoneNumber = {
-    Name: 'phone_number',
-    Value: '+15555555555',
+  Name: 'phone_number',
+  Value: '+15555555555',
 };
 var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(
-    dataPhoneNumber
+  dataPhoneNumber
 );
 
 attributeList.push(attributeEmail);
 attributeList.push(attributePhoneNumber);
 
 userPool.signUp('username', 'password', attributeList, null, function(
-    err,
-    result
+  err,
+  result
 ) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    var cognitoUser = result.user;
-    console.log('user name is ' + cognitoUser.getUsername());
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  var cognitoUser = result.user;
+  console.log('user name is ' + cognitoUser.getUsername());
 });
 ```
 
@@ -251,23 +251,23 @@ userPool.signUp('username', 'password', attributeList, null, function(
 
 ```javascript
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var userData = {
-    Username: 'username',
-    Pool: userPool,
+  Username: 'username',
+  Pool: userPool,
 };
 
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 cognitoUser.confirmRegistration('123456', true, function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -275,11 +275,11 @@ cognitoUser.confirmRegistration('123456', true, function(err, result) {
 
 ```javascript
 cognitoUser.resendConfirmationCode(function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -289,54 +289,54 @@ cognitoUser.resendConfirmationCode(function(err, result) {
 import * as AWS from 'aws-sdk/global';
 
 var authenticationData = {
-    Username: 'username',
-    Password: 'password',
+  Username: 'username',
+  Password: 'password',
 };
 var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-    authenticationData
+  authenticationData
 );
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var userData = {
-    Username: 'username',
-    Pool: userPool,
+  Username: 'username',
+  Pool: userPool,
 };
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function(result) {
-        var accessToken = result.getAccessToken().getJwtToken();
+  onSuccess: function(result) {
+    var accessToken = result.getAccessToken().getJwtToken();
 
-        //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-        AWS.config.region = '<region>';
+    //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+    AWS.config.region = '<region>';
 
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: '...', // your identity pool id here
-            Logins: {
-                // Change the key below according to the specific region your user pool is in.
-                'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
-                    .getIdToken()
-                    .getJwtToken(),
-            },
-        });
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: '...', // your identity pool id here
+      Logins: {
+        // Change the key below according to the specific region your user pool is in.
+        'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
+          .getIdToken()
+          .getJwtToken(),
+      },
+    });
 
-        //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-        AWS.config.credentials.refresh(error => {
-            if (error) {
-                console.error(error);
-            } else {
-                // Instantiate aws sdk service objects now that the credentials have been updated.
-                // example: var s3 = new AWS.S3();
-                console.log('Successfully logged!');
-            }
-        });
-    },
+    //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
+    AWS.config.credentials.refresh(error => {
+      if (error) {
+        console.error(error);
+      } else {
+        // Instantiate aws sdk service objects now that the credentials have been updated.
+        // example: var s3 = new AWS.S3();
+        console.log('Successfully logged!');
+      }
+    });
+  },
 
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 });
 ```
 
@@ -348,18 +348,15 @@ Note also that if CognitoUser.authenticateUser throws ReferenceError: navigator 
 
 ```javascript
 cognitoUser.getUserAttributes(function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    for (i = 0; i < result.length; i++) {
-        console.log(
-            'attribute ' +
-                result[i].getName() +
-                ' has value ' +
-                result[i].getValue()
-        );
-    }
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  for (i = 0; i < result.length; i++) {
+    console.log(
+      'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
+    );
+  }
 });
 ```
 
@@ -369,16 +366,16 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
 ```javascript
 cognitoUser.getAttributeVerificationCode('email', {
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
-    inputVerificationCode: function() {
-        var verificationCode = prompt('Please input verification code: ', '');
-        cognitoUser.verifyAttribute('email', verificationCode, this);
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
+  inputVerificationCode: function() {
+    var verificationCode = prompt('Please input verification code: ', '');
+    cognitoUser.verifyAttribute('email', verificationCode, this);
+  },
 });
 ```
 
@@ -389,11 +386,11 @@ var attributeList = [];
 attributeList.push('nickname');
 
 cognitoUser.deleteAttributes(attributeList, function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -402,18 +399,18 @@ cognitoUser.deleteAttributes(attributeList, function(err, result) {
 ```javascript
 var attributeList = [];
 var attribute = {
-    Name: 'nickname',
-    Value: 'joe',
+  Name: 'nickname',
+  Value: 'joe',
 };
 var attribute = new AmazonCognitoIdentity.CognitoUserAttribute(attribute);
 attributeList.push(attribute);
 
 cognitoUser.updateAttributes(attributeList, function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -423,11 +420,11 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
 cognitoUser.enableMFA(function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -437,11 +434,11 @@ Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
 cognitoUser.disableMFA(function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -449,11 +446,11 @@ cognitoUser.disableMFA(function(err, result) {
 
 ```javascript
 cognitoUser.changePassword('oldPassword', 'newPassword', function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -474,27 +471,27 @@ For example:
 
 ```javascript
 cognitoUser.forgotPassword({
-    onSuccess: function(data) {
-        // successfully initiated reset password request
-        console.log('CodeDeliveryData from forgotPassword: ' + data);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
-    //Optional automatic callback
-    inputVerificationCode: function(data) {
-        console.log('Code sent to: ' + data);
-        var code = document.getElementById('code').value;
-        var newPassword = document.getElementById('new_password').value;
-        cognitoUser.confirmPassword(verificationCode, newPassword, {
-            onSuccess() {
-                console.log('Password confirmed!');
-            },
-            onFailure(err) {
-                console.log('Password not confirmed!');
-            },
-        });
-    },
+  onSuccess: function(data) {
+    // successfully initiated reset password request
+    console.log('CodeDeliveryData from forgotPassword: ' + data);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
+  //Optional automatic callback
+  inputVerificationCode: function(data) {
+    console.log('Code sent to: ' + data);
+    var code = document.getElementById('code').value;
+    var newPassword = document.getElementById('new_password').value;
+    cognitoUser.confirmPassword(verificationCode, newPassword, {
+      onSuccess() {
+        console.log('Password confirmed!');
+      },
+      onFailure(err) {
+        console.log('Password not confirmed!');
+      },
+    });
+  },
 });
 ```
 
@@ -502,11 +499,11 @@ cognitoUser.forgotPassword({
 
 ```javascript
 cognitoUser.deleteUser(function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('call result: ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('call result: ' + result);
 });
 ```
 
@@ -528,17 +525,17 @@ In React Native, loading the persisted current user information requires an extr
 
 ```javascript
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
 userPool.storage.sync(function(err, result) {
-    if (err) {
-    } else if (result === 'SUCCESS') {
-        var cognitoUser = userPool.getCurrentUser();
-        // Continue with steps in Use case 16
-    }
+  if (err) {
+  } else if (result === 'SUCCESS') {
+    var cognitoUser = userPool.getCurrentUser();
+    // Continue with steps in Use case 16
+  }
 });
 ```
 
@@ -546,42 +543,42 @@ userPool.storage.sync(function(err, result) {
 
 ```javascript
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var cognitoUser = userPool.getCurrentUser();
 
 if (cognitoUser != null) {
-    cognitoUser.getSession(function(err, session) {
-        if (err) {
-            alert(err.message || JSON.stringify(err));
-            return;
-        }
-        console.log('session validity: ' + session.isValid());
+  cognitoUser.getSession(function(err, session) {
+    if (err) {
+      alert(err.message || JSON.stringify(err));
+      return;
+    }
+    console.log('session validity: ' + session.isValid());
 
-        // NOTE: getSession must be called to authenticate user before calling getUserAttributes
-        cognitoUser.getUserAttributes(function(err, attributes) {
-            if (err) {
-                // Handle error
-            } else {
-                // Do something with attributes
-            }
-        });
-
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: '...', // your identity pool id here
-            Logins: {
-                // Change the key below according to the specific region your user pool is in.
-                'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': session
-                    .getIdToken()
-                    .getJwtToken(),
-            },
-        });
-
-        // Instantiate aws sdk service objects now that the credentials have been updated.
-        // example: var s3 = new AWS.S3();
+    // NOTE: getSession must be called to authenticate user before calling getUserAttributes
+    cognitoUser.getUserAttributes(function(err, attributes) {
+      if (err) {
+        // Handle error
+      } else {
+        // Do something with attributes
+      }
     });
+
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: '...', // your identity pool id here
+      Logins: {
+        // Change the key below according to the specific region your user pool is in.
+        'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': session
+          .getIdToken()
+          .getJwtToken(),
+      },
+    });
+
+    // Instantiate aws sdk service objects now that the credentials have been updated.
+    // example: var s3 = new AWS.S3();
+  });
 }
 ```
 
@@ -591,32 +588,32 @@ if (cognitoUser != null) {
 var cognitoUser = userPool.getCurrentUser();
 
 if (cognitoUser != null) {
-    cognitoUser.getSession(function(err, result) {
-        if (result) {
-            console.log('You are now logged in.');
+  cognitoUser.getSession(function(err, result) {
+    if (result) {
+      console.log('You are now logged in.');
 
-            //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-            AWS.config.region = '<region>';
+      //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+      AWS.config.region = '<region>';
 
-            // Add the User's Id Token to the Cognito credentials login map.
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: 'YOUR_IDENTITY_POOL_ID',
-                Logins: {
-                    'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
-                        .getIdToken()
-                        .getJwtToken(),
-                },
-            });
-        }
-    });
+      // Add the User's Id Token to the Cognito credentials login map.
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'YOUR_IDENTITY_POOL_ID',
+        Logins: {
+          'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
+            .getIdToken()
+            .getJwtToken(),
+        },
+      });
+    }
+  });
 }
 //call refresh method in order to authenticate user and get new temp credentials
 AWS.config.credentials.refresh(error => {
-    if (error) {
-        console.error(error);
-    } else {
-        console.log('Successfully logged!');
-    }
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('Successfully logged!');
+  }
 });
 ```
 
@@ -626,12 +623,12 @@ _note that you can not replace the login key with a variable because it will be 
 
 ```javascript
 cognitoUser.listDevices(limit, paginationToken, {
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message);
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message);
+  },
 });
 ```
 
@@ -639,12 +636,12 @@ cognitoUser.listDevices(limit, paginationToken, {
 
 ```javascript
 cognitoUser.getDevice({
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 });
 ```
 
@@ -652,12 +649,12 @@ cognitoUser.getDevice({
 
 ```javascript
 cognitoUser.setDeviceStatusRemembered({
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 });
 ```
 
@@ -665,12 +662,12 @@ cognitoUser.setDeviceStatusRemembered({
 
 ```javascript
 cognitoUser.setDeviceStatusNotRemembered({
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 });
 ```
 
@@ -678,12 +675,12 @@ cognitoUser.setDeviceStatusNotRemembered({
 
 ```javascript
 cognitoUser.forgetDevice({
-    onSuccess: function(result) {
-        console.log('call result: ' + result);
-    },
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onSuccess: function(result) {
+    console.log('call result: ' + result);
+  },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 });
 ```
 
@@ -734,11 +731,11 @@ cognitoUser.forgetDevice({
 
 ```javascript
 cognitoUser.getMFAOptions(function(err, mfaOptions) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('MFA options for user ' + mfaOptions);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('MFA options for user ' + mfaOptions);
 });
 ```
 
@@ -748,17 +745,17 @@ cognitoUser.getMFAOptions(function(err, mfaOptions) {
 cognitoUser.setAuthenticationFlowType('CUSTOM_AUTH');
 
 cognitoUser.initiateAuth(authenticationDetails, {
-    onSuccess: function(result) {
-        // User authentication was successful
-    },
-    onFailure: function(err) {
-        // User authentication was not successful
-    },
-    customChallenge: function(challengeParameters) {
-        // User authentication depends on challenge response
-        var challengeResponses = 'challenge-answer';
-        cognitoUser.sendCustomChallengeAnswer(challengeResponses, this);
-    },
+  onSuccess: function(result) {
+    // User authentication was successful
+  },
+  onFailure: function(err) {
+    // User authentication was not successful
+  },
+  customChallenge: function(challengeParameters) {
+    // User authentication depends on challenge response
+    var challengeResponses = 'challenge-answer';
+    cognitoUser.sendCustomChallengeAnswer(challengeResponses, this);
+  },
 });
 ```
 
@@ -787,68 +784,64 @@ To use the CookieStorage you have to pass it in the constructor map of CognitoUs
 
 The CookieStorage object receives a map (data) in its constructor that may have these values:
 
--   data.domain Cookies domain (mandatory)
--   data.path Cookies path (default: '/')
--   data.expires Cookie expiration (in days, default: 365)
--   data.secure Cookie secure flag (default: true)
+- data.domain Cookies domain (mandatory)
+- data.path Cookies path (default: '/')
+- data.expires Cookie expiration (in days, default: 365)
+- data.secure Cookie secure flag (default: true)
 
 **Use case 27.** Selecting the MFA method and authenticating using TOTP.
 
 ```js
 var authenticationData = {
-    Username: 'username',
-    Password: 'password',
+  Username: 'username',
+  Password: 'password',
 };
 var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-    authenticationData
+  authenticationData
 );
 var poolData = {
-    UserPoolId: '...', // Your user pool id here
-    ClientId: '...', // Your client id here
+  UserPoolId: '...', // Your user pool id here
+  ClientId: '...', // Your client id here
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var userData = {
-    Username: 'username',
-    Pool: userPool,
+  Username: 'username',
+  Pool: userPool,
 };
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
 cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function(result) {
-        var accessToken = result.getAccessToken().getJwtToken();
-    },
+  onSuccess: function(result) {
+    var accessToken = result.getAccessToken().getJwtToken();
+  },
 
-    onFailure: function(err) {
-        alert(err.message || JSON.stringify(err));
-    },
+  onFailure: function(err) {
+    alert(err.message || JSON.stringify(err));
+  },
 
-    mfaSetup: function(challengeName, challengeParameters) {
-        cognitoUser.associateSoftwareToken(this);
-    },
+  mfaSetup: function(challengeName, challengeParameters) {
+    cognitoUser.associateSoftwareToken(this);
+  },
 
-    associateSecretCode: function(secretCode) {
-        var challengeAnswer = prompt('Please input the TOTP code.', '');
-        cognitoUser.verifySoftwareToken(
-            challengeAnswer,
-            'My TOTP device',
-            this
-        );
-    },
+  associateSecretCode: function(secretCode) {
+    var challengeAnswer = prompt('Please input the TOTP code.', '');
+    cognitoUser.verifySoftwareToken(challengeAnswer, 'My TOTP device', this);
+  },
 
-    selectMFAType: function(challengeName, challengeParameters) {
-        var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA"
-        cognitoUser.sendMFASelectionAnswer(mfaType, this);
-    },
+  selectMFAType: function(challengeName, challengeParameters) {
+    var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA"
+    cognitoUser.sendMFASelectionAnswer(mfaType, this);
+  },
 
-    totpRequired: function(secretCode) {
-        var challengeAnswer = prompt('Please input the TOTP code.', '');
-        cognitoUser.sendMFACode(challengeAnswer, this, 'SOFTWARE_TOKEN_MFA');
-    },
+  totpRequired: function(secretCode) {
+    var challengeAnswer = prompt('Please input the TOTP code.', '');
+    cognitoUser.sendMFACode(challengeAnswer, this, 'SOFTWARE_TOKEN_MFA');
+  },
 
-    mfaRequired: function(codeDeliveryDetails) {
-        var verificationCode = prompt('Please input verification code', '');
-        cognitoUser.sendMFACode(verificationCode, this);
-    },
+  mfaRequired: function(codeDeliveryDetails) {
+    var verificationCode = prompt('Please input verification code', '');
+    cognitoUser.sendMFACode(verificationCode, this);
+  },
 });
 ```
 
@@ -856,14 +849,14 @@ cognitoUser.authenticateUser(authenticationDetails, {
 
 ```js
 smsMfaSettings = {
-    PreferredMfa: true,
-    Enabled: true,
+  PreferredMfa: true,
+  Enabled: true,
 };
 cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-    }
-    console.log('call result ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+  }
+  console.log('call result ' + result);
 });
 ```
 
@@ -871,14 +864,14 @@ cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
 
 ```js
 totpMfaSettings = {
-    PreferredMfa: true,
-    Enabled: true,
+  PreferredMfa: true,
+  Enabled: true,
 };
 cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-    }
-    console.log('call result ' + result);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+  }
+  console.log('call result ' + result);
 });
 ```
 
@@ -888,17 +881,17 @@ cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
 cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 
 cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function(result) {
-        // User authentication was successful
-    },
-    onFailure: function(err) {
-        // User authentication was not successful
-    },
-    mfaRequired: function(codeDeliveryDetails) {
-        // MFA is required to complete user authentication.
-        // Get the code from user and call
-        cognitoUser.sendMFACode(verificationCode, this);
-    },
+  onSuccess: function(result) {
+    // User authentication was successful
+  },
+  onFailure: function(err) {
+    // User authentication was not successful
+  },
+  mfaRequired: function(codeDeliveryDetails) {
+    // MFA is required to complete user authentication.
+    // Get the code from user and call
+    cognitoUser.sendMFACode(verificationCode, this);
+  },
 });
 ```
 
@@ -906,24 +899,24 @@ cognitoUser.authenticateUser(authenticationDetails, {
 
 ```js
 cognitoUser.getUserData(function(err, userData) {
-    if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-    }
-    console.log('User data for user ' + userData);
+  if (err) {
+    alert(err.message || JSON.stringify(err));
+    return;
+  }
+  console.log('User data for user ' + userData);
 });
 
 // If you want to force to get the user data from backend,
 // you can set the bypassCache to true
 cognitoUser.getUserData(
-    function(err, userData) {
-        if (err) {
-            alert(err.message || JSON.stringify(err));
-            return;
-        }
-        console.log('User data for user ' + userData);
-    },
-    { bypassCache: true }
+  function(err, userData) {
+    if (err) {
+      alert(err.message || JSON.stringify(err));
+      return;
+    }
+    console.log('User data for user ' + userData);
+  },
+  { bypassCache: true }
 );
 ```
 
@@ -932,22 +925,22 @@ cognitoUser.getUserData(
 ```js
 refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
 if (AWS.config.credentials.needsRefresh()) {
-    cognitoUser.refreshSession(refresh_token, (err, session) => {
+  cognitoUser.refreshSession(refresh_token, (err, session) => {
+    if (err) {
+      console.log(err);
+    } else {
+      AWS.config.credentials.params.Logins[
+        'cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>'
+      ] = session.getIdToken().getJwtToken();
+      AWS.config.credentials.refresh(err => {
         if (err) {
-            console.log(err);
+          console.log(err);
         } else {
-            AWS.config.credentials.params.Logins[
-                'cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>'
-            ] = session.getIdToken().getJwtToken();
-            AWS.config.credentials.refresh(err => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log('TOKEN SUCCESSFULLY UPDATED');
-                }
-            });
+          console.log('TOKEN SUCCESSFULLY UPDATED');
         }
-    });
+      });
+    }
+  });
 }
 ```
 
@@ -955,8 +948,8 @@ if (AWS.config.credentials.needsRefresh()) {
 
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
 
--   For Amazon Cognito User Pool service request handling: "https://cognito-idp.us-east-1.amazonaws.com"
-    -   This endpoint may change based on which region your Cognito User Pool was created in.
+- For Amazon Cognito User Pool service request handling: "https://cognito-idp.us-east-1.amazonaws.com"
+  - This endpoint may change based on which region your Cognito User Pool was created in.
 
 For most frameworks you can whitelist the domain by whitelisting all AWS endpoints with "\*.amazonaws.com".
 
@@ -970,164 +963,164 @@ Latest change logs have been moved to [CHANGELOG.md](./CHANGELOG.md).
 
 **v2.0.2:**
 
--   What has changed
-    -   To make a new version for NPM package sync with Github repo.
+- What has changed
+  - To make a new version for NPM package sync with Github repo.
 
 **v2.0.1:**
 
--   What has changed
-    -   Added migration lambda trigger support.
+- What has changed
+  - Added migration lambda trigger support.
 
 **v1.31.0:**
 
--   What has changed
-    -   Added lib folder.
+- What has changed
+  - Added lib folder.
 
 **v1.30.0:**
 
--   What has changed
+- What has changed
 
-    -   Temporary fix to lock down the AWS SDK version to a compatible one.
+  - Temporary fix to lock down the AWS SDK version to a compatible one.
 
 **v1.29.0:**
 
--   What has changed
-    -   Fixing verify software token call to work with access token.
+- What has changed
+  - Fixing verify software token call to work with access token.
 
 **v1.28.0:**
 
--   What has changed
-    -   Not sending UserContextData if it is not available.
+- What has changed
+  - Not sending UserContextData if it is not available.
 
 **v1.27.0:**
 
--   What has changed
-    -   Added support for TOTP and new MFA settings APIs.
+- What has changed
+  - Added support for TOTP and new MFA settings APIs.
 
 **v1.26.0:**
 
--   What has changed
-    -   Fixed typescript typings.
+- What has changed
+  - Fixed typescript typings.
 
 **v1.25.0:**
 
--   What has changed
-    -   Added cookie storage support and solved bug related to clock drift parsing.
+- What has changed
+  - Added cookie storage support and solved bug related to clock drift parsing.
 
 **v1.24.0:**
 
--   What has changed
-    -   Fixed bug related to missing callback
+- What has changed
+  - Fixed bug related to missing callback
 
 **v1.23.0:**
 
--   What has changed
-    -   Added react native optimizations for BigInteger
+- What has changed
+  - Added react native optimizations for BigInteger
 
 **v1.19.0:**
 
--   What has changed
-    -   Added UserSub return on sign up
+- What has changed
+  - Added UserSub return on sign up
 
 **v1.18.0:**
 
--   What has changed
-    -   Added missing result in resendConfirmationCode.
+- What has changed
+  - Added missing result in resendConfirmationCode.
 
 **v1.17.0:**
 
--   What has changed
-    -   Added non-minified files.
+- What has changed
+  - Added non-minified files.
 
 **v1.16.0:**
 
--   What has changed
-    -   Brought in JSBN and updated Notice file.
+- What has changed
+  - Brought in JSBN and updated Notice file.
 
 **v1.15.0:**
 
--   What has changed
-    -   Solved an issue that occurred rarely related to the padding of the U value that is used in computing the HKDF.
+- What has changed
+  - Solved an issue that occurred rarely related to the padding of the U value that is used in computing the HKDF.
 
 **v1.14.0:**
 
--   What has changed
-    -   Importing only the CognitoIdentityServiceProvider client and util from the AWS SDK.
+- What has changed
+  - Importing only the CognitoIdentityServiceProvider client and util from the AWS SDK.
 
 **v1.13.0:**
 
--   What has changed
-    -   Removed SJCL as a dependency and fixed typescript typings.
+- What has changed
+  - Removed SJCL as a dependency and fixed typescript typings.
 
 **v1.12.0:**
 
--   What has changed
-    -   Added typescript typings.
+- What has changed
+  - Added typescript typings.
 
 **v1.11.0:**
 
--   What has changed
-    -   Added challenge parameters to the mfaRequired function of the return object.
+- What has changed
+  - Added challenge parameters to the mfaRequired function of the return object.
 
 **v1.10.0:**
 
--   What has changed
-    -   Clearing tokens when they have been revoked and adding retrieval for MFAOptions.
+- What has changed
+  - Clearing tokens when they have been revoked and adding retrieval for MFAOptions.
 
 **v1.9.0:**
 
--   What has changed
-    -   Fixed dependency on local storage. Reverting to memory use when local storage is not available.
+- What has changed
+  - Fixed dependency on local storage. Reverting to memory use when local storage is not available.
 
 **v1.7.0:**
 
--   What has changed
-    -   Fixed Cannot read property 'NewDeviceMetadata' of undefined bug.
+- What has changed
+  - Fixed Cannot read property 'NewDeviceMetadata' of undefined bug.
 
 **v1.6.0:**
 
--   What has changed
-    -   Support for Admin create user flow. Users being signed up by admins will be able to authenticate using their one time passwords.
+- What has changed
+  - Support for Admin create user flow. Users being signed up by admins will be able to authenticate using their one time passwords.
 
 **v1.5.0:**
 
--   What has changed
-    -   Changed webpack support to follow AWS-SDK usage.
+- What has changed
+  - Changed webpack support to follow AWS-SDK usage.
 
 **v1.2.0:**
 
--   What has changed
-    -   Derived the region from the user pool id so the region doesn't need to be configured anymore.
+- What has changed
+  - Derived the region from the user pool id so the region doesn't need to be configured anymore.
 
 **v1.1.0:**
 
--   What has changed
-    -   Fixed a bug in token parsing.
-    -   Removed moment.js as a dependency.
+- What has changed
+  - Fixed a bug in token parsing.
+  - Removed moment.js as a dependency.
 
 **v1.0.0:**
 
--   GA release. In this GA service launch, the following new features have been added to Amazon Cognito Your User Pools.
+- GA release. In this GA service launch, the following new features have been added to Amazon Cognito Your User Pools.
 
--   Whats new
+- Whats new
 
-    -   Webpack support.
-    -   Support for Custom authentication flows. Developers can implement custom authentication flows around Cognito Your User Pools. See developer documentation for details.
-    -   Devices support in User Pools. Users can remember devices and skip MFA verification for remembered devices.
-    -   Scopes to control permissions for attributes in a User Pool.
-    -   Configurable expiration time for refresh tokens.
-    -   Set custom FROM and REPLY-TO for email verification messages.
-    -   Search users in your pool using user attributes.
-    -   Global sign-out for a user.
-    -   Removed dependency to sjcl bytes codec.
+  - Webpack support.
+  - Support for Custom authentication flows. Developers can implement custom authentication flows around Cognito Your User Pools. See developer documentation for details.
+  - Devices support in User Pools. Users can remember devices and skip MFA verification for remembered devices.
+  - Scopes to control permissions for attributes in a User Pool.
+  - Configurable expiration time for refresh tokens.
+  - Set custom FROM and REPLY-TO for email verification messages.
+  - Search users in your pool using user attributes.
+  - Global sign-out for a user.
+  - Removed dependency to sjcl bytes codec.
 
--   What has changed
-    -   Authentication flow in Javascript SDK now uses Custom Authentication API
-    -   Two new exceptions added for the authentication APIs: These exceptions have been added to accurately represent the user state when the username is invalid and when the user is not confirmed. You will have to update your application to handle these exceptions.
-        -   UserNotFoundException: Returned when the username user does not exist.
-        -   UserNotConfirmedException: Returned when the user has not been confirmed.
-        -   PasswordResetRequiredException: When administrator has requested for a password reset for the user.
+- What has changed
+  - Authentication flow in Javascript SDK now uses Custom Authentication API
+  - Two new exceptions added for the authentication APIs: These exceptions have been added to accurately represent the user state when the username is invalid and when the user is not confirmed. You will have to update your application to handle these exceptions.
+    - UserNotFoundException: Returned when the username user does not exist.
+    - UserNotConfirmedException: Returned when the user has not been confirmed.
+    - PasswordResetRequiredException: When administrator has requested for a password reset for the user.
 
 **v0.9.0:**
 
--   Initial release. Developer preview.
+- Initial release. Developer preview.

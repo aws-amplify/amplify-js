@@ -72,7 +72,7 @@ const template = `
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
           <a class="amplify-form-link" (click)="onSignIn()" data-test="${
-              auth.signUp.signInButton
+            auth.signUp.signInButton
           }">
             {{ this.amplifyService.i18n().get('Sign In') }}
           </a>
@@ -101,17 +101,17 @@ const template = `
 `;
 
 @Component({
-    selector: 'amplify-auth-sign-up-ionic',
-    template,
+  selector: 'amplify-auth-sign-up-ionic',
+  template,
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
-    constructor(
-        @Inject(AmplifyService) protected amplifyService: AmplifyService
-    ) {
-        super(amplifyService);
-    }
+  constructor(
+    @Inject(AmplifyService) protected amplifyService: AmplifyService
+  ) {
+    super(amplifyService);
+  }
 
-    setProp(target) {
-        return (this.user[target.name] = target.value);
-    }
+  setProp(target) {
+    return (this.user[target.name] = target.value);
+  }
 }

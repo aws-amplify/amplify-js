@@ -131,7 +131,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.1.28"></a>
 
@@ -427,7 +427,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
+- **aws-amplify-react-native:** Add withOAuth HOC for Cognito Hosted UI ([#2665](https://github.com/aws/aws-amplify/issues/2665)) ([ac4d232](https://github.com/aws/aws-amplify/commit/ac4d232))
 
 <a name="1.1.20-unstable.14"></a>
 
@@ -1075,7 +1075,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+- bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
 
 <a name="1.1.2"></a>
 
@@ -1623,7 +1623,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
+- **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
 
 <a name="0.4.7"></a>
 
@@ -1631,7 +1631,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
+- **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
 
 <a name="0.4.7-unstable.2"></a>
 
@@ -1639,7 +1639,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **integration tests:** CircleCI workflows and Cypress integration testing ([#1071](https://github.com/aws/aws-amplify/issues/1071)) ([bfa4776](https://github.com/aws/aws-amplify/commit/bfa4776))
+- **integration tests:** CircleCI workflows and Cypress integration testing ([#1071](https://github.com/aws/aws-amplify/issues/1071)) ([bfa4776](https://github.com/aws/aws-amplify/commit/bfa4776))
 
 <a name="0.4.7-unstable.1"></a>
 
@@ -1687,9 +1687,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
--   **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+- **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="0.4.4"></a>
 
@@ -1719,7 +1719,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
--   **interactions:** Interactions category ([#1042](https://github.com/aws/aws-amplify/issues/1042)) ([befb336](https://github.com/aws/aws-amplify/commit/befb336))
+- **interactions:** Interactions category ([#1042](https://github.com/aws/aws-amplify/issues/1042)) ([befb336](https://github.com/aws/aws-amplify/commit/befb336))
 
 <a name="0.4.2-unstable.43"></a>
 
@@ -1787,9 +1787,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
--   **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
--   **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+- **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+- **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+- **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 <a name="0.4.3"></a>
 
@@ -1797,8 +1797,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
--   **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
+- **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+- **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
 
 <a name="0.4.2"></a>
 
@@ -1806,7 +1806,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify
 
--   **API:** query string for non signed requests ([#801](https://github.com/aws/aws-amplify/issues/801)) ([6746368](https://github.com/aws/aws-amplify/commit/6746368))
+- **API:** query string for non signed requests ([#801](https://github.com/aws/aws-amplify/issues/801)) ([6746368](https://github.com/aws/aws-amplify/commit/6746368))
 
 <a name="0.4.2-unstable.31"></a>
 
@@ -1814,7 +1814,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
+- **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
 
 <a name="0.4.2-unstable.30"></a>
 
@@ -1882,7 +1882,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
--   **Storage:** allowing to set an empty value as prefix for the S3 Key ([#931](https://github.com/aws/aws-amplify/issues/931)) ([240e50b](https://github.com/aws/aws-amplify/commit/240e50b))
+- **Storage:** allowing to set an empty value as prefix for the S3 Key ([#931](https://github.com/aws/aws-amplify/issues/931)) ([240e50b](https://github.com/aws/aws-amplify/commit/240e50b))
 
 <a name="0.4.2-unstable.17"></a>
 
