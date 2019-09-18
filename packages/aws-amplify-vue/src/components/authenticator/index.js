@@ -36,13 +36,13 @@ Vue.component('amplify-set-mfa', SetMfa);
 Vue.component('amplify-require-new-password', RequireNewPassword);
 
 export {
-  Authenticator,
-  SignIn,
-  SignUp,
-  SignOut,
-  ConfirmSignUp,
-  ConfirmSignIn,
-  ForgotPassword,
-  SetMfa,
-  RequireNewPassword,
+    Authenticator,
+    SignIn,
+    SignUp,
+    SignOut,
+    ConfirmSignUp,
+    ConfirmSignIn,
+    ForgotPassword,
+    SetMfa,
+    RequireNewPassword,
 };

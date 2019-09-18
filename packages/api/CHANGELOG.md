@@ -15,7 +15,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **@aws-amplify/api:** Add ability to set withCredentials in API ([#3634](https://github.com/aws/aws-amplify/issues/3634)) ([8437578](https://github.com/aws/aws-amplify/commit/8437578))
+-   **@aws-amplify/api:** Add ability to set withCredentials in API ([#3634](https://github.com/aws/aws-amplify/issues/3634)) ([8437578](https://github.com/aws/aws-amplify/commit/8437578))
 
 ## [1.0.42](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.41...@aws-amplify/api@1.0.42) (2019-08-05)
 
@@ -87,7 +87,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+-   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.35"></a>
 
@@ -131,7 +131,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
+-   **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
 
 <a name="1.0.34-unstable.7"></a>
 
@@ -247,7 +247,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **api:** allow API options to be merged with root level options ([8965b36](https://github.com/aws/aws-amplify/commit/8965b36)), closes [#1302](https://github.com/aws/aws-amplify/issues/1302)
+-   **api:** allow API options to be merged with root level options ([8965b36](https://github.com/aws/aws-amplify/commit/8965b36)), closes [#1302](https://github.com/aws/aws-amplify/issues/1302)
 
 <a name="1.0.30-unstable.5"></a>
 
@@ -459,7 +459,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **@aws-amplify/api,graphql:** DocumentNode support for GraphQL Client ([#2227](https://github.com/aws/aws-amplify/issues/2227)) ([f31d649](https://github.com/aws/aws-amplify/commit/f31d649)), closes [#1237](https://github.com/aws/aws-amplify/issues/1237)
+-   **@aws-amplify/api,graphql:** DocumentNode support for GraphQL Client ([#2227](https://github.com/aws/aws-amplify/issues/2227)) ([f31d649](https://github.com/aws/aws-amplify/commit/f31d649)), closes [#1237](https://github.com/aws/aws-amplify/issues/1237)
 
 <a name="1.0.22-unstable.11"></a>
 
@@ -725,7 +725,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
+-   **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
 
 <a name="1.0.15-unstable.0"></a>
 
@@ -733,7 +733,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/api:** Content-Type header on init options ([#1720](https://github.com/aws/aws-amplify/issues/1720)) ([dbe37e0](https://github.com/aws/aws-amplify/commit/dbe37e0))
+-   **@aws-amplify/api:** Content-Type header on init options ([#1720](https://github.com/aws/aws-amplify/issues/1720)) ([dbe37e0](https://github.com/aws/aws-amplify/commit/dbe37e0))
 
 <a name="1.0.14"></a>
 
@@ -747,8 +747,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
-- bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+-   **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
+-   bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
 
 <a name="1.0.13"></a>
 
@@ -786,7 +786,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub,api,appsync:** Use subscriber-id header (AppSync subscription) ([#1618](https://github.com/aws/aws-amplify/issues/1618)) ([03f2517](https://github.com/aws/aws-amplify/commit/03f2517))
+-   **pubsub,api,appsync:** Use subscriber-id header (AppSync subscription) ([#1618](https://github.com/aws/aws-amplify/issues/1618)) ([03f2517](https://github.com/aws/aws-amplify/commit/03f2517))
 
 <a name="1.0.11"></a>
 
@@ -794,7 +794,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub:** Better handling of multiple AppSync subscriptions ([#1611](https://github.com/aws/aws-amplify/issues/1611)) ([6c86500](https://github.com/aws/aws-amplify/commit/6c86500))
+-   **pubsub:** Better handling of multiple AppSync subscriptions ([#1611](https://github.com/aws/aws-amplify/issues/1611)) ([6c86500](https://github.com/aws/aws-amplify/commit/6c86500))
 
 <a name="1.0.10"></a>
 
@@ -970,7 +970,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+-   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.7-unstable.2"></a>
 
@@ -1032,7 +1032,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/api:** error handling for signed requests in RestClient ([#1362](https://github.com/aws/aws-amplify/issues/1362)) ([fbbeffb](https://github.com/aws/aws-amplify/commit/fbbeffb))
+-   **@aws-amplify/api:** error handling for signed requests in RestClient ([#1362](https://github.com/aws/aws-amplify/issues/1362)) ([fbbeffb](https://github.com/aws/aws-amplify/commit/fbbeffb))
 
 <a name="1.0.5"></a>
 

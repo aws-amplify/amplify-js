@@ -16,87 +16,87 @@ import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
-  'componentDidMount',
-  'componentDidUpdate',
-  'compomentWillUnmount',
-  'compomentDidCatch',
-  'render',
+    'componentDidMount',
+    'componentDidUpdate',
+    'compomentWillUnmount',
+    'compomentDidCatch',
+    'render',
 ];
 
 export function trackLifecycle(
-  Comp,
-  trackerName,
-  events = Default_Track_Events
+    Comp,
+    trackerName,
+    events = Default_Track_Events
 ) {
-  return class WithTrackLifecycle extends Component {
-    constructor(props) {
-      super(props);
-      this.trackerName = trackerName;
-      this.trackEvents = events;
+    return class WithTrackLifecycle extends Component {
+        constructor(props) {
+            super(props);
+            this.trackerName = trackerName;
+            this.trackEvents = events;
 
-      this.track('constructor');
-    }
-
-    track(event) {
-      const filtered = this.trackEvents.filter(item => item === event);
-      if (filtered.length > 0) {
-        if (Analytics && typeof Analytics.record === 'function') {
-          Analytics.record({
-            name: this.trackerName,
-            attributes: { event },
-          });
-        } else {
-          throw new Error(
-            'No Analytics module found, please ensure @aws-amplify/analytics is imported'
-          );
+            this.track('constructor');
         }
-      }
-    }
 
-    componentWillMount() {
-      this.track('componentWillMount');
-    }
+        track(event) {
+            const filtered = this.trackEvents.filter(item => item === event);
+            if (filtered.length > 0) {
+                if (Analytics && typeof Analytics.record === 'function') {
+                    Analytics.record({
+                        name: this.trackerName,
+                        attributes: { event },
+                    });
+                } else {
+                    throw new Error(
+                        'No Analytics module found, please ensure @aws-amplify/analytics is imported'
+                    );
+                }
+            }
+        }
 
-    componentDidMount() {
-      this.track('componentDidMount');
-    }
+        componentWillMount() {
+            this.track('componentWillMount');
+        }
 
-    componentWillUnmount() {
-      this.track('componentWillUnmount');
-    }
+        componentDidMount() {
+            this.track('componentDidMount');
+        }
 
-    componentDidCatch() {
-      this.track('componentDidCatch');
-    }
+        componentWillUnmount() {
+            this.track('componentWillUnmount');
+        }
 
-    componentWillReceiveProps() {
-      this.track('componentWillReceiveProps');
-    }
+        componentDidCatch() {
+            this.track('componentDidCatch');
+        }
 
-    shouldComponentUpdate() {
-      this.track('shouldComponentUpdate');
-      return true;
-    }
+        componentWillReceiveProps() {
+            this.track('componentWillReceiveProps');
+        }
 
-    componentWillUpdate() {
-      this.track('componentWillUpdate');
-    }
+        shouldComponentUpdate() {
+            this.track('shouldComponentUpdate');
+            return true;
+        }
 
-    componentDidUpdate() {
-      this.track('componentDidUpdate');
-    }
+        componentWillUpdate() {
+            this.track('componentWillUpdate');
+        }
 
-    setState() {
-      this.track('setState');
-    }
+        componentDidUpdate() {
+            this.track('componentDidUpdate');
+        }
 
-    forceUpdate() {
-      this.track('forceUpdate');
-    }
+        setState() {
+            this.track('setState');
+        }
 
-    render() {
-      this.track('render');
-      return <Comp {...this.props} />;
-    }
-  };
+        forceUpdate() {
+            this.track('forceUpdate');
+        }
+
+        render() {
+            this.track('render');
+            return <Comp {...this.props} />;
+        }
+    };
 }

@@ -13,23 +13,25 @@
 const packageInfo = require('../../package.json');
 
 const Platform = {
-  userAgent: `aws-amplify/${packageInfo.version} js`,
-  product: '',
-  navigator: null,
-  isReactNative: false,
+    userAgent: `aws-amplify/${packageInfo.version} js`,
+    product: '',
+    navigator: null,
+    isReactNative: false,
 };
 if (typeof navigator !== 'undefined' && navigator.product) {
-  Platform.product = navigator.product || '';
-  Platform.navigator = navigator || null;
-  switch (navigator.product) {
-    case 'ReactNative':
-      Platform.userAgent = `aws-amplify/${packageInfo.version} react-native`;
-      Platform.isReactNative = true;
-      break;
-    default:
-      Platform.userAgent = `aws-amplify/${packageInfo.version} js`;
-      Platform.isReactNative = false;
-      break;
-  }
+    Platform.product = navigator.product || '';
+    Platform.navigator = navigator || null;
+    switch (navigator.product) {
+        case 'ReactNative':
+            Platform.userAgent = `aws-amplify/${
+                packageInfo.version
+            } react-native`;
+            Platform.isReactNative = true;
+            break;
+        default:
+            Platform.userAgent = `aws-amplify/${packageInfo.version} js`;
+            Platform.isReactNative = false;
+            break;
+    }
 }
 export default Platform;

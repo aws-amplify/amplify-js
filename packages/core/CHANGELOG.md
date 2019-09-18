@@ -15,12 +15,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** Await for cache.setItem when setting federatedInfo ([8691c42](https://github.com/aws/aws-amplify/commit/8691c42)), closes [#3296](https://github.com/aws/aws-amplify/issues/3296)
-- **@aws-amplify/core:** Edge browser misidentified as Chrome ([#3807](https://github.com/aws/aws-amplify/issues/3807)) ([302d95b](https://github.com/aws/aws-amplify/commit/302d95b))
+-   **@aws-amplify/core:** Await for cache.setItem when setting federatedInfo ([8691c42](https://github.com/aws/aws-amplify/commit/8691c42)), closes [#3296](https://github.com/aws/aws-amplify/issues/3296)
+-   **@aws-amplify/core:** Edge browser misidentified as Chrome ([#3807](https://github.com/aws/aws-amplify/issues/3807)) ([302d95b](https://github.com/aws/aws-amplify/commit/302d95b))
 
 ### Features
 
-- Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
+-   Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
 
 ## [1.0.31](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.30...@aws-amplify/core@1.0.31) (2019-07-31)
 
@@ -58,8 +58,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** guard for Symbol reference ([ac76a7f](https://github.com/aws/aws-amplify/commit/ac76a7f))
-- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+-   **@aws-amplify/core:** guard for Symbol reference ([ac76a7f](https://github.com/aws/aws-amplify/commit/ac76a7f))
+-   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.27"></a>
 
@@ -73,7 +73,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** bind console error to console ([d01062c](https://github.com/aws/aws-amplify/commit/d01062c))
+-   **@aws-amplify/core:** bind console error to console ([d01062c](https://github.com/aws/aws-amplify/commit/d01062c))
 
 <a name="1.0.26"></a>
 
@@ -87,7 +87,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
+-   **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
 
 <a name="1.0.26-unstable.1"></a>
 
@@ -95,7 +95,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** directly return if input is null for function transferKeyToUpperCase/transferKeyToLowerCase ([1600cfb](https://github.com/aws/aws-amplify/commit/1600cfb))
+-   **@aws-amplify/core:** directly return if input is null for function transferKeyToUpperCase/transferKeyToLowerCase ([1600cfb](https://github.com/aws/aws-amplify/commit/1600cfb))
 
 <a name="1.0.26-unstable.0"></a>
 
@@ -115,7 +115,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** fix hub this binding issue ([#3002](https://github.com/aws/aws-amplify/issues/3002)) ([8fba1a2](https://github.com/aws/aws-amplify/commit/8fba1a2))
+-   **@aws-amplify/core:** fix hub this binding issue ([#3002](https://github.com/aws/aws-amplify/issues/3002)) ([8fba1a2](https://github.com/aws/aws-amplify/commit/8fba1a2))
 
 <a name="1.0.25-unstable.0"></a>
 
@@ -135,7 +135,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
+-   **core:** Hub refactor and tests ([7ac5bcf](https://github.com/aws/aws-amplify/commit/7ac5bcf))
 
 <a name="1.0.24-unstable.0"></a>
 
@@ -143,7 +143,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **core:** Remove unneeded Hub.dispatch and Hub.listen ([#2919](https://github.com/aws/aws-amplify/issues/2919)) ([aea7fa9](https://github.com/aws/aws-amplify/commit/aea7fa9)), closes [#2623](https://github.com/aws/aws-amplify/issues/2623)
+-   **core:** Remove unneeded Hub.dispatch and Hub.listen ([#2919](https://github.com/aws/aws-amplify/issues/2919)) ([aea7fa9](https://github.com/aws/aws-amplify/commit/aea7fa9)), closes [#2623](https://github.com/aws/aws-amplify/issues/2623)
 
 <a name="1.0.23"></a>
 
@@ -175,7 +175,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** storage, avoid to sync twice ([919c82a](https://github.com/aws/aws-amplify/commit/919c82a))
+-   **@aws-amplify/core:** storage, avoid to sync twice ([919c82a](https://github.com/aws/aws-amplify/commit/919c82a))
 
 <a name="1.0.22"></a>
 
@@ -249,7 +249,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** check if window.addListener is a function ([eaca33b](https://github.com/aws/aws-amplify/commit/eaca33b))
+-   **@aws-amplify/core:** check if window.addListener is a function ([eaca33b](https://github.com/aws/aws-amplify/commit/eaca33b))
 
 <a name="1.0.18"></a>
 
@@ -263,7 +263,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** use existing methods to load localStorage ([3ec680d](https://github.com/aws/aws-amplify/commit/3ec680d))
+-   **@aws-amplify/core:** use existing methods to load localStorage ([3ec680d](https://github.com/aws/aws-amplify/commit/3ec680d))
 
 <a name="1.0.17"></a>
 
@@ -295,7 +295,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/auth:** throw error when failed to sync items from AsyncStorage into Memory ([85c3f32](https://github.com/aws/aws-amplify/commit/85c3f32))
+-   **@aws-amplify/auth:** throw error when failed to sync items from AsyncStorage into Memory ([85c3f32](https://github.com/aws/aws-amplify/commit/85c3f32))
 
 <a name="1.0.16-unstable.1"></a>
 
@@ -303,7 +303,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** fix aws-sdk version to 2.329.0 ([#1851](https://github.com/aws/aws-amplify/issues/1851)) ([c6519e7](https://github.com/aws/aws-amplify/commit/c6519e7))
+-   **@aws-amplify/core:** fix aws-sdk version to 2.329.0 ([#1851](https://github.com/aws/aws-amplify/issues/1851)) ([c6519e7](https://github.com/aws/aws-amplify/commit/c6519e7))
 
 <a name="1.0.16-unstable.0"></a>
 
@@ -359,7 +359,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** remove the polyfill ([728bf20](https://github.com/aws/aws-amplify/commit/728bf20))
+-   **@aws-amplify/core:** remove the polyfill ([728bf20](https://github.com/aws/aws-amplify/commit/728bf20))
 
 <a name="1.0.13-unstable.0"></a>
 
@@ -397,7 +397,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
+-   **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
 
 <a name="1.0.8"></a>
 
@@ -417,7 +417,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/core:** check if window object exists for browser usage ([3596c9e](https://github.com/aws/aws-amplify/commit/3596c9e))
+-   **@aws-amplify/core:** check if window object exists for browser usage ([3596c9e](https://github.com/aws/aws-amplify/commit/3596c9e))
 
 <a name="1.0.7"></a>
 
@@ -437,7 +437,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+-   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.5"></a>
 
@@ -475,7 +475,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** use method get instead of getPromise for credentials ([f15d74f](https://github.com/aws/aws-amplify/commit/f15d74f))
+-   **aws-amplify:** use method get instead of getPromise for credentials ([f15d74f](https://github.com/aws/aws-amplify/commit/f15d74f))
 
 <a name="1.0.2"></a>
 

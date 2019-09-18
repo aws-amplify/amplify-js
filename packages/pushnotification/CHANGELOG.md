@@ -45,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+-   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.27"></a>
 
@@ -95,7 +95,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pushnotification:** import necessary lib ([763caf5](https://github.com/aws/aws-amplify/commit/763caf5))
+-   **@aws-amplify/pushnotification:** import necessary lib ([763caf5](https://github.com/aws/aws-amplify/commit/763caf5))
 
 <a name="1.0.26-unstable.1"></a>
 
@@ -109,7 +109,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pushnotification:** fetch and cache the token if not in local ([8ba2e7f](https://github.com/aws/aws-amplify/commit/8ba2e7f))
+-   **@aws-amplify/pushnotification:** fetch and cache the token if not in local ([8ba2e7f](https://github.com/aws/aws-amplify/commit/8ba2e7f))
 
 <a name="1.0.25"></a>
 
@@ -207,7 +207,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pushnotification:** open app on device with Android 8.0 ([a5a7ce9](https://github.com/aws/aws-amplify/commit/a5a7ce9))
+-   **@aws-amplify/pushnotification:** open app on device with Android 8.0 ([a5a7ce9](https://github.com/aws/aws-amplify/commit/a5a7ce9))
 
 <a name="1.0.20"></a>
 
@@ -221,7 +221,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pushnotification:** send campaign open events when app is opend by notification ([d21d4fe](https://github.com/aws/aws-amplify/commit/d21d4fe))
+-   **@aws-amplify/pushnotification:** send campaign open events when app is opend by notification ([d21d4fe](https://github.com/aws/aws-amplify/commit/d21d4fe))
 
 <a name="1.0.20-unstable.0"></a>
 
@@ -439,7 +439,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+-   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.5"></a>
 
@@ -459,7 +459,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pushnotifications:** moved notificationManager creation earlier to allow for notificationChannel creation ([cac7144](https://github.com/aws/aws-amplify/commit/cac7144))
+-   **@aws-amplify/pushnotifications:** moved notificationManager creation earlier to allow for notificationChannel creation ([cac7144](https://github.com/aws/aws-amplify/commit/cac7144))
 
 <a name="1.0.4"></a>
 

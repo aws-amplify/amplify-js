@@ -30,12 +30,12 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-form',
-  template: template,
+    selector: 'amplify-form',
+    template: template,
 })
 export class FormComponent {
-  @Input()
-  set title(title: string) {
-    this.title = title;
-  }
+    @Input()
+    set title(title: string) {
+        this.title = title;
+    }
 }

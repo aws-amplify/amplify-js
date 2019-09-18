@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class RequireNewPasswordClass {
-  data: any;
+    data: any;
 }

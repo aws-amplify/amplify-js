@@ -45,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+-   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="0.1.17"></a>
 
@@ -77,7 +77,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **@aws-amplify/xr:** Changing signing logic in SumerianProvider to use Auth Headers instead of Query Params. This makes it easier for caching libraries like Workbox to cache requests which enable offline PWA Sumerian apps. ([3682b3b](https://github.com/aws/aws-amplify/commit/3682b3b))
+-   **@aws-amplify/xr:** Changing signing logic in SumerianProvider to use Auth Headers instead of Query Params. This makes it easier for caching libraries like Workbox to cache requests which enable offline PWA Sumerian apps. ([3682b3b](https://github.com/aws/aws-amplify/commit/3682b3b))
 
 <a name="0.1.16-unstable.1"></a>
 

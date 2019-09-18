@@ -26,7 +26,7 @@ const template = `
   data-test="${auth.requireNewPassword.section}"
   >
   <div class="amplify-form-body" data-test="${
-    auth.requireNewPassword.bodySection
+      auth.requireNewPassword.bodySection
   }">
     <div
       class="amplify-form-header amplify-form-header-ionic"
@@ -79,13 +79,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-require-new-password-ionic',
-  template,
+    selector: 'amplify-auth-require-new-password-ionic',
+    template,
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
-  constructor(
-    @Inject(AmplifyService) protected amplifyService: AmplifyService
-  ) {
-    super(amplifyService);
-  }
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
+        super(amplifyService);
+    }
 }

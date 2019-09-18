@@ -11,14 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pubsub:** call observer.error on disconnect for MqttOverWSProvider ([0795db6](https://github.com/aws/aws-amplify/commit/0795db6))
-- **@aws-amplify/pubsub:** sending connection error to observable on AWSAppSyncProvider ([8b7cac7](https://github.com/aws/aws-amplify/commit/8b7cac7))
+-   **@aws-amplify/pubsub:** call observer.error on disconnect for MqttOverWSProvider ([0795db6](https://github.com/aws/aws-amplify/commit/0795db6))
+-   **@aws-amplify/pubsub:** sending connection error to observable on AWSAppSyncProvider ([8b7cac7](https://github.com/aws/aws-amplify/commit/8b7cac7))
 
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.32...@aws-amplify/pubsub@1.1.0) (2019-08-05)
 
 ### Features
 
-- Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
+-   Add support for local testing of api and storage ([#3806](https://github.com/aws/aws-amplify/issues/3806)) ([4390e8e](https://github.com/aws/aws-amplify/commit/4390e8e))
 
 ## [1.0.32](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.31...@aws-amplify/pubsub@1.0.32) (2019-07-31)
 
@@ -44,7 +44,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pubsub:** fix the typescript error ([#3461](https://github.com/aws/aws-amplify/issues/3461)) ([3497986](https://github.com/aws/aws-amplify/commit/3497986))
+-   **@aws-amplify/pubsub:** fix the typescript error ([#3461](https://github.com/aws/aws-amplify/issues/3461)) ([3497986](https://github.com/aws/aws-amplify/commit/3497986))
 
 <a name="1.0.29-unstable.3"></a>
 
@@ -58,7 +58,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pubsub:** catch and throw the error when subscribing using Mqtt ([#3376](https://github.com/aws/aws-amplify/issues/3376)) ([08ce6eb](https://github.com/aws/aws-amplify/commit/08ce6eb))
+-   **@aws-amplify/pubsub:** catch and throw the error when subscribing using Mqtt ([#3376](https://github.com/aws/aws-amplify/issues/3376)) ([08ce6eb](https://github.com/aws/aws-amplify/commit/08ce6eb))
 
 <a name="1.0.29-unstable.1"></a>
 
@@ -66,7 +66,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
+-   **aws-amplify:** manual version bumps for lerna issue ([9ce5a72](https://github.com/aws/aws-amplify/commit/9ce5a72))
 
 <a name="1.0.28"></a>
 
@@ -92,7 +92,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
+-   **pubsub:** Enable PubSub to work along side GraphQL/Appsync ([d8c972d](https://github.com/aws/aws-amplify/commit/d8c972d))
 
 <a name="1.0.27-unstable.1"></a>
 
@@ -268,7 +268,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pubsub:** correctly match # and + wildcards in message topic ([#2008](https://github.com/aws/aws-amplify/issues/2008)) ([522372e](https://github.com/aws/aws-amplify/commit/522372e))
+-   **@aws-amplify/pubsub:** correctly match # and + wildcards in message topic ([#2008](https://github.com/aws/aws-amplify/issues/2008)) ([522372e](https://github.com/aws/aws-amplify/commit/522372e))
 
 <a name="1.0.18-unstable.2"></a>
 
@@ -282,7 +282,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub,appsync:** Fix NPE when unsubscribing ([#1955](https://github.com/aws/aws-amplify/issues/1955)) ([e651728](https://github.com/aws/aws-amplify/commit/e651728)), closes [#1940](https://github.com/aws/aws-amplify/issues/1940)
+-   **pubsub,appsync:** Fix NPE when unsubscribing ([#1955](https://github.com/aws/aws-amplify/issues/1955)) ([e651728](https://github.com/aws/aws-amplify/commit/e651728)), closes [#1940](https://github.com/aws/aws-amplify/issues/1940)
 
 <a name="1.0.18-unstable.0"></a>
 
@@ -350,7 +350,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/pubsub:** paho-mqtt typescript ([#1821](https://github.com/aws/aws-amplify/issues/1821)) ([4d0802c](https://github.com/aws/aws-amplify/commit/4d0802c))
+-   **@aws-amplify/pubsub:** paho-mqtt typescript ([#1821](https://github.com/aws/aws-amplify/issues/1821)) ([4d0802c](https://github.com/aws/aws-amplify/commit/4d0802c))
 
 <a name="1.0.15-unstable.0"></a>
 
@@ -400,7 +400,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
+-   **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
 
 <a name="1.0.12"></a>
 
@@ -414,7 +414,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
+-   **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
 
 <a name="1.0.11"></a>
 
@@ -428,7 +428,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub,api,appsync:** Use subscriber-id header (AppSync subscription) ([#1618](https://github.com/aws/aws-amplify/issues/1618)) ([03f2517](https://github.com/aws/aws-amplify/commit/03f2517))
+-   **pubsub,api,appsync:** Use subscriber-id header (AppSync subscription) ([#1618](https://github.com/aws/aws-amplify/issues/1618)) ([03f2517](https://github.com/aws/aws-amplify/commit/03f2517))
 
 <a name="1.0.9"></a>
 
@@ -436,7 +436,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **pubsub:** Better handling of multiple AppSync subscriptions ([#1611](https://github.com/aws/aws-amplify/issues/1611)) ([6c86500](https://github.com/aws/aws-amplify/commit/6c86500))
+-   **pubsub:** Better handling of multiple AppSync subscriptions ([#1611](https://github.com/aws/aws-amplify/issues/1611)) ([6c86500](https://github.com/aws/aws-amplify/commit/6c86500))
 
 <a name="1.0.8"></a>
 
@@ -468,7 +468,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+-   **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
 
 <a name="1.0.5"></a>
 

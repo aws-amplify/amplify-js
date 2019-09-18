@@ -14,11 +14,11 @@
 // tslint:enable
 
 import {
-  Component,
-  Input,
-  ViewEncapsulation,
-  Injector,
-  ElementRef,
+    Component,
+    Input,
+    ViewEncapsulation,
+    Injector,
+    ElementRef,
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { S3AlbumComponentCore } from './s3-album.component.core';
@@ -37,11 +37,11 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-s3-album-ionic',
-  template,
+    selector: 'amplify-s3-album-ionic',
+    template,
 })
 export class S3AlbumComponentIonic extends S3AlbumComponentCore {
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+    constructor(protected amplifyService: AmplifyService) {
+        super(amplifyService);
+    }
 }

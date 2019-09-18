@@ -19,78 +19,78 @@ import AmplifyTheme from '../AmplifyTheme';
 const logger = new Logger('Storage.S3Image');
 
 export default class S3Image extends Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = { src: null };
-  }
-
-  getImageSource() {
-    const { imgKey, level } = this.props;
-    Storage.get(imgKey, { level: level ? level : 'public' })
-      .then(url => {
-        logger.debug(url);
-        this.setState({
-          src: { uri: url },
-        });
-      })
-      .catch(err => logger.warn(err));
-  }
-
-  load() {
-    const { imgKey, body, contentType, level } = this.props;
-    if (!imgKey) {
-      logger.debug('empty imgKey');
-      return;
+        this.state = { src: null };
     }
 
-    const that = this;
-    logger.debug('loading ' + imgKey + '...');
-    if (body) {
-      const type = contentType ? contentType : 'binary/octet-stream';
-      const opt = {
-        contentType: type,
-        level: level ? level : 'public',
-      };
-      const ret = Storage.put(imgKey, body, opt);
-      ret
-        .then(data => {
-          logger.debug(data);
-          that.getImageSource();
-        })
-        .catch(err => logger.warn(err));
-    } else {
-      that.getImageSource();
-    }
-  }
-
-  componentDidMount() {
-    this.load();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.imgKey !== this.props.imgKey ||
-      prevProps.body !== this.props.body
-    ) {
-      this.load();
-    }
-  }
-
-  render() {
-    const { src } = this.state;
-    if (!src) {
-      return null;
+    getImageSource() {
+        const { imgKey, level } = this.props;
+        Storage.get(imgKey, { level: level ? level : 'public' })
+            .then(url => {
+                logger.debug(url);
+                this.setState({
+                    src: { uri: url },
+                });
+            })
+            .catch(err => logger.warn(err));
     }
 
-    const { style, resizeMode } = this.props;
-    const theme = this.props.theme || AmplifyTheme;
-    const photoStyle = Object.assign(
-      {},
-      StyleSheet.flatten(theme.photo),
-      style
-    );
+    load() {
+        const { imgKey, body, contentType, level } = this.props;
+        if (!imgKey) {
+            logger.debug('empty imgKey');
+            return;
+        }
 
-    return <Image source={src} resizeMode={resizeMode} style={photoStyle} />;
-  }
+        const that = this;
+        logger.debug('loading ' + imgKey + '...');
+        if (body) {
+            const type = contentType ? contentType : 'binary/octet-stream';
+            const opt = {
+                contentType: type,
+                level: level ? level : 'public',
+            };
+            const ret = Storage.put(imgKey, body, opt);
+            ret.then(data => {
+                logger.debug(data);
+                that.getImageSource();
+            }).catch(err => logger.warn(err));
+        } else {
+            that.getImageSource();
+        }
+    }
+
+    componentDidMount() {
+        this.load();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.imgKey !== this.props.imgKey ||
+            prevProps.body !== this.props.body
+        ) {
+            this.load();
+        }
+    }
+
+    render() {
+        const { src } = this.state;
+        if (!src) {
+            return null;
+        }
+
+        const { style, resizeMode } = this.props;
+        const theme = this.props.theme || AmplifyTheme;
+        const photoStyle = Object.assign(
+            {},
+            StyleSheet.flatten(theme.photo),
+            style
+        );
+
+        return (
+            <Image source={src} resizeMode={resizeMode} style={photoStyle} />
+        );
+    }
 }

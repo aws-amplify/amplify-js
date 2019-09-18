@@ -22,13 +22,13 @@ import { auth } from '../../../assets/data-test-attributes';
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container" data-test="${
-    auth.forgotPassword.section
+      auth.forgotPassword.section
   }">
     <div class="amplify-form-body" data-test="${
-      auth.forgotPassword.bodySection
+        auth.forgotPassword.bodySection
     }">
     <div class="amplify-form-header" data-test="${
-      auth.forgotPassword.headerSection
+        auth.forgotPassword.headerSection
     }">
       {{ this.amplifyService.i18n().get('Reset your password') }}
     </div>
@@ -117,160 +117,168 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-forgot-password-core',
-  template,
+    selector: 'amplify-auth-forgot-password-core',
+    template,
 })
 export class ForgotPasswordComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  _usernameAttributes: string = 'username';
-  username: string;
-  code: string;
-  password: string;
-  errorMessage: string;
-  code_sent = false;
-  protected logger: any;
-  local_phone_number: string;
-  country_code: string = '1';
-  email: string;
+    _authState: AuthState;
+    _show: boolean;
+    _usernameAttributes: string = 'username';
+    username: string;
+    code: string;
+    password: string;
+    errorMessage: string;
+    code_sent = false;
+    protected logger: any;
+    local_phone_number: string;
+    country_code: string = '1';
+    email: string;
 
-  constructor(
-    @Inject(AmplifyService) protected amplifyService: AmplifyService
-  ) {
-    this.logger = this.amplifyService.logger('ForgotPasswordComponent');
-  }
-
-  @Input()
-  set data(data: any) {
-    this._authState = data.authState;
-    this._show = data.authState.state === 'forgotPassword';
-    this._usernameAttributes = data.usernameAttributes;
-    this.hide = data.hide ? data.hide : this.hide;
-
-    this.username =
-      data.authState.user && data.authState.user.username
-        ? data.authState.user.username
-        : '';
-  }
-
-  @Input() hide: string[] = [];
-
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp).length > 0;
-  }
-
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'forgotPassword';
-
-    this.email =
-      authState.user && authState.user.email ? authState.user.email : '';
-    this.country_code =
-      authState.user && authState.user.contry_code
-        ? authState.user.country_code
-        : '1';
-    this.local_phone_number =
-      authState.user && authState.user.local_phone_number
-        ? authState.user.local_phone_number
-        : '';
-    this.username =
-      authState.user && authState.user.username ? authState.user.username : '';
-  }
-
-  ngOnInit() {
-    if (!this.amplifyService.auth()) {
-      throw new Error('Auth module not registered on AmplifyService provider');
+    constructor(
+        @Inject(AmplifyService) protected amplifyService: AmplifyService
+    ) {
+        this.logger = this.amplifyService.logger('ForgotPasswordComponent');
     }
-  }
 
-  @Input()
-  set usernameAttributes(usernameAttributes: string) {
-    this._usernameAttributes = usernameAttributes;
-  }
+    @Input()
+    set data(data: any) {
+        this._authState = data.authState;
+        this._show = data.authState.state === 'forgotPassword';
+        this._usernameAttributes = data.usernameAttributes;
+        this.hide = data.hide ? data.hide : this.hide;
 
-  setCode(code: string) {
-    this.code = code;
-  }
-
-  setPassword(password: string) {
-    this.password = password;
-  }
-
-  getforgotPwUsername() {
-    switch (this._usernameAttributes) {
-      case UsernameAttributes.EMAIL:
-        return this.email;
-      case UsernameAttributes.PHONE_NUMBER:
-        return composePhoneNumber(this.country_code, this.local_phone_number);
-      default:
-        return this.username;
+        this.username =
+            data.authState.user && data.authState.user.username
+                ? data.authState.user.username
+                : '';
     }
-  }
 
-  onSend() {
-    let forgotPwUsername = this.getforgotPwUsername();
-    if (!forgotPwUsername) {
-      this.errorMessage = 'Username cannot be empty';
-      return;
+    @Input() hide: string[] = [];
+
+    shouldHide(comp) {
+        return this.hide.filter(item => item === comp).length > 0;
     }
-    this.amplifyService
-      .auth()
-      .forgotPassword(forgotPwUsername)
-      .then(() => {
-        this.code_sent = true;
-      })
-      .catch(err => {
-        this._setError(err);
-        this.code_sent = false;
-      });
-  }
 
-  onSubmit() {
-    this.amplifyService
-      .auth()
-      .forgotPasswordSubmit(
-        this.getforgotPwUsername(),
-        this.code,
-        this.password
-      )
-      .then(() => {
-        const user = { username: this.username };
+    @Input()
+    set authState(authState: AuthState) {
+        this._authState = authState;
+        this._show = authState.state === 'forgotPassword';
+
+        this.email =
+            authState.user && authState.user.email ? authState.user.email : '';
+        this.country_code =
+            authState.user && authState.user.contry_code
+                ? authState.user.country_code
+                : '1';
+        this.local_phone_number =
+            authState.user && authState.user.local_phone_number
+                ? authState.user.local_phone_number
+                : '';
+        this.username =
+            authState.user && authState.user.username
+                ? authState.user.username
+                : '';
+    }
+
+    ngOnInit() {
+        if (!this.amplifyService.auth()) {
+            throw new Error(
+                'Auth module not registered on AmplifyService provider'
+            );
+        }
+    }
+
+    @Input()
+    set usernameAttributes(usernameAttributes: string) {
+        this._usernameAttributes = usernameAttributes;
+    }
+
+    setCode(code: string) {
+        this.code = code;
+    }
+
+    setPassword(password: string) {
+        this.password = password;
+    }
+
+    getforgotPwUsername() {
+        switch (this._usernameAttributes) {
+            case UsernameAttributes.EMAIL:
+                return this.email;
+            case UsernameAttributes.PHONE_NUMBER:
+                return composePhoneNumber(
+                    this.country_code,
+                    this.local_phone_number
+                );
+            default:
+                return this.username;
+        }
+    }
+
+    onSend() {
+        let forgotPwUsername = this.getforgotPwUsername();
+        if (!forgotPwUsername) {
+            this.errorMessage = 'Username cannot be empty';
+            return;
+        }
+        this.amplifyService
+            .auth()
+            .forgotPassword(forgotPwUsername)
+            .then(() => {
+                this.code_sent = true;
+            })
+            .catch(err => {
+                this._setError(err);
+                this.code_sent = false;
+            });
+    }
+
+    onSubmit() {
+        this.amplifyService
+            .auth()
+            .forgotPasswordSubmit(
+                this.getforgotPwUsername(),
+                this.code,
+                this.password
+            )
+            .then(() => {
+                const user = { username: this.username };
+                this.onAlertClose();
+                this.amplifyService.setAuthState({ state: 'signIn', user });
+            })
+            .catch(err => this._setError(err));
+    }
+
+    onSignIn() {
         this.onAlertClose();
-        this.amplifyService.setAuthState({ state: 'signIn', user });
-      })
-      .catch(err => this._setError(err));
-  }
-
-  onSignIn() {
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signIn', user: null });
-  }
-
-  onAlertClose() {
-    this._setError(null);
-  }
-
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
+        this.amplifyService.setAuthState({ state: 'signIn', user: null });
     }
 
-    this.errorMessage = err.message || err;
-  }
+    onAlertClose() {
+        this._setError(null);
+    }
 
-  getUsernameLabel() {
-    return (
-      labelMap[this._usernameAttributes as string] || this._usernameAttributes
-    );
-  }
+    _setError(err) {
+        if (!err) {
+            this.errorMessage = null;
+            return;
+        }
 
-  onUsernameFieldChanged(event: UsernameFieldOutput) {
-    this.email = event.email || this.email;
-    this.username = event.username || this.username;
-    this.country_code = event.country_code || this.country_code;
-    this.local_phone_number =
-      event.local_phone_number || this.local_phone_number;
-  }
+        this.errorMessage = err.message || err;
+    }
+
+    getUsernameLabel() {
+        return (
+            labelMap[this._usernameAttributes as string] ||
+            this._usernameAttributes
+        );
+    }
+
+    onUsernameFieldChanged(event: UsernameFieldOutput) {
+        this.email = event.email || this.email;
+        this.username = event.username || this.username;
+        this.country_code = event.country_code || this.country_code;
+        this.local_phone_number =
+            event.local_phone_number || this.local_phone_number;
+    }
 }

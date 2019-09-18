@@ -26,23 +26,23 @@
 // IMPORTANT: if new packages are added to Amplify, add them to the map below.
 
 const packageFolderMap = {
-  'amazon-cognito-identity-js': 'amazon-cognito-identity-js',
-  'amplify-ui': '@aws-amplify/ui',
-  analytics: '@aws-amplify/analytics',
-  api: '@aws-amplify/api',
-  auth: '@aws-amplify/auth',
-  'aws-amplify': 'aws-amplify',
-  'aws-amplify-angular': 'aws-amplify-angular',
-  'aws-amplify-react': 'aws-amplify-react',
-  'aws-amplify-react-native': 'aws-amplify-react-native',
-  'aws-amplify-vue': 'aws-amplify-vue',
-  cache: '@aws-amplify/cache',
-  core: '@aws-amplify/core',
-  interactions: '@aws-amplify/interactions',
-  pubsub: '@aws-amplify/pubsub',
-  pushnotification: '@aws-amplify/pushnotification',
-  storage: '@aws-amplify/storage',
-  xr: '@aws-amplify/xr',
+    'amazon-cognito-identity-js': 'amazon-cognito-identity-js',
+    'amplify-ui': '@aws-amplify/ui',
+    analytics: '@aws-amplify/analytics',
+    api: '@aws-amplify/api',
+    auth: '@aws-amplify/auth',
+    'aws-amplify': 'aws-amplify',
+    'aws-amplify-angular': 'aws-amplify-angular',
+    'aws-amplify-react': 'aws-amplify-react',
+    'aws-amplify-react-native': 'aws-amplify-react-native',
+    'aws-amplify-vue': 'aws-amplify-vue',
+    cache: '@aws-amplify/cache',
+    core: '@aws-amplify/core',
+    interactions: '@aws-amplify/interactions',
+    pubsub: '@aws-amplify/pubsub',
+    pushnotification: '@aws-amplify/pushnotification',
+    storage: '@aws-amplify/storage',
+    xr: '@aws-amplify/xr',
 };
 
 const folders = Object.keys(packageFolderMap);
@@ -51,34 +51,34 @@ const webpackPrefix = 'webpack:///';
 const webpackNodeModules = webpackPrefix + '.' + nodeModules;
 
 function devtoolModuleFilenameTemplate(info) {
-  const resource = info.resource;
+    const resource = info.resource;
 
-  if (resource.includes(nodeModules)) {
-    // dependency paths
-    const start = resource.indexOf(nodeModules);
-    const after = start + nodeModules.length;
-    return webpackNodeModules + resource.substring(after);
-  } else if (resource.includes('../')) {
-    // handle relative paths to other packages in this monorepo by converting them into absolute
-    // paths pointing at node_modules
-    for (let i = 0; i < folders.length; i++) {
-      const folder = folders[i];
-      const relative = '../' + folder;
-      const start = resource.indexOf(relative);
-      if (start !== -1) {
-        const after = start + relative.length;
-        return (
-          webpackNodeModules +
-          packageFolderMap[folder] +
-          resource.substring(after)
-        );
-      }
+    if (resource.includes(nodeModules)) {
+        // dependency paths
+        const start = resource.indexOf(nodeModules);
+        const after = start + nodeModules.length;
+        return webpackNodeModules + resource.substring(after);
+    } else if (resource.includes('../')) {
+        // handle relative paths to other packages in this monorepo by converting them into absolute
+        // paths pointing at node_modules
+        for (let i = 0; i < folders.length; i++) {
+            const folder = folders[i];
+            const relative = '../' + folder;
+            const start = resource.indexOf(relative);
+            if (start !== -1) {
+                const after = start + relative.length;
+                return (
+                    webpackNodeModules +
+                    packageFolderMap[folder] +
+                    resource.substring(after)
+                );
+            }
+        }
     }
-  }
-  // fall-through (e.g. relative paths in this package, webpack builtins, unknown package paths)
-  return webpackPrefix + resource;
+    // fall-through (e.g. relative paths in this package, webpack builtins, unknown package paths)
+    return webpackPrefix + resource;
 }
 
 module.exports = {
-  devtoolModuleFilenameTemplate,
+    devtoolModuleFilenameTemplate,
 };
