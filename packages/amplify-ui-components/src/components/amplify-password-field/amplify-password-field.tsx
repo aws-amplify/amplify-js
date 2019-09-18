@@ -1,27 +1,32 @@
 import { Component, Prop, h } from '@stencil/core';
-import { fieldIdTextTypes } from '../../common/types';
 import { COMMON_PASSWORD_TEXT } from '../../common/constants';
+import { FunctionalComponent } from '@stencil/state-tunnel/dist/types/stencil.core';
 
 const {
   PASSWORD_SUFFIX,
   PASSWORD_LABEL,
   PASSWORD_PLACEHOLDER,
   } = COMMON_PASSWORD_TEXT;
+
 @Component({
   tag: 'amplify-password-field',
   shadow: false,
 })
 export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
-  @Prop() fieldIdText: fieldIdTextTypes;
+  @Prop() fieldId: string = PASSWORD_SUFFIX;
   /** Used for the password label */
-  @Prop() passwordLabel: string = PASSWORD_LABEL;
+  @Prop() label: string = PASSWORD_LABEL;
   /** Used for the placeholder label */
-  @Prop() passwordPlaceholderLabel: string = PASSWORD_PLACEHOLDER;
+  @Prop() placeholder: string = PASSWORD_PLACEHOLDER;
+  /** Used as the hint in case you forgot your password, etc. */
+  @Prop() hint: string | FunctionalComponent | null;
+  /** The required flag in order to make an input required prior to submitting a form */
+  @Prop() required: boolean = false;
 
   render() {
     return (
-      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${PASSWORD_SUFFIX}` : PASSWORD_SUFFIX} label={this.passwordLabel} placeholder={this.passwordPlaceholderLabel} />
+      <amplify-form-field fieldId={this.fieldId} label={this.label} placeholder={this.placeholder} hint={this.hint} required={this.required} />
     );
   }
 }

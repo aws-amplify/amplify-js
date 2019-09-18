@@ -1,5 +1,4 @@
 import { Component, Prop, h } from '@stencil/core';
-import { fieldIdTextTypes } from '../../common/types';
 import { COMMON_USERNAME_TEXT } from '../../common/constants';
 
 const {
@@ -14,15 +13,17 @@ const {
 })
 export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
-  @Prop() fieldIdText: fieldIdTextTypes;
+  @Prop() fieldId: string = USERNAME_SUFFIX;
   /** Used for the username label */
-  @Prop() usernameLabel: string = USERNAME_LABEL;
+  @Prop() label: string = USERNAME_LABEL;
   /** Used for the placeholder label */
-  @Prop() usernamePlaceholderLabel: string = USERNAME_PLACEHOLDER;
+  @Prop() placeholder: string = USERNAME_PLACEHOLDER;
+  /** The required flag in order to make an input required prior to submitting a form */
+  @Prop() required: boolean = false;
 
   render() {
     return (
-      <amplify-form-field fieldId={this.fieldIdText ? `${this.fieldIdText}-${USERNAME_SUFFIX}` : USERNAME_SUFFIX} label={this.usernameLabel} placeholder={this.usernamePlaceholderLabel} />
+      <amplify-form-field fieldId={this.fieldId} label={this.label} placeholder={this.placeholder} required={this.required} />
     );
   }
 }

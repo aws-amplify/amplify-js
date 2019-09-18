@@ -8,6 +8,7 @@ const handleSampleFormSubmit = event => {
 
 const Example1 = () => (
   <div>
+    {/* <amplify-authenticator /> */}
     <amplify-sign-in />
     <form onSubmit={handleSampleFormSubmit}>
       <fieldset>

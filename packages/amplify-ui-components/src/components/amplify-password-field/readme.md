@@ -7,18 +7,20 @@
 
 ## Properties
 
-| Property                   | Attribute                    | Description                                                             | Type                                    | Default                |
-| -------------------------- | ---------------------------- | ----------------------------------------------------------------------- | --------------------------------------- | ---------------------- |
-| `fieldIdText`              | `field-id-text`              | Based on the type of field e.g. sign in, sign up, forgot password, etc. | `"password" \| "sign-in" \| "username"` | `undefined`            |
-| `passwordLabel`            | `password-label`             | Used for the password label                                             | `string`                                | `PASSWORD_LABEL`       |
-| `passwordPlaceholderLabel` | `password-placeholder-label` | Used for the placeholder label                                          | `string`                                | `PASSWORD_PLACEHOLDER` |
+| Property      | Attribute     | Description                                                                     | Type                                | Default                |
+| ------------- | ------------- | ------------------------------------------------------------------------------- | ----------------------------------- | ---------------------- |
+| `fieldId`     | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.         | `string`                            | `PASSWORD_SUFFIX`      |
+| `hint`        | `hint`        | Used as the hint in case you forgot your password, etc.                         | `FunctionalComponent<{}> \| string` | `undefined`            |
+| `label`       | `label`       | Used for the password label                                                     | `string`                            | `PASSWORD_LABEL`       |
+| `placeholder` | `placeholder` | Used for the placeholder label                                                  | `string`                            | `PASSWORD_PLACEHOLDER` |
+| `required`    | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean`                           | `false`                |
 
 
 ## Dependencies
 
 ### Used by
 
- - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Depends on
 
@@ -31,7 +33,7 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
-  amplify-sign-in --> amplify-password-field
+  amplify-auth-fields --> amplify-password-field
   style amplify-password-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
