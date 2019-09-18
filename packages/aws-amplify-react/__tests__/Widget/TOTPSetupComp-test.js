@@ -3,215 +3,211 @@ import * as React from 'react';
 import { Component } from 'react';
 import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
 import {
-    Header,
-    Footer,
-    InputRow,
-    Button,
-    Link,
+  Header,
+  Footer,
+  InputRow,
+  Button,
+  Link,
 } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
 
 describe('TOTPSetupComp test', () => {
-    describe('render test', () => {
-        test('render without code or setupMessage', () => {
-            const wrapper = shallow(<TOTPSetupComp />);
+  describe('render test', () => {
+    test('render without code or setupMessage', () => {
+      const wrapper = shallow(<TOTPSetupComp />);
 
-            expect(wrapper).toMatchSnapshot();
-        });
-
-        test('render with code and setupMessage', () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            wrapper.setState({ code: 'code' });
-            wrapper.setState({ setupMessage: 'message' });
-
-            expect(wrapper).toMatchSnapshot();
-        });
+      expect(wrapper).toMatchSnapshot();
     });
 
-    describe('interaction test', () => {
-        test('verify button test', () => {
-            const spyon = jest
-                .spyOn(TOTPSetupComp.prototype, 'verifyTotpToken')
-                .mockImplementationOnce(() => {
-                    return;
-                });
-            const wrapper = shallow(<TOTPSetupComp />);
-            wrapper.setState({ code: 'code' });
+    test('render with code and setupMessage', () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      wrapper.setState({ code: 'code' });
+      wrapper.setState({ setupMessage: 'message' });
 
-            wrapper.find(Button).simulate('click');
+      expect(wrapper).toMatchSnapshot();
+    });
+  });
 
-            expect(spyon).toBeCalled();
+  describe('interaction test', () => {
+    test('verify button test', () => {
+      const spyon = jest
+        .spyOn(TOTPSetupComp.prototype, 'verifyTotpToken')
+        .mockImplementationOnce(() => {
+          return;
         });
+      const wrapper = shallow(<TOTPSetupComp />);
+      wrapper.setState({ code: 'code' });
 
-        test('get secret key button test', () => {
-            const spyon = jest
-                .spyOn(TOTPSetupComp.prototype, 'setup')
-                .mockImplementationOnce(() => {
-                    return;
-                });
-            const wrapper = shallow(<TOTPSetupComp />);
+      wrapper.find(Button).simulate('click');
 
-            wrapper.find(Button).simulate('click');
-
-            expect(spyon).toBeCalled();
-        });
+      expect(spyon).toBeCalled();
     });
 
-    describe('hanldeInputChange test', () => {
-        test('happy case', () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
-
-            const evt = {
-                target: {
-                    name: 'name',
-                    value: 'value',
-                },
-            };
-            instance.handleInputChange(evt);
+    test('get secret key button test', () => {
+      const spyon = jest
+        .spyOn(TOTPSetupComp.prototype, 'setup')
+        .mockImplementationOnce(() => {
+          return;
         });
+      const wrapper = shallow(<TOTPSetupComp />);
+
+      wrapper.find(Button).simulate('click');
+
+      expect(spyon).toBeCalled();
+    });
+  });
+
+  describe('hanldeInputChange test', () => {
+    test('happy case', () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
+
+      const evt = {
+        target: {
+          name: 'name',
+          value: 'value',
+        },
+      };
+      instance.handleInputChange(evt);
+    });
+  });
+
+  describe('setup test', () => {
+    test('happy case', async () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
+
+      const spyon = jest.spyOn(Auth, 'setupTOTP').mockImplementationOnce(() => {
+        return new Promise((res, rej) => {
+          res();
+        });
+      });
+
+      await instance.setup();
+
+      expect(spyon).toBeCalled();
+
+      spyon.mockClear();
     });
 
-    describe('setup test', () => {
-        test('happy case', async () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
+    test('error case', async () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
 
-            const spyon = jest
-                .spyOn(Auth, 'setupTOTP')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res();
-                    });
-                });
-
-            await instance.setup();
-
-            expect(spyon).toBeCalled();
-
-            spyon.mockClear();
+      const spyon = jest.spyOn(Auth, 'setupTOTP').mockImplementationOnce(() => {
+        return new Promise((res, rej) => {
+          rej();
         });
+      });
 
-        test('error case', async () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
+      await instance.setup();
 
-            const spyon = jest
-                .spyOn(Auth, 'setupTOTP')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej();
-                    });
-                });
+      expect(spyon).toBeCalled();
 
-            await instance.setup();
+      spyon.mockClear();
+    });
+  });
 
-            expect(spyon).toBeCalled();
+  describe('triggerTOTPEvent test', () => {
+    test('happy case', () => {
+      const mockFn = jest.fn();
+      const wrapper = shallow(<TOTPSetupComp onTOTPEvent={mockFn} />);
+      const instance = wrapper.instance();
 
-            spyon.mockClear();
+      instance.triggerTOTPEvent('event', 'data', 'user');
+
+      expect(mockFn).toBeCalledWith('event', 'data', 'user');
+    });
+  });
+
+  describe('verifyTotpToken test', () => {
+    test('happy case', async () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
+
+      const evt = {
+        target: {
+          name: 'name',
+          value: 'value',
+        },
+      };
+      instance.handleInputChange(evt);
+
+      const spyon = jest
+        .spyOn(Auth, 'verifyTotpToken')
+        .mockImplementationOnce(() => {
+          return new Promise((res, rej) => {
+            res();
+          });
         });
+      const spyon2 = jest
+        .spyOn(Auth, 'setPreferredMFA')
+        .mockImplementationOnce(() => {
+          return;
+        });
+      const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
+
+      await instance.verifyTotpToken();
+
+      expect(spyon).toBeCalled();
+      expect(spyon2).toBeCalled();
+      expect(spyon3).toBeCalled();
+
+      spyon.mockClear();
+      spyon2.mockClear();
+      spyon3.mockClear();
     });
 
-    describe('triggerTOTPEvent test', () => {
-        test('happy case', () => {
-            const mockFn = jest.fn();
-            const wrapper = shallow(<TOTPSetupComp onTOTPEvent={mockFn} />);
-            const instance = wrapper.instance();
+    test('no input', async () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
 
-            instance.triggerTOTPEvent('event', 'data', 'user');
-
-            expect(mockFn).toBeCalledWith('event', 'data', 'user');
+      const spyon = jest
+        .spyOn(Auth, 'verifyTotpToken')
+        .mockImplementationOnce(() => {
+          return new Promise((res, rej) => {
+            res();
+          });
         });
+
+      await instance.verifyTotpToken();
+
+      expect(spyon).not.toBeCalled();
+
+      spyon.mockClear();
     });
 
-    describe('verifyTotpToken test', () => {
-        test('happy case', async () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
+    test('error case', async () => {
+      const wrapper = shallow(<TOTPSetupComp />);
+      const instance = wrapper.instance();
 
-            const evt = {
-                target: {
-                    name: 'name',
-                    value: 'value',
-                },
-            };
-            instance.handleInputChange(evt);
+      const evt = {
+        target: {
+          name: 'name',
+          value: 'value',
+        },
+      };
+      instance.handleInputChange(evt);
 
-            const spyon = jest
-                .spyOn(Auth, 'verifyTotpToken')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res();
-                    });
-                });
-            const spyon2 = jest
-                .spyOn(Auth, 'setPreferredMFA')
-                .mockImplementationOnce(() => {
-                    return;
-                });
-            const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
-
-            await instance.verifyTotpToken();
-
-            expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalled();
-            expect(spyon3).toBeCalled();
-
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
+      const spyon = jest
+        .spyOn(Auth, 'verifyTotpToken')
+        .mockImplementationOnce(() => {
+          return new Promise((res, rej) => {
+            rej();
+          });
         });
-
-        test('no input', async () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
-
-            const spyon = jest
-                .spyOn(Auth, 'verifyTotpToken')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res();
-                    });
-                });
-
-            await instance.verifyTotpToken();
-
-            expect(spyon).not.toBeCalled();
-
-            spyon.mockClear();
+      const spyon2 = jest
+        .spyOn(Auth, 'setPreferredMFA')
+        .mockImplementationOnce(() => {
+          return;
         });
+      const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
 
-        test('error case', async () => {
-            const wrapper = shallow(<TOTPSetupComp />);
-            const instance = wrapper.instance();
+      await instance.verifyTotpToken();
 
-            const evt = {
-                target: {
-                    name: 'name',
-                    value: 'value',
-                },
-            };
-            instance.handleInputChange(evt);
+      expect(spyon).toBeCalled();
 
-            const spyon = jest
-                .spyOn(Auth, 'verifyTotpToken')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej();
-                    });
-                });
-            const spyon2 = jest
-                .spyOn(Auth, 'setPreferredMFA')
-                .mockImplementationOnce(() => {
-                    return;
-                });
-            const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
-
-            await instance.verifyTotpToken();
-
-            expect(spyon).toBeCalled();
-
-            spyon.mockClear();
-        });
+      spyon.mockClear();
     });
+  });
 });
