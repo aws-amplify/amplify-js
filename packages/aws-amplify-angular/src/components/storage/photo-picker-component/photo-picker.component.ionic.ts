@@ -53,13 +53,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-photo-picker-ionic',
-  template,
+	selector: 'amplify-photo-picker-ionic',
+	template,
 })
 export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
-  constructor(
-    @Inject(AmplifyService) protected amplifyService: AmplifyService
-  ) {
-    super(amplifyService);
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

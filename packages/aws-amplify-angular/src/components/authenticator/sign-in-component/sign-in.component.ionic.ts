@@ -69,8 +69,8 @@ const template = `
         </div>
         <div class="amplify-form-signup" *ngIf="!shouldHide('ForgotPassword')">
           <a class="amplify-form-link" (click)="onForgotPassword()" data-test="${
-            auth.signIn.forgotPasswordLink
-          }">
+						auth.signIn.forgotPasswordLink
+					}">
             {{ this.amplifyService.i18n().get('Reset Password') }}
           </a>
         </div>
@@ -90,13 +90,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-sign-in-ionic',
-  template,
+	selector: 'amplify-auth-sign-in-ionic',
+	template,
 })
 export class SignInComponentIonic extends SignInComponentCore {
-  constructor(
-    @Inject(AmplifyService) protected amplifyService: AmplifyService
-  ) {
-    super(amplifyService);
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

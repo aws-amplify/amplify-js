@@ -19,8 +19,8 @@ const template = `
 <div class={{AmplifyUI.loadingOverlay}}>
   <div class={{AmplifyUI.loadingContainer}}>
     <div class={{AmplifyUI.loadingLogo}} data-test="${
-      sumerianScene.loadingLogo
-    }">
+			sumerianScene.loadingLogo
+		}">
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
       viewBox="0 0 2000 1195" style="enable-background:new 0 0 2000 1195;" xml:space="preserve">
         <g>
@@ -75,14 +75,14 @@ const template = `
       </svg>
     </div>
     <div class={{AmplifyUI.loadingSceneName}} data-test="${
-      sumerianScene.loadingSceneName
-    }">{{sceneName}}</div>
+			sumerianScene.loadingSceneName
+		}">{{sceneName}}</div>
     <div *ngIf="sceneError" class={{AmplifyUI.sceneErrorText}} data-test="${
-      sumerianScene.errorText
-    }">{{sceneError}}</div>
+			sumerianScene.errorText
+		}">{{sceneError}}</div>
     <div *ngIf="!sceneError" class={{AmplifyUI.loadingBar}} data-test="${
-      sumerianScene.loadingBar
-    }">
+			sumerianScene.loadingBar
+		}">
       <div class={{AmplifyUI.loadingBarFill}} [ngStyle]="{ 'width': loadPercentage + '%' }"></div>
     </div>
   </div>
@@ -90,17 +90,17 @@ const template = `
 `;
 
 @Component({
-  selector: 'sumerian-scene-loading-core',
-  template,
+	selector: 'sumerian-scene-loading-core',
+	template,
 })
 export class SumerianSceneLoadingComponentCore {
-  @Input() loadPercentage: number;
-  @Input() sceneName: string;
-  @Input() sceneError: string | null;
+	@Input() loadPercentage: number;
+	@Input() sceneName: string;
+	@Input() sceneError: string | null;
 
-  AmplifyUI: any;
+	AmplifyUI: any;
 
-  constructor() {
-    this.AmplifyUI = AmplifyUI;
-  }
+	constructor() {
+		this.AmplifyUI = AmplifyUI;
+	}
 }
