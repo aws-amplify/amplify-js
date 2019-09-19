@@ -835,6 +835,7 @@
 						 */
 						var requestDevice = function() {
 							if (typeof audio_context === 'undefined') {
+								// @ts-ignore
 								window.AudioContext =
 									// @ts-ignore
 									window.AudioContext || window.webkitAudioContext;
