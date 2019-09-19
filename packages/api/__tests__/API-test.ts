@@ -439,7 +439,9 @@ describe('API test', () => {
 
 			Cache.configure(cache_config);
 
-			jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'oidc_token' });
+			jest.spyOn(Cache, 'getItem').mockReturnValue({
+				token: 'oidc_token',
+			});
 
 			const spyon = jest
 				.spyOn(RestClient.prototype, 'post')

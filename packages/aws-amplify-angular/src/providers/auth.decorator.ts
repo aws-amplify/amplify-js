@@ -29,7 +29,10 @@ function listen(authState: Subject<AuthState>) {
 					if (channel === 'auth') {
 						const { username } = payload.data;
 						logger.debug('authentication oauth event', payload);
-						authState.next({ state: payload.event, user: { username } });
+						authState.next({
+							state: payload.event,
+							user: { username },
+						});
 					}
 				},
 			},

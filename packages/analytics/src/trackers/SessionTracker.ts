@@ -103,7 +103,6 @@ export default class SessionTracker {
 
 	private _trackBeforeUnload(event) {
 		// before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
-
 		const customAttrs =
 			typeof this._config.attributes === 'function'
 				? Promise.resolve(this._config.attributes())
@@ -138,7 +137,6 @@ export default class SessionTracker {
 			typeof this._config.attributes === 'function'
 				? await this._config.attributes()
 				: this._config.attributes;
-
 		const attributes = Object.assign({}, customAttrs);
 
 		this._tracker(

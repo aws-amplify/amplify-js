@@ -290,7 +290,11 @@ describe('Predictions identify provider test', () => {
 					.mockImplementationOnce((_param, callback) => {
 						const plainBlocks: Rekognition.DetectTextResponse = {
 							TextDetections: [
-								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
+								{
+									Type: 'LINE',
+									Id: 1,
+									DetectedText: 'Hello world',
+								},
 							],
 						};
 						for (let i = 0; i < 50; ++i) {
@@ -318,7 +322,10 @@ describe('Predictions identify provider test', () => {
 					text: {
 						fullText: 'Hello world',
 						keyValues: [
-							{ key: 'Hello', value: { selected: true, text: 'world' } },
+							{
+								key: 'Hello',
+								value: { selected: true, text: 'world' },
+							},
 						],
 						lines: ['Hello world'],
 						linesDetailed: [{ text: 'Hello world' }],
@@ -449,7 +456,12 @@ describe('Predictions identify provider test', () => {
 				const expected: IdentifyEntitiesOutput = {
 					entities: [
 						{
-							boundingBox: { height: 0, left: 0, top: 0, width: 0 },
+							boundingBox: {
+								height: 0,
+								left: 0,
+								top: 0,
+								width: 0,
+							},
 							landmarks: [{ type: 'eyeLeft', x: 0.5, y: 0.5 }],
 							metadata: {
 								name: 'William',
@@ -495,7 +507,16 @@ describe('Predictions identify provider test', () => {
 
 			test('happy case credentials exist', () => {
 				const expected: IdentifyEntitiesOutput = {
-					entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }],
+					entities: [
+						{
+							boundingBox: {
+								left: 0,
+								top: 0,
+								height: 0,
+								width: 0,
+							},
+						},
+					],
 				};
 				return expect(
 					predictionsProvider.identify(recognizeCelebritiesInput)
@@ -526,7 +547,16 @@ describe('Predictions identify provider test', () => {
 
 			test('happy case credentials exist', () => {
 				const expected: IdentifyEntitiesOutput = {
-					entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }],
+					entities: [
+						{
+							boundingBox: {
+								left: 0,
+								top: 0,
+								height: 0,
+								width: 0,
+							},
+						},
+					],
 				};
 				return expect(
 					predictionsProvider.identify(searchByFacesInput)
@@ -552,7 +582,14 @@ describe('Predictions identify provider test', () => {
 				{
 					Name: 'test',
 					Instances: [
-						{ BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } },
+						{
+							BoundingBox: {
+								Height: 0,
+								Left: 0,
+								Top: 0,
+								Width: 0,
+							},
+						},
 					],
 				},
 			],
@@ -560,7 +597,10 @@ describe('Predictions identify provider test', () => {
 
 		test('happy case input source valid public s3object', () => {
 			const detectLabelInput: IdentifyLabelsInput = {
-				labels: { source: { level: 'public', key: 'key' }, type: 'LABELS' },
+				labels: {
+					source: { level: 'public', key: 'key' },
+					type: 'LABELS',
+				},
 			};
 			jest
 				.spyOn(Rekognition.prototype, 'detectLabels')
@@ -573,7 +613,10 @@ describe('Predictions identify provider test', () => {
 
 		test('happy case input source valid private s3object', done => {
 			const detectLabelInput: IdentifyLabelsInput = {
-				labels: { source: { key: 'key', level: 'private' }, type: 'LABELS' },
+				labels: {
+					source: { key: 'key', level: 'private' },
+					type: 'LABELS',
+				},
 			};
 			jest
 				.spyOn(Rekognition.prototype, 'detectLabels')

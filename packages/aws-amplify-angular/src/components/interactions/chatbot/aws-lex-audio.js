@@ -317,7 +317,9 @@
 					});
 
 					var lexruntime,
-						audioControl = new AudioControl({ checkAudioSupport: false });
+						audioControl = new AudioControl({
+							checkAudioSupport: false,
+						});
 
 					exports.conversation = function(
 						config,

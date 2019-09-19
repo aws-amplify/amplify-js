@@ -204,7 +204,10 @@ export class ChatBot extends Component {
 				dialog: [
 					...this.state.dialog,
 					response &&
-						response.message && { from: 'bot', message: response.message },
+						response.message && {
+							from: 'bot',
+							message: response.message,
+						},
 				].filter(Boolean),
 				inputText: '',
 				inputEditable: true,
@@ -387,7 +390,7 @@ export class ChatBot extends Component {
 					editable={this.state.inputEditable}
 					handleMicButton={this.handleMicButton}
 					submit={this.submit}
-				></ChatBotInputs>
+				/>
 			</KeyboardAvoidingView>
 		);
 	}
@@ -479,7 +482,7 @@ function ChatBotTextInput(props) {
 			onSubmitEditing={onSubmitEditing}
 			blurOnSubmit={false}
 			editable={editable}
-		></TextInput>
+		/>
 	);
 }
 

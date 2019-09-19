@@ -25,7 +25,10 @@ const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
 
 	client.connect = mockConnect;
 	client.send = jest.fn((topic, message) => {
-		client.onMessageArrived({ destinationName: topic, payloadString: message });
+		client.onMessageArrived({
+			destinationName: topic,
+			payloadString: message,
+		});
 	});
 	client.subscribe = jest.fn((topics, options) => {});
 	client.unsubscribe = jest.fn(() => {});

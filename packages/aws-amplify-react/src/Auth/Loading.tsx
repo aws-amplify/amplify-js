@@ -14,7 +14,11 @@
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
+<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Loading.tsx
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+=======
+import AuthPiece from './AuthPiece';
+>>>>>>> master:packages/aws-amplify-react/src/Auth/Loading.jsx
 import AmplifyTheme from '../AmplifyTheme';
 import {
 	FormSection,
@@ -25,11 +29,16 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('Loading');
 
+<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Loading.tsx
 export default class Loading extends AuthPiece<
 	IAuthPieceProps,
 	IAuthPieceState
 > {
 	constructor(props: IAuthPieceProps) {
+=======
+export default class Loading extends AuthPiece {
+	constructor(props) {
+>>>>>>> master:packages/aws-amplify-react/src/Auth/Loading.jsx
 		super(props);
 
 		this._validAuthStates = ['loading'];

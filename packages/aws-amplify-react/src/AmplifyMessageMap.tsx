@@ -26,7 +26,10 @@ export const MapEntries = [
 ];
 
 export default function AmplifyMessageMap(message) {
+<<<<<<< HEAD:packages/aws-amplify-react/src/AmplifyMessageMap.tsx
 	// @ts-ignore
+=======
+>>>>>>> master:packages/aws-amplify-react/src/AmplifyMessageMap.js
 	const match = MapEntries.filter(entry => entry[1].test(message));
 	if (match.length === 0) {
 		return message;

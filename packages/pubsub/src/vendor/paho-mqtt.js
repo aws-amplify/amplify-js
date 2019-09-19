@@ -196,8 +196,14 @@
 		 */
 		var ERROR = {
 			OK: { code: 0, text: 'AMQJSC0000I OK.' },
-			CONNECT_TIMEOUT: { code: 1, text: 'AMQJSC0001E Connect timed out.' },
-			SUBSCRIBE_TIMEOUT: { code: 2, text: 'AMQJS0002E Subscribe timed out.' },
+			CONNECT_TIMEOUT: {
+				code: 1,
+				text: 'AMQJSC0001E Connect timed out.',
+			},
+			SUBSCRIBE_TIMEOUT: {
+				code: 2,
+				text: 'AMQJS0002E Subscribe timed out.',
+			},
 			UNSUBSCRIBE_TIMEOUT: {
 				code: 3,
 				text: 'AMQJS0003E Unsubscribe timed out.',
@@ -222,7 +228,10 @@
 				text: 'AMQJS0010E {0} is not supported by this browser.',
 			},
 			INVALID_STATE: { code: 11, text: 'AMQJS0011E Invalid state {0}.' },
-			INVALID_TYPE: { code: 12, text: 'AMQJS0012E Invalid type {0} for {1}.' },
+			INVALID_TYPE: {
+				code: 12,
+				text: 'AMQJS0012E Invalid type {0} for {1}.',
+			},
 			INVALID_ARGUMENT: {
 				code: 13,
 				text: 'AMQJS0013E Invalid argument {0} for {1}.',

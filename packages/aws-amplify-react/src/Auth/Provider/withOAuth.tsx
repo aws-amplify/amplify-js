@@ -24,8 +24,13 @@ import {
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 
 export default function withOAuth(Comp) {
+<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Provider/withOAuth.tsx
 	return class extends Component<any, any> {
 		constructor(props: any) {
+=======
+	return class extends Component {
+		constructor(props) {
+>>>>>>> master:packages/aws-amplify-react/src/Auth/Provider/withOAuth.jsx
 			super(props);
 			this.signIn = this.signIn.bind(this);
 		}
@@ -40,7 +45,11 @@ export default function withOAuth(Comp) {
 	};
 }
 
+<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Provider/withOAuth.tsx
 const Button = (props: any) => (
+=======
+const Button = props => (
+>>>>>>> master:packages/aws-amplify-react/src/Auth/Provider/withOAuth.jsx
 	<SignInButton
 		id={oAuthSignInButton}
 		onClick={() => props.OAuthSignIn()}

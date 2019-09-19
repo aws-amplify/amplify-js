@@ -55,7 +55,12 @@ export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentif
 						const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
 						const parsedURL = url.match(parser);
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
-						res({ S3Object: { Bucket: parsedURL[1], Name: parsedURL[2] } });
+						res({
+							S3Object: {
+								Bucket: parsedURL[1],
+								Name: parsedURL[2],
+							},
+						});
 					})
 					.catch(err => rej(err));
 			} else if (isFileSource(source)) {
