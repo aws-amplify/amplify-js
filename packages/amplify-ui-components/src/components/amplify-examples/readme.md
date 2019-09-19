@@ -47,6 +47,7 @@ graph TD;
   amplify-auth-fields --> amplify-email-field
   amplify-auth-fields --> amplify-code-field
   amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
   amplify-username-field --> amplify-form-field
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
