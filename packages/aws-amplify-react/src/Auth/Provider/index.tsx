@@ -27,20 +27,14 @@ export { default as withOAuth, OAuthButton } from './withOAuth';
 export { default as withAuth0, Auth0Button } from './withAuth0';
 
 export function withFederated(Comp) {
-<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Provider/index.tsx
 	// @ts-ignore
-=======
->>>>>>> master:packages/aws-amplify-react/src/Auth/Provider/index.jsx
 	const Federated = withAuth0(
 		withOAuth(withAmazon(withGoogle(withFacebook(Comp))))
 	);
 
 	return class extends Component {
 		render() {
-<<<<<<< HEAD:packages/aws-amplify-react/src/Auth/Provider/index.tsx
 			// @ts-ignore
-=======
->>>>>>> master:packages/aws-amplify-react/src/Auth/Provider/index.jsx
 			const federated = this.props.federated || {};
 			return <Federated {...this.props} {...federated} />;
 		}
