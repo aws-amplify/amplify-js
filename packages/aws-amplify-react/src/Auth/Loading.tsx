@@ -14,34 +14,37 @@
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
-
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
-    FormSection,
-    SectionBody
+	FormSection,
+	SectionBody,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('Loading');
 
-export default class Loading extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
-    constructor(props: IAuthPieceProps) {
-        super(props);
+export default class Loading extends AuthPiece<
+	IAuthPieceProps,
+	IAuthPieceState
+> {
+	constructor(props: IAuthPieceProps) {
+		super(props);
 
-        this._validAuthStates = ['loading'];
-    }
+		this._validAuthStates = ['loading'];
+	}
 
-    showComponent(theme) {
-        const { hide } = this.props;
-        if (hide && hide.includes(Loading)) { return null; }
+	showComponent(theme) {
+		const { hide } = this.props;
+		if (hide && hide.includes(Loading)) {
+			return null;
+		}
 
-        return (
-            <FormSection theme={theme} data-test={auth.loading.section}>
-                <SectionBody theme={theme}>{I18n.get('Loading...')}
-                </SectionBody>
-            </FormSection>
-        );
-    }
+		return (
+			<FormSection theme={theme} data-test={auth.loading.section}>
+				<SectionBody theme={theme}>{I18n.get('Loading...')}</SectionBody>
+			</FormSection>
+		);
+	}
 }

@@ -2,175 +2,192 @@ import regeneratorRuntime from 'regenerator-runtime/runtime';
 import { Component } from 'react';
 import API from '@aws-amplify/api';
 
-
 export interface IConnectProps {
-    mutation?: any;
-    onSubscriptionMsg?: (prevData: any) => any;
-    query?: any;
-    subscription?: any;
+	mutation?: any;
+	onSubscriptionMsg?: (prevData: any) => any;
+	query?: any;
+	subscription?: any;
 }
-  
+
 export interface IConnectState {
-    loading: boolean;
-    data: any;
-    errors: any;
-    mutation: any;
+	loading: boolean;
+	data: any;
+	errors: any;
+	mutation: any;
 }
 
 export default class Connect extends Component<IConnectProps, IConnectState> {
-    public subSubscription;
-    private mounted: boolean;
+	public subSubscription;
+	private mounted: boolean;
 
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.state = this.getInitialState();
-        this.subSubscription = null;
-    }
+		this.state = this.getInitialState();
+		this.subSubscription = null;
+	}
 
-    getInitialState() {
-        const { query } = this.props;
-        return {
-            loading: query && !!query.query,
-            data: {},
-            errors: [],
-            mutation: () => console.warn('Not implemented'),
-        };
-    }
+	getInitialState() {
+		const { query } = this.props;
+		return {
+			loading: query && !!query.query,
+			data: {},
+			errors: [],
+			mutation: () => console.warn('Not implemented'),
+		};
+	}
 
-    getDefaultState() {
-        return {
-            loading: false,
-            data: {},
-            errors: [],
-            mutation: () => console.warn('Not implemented'),
-        };
-    }
+	getDefaultState() {
+		return {
+			loading: false,
+			data: {},
+			errors: [],
+			mutation: () => console.warn('Not implemented'),
+		};
+	}
 
-    async _fetchData() {
-        this._unsubscribe();
-        this.setState({ loading: true });
+	async _fetchData() {
+		this._unsubscribe();
+		this.setState({ loading: true });
 
-        const {
-            // @ts-ignore
-            query: { query, variables = {} } = {},
-            // @ts-ignore
-            mutation: { query: mutation, mutationVariables = {} } = {},
-            subscription,
-            onSubscriptionMsg = (prevData) => prevData,
-        } = this.props;
+		const {
+			// @ts-ignore
+			query: { query, variables = {} } = {},
+			// @ts-ignore
+			mutation: { query: mutation, mutationVariables = {} } = {},
+			subscription,
+			onSubscriptionMsg = prevData => prevData,
+		} = this.props;
 
-        let { data, mutation: mutationProp, errors } = this.getDefaultState();
+		let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
-        if (!API || typeof API.graphql !== 'function' || typeof API.getGraphqlOperationType !== 'function') {
-            throw new Error('No API module found, please ensure @aws-amplify/api is imported');
-        }
+		if (
+			!API ||
+			typeof API.graphql !== 'function' ||
+			typeof API.getGraphqlOperationType !== 'function'
+		) {
+			throw new Error(
+				'No API module found, please ensure @aws-amplify/api is imported'
+			);
+		}
 
-        const hasValidQuery = query && API.getGraphqlOperationType(query) === 'query';
-        const hasValidMutation = mutation && API.getGraphqlOperationType(mutation) === 'mutation';
-        const hasValidSubscription = subscription && API.getGraphqlOperationType(subscription.query) === 'subscription';
+		const hasValidQuery =
+			query && API.getGraphqlOperationType(query) === 'query';
+		const hasValidMutation =
+			mutation && API.getGraphqlOperationType(mutation) === 'mutation';
+		const hasValidSubscription =
+			subscription &&
+			API.getGraphqlOperationType(subscription.query) === 'subscription';
 
-        if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
-            console.warn('No query, mutation or subscription was specified');
-        }
+		if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
+			console.warn('No query, mutation or subscription was specified');
+		}
 
-        if (hasValidQuery) {
-            try {
-                data = null;
+		if (hasValidQuery) {
+			try {
+				data = null;
 
-                const response = await API.graphql({ query, variables });
+				const response = await API.graphql({ query, variables });
 
-                // @ts-ignore
-                data = response.data;
-            } catch (err) {
-                data = err.data;
-                errors = err.errors;
-            }
-        }
+				// @ts-ignore
+				data = response.data;
+			} catch (err) {
+				data = err.data;
+				errors = err.errors;
+			}
+		}
 
-        if (hasValidMutation) {
-            // @ts-ignore
-            mutationProp = async (variables) => {
-                const result = await API.graphql({ query: mutation, variables });
+		if (hasValidMutation) {
+			// @ts-ignore
+			mutationProp = async variables => {
+				const result = await API.graphql({ query: mutation, variables });
 
-                this.forceUpdate();
-                return result;
-            };
-        }
+				this.forceUpdate();
+				return result;
+			};
+		}
 
-        if (hasValidSubscription) {
-            const { query: subsQuery, variables: subsVars } = subscription;
+		if (hasValidSubscription) {
+			const { query: subsQuery, variables: subsVars } = subscription;
 
-            try {
-                const observable = API.graphql({ query: subsQuery, variables: subsVars });
+			try {
+				const observable = API.graphql({
+					query: subsQuery,
+					variables: subsVars,
+				});
 
-                // @ts-ignore
-                this.subSubscription = observable.subscribe({
-                    next: ({ value: { data } }) => {
-                        const { data: prevData } = this.state;
-                        // @ts-ignore
-                        const newData = onSubscriptionMsg(prevData, data);
-                        if (this.mounted) {
-                            this.setState({ data: newData });
-                        }
-                    },
-                    error: err => console.error(err),
-                });
-            } catch (err) {
-                errors = err.errors;
-            }
-        }
+				// @ts-ignore
+				this.subSubscription = observable.subscribe({
+					next: ({ value: { data } }) => {
+						const { data: prevData } = this.state;
+						// @ts-ignore
+						const newData = onSubscriptionMsg(prevData, data);
+						if (this.mounted) {
+							this.setState({ data: newData });
+						}
+					},
+					error: err => console.error(err),
+				});
+			} catch (err) {
+				errors = err.errors;
+			}
+		}
 
-        this.setState({ data, errors, mutation: mutationProp, loading: false });
-    }
+		this.setState({ data, errors, mutation: mutationProp, loading: false });
+	}
 
-    _unsubscribe() {
-        if (this.subSubscription) {
-            this.subSubscription.unsubscribe();
-        }
-    }
+	_unsubscribe() {
+		if (this.subSubscription) {
+			this.subSubscription.unsubscribe();
+		}
+	}
 
-    async componentDidMount() {
-        this._fetchData();
-        this.mounted = true;
-    }
+	async componentDidMount() {
+		this._fetchData();
+		this.mounted = true;
+	}
 
-    componentWillUnmount() {
-        this._unsubscribe();
-        this.mounted = false;
-    }
+	componentWillUnmount() {
+		this._unsubscribe();
+		this.mounted = false;
+	}
 
-    componentDidUpdate(prevProps) {
-        const { loading } = this.state;
+	componentDidUpdate(prevProps) {
+		const { loading } = this.state;
 
-        const { query: newQueryObj, mutation: newMutationObj } = this.props;
-        const { query: prevQueryObj, mutation: prevMutationObj } = prevProps;
+		const { query: newQueryObj, mutation: newMutationObj } = this.props;
+		const { query: prevQueryObj, mutation: prevMutationObj } = prevProps;
 
-        // query
-        // @ts-ignore
-        const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
-        // @ts-ignore
-        const { query: prevQuery, variables: prevQueryVariables } = prevQueryObj || {};
-        const queryChanged =
-            prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
+		// query
+		// @ts-ignore
+		const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
+		// @ts-ignore
+		const { query: prevQuery, variables: prevQueryVariables } =
+			prevQueryObj || {};
+		const queryChanged =
+			prevQuery !== newQuery ||
+			JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
 
-        // mutation
-        // @ts-ignore
-        const { query: newMutation, variables: newMutationVariables } = newMutationObj || {};
-        // @ts-ignore
-        const { query: prevMutation, variables: prevMutationVariables } = prevMutationObj || {};
-        const mutationChanged =
-            prevMutation !== newMutation
-            || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
+		// mutation
+		// @ts-ignore
+		const { query: newMutation, variables: newMutationVariables } =
+			newMutationObj || {};
+		// @ts-ignore
+		const { query: prevMutation, variables: prevMutationVariables } =
+			prevMutationObj || {};
+		const mutationChanged =
+			prevMutation !== newMutation ||
+			JSON.stringify(prevMutationVariables) !==
+				JSON.stringify(newMutationVariables);
 
-        if (!loading && (queryChanged || mutationChanged)) {
-            this._fetchData();
-        }
-    }
+		if (!loading && (queryChanged || mutationChanged)) {
+			this._fetchData();
+		}
+	}
 
-    render() {
-        const { data, loading, mutation, errors } = this.state;
-        // @ts-ignore
-        return this.props.children({ data, errors, loading, mutation }) || null;
-    }
+	render() {
+		const { data, loading, mutation, errors } = this.state;
+		// @ts-ignore
+		return this.props.children({ data, errors, loading, mutation }) || null;
+	}
 }

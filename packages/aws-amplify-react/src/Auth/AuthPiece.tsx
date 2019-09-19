@@ -16,200 +16,216 @@ import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import countryDialCodes from './common/country-dial-codes';
-import { 
-    FormField,
-    Input,
-    InputLabel,
-    SelectInput
- } from '../Amplify-UI/Amplify-UI-Components-React';
+import {
+	FormField,
+	Input,
+	InputLabel,
+	SelectInput,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 import { UsernameAttributes } from './common/types';
 import { PhoneField } from './PhoneField';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 const labelMap = {
-  [UsernameAttributes.EMAIL]: 'Email',
-  [UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
-  [UsernameAttributes.USERNAME]: 'Username'
+	[UsernameAttributes.EMAIL]: 'Email',
+	[UsernameAttributes.PHONE_NUMBER]: 'Phone Number',
+	[UsernameAttributes.USERNAME]: 'Username',
 };
 
 export interface IAuthPieceProps {
-    authData?: any;
-    authState?: string;
-    hide?: any;
-    onAuthEvent?: any;
-    onStateChange?: (state: string, data?) => void;
-    track?: () => void;
-    theme?: any;
-    usernameAttributes?: UsernameAttributes;
+	authData?: any;
+	authState?: string;
+	hide?: any;
+	onAuthEvent?: any;
+	onStateChange?: (state: string, data?) => void;
+	track?: () => void;
+	theme?: any;
+	usernameAttributes?: UsernameAttributes;
 }
 
 export interface IAuthPieceState {
-    username?: any;
+	username?: any;
 }
 
-export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends React.Component<Props, State> {
-    public _validAuthStates: string[];
-    public _isHidden: boolean;
-    public inputs: any; 
-    public phone_number: any;
-    
-    constructor(props) {
-        super(props);
+export default class AuthPiece<
+	Props extends IAuthPieceProps,
+	State extends IAuthPieceState
+> extends React.Component<Props, State> {
+	public _validAuthStates: string[];
+	public _isHidden: boolean;
+	public inputs: any;
+	public phone_number: any;
 
-        this.inputs = {};
+	constructor(props) {
+		super(props);
 
-        this._isHidden = true;
-        this._validAuthStates = [];
-        this.phone_number = '';
-        this.changeState = this.changeState.bind(this);
-        this.error = this.error.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.renderUsernameField = this.renderUsernameField.bind(this);
-        this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
-        this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
-    }
+		this.inputs = {};
 
-    componentDidMount() {
-        if (window && window.location && window.location.search) {
-            if (!this.props.authData || !this.props.authData.username) {
-                const searchParams = new URLSearchParams(window.location.search);
-                const username = searchParams ? searchParams.get('username') : undefined;
-                this.setState({ username });
-            }
-        }
-    }
+		this._isHidden = true;
+		this._validAuthStates = [];
+		this.phone_number = '';
+		this.changeState = this.changeState.bind(this);
+		this.error = this.error.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.renderUsernameField = this.renderUsernameField.bind(this);
+		this.getUsernameFromInput = this.getUsernameFromInput.bind(this);
+		this.onPhoneNumberChanged = this.onPhoneNumberChanged.bind(this);
+	}
 
-    getUsernameFromInput() {
-        const { usernameAttributes = 'username' } = this.props;
-        switch(usernameAttributes) {
-            case UsernameAttributes.EMAIL:
-                return this.inputs.email;
-            case UsernameAttributes.PHONE_NUMBER:
-                return this.phone_number;
-            default:
-                return this.inputs.username || this.state.username;
-        }
-    }
+	componentDidMount() {
+		if (window && window.location && window.location.search) {
+			if (!this.props.authData || !this.props.authData.username) {
+				const searchParams = new URLSearchParams(window.location.search);
+				const username = searchParams
+					? searchParams.get('username')
+					: undefined;
+				this.setState({ username });
+			}
+		}
+	}
 
-    onPhoneNumberChanged(phone_number) {
-        this.phone_number = phone_number;
-    }
+	getUsernameFromInput() {
+		const { usernameAttributes = 'username' } = this.props;
+		switch (usernameAttributes) {
+			case UsernameAttributes.EMAIL:
+				return this.inputs.email;
+			case UsernameAttributes.PHONE_NUMBER:
+				return this.phone_number;
+			default:
+				return this.inputs.username || this.state.username;
+		}
+	}
 
-    renderUsernameField(theme) {
-        const { usernameAttributes = [] } = this.props;
-        if (usernameAttributes === UsernameAttributes.EMAIL) {
-            return (
-                <FormField theme={theme}>           
-                    <InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
-                    <Input
-                        autoFocus
-                        placeholder={I18n.get('Enter your email')}
-                        theme={theme}
-                        key="email"
-                        name="email"
-                        onChange={this.handleInputChange}
-                        data-test={auth.genericAttrs.emailInput}
-                    />
-                </FormField>
-            );
-        } else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-            return (
-                <PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged}/>
-            );
-        } else {
-            return (
-                <FormField theme={theme}>           
-                    <InputLabel theme={theme}>{I18n.get(this.getUsernameLabel())} *</InputLabel>
-                    <Input
-                        defaultValue={this.state.username}
-                        autoFocus
-                        placeholder={I18n.get('Enter your username')}
-                        theme={theme}
-                        key="username"
-                        name="username"
-                        onChange={this.handleInputChange}
-                        data-test={auth.genericAttrs.usernameInput}
-                    />
-                </FormField>
-            );
-        }
-    }
+	onPhoneNumberChanged(phone_number) {
+		this.phone_number = phone_number;
+	}
 
-    getUsernameLabel() {
-        const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
-        return labelMap[usernameAttributes] || usernameAttributes;
-    }
+	renderUsernameField(theme) {
+		const { usernameAttributes = [] } = this.props;
+		if (usernameAttributes === UsernameAttributes.EMAIL) {
+			return (
+				<FormField theme={theme}>
+					<InputLabel theme={theme}>{I18n.get('Email')} *</InputLabel>
+					<Input
+						autoFocus
+						placeholder={I18n.get('Enter your email')}
+						theme={theme}
+						key="email"
+						name="email"
+						onChange={this.handleInputChange}
+						data-test={auth.genericAttrs.emailInput}
+					/>
+				</FormField>
+			);
+		} else if (usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+			return (
+				<PhoneField theme={theme} onChangeText={this.onPhoneNumberChanged} />
+			);
+		} else {
+			return (
+				<FormField theme={theme}>
+					<InputLabel theme={theme}>
+						{I18n.get(this.getUsernameLabel())} *
+					</InputLabel>
+					<Input
+						defaultValue={this.state.username}
+						autoFocus
+						placeholder={I18n.get('Enter your username')}
+						theme={theme}
+						key="username"
+						name="username"
+						onChange={this.handleInputChange}
+						data-test={auth.genericAttrs.usernameInput}
+					/>
+				</FormField>
+			);
+		}
+	}
 
-    // extract username from authData
-    usernameFromAuthData() {
-        const { authData } = this.props;
-        if (!authData) { return ''; }
+	getUsernameLabel() {
+		const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
+		return labelMap[usernameAttributes] || usernameAttributes;
+	}
 
-        let username = '';
-        if (typeof authData === 'object') { // user object
-            username = authData.user? authData.user.username : authData.username;
-        } else {
-            username = authData; // username string
-        }
+	// extract username from authData
+	usernameFromAuthData() {
+		const { authData } = this.props;
+		if (!authData) {
+			return '';
+		}
 
-        return username;
-    }
+		let username = '';
+		if (typeof authData === 'object') {
+			// user object
+			username = authData.user ? authData.user.username : authData.username;
+		} else {
+			username = authData; // username string
+		}
 
-    errorMessage(err) {
-        if (typeof err === 'string') { return err; }
-        return err.message? err.message : JSON.stringify(err);
-    }
+		return username;
+	}
 
-    triggerAuthEvent(event) {
-        const state = this.props.authState;
-        if (this.props.onAuthEvent) { this.props.onAuthEvent(state, event); }
-    }
+	errorMessage(err) {
+		if (typeof err === 'string') {
+			return err;
+		}
+		return err.message ? err.message : JSON.stringify(err);
+	}
 
-    changeState(state, data?) {
-        if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+	triggerAuthEvent(event) {
+		const state = this.props.authState;
+		if (this.props.onAuthEvent) {
+			this.props.onAuthEvent(state, event);
+		}
+	}
 
-        this.triggerAuthEvent({
-            type: 'stateChange',
-            data: state
-        });
-    }
+	changeState(state, data?) {
+		if (this.props.onStateChange) {
+			this.props.onStateChange(state, data);
+		}
 
-    error(err) {
-        this.triggerAuthEvent({
-            type: 'error',
-            data: this.errorMessage(err)
-        });
-    }
+		this.triggerAuthEvent({
+			type: 'stateChange',
+			data: state,
+		});
+	}
 
-    handleInputChange(evt) {
-        this.inputs = this.inputs || {};
-        const { name, value, type, checked } = evt.target;
-        // @ts-ignore
-        const check_type = ['radio', 'checkbox'].includes(type);
-        this.inputs[name] = check_type? checked : value;
-        this.inputs['checkedValue'] = check_type? value: null;
-    }
+	error(err) {
+		this.triggerAuthEvent({
+			type: 'error',
+			data: this.errorMessage(err),
+		});
+	}
 
-    // @ts-ignore
-    render() {
-        // @ts-ignore
-        if (!this._validAuthStates.includes(this.props.authState)) {
-            this._isHidden = true;
-            this.inputs = {};
-            return null;
-        }
+	handleInputChange(evt) {
+		this.inputs = this.inputs || {};
+		const { name, value, type, checked } = evt.target;
+		// @ts-ignore
+		const check_type = ['radio', 'checkbox'].includes(type);
+		this.inputs[name] = check_type ? checked : value;
+		this.inputs['checkedValue'] = check_type ? value : null;
+	}
 
-        if (this._isHidden) {
-            this.inputs = {};
-            const { track } = this.props;
-            if (track) track();
-        }
-        this._isHidden = false;
+	// @ts-ignore
+	render() {
+		// @ts-ignore
+		if (!this._validAuthStates.includes(this.props.authState)) {
+			this._isHidden = true;
+			this.inputs = {};
+			return null;
+		}
 
-        return this.showComponent(this.props.theme || AmplifyTheme);
-    }
+		if (this._isHidden) {
+			this.inputs = {};
+			const { track } = this.props;
+			if (track) track();
+		}
+		this._isHidden = false;
 
-    showComponent(theme) {
-        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
-    }
+		return this.showComponent(this.props.theme || AmplifyTheme);
+	}
+
+	showComponent(theme) {
+		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+	}
 }
