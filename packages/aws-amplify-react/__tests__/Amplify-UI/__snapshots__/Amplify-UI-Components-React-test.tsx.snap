@@ -102,6 +102,7 @@ exports[`AmplifyUi test render SectionHeader correctly 1`] = `
 
 exports[`AmplifyUi test render SectionHeaderContent correctly 1`] = `
 <span
+  className="Section__sectionHeaderContent___1UCqa"
   style={Object {}}
 />
 `;

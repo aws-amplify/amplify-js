@@ -321,9 +321,7 @@ describe('RequireNewPassword test', () => {
 
 			expect(spyon).toBeCalledWith(
 				{
-					challengeParam: {
-						requiredAttributes: ['given_name', 'family_name'],
-					},
+					challengeParam: { requiredAttributes: ['given_name', 'family_name'] },
 				},
 				'password',
 				{ given_name: 'Max', family_name: 'Power' }

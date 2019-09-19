@@ -14,7 +14,7 @@
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
 	FormSection,
@@ -25,8 +25,11 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('Loading');
 
-export default class Loading extends AuthPiece {
-	constructor(props) {
+export default class Loading extends AuthPiece<
+	IAuthPieceProps,
+	IAuthPieceState
+> {
+	constructor(props: IAuthPieceProps) {
 		super(props);
 
 		this._validAuthStates = ['loading'];

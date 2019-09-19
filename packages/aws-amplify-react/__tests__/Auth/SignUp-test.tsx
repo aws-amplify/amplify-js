@@ -114,10 +114,7 @@ describe('signUp without signUpConfig prop', () => {
 			await wrapper.find(Button).simulate('click');
 
 			expect(spyon).toBeCalledWith({
-				attributes: {
-					email: 'email@amazon.com',
-					phone_number: '+12345678999',
-				},
+				attributes: { email: 'email@amazon.com', phone_number: '+12345678999' },
 				password: 'abc',
 				username: 'user1',
 			});
@@ -186,10 +183,7 @@ describe('signUp without signUpConfig prop', () => {
 			await wrapper.find(Button).simulate('click');
 
 			expect(spyon).toBeCalledWith({
-				attributes: {
-					email: 'email@amazon.com',
-					phone_number: '+12345678901',
-				},
+				attributes: { email: 'email@amazon.com', phone_number: '+12345678901' },
 				password: 'abc',
 				username: 'user1',
 			});

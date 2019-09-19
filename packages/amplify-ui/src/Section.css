@@ -26,6 +26,9 @@
   margin-bottom: 30px;
 }
 
+.sectionHeaderContent {
+}
+
 .sectionFooter {
   font-size: 14px;
   color: var(--grey);

@@ -121,10 +121,7 @@ describe('AuthPiece test', () => {
 			testPiece.changeState('state', 'data');
 
 			expect(mockFn).toBeCalledWith('state', 'data');
-			expect(spyon).toBeCalledWith({
-				data: 'state',
-				type: 'stateChange',
-			});
+			expect(spyon).toBeCalledWith({ data: 'state', type: 'stateChange' });
 
 			spyon.mockClear();
 		});
@@ -139,10 +136,7 @@ describe('AuthPiece test', () => {
 			const testPiece = wrapper.instance();
 
 			testPiece.changeState('state', 'data');
-			expect(spyon).toBeCalledWith({
-				data: 'state',
-				type: 'stateChange',
-			});
+			expect(spyon).toBeCalledWith({ data: 'state', type: 'stateChange' });
 
 			spyon.mockClear();
 		});
@@ -189,10 +183,7 @@ describe('AuthPiece test', () => {
 
 			testPiece.handleInputChange(event);
 
-			expect(testPiece.inputs).toEqual({
-				checkedValue: 'value',
-				name: true,
-			});
+			expect(testPiece.inputs).toEqual({ checkedValue: 'value', name: true });
 		});
 
 		test('happy case without checke_type', () => {
@@ -209,10 +200,7 @@ describe('AuthPiece test', () => {
 
 			testPiece.handleInputChange(event);
 
-			expect(testPiece.inputs).toEqual({
-				checkedValue: null,
-				name: 'value',
-			});
+			expect(testPiece.inputs).toEqual({ checkedValue: null, name: 'value' });
 		});
 	});
 });

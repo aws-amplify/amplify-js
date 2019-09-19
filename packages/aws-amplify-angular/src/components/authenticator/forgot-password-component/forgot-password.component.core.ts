@@ -21,15 +21,9 @@ import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container" data-test="${
-		auth.forgotPassword.section
-	}">
-    <div class="amplify-form-body" data-test="${
-			auth.forgotPassword.bodySection
-		}">
-    <div class="amplify-form-header" data-test="${
-			auth.forgotPassword.headerSection
-		}">
+  <div class="amplify-form-container" data-test="${auth.forgotPassword.section}">
+    <div class="amplify-form-body" data-test="${auth.forgotPassword.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.forgotPassword.headerSection}">
       {{ this.amplifyService.i18n().get('Reset your password') }}
     </div>
     <div class="amplify-form-text" *ngIf="!code_sent">

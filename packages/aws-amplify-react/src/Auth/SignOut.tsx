@@ -15,7 +15,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
@@ -25,8 +25,24 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('SignOut');
 
-export default class SignOut extends AuthPiece {
-	constructor(props) {
+export interface ISignOutProps extends IAuthPieceProps {
+	googleSignOut?: any;
+	facebookSignOut?: any;
+	amazonSignOut?: any;
+	auth0SignOut?: any;
+	stateFromStorage?: any;
+}
+
+export interface ISignOutState extends IAuthPieceState {
+	authData?: any;
+	authState?: any;
+	stateFromStorage?: any;
+}
+
+export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
+	public _isMounted: boolean;
+
+	constructor(props: ISignOutProps) {
 		super(props);
 
 		this.signOut = this.signOut.bind(this);
@@ -108,6 +124,7 @@ export default class SignOut extends AuthPiece {
 			amazonSignOut,
 			auth0SignOut,
 		} = this.props;
+		// @ts-ignore
 		switch (payload.provider) {
 			case Constants.GOOGLE:
 				if (googleSignOut) googleSignOut();
@@ -122,6 +139,7 @@ export default class SignOut extends AuthPiece {
 				else logger.debug('No Amazon signout method provided');
 				break;
 			case Constants.AUTH0:
+				// @ts-ignore
 				if (auth0SignOut) auth0SignOut(payload.opts);
 				else logger.debug('No Auth0 signout method provided');
 				break;

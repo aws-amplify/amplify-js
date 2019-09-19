@@ -65,9 +65,7 @@ const template = `
         <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
-            <a class="amplify-form-link" (click)="onSignIn()" data-test="${
-							auth.signUp.signInLink
-						}">
+            <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInLink}">
               {{ this.amplifyService.i18n().get('Sign in') }}
             </a>
           </div>
