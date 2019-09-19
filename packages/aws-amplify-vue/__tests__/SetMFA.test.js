@@ -102,9 +102,7 @@ describe('SetMFA', () => {
 		});
 		it('...should call Auth.setupTOTP when setup function is called', async () => {
 			wrapper.vm.setup();
-			let testToken = `otpauth://totp/AWSCognito:${
-				wrapper.vm.user.username
-			}?secret=gibberish&issuer=AWSCognito`;
+			let testToken = `otpauth://totp/AWSCognito:${wrapper.vm.user.username}?secret=gibberish&issuer=AWSCognito`;
 			await expect(wrapper.vm.$Amplify.Auth.setupTOTP).toBeCalledWith(
 				wrapper.vm.user
 			);

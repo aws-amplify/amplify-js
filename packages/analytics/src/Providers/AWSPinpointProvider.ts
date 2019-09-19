@@ -370,9 +370,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending event ${params.eventName} with ${
-					params.resendLimit
-				} retry times left`
+				`resending event ${params.eventName} with ${params.resendLimit} retry times left`
 			);
 			this._putToBuffer(params, handlers);
 		} else {

@@ -20,15 +20,9 @@ import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-<div class="amplify-form-container" data-test="${
-	auth.requireNewPassword.section
-}">
-  <div class="amplify-form-body" data-test="${
-		auth.requireNewPassword.bodySection
-	}">
-  <div class="amplify-form-header" data-test="${
-		auth.requireNewPassword.headerSection
-	}">
+<div class="amplify-form-container" data-test="${auth.requireNewPassword.section}">
+  <div class="amplify-form-body" data-test="${auth.requireNewPassword.bodySection}">
+  <div class="amplify-form-header" data-test="${auth.requireNewPassword.headerSection}">
     {{ this.amplifyService.i18n().get('You are required to update your password') }}
   </div>
   <div class="amplify-form-row">
