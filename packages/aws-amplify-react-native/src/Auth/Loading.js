@@ -18,17 +18,17 @@ import AuthPiece from './AuthPiece';
 import { Header } from '../AmplifyUI';
 
 export default class Loading extends AuthPiece {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this._validAuthStates = ['loading'];
-    }
+		this._validAuthStates = ['loading'];
+	}
 
-    showComponent(theme) {
-        return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Loading...')}</Header>
-            </View>
-        );
-    }
+	showComponent(theme) {
+		return (
+			<View style={theme.section}>
+				<Header theme={theme}>{I18n.get('Loading...')}</Header>
+			</View>
+		);
+	}
 }

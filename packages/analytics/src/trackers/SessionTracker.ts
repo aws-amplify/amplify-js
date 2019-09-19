@@ -19,162 +19,166 @@ import { SessionTrackOpts } from '../types';
 const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
-    enable: false,
-    provider: 'AWSPinpoint'
+	enable: false,
+	provider: 'AWSPinpoint',
 };
 
 let initialEventSent = false;
 
 export default class SessionTracker {
-    private _tracker;
-    private _hasEnabled;
-    private _config: SessionTrackOpts;
+	private _tracker;
+	private _hasEnabled;
+	private _config: SessionTrackOpts;
 
-    private _hidden;
-    private _visibilityChange;
+	private _hidden;
+	private _visibilityChange;
 
-    constructor(tracker, opts) {
-        this._config = Object.assign({}, defaultOpts, opts);
-        this._tracker = tracker;
+	constructor(tracker, opts) {
+		this._config = Object.assign({}, defaultOpts, opts);
+		this._tracker = tracker;
 
-        this._hasEnabled = false;
-        this._trackFunc = this._trackFunc.bind(this);
-        this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
-        
-        this.configure(this._config);
-    }
+		this._hasEnabled = false;
+		this._trackFunc = this._trackFunc.bind(this);
+		this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
 
-    private _envCheck() {
-        if (!JS.browserOrNode().isBrowser) {
-            return false;
-        }
+		this.configure(this._config);
+	}
 
-        if (!document || !document.addEventListener) {
-            logger.debug('not in the supported web environment');
-            return false;
-        }
+	private _envCheck() {
+		if (!JS.browserOrNode().isBrowser) {
+			return false;
+		}
 
-        if (typeof document.hidden !== 'undefined') {
-            this._hidden = 'hidden';
-            this._visibilityChange = 'visibilitychange';
-        } else if (typeof document['msHidden'] !== 'undefined') {
-            this._hidden = 'msHidden';
-            this._visibilityChange = 'msvisibilitychange';
-        } else if (typeof document['webkitHidden'] !== 'undefined') {
-            this._hidden = 'webkitHidden';
-            this._visibilityChange = 'webkitvisibilitychange';
-        } else {
-            logger.debug('not in the supported web environment');
-            return false;
-        }
-        return true;
-    }
+		if (!document || !document.addEventListener) {
+			logger.debug('not in the supported web environment');
+			return false;
+		}
 
-    private async _trackFunc() {
-        const customAttrs = typeof this._config.attributes === 'function' ?
-            await this._config.attributes() : this._config.attributes;
+		if (typeof document.hidden !== 'undefined') {
+			this._hidden = 'hidden';
+			this._visibilityChange = 'visibilitychange';
+		} else if (typeof document['msHidden'] !== 'undefined') {
+			this._hidden = 'msHidden';
+			this._visibilityChange = 'msvisibilitychange';
+		} else if (typeof document['webkitHidden'] !== 'undefined') {
+			this._hidden = 'webkitHidden';
+			this._visibilityChange = 'webkitvisibilitychange';
+		} else {
+			logger.debug('not in the supported web environment');
+			return false;
+		}
+		return true;
+	}
 
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+	private async _trackFunc() {
+		const customAttrs =
+			typeof this._config.attributes === 'function'
+				? await this._config.attributes()
+				: this._config.attributes;
 
-        if (document.visibilityState === this._hidden) {
-            this._tracker(
-                {
-                    name: '_session.stop',
-                    attributes
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session stop event failed.', e);
-            });
-        } else {
-            this._tracker(
-                {
-                    name: '_session.start',
-                    attributes
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session start event failed.', e);
-            });
-        }
-    }
+		const attributes = Object.assign({}, customAttrs);
 
-    private _trackBeforeUnload(event) {
-        // before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
+		if (document.visibilityState === this._hidden) {
+			this._tracker(
+				{
+					name: '_session.stop',
+					attributes,
+				},
+				this._config.provider
+			).catch(e => {
+				logger.debug('record session stop event failed.', e);
+			});
+		} else {
+			this._tracker(
+				{
+					name: '_session.start',
+					attributes,
+				},
+				this._config.provider
+			).catch(e => {
+				logger.debug('record session start event failed.', e);
+			});
+		}
+	}
 
-        const customAttrs = typeof this._config.attributes === 'function' ?
-            Promise.resolve(this._config.attributes()) : Promise.resolve(this._config.attributes);
+	private _trackBeforeUnload(event) {
+		// before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
 
-        customAttrs.then(custom => {
-            const attributes = Object.assign(
-                {},
-                custom
-            );
+		const customAttrs =
+			typeof this._config.attributes === 'function'
+				? Promise.resolve(this._config.attributes())
+				: Promise.resolve(this._config.attributes);
 
-            this._tracker(
-                {
-                    name: '_session.stop',
-                    attributes,
-                    immediate: true
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session stop event failed.', e);
-            });
-        });
-    }
+		customAttrs.then(custom => {
+			const attributes = Object.assign({}, custom);
 
-    // to keep configure a synchronized function
-    private async _sendInitialEvent() {
-        if (initialEventSent) {
-            logger.debug('the start session has been sent when the page is loaded');
-            return;
-        } else {
-            initialEventSent = true;
-        }
+			this._tracker(
+				{
+					name: '_session.stop',
+					attributes,
+					immediate: true,
+				},
+				this._config.provider
+			).catch(e => {
+				logger.debug('record session stop event failed.', e);
+			});
+		});
+	}
 
-        const customAttrs = typeof this._config.attributes === 'function' 
-            ? await this._config.attributes() 
-            : this._config.attributes;
-        
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+	// to keep configure a synchronized function
+	private async _sendInitialEvent() {
+		if (initialEventSent) {
+			logger.debug('the start session has been sent when the page is loaded');
+			return;
+		} else {
+			initialEventSent = true;
+		}
 
-        this._tracker(
-            {
-                name: '_session.start',
-                attributes
-            },
-            this._config.provider
-        ).catch(e => {
-            logger.debug('record session start event failed.', e);
-        });
-    }
+		const customAttrs =
+			typeof this._config.attributes === 'function'
+				? await this._config.attributes()
+				: this._config.attributes;
 
-    configure(opts?: SessionTrackOpts) {
-        if (!this._envCheck()) {
-            return this._config;
-        }
+		const attributes = Object.assign({}, customAttrs);
 
-        Object.assign(this._config, opts);
-        if (this._config.enable && !this._hasEnabled) {
-            // send a start session as soon as it's enabled
-            this._sendInitialEvent();
-            // listen on events
-            document.addEventListener(this._visibilityChange, this._trackFunc, false);
-            window.addEventListener("beforeunload", this._trackBeforeUnload, false);
-            this._hasEnabled = true;
-        } else if (!this._config.enable && this._hasEnabled) {
-            document.removeEventListener(this._visibilityChange, this._trackFunc, false);
-            window.removeEventListener("beforeunload", this._trackBeforeUnload, false);
-            this._hasEnabled = false;
-        }
+		this._tracker(
+			{
+				name: '_session.start',
+				attributes,
+			},
+			this._config.provider
+		).catch(e => {
+			logger.debug('record session start event failed.', e);
+		});
+	}
 
-        return this._config;
-    }
+	configure(opts?: SessionTrackOpts) {
+		if (!this._envCheck()) {
+			return this._config;
+		}
+
+		Object.assign(this._config, opts);
+		if (this._config.enable && !this._hasEnabled) {
+			// send a start session as soon as it's enabled
+			this._sendInitialEvent();
+			// listen on events
+			document.addEventListener(this._visibilityChange, this._trackFunc, false);
+			window.addEventListener('beforeunload', this._trackBeforeUnload, false);
+			this._hasEnabled = true;
+		} else if (!this._config.enable && this._hasEnabled) {
+			document.removeEventListener(
+				this._visibilityChange,
+				this._trackFunc,
+				false
+			);
+			window.removeEventListener(
+				'beforeunload',
+				this._trackBeforeUnload,
+				false
+			);
+			this._hasEnabled = false;
+		}
+
+		return this._config;
+	}
 }

@@ -68,80 +68,82 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-authenticator-core',
-  template
+	selector: 'amplify-authenticator-core',
+	template,
 })
 export class AuthenticatorComponentCore implements OnInit {
-  authState: AuthState = {
-    state: 'loading',
-    user: null
-  };
-  _signUpConfig: any = {};
-  _usernameAttributes: string = 'username';
+	authState: AuthState = {
+		state: 'loading',
+		user: null,
+	};
+	_signUpConfig: any = {};
+	_usernameAttributes: string = 'username';
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.subscribe();
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		this.subscribe();
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    } else {
-      const loadStatus = this.amplifyService.auth().currentAuthenticatedUser()
-      .then((user) => {
-        if (this.authState.state === 'loading' && user) {
-          this.amplifyService.setAuthState({ state: 'signedIn', user });
-        }
-      })
-      .catch((e) => {
-        if (this.authState.state === 'loading') {
-          this.amplifyService.setAuthState({ state: 'signIn', user: null });
-        }
-      });  
-    }
-  }
+	ngOnInit() {
+		if (!this.amplifyService.auth()) {
+			throw new Error('Auth module not registered on AmplifyService provider');
+		} else {
+			const loadStatus = this.amplifyService
+				.auth()
+				.currentAuthenticatedUser()
+				.then(user => {
+					if (this.authState.state === 'loading' && user) {
+						this.amplifyService.setAuthState({ state: 'signedIn', user });
+					}
+				})
+				.catch(e => {
+					if (this.authState.state === 'loading') {
+						this.amplifyService.setAuthState({ state: 'signIn', user: null });
+					}
+				});
+		}
+	}
 
-  @Input()
-  hide: string[] = [];
+	@Input()
+	hide: string[] = [];
 
-  @Input()
-  set data(data: any) {
-    if (data.signUpConfig) {
-      this._signUpConfig = data.signUpConfig;
-    }
-    if (data.hide) {
-      this.hide = data.hide;
-    }
+	@Input()
+	set data(data: any) {
+		if (data.signUpConfig) {
+			this._signUpConfig = data.signUpConfig;
+		}
+		if (data.hide) {
+			this.hide = data.hide;
+		}
 
-    this._usernameAttributes = data.usernameAttributes || this._usernameAttributes || 'username';
-  }
+		this._usernameAttributes =
+			data.usernameAttributes || this._usernameAttributes || 'username';
+	}
 
-  @Input()
-  set signUpConfig(signUpConfig: any) {
-    this._signUpConfig = signUpConfig;
-  }
+	@Input()
+	set signUpConfig(signUpConfig: any) {
+		this._signUpConfig = signUpConfig;
+	}
 
-  @Input()
-  set usernameAttributes(usernameAttributes: string) {
-    this._usernameAttributes = usernameAttributes || 'username';
-  }
+	@Input()
+	set usernameAttributes(usernameAttributes: string) {
+		this._usernameAttributes = usernameAttributes || 'username';
+	}
 
-  subscribe() {
-    this.amplifyService.authStateChange$
-    .subscribe(
-      state => {
-        this.authState = state;
-      },
-      () => {
-        this.authState = {
-          'state': 'signIn',
-          'user': null
-        };
-      });
-  }
+	subscribe() {
+		this.amplifyService.authStateChange$.subscribe(
+			state => {
+				this.authState = state;
+			},
+			() => {
+				this.authState = {
+					state: 'signIn',
+					user: null,
+				};
+			}
+		);
+	}
 
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-      .length > 0;
-  }
+	shouldHide(comp) {
+		return this.hide.filter(item => item === comp).length > 0;
+	}
 }
