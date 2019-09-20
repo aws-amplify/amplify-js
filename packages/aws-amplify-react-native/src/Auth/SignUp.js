@@ -67,7 +67,11 @@ export default class SignUp extends AuthPiece {
 
 	isValid() {
 		for (const el in this.signUpFields) {
-			if (this.signUpFields[el].required && !this.state[el.key]) return false;
+			if (
+				this.signUpFields[el].required &&
+				!this.state[this.signUpFields[el].key]
+			)
+				return false;
 		}
 		return true;
 	}
