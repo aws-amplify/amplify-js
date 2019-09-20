@@ -1,14 +1,3 @@
-export interface ISignUpField {
-	label: string;
-	key: string;
-	placeholder: string;
-	required: boolean;
-	displayOrder: number;
-	invalid?: boolean;
-	custom?: boolean;
-	type?: string;
-}
-
 export default [
 	{
 		label: 'Username',
@@ -42,7 +31,7 @@ export default [
 	},
 ];
 
-export const signUpWithEmailFields: ISignUpField[] = [
+export const signUpWithEmailFields = [
 	{
 		label: 'Email',
 		key: 'email',
@@ -68,7 +57,7 @@ export const signUpWithEmailFields: ISignUpField[] = [
 	},
 ];
 
-export const signUpWithPhoneNumberFields: ISignUpField[] = [
+export const signUpWithPhoneNumberFields = [
 	{
 		label: 'Phone Number',
 		key: 'phone_number',

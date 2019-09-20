@@ -98,7 +98,9 @@ export default class SignOut extends AuthPiece {
 			localStorage.removeItem(Constants.AUTH_SOURCE_KEY);
 		} catch (e) {
 			logger.debug(
-				`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`
+				`Failed to parse the info from ${
+					Constants.AUTH_SOURCE_KEY
+				} from localStorage with ${e}`
 			);
 		}
 		logger.debug('sign out from the source', payload);

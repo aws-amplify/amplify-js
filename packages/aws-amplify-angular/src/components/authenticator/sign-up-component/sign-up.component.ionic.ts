@@ -71,7 +71,9 @@ const template = `
       <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
-          <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInButton}">
+          <a class="amplify-form-link" (click)="onSignIn()" data-test="${
+						auth.signUp.signInButton
+					}">
             {{ this.amplifyService.i18n().get('Sign In') }}
           </a>
         </div>

@@ -21,8 +21,12 @@ import { auth } from '../../../assets/data-test-attributes';
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
-    <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
-    <div class="amplify-form-header" data-test="${auth.confirmSignIn.headerSection}">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
+    <div class="amplify-form-body" data-test="${
+			auth.confirmSignIn.bodySection
+		}">
+    <div class="amplify-form-header" data-test="${
+			auth.confirmSignIn.headerSection
+		}">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
       <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}

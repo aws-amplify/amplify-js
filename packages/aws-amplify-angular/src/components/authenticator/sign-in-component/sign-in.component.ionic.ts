@@ -68,7 +68,9 @@ const template = `
           </a>
         </div>
         <div class="amplify-form-signup" *ngIf="!shouldHide('ForgotPassword')">
-          <a class="amplify-form-link" (click)="onForgotPassword()" data-test="${auth.signIn.forgotPasswordLink}">
+          <a class="amplify-form-link" (click)="onForgotPassword()" data-test="${
+						auth.signIn.forgotPasswordLink
+					}">
             {{ this.amplifyService.i18n().get('Reset Password') }}
           </a>
         </div>

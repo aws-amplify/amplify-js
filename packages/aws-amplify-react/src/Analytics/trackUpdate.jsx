@@ -16,9 +16,7 @@ import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {
-	return class extends Component<any, {}> {
-		public trackerName: string;
-
+	return class extends Component {
 		constructor(props) {
 			super(props);
 			this.trackerName = trackerName;

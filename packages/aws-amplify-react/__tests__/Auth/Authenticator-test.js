@@ -46,7 +46,7 @@ describe('Authenticator', () => {
 		test('render if no error with children', () => {
 			const wrapper = shallow(
 				<Authenticator>
-					<div></div>
+					<div />
 				</Authenticator>
 			);
 			wrapper.setProps({

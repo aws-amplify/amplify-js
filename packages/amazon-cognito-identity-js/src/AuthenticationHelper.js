@@ -148,7 +148,9 @@ export default class AuthenticationHelper {
 	 */
 	generateHashDevice(deviceGroupKey, username, callback) {
 		this.randomPassword = this.generateRandomString();
-		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
+		const combinedString = `${deviceGroupKey}${username}:${
+			this.randomPassword
+		}`;
 		const hashedString = this.hash(combinedString);
 
 		const hexRandom = randomBytes(16).toString('hex');

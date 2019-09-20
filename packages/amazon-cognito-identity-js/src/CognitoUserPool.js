@@ -129,7 +129,9 @@ export default class CognitoUserPool {
 	 * @returns {CognitoUser} the user retrieved from storage
 	 */
 	getCurrentUser() {
-		const lastUserKey = `CognitoIdentityServiceProvider.${this.clientId}.LastAuthUser`;
+		const lastUserKey = `CognitoIdentityServiceProvider.${
+			this.clientId
+		}.LastAuthUser`;
 
 		const lastAuthUser = this.storage.getItem(lastUserKey);
 		if (lastAuthUser) {
