@@ -105,17 +105,18 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-interactions-ionic',
-	template,
+  selector: 'amplify-interactions-ionic',
+  template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
+	
 	inputValue;
+	
+  constructor(
+		ref: ChangeDetectorRef, 
+		@Inject(AmplifyService) 
+		protected amplifyService: AmplifyService) {
+    super(ref, amplifyService);    
+  }
 
-	constructor(
-		ref: ChangeDetectorRef,
-		@Inject(AmplifyService)
-		protected amplifyService: AmplifyService
-	) {
-		super(ref, amplifyService);
-	}
 }

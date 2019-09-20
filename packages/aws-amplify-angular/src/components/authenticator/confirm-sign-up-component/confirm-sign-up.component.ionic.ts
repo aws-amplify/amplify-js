@@ -107,13 +107,12 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-auth-confirm-sign-up-ionic',
-	template,
+  selector: 'amplify-auth-confirm-sign-up-ionic',
+  template
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
-		super(amplifyService);
-	}
+
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    super(amplifyService);
+  }
 }

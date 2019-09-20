@@ -5,9 +5,7 @@ import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show" data-test="${
-	auth.confirmSignIn.section
-}">
+<div class="amplify-form-container" *ngIf="_show" data-test="${auth.confirmSignIn.section}">
   <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
     <div
       class="amplify-form-header amplify-form-header-ionic"
@@ -53,18 +51,16 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-auth-confirm-sign-in-ionic',
-	template,
+  selector: 'amplify-auth-confirm-sign-in-ionic',
+  template
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
-	_authState: AuthState;
-	_show: boolean;
-	code: string;
-	errorMessage: string;
+  _authState: AuthState;
+  _show: boolean;
+  code: string;
+  errorMessage: string;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
-		super(amplifyService);
-	}
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    super(amplifyService);
+  }
 }

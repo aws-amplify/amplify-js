@@ -4,68 +4,68 @@ import Analytics from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
 describe('trackLifecycle test', () => {
-	test('render correctly', () => {
-		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
-			render() {
-				return <div />;
-			}
-		};
-		const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-		const wrapper = shallow(<CompWithAuth />);
+    test('render correctly', () => {
+        const spyon = jest.spyOn(Analytics, 'record');
+        const MockComp = class extends Component {
+            render() {
+                return <div />;
+            }
+        };
+        const CompWithAuth = trackLifecycle(MockComp, 'trackername');
+        const wrapper = shallow(<CompWithAuth/>);
 
-		expect(wrapper).toMatchSnapshot();
-		expect(spyon).toBeCalled();
+        expect(wrapper).toMatchSnapshot();
+        expect(spyon).toBeCalled();
 
-		spyon.mockClear();
-	});
+        spyon.mockClear();
+    });
 
-	test('track when mounting', () => {
-		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
-			render() {
-				return <div />;
-			}
-		};
-		const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-		const wrapper = mount(<CompWithAuth />);
+    test('track when mounting', () => {
+        const spyon = jest.spyOn(Analytics, 'record');
+        const MockComp = class extends Component {
+            render() {
+                return <div />;
+            }
+        };
+        const CompWithAuth = trackLifecycle(MockComp, 'trackername');
+        const wrapper = mount(<CompWithAuth/>);
+        
+        expect(spyon.mock.calls.length).toBe(2);
 
-		expect(spyon.mock.calls.length).toBe(2);
+        spyon.mockClear();
+        wrapper.unmount();
+    });
 
-		spyon.mockClear();
-		wrapper.unmount();
-	});
+    test('track when unmounting', () => {
+        const spyon = jest.spyOn(Analytics, 'record');
+        const MockComp = class extends Component {
+            render() {
+                return <div />;
+            }
+        };
+        const CompWithAuth = trackLifecycle(MockComp, 'trackername');
+        const wrapper = shallow(<CompWithAuth/>);
+        
+        wrapper.unmount();
+        expect(spyon.mock.calls.length).toBe(2);
 
-	test('track when unmounting', () => {
-		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
-			render() {
-				return <div />;
-			}
-		};
-		const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-		const wrapper = shallow(<CompWithAuth />);
+        spyon.mockClear();
+    });
 
-		wrapper.unmount();
-		expect(spyon.mock.calls.length).toBe(2);
+    test('track when updating', () => {
+        const spyon = jest.spyOn(Analytics, 'record');
+        const MockComp = class extends Component {
+            render() {
+                return <div />;
+            }
+        };
+        const CompWithAuth = trackLifecycle(MockComp, 'trackername');
+        const wrapper = shallow(<CompWithAuth/>);
 
-		spyon.mockClear();
-	});
+        wrapper.update();
+        
+        expect(spyon.mock.calls.length).toBe(2);
 
-	test('track when updating', () => {
-		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
-			render() {
-				return <div />;
-			}
-		};
-		const CompWithAuth = trackLifecycle(MockComp, 'trackername');
-		const wrapper = shallow(<CompWithAuth />);
-
-		wrapper.update();
-
-		expect(spyon.mock.calls.length).toBe(2);
-
-		spyon.mockClear();
-	});
+        spyon.mockClear();
+    });
 });

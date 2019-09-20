@@ -16,44 +16,36 @@
  *     be false if any of the event listeners called `preventDefault`.
  */
 export default function dispatch(
-	element,
-	eventType,
-	evtName = 'Event',
-	init_dict = {}
-) {
-	let event;
-	let isCustom;
-	let initDict = init_dict;
-	let eventName = evtName;
+    element, eventType, evtName = 'Event', init_dict = {}) {
+  let event;
+  let isCustom;
+  let initDict = init_dict;
+  let eventName = evtName;
+  
+  // eventName is optional
+  if (typeof eventName === 'object') {
+    initDict = eventName;
+    eventName = 'Event';
+  }
 
-	// eventName is optional
-	if (typeof eventName === 'object') {
-		initDict = eventName;
-		eventName = 'Event';
-	}
+  initDict['bubbles'] = initDict['bubbles'] || false;
+  initDict['cancelable'] = initDict['cancelable'] || false;
+  initDict['composed'] = initDict['composed'] || false;
 
-	initDict['bubbles'] = initDict['bubbles'] || false;
-	initDict['cancelable'] = initDict['cancelable'] || false;
-	initDict['composed'] = initDict['composed'] || false;
+  // If a detail property is passed, this is a custom event.
+  if ('detail' in initDict) isCustom = true;
+  eventName = isCustom ? 'CustomEvent' : eventName;
 
-	// If a detail property is passed, this is a custom event.
-	if ('detail' in initDict) isCustom = true;
-	eventName = isCustom ? 'CustomEvent' : eventName;
+  // Tries to create the event using constructors, if that doesn't work,
+  // fallback to `document.createEvent()`.
+  try {
+    event = new window[eventName](eventType, initDict);
+  } catch(err) {
+    event = document.createEvent(eventName);
+    const initMethod = 'init' + (isCustom ? 'Custom' : '') + 'Event';
+    event[initMethod](eventType, initDict['bubbles'],
+                      initDict['cancelable'], initDict['detail']);
+  }
 
-	// Tries to create the event using constructors, if that doesn't work,
-	// fallback to `document.createEvent()`.
-	try {
-		event = new window[eventName](eventType, initDict);
-	} catch (err) {
-		event = document.createEvent(eventName);
-		const initMethod = 'init' + (isCustom ? 'Custom' : '') + 'Event';
-		event[initMethod](
-			eventType,
-			initDict['bubbles'],
-			initDict['cancelable'],
-			initDict['detail']
-		);
-	}
-
-	return element.dispatchEvent(event);
+  return element.dispatchEvent(event);
 }

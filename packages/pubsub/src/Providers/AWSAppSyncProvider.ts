@@ -19,188 +19,170 @@ import { MqttOverWSProvider } from './MqttOverWSProvider';
 const logger = new Logger('AWSAppSyncProvider');
 
 export class AWSAppSyncProvider extends MqttOverWSProvider {
-	protected get endpoint() {
-		throw new Error('Not supported');
-	}
 
-	getProviderName() {
-		return 'AWSAppSyncProvider';
-	}
+    protected get endpoint() { throw new Error('Not supported'); }
 
-	public async publish(topics: string[] | string, msg: any, options?: any) {
-		throw new Error('Operation not supported');
-	}
+    getProviderName() { return 'AWSAppSyncProvider'; }
 
-	private _cleanUp(clientId: string) {
-		const topicsForClient = Array.from(this._topicClient.entries())
-			.filter(([, c]) => c.clientId === clientId)
-			.map(([t]) => t);
+    public async publish(topics: string[] | string, msg: any, options?: any) {
+        throw new Error('Operation not supported');
+    }
 
-		topicsForClient.forEach(t => this._cleanUpForTopic(t));
-	}
+    private _cleanUp(clientId: string) {
+        const topicsForClient = Array.from(this._topicClient.entries())
+            .filter(([, c]) => c.clientId === clientId)
+            .map(([t]) => t);
 
-	private _cleanUpForTopic(topic) {
-		this._topicClient.delete(topic);
-		this._topicAlias.delete(topic);
-	}
+        topicsForClient.forEach(t => this._cleanUpForTopic(t));
+    }
 
-	public onDisconnect({ clientId, errorCode, ...args }) {
-		if (errorCode !== 0) {
-			const topicsForClient = Array.from(this._topicClient.entries())
-				.filter(([, c]) => c.clientId === clientId)
-				.map(([t]) => t);
+    private _cleanUpForTopic(topic) {
+        this._topicClient.delete(topic);
+        this._topicAlias.delete(topic);
+    }
 
-			topicsForClient.forEach(topic => {
-				if (this._topicObservers.has(topic)) {
-					this._topicObservers.get(topic).forEach(obs => {
-						if (!obs.closed) {
-							obs.error(args);
-						}
-					});
+    public onDisconnect({ clientId, errorCode, ...args }) {
+        if (errorCode !== 0) {
+            const topicsForClient = Array.from(this._topicClient.entries())
+                .filter(([, c]) => c.clientId === clientId)
+                .map(([t,]) => t);
 
-					this._topicObservers.delete(topic);
-				}
-			});
+            topicsForClient.forEach(topic => {
+                if (this._topicObservers.has(topic)) {
+                    this._topicObservers.get(topic).forEach(obs => {
+                        if (!obs.closed) {
+                            obs.error(args);
+                        }
+                    });
 
-			this._cleanUp(clientId);
-		}
-	}
+                    this._topicObservers.delete(topic);
+                }
+            });
 
-	private _topicClient: Map<string, Client> = new Map();
+            this._cleanUp(clientId);
+        }
+    }
 
-	private _topicAlias: Map<string, string> = new Map();
+    private _topicClient: Map<string, Client> = new Map();
 
-	protected async disconnect(clientId: string): Promise<void> {
-		const client = await this.clientsQueue.get(clientId, () => null);
+    private _topicAlias: Map<string, string> = new Map();
 
-		await super.disconnect(clientId);
+    protected async disconnect(clientId: string): Promise<void> {
+        const client = await this.clientsQueue.get(clientId, () => null);
 
-		this._cleanUp(clientId);
-	}
+        await super.disconnect(clientId);
 
-	subscribe(topics: string[] | string, options: any = {}): Observable<any> {
-		const result = new Observable<any>(observer => {
-			const targetTopics = ([] as string[]).concat(topics);
-			logger.debug('Subscribing to topic(s)', targetTopics.join(','));
+        this._cleanUp(clientId);
+    }
 
-			(async () => {
-				// Add these topics to map
-				targetTopics.forEach(t => {
-					if (!this._topicObservers.has(t)) {
-						this._topicObservers.set(t, new Set());
-					}
+    subscribe(topics: string[] | string, options: any = {}): Observable<any> {
 
-					this._topicObservers.get(t).add(observer);
-				});
+        const result = new Observable<any>(observer => {
+            const targetTopics = ([] as string[]).concat(topics);
+            logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
-				const { mqttConnections = [], newSubscriptions } = options;
+            (async () => {
+                // Add these topics to map
+                targetTopics.forEach(t => {
+                    if (!this._topicObservers.has(t)) {
+                        this._topicObservers.set(t, new Set());
+                    }
 
-				// creates a map of {"topic": "alias"}
-				const newAliases = Object.entries(newSubscriptions).map(
-					([alias, v]: [string, { topic: string }]) => [v.topic, alias]
-				);
+                    this._topicObservers.get(t).add(observer);
+                });
 
-				// Merge new aliases with old ones
-				this._topicAlias = new Map([
-					...Array.from(this._topicAlias.entries()),
-					...(newAliases as [string, string][]),
-				]);
+                const { mqttConnections = [], newSubscriptions } = options;
 
-				// group by urls
-				const map: [
-					string,
-					{ url: string; topics: Set<string> }
-				][] = Object.entries(
-					targetTopics.reduce((acc, elem) => {
-						const connectionInfoForTopic = mqttConnections.find(
-							c => c.topics.indexOf(elem) > -1
-						);
+                // creates a map of {"topic": "alias"}
+                const newAliases = Object.entries(newSubscriptions)
+                    .map(([alias, v]: [string, { topic: string }]) => [v.topic, alias]);
 
-						if (connectionInfoForTopic) {
-							const { client: clientId, url } = connectionInfoForTopic;
+                // Merge new aliases with old ones
+                this._topicAlias = new Map([
+                    ...Array.from(this._topicAlias.entries()),
+                    ...(newAliases as [string, string][])
+                ]);
 
-							if (!acc[clientId]) {
-								acc[clientId] = {
-									url,
-									topics: new Set(),
-								};
-							}
+                // group by urls
+                const map: [string, { url: string, topics: Set<string> }][] = Object.entries(targetTopics.reduce(
+                    (acc, elem) => {
+                        const connectionInfoForTopic = mqttConnections.find(c => c.topics.indexOf(elem) > -1);
 
-							acc[clientId].topics.add(elem);
-						}
+                        if (connectionInfoForTopic) {
+                            const { client: clientId, url } = connectionInfoForTopic;
 
-						return acc;
-					}, {})
-				);
+                            if (!acc[clientId]) {
+                                acc[clientId] = {
+                                    url,
+                                    topics: new Set(),
+                                };
+                            }
 
-				// reconnect everything we have in the map
-				await Promise.all(
-					map.map(async ([clientId, { url, topics }]) => {
-						// connect to new client
-						let client = null;
-						try {
-							client = await this.connect(clientId, {
-								clientId,
-								url,
-							});
-						} catch (err) {
-							observer.error({
-								message: 'Failed to connect',
-								error: err,
-							});
-							observer.complete();
-							return undefined;
-						}
+                            acc[clientId].topics.add(elem);
+                        }
 
-						// subscribe to all topics for this client
-						// store topic-client mapping
-						topics.forEach(topic => {
-							if (client.isConnected()) {
-								client.subscribe(topic);
+                        return acc;
+                    },
+                    {}
+                ));
 
-								this._topicClient.set(topic, client);
-							}
-						});
+                // reconnect everything we have in the map
+                await Promise.all(map.map(async ([clientId, { url, topics }]) => {
+                    // connect to new client
+                    let client = null;
+                    try {
+                        client = await this.connect(clientId, {
+                            clientId,
+                            url,
+                        });
+                    } catch (err) {
+                        observer.error({ message: 'Failed to connect', error: err });
+                        observer.complete();
+                        return undefined;
+                    }
 
-						return client;
-					})
-				);
-			})();
+                    // subscribe to all topics for this client
+                    // store topic-client mapping
+                    topics.forEach(topic => {
+                        if (client.isConnected()) {
+                            client.subscribe(topic);
 
-			return () => {
-				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
+                            this._topicClient.set(topic, client);
+                        }
+                    });
 
-				targetTopics.forEach(t => {
-					const client = this._topicClient.get(t);
+                    return client;
+                }));
+            })();
 
-					if (client && client.isConnected()) {
-						client.unsubscribe(t);
-						this._topicClient.delete(t);
+            return () => {
+                logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
-						if (
-							!Array.from(this._topicClient.values()).some(c => c === client)
-						) {
-							this.disconnect(client.clientId);
-						}
-					}
+                targetTopics.forEach(t => {
+                    const client = this._topicClient.get(t);
 
-					this._topicObservers.delete(t);
-				});
-			};
-		});
+                    if (client && client.isConnected()) {
+                        client.unsubscribe(t);
+                        this._topicClient.delete(t);
 
-		return Observable.from(result).map(value => {
-			const topic = this.getTopicForValue(value);
-			const alias = this._topicAlias.get(topic);
+                        if (!Array.from(this._topicClient.values()).some(c => c === client)) {
+                            this.disconnect(client.clientId);
+                        }
+                    }
 
-			value.data = Object.entries(value.data).reduce(
-				(obj, [origKey, val]) => (
-					(obj[(alias || origKey) as string] = val), obj
-				),
-				{}
-			);
+                    this._topicObservers.delete(t);
+                });
+            };
+        });
 
-			return value;
-		});
-	}
+        return Observable.from(result).map(value => {
+            const topic = this.getTopicForValue(value);
+            const alias = this._topicAlias.get(topic);
+
+            value.data = Object.entries(value.data)
+                .reduce((obj, [origKey, val]) => (obj[((alias || origKey) as string)] = val, obj), {});
+
+            return value;
+        });
+    }
 }

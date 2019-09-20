@@ -11,49 +11,35 @@
  * and limitations under the License.
  */
 
-import {
-	InteractionsProvider,
-	InteractionsOptions,
-	InteractionsResponse,
-} from '../types';
+import { InteractionsProvider, InteractionsOptions, InteractionsResponse } from '../types';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractInteractionsProvider');
 
-export abstract class AbstractInteractionsProvider
-	implements InteractionsProvider {
-	protected _config: InteractionsOptions;
+export abstract class AbstractInteractionsProvider implements InteractionsProvider {
 
-	constructor(options: InteractionsOptions = {}) {
-		this._config = options;
-	}
+    protected _config: InteractionsOptions;
 
-	configure(config: InteractionsOptions = {}): InteractionsOptions {
-		this._config = { ...this._config, ...config };
+    constructor(options: InteractionsOptions = {}) {
+        this._config = options;
+    }
 
-		logger.debug(`configure ${this.getProviderName()}`, this._config);
+    configure(config: InteractionsOptions = {}): InteractionsOptions {
+        this._config = {  ...this._config, ...config };
 
-		return this.options;
-	}
+        logger.debug(`configure ${this.getProviderName()}`, this._config);
 
-	getCategory() {
-		return 'Interactions';
-	}
+        return this.options;
+    }
 
-	abstract getProviderName(): string;
+    getCategory() { return 'Interactions'; }
 
-	protected get options(): InteractionsOptions {
-		return { ...this._config };
-	}
+    abstract getProviderName(): string;
 
-	public abstract sendMessage(
-		botname: string,
-		message: string | Object
-	): Promise<object>;
+    protected get options(): InteractionsOptions { return { ...this._config }; }
 
-	public abstract onComplete(
-		botname: string,
-		callback: (err: any, confirmation: InteractionsResponse) => void
-	);
+    public abstract sendMessage(botname: string, message: string | Object): Promise<object>;
+
+    public abstract onComplete(botname: string, callback: (err: any, confirmation: InteractionsResponse) => void );
 }

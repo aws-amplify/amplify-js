@@ -31,70 +31,60 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-auth-greetings-core',
-	template,
+  selector: 'amplify-auth-greetings-core',
+  template
 })
 export class GreetingComponentCore implements OnInit {
-	signedIn: boolean;
-	greeting: string;
-	_usernameAttributes: string = 'username';
-	protected logger: any;
+  signedIn: boolean;
+  greeting: string;
+  _usernameAttributes: string = 'username';
+  protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
-		this.logger = this.amplifyService.logger('GreetingComponent');
-		this.subscribe();
-	}
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    this.logger = this.amplifyService.logger('GreetingComponent');
+    this.subscribe();
+  }
 
-	@Input()
-	authState: AuthState;
+  @Input()
+  authState: AuthState;
 
-	@Input()
-	set usernameAttributes(usernameAttributes: string) {
-		this._usernameAttributes = usernameAttributes;
-	}
+  @Input()
+  set usernameAttributes(usernameAttributes: string) {
+    this._usernameAttributes = usernameAttributes;
+  }
+  
+  ngOnInit() {
+    if (!this.amplifyService.auth()){
+      throw new Error('Auth module not registered on AmplifyService provider');
+    }
+  }
 
-	ngOnInit() {
-		if (!this.amplifyService.auth()) {
-			throw new Error('Auth module not registered on AmplifyService provider');
-		}
-	}
+  subscribe() {
+    this.amplifyService.authStateChange$
+      .subscribe(state => this.setAuthState(state));
+  }
 
-	subscribe() {
-		this.amplifyService.authStateChange$.subscribe(state =>
-			this.setAuthState(state)
-		);
-	}
+  setAuthState(authState: AuthState) {
+    this.authState = authState;
+    this.signedIn = authState.state === 'signedIn';
 
-	setAuthState(authState: AuthState) {
-		this.authState = authState;
-		this.signedIn = authState.state === 'signedIn';
+    let username = "";
+    if (authState.user) {
+      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+        username = authState.user.attributes? authState.user.attributes.email : authState.user.username;
+      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+        username = authState.user.attributes? authState.user.attributes.phone_number : authState.user.username;
+      } else {
+        username = authState.user.username;
+      }
+    }
+    
+    this.greeting = this.signedIn
+      ? this.amplifyService.i18n().get("Hello, {{username}}").replace('{{username}}', username)
+      : "";
+  }
 
-		let username = '';
-		if (authState.user) {
-			if (this._usernameAttributes === UsernameAttributes.EMAIL) {
-				username = authState.user.attributes
-					? authState.user.attributes.email
-					: authState.user.username;
-			} else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-				username = authState.user.attributes
-					? authState.user.attributes.phone_number
-					: authState.user.username;
-			} else {
-				username = authState.user.username;
-			}
-		}
-
-		this.greeting = this.signedIn
-			? this.amplifyService
-					.i18n()
-					.get('Hello, {{username}}')
-					.replace('{{username}}', username)
-			: '';
-	}
-
-	onSignOut() {
-		this.amplifyService.auth().signOut();
-	}
+  onSignOut() {
+    this.amplifyService.auth().signOut();
+  }
 }

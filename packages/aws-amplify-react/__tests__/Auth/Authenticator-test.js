@@ -2,187 +2,164 @@ import Auth from '@aws-amplify/auth';
 import * as React from 'react';
 import Authenticator, { EmptyContainer } from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
-import AmplifyTheme from '../../src/AmplifyTheme';
-import {
-	Button,
-	InputRow,
-	Container,
-} from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import AmplifyTheme  from '../../src/AmplifyTheme';
+import { Button, InputRow, Container } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const waitForResolve = Promise.resolve();
 
 describe('Authenticator', () => {
-	beforeAll(() => {
-		const localStorageMock = {
-			getItem: jest.fn(),
-			setItem: jest.fn(),
-			removeItem: jest.fn(),
-			clear: jest.fn(),
-		};
-		global.localStorage = localStorageMock;
-	});
-	afterAll(() => {
-		jest.resetAllMocks();
-	});
-	describe('normal case', () => {
-		test('render if no error', () => {
-			const wrapper = shallow(<Authenticator />);
-			wrapper.setProps({
-				authState: 'signIn',
-				theme: AmplifyTheme,
-			});
-			expect(wrapper).toMatchSnapshot();
-		});
+    beforeAll(() => {
+        const localStorageMock = {
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+            removeItem: jest.fn(),
+            clear: jest.fn()
+          };
+          global.localStorage = localStorageMock;
+    })
+    afterAll(() => {
+        jest.resetAllMocks();
+    })
+    describe('normal case', () => {
 
-		test('render with hidedefault', () => {
-			const wrapper = shallow(<Authenticator hidedefault />);
-			wrapper.setProps({
-				authState: 'signIn',
-				theme: AmplifyTheme,
-			});
-			expect(wrapper).toMatchSnapshot();
-		});
+        test('render if no error', () => {
+            const wrapper = shallow(<Authenticator/>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
 
-		test('render if no error with children', () => {
-			const wrapper = shallow(
-				<Authenticator>
-					<div />
-				</Authenticator>
-			);
-			wrapper.setProps({
-				authState: 'signIn',
-				theme: AmplifyTheme,
-			});
-			expect(wrapper).toMatchSnapshot();
-		});
-	});
+        test('render with hidedefault', () => {
+            const wrapper = shallow(<Authenticator hidedefault/>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
 
-	describe.skip('handleStateChange test', () => {
-		test('when user sign in and need confirmation', async () => {
-			const wrapper = shallow(<Authenticator />);
+        test('render if no error with children', () => {
+            const wrapper = shallow(<Authenticator><div></div></Authenticator>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
+    });
 
-			const spyon = jest
-				.spyOn(Auth, 'signIn')
-				.mockImplementationOnce((user, password) => {
-					return new Promise((res, rej) => {
-						res({
-							challengeName: 'SMS_MFA',
-						});
-					});
-				});
+    describe.skip('handleStateChange test', () => {
+        test('when user sign in and need confirmation', async () => {
+            const wrapper = shallow(<Authenticator/>);
 
-			const event_username = {
-				target: {
-					name: 'username',
-					value: 'user1',
-				},
-			};
-			const event_password = {
-				target: {
-					name: 'password',
-					value: 'abc',
-				},
-			};
+            const spyon = jest.spyOn(Auth, 'signIn')
+                    .mockImplementationOnce((user, password) => {
+                        return new Promise((res, rej) => {
+                            res({
+                                challengeName: 'SMS_MFA'
+                            });
+                        });
+                    });
 
-			const signInWrapper = wrapper.find(SignIn).dive();
-			signInWrapper
-				.find(InputRow)
-				.at(0)
-				.simulate('change', event_username);
-			signInWrapper
-				.find(InputRow)
-				.at(1)
-				.simulate('change', event_password);
-			await signInWrapper.find(Button).simulate('click');
+            const event_username = {
+                target: {
+                    name: 'username',
+                    value: 'user1'
+                }
+            };
+            const event_password = {
+                target: {
+                    name: 'password',
+                    value: 'abc'
+                }
+            };
 
-			expect(wrapper.state()).toEqual({
-				auth: 'confirmSignIn',
-				authData: { challengeName: 'SMS_MFA' },
-				error: null,
-			});
+            const signInWrapper = wrapper.find(SignIn).dive();
+            signInWrapper.find(InputRow).at(0).simulate('change', event_username);
+            signInWrapper.find(InputRow).at(1).simulate('change', event_password);
+            await signInWrapper.find(Button).simulate('click');
 
-			spyon.mockClear();
-		});
-	});
+            expect(wrapper.state()).toEqual({
+                "auth": "confirmSignIn", 
+                "authData": {"challengeName": "SMS_MFA"}, 
+                "error": null
+            });
 
-	describe.skip('handleAuthEvent test', () => {
-		test('when user sign in failed', async () => {
-			const wrapper = shallow(<Authenticator />);
+            spyon.mockClear();
+        });
+    });
 
-			const spyon = jest
-				.spyOn(Auth, 'signIn')
-				.mockImplementationOnce((user, password) => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
-				});
+    describe.skip('handleAuthEvent test', () => {
+        test('when user sign in failed', async () => {
+            const wrapper = shallow(<Authenticator/>);
 
-			const event_username = {
-				target: {
-					name: 'username',
-					value: 'user1',
-				},
-			};
-			const event_password = {
-				target: {
-					name: 'password',
-					value: 'abc',
-				},
-			};
+            const spyon = jest.spyOn(Auth, 'signIn')
+                    .mockImplementationOnce((user, password) => {
+                        return new Promise((res, rej) => {
+                            rej('err');
+                        });
+                    });
 
-			const signInWrapper = wrapper.find(SignIn).dive();
-			signInWrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			signInWrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			await signInWrapper.find(Button).simulate('click');
+            const event_username = {
+                target: {
+                    name: 'username',
+                    value: 'user1'
+                }
+            };
+            const event_password = {
+                target: {
+                    name: 'password',
+                    value: 'abc'
+                }
+            };
 
-			expect(wrapper.state()).toEqual({
-				auth: 'signIn',
-			});
+            const signInWrapper = wrapper.find(SignIn).dive();
+            signInWrapper.find(Input).at(0).simulate('change', event_username);
+            signInWrapper.find(Input).at(1).simulate('change', event_password);
+            await signInWrapper.find(Button).simulate('click');
 
-			spyon.mockClear();
-		});
-	});
+            expect(wrapper.state()).toEqual({
+                "auth": "signIn"
+            });
 
-	describe('checkUser test', () => {
-		test('happy case', async () => {
-			const wrapper = shallow(<Authenticator />);
-			const authenticator = wrapper.instance();
+            spyon.mockClear();
+        });
+    });
 
-			const spyon = jest
-				.spyOn(Auth, 'currentAuthenticatedUser')
-				.mockImplementationOnce(() => {
-					return Promise.resolve('user');
-				});
+    describe('checkUser test', () => {
+        test('happy case', async () => {
+            const wrapper = shallow(<Authenticator/>);
+            const authenticator = wrapper.instance();
 
-			await authenticator.checkUser();
+            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
 
-			expect(spyon).toBeCalled();
-		});
-	});
+            await authenticator.checkUser();
 
-	describe('container component', () => {
-		test('use provided Container component if this.props.container is truthy', () => {
-			const CustomContainer = ({ children }) => {
-				return <div className="custom-container">{children}</div>;
-			};
-			const wrapper = mount(<Authenticator container={CustomContainer} />);
-			expect(wrapper.childAt(0).type()).toBe(CustomContainer);
-		});
+            expect(spyon).toBeCalled();
+        });
+    });
 
-		test('use AWS Amplify UI Container if this.props.container is undefined', () => {
-			const wrapper = mount(<Authenticator />);
-			expect(wrapper.childAt(0).type()).toBe(Container);
-		});
+    describe('container component', () => {
+        test("use provided Container component if this.props.container is truthy", () => {
+            const CustomContainer = ({ children }) => {
+                return <div className="custom-container">{children}</div>;
+            };
+            const wrapper = mount(<Authenticator container={CustomContainer} />);
+            expect(wrapper.childAt(0).type()).toBe(CustomContainer);
+        });
 
-		test('use EmptyContainer if this.props.container is falsey', () => {
-			const wrapper = mount(<Authenticator container="" />);
-			expect(wrapper.childAt(0).type()).toBe(EmptyContainer);
-		});
-	});
+        test("use AWS Amplify UI Container if this.props.container is undefined", () => {
+            const wrapper = mount(<Authenticator />);
+            expect(wrapper.childAt(0).type()).toBe(Container);
+        });
+
+        test("use EmptyContainer if this.props.container is falsey", () => {
+            const wrapper = mount(<Authenticator container="" />);
+            expect(wrapper.childAt(0).type()).toBe(EmptyContainer);
+        });
+    });
 });

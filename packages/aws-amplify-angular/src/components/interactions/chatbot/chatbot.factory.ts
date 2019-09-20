@@ -14,79 +14,77 @@
 // tslint:enable
 
 import {
-	Component,
-	Input,
-	OnInit,
-	ViewChild,
-	ComponentFactoryResolver,
-	OnDestroy,
-	Output,
-	EventEmitter,
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { ChatBotClass } from './chatbot.class';
 import { ChatbotComponentIonic } from './chatbot.component.ionic';
 import { ChatbotComponentCore } from './chatbot.component.core';
 
 @Component({
-	selector: 'amplify-interactions',
-	template: `
-		<div class="amplify-component">
-			<ng-template component-host></ng-template>
-		</div>
-	`,
+  selector: 'amplify-interactions',
+  template: `
+              <div class="amplify-component">
+                <ng-template component-host></ng-template>
+              </div>
+            `
 })
 export class ChatBotComponent implements OnInit, OnDestroy {
-	@Input() framework: string;
-	@Input() bot: string;
-	@Input() title: string;
-	@Input() clearComplete: boolean;
-	@Input() conversationModeOn: boolean;
-	@Input() voiceConfig: any;
-	@Input() voiceEnabled: boolean;
-	@Input() textEnabled: boolean;
-	@Output()
+  @Input() framework: string;
+  @Input() bot: string;
+  @Input() title: string;
+  @Input() clearComplete: boolean;
+  @Input() conversationModeOn: boolean;
+  @Input() voiceConfig: any;
+  @Input() voiceEnabled: boolean;
+  @Input() textEnabled: boolean;
+  @Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
-	ngOnInit() {
-		this.loadComponent();
-	}
+  ngOnInit() {
+    this.loadComponent();
+  }
 
-	ngOnDestroy() {}
+  ngOnDestroy() {}
 
-	loadComponent() {
-		const interactionParams = {
-			bot: this.bot,
-			title: this.title,
-			clearComplete: this.clearComplete,
-			conversationModeOn: this.conversationModeOn,
-			voiceConfig: this.voiceConfig,
-			voiceEnabled: this.voiceEnabled,
-			textEnabled: this.textEnabled,
-		};
+  loadComponent() {
 
-		const interactionComponent =
-			this.framework && this.framework.toLowerCase() === 'ionic'
-				? new ComponentMount(ChatbotComponentIonic, interactionParams)
-				: new ComponentMount(ChatbotComponentCore, interactionParams);
+    const interactionParams = {
+      bot: this.bot,
+      title: this.title,
+      clearComplete: this.clearComplete,
+      conversationModeOn: this.conversationModeOn,
+      voiceConfig: this.voiceConfig,
+      voiceEnabled: this.voiceEnabled,
+      textEnabled: this.textEnabled
+    };
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			interactionComponent.component
-		);
+    const interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(ChatbotComponentIonic, interactionParams) :
+    new ComponentMount(ChatbotComponentCore, interactionParams);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(interactionComponent.component);
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
-		(<ChatBotClass>componentRef.instance).data = interactionComponent.data;
+    const viewContainerRef = this.componentHost.viewContainerRef;
+    viewContainerRef.clear();
 
-		componentRef.instance.complete.subscribe(e => {
-			this.complete.emit(e);
-		});
-	}
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    (<ChatBotClass>componentRef.instance).data = interactionComponent.data;
+
+    componentRef.instance.complete.subscribe((e) => {
+      this.complete.emit(e);
+    });
+  }
 }

@@ -1,261 +1,263 @@
 import { Hub, Logger } from '../src';
 
 describe('Hub', () => {
-	test('happy case', () => {
-		const listener = jest.fn(() => {});
+  test('happy case', () => {
+    const listener = jest.fn(() => { });
 
-		Hub.listen('auth', listener);
+    Hub.listen('auth', listener);
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		expect(listener).toHaveBeenCalled();
-	});
+    expect(listener).toHaveBeenCalled();
+  });
 
-	test('Legacy config', () => {
-		class MyClass {
-			constructor() {
-				Hub.listen('auth', this, 'MyListener');
-			}
+  test('Legacy config', () => {
 
-			// Default handler for listening events
-			onHubCapsule = jest.fn(function(capsule) {
-				const { channel, payload } = capsule;
-				if (channel === 'auth') {
-					this.onAuthEvent(payload);
-				}
-			});
+    class MyClass {
+      constructor() {
+        Hub.listen('auth', this, 'MyListener');
+      }
 
-			onAuthEvent = jest.fn(function(payload) {
-				// ... your implementation
-			});
-		}
+      // Default handler for listening events
+      onHubCapsule = jest.fn(function (capsule) {
+        const { channel, payload } = capsule;
+        if (channel === 'auth') { this.onAuthEvent(payload); }
+      })
 
-		const listener = new MyClass();
+      onAuthEvent = jest.fn(function (payload) {
+        // ... your implementation
+      })
+    }
 
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+    const listener = new MyClass();
 
-		Hub.listen('auth', listener);
+    const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+    Hub.listen('auth', listener);
 
-		expect(listener.onHubCapsule).toHaveBeenCalled();
-		expect(listener.onAuthEvent).toHaveBeenCalled();
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
-		);
-	});
+    expect(listener.onHubCapsule).toHaveBeenCalled();
+    expect(listener.onAuthEvent).toHaveBeenCalled();
 
-	test('Protected channel', () => {
-		const listener = jest.fn(() => {});
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'WARN',
+      'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
+    );
+  });
 
-		Hub.listen('auth', listener);
+  test('Protected channel', () => {
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth'
-		);
+    const listener = jest.fn(() => { });
+    const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 
-		expect(listener).toHaveBeenCalled();
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'WARNING: auth is protected and dispatching on it can have unintended consequences'
-		);
-	});
+    Hub.listen('auth', listener);
 
-	test('Regex Listener', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
+      'Auth'
+    );
 
-		Hub.listen(/user/, listener);
+    expect(listener).toHaveBeenCalled();
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'WARN',
+      'WARNING: auth is protected and dispatching on it can have unintended consequences'
+    );
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'A user sign out event has taken place.',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Regex Listener', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).toHaveBeenCalledWith({
-			channel: 'auth',
-			payload: {
-				data: 'the user has been signed out',
-				event: 'signOut',
-				message: 'A user sign out event has taken place.',
-			},
-			patternInfo: [],
-			source: 'Auth',
-		});
-	});
+    Hub.listen(/user/, listener);
 
-	test('Regex Listener one group', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.listen(/user(.*)/, listener);
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [],
+      "source": "Auth"
+    });
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'A user sign out event has taken place.',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Regex Listener one group', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).toHaveBeenCalledWith({
-			channel: 'auth',
-			payload: {
-				data: 'the user has been signed out',
-				event: 'signOut',
-				message: 'A user sign out event has taken place.',
-			},
-			patternInfo: [' sign out event has taken place.'],
-			source: 'Auth',
-		});
-	});
+    Hub.listen(/user(.*)/, listener);
 
-	test('Regex Listener three groups', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.listen(/user ([^ ]+) ([^ ]+) (.*)/, listener);
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [" sign out event has taken place."],
+      "source": "Auth"
+    });
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'A user sign out event has taken place.',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Regex Listener three groups', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).toHaveBeenCalledWith({
-			channel: 'auth',
-			payload: {
-				data: 'the user has been signed out',
-				event: 'signOut',
-				message: 'A user sign out event has taken place.',
-			},
-			patternInfo: ['sign', 'out', 'event has taken place.'],
-			source: 'Auth',
-		});
-	});
+    Hub.listen(/user ([^ ]+) ([^ ]+) (.*)/, listener);
 
-	test('Regex All Messages', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.listen(/.*/, listener);
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: ["sign", "out", "event has taken place."],
+      "source": "Auth"
+    });
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'A user sign out event has taken place.',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Regex All Messages', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).toHaveBeenCalledWith({
-			channel: 'auth',
-			payload: {
-				data: 'the user has been signed out',
-				event: 'signOut',
-				message: 'A user sign out event has taken place.',
-			},
-			patternInfo: [],
-			source: 'Auth',
-		});
-	});
+    Hub.listen(/.*/, listener);
 
-	test('Regex Listener No Message', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'A user sign out event has taken place.'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.listen(/user(.*)/, listener);
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+    expect(listener).toHaveBeenCalledWith({
+      "channel": "auth", "payload":
+      {
+        data: "the user has been signed out",
+        event: "signOut",
+        message: 'A user sign out event has taken place.'
+      },
+      patternInfo: [],
+      "source": "Auth"
+    });
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				message: null,
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Regex Listener No Message', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).not.toHaveBeenCalled();
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'Cannot perform pattern matching without a message key'
-		);
-	});
+    Hub.listen(/user(.*)/, listener);
+    const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 
-	test('Remove listener', () => {
-		const listener = jest.fn(() => {});
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        message: null
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.listen('auth', listener);
+    expect(listener).not.toHaveBeenCalled();
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'WARN',
+      'Cannot perform pattern matching without a message key'
+    );
+  });
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+  test('Remove listener', () => {
+    const listener = jest.fn(() => { });
 
-		expect(listener).toHaveBeenCalled();
+    Hub.listen('auth', listener);
 
-		listener.mockReset();
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut',
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
 
-		Hub.remove('auth', listener);
+    expect(listener).toHaveBeenCalled();
 
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut2',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
+    listener.mockReset();
 
-		expect(listener).not.toHaveBeenCalled();
-	});
+    Hub.remove('auth', listener);
+
+    Hub.dispatch(
+      'auth',
+      {
+        event: 'signOut2',
+        data: 'the user has been signed out',
+        message: 'User singout has taken place'
+      },
+      'Auth',
+      Symbol.for('amplify_default')
+    );
+
+    expect(listener).not.toHaveBeenCalled();
+
+  });
 });
+

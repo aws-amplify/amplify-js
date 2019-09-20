@@ -1,3 +1,4 @@
+
 // tslint:disable
 /*
  * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -16,6 +17,4 @@
 export { ForgotPasswordComponent } from './forgot-password.factory';
 export { ForgotPasswordClass } from './forgot-password.class';
 export { ForgotPasswordComponentCore } from './forgot-password.component.core';
-export {
-	ForgotPasswordComponentIonic,
-} from './forgot-password.component.ionic';
+export { ForgotPasswordComponentIonic } from './forgot-password.component.ionic';
