@@ -10,18 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const packageInfo = require('../../package.json');
+const packageInfo = require("../../package.json");
 
 const Platform = {
-	userAgent: `aws-amplify/${packageInfo.version} js`,
-	product: '',
-	navigator: null,
-	isReactNative: false,
+	'userAgent': `aws-amplify/${packageInfo.version} js`,
+	'product': '',
+	'navigator': null,
+	'isReactNative': false
 };
 if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.product = navigator.product || '';
 	Platform.navigator = navigator || null;
-	switch (navigator.product) {
+	switch(navigator.product) {
 		case 'ReactNative':
 			Platform.userAgent = `aws-amplify/${packageInfo.version} react-native`;
 			Platform.isReactNative = true;

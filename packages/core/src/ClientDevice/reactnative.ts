@@ -18,11 +18,11 @@ import * as Android from './android';
 const { OS } = Platform;
 
 export default class ClientDevice {
-	static clientInfo() {
-		if (OS === 'ios') {
-			return iOS.clientInfo();
-		} else {
-			return Android.clientInfo();
-		}
-	}
+    static clientInfo() {
+        if (OS === 'ios') {
+            return iOS.clientInfo();
+        } else {
+            return Android.clientInfo();
+        }
+    }
 }

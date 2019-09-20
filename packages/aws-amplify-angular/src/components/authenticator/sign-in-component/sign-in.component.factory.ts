@@ -14,15 +14,15 @@
 // tslint:enable
 
 import {
-	Component,
-	Input,
-	OnInit,
-	ViewChild,
-	ComponentFactoryResolver,
-	OnDestroy,
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ComponentFactoryResolver,
+  OnDestroy
 } from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { SignInClass } from './sign-in.class';
 import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
@@ -30,51 +30,52 @@ import { AuthState } from '../../../providers';
 import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({
-	selector: 'amplify-auth-sign-in',
-	template: `
-		<div>
-			<ng-template component-host></ng-template>
-		</div>
-	`,
+  selector: 'amplify-auth-sign-in',
+  template: `
+              <div>
+                <ng-template component-host></ng-template>
+              </div>
+            `
 })
 export class SignInComponent implements OnInit, OnDestroy {
-	@Input() framework: string;
-	@Input() authState: AuthState;
-	@Input() usernameAttributes: string = 'username';
-	@Input() hide: string[] = [];
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+  @Input() framework: string;
+  @Input() authState: AuthState;
+  @Input() usernameAttributes: string = 'username';
+  @Input() hide: string[] = [];
+  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
-	ngOnInit() {
-		this.loadComponent();
-	}
+  ngOnInit() {
+    this.loadComponent();
+  }
 
-	ngOnDestroy() {}
+  ngOnDestroy() {}
 
-	loadComponent() {
-		let authComponent =
-			this.framework && this.framework === 'ionic'
-				? new ComponentMount(SignInComponentIonic, {
-						authState: this.authState,
-						hide: this.hide,
-						usernameAttributes: this.usernameAttributes,
-				  })
-				: new ComponentMount(SignInComponentCore, {
-						authState: this.authState,
-						hide: this.hide,
-						usernameAttributes: this.usernameAttributes,
-				  });
+  loadComponent() {
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			authComponent.component
-		);
+    let authComponent = this.framework && this.framework === 'ionic' ? 
+      new ComponentMount(
+        SignInComponentIonic,{
+          authState: this.authState,
+          hide: this.hide,
+          usernameAttributes: this.usernameAttributes
+        }) 
+        : 
+      new ComponentMount(
+        SignInComponentCore, {
+          authState: this.authState,
+          hide: this.hide,
+          usernameAttributes: this.usernameAttributes
+        });
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+    const componentFactory = this.componentFactoryResolver
+    .resolveComponentFactory(authComponent.component);
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
-		(<SignInClass>componentRef.instance).data = authComponent.data;
-	}
+    const viewContainerRef = this.componentHost.viewContainerRef;
+    viewContainerRef.clear();
+
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    (<SignInClass>componentRef.instance).data = authComponent.data;
+  }
 }

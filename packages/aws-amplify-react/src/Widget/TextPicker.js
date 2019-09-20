@@ -18,77 +18,74 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../AmplifyTheme';
 import Picker from './Picker';
 
-const Container = {};
+const Container = {
+};
 
 const PickerPreview = {
-	maxWidth: '100%',
+    maxWidth: '100%'
 };
 
 const logger = new Logger('TextPicker');
 
 export default class TextPicker extends Component {
-	constructor(props) {
-		super(props);
+    constructor(props) {
+        super(props);
 
-		this.handlePick = this.handlePick.bind(this);
+        this.handlePick = this.handlePick.bind(this);
 
-		this.state = {
-			previewText: props.previewText,
-		};
-	}
+        this.state = {
+            previewText: props.previewText
+        };
+    }
 
-	handlePick(data) {
-		const that = this;
-		const { file, name, size, type } = data;
-		const { preview, onPick, onLoad } = this.props;
+    handlePick(data) {
+        const that = this;
+        const { file, name, size, type } = data;
+        const { preview, onPick, onLoad } = this.props;
 
-		if (onPick) {
-			onPick(data);
-		}
+        if (onPick) { onPick(data); }
 
-		if (preview) {
-			const reader = new FileReader();
-			reader.onload = function(e) {
-				const text = e.target.result;
-				that.setState({ previewText: text });
-				if (onLoad) {
-					onLoad(text);
-				}
-			};
-			reader.readAsText(file);
-		}
-	}
+        if (preview) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text  = e.target.result;
+                that.setState({ previewText: text });
+                if (onLoad) { onLoad(text); }
+            };
+            reader.readAsText(file);
+        }
+    }
 
-	render() {
-		const { preview } = this.props;
-		const { previewText } = this.state;
+    render() {
+        const { preview } = this.props;
+        const { previewText } = this.state;
 
-		const title = this.props.title || 'Pick a File';
+        const title = this.props.title || 'Pick a File';
 
-		const theme = this.props.theme || AmplifyTheme;
-		const containerStyle = Object.assign({}, Container, theme.picker);
-		const previewStyle = Object.assign(
-			{},
-			PickerPreview,
-			theme.pickerPreview,
-			theme.halfHeight,
-			preview && preview !== 'hidden' ? {} : AmplifyTheme.hidden
-		);
+        const theme = this.props.theme || AmplifyTheme;
+        const containerStyle = Object.assign({}, Container, theme.picker);
+        const previewStyle = Object.assign(
+            {},
+            PickerPreview,
+            theme.pickerPreview,
+            theme.halfHeight,
+            (preview && preview !== 'hidden')? {} : AmplifyTheme.hidden
+        );
 
-		return (
-			<div style={containerStyle}>
-				{previewText ? (
-					<div style={previewStyle}>
-						<pre style={theme.pre}>{previewText}</pre>
-					</div>
-				) : null}
-				<Picker
-					title={title}
-					accept="text/*"
-					theme={theme}
-					onPick={this.handlePick}
-				/>
-			</div>
-		);
-	}
+        return (
+            <div style={containerStyle}>
+                { previewText? <div style={previewStyle}>
+                                <pre style={theme.pre}>{previewText}</pre>
+                              </div>
+                             : null
+                }
+                <Picker
+                    title={title}
+                    accept="text/*"
+                    theme={theme}
+                    onPick={this.handlePick}
+                />
+            </div>
+        );
+    }
 }

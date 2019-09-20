@@ -13,13 +13,7 @@
  */
 // tslint:enable
 
-import {
-	Component,
-	Input,
-	ViewEncapsulation,
-	Injector,
-	ElementRef,
-} from '@angular/core';
+import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { S3ImageComponentCore } from './s3-image.component.core';
 
@@ -32,11 +26,13 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-s3-image-ionic',
-	template,
+  selector: 'amplify-s3-image-ionic',
+  template
 })
 export class S3ImageComponentIonic extends S3ImageComponentCore {
-	constructor(protected amplifyService: AmplifyService) {
-		super(amplifyService);
-	}
+
+  constructor(protected amplifyService: AmplifyService) {
+    super(amplifyService);
+    
+  }
 }

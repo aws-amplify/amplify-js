@@ -1,104 +1,90 @@
 jest.mock('aws-sdk/clients/kinesis', () => {
-	const Kinesis = () => {
-		var kinesis = null;
-		return kinesis;
-	};
+    const Kinesis = () => {
+        var kinesis = null;
+        return kinesis;
+    }
 
-	Kinesis.prototype.putRecords = (params, callback) => {
-		callback(null, 'data');
-	};
+    Kinesis.prototype.putRecords = (params, callback) => {
+        callback(null, 'data');
+    }
 
-	return Kinesis;
+    return Kinesis;
 });
 
-import {
-	Pinpoint,
-	AWS,
-	MobileAnalytics,
-	JS,
-	Credentials,
-} from '@aws-amplify/core';
-import KinesisProvider from '../../src/Providers/AWSKinesisProvider';
+import { Pinpoint, AWS, MobileAnalytics, JS, Credentials } from '@aws-amplify/core';
+import KinesisProvider from "../../src/Providers/AWSKinesisProvider";
 
 jest.useFakeTimers();
 
 const credentials = {
-	accessKeyId: 'accessKeyId',
-	sessionToken: 'sessionToken',
-	secretAccessKey: 'secretAccessKey',
-	identityId: 'identityId',
-	authenticated: true,
-};
+    accessKeyId: 'accessKeyId',
+    sessionToken: 'sessionToken',
+    secretAccessKey: 'secretAccessKey',
+    identityId: 'identityId',
+    authenticated: true
+}
 
-jest.useFakeTimers();
+jest.useFakeTimers()
 
 describe('kinesis provider test', () => {
-	describe('getCategory test', () => {
-		test('happy case', () => {
-			const analytics = new KinesisProvider();
+    describe('getCategory test', () => {
+        test('happy case', () => {
+            const analytics = new KinesisProvider();
 
-			expect(analytics.getCategory()).toBe('Analytics');
-		});
-	});
+            expect(analytics.getCategory()).toBe('Analytics');
+        });
+    });
 
-	describe('getProviderName test', () => {
-		test('happy case', () => {
-			const analytics = new KinesisProvider();
+    describe('getProviderName test', () => {
+        test('happy case', () => {
+            const analytics = new KinesisProvider();
 
-			expect(analytics.getProviderName()).toBe('AWSKinesis');
-		});
-	});
+            expect(analytics.getProviderName()).toBe('AWSKinesis');
+        });
+    });
 
-	describe('configure test', () => {
-		test('happy case', () => {
-			const analytics = new KinesisProvider();
+    describe('configure test', () => {
+        test('happy case', () => {
+            const analytics = new KinesisProvider();
 
-			expect(analytics.configure({ region: 'region1' })).toEqual({
-				bufferSize: 1000,
-				flushInterval: 5000,
-				flushSize: 100,
-				region: 'region1',
-				resendLimit: 5,
-			});
-		});
-	});
+            expect(analytics.configure({region: 'region1'})).toEqual({"bufferSize": 1000, "flushInterval": 5000, "flushSize": 100, "region": "region1", "resendLimit": 5});
+        });
+    });
 
-	describe('record test', () => {
-		test('record without credentials', async () => {
-			const analytics = new KinesisProvider();
+    describe('record test', () => {
+        test('record without credentials', async () => {
+            const analytics = new KinesisProvider();
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return Promise.reject('err');
+            });
+        
+            expect(await analytics.record('params')).toBe(false);
+            spyon.mockClear();
+        });
 
-			expect(await analytics.record('params')).toBe(false);
-			spyon.mockClear();
-		});
+        test('record happy case', async () => {
+            const analytics = new KinesisProvider();
+        
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
 
-		test('record happy case', async () => {
-			const analytics = new KinesisProvider();
+            await analytics.record({
+                event: {
+                    data: {
+                        data: 'data'
+                    },
+                    streamName: 'stream'
+                },
+                config: {}
+            });
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+            jest.advanceTimersByTime(6000);
 
-			await analytics.record({
-				event: {
-					data: {
-						data: 'data',
-					},
-					streamName: 'stream',
-				},
-				config: {},
-			});
+            spyon.mockClear();
+        });
 
-			jest.advanceTimersByTime(6000);
-
-			spyon.mockClear();
-		});
-	});
+    });
 });

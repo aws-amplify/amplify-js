@@ -14,11 +14,11 @@
 import * as Browser from './browser';
 
 export default class ClientDevice {
-	static clientInfo() {
-		return Browser.clientInfo();
-	}
+    static clientInfo() {
+        return Browser.clientInfo();
+    }
 
-	static dimension() {
-		return Browser.dimension();
-	}
+    static dimension() {
+        return Browser.dimension();
+    }
 }

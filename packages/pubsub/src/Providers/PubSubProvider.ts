@@ -17,40 +17,31 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSubProvider implements PubSubProvider {
-	private _config: ProvidertOptions;
 
-	constructor(options: ProvidertOptions = {}) {
-		this._config = options;
-	}
+    private _config: ProvidertOptions;
 
-	configure(config: ProvidertOptions = {}): ProvidertOptions {
-		this._config = { ...config, ...this._config };
+    constructor(options: ProvidertOptions = {}) {
+        this._config = options;
+    }
 
-		logger.debug(`configure ${this.getProviderName()}`, this._config);
+    configure(config: ProvidertOptions = {}): ProvidertOptions {
+        this._config = { ...config, ...this._config };
 
-		return this.options;
-	}
+        logger.debug(`configure ${this.getProviderName()}`, this._config);
 
-	getCategory() {
-		return 'PubSub';
-	}
+        return this.options;
+    }
 
-	abstract getProviderName(): string;
+    getCategory() { return 'PubSub'; }
 
-	protected get options(): ProvidertOptions {
-		return { ...this._config };
-	}
+    abstract getProviderName(): string;
 
-	public abstract newClient(clientOptions: ProvidertOptions): Promise<any>;
+    protected get options(): ProvidertOptions { return { ...this._config }; }
 
-	public abstract publish(
-		topics: string[] | string,
-		msg: any,
-		options?: ProvidertOptions
-	): void;
+    public abstract newClient(clientOptions: ProvidertOptions): Promise<any>;
 
-	public abstract subscribe(
-		topics: string[] | string,
-		options?: ProvidertOptions
-	): Observable<any>;
+    public abstract publish(topics: string[] | string, msg: any, options?: ProvidertOptions): void;
+
+    public abstract subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any>;
+
 }

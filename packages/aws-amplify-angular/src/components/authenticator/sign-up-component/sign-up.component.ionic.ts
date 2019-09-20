@@ -20,6 +20,7 @@ import { SignUpComponentCore } from './sign-up.component.core';
 import { countrylist, country } from '../../../assets/countries';
 import { auth } from '../../../assets/data-test-attributes';
 
+
 const template = `
 <div
   class="amplify-authenticator"
@@ -99,17 +100,16 @@ const template = `
 `;
 
 @Component({
-	selector: 'amplify-auth-sign-up-ionic',
-	template,
+  selector: 'amplify-auth-sign-up-ionic',
+  template,
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
-		super(amplifyService);
-	}
 
-	setProp(target) {
-		return (this.user[target.name] = target.value);
-	}
+  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
+    super(amplifyService);
+  }
+
+  setProp(target){
+    return this.user[target.name] = target.value;
+  }
 }

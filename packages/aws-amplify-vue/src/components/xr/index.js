@@ -16,4 +16,6 @@ import SumerianScene from './SumerianScene.vue';
 
 Vue.component('amplify-sumerian-scene', SumerianScene);
 
-export { SumerianScene };
+export {
+  SumerianScene,
+};
