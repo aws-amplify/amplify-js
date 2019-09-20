@@ -132,6 +132,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
 			federated.oauth_config = Object.assign(
 				{},
 				federated.oauth_config,
+				// @ts-ignore
 				oauth.awsCognito
 			);
 		}
@@ -189,6 +190,7 @@ export default class FederatedSignIn extends Component<any, any> {
 			federated.oauth_config = Object.assign(
 				{},
 				federated.oauth_config,
+				// @ts-ignore
 				oauth.awsCognito
 			);
 		}

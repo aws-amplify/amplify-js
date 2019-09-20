@@ -18,9 +18,12 @@
 		if (!n[o]) {
 			if (!t[o]) {
 				var a = typeof require == 'function' && require;
+				// @ts-ignore
 				if (!u && a) return a(o, !0);
+				// @ts-ignore
 				if (i) return i(o, !0);
 				var f = new Error("Cannot find module '" + o + "'");
+				// @ts-ignore
 				throw ((f.code = 'MODULE_NOT_FOUND'), f);
 			}
 			var l = (n[o] = { exports: {} });
@@ -28,6 +31,7 @@
 				l.exports,
 				function(e) {
 					var n = t[o][1][e];
+					// @ts-ignore
 					return s(n ? n : e);
 				},
 				l,
@@ -41,6 +45,7 @@
 		return n[o].exports;
 	}
 	var i = typeof require == 'function' && require;
+	// @ts-ignore
 	for (var o = 0; o < r.length; o++) s(r[o]);
 	return s;
 })(
@@ -602,6 +607,7 @@
 					sources[skey] = [
 						// @ts-ignore
 						Function(
+							// @ts-ignore
 							['require'],
 							// try to call default if defined to also support babel esmodule
 							// exports
@@ -649,6 +655,7 @@
 
 					// @ts-ignore
 					var URL =
+						// @ts-ignore
 						window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 					var blob = new Blob([src], { type: 'text/javascript' });
@@ -831,6 +838,7 @@
 							if (typeof audio_context === 'undefined') {
 								// @ts-ignore
 								window.AudioContext =
+									// @ts-ignore
 									window.AudioContext || window.webkitAudioContext;
 								audio_context = new AudioContext();
 							}

@@ -2,26 +2,27 @@
 
 Bug reports and feature suggestions are welcome. When filing a bug, try to include as much information as you can. Details like these are incredibly useful:
 
-* A reproducible test case or series of steps
-* The date/commit of the code you're running
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
+- A reproducible test case or series of steps
+- The date/commit of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
 
 # Pull Requests
 
 Pull requests are welcome!
 
-You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort. 
+You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
 Pull requests should generally be opened against **master**.
 
-Only include ***src*** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
+Only include **_src_** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
 
-Make sure you have attached a commit message before submitting the PR with the format: ```fix/feat(package_name): message```
+Make sure you have attached a commit message before submitting the PR with the format: `fix/feat(package_name): message`
 For example:
-  * A change is made in one of the file from @aws-amplify/auth
-  * When you want to commit the change: git commit -m 'fix(@aws-amplify/auth): the_message'
-  * Replace fix with feat when this is a feature change
+
+- A change is made in one of the file from @aws-amplify/auth
+- When you want to commit the change: git commit -m 'fix(@aws-amplify/auth): the_message'
+- Replace fix with feat when this is a feature change
 
 ## Tests
 

@@ -356,6 +356,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 			// @ts-ignore
 			dialog: [
 				...this.state.dialog,
+				// @ts-ignore
 				response && { from: 'bot', message: response.message },
 			],
 			inputText: '',
