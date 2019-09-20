@@ -10,37 +10,38 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-    ConsoleLogger as Logger
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('urlListener');
 
 let handler;
 
 export default async callback => {
-    if (handler) {
-        return;
-    }
+	if (handler) {
+		return;
+	}
 
-    let Linking: any;
-    let AppState: any;
+	let Linking: any;
+	let AppState: any;
 
-    try {
-        ({ Linking, AppState } = require('react-native'));
-    } catch (error) { /* Keep webpack happy */ }
+	try {
+		({ Linking, AppState } = require('react-native'));
+	} catch (error) {
+		/* Keep webpack happy */
+	}
 
+	handler =
+		handler ||
+		(({ url, ...rest }: { url: string }) => {
+			logger.debug('urlListener', { url, ...rest });
+			callback({ url });
+		});
 
-    handler = handler || (({ url, ...rest }: { url: string }) => {
-        logger.debug('urlListener', { url, ...rest });
-        callback({ url });
-    });
-
-    Linking.removeEventListener('url', handler);
-    Linking.addEventListener('url', handler);
-    AppState.addEventListener('change', async newAppState => {
-        if (newAppState === 'active') {
-            const initialUrl = await Linking.getInitialURL();
-            handler({ url: initialUrl });
-        }
-    });
+	Linking.removeEventListener('url', handler);
+	Linking.addEventListener('url', handler);
+	AppState.addEventListener('change', async newAppState => {
+		if (newAppState === 'active') {
+			const initialUrl = await Linking.getInitialURL();
+			handler({ url: initialUrl });
+		}
+	});
 };

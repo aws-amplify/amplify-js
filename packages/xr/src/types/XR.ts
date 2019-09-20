@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 export interface XROptions {
-  [key: string]: any,
+	[key: string]: any;
 }
 
 export interface ProviderOptions {
-  [key: string]: any,
+	[key: string]: any;
 }
 
 export interface SceneOptions {
-  [key: string]: any,
+	[key: string]: any;
 }
