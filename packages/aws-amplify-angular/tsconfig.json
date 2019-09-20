@@ -18,15 +18,9 @@
     "inlineSources": true,
     "target": "es5",
     "skipLibCheck": true,
-    "lib": [
-      "es2015", 
-      "dom"
-    ]
+    "lib": ["es2015", "dom"]
   },
-  "files": [
-    "index.ts",
-    "src/components/interactions/chatbot/aws-lex-audio.js"
-  ],
+  "files": ["index.ts", "src/components/interactions/chatbot/aws-lex-audio.js"],
   "angularCompilerOptions": {
     "strictMetadataEmit": true
   }

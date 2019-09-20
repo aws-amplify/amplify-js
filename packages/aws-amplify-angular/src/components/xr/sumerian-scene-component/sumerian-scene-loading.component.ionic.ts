@@ -82,11 +82,11 @@ const template = `
 `;
 
 @Component({
-  selector: 'sumerian-scene-loading-ionic',
-  template
+	selector: 'sumerian-scene-loading-ionic',
+	template,
 })
 export class SumerianSceneLoadingComponentIonic extends SumerianSceneLoadingComponentCore {
-  constructor() {
-    super();
-  }
+	constructor() {
+		super();
+	}
 }
