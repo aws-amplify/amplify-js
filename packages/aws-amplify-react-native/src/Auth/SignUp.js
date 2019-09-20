@@ -67,7 +67,7 @@ export default class SignUp extends AuthPiece {
 
 	isValid() {
 		for (const el in this.signUpFields) {
-			if (el.required && !this.state[el.key]) return false;
+			if (this.signUpFields[el].required && !this.state[el.key]) return false;
 		}
 		return true;
 	}
@@ -263,7 +263,7 @@ export default class SignUp extends AuthPiece {
 							text={I18n.get('Sign Up').toUpperCase()}
 							theme={theme}
 							onPress={this.signUp}
-							disabled={!this.isValid}
+							disabled={!this.isValid()}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
