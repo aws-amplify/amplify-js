@@ -231,8 +231,8 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		const inputVals = Object.values(this.inputs);
 
 		inputKeys.forEach((key, index) => {
-			// @ts-ignore
 			if (
+				// @ts-ignore
 				!['username', 'password', 'checkedValue', 'dial_code'].includes(key)
 			) {
 				if (

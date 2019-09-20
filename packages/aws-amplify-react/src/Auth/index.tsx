@@ -135,18 +135,23 @@ export class AuthenticatorWrapper extends Component {
 		this.state = { auth: 'init' };
 
 		this.handleAuthState = this.handleAuthState.bind(this);
+		this.renderChildren = this.renderChildren.bind(this);
 	}
 
 	handleAuthState(state, data) {
 		this.setState({ auth: state, authData: data });
 	}
 
+	renderChildren() {
+		// @ts-ignore
+		return this.props.children(this.state.auth);
+	}
+
 	render() {
 		return (
 			<div>
 				<Authenticator {...this.props} onStateChange={this.handleAuthState} />
-				{// @ts-ignore
-				this.props.children(this.state.auth)}
+				{this.renderChildren()}
 			</div>
 		);
 	}
