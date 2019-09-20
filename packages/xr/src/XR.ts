@@ -17,134 +17,196 @@ import { XRProviderNotConfigured } from './Errors';
 
 const logger = new Logger('XR');
 
-const DEFAULT_PROVIDER_NAME = "SumerianProvider";
+const DEFAULT_PROVIDER_NAME = 'SumerianProvider';
 
 export class XRClass {
+	private _options: XROptions;
 
-    private _options: XROptions;
+	private _pluggables: { [key: string]: XRProvider };
+	private _defaultProvider: string;
 
-    private _pluggables: { [key:string]:XRProvider };
-    private _defaultProvider: string;
+	/**
+	 * Initialize XR with AWS configurations
+	 *
+	 * @param {XROptions} options - Configuration object for XR
+	 */
+	constructor(options: XROptions) {
+		this._options = options;
+		logger.debug('XR Options', this._options);
+		this._defaultProvider = DEFAULT_PROVIDER_NAME;
+		this._pluggables = {};
 
-    /**
-     * Initialize XR with AWS configurations
-     * 
-     * @param {XROptions} options - Configuration object for XR
-     */
-    constructor(options: XROptions) {
-        this._options = options;
-        logger.debug('XR Options', this._options);
-        this._defaultProvider = DEFAULT_PROVIDER_NAME;
-        this._pluggables = {};
+		// Add default provider
+		this.addPluggable(new SumerianProvider());
+		Amplify.register(this);
+	}
 
-        // Add default provider
-        this.addPluggable(new SumerianProvider());
-        Amplify.register(this);
-    }
+	/**
+	 * Configure XR part with configurations
+	 *
+	 * @param {XROptions} config - Configuration for XR
+	 * @return {Object} - The current configuration
+	 */
+	configure(options: XROptions) {
+		const opt = options ? options.XR || options : {};
+		logger.debug('configure XR', { opt });
 
-    /**
-     * Configure XR part with configurations
-     * 
-     * @param {XROptions} config - Configuration for XR
-     * @return {Object} - The current configuration
-     */
-    configure(options: XROptions) {
-        const opt = options ? options.XR || options : {};
-        logger.debug('configure XR', { opt });
+		this._options = Object.assign({}, this._options, opt);
 
-        this._options = Object.assign({}, this._options, opt);
+		Object.entries(this._pluggables).map(([name, provider]) => {
+			if (name === this._defaultProvider && !opt[this._defaultProvider]) {
+				provider.configure(this._options);
+			} else {
+				provider.configure(this._options[name]);
+			}
+		});
 
-        Object.entries(this._pluggables).map(([name, provider]) => {
-            if (name === this._defaultProvider && !opt[this._defaultProvider]) {
-                provider.configure(this._options);
-            } else {
-                provider.configure(this._options[name]);
-            }
-        });
+		return this._options;
+	}
 
-        return this._options;
-    }
+	/**
+	 * add plugin into XR category
+	 * @param {Object} pluggable - an instance of the plugin
+	 */
+	public async addPluggable(pluggable: XRProvider) {
+		if (pluggable && pluggable.getCategory() === 'XR') {
+			this._pluggables[pluggable.getProviderName()] = pluggable;
+			const config = pluggable.configure(this._options);
 
-    /**
-     * add plugin into XR category
-     * @param {Object} pluggable - an instance of the plugin
-     */
-    public async addPluggable(pluggable: XRProvider) {
-        if (pluggable && pluggable.getCategory() === 'XR') {
-            this._pluggables[pluggable.getProviderName()] = pluggable;
-            const config = pluggable.configure(this._options);
+			return config;
+		}
+	}
 
-            return config;
-        }
-    }
+	public async loadScene(
+		sceneName: string,
+		domElementId: string,
+		sceneOptions: SceneOptions = {},
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return await this._pluggables[provider].loadScene(
+			sceneName,
+			domElementId,
+			sceneOptions
+		);
+	}
 
-    public async loadScene(
-        sceneName: string, 
-        domElementId: string, 
-        sceneOptions: SceneOptions = {},
-        provider: string = this._defaultProvider
-    ) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return await this._pluggables[provider].loadScene(sceneName, domElementId, sceneOptions);
-    }
+	public isSceneLoaded(
+		sceneName: string,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].isSceneLoaded(sceneName);
+	}
 
-    public isSceneLoaded(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].isSceneLoaded(sceneName);
-    }
+	public getSceneController(
+		sceneName: string,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].getSceneController(sceneName);
+	}
 
-    public getSceneController(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].getSceneController(sceneName);
-    }
+	public isVRCapable(
+		sceneName: string,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].isVRCapable(sceneName);
+	}
 
-    public isVRCapable(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].isVRCapable(sceneName);
-    }
+	public isVRPresentationActive(
+		sceneName: string,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].isVRPresentationActive(sceneName);
+	}
 
-    public isVRPresentationActive(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].isVRPresentationActive(sceneName);
-    }
+	public start(sceneName: string, provider: string = this._defaultProvider) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].start(sceneName);
+	}
 
-    public start(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].start(sceneName);
-    }
+	public enterVR(sceneName: string, provider: string = this._defaultProvider) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].enterVR(sceneName);
+	}
 
-    public enterVR(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].enterVR(sceneName);
-    }
+	public exitVR(sceneName: string, provider: string = this._defaultProvider) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].exitVR(sceneName);
+	}
 
-    public exitVR(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].exitVR(sceneName);
-    }
+	public isMuted(sceneName: string, provider: string = this._defaultProvider) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].isMuted(sceneName);
+	}
 
-    public isMuted(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].isMuted(sceneName);
-    }
-    
-    public setMuted(sceneName: string, muted: boolean, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].setMuted(sceneName, muted);
-    }
+	public setMuted(
+		sceneName: string,
+		muted: boolean,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].setMuted(sceneName, muted);
+	}
 
-    public onSceneEvent(
-        sceneName: string, 
-        eventName: string, 
-        eventHandler: Function, 
-        provider: string = this._defaultProvider
-    ) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].onSceneEvent(sceneName, eventName, eventHandler);
-    }
+	public onSceneEvent(
+		sceneName: string,
+		eventName: string,
+		eventHandler: Function,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].onSceneEvent(
+			sceneName,
+			eventName,
+			eventHandler
+		);
+	}
 
-    public enableAudio(sceneName: string, provider: string = this._defaultProvider) {
-        if (!this._pluggables[provider]) throw new XRProviderNotConfigured(`Provider '${provider}' not configured`);
-        return this._pluggables[provider].enableAudio(sceneName);
-    }
+	public enableAudio(
+		sceneName: string,
+		provider: string = this._defaultProvider
+	) {
+		if (!this._pluggables[provider])
+			throw new XRProviderNotConfigured(
+				`Provider '${provider}' not configured`
+			);
+		return this._pluggables[provider].enableAudio(sceneName);
+	}
 }

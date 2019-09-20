@@ -3,129 +3,134 @@ import { Auth } from '@aws-amplify/auth';
 import { TOTPSetup } from '../../src/Auth/TOTPSetup';
 import AmplifyTheme from '../../src/AmplifyTheme';
 
-const acceptedStates = [
-    'TOTPSetup'
-];
+const acceptedStates = ['TOTPSetup'];
 
 const deniedStates = [
-    'signIn',  
-    'signedUp', 
-    'signedOut',
-    'signUp',
-    'signedIn',
-    'confirmSignUp',
-    'forgotPassword',
-    'verifyContact'
+	'signIn',
+	'signedUp',
+	'signedOut',
+	'signUp',
+	'signedIn',
+	'confirmSignUp',
+	'forgotPassword',
+	'verifyContact',
 ];
 
 describe('TOTPSetup', () => {
-    describe('render test', () => {
-        test('render correctly', () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            for (let i = 0; i < acceptedStates.length; i += 1){
-                wrapper.setProps({
-                    authState: acceptedStates[i],
-                    theme: AmplifyTheme
-                });
-                expect(wrapper).toMatchSnapshot();
-            }
-        });
+	describe('render test', () => {
+		test('render correctly', () => {
+			const wrapper = shallow(<TOTPSetup />);
+			for (let i = 0; i < acceptedStates.length; i += 1) {
+				wrapper.setProps({
+					authState: acceptedStates[i],
+					theme: AmplifyTheme,
+				});
+				expect(wrapper).toMatchSnapshot();
+			}
+		});
 
-        test('render hidden', () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            
-            for (let i = 0; i < deniedStates.length; i += 1){
-                wrapper.setProps({
-                    authState: deniedStates[i],
-                    theme: AmplifyTheme
-                });
+		test('render hidden', () => {
+			const wrapper = shallow(<TOTPSetup />);
 
-                expect(wrapper).toMatchSnapshot();
-            }
-        });
+			for (let i = 0; i < deniedStates.length; i += 1) {
+				wrapper.setProps({
+					authState: deniedStates[i],
+					theme: AmplifyTheme,
+				});
 
-        test('hide props', () => {
-            const wrapper = shallow(<TOTPSetup hide={[TOTPSetup]}/>);
-            
-            for (let i = 0; i < acceptedStates.length; i += 1){
-                wrapper.setProps({
-                    authState: acceptedStates[i],
-                    theme: AmplifyTheme
-                });
-                expect(wrapper).toMatchSnapshot();
-            }
-        });
-    });
+				expect(wrapper).toMatchSnapshot();
+			}
+		});
 
-    describe('onTOTPEvent test', () => {
-        test('happy case', () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            const TOTPSetupInstance = wrapper.instance();
+		test('hide props', () => {
+			const wrapper = shallow(<TOTPSetup hide={[TOTPSetup]} />);
 
-            const spyon = jest.spyOn(TOTPSetupInstance, 'checkContact');
-            TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'SUCCESS', 'user');
+			for (let i = 0; i < acceptedStates.length; i += 1) {
+				wrapper.setProps({
+					authState: acceptedStates[i],
+					theme: AmplifyTheme,
+				});
+				expect(wrapper).toMatchSnapshot();
+			}
+		});
+	});
 
-            expect(spyon).toBeCalledWith('user');
-            spyon.mockClear();
-        });
+	describe('onTOTPEvent test', () => {
+		test('happy case', () => {
+			const wrapper = shallow(<TOTPSetup />);
+			const TOTPSetupInstance = wrapper.instance();
 
-        test('setup totp fail', () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            const TOTPSetupInstance = wrapper.instance();
+			const spyon = jest.spyOn(TOTPSetupInstance, 'checkContact');
+			TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'SUCCESS', 'user');
 
-            const spyon = jest.spyOn(TOTPSetupInstance, 'changeState');
-            TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'FAIL', 'user');
+			expect(spyon).toBeCalledWith('user');
+			spyon.mockClear();
+		});
 
-            expect(spyon).not.toBeCalled();
-            spyon.mockClear();
-        });
-    });
+		test('setup totp fail', () => {
+			const wrapper = shallow(<TOTPSetup />);
+			const TOTPSetupInstance = wrapper.instance();
 
-    describe('checkContact test', () => {
-        test('contact verified', async () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            const totpSetup = wrapper.instance();
+			const spyon = jest.spyOn(TOTPSetupInstance, 'changeState');
+			TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'FAIL', 'user');
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {
-                        email: 'xxx@xxx.com'
-                    }
-                });
-            });
+			expect(spyon).not.toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+	describe('checkContact test', () => {
+		test('contact verified', async () => {
+			const wrapper = shallow(<TOTPSetup />);
+			const totpSetup = wrapper.instance();
 
-            await totpSetup.checkContact({
-                user: 'user'
-            });
-            
-            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+			const spyon = jest
+				.spyOn(Auth, 'verifiedContact')
+				.mockImplementationOnce(() => {
+					return Promise.resolve({
+						verified: {
+							email: 'xxx@xxx.com',
+						},
+					});
+				});
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			const spyon2 = jest.spyOn(totpSetup, 'changeState');
 
-        test('contact not verified', async () => {
-            const wrapper = shallow(<TOTPSetup/>);
-            const totpSetup = wrapper.instance();
+			await totpSetup.checkContact({
+				user: 'user',
+			});
 
-            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
-                return Promise.resolve({
-                    verified: {}
-                });
-            });
+			expect(spyon2).toBeCalledWith('signedIn', { user: 'user' });
 
-            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-            await totpSetup.checkContact({
-                user: 'user'
-            });
-            
-            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
+		test('contact not verified', async () => {
+			const wrapper = shallow(<TOTPSetup />);
+			const totpSetup = wrapper.instance();
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(Auth, 'verifiedContact')
+				.mockImplementationOnce(() => {
+					return Promise.resolve({
+						verified: {},
+					});
+				});
+
+			const spyon2 = jest.spyOn(totpSetup, 'changeState');
+
+			await totpSetup.checkContact({
+				user: 'user',
+			});
+
+			expect(spyon2).toBeCalledWith('verifyContact', {
+				user: 'user',
+				verified: {},
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+	});
 });

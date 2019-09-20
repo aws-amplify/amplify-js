@@ -9,11 +9,11 @@
  *     parent elements are found.
  */
 export function parents(ele) {
-  const list = [];
-  let element = ele;
-  while (element && element.parentNode && element.parentNode.nodeType === 1) {
-    element = /** @type {!Element} */ (element.parentNode);
-    list.push(element);
-  }
-  return list;
+	const list = [];
+	let element = ele;
+	while (element && element.parentNode && element.parentNode.nodeType === 1) {
+		element = /** @type {!Element} */ element.parentNode;
+		list.push(element);
+	}
+	return list;
 }

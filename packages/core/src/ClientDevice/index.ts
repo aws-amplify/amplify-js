@@ -11,16 +11,16 @@
  * and limitations under the License.
  */
 
-import {clientInfo, dimension} from './browser';
+import { clientInfo, dimension } from './browser';
 
 export class ClientDevice {
-    static clientInfo() {
-        return clientInfo();
-    }
+	static clientInfo() {
+		return clientInfo();
+	}
 
-    static dimension() {
-        return dimension();
-    }
+	static dimension() {
+		return dimension();
+	}
 }
 
 /**

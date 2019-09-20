@@ -16,73 +16,72 @@ import { browserOrNode } from '../JS';
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-    if (!browserOrNode().isBrowser) {
-        logger.debug('not in the browser, directly resolved');
-        return res();
-    }
-    const fb = window['FB'];
-    if (fb) {
-        logger.debug('FB SDK already loaded');
-        return res();
-    } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
-    }
+	if (!browserOrNode().isBrowser) {
+		logger.debug('not in the browser, directly resolved');
+		return res();
+	}
+	const fb = window['FB'];
+	if (fb) {
+		logger.debug('FB SDK already loaded');
+		return res();
+	} else {
+		setTimeout(() => {
+			return res();
+		}, 2000);
+	}
 });
 
 export class FacebookOAuth {
-    public initialized = false;
+	public initialized = false;
 
-    constructor() {
-        this.refreshFacebookToken = this.refreshFacebookToken.bind(this);
-        this._refreshFacebookTokenImpl = this._refreshFacebookTokenImpl.bind(this);
-    }
+	constructor() {
+		this.refreshFacebookToken = this.refreshFacebookToken.bind(this);
+		this._refreshFacebookTokenImpl = this._refreshFacebookTokenImpl.bind(this);
+	}
 
-    public async refreshFacebookToken() {
-        if (!this.initialized) {
-            logger.debug('need to wait for the Facebook SDK loaded');
-            await waitForInit;
-            this.initialized = true;
-            logger.debug('finish waiting');
-        }
+	public async refreshFacebookToken() {
+		if (!this.initialized) {
+			logger.debug('need to wait for the Facebook SDK loaded');
+			await waitForInit;
+			this.initialized = true;
+			logger.debug('finish waiting');
+		}
 
-        return this._refreshFacebookTokenImpl();
-    }
+		return this._refreshFacebookTokenImpl();
+	}
 
-    private _refreshFacebookTokenImpl() {
-        let fb = null;
-        if (browserOrNode().isBrowser) fb = window['FB'];
-        if (!fb) {
-            logger.debug('no fb sdk available');
-            return Promise.reject('no fb sdk available');
-        }
+	private _refreshFacebookTokenImpl() {
+		let fb = null;
+		if (browserOrNode().isBrowser) fb = window['FB'];
+		if (!fb) {
+			logger.debug('no fb sdk available');
+			return Promise.reject('no fb sdk available');
+		}
 
-        return new Promise((res, rej) => {
-            fb.getLoginStatus(
-                fbResponse => {
-                    if (!fbResponse || !fbResponse.authResponse) {
-                        logger.debug('no response from facebook when refreshing the jwt token');
-                        rej('no response from facebook when refreshing the jwt token');
-                    }
+		return new Promise((res, rej) => {
+			fb.getLoginStatus(
+				fbResponse => {
+					if (!fbResponse || !fbResponse.authResponse) {
+						logger.debug(
+							'no response from facebook when refreshing the jwt token'
+						);
+						rej('no response from facebook when refreshing the jwt token');
+					}
 
-                    const response = fbResponse.authResponse;
-                    const { accessToken, expiresIn } = response;
-                    const date = new Date();
-                    const expires_at = expiresIn * 1000 + date.getTime();
-                    if (!accessToken) {
-                        logger.debug('the jwtToken is undefined');
-                        rej('the jwtToken is undefined');
-                    }
-                    res({token: accessToken, expires_at });
-                }, 
-                {scope: 'public_profile,email' }
-            );
-        });
-    }
+					const response = fbResponse.authResponse;
+					const { accessToken, expiresIn } = response;
+					const date = new Date();
+					const expires_at = expiresIn * 1000 + date.getTime();
+					if (!accessToken) {
+						logger.debug('the jwtToken is undefined');
+						rej('the jwtToken is undefined');
+					}
+					res({ token: accessToken, expires_at });
+				},
+				{ scope: 'public_profile,email' }
+			);
+		});
+	}
 }
 
 /**

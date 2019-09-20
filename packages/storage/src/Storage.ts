@@ -22,203 +22,218 @@ const DEFAULT_PROVIDER = 'AWSS3';
  * Provide storage methods to use AWS S3
  */
 export class Storage {
-    /**
-     * @private
-     */
-    private _config;
-    private _pluggables: StorageProvider[];
+	/**
+	 * @private
+	 */
+	private _config;
+	private _pluggables: StorageProvider[];
 
-    /**
-     * @public
-     */
-    public vault: Storage;
+	/**
+	 * @public
+	 */
+	public vault: Storage;
 
-    /**
-     * Initialize Storage
-     * @param {Object} config - Configuration object for storage
-     */
-    constructor() {
-        this._config = {};
-        this._pluggables = [];
-        logger.debug('Storage Options', this._config);
+	/**
+	 * Initialize Storage
+	 * @param {Object} config - Configuration object for storage
+	 */
+	constructor() {
+		this._config = {};
+		this._pluggables = [];
+		logger.debug('Storage Options', this._config);
 
-        this.get = this.get.bind(this);
-        this.put = this.put.bind(this);
-        this.remove = this.remove.bind(this);
-        this.list = this.list.bind(this);
-        Amplify.register(this);
-    }
+		this.get = this.get.bind(this);
+		this.put = this.put.bind(this);
+		this.remove = this.remove.bind(this);
+		this.list = this.list.bind(this);
+		Amplify.register(this);
+	}
 
-    public getModuleName() {
-        return 'Storage';
-    }
+	public getModuleName() {
+		return 'Storage';
+	}
 
-    /**
-     * add plugin into Storage category
-     * @param {Object} pluggable - an instance of the plugin
-     */
-    public addPluggable(pluggable: StorageProvider) {
-        if (pluggable && pluggable.getCategory() === 'Storage') {
-            this._pluggables.push(pluggable);
-            let config = {};
-            
-            config = pluggable.configure(this._config[pluggable.getProviderName()]);
-            
-            return config;
-        }
-    }
+	/**
+	 * add plugin into Storage category
+	 * @param {Object} pluggable - an instance of the plugin
+	 */
+	public addPluggable(pluggable: StorageProvider) {
+		if (pluggable && pluggable.getCategory() === 'Storage') {
+			this._pluggables.push(pluggable);
+			let config = {};
 
-    /**
-     * Get the plugin object
-     * @param providerName - the name of the plugin
-     */
-    public getPluggable(providerName: string) {
-        const pluggable = this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
-        if (pluggable === undefined) {
-            logger.debug('No plugin found with providerName', providerName);
-            return null;
-        } else
-            return pluggable;
-    }
+			config = pluggable.configure(this._config[pluggable.getProviderName()]);
 
-    /**
-     * Remove the plugin object
-     * @param providerName - the name of the plugin
-     */
-    public removePluggable(providerName: string) {
-        this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
-        return;
-    }
+			return config;
+		}
+	}
 
-    /**
-     * Configure Storage
-     * @param {Object} config - Configuration object for storage
-     * @return {Object} - Current configuration
-     */
-    configure(config?) {
-        logger.debug('configure Storage');
-        if (!config) return this._config;
+	/**
+	 * Get the plugin object
+	 * @param providerName - the name of the plugin
+	 */
+	public getPluggable(providerName: string) {
+		const pluggable = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === providerName
+		);
+		if (pluggable === undefined) {
+			logger.debug('No plugin found with providerName', providerName);
+			return null;
+		} else return pluggable;
+	}
 
-        const amplifyConfig = Parser.parseMobilehubConfig(config);
+	/**
+	 * Remove the plugin object
+	 * @param providerName - the name of the plugin
+	 */
+	public removePluggable(providerName: string) {
+		this._pluggables = this._pluggables.filter(
+			pluggable => pluggable.getProviderName() !== providerName
+		);
+		return;
+	}
 
-        const storageKeysFromConfig = Object.keys(amplifyConfig.Storage);
+	/**
+	 * Configure Storage
+	 * @param {Object} config - Configuration object for storage
+	 * @return {Object} - Current configuration
+	 */
+	configure(config?) {
+		logger.debug('configure Storage');
+		if (!config) return this._config;
 
-        const storageArrayKeys = [
-            'bucket',
-            'region',
-            'level',
-            'track',
-            'customPrefix',
-            'serverSideEncryption',
-            'SSECustomerAlgorithm',
-            'SSECustomerKey',
-            'SSECustomerKeyMD5',
-            'SSEKMSKeyId'
-        ];
+		const amplifyConfig = Parser.parseMobilehubConfig(config);
 
-        const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
-        const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
+		const storageKeysFromConfig = Object.keys(amplifyConfig.Storage);
 
-        if (
-            storageKeysFromConfig &&
-            checkConfigKeysFromArray(storageKeysFromConfig) &&
-            !amplifyConfig.Storage[DEFAULT_PROVIDER]
-        ) {
-            amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
-        }
+		const storageArrayKeys = [
+			'bucket',
+			'region',
+			'level',
+			'track',
+			'customPrefix',
+			'serverSideEncryption',
+			'SSECustomerAlgorithm',
+			'SSECustomerKey',
+			'SSECustomerKeyMD5',
+			'SSEKMSKeyId',
+		];
 
-        Object.entries(amplifyConfig.Storage).map(([key, value]) => {
-            if (key && isInStorageArrayKeys(key) && value !== undefined) {
-                amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
-                delete amplifyConfig.Storage[key];
-            }
-        });
+		const isInStorageArrayKeys = (k: string) =>
+			storageArrayKeys.some(x => x === k);
+		const checkConfigKeysFromArray = (k: string[]) =>
+			k.find(k => isInStorageArrayKeys(k));
 
-        // only update new values for each provider
-        Object.keys(amplifyConfig.Storage).forEach((providerName) => {
-            if (typeof amplifyConfig.Storage[providerName] !== 'string') {
-                this._config[providerName] = { ...this._config[providerName], ...amplifyConfig.Storage[providerName] };
-            }
-        });
+		if (
+			storageKeysFromConfig &&
+			checkConfigKeysFromArray(storageKeysFromConfig) &&
+			!amplifyConfig.Storage[DEFAULT_PROVIDER]
+		) {
+			amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
+		}
 
-        this._pluggables.forEach((pluggable) => {
-            pluggable.configure(this._config[pluggable.getProviderName()]);
-        });
+		Object.entries(amplifyConfig.Storage).map(([key, value]) => {
+			if (key && isInStorageArrayKeys(key) && value !== undefined) {
+				amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
+				delete amplifyConfig.Storage[key];
+			}
+		});
 
-        if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSS3Provider());
-        }
+		// only update new values for each provider
+		Object.keys(amplifyConfig.Storage).forEach(providerName => {
+			if (typeof amplifyConfig.Storage[providerName] !== 'string') {
+				this._config[providerName] = {
+					...this._config[providerName],
+					...amplifyConfig.Storage[providerName],
+				};
+			}
+		});
 
-        return this._config;
-    }
+		this._pluggables.forEach(pluggable => {
+			pluggable.configure(this._config[pluggable.getProviderName()]);
+		});
 
-    /**
-    * Get a presigned URL of the file or the object data when download:true
-    *
-    * @param {string} key - key of the object
-    * @param {Object} [config] - { level : private|protected|public, download: true|false }
-    * @return - A promise resolves to either a presigned url or the object
-    */
-    public async get(key: string, config?): Promise<String | Object> {
+		if (this._pluggables.length === 0) {
+			this.addPluggable(new AWSS3Provider());
+		}
 
-        const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if (prov === undefined) {
-            logger.debug('No plugin found with providerName', provider);
-            Promise.reject('No plugin found in Storage for the provider');
-        }
-        return prov.get(key, config);
-    }
+		return this._config;
+	}
 
-    /**
-     * Put a file in storage bucket specified to configure method
-     * @param {string} key - key of the object
-     * @param {Object} object - File to be put in bucket
-     * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
-     *  progressCallback: function }
-     * @return - promise resolves to object on success
-     */
-    public async put(key: string, object, config?): Promise<Object> {
-        const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if (prov === undefined) {
-            logger.debug('No plugin found with providerName', provider);
-            Promise.reject('No plugin found in Storage for the provider');
-        }
-        return prov.put(key, object, config);
-    }
+	/**
+	 * Get a presigned URL of the file or the object data when download:true
+	 *
+	 * @param {string} key - key of the object
+	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
+	 * @return - A promise resolves to either a presigned url or the object
+	 */
+	public async get(key: string, config?): Promise<String | Object> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			Promise.reject('No plugin found in Storage for the provider');
+		}
+		return prov.get(key, config);
+	}
 
-    /**
-     * Remove the object for specified key
-     * @param {string} key - key of the object
-     * @param {Object} [config] - { level : private|protected|public }
-     * @return - Promise resolves upon successful removal of the object
-     */
-    public async remove(key: string, config?): Promise<any> {
-        const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if (prov === undefined) {
-            logger.debug('No plugin found with providerName', provider);
-            Promise.reject('No plugin found in Storage for the provider');
-        }
-        return prov.remove(key, config);
-    }
+	/**
+	 * Put a file in storage bucket specified to configure method
+	 * @param {string} key - key of the object
+	 * @param {Object} object - File to be put in bucket
+	 * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
+	 *  progressCallback: function }
+	 * @return - promise resolves to object on success
+	 */
+	public async put(key: string, object, config?): Promise<Object> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			Promise.reject('No plugin found in Storage for the provider');
+		}
+		return prov.put(key, object, config);
+	}
 
-    /**
-     * List bucket objects relative to the level and prefix specified
-     * @param {string} path - the path that contains objects
-     * @param {Object} [config] - { level : private|protected|public }
-     * @return - Promise resolves to list of keys for all objects in path
-     */
-    public async list(path, config?): Promise<any> {
-        const { provider = DEFAULT_PROVIDER } = config || {};
-        const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
-        if (prov === undefined) {
-            logger.debug('No plugin found with providerName', provider);
-            Promise.reject('No plugin found in Storage for the provider');
-        }
-        return prov.list(path, config);
-    }
+	/**
+	 * Remove the object for specified key
+	 * @param {string} key - key of the object
+	 * @param {Object} [config] - { level : private|protected|public }
+	 * @return - Promise resolves upon successful removal of the object
+	 */
+	public async remove(key: string, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			Promise.reject('No plugin found in Storage for the provider');
+		}
+		return prov.remove(key, config);
+	}
+
+	/**
+	 * List bucket objects relative to the level and prefix specified
+	 * @param {string} path - the path that contains objects
+	 * @param {Object} [config] - { level : private|protected|public }
+	 * @return - Promise resolves to list of keys for all objects in path
+	 */
+	public async list(path, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			Promise.reject('No plugin found in Storage for the provider');
+		}
+		return prov.list(path, config);
+	}
 }
 
 /**

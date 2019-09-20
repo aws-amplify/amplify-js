@@ -11,128 +11,134 @@
  * and limitations under the License.
  */
 
- // the session tracker for react native
+// the session tracker for react native
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
-import { AppState } from 'react-native'; 
+import { AppState } from 'react-native';
 
 const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
-    enable: false,
-    provider: 'AWSPinpoint'
+	enable: false,
+	provider: 'AWSPinpoint',
 };
 
 let initialEventSent = false;
 
 export class SessionTracker {
-    private _tracker;
-    private _hasEnabled;
-    private _config: SessionTrackOpts;
-    private _currentState;
+	private _tracker;
+	private _hasEnabled;
+	private _config: SessionTrackOpts;
+	private _currentState;
 
-    constructor(tracker, opts) {
-        this._config = Object.assign({}, defaultOpts, opts);
-        this._tracker = tracker;
-        
-        this._hasEnabled = false;
-        this._trackFunc = this._trackFunc.bind(this);
-        this._currentState = AppState.currentState;
-        this.configure(this._config);
-    }
+	constructor(tracker, opts) {
+		this._config = Object.assign({}, defaultOpts, opts);
+		this._tracker = tracker;
 
-    private _envCheck() {
-        if (!AppState) {
-            logger.debug('not in the supported react native environment');
-            return false;
-        }
-        return true;
-    }
+		this._hasEnabled = false;
+		this._trackFunc = this._trackFunc.bind(this);
+		this._currentState = AppState.currentState;
+		this.configure(this._config);
+	}
 
-    private async _trackFunc(nextAppState) {
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+	private _envCheck() {
+		if (!AppState) {
+			logger.debug('not in the supported react native environment');
+			return false;
+		}
+		return true;
+	}
 
-        if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
-            logger.debug('App has come to the foreground, recording start session');
-            this._tracker(
-                {
-                    name: '_session.start',
-                    attributes
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session start event failed.', e);
-            });
-        }
-        if (this._currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
-            logger.debug('App has come to inactive/background, recording stop session');
-            this._tracker(
-                { 
-                    name: '_session.stop',
-                    attributes,
-                    immediate: true
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session stop event failed.', e);
-            });
-        }
+	private async _trackFunc(nextAppState) {
+		const customAttrs =
+			typeof this._config.attributes === 'function'
+				? await this._config.attributes()
+				: this._config.attributes;
+		const attributes = Object.assign({}, customAttrs);
 
-        this._currentState = nextAppState;
-    }
+		if (
+			this._currentState.match(/inactive|background/) &&
+			nextAppState === 'active'
+		) {
+			logger.debug('App has come to the foreground, recording start session');
+			this._tracker(
+				{
+					name: '_session.start',
+					attributes,
+				},
+				this._config.provider
+			).catch(e => {
+				logger.debug('record session start event failed.', e);
+			});
+		}
+		if (
+			this._currentState.match(/active/) &&
+			nextAppState.match(/inactive|background/)
+		) {
+			logger.debug(
+				'App has come to inactive/background, recording stop session'
+			);
+			this._tracker(
+				{
+					name: '_session.stop',
+					attributes,
+					immediate: true,
+				},
+				this._config.provider
+			).catch(e => {
+				logger.debug('record session stop event failed.', e);
+			});
+		}
 
-    // to keep configure a synchronized function
-    private async _sendInitialEvent() {
-        if (initialEventSent) {
-            logger.debug('the start session has been sent when the page is loaded');
-            return;
-        } else {
-            initialEventSent = true;
-        }
+		this._currentState = nextAppState;
+	}
 
-        const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : this._config.attributes;
-        const attributes = Object.assign(
-            {},
-            customAttrs
-        );
+	// to keep configure a synchronized function
+	private async _sendInitialEvent() {
+		if (initialEventSent) {
+			logger.debug('the start session has been sent when the page is loaded');
+			return;
+		} else {
+			initialEventSent = true;
+		}
 
-        this._tracker(
-            { 
-                name: '_session.start',
-                attributes
-            },
-            this._config.provider
-        ).catch(e => {
-            logger.debug('record session start event failed.', e);
-        });
-    }
+		const customAttrs =
+			typeof this._config.attributes === 'function'
+				? await this._config.attributes()
+				: this._config.attributes;
+		const attributes = Object.assign({}, customAttrs);
 
-    configure(opts?: SessionTrackOpts) {
-        if (!this._envCheck()) {
-            return this._config;
-        }
+		this._tracker(
+			{
+				name: '_session.start',
+				attributes,
+			},
+			this._config.provider
+		).catch(e => {
+			logger.debug('record session start event failed.', e);
+		});
+	}
 
-        Object.assign(this._config, opts);
-        if (this._config.enable && !this._hasEnabled) {
-            // send a start session as soon as it's enabled
-            this._sendInitialEvent();
-            // listen on events
-            AppState.addEventListener('change', this._trackFunc, false);
-            this._hasEnabled = true;
-        } else if (!this._config.enable && this._hasEnabled) {
-            AppState.removeEventListener('change', this._trackFunc, false);
-            this._hasEnabled = false;
-        }
+	configure(opts?: SessionTrackOpts) {
+		if (!this._envCheck()) {
+			return this._config;
+		}
 
-        return this._config;
-    }
+		Object.assign(this._config, opts);
+		if (this._config.enable && !this._hasEnabled) {
+			// send a start session as soon as it's enabled
+			this._sendInitialEvent();
+			// listen on events
+			AppState.addEventListener('change', this._trackFunc, false);
+			this._hasEnabled = true;
+		} else if (!this._config.enable && this._hasEnabled) {
+			AppState.removeEventListener('change', this._trackFunc, false);
+			this._hasEnabled = false;
+		}
+
+		return this._config;
+	}
 }
 
 /**

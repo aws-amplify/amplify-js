@@ -32,96 +32,111 @@ export { Loading } from './Loading';
 
 export * from './Provider';
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null, signUpConfig = {}) {
-    return class extends React.Component {
-        constructor(props) {
-            super(props);
+export function withAuthenticator(
+	Comp,
+	includeGreetings = false,
+	authenticatorComponents = [],
+	federated = null,
+	theme = null,
+	signUpConfig = {}
+) {
+	return class extends React.Component {
+		constructor(props) {
+			super(props);
 
-            this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
+			this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
-            this.state = {
-                authState: props.authState || null,
-                authData: props.authData || null
-            };
+			this.state = {
+				authState: props.authState || null,
+				authData: props.authData || null,
+			};
 
-            if (typeof includeGreetings === 'object') {
-                this.authConfig = Object.assign({}, includeGreetings)
-            } else {
-                this.authConfig = {
-                    includeGreetings,
-                    authenticatorComponents,
-                    federated,
-                    theme,
-                    signUpConfig
-                }
-            }
-        }
+			if (typeof includeGreetings === 'object') {
+				this.authConfig = Object.assign({}, includeGreetings);
+			} else {
+				this.authConfig = {
+					includeGreetings,
+					authenticatorComponents,
+					federated,
+					theme,
+					signUpConfig,
+				};
+			}
+		}
 
-        handleAuthStateChange(state, data) {
-            this.setState({ authState: state, authData: data });
-        }
+		handleAuthStateChange(state, data) {
+			this.setState({ authState: state, authData: data });
+		}
 
-        render() {
-            const { authState, authData } = this.state;
+		render() {
+			const { authState, authData } = this.state;
 
-            if (authState === 'signedIn') {
-                return (
-                    <React.Fragment>
-                        { this.authConfig.includeGreetings ? 
-                            <Authenticator
-                                {...this.props}
-                                theme={this.authConfig.theme}
-                                federated={this.authConfig.federated || this.props.federated}
-                                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
-                                signUpConfig={this.authConfig.signUpConfig}
-                                usernameAttributes={this.authConfig.usernameAttributes}
-                                onStateChange={this.handleAuthStateChange}
-                                children={this.authConfig.authenticatorComponents || []}
-                            /> : null
-                        }
-                        <Comp
-                            {...this.props}
-                            authState={authState}
-                            authData={authData}
-                            onStateChange={this.handleAuthStateChange}
-                        />
-                    </React.Fragment>
-                );
-            }
+			if (authState === 'signedIn') {
+				return (
+					<React.Fragment>
+						{this.authConfig.includeGreetings ? (
+							<Authenticator
+								{...this.props}
+								theme={this.authConfig.theme}
+								federated={this.authConfig.federated || this.props.federated}
+								hideDefault={
+									this.authConfig.authenticatorComponents &&
+									this.authConfig.authenticatorComponents.length > 0
+								}
+								signUpConfig={this.authConfig.signUpConfig}
+								usernameAttributes={this.authConfig.usernameAttributes}
+								onStateChange={this.handleAuthStateChange}
+								children={this.authConfig.authenticatorComponents || []}
+							/>
+						) : null}
+						<Comp
+							{...this.props}
+							authState={authState}
+							authData={authData}
+							onStateChange={this.handleAuthStateChange}
+						/>
+					</React.Fragment>
+				);
+			}
 
-            return <Authenticator
-                {...this.props}
-                theme={this.authConfig.theme}
-                federated={this.authConfig.federated || this.props.federated}
-                hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
-                signUpConfig={this.authConfig.signUpConfig}
-                usernameAttributes={this.authConfig.usernameAttributes}
-                onStateChange={this.handleAuthStateChange}
-                children={this.authConfig.authenticatorComponents || []}
-            />;
-        }
-    };
+			return (
+				<Authenticator
+					{...this.props}
+					theme={this.authConfig.theme}
+					federated={this.authConfig.federated || this.props.federated}
+					hideDefault={
+						this.authConfig.authenticatorComponents &&
+						this.authConfig.authenticatorComponents.length > 0
+					}
+					signUpConfig={this.authConfig.signUpConfig}
+					usernameAttributes={this.authConfig.usernameAttributes}
+					onStateChange={this.handleAuthStateChange}
+					children={this.authConfig.authenticatorComponents || []}
+				/>
+			);
+		}
+	};
 }
 
 export class AuthenticatorWrapper extends React.Component {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.state = { auth: 'init' };
+		this.state = { auth: 'init' };
 
-        this.handleAuthState = this.handleAuthState.bind(this);
-    }
+		this.handleAuthState = this.handleAuthState.bind(this);
+	}
 
-    handleAuthState(state, data) {
-        this.setState({ auth: state, authData: data });
-    }
+	handleAuthState(state, data) {
+		this.setState({ auth: state, authData: data });
+	}
 
-    render() {
-        return (
-            <div>
-                <Authenticator {...this.props} onStateChange={this.handleAuthState} />
-                {this.props.children(this.state.auth)}
-            </div>
-        );
-    }
+	render() {
+		return (
+			<div>
+				<Authenticator {...this.props} onStateChange={this.handleAuthState} />
+				{this.props.children(this.state.auth)}
+			</div>
+		);
+	}
 }

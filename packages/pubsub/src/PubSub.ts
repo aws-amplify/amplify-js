@@ -13,130 +13,147 @@
 // import '../Common/Polyfills';
 import * as Observable from 'zen-observable';
 
-import { Amplify, ConsoleLogger as Logger, INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
 export class PubSub {
+	private _options: PubSubOptions;
 
-    private _options: PubSubOptions;
+	private _pluggables: PubSubProvider[];
 
-    private _pluggables: PubSubProvider[];
+	/**
+	 * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
+	 */
+	private _awsAppSyncProvider: AWSAppSyncProvider;
 
-    /**
-     * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
-     */
-    private _awsAppSyncProvider: AWSAppSyncProvider;
+	/**
+	 * Lazy instantiate awsAppSyncProvider when it is required by the API category
+	 */
+	private get awsAppSyncProvider() {
+		if (!this._awsAppSyncProvider) {
+			this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
+		}
+		return this._awsAppSyncProvider;
+	}
 
-    /**
-     * Lazy instantiate awsAppSyncProvider when it is required by the API category
-     */
-    private get awsAppSyncProvider() {
-        if (!this._awsAppSyncProvider) {
-            this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
-        }
-        return this._awsAppSyncProvider;
-    }
+	/**
+	 * Initialize PubSub with AWS configurations
+	 *
+	 * @param {PubSubOptions} options - Configuration object for PubSub
+	 */
+	constructor(options: PubSubOptions) {
+		this._options = options;
+		logger.debug('PubSub Options', this._options);
+		this._pluggables = [];
+		this.subscribe = this.subscribe.bind(this);
+		Amplify.register(this);
+	}
 
-    /**
-     * Initialize PubSub with AWS configurations
-     * 
-     * @param {PubSubOptions} options - Configuration object for PubSub
-     */
-    constructor(options: PubSubOptions) {
-        this._options = options;
-        logger.debug('PubSub Options', this._options);
-        this._pluggables = [];
-        this.subscribe = this.subscribe.bind(this);
-        Amplify.register(this);
-    }
+	public getModuleName() {
+		return 'PubSub';
+	}
 
-    public getModuleName() {
-        return 'PubSub';
-    }
+	/**
+	 * Configure PubSub part with configurations
+	 *
+	 * @param {PubSubOptions} config - Configuration for PubSub
+	 * @return {Object} - The current configuration
+	 */
+	configure(options: PubSubOptions) {
+		const opt = options ? options.PubSub || options : {};
+		logger.debug('configure PubSub', { opt });
 
-    /**
-     * Configure PubSub part with configurations
-     * 
-     * @param {PubSubOptions} config - Configuration for PubSub
-     * @return {Object} - The current configuration
-     */
-    configure(options: PubSubOptions) {
-        const opt = options ? options.PubSub || options : {};
-        logger.debug('configure PubSub', { opt });
+		this._options = Object.assign({}, this._options, opt);
 
-        this._options = Object.assign({}, this._options, opt);
+		this._pluggables.map(pluggable => pluggable.configure(this._options));
 
-        this._pluggables.map((pluggable) => pluggable.configure(this._options));
+		return this._options;
+	}
 
-        return this._options;
-    }
+	/**
+	 * add plugin into Analytics category
+	 * @param {Object} pluggable - an instance of the plugin
+	 */
+	public async addPluggable(pluggable: PubSubProvider) {
+		if (pluggable && pluggable.getCategory() === 'PubSub') {
+			this._pluggables.push(pluggable);
 
-    /**
-     * add plugin into Analytics category
-     * @param {Object} pluggable - an instance of the plugin
-     */
-    public async addPluggable(pluggable: PubSubProvider) {
-        if (pluggable && pluggable.getCategory() === 'PubSub') {
-            this._pluggables.push(pluggable);
+			const config = pluggable.configure(this._options);
 
-            const config = pluggable.configure(this._options);
+			return config;
+		}
+	}
 
-            return config;
-        }
-    }
+	private getProviderByName(providerName) {
+		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
+			return this.awsAppSyncProvider;
+		}
 
-    private getProviderByName(providerName) {
-        if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
-            return this.awsAppSyncProvider;
-        }
+		return this._pluggables.find(
+			pluggable => pluggable.getProviderName() === providerName
+		);
+	}
 
-        return this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
-    }
+	private getProviders(options: ProvidertOptions = {}) {
+		const { provider: providerName } = options;
+		if (!providerName) {
+			return this._pluggables;
+		}
 
-    private getProviders(options: ProvidertOptions = {}) {
-        const { provider: providerName } = options;
-        if (!providerName) {
-            return this._pluggables;
-        }
+		const provider = this.getProviderByName(providerName);
+		if (!provider) {
+			throw new Error(`Could not find provider named ${providerName}`);
+		}
 
-        const provider = this.getProviderByName(providerName);
-        if (!provider) {
-            throw new Error(`Could not find provider named ${providerName}`);
-        }
+		return [provider];
+	}
 
-        return [provider];
-    }
+	async publish(
+		topics: string[] | string,
+		msg: any,
+		options?: ProvidertOptions
+	) {
+		return Promise.all(
+			this.getProviders(options).map(provider =>
+				provider.publish(topics, msg, options)
+			)
+		);
+	}
 
-    async publish(topics: string[] | string, msg: any, options?: ProvidertOptions) {
-        return Promise.all(
-            this.getProviders(options).map(provider => provider.publish(topics, msg, options))
-        );
-    }
+	subscribe(
+		topics: string[] | string,
+		options?: ProvidertOptions
+	): Observable<any> {
+		logger.debug('subscribe options', options);
 
-    subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any> {
-        logger.debug('subscribe options', options);
+		const providers = this.getProviders(options);
 
-        const providers = this.getProviders(options);
+		return new Observable(observer => {
+			const observables = providers.map(provider => ({
+				provider,
+				observable: provider.subscribe(topics, options),
+			}));
 
-        return new Observable(observer => {
-            const observables = providers.map(provider => ({
-                provider,
-                observable: provider.subscribe(topics, options),
-            }));
+			const subscriptions = observables.map(({ provider, observable }) =>
+				observable.subscribe({
+					start: console.error,
+					next: value => observer.next({ provider, value }),
+					error: error => observer.error({ provider, error }),
+					// complete: observer.complete, // TODO: when all completed, complete the outer one
+				})
+			);
 
-            const subscriptions = observables.map(({ provider, observable }) => observable.subscribe({
-                start: console.error,
-                next: value => observer.next({ provider, value }),
-                error: error => observer.error({ provider, error }),
-                // complete: observer.complete, // TODO: when all completed, complete the outer one
-            }));
-
-            return () => subscriptions.forEach(subscription => subscription.unsubscribe());
-        });
-    }
+			return () =>
+				subscriptions.forEach(subscription => subscription.unsubscribe());
+		});
+	}
 }
 
 /**

@@ -15,11 +15,11 @@ import { AnalyticsClass } from './Analytics';
 import { AnalyticsProvider } from './types';
 
 import {
-    Amplify,
-    ConsoleLogger as Logger,
-    Hub,
-    Linking,
-    Platform
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	Linking,
+	Platform,
 } from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
@@ -30,8 +30,8 @@ let analyticsConfigured = false;
 let _instance: AnalyticsClass = null;
 
 if (!_instance) {
-    logger.debug('Create Analytics Instance');
-    _instance = new AnalyticsClass();
+	logger.debug('Create Analytics Instance');
+	_instance = new AnalyticsClass();
 }
 
 const Analytics = _instance;
@@ -43,108 +43,115 @@ export default Analytics;
 export { AnalyticsProvider, Analytics, AnalyticsClass };
 export * from './Providers';
 
-const listener = (capsule) => {
-    const { channel, payload, source } = capsule;
-    logger.debug('on hub capsule ' + channel, payload);
+const listener = capsule => {
+	const { channel, payload, source } = capsule;
+	logger.debug('on hub capsule ' + channel, payload);
 
-    switch(channel) {
-        case 'auth':
-            authEvent(payload);
-            break;
-        case 'storage':
-            storageEvent(payload);
-            break;
-        case 'analytics':
-            analyticsEvent(payload);
-            break;
-        default:
-            break;
-    }
+	switch (channel) {
+		case 'auth':
+			authEvent(payload);
+			break;
+		case 'storage':
+			storageEvent(payload);
+			break;
+		case 'analytics':
+			analyticsEvent(payload);
+			break;
+		default:
+			break;
+	}
 };
 
-const storageEvent = (payload) => {
-    const { data: { attrs, metrics }} = payload;
-    if (!attrs) return;
+const storageEvent = payload => {
+	const {
+		data: { attrs, metrics },
+	} = payload;
+	if (!attrs) return;
 
-    if (analyticsConfigured) {
-        Analytics.record({
-            name: 'Storage', 
-            attributes: attrs, 
-            metrics
-        }).catch(e => {
-            logger.debug('Failed to send the storage event automatically', e);
-        });
-    }
+	if (analyticsConfigured) {
+		Analytics.record({
+			name: 'Storage',
+			attributes: attrs,
+			metrics,
+		}).catch(e => {
+			logger.debug('Failed to send the storage event automatically', e);
+		});
+	}
 };
 
-const authEvent = (payload) => {
-    const { event } = payload;
-    if (!event) { return; }
+const authEvent = payload => {
+	const { event } = payload;
+	if (!event) {
+		return;
+	}
 
-    switch(event) {
-        case 'signIn':
-            if (authConfigured && analyticsConfigured) {
-                Analytics.record({
-                    name: '_userauth.sign_in'
-                }).catch(e => {
-                    logger.debug('Failed to send the sign in event automatically', e);
-                });
-            }
-            break;
-        case 'signUp':
-            if (authConfigured && analyticsConfigured) {
-                Analytics.record({
-                    name: '_userauth.sign_up'
-                }).catch(e => {
-                    logger.debug('Failed to send the sign up event automatically', e);
-                });
-            }
-            break;
-        case 'signOut':
-            break;
-        case 'signIn_failure':
-            if (authConfigured && analyticsConfigured) {
-                Analytics.record({
-                    name: '_userauth.auth_fail'
-                }).catch(e => {
-                    logger.debug('Failed to send the sign in failure event automatically', e);
-                });
-            }
-            break;
-        case 'configured':
-            authConfigured = true;
-            if (authConfigured && analyticsConfigured) {
-                sendEvents();
-            }
-            break;
-    }
+	switch (event) {
+		case 'signIn':
+			if (authConfigured && analyticsConfigured) {
+				Analytics.record({
+					name: '_userauth.sign_in',
+				}).catch(e => {
+					logger.debug('Failed to send the sign in event automatically', e);
+				});
+			}
+			break;
+		case 'signUp':
+			if (authConfigured && analyticsConfigured) {
+				Analytics.record({
+					name: '_userauth.sign_up',
+				}).catch(e => {
+					logger.debug('Failed to send the sign up event automatically', e);
+				});
+			}
+			break;
+		case 'signOut':
+			break;
+		case 'signIn_failure':
+			if (authConfigured && analyticsConfigured) {
+				Analytics.record({
+					name: '_userauth.auth_fail',
+				}).catch(e => {
+					logger.debug(
+						'Failed to send the sign in failure event automatically',
+						e
+					);
+				});
+			}
+			break;
+		case 'configured':
+			authConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
 };
 
-const analyticsEvent = (payload) => {
-    const { event } = payload;
-    if (!event) return;
+const analyticsEvent = payload => {
+	const { event } = payload;
+	if (!event) return;
 
-     switch(event) {
-         case 'pinpointProvider_configured':
-            analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured) {
-                sendEvents();
-            }
-            break;
-     }
+	switch (event) {
+		case 'pinpointProvider_configured':
+			analyticsConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
 };
 
 const sendEvents = () => {
-    const config = Analytics.configure();
-    if (!endpointUpdated && config['autoSessionRecord']) {
-        Analytics.updateEndpoint({ immediate: true }).catch(e => {
-            logger.debug('Failed to update the endpoint', e);
-        });
-        endpointUpdated = true;
-    }
-    Analytics.autoTrack('session', {
-        enable: config['autoSessionRecord']
-    });
+	const config = Analytics.configure();
+	if (!endpointUpdated && config['autoSessionRecord']) {
+		Analytics.updateEndpoint({ immediate: true }).catch(e => {
+			logger.debug('Failed to update the endpoint', e);
+		});
+		endpointUpdated = true;
+	}
+	Analytics.autoTrack('session', {
+		enable: config['autoSessionRecord'],
+	});
 };
 
 Hub.listen('auth', listener);

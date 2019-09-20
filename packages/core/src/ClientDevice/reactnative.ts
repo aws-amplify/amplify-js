@@ -18,13 +18,13 @@ import { clientInfo as androidClientInfo } from './android';
 const { OS } = Platform;
 
 export class ClientDevice {
-    static clientInfo() {
-        if (OS === 'ios') {
-            return iOSClientInfo();
-        } else {
-            return androidClientInfo();
-        }
-    }
+	static clientInfo() {
+		if (OS === 'ios') {
+			return iOSClientInfo();
+		} else {
+			return androidClientInfo();
+		}
+	}
 }
 
 /**

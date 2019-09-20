@@ -11,26 +11,26 @@
  * and limitations under the License.
  */
 export interface StorageProvider {
-    // you need to implement those  methods
-    
-    // configure your provider
-    configure(config: object): object;
+	// you need to implement those  methods
 
-    // get object/pre-signed url from storage
-    get(key: string, options?): Promise<string|Object>
+	// configure your provider
+	configure(config: object): object;
 
-    // upload storage object
-    put(key: string, object, options?): Promise<Object>
+	// get object/pre-signed url from storage
+	get(key: string, options?): Promise<string | Object>;
 
-    // remove object 
-    remove(key: string, options?): Promise<any>
+	// upload storage object
+	put(key: string, object, options?): Promise<Object>;
 
-    // list objects for the path
-    list(path, options?): Promise<any>
-    
-    // return 'Storage';
-    getCategory(): string;
-    
-    // return the name of you provider
-    getProviderName(): string;
+	// remove object
+	remove(key: string, options?): Promise<any>;
+
+	// list objects for the path
+	list(path, options?): Promise<any>;
+
+	// return 'Storage';
+	getCategory(): string;
+
+	// return the name of you provider
+	getProviderName(): string;
 }

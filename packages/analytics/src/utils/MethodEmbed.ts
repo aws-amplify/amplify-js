@@ -11,50 +11,51 @@
  * and limitations under the License.
  */
 
-const lists : MethodEmbed[] = [];
+const lists: MethodEmbed[] = [];
 
 export class MethodEmbed {
-    public context;
-    public methodName;
-    private _originalMethod;
-    private _bindedMethod;
+	public context;
+	public methodName;
+	private _originalMethod;
+	private _bindedMethod;
 
-    static add(context, methodName, methodOverride) {
-        getInstance(context, methodName).set(methodOverride);
-    }
+	static add(context, methodName, methodOverride) {
+		getInstance(context, methodName).set(methodOverride);
+	}
 
-    static remove(context, methodName) {
-        getInstance(context, methodName).remove();
-    }
+	static remove(context, methodName) {
+		getInstance(context, methodName).remove();
+	}
 
-    constructor(context, methodName) {
-        this.context = context;
-        this.methodName = methodName;
+	constructor(context, methodName) {
+		this.context = context;
+		this.methodName = methodName;
 
-        this._originalMethod = context[methodName].bind(context);
-    }
+		this._originalMethod = context[methodName].bind(context);
+	}
 
-    public set(methodOverride) {
-        this.context[this.methodName] = (...args) => {
-            return methodOverride(this._originalMethod(...args));
-        };
-    }
+	public set(methodOverride) {
+		this.context[this.methodName] = (...args) => {
+			return methodOverride(this._originalMethod(...args));
+		};
+	}
 
-    public remove() {
-        this.context[this.methodName] = this._originalMethod;
-    }
+	public remove() {
+		this.context[this.methodName] = this._originalMethod;
+	}
 }
 
 function getInstance(context, methodName): MethodEmbed {
-    let instance = lists
-      .filter((h) => h.context === context && h.methodName === methodName)[0];
+	let instance = lists.filter(
+		h => h.context === context && h.methodName === methodName
+	)[0];
 
-    if (!instance) {
-        instance = new MethodEmbed(context, methodName);
-        lists.push(instance);
-    }
+	if (!instance) {
+		instance = new MethodEmbed(context, methodName);
+		lists.push(instance);
+	}
 
-    return instance;
+	return instance;
 }
 
 /**

@@ -12,37 +12,38 @@
  */
 
 export {
-    Analytics,
-    AnalyticsClass,
-    AnalyticsProvider,
-    AWSPinpointProvider, 
-    AWSKinesisProvider } from '@aws-amplify/analytics';
+	Analytics,
+	AnalyticsClass,
+	AnalyticsProvider,
+	AWSPinpointProvider,
+	AWSKinesisProvider,
+} from '@aws-amplify/analytics';
 export { Auth, AuthClass } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export { PubSub, PubSubClass } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
 export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
-export  * from '@aws-amplify/ui';
+export * from '@aws-amplify/ui';
 export { XR, XRClass } from '@aws-amplify/xr';
-export { Predictions, AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
-export { 
-    Amplify, 
-    ConsoleLogger as Logger,
-    Hub,
-    JS,
-    ClientDevice,
-    Signer,
-    I18n,
-    ServiceWorker
+export {
+	Predictions,
+	AmazonAIPredictionsProvider,
+} from '@aws-amplify/predictions';
+export {
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	JS,
+	ClientDevice,
+	Signer,
+	I18n,
+	ServiceWorker,
 } from '@aws-amplify/core';
 
-import { 
-    Amplify, 
-    ServiceWorker
-} from '@aws-amplify/core';
+import { Amplify, ServiceWorker } from '@aws-amplify/core';
 
-import Cache from "@aws-amplify/cache";
+import Cache from '@aws-amplify/cache';
 
 Amplify.Cache = Cache;
 Amplify.ServiceWorker = ServiceWorker;

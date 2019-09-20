@@ -11,18 +11,18 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import {autoShowTooltip, tooltip} from '@aws-amplify/ui';
+import { autoShowTooltip, tooltip } from '@aws-amplify/ui';
 
-export const Tooltip = (props) => {
-  let classes = `${tooltip}`;
-  
-  if (props.autoShowTooltip) {
-    classes = `${tooltip} ${autoShowTooltip}`;
-  }
+export const Tooltip = props => {
+	let classes = `${tooltip}`;
 
-  return (
-    <div className={classes} data-text={props.text}>
-      {props.children}
-    </div>
-  )
+	if (props.autoShowTooltip) {
+		classes = `${tooltip} ${autoShowTooltip}`;
+	}
+
+	return (
+		<div className={classes} data-text={props.text}>
+			{props.children}
+		</div>
+	);
 };

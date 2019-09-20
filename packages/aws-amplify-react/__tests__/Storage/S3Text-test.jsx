@@ -4,337 +4,359 @@ import { S3Text } from '../../src/Storage/S3Text';
 import { TextPicker } from '../../src/Widget';
 
 jest.mock('../../src/Storage/Common', () => {
-    const calcKey = () => {
-        return '';
-    };
+	const calcKey = () => {
+		return '';
+	};
 
-    return { calcKey };
+	return { calcKey };
 });
 
 describe('S3Text test', () => {
-    describe('render test', () => {
-        test('render null if no test and no picker', () => {
-            const wrapper = shallow(<S3Text/>);
+	describe('render test', () => {
+		test('render null if no test and no picker', () => {
+			const wrapper = shallow(<S3Text />);
 
-            expect(wrapper).toMatchSnapshot();
-        });
+			expect(wrapper).toMatchSnapshot();
+		});
 
-        test('render with picker true', () => {
-            const wrapper = shallow(<S3Text picker/>);
-            
-            expect(wrapper).toMatchSnapshot();
-        });
+		test('render with picker true', () => {
+			const wrapper = shallow(<S3Text picker />);
 
-        test('render with text exist', () => {
-            const wrapper = shallow(<S3Text/>);
-            wrapper.setState({text: 'text'});
+			expect(wrapper).toMatchSnapshot();
+		});
 
-            expect(wrapper).toMatchSnapshot();
-        });
+		test('render with text exist', () => {
+			const wrapper = shallow(<S3Text />);
+			wrapper.setState({ text: 'text' });
 
-        test('render with translate text', () => {
-            const wrapper = shallow(<S3Text translate='translate'/>);
+			expect(wrapper).toMatchSnapshot();
+		});
 
-            expect(wrapper).toMatchSnapshot();
-        });
-    });
+		test('render with translate text', () => {
+			const wrapper = shallow(<S3Text translate="translate" />);
 
-    describe('interaction test', () => {
-        test('TextPicker onPick test', () => {
-            const spyon = jest.spyOn(S3Text.prototype, 'handlePick')
-                .mockImplementationOnce(() => {
-                    return;
-                });
+			expect(wrapper).toMatchSnapshot();
+		});
+	});
 
-            const wrapper = shallow(<S3Text picker/>);
-                
-            wrapper.find(TextPicker).simulate('pick');
+	describe('interaction test', () => {
+		test('TextPicker onPick test', () => {
+			const spyon = jest
+				.spyOn(S3Text.prototype, 'handlePick')
+				.mockImplementationOnce(() => {
+					return;
+				});
 
-            expect(spyon).toBeCalled();
+			const wrapper = shallow(<S3Text picker />);
 
-            spyon.mockClear();
-        });
-        
-        test('textEl click test', () => {
-            const spyon = jest.spyOn(S3Text.prototype, 'handleClick')
-                .mockImplementationOnce(() => {
-                    return;
-                });
-            const wrapper = shallow(<S3Text/>);
-            wrapper.setState({text: 'text'});
+			wrapper.find(TextPicker).simulate('pick');
 
-            wrapper.find('div').at(1).simulate('click');
+			expect(spyon).toBeCalled();
 
-            expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
 
-            spyon.mockClear();
-        });
-    });
+		test('textEl click test', () => {
+			const spyon = jest
+				.spyOn(S3Text.prototype, 'handleClick')
+				.mockImplementationOnce(() => {
+					return;
+				});
+			const wrapper = shallow(<S3Text />);
+			wrapper.setState({ text: 'text' });
 
-    describe('load test', () => {
-        test('happy case with body set', async () => {
-            const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('text');
-                });
-            });
-            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
-                return;
-            });
+			wrapper
+				.find('div')
+				.at(1)
+				.simulate('click');
 
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps({
-                textKey: 'textKey',
-                body: 'textBody'
-            });
+			expect(spyon).toBeCalled();
 
-            await s3Text.load();
+			spyon.mockClear();
+		});
+	});
 
-            expect.assertions(2);
-            expect(spyon).toBeCalledWith('textKey', 'textBody', { contentType: 'text/*', level: 'public' });
-            expect(spyon2).toBeCalled();
+	describe('load test', () => {
+		test('happy case with body set', async () => {
+			const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('text');
+				});
+			});
+			const spyon2 = jest
+				.spyOn(S3Text.prototype, 'getText')
+				.mockImplementationOnce(() => {
+					return;
+				});
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps({
+				textKey: 'textKey',
+				body: 'textBody',
+			});
 
-        test('nothing to do if no textKey and path set', async () => {
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
+			await s3Text.load();
 
-            await s3Text.load();
-        });
+			expect.assertions(2);
+			expect(spyon).toBeCalledWith('textKey', 'textBody', {
+				contentType: 'text/*',
+				level: 'public',
+			});
+			expect(spyon2).toBeCalled();
 
-        test('only get text when body no specified', async () => {
-            const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('text');
-                });
-            });
-            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
-                return;
-            });
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps({
-                textKey: 'textKey'
-            });
+		test('nothing to do if no textKey and path set', async () => {
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
 
-            await s3Text.load();
+			await s3Text.load();
+		});
 
-            expect.assertions(2);
-            expect(spyon).not.toBeCalled();
-            expect(spyon2).toBeCalled();
+		test('only get text when body no specified', async () => {
+			const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('text');
+				});
+			});
+			const spyon2 = jest
+				.spyOn(S3Text.prototype, 'getText')
+				.mockImplementationOnce(() => {
+					return;
+				});
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-    });
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps({
+				textKey: 'textKey',
+			});
 
-    describe('handlePick test', () => {
-        test('happy case', async () => {
-            const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('data');
-                });
-            });
+			await s3Text.load();
 
-            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
-                return;
-            });
+			expect.assertions(2);
+			expect(spyon).not.toBeCalled();
+			expect(spyon2).toBeCalled();
 
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps({
-                text: 'text',
-                textKey: 'textKey',
-                level: 'level',
-                fileToKey: 'fileToKey'
-            });
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+	});
 
-            const data = {
-                file: 'file',
-                name: 'name',
-                size: 'size',
-                type: 'type'
-            };
+	describe('handlePick test', () => {
+		test('happy case', async () => {
+			const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('data');
+				});
+			});
 
-            await s3Text.handlePick(data);
+			const spyon2 = jest
+				.spyOn(S3Text.prototype, 'getText')
+				.mockImplementationOnce(() => {
+					return;
+				});
 
-            expect.assertions(2);
-            expect(spyon)
-                .toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
-            expect(spyon2).toBeCalled();
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps({
+				text: 'text',
+				textKey: 'textKey',
+				level: 'level',
+				fileToKey: 'fileToKey',
+			});
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			const data = {
+				file: 'file',
+				name: 'name',
+				size: 'size',
+				type: 'type',
+			};
 
-        test('storage put error', async () => {
-            const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
-                });
-            });
+			await s3Text.handlePick(data);
 
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps({
-                text: 'text',
-                textKey: 'textKey',
-                level: 'level',
-                fileToKey: 'fileToKey'
-            });
-            
-            const data = {
-                file: 'file',
-                name: 'name',
-                size: 'size',
-                type: 'type'
-            };
+			expect.assertions(2);
+			expect(spyon).toBeCalledWith('textKey', 'file', {
+				contentType: 'type',
+				level: 'level',
+				track: undefined,
+			});
+			expect(spyon2).toBeCalled();
 
-            await s3Text.handlePick(data);
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-            spyon.mockClear();
-        });
-    });
+		test('storage put error', async () => {
+			const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
+				});
+			});
 
-    describe('handleClick test', () => {
-        test('happy case', () => {
-            const mockFn = jest.fn();
-            const props = {
-                text: 'text',
-                textKey: 'textKey',
-                onClick: mockFn
-            };
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps({
+				text: 'text',
+				textKey: 'textKey',
+				level: 'level',
+				fileToKey: 'fileToKey',
+			});
 
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps(props);
+			const data = {
+				file: 'file',
+				name: 'name',
+				size: 'size',
+				type: 'type',
+			};
 
-            s3Text.handleClick('evt');
+			await s3Text.handlePick(data);
 
-            expect(mockFn).toBeCalledWith('evt');
-        });
+			spyon.mockClear();
+		});
+	});
 
-        test('if no onclick', () => {
-            const mockFn = jest.fn();
-            const props = {
-                text: 'text',
-                textKey: 'textKey'
-            };
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps(props);
+	describe('handleClick test', () => {
+		test('happy case', () => {
+			const mockFn = jest.fn();
+			const props = {
+				text: 'text',
+				textKey: 'textKey',
+				onClick: mockFn,
+			};
 
-            s3Text.handleClick('evt');
-        });
-    });
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps(props);
 
-    describe('handleOnLoad test', () => {
-        test('happy case', () => {
-            const mockFn = jest.fn();
-            const props = {
-                text: 'text',
-                textKey: 'textKey',
-                onLoad: mockFn
-            };
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps(props);
+			s3Text.handleClick('evt');
 
-            s3Text.handleOnLoad('text');
+			expect(mockFn).toBeCalledWith('evt');
+		});
 
-            expect(mockFn).toBeCalledWith('text');
-        });
+		test('if no onclick', () => {
+			const mockFn = jest.fn();
+			const props = {
+				text: 'text',
+				textKey: 'textKey',
+			};
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps(props);
 
-        test('if no onLoad', () => {
-            const mockFn = jest.fn();
-            const props = {
-                text: 'text',
-                textKey: 'textKey'
-            };
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps(props);
+			s3Text.handleClick('evt');
+		});
+	});
 
-            s3Text.handleOnLoad('evt');
-        });
-    });
+	describe('handleOnLoad test', () => {
+		test('happy case', () => {
+			const mockFn = jest.fn();
+			const props = {
+				text: 'text',
+				textKey: 'textKey',
+				onLoad: mockFn,
+			};
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps(props);
 
-    describe('handleOnError test', () => {
-        test('happy case', () => {
-            const mockFn = jest.fn();
-            const props = {
-                text: 'text',
-                textKey: 'textKey',
-                onError: mockFn
-            };
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
-            wrapper.setProps(props);
+			s3Text.handleOnLoad('text');
 
-            s3Text.handleOnError('err');
+			expect(mockFn).toBeCalledWith('text');
+		});
 
-            expect(mockFn).toBeCalledWith('err');
-        });
-    });
+		test('if no onLoad', () => {
+			const mockFn = jest.fn();
+			const props = {
+				text: 'text',
+				textKey: 'textKey',
+			};
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps(props);
 
-    describe('textEl test', () => {
-        test('null text', () => {
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
+			s3Text.handleOnLoad('evt');
+		});
+	});
 
-            expect(s3Text.textEl(null, 'theme')).toBeNull();
-        });
-    });
+	describe('handleOnError test', () => {
+		test('happy case', () => {
+			const mockFn = jest.fn();
+			const props = {
+				text: 'text',
+				textKey: 'textKey',
+				onError: mockFn,
+			};
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+			wrapper.setProps(props);
 
-    describe('componentDidmount test', () => {
-        test('happy case', () => {
-            const spyon = jest.spyOn(S3Text.prototype, 'load');
+			s3Text.handleOnError('err');
 
-            const wrapper = mount(<S3Text/>);
+			expect(mockFn).toBeCalledWith('err');
+		});
+	});
 
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+	describe('textEl test', () => {
+		test('null text', () => {
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
 
-    describe('getText test', () => {
-        test('happy case', () => {
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
+			expect(s3Text.textEl(null, 'theme')).toBeNull();
+		});
+	});
 
-            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('url');
-                });
-            });
+	describe('componentDidmount test', () => {
+		test('happy case', () => {
+			const spyon = jest.spyOn(S3Text.prototype, 'load');
 
-            s3Text.getText('key', 'level', false, 'identityId');
-            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false, identityId: 'identityId'});
-            spyon.mockClear();
-        });
+			const wrapper = mount(<S3Text />);
 
-        test('error case', () => {
-            const wrapper = shallow(<S3Text/>);
-            const s3Text = wrapper.instance();
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
-                });
-            });
+	describe('getText test', () => {
+		test('happy case', () => {
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
 
-            try {
-                s3Text.getText('key', 'level', false);
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-    
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('url');
+				});
+			});
+
+			s3Text.getText('key', 'level', false, 'identityId');
+			expect(spyon).toBeCalledWith('key', {
+				download: true,
+				level: 'level',
+				track: false,
+				identityId: 'identityId',
+			});
+			spyon.mockClear();
+		});
+
+		test('error case', () => {
+			const wrapper = shallow(<S3Text />);
+			const s3Text = wrapper.instance();
+
+			const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
+				});
+			});
+
+			try {
+				s3Text.getText('key', 'level', false);
+			} catch (e) {
+				expect(e).not.toBeNull();
+			}
+
+			spyon.mockClear();
+		});
+	});
 });

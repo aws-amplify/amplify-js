@@ -14,11 +14,12 @@ import { parents } from './parents';
  * @return {Element|undefined} The matching element or undefined.
  */
 export function closest(element, selector, shouldCheckSelf = false) {
-  if (!(element && element.nodeType === 1 && selector)) return;
-  const parentElements =
-      (shouldCheckSelf ? [element] : []).concat(parents(element));
+	if (!(element && element.nodeType === 1 && selector)) return;
+	const parentElements = (shouldCheckSelf ? [element] : []).concat(
+		parents(element)
+	);
 
-  for (let i = 0, parent; parent = parentElements[i]; i++) {
-    if (matches(parent, selector)) return parent;
-  }
+	for (let i = 0, parent; (parent = parentElements[i]); i++) {
+		if (matches(parent, selector)) return parent;
+	}
 }
