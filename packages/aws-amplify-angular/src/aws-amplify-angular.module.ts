@@ -11,8 +11,7 @@
  * and limitations under the License.
  */
 
-
-import { NgModule , forwardRef} from '@angular/core';
+import { NgModule, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -42,7 +41,7 @@ import { S3ImageComponentCore } from './components/storage/s3-image-component/s3
 import { PhotoPickerComponent } from './components/storage/photo-picker-component/photo-picker.factory';
 import { PhotoPickerComponentCore } from './components/storage/photo-picker-component/photo-picker.component.core';
 import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
-import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
+import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core';
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
 import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
@@ -51,53 +50,43 @@ import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scen
 // tslint:enable:max-line-length
 
 const components = [
-  AuthenticatorComponent,
-  AuthenticatorComponentCore,
-  ConfirmSignInComponent,
-  ConfirmSignInComponentCore,
-  ConfirmSignUpComponent,
-  ConfirmSignUpComponentCore,
-  SignInComponent,
-  SignInComponentCore,
-  SignUpComponent,
-  SignUpComponentCore,
-  RequireNewPasswordComponent,
-  RequireNewPasswordComponentCore,
-  GreetingComponent,
-  GreetingComponentCore,
-  ForgotPasswordComponent,
-  ForgotPasswordComponentCore,
-  UsernameFieldComponentCore,
-  PhoneFieldComponentCore,
-  S3AlbumComponent,
-  S3AlbumComponentCore,
-  S3ImageComponent,
-  S3ImageComponentCore,
-  PhotoPickerComponent,
-  PhotoPickerComponentCore,
-  ChatBotComponent,
-  ChatbotComponentCore,
-  FormComponent,
-  SumerianSceneComponent,
-  SumerianSceneComponentCore,
-  SumerianSceneLoadingComponentCore
+	AuthenticatorComponent,
+	AuthenticatorComponentCore,
+	ConfirmSignInComponent,
+	ConfirmSignInComponentCore,
+	ConfirmSignUpComponent,
+	ConfirmSignUpComponentCore,
+	SignInComponent,
+	SignInComponentCore,
+	SignUpComponent,
+	SignUpComponentCore,
+	RequireNewPasswordComponent,
+	RequireNewPasswordComponentCore,
+	GreetingComponent,
+	GreetingComponentCore,
+	ForgotPasswordComponent,
+	ForgotPasswordComponentCore,
+	UsernameFieldComponentCore,
+	PhoneFieldComponentCore,
+	S3AlbumComponent,
+	S3AlbumComponentCore,
+	S3ImageComponent,
+	S3ImageComponentCore,
+	PhotoPickerComponent,
+	PhotoPickerComponentCore,
+	ChatBotComponent,
+	ChatbotComponentCore,
+	FormComponent,
+	SumerianSceneComponent,
+	SumerianSceneComponentCore,
+	SumerianSceneLoadingComponentCore,
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-  ],
-  declarations: [
-    DynamicComponentDirective,
-    ...components,
-  ],
-  entryComponents: [
-    ...components
-  ],
-  providers: [ ],
-  exports: [
-    ...components,
-  ]
+	imports: [CommonModule, FormsModule],
+	declarations: [DynamicComponentDirective, ...components],
+	entryComponents: [...components],
+	providers: [],
+	exports: [...components],
 })
-export class AmplifyAngularModule { }
+export class AmplifyAngularModule {}

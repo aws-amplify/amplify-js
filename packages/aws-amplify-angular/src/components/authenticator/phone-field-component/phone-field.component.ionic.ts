@@ -57,12 +57,11 @@ const template = `
 </ion-grid>`;
 
 @Component({
-  selector: 'amplify-auth-phone-field-ionic',
-  template,
+	selector: 'amplify-auth-phone-field-ionic',
+	template,
 })
 export class PhoneFieldComponentIonic extends PhoneFieldComponentCore {
-
-  constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
-    super(amplifyService);
-  }  
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }
