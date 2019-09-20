@@ -15,19 +15,25 @@ import { ConsoleLogger as Logger } from './Logger';
 import { AWS } from './Facet';
 
 const logger = new Logger('Signer'),
-    url = require('url'),
-    crypto = AWS['util'].crypto;
+	url = require('url'),
+	crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 
 const encrypt = function(key, src, encoding?) {
-    return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
+	return crypto.lib
+		.createHmac('sha256', key)
+		.update(src, 'utf8')
+		.digest(encoding);
 };
 
 const hash = function(src) {
-    const arg = src || '';
-    return crypto.createHash('sha256').update(arg, 'utf8').digest('hex');
+	const arg = src || '';
+	return crypto
+		.createHash('sha256')
+		.update(arg, 'utf8')
+		.digest('hex');
 };
 
 /**
@@ -35,38 +41,49 @@ const hash = function(src) {
  * RFC 3986 compliant version of encodeURIComponent
  */
 const escape_RFC3986 = function(component) {
-    return component.replace(/[!'()*]/g, function(c) {
-        return '%' + c.charCodeAt(0).toString(16).toUpperCase();
-    });
+	return component.replace(/[!'()*]/g, function(c) {
+		return (
+			'%' +
+			c
+				.charCodeAt(0)
+				.toString(16)
+				.toUpperCase()
+		);
+	});
 };
 
 /**
  * @private
  * Create canonical query string
  *
-*/
+ */
 const canonical_query = function(query) {
-    if (!query || query.length === 0) { return ''; }
+	if (!query || query.length === 0) {
+		return '';
+	}
 
-    return query.split('&')
-        .map(e => {
-            const key_val = e.split('=');
+	return query
+		.split('&')
+		.map(e => {
+			const key_val = e.split('=');
 
-            if(key_val.length === 1) {
-                return e;
-            } else {
-                const reencoded_val = escape_RFC3986(key_val[1]);
-                return key_val[0] + '=' + reencoded_val;
-            }
-        }).sort((a, b) => {
-          const key_a = a.split('=')[0];
-          const key_b = b.split('=')[0];
-          if (key_a === key_b) {
-              return a < b ? -1 : 1;
-          } else {
-              return key_a < key_b ? -1 : 1;
-          }
-        }).join('&');
+			if (key_val.length === 1) {
+				return e;
+			} else {
+				const reencoded_val = escape_RFC3986(key_val[1]);
+				return key_val[0] + '=' + reencoded_val;
+			}
+		})
+		.sort((a, b) => {
+			const key_a = a.split('=')[0];
+			const key_b = b.split('=')[0];
+			if (key_a === key_b) {
+				return a < b ? -1 : 1;
+			} else {
+				return key_a < key_b ? -1 : 1;
+			}
+		})
+		.join('&');
 };
 
 /**
@@ -81,33 +98,39 @@ CanonicalHeadersEntry =
 </pre>
 */
 const canonical_headers = function(headers) {
-    if (!headers || Object.keys(headers).length === 0) { return ''; }
+	if (!headers || Object.keys(headers).length === 0) {
+		return '';
+	}
 
-    return Object.keys(headers)
-        .map(function(key) {
-            return {
-                key: key.toLowerCase(),
-                value: headers[key] ? headers[key].trim().replace(/\s+/g, ' ') : ''
-            };
-        })
-        .sort(function(a, b) {
-            return a.key < b.key ? -1 : 1;
-        })
-        .map(function(item) {
-            return item.key + ':' + item.value;
-        })
-        .join('\n') + '\n';
+	return (
+		Object.keys(headers)
+			.map(function(key) {
+				return {
+					key: key.toLowerCase(),
+					value: headers[key] ? headers[key].trim().replace(/\s+/g, ' ') : '',
+				};
+			})
+			.sort(function(a, b) {
+				return a.key < b.key ? -1 : 1;
+			})
+			.map(function(item) {
+				return item.key + ':' + item.value;
+			})
+			.join('\n') + '\n'
+	);
 };
 
 /**
-* List of header keys included in the canonical headers.
-* @access private
-*/
+ * List of header keys included in the canonical headers.
+ * @access private
+ */
 const signed_headers = function(headers) {
-    return Object.keys(headers)
-        .map(function(key) { return key.toLowerCase(); })
-        .sort()
-        .join(';');
+	return Object.keys(headers)
+		.map(function(key) {
+			return key.toLowerCase();
+		})
+		.sort()
+		.join(';');
 };
 
 /**
@@ -127,42 +150,38 @@ CanonicalRequest =
 </pre>
 */
 const canonical_request = function(request) {
-    const url_info = url.parse(request.url);
+	const url_info = url.parse(request.url);
 
-    return [
-        request.method || '/',
-        encodeURIComponent(url_info.pathname).replace(/%2F/ig, '/'),
-        canonical_query(url_info.query),
-        canonical_headers(request.headers),
-        signed_headers(request.headers),
-        hash(request.data)
-    ].join('\n');
+	return [
+		request.method || '/',
+		encodeURIComponent(url_info.pathname).replace(/%2F/gi, '/'),
+		canonical_query(url_info.query),
+		canonical_headers(request.headers),
+		signed_headers(request.headers),
+		hash(request.data),
+	].join('\n');
 };
 
 const parse_service_info = function(request) {
-    const url_info = url.parse(request.url),
-        host = url_info.host;
+	const url_info = url.parse(request.url),
+		host = url_info.host;
 
-    const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
-    let parsed = (matched || []).slice(1, 3);
+	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
+	let parsed = (matched || []).slice(1, 3);
 
-    if (parsed[1] === 'es') { // Elastic Search
-        parsed = parsed.reverse();
-    }
+	if (parsed[1] === 'es') {
+		// Elastic Search
+		parsed = parsed.reverse();
+	}
 
-    return {
-        service: request.service || parsed[0],
-        region: request.region || parsed[1]
-    };
+	return {
+		service: request.service || parsed[0],
+		region: request.region || parsed[1],
+	};
 };
 
 const credential_scope = function(d_str, region, service) {
-    return [
-        d_str,
-        region,
-        service,
-        'aws4_request',
-    ].join('/');
+	return [d_str, region, service, 'aws4_request'].join('/');
 };
 
 /**
@@ -180,12 +199,7 @@ StringToSign =
 </pre>
 */
 const string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
-    return [
-        algorithm,
-        dt_str,
-        scope,
-        hash(canonical_request)
-    ].join('\n');
+	return [algorithm, dt_str, scope, hash(canonical_request)].join('\n');
 };
 
 /**
@@ -203,43 +217,49 @@ kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
 const get_signing_key = function(secret_key, d_str, service_info) {
-    logger.debug(service_info);
-    const k = ('AWS4' + secret_key),
-        k_date = encrypt(k, d_str),
-        k_region = encrypt(k_date, service_info.region),
-        k_service = encrypt(k_region, service_info.service),
-        k_signing = encrypt(k_service, 'aws4_request');
+	logger.debug(service_info);
+	const k = 'AWS4' + secret_key,
+		k_date = encrypt(k, d_str),
+		k_region = encrypt(k_date, service_info.region),
+		k_service = encrypt(k_region, service_info.service),
+		k_signing = encrypt(k_service, 'aws4_request');
 
-    return k_signing;
+	return k_signing;
 };
 
 const get_signature = function(signing_key, str_to_sign) {
-    return encrypt(signing_key, str_to_sign, 'hex');
+	return encrypt(signing_key, str_to_sign, 'hex');
 };
 
 /**
-* @private
-* Create authorization header
-* Refer to
-* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
-*/
-const get_authorization_header = function(algorithm, access_key, scope, signed_headers, signature) {
-    return [
-        algorithm + ' ' + 'Credential=' + access_key + '/' + scope,
-        'SignedHeaders=' + signed_headers,
-        'Signature=' + signature
-    ].join(', ');
+ * @private
+ * Create authorization header
+ * Refer to
+ * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
+ */
+const get_authorization_header = function(
+	algorithm,
+	access_key,
+	scope,
+	signed_headers,
+	signature
+) {
+	return [
+		algorithm + ' ' + 'Credential=' + access_key + '/' + scope,
+		'SignedHeaders=' + signed_headers,
+		'Signature=' + signature,
+	].join(', ');
 };
 
 /**
-* AWS request signer.
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
-*
-* @class Signer
-*/
+ * AWS request signer.
+ * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
+ *
+ * @class Signer
+ */
 
 export default class Signer {
-    /**
+	/**
     * Sign a HTTP request, add 'Authorization' header to request param
     * @method sign
     * @memberof Signer
@@ -275,139 +295,153 @@ export default class Signer {
     *
     * @returns {object} Signed HTTP request
     */
-    static sign(request, access_info, service_info = null) {
-        request.headers = request.headers || {};
-    
-        // datetime string and date string
-        const dt = new Date(),
-            dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
-            d_str = dt_str.substr(0, 8);
-    
-        const url_info = url.parse(request.url);
-        request.headers['host'] = url_info.host;
-        request.headers['x-amz-date'] = dt_str;
-        if (access_info.session_token) {
-            request.headers['X-Amz-Security-Token'] = access_info.session_token;
-        }
-    
-        // Task 1: Create a Canonical Request
-        const request_str = canonical_request(request);
-        logger.debug(request_str);
-    
-        // Task 2: Create a String to Sign
-        const serviceInfo = service_info || parse_service_info(request),
-            scope = credential_scope(
-                d_str,
-                serviceInfo.region,
-                serviceInfo.service
-            ),
-            str_to_sign = string_to_sign(
-                DEFAULT_ALGORITHM,
-                request_str,
-                dt_str,
-                scope
-            );
-    
-        // Task 3: Calculate the Signature
-        const signing_key = get_signing_key(
-            access_info.secret_key,
-            d_str,
-            serviceInfo
-        ),
-            signature = get_signature(signing_key, str_to_sign);
-    
-        // Task 4: Adding the Signing information to the Request
-        const authorization_header = get_authorization_header(
-            DEFAULT_ALGORITHM,
-            access_info.access_key,
-            scope,
-            signed_headers(request.headers),
-            signature
-        );
-        request.headers['Authorization'] = authorization_header;
-    
-        return request;
-    }
-    
-    static signUrl(urlToSign: string, accessInfo: any, serviceInfo?: any, expiration?: number): string;
-    static signUrl(request: any, accessInfo: any, serviceInfo?: any, expiration?: number): string;
-    static signUrl(urlOrRequest: string | any, accessInfo: any, serviceInfo?: any, expiration?: number): string {
+	static sign(request, access_info, service_info = null) {
+		request.headers = request.headers || {};
 
-        const urlToSign: string = typeof urlOrRequest === 'object' ? urlOrRequest.url : urlOrRequest;
-        const method: string = typeof urlOrRequest === 'object' ? urlOrRequest.method : 'GET';
-        const body: any = typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
+		// datetime string and date string
+		const dt = new Date(),
+			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
+			d_str = dt_str.substr(0, 8);
 
-        const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
-        const today = now.substr(0, 8);
-        // Intentionally discarding search
-        const {search, ...parsedUrl} = url.parse(urlToSign, true, true);
-        const { host } = parsedUrl;
-        const signedHeaders = { host };
-    
-        const { region, service } = serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
-        const credentialScope = credential_scope(
-            today,
-            region,
-            service
-        );
-    
-        // IoT service does not allow the session token in the canonical request
-        // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-        const sessionTokenRequired = accessInfo.session_token && service !== IOT_SERVICE_NAME;
-        const queryParams = {
-            'X-Amz-Algorithm': DEFAULT_ALGORITHM,
-            'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
-            'X-Amz-Date': now.substr(0, 16),
-            ...(sessionTokenRequired ? { 'X-Amz-Security-Token': `${accessInfo.session_token}` } : {}),
-            ...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
-            'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
-        };
-    
-        const canonicalRequest = canonical_request({
-            method,
-            url: url.format({
-                ...parsedUrl,
-                query: {
-                    ...parsedUrl.query,
-                    ...queryParams
-                },
-            }),
-            headers: signedHeaders,
-            data: body
-        });
-    
-        const stringToSign = string_to_sign(
-            DEFAULT_ALGORITHM,
-            canonicalRequest,
-            now,
-            credentialScope
-        );
-    
-        const signing_key = get_signing_key(
-            accessInfo.secret_key,
-            today,
-            { region, service },
-        );
-        const signature = get_signature(signing_key, stringToSign);
-    
-        const additionalQueryParams = {
-            'X-Amz-Signature': signature,
-            ...(accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }),
-        };
-    
-        const result = url.format({
-            protocol: parsedUrl.protocol,
-            slashes: true,
-            hostname: parsedUrl.hostname,
-            port: parsedUrl.port,
-            pathname: parsedUrl.pathname,
-            query: {
-                ...parsedUrl.query,
-                ...queryParams,
-                ...additionalQueryParams,
-            }
-        });
-    
-        return result;
-    }
+		const url_info = url.parse(request.url);
+		request.headers['host'] = url_info.host;
+		request.headers['x-amz-date'] = dt_str;
+		if (access_info.session_token) {
+			request.headers['X-Amz-Security-Token'] = access_info.session_token;
+		}
+
+		// Task 1: Create a Canonical Request
+		const request_str = canonical_request(request);
+		logger.debug(request_str);
+
+		// Task 2: Create a String to Sign
+		const serviceInfo = service_info || parse_service_info(request),
+			scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service),
+			str_to_sign = string_to_sign(
+				DEFAULT_ALGORITHM,
+				request_str,
+				dt_str,
+				scope
+			);
+
+		// Task 3: Calculate the Signature
+		const signing_key = get_signing_key(
+				access_info.secret_key,
+				d_str,
+				serviceInfo
+			),
+			signature = get_signature(signing_key, str_to_sign);
+
+		// Task 4: Adding the Signing information to the Request
+		const authorization_header = get_authorization_header(
+			DEFAULT_ALGORITHM,
+			access_info.access_key,
+			scope,
+			signed_headers(request.headers),
+			signature
+		);
+		request.headers['Authorization'] = authorization_header;
+
+		return request;
+	}
+
+	static signUrl(
+		urlToSign: string,
+		accessInfo: any,
+		serviceInfo?: any,
+		expiration?: number
+	): string;
+	static signUrl(
+		request: any,
+		accessInfo: any,
+		serviceInfo?: any,
+		expiration?: number
+	): string;
+	static signUrl(
+		urlOrRequest: string | any,
+		accessInfo: any,
+		serviceInfo?: any,
+		expiration?: number
+	): string {
+		const urlToSign: string =
+			typeof urlOrRequest === 'object' ? urlOrRequest.url : urlOrRequest;
+		const method: string =
+			typeof urlOrRequest === 'object' ? urlOrRequest.method : 'GET';
+		const body: any =
+			typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
+
+		const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+		const today = now.substr(0, 8);
+		// Intentionally discarding search
+		const { search, ...parsedUrl } = url.parse(urlToSign, true, true);
+		const { host } = parsedUrl;
+		const signedHeaders = { host };
+
+		const { region, service } =
+			serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
+		const credentialScope = credential_scope(today, region, service);
+
+		// IoT service does not allow the session token in the canonical request
+		// https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+		const sessionTokenRequired =
+			accessInfo.session_token && service !== IOT_SERVICE_NAME;
+		const queryParams = {
+			'X-Amz-Algorithm': DEFAULT_ALGORITHM,
+			'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
+			'X-Amz-Date': now.substr(0, 16),
+			...(sessionTokenRequired
+				? { 'X-Amz-Security-Token': `${accessInfo.session_token}` }
+				: {}),
+			...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
+			'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
+		};
+
+		const canonicalRequest = canonical_request({
+			method,
+			url: url.format({
+				...parsedUrl,
+				query: {
+					...parsedUrl.query,
+					...queryParams,
+				},
+			}),
+			headers: signedHeaders,
+			data: body,
+		});
+
+		const stringToSign = string_to_sign(
+			DEFAULT_ALGORITHM,
+			canonicalRequest,
+			now,
+			credentialScope
+		);
+
+		const signing_key = get_signing_key(accessInfo.secret_key, today, {
+			region,
+			service,
+		});
+		const signature = get_signature(signing_key, stringToSign);
+
+		const additionalQueryParams = {
+			'X-Amz-Signature': signature,
+			...(accessInfo.session_token && {
+				'X-Amz-Security-Token': accessInfo.session_token,
+			}),
+		};
+
+		const result = url.format({
+			protocol: parsedUrl.protocol,
+			slashes: true,
+			hostname: parsedUrl.hostname,
+			port: parsedUrl.port,
+			pathname: parsedUrl.pathname,
+			query: {
+				...parsedUrl.query,
+				...queryParams,
+				...additionalQueryParams,
+			},
+		});
+
+		return result;
+	}
 }

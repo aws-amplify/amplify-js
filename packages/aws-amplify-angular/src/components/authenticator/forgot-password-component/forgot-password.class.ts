@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class ForgotPasswordClass {
-  data: any;
+	data: any;
 }

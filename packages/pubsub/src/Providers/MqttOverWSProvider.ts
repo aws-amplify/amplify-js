@@ -21,213 +21,242 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('MqttOverWSProvider');
 
 export function mqttTopicMatch(filter: string, topic: string) {
-    const filterArray = filter.split('/');
-    const length = filterArray.length;
-    const topicArray = topic.split('/');
+	const filterArray = filter.split('/');
+	const length = filterArray.length;
+	const topicArray = topic.split('/');
 
-    for (let i = 0; i < length; ++i) {
-        const left = filterArray[i];
-        const right = topicArray[i];
-        if (left === '#') return topicArray.length >= length;
-        if (left !== '+' && left !== right) return false;
-    }
-    return length === topicArray.length;
+	for (let i = 0; i < length; ++i) {
+		const left = filterArray[i];
+		const right = topicArray[i];
+		if (left === '#') return topicArray.length >= length;
+		if (left !== '+' && left !== right) return false;
+	}
+	return length === topicArray.length;
 }
 
 export interface MqttProvidertOptions extends ProvidertOptions {
-    clientId?: string,
-    url?: string,
+	clientId?: string;
+	url?: string;
 }
 
 class ClientsQueue {
-    private promises: Map<string, Promise<any>> = new Map();
+	private promises: Map<string, Promise<any>> = new Map();
 
-    async get(clientId: string, clientFactory: (string) => Promise<any>) {
-        let promise = this.promises.get(clientId);
-        if (promise) {
-            return promise;
-        }
+	async get(clientId: string, clientFactory: (string) => Promise<any>) {
+		let promise = this.promises.get(clientId);
+		if (promise) {
+			return promise;
+		}
 
-        promise = clientFactory(clientId);
+		promise = clientFactory(clientId);
 
-        this.promises.set(clientId, promise);
+		this.promises.set(clientId, promise);
 
-        return promise;
-    }
+		return promise;
+	}
 
-    get allClients() { return Array.from(this.promises.keys()); }
+	get allClients() {
+		return Array.from(this.promises.keys());
+	}
 
-    remove(clientId) {
-        this.promises.delete(clientId);
-    }
+	remove(clientId) {
+		this.promises.delete(clientId);
+	}
 }
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
 export class MqttOverWSProvider extends AbstractPubSubProvider {
+	private _clientsQueue = new ClientsQueue();
 
-    private _clientsQueue = new ClientsQueue();
+	constructor(options: MqttProvidertOptions = {}) {
+		super({ ...options, clientId: options.clientId || uuid() });
+	}
 
-    constructor(options: MqttProvidertOptions = {}) {
-        super({ ...options, clientId: options.clientId || uuid(), });
-    }
+	protected get clientId() {
+		return this.options.clientId;
+	}
 
-    protected get clientId() { return this.options.clientId; }
+	protected get endpoint() {
+		return this.options.aws_pubsub_endpoint;
+	}
 
-    protected get endpoint() { return this.options.aws_pubsub_endpoint; }
+	protected get clientsQueue() {
+		return this._clientsQueue;
+	}
 
-    protected get clientsQueue() { return this._clientsQueue; }
+	protected get isSSLEnabled() {
+		return !this.options
+			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+	}
 
-    protected get isSSLEnabled() {
-        return !this.options.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
-    }
-    
-    protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
+	protected getTopicForValue(value) {
+		return typeof value === 'object' && value[topicSymbol];
+	}
 
-    getProviderName() { return 'MqttOverWSProvider'; }
+	getProviderName() {
+		return 'MqttOverWSProvider';
+	}
 
-    public onDisconnect({ clientId, errorCode, ...args }) {
-        if (errorCode !== 0) {
-            logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
-            this._topicObservers.forEach((observerForTopic, _observerTopic) => {
-                observerForTopic.forEach(observer => {
-                    observer.error('Disconnected, error code: ' + errorCode);
-                    observer.complete();
-                });
-            });
-        }
-        this._topicObservers = new Map();
-    }
+	public onDisconnect({ clientId, errorCode, ...args }) {
+		if (errorCode !== 0) {
+			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+			this._topicObservers.forEach((observerForTopic, _observerTopic) => {
+				observerForTopic.forEach(observer => {
+					observer.error('Disconnected, error code: ' + errorCode);
+					observer.complete();
+				});
+			});
+		}
+		this._topicObservers = new Map();
+	}
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
-        logger.debug('Creating new MQTT client', clientId);
+	public async newClient({
+		url,
+		clientId,
+	}: MqttProvidertOptions): Promise<any> {
+		logger.debug('Creating new MQTT client', clientId);
 
-        const client = new Paho.Client(url, clientId);
-        // client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
-        client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
-            this._onMessage(topic, msg);
-        };
-        client.onConnectionLost = ({ errorCode, ...args }) => {
-            this.onDisconnect({ clientId, errorCode, ...args });
-        };
-        
-        await new Promise((resolve, reject) => {
-            client.connect({
-                useSSL: this.isSSLEnabled,
-                mqttVersion: 3,
-                onSuccess: () => resolve(client),
-                onFailure: reject,
-            });
-        });
+		const client = new Paho.Client(url, clientId);
+		// client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
+		client.onMessageArrived = ({
+			destinationName: topic,
+			payloadString: msg,
+		}) => {
+			this._onMessage(topic, msg);
+		};
+		client.onConnectionLost = ({ errorCode, ...args }) => {
+			this.onDisconnect({ clientId, errorCode, ...args });
+		};
 
-        return client;
-    }
+		await new Promise((resolve, reject) => {
+			client.connect({
+				useSSL: this.isSSLEnabled,
+				mqttVersion: 3,
+				onSuccess: () => resolve(client),
+				onFailure: reject,
+			});
+		});
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<any> {
-        return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
-    }
+		return client;
+	}
 
-    protected async disconnect(clientId: string): Promise<void> {
-        const client = await this.clientsQueue.get(clientId, () => null);
+	protected async connect(
+		clientId: string,
+		options: MqttProvidertOptions = {}
+	): Promise<any> {
+		return await this.clientsQueue.get(clientId, clientId =>
+			this.newClient({ ...options, clientId })
+		);
+	}
 
-        if (client && client.isConnected()) {
-            client.disconnect();
-        }
-        this.clientsQueue.remove(clientId);
-    }
+	protected async disconnect(clientId: string): Promise<void> {
+		const client = await this.clientsQueue.get(clientId, () => null);
 
-    async publish(topics: string[] | string, msg: any) {
-        const targetTopics = ([] as string[]).concat(topics);
-        const message = JSON.stringify(msg);
+		if (client && client.isConnected()) {
+			client.disconnect();
+		}
+		this.clientsQueue.remove(clientId);
+	}
 
-        const url = await this.endpoint;
+	async publish(topics: string[] | string, msg: any) {
+		const targetTopics = ([] as string[]).concat(topics);
+		const message = JSON.stringify(msg);
 
-        const client = await this.connect(this.clientId, { url });
+		const url = await this.endpoint;
 
-        logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-        targetTopics.forEach(topic => client.send(topic, message));
-    }
+		const client = await this.connect(this.clientId, { url });
 
-    protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> = new Map();
+		logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
+		targetTopics.forEach(topic => client.send(topic, message));
+	}
 
-    private _onMessage(topic: string, msg: any) {
-        try {
-            const matchedTopicObservers = [];
-            this._topicObservers.forEach((observerForTopic, observerTopic) => {
-                if (mqttTopicMatch(observerTopic, topic)) {
-                    matchedTopicObservers.push(observerForTopic);
-                }
-            });
-            const parsedMessage = JSON.parse(msg);
+	protected _topicObservers: Map<
+		string,
+		Set<SubscriptionObserver<any>>
+	> = new Map();
 
-            if (typeof parsedMessage === 'object') {
-                parsedMessage[topicSymbol] = topic;
-            }
+	private _onMessage(topic: string, msg: any) {
+		try {
+			const matchedTopicObservers = [];
+			this._topicObservers.forEach((observerForTopic, observerTopic) => {
+				if (mqttTopicMatch(observerTopic, topic)) {
+					matchedTopicObservers.push(observerForTopic);
+				}
+			});
+			const parsedMessage = JSON.parse(msg);
 
-            matchedTopicObservers.forEach(observersForTopic =>{
-                observersForTopic.forEach(observer => observer.next(parsedMessage));
-            });
-        } catch (error) {
-            logger.warn('Error handling message', error, msg);
-        }
-    }
+			if (typeof parsedMessage === 'object') {
+				parsedMessage[topicSymbol] = topic;
+			}
 
-    subscribe(topics: string[] | string, options: MqttProvidertOptions = {}): Observable<any> {
-        const targetTopics = ([] as string[]).concat(topics);
-        logger.debug('Subscribing to topic(s)', targetTopics.join(','));
+			matchedTopicObservers.forEach(observersForTopic => {
+				observersForTopic.forEach(observer => observer.next(parsedMessage));
+			});
+		} catch (error) {
+			logger.warn('Error handling message', error, msg);
+		}
+	}
 
-        return new Observable(observer => {
+	subscribe(
+		topics: string[] | string,
+		options: MqttProvidertOptions = {}
+	): Observable<any> {
+		const targetTopics = ([] as string[]).concat(topics);
+		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
-            targetTopics.forEach(topic => {
-                let observersForTopic = this._topicObservers.get(topic);
+		return new Observable(observer => {
+			targetTopics.forEach(topic => {
+				let observersForTopic = this._topicObservers.get(topic);
 
-                if (!observersForTopic) {
-                    observersForTopic = new Set();
+				if (!observersForTopic) {
+					observersForTopic = new Set();
 
-                    this._topicObservers.set(topic, observersForTopic);
-                }
+					this._topicObservers.set(topic, observersForTopic);
+				}
 
-                observersForTopic.add(observer);
-            });
+				observersForTopic.add(observer);
+			});
 
-            let client: Paho.Client;
-            const { clientId = this.clientId } = options;
+			let client: Paho.Client;
+			const { clientId = this.clientId } = options;
 
-            (async () => {
-                const {
-                    url = await this.endpoint,
-                } = options;
+			(async () => {
+				const { url = await this.endpoint } = options;
 
-                try {
-                    client = await this.connect(clientId, { url });
-                    targetTopics.forEach(topic => { client.subscribe(topic); });
-                } catch (e) {
-                    observer.error(e);
-                }
-            })();
+				try {
+					client = await this.connect(clientId, { url });
+					targetTopics.forEach(topic => {
+						client.subscribe(topic);
+					});
+				} catch (e) {
+					observer.error(e);
+				}
+			})();
 
-            return () => {
-                logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
+			return () => {
+				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
-                if (client) {
-                    targetTopics.forEach(topic => {
-                        if (client.isConnected()) {
-                            client.unsubscribe(topic);
-                        }
+				if (client) {
+					targetTopics.forEach(topic => {
+						if (client.isConnected()) {
+							client.unsubscribe(topic);
+						}
 
-                        const observersForTopic = this._topicObservers.get(topic) ||
-                            (new Set() as Set<SubscriptionObserver<any>>);
+						const observersForTopic =
+							this._topicObservers.get(topic) ||
+							(new Set() as Set<SubscriptionObserver<any>>);
 
-                        observersForTopic.forEach(observer => observer.complete());
+						observersForTopic.forEach(observer => observer.complete());
 
-                        observersForTopic.clear();
-                    });
+						observersForTopic.clear();
+					});
 
-                    this.disconnect(clientId);
-                }
+					this.disconnect(clientId);
+				}
 
-                return null;
-            };
-        });
-    }
+				return null;
+			};
+		});
+	}
 }

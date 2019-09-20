@@ -22,45 +22,52 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('TOTPSetup');
 
 export default class TOTPSetup extends AuthPiece {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this._validAuthStates = ['TOTPSetup'];
-        this.onTOTPEvent = this.onTOTPEvent.bind(this);
-        this.checkContact = this.checkContact.bind(this);
-    }
+		this._validAuthStates = ['TOTPSetup'];
+		this.onTOTPEvent = this.onTOTPEvent.bind(this);
+		this.checkContact = this.checkContact.bind(this);
+	}
 
-    checkContact(user) {
-        if (!Auth || typeof Auth.verifiedContact !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        Auth.verifiedContact(user)
-            .then(data => {
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    const newUser = Object.assign(user, data);
-                    this.changeState('verifyContact', newUser);
-                }
-            });
-    }
+	checkContact(user) {
+		if (!Auth || typeof Auth.verifiedContact !== 'function') {
+			throw new Error(
+				'No Auth module found, please ensure @aws-amplify/auth is imported'
+			);
+		}
+		Auth.verifiedContact(user).then(data => {
+			if (!JS.isEmpty(data.verified)) {
+				this.changeState('signedIn', user);
+			} else {
+				const newUser = Object.assign(user, data);
+				this.changeState('verifyContact', newUser);
+			}
+		});
+	}
 
-    onTOTPEvent(event, data, user) {
-        logger.debug('on totp event', event, data);
-        // const user = this.props.authData;
-        if (event === 'Setup TOTP') {
-            if (data === 'SUCCESS') {
-                this.checkContact(user);
-            }
-        }
-    }
+	onTOTPEvent(event, data, user) {
+		logger.debug('on totp event', event, data);
+		// const user = this.props.authData;
+		if (event === 'Setup TOTP') {
+			if (data === 'SUCCESS') {
+				this.checkContact(user);
+			}
+		}
+	}
 
-    showComponent(theme) {
-        const { hide } = this.props;
-        if (hide && hide.includes(TOTPSetup)) { return null; }
+	showComponent(theme) {
+		const { hide } = this.props;
+		if (hide && hide.includes(TOTPSetup)) {
+			return null;
+		}
 
-        return (
-            <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} data-test={auth.TOTPSetup.component} />
-        );
-    }
+		return (
+			<TOTPSetupComp
+				{...this.props}
+				onTOTPEvent={this.onTOTPEvent}
+				data-test={auth.TOTPSetup.component}
+			/>
+		);
+	}
 }

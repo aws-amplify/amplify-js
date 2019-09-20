@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class PhotoPickerClass {
-  data: any;
+	data: any;
 }

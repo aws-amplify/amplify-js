@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class GreetingClass {
-  data: any;
+	data: any;
 }
