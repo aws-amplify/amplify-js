@@ -1,5 +1,6 @@
 import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
 import { AmplifyForgotPasswordHintProps, SignInFormFooterProps } from './amplify-sign-in-interface';
+import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { signInFormFooter } from './amplify-sign-in.styles';
 import { SIGN_IN_TEXT, COMMON_PASSWORD_TEXT } from '../../common/constants';
 
@@ -72,7 +73,7 @@ export class AmplifySignIn {
    * ]
    * ```
   */
-  @Prop() formFields: object[] | string[] = signInComponents; 
+  @Prop() formFields: FormFieldTypes | string[] = signInComponents; 
 
   render() {
     return (

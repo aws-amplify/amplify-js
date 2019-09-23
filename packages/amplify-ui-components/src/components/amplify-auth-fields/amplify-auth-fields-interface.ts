@@ -7,3 +7,5 @@ export interface FormFieldType {
   hint?: string | FunctionalComponent | null; 
   required?: boolean;
 }
+
+export interface FormFieldTypes extends Array<FormFieldType> {};

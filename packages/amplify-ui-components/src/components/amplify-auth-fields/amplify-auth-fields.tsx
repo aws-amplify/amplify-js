@@ -1,16 +1,6 @@
 import { Component, Prop, h } from '@stencil/core';
-import { FormFieldType } from './amplify-auth-fields-interface';
+import { FormFieldType, FormFieldTypes } from './amplify-auth-fields-interface';
 import componentFieldMapping from './component-field-mapping';
-
-const content = (formFields) => {
-  let formComponentStructOptions = [];
-
-  formFields.map((formField: FormFieldType | string) => {
-    return formComponentStructOptions.push(componentFieldMapping[typeof formField === 'string' ? formField : formField.type](formField));    
-  });
-  
-  return formComponentStructOptions;
-};
 
 @Component({
   tag: 'amplify-auth-fields',
@@ -33,12 +23,23 @@ export class AmplifyAuthFields {
    * ]
    * ```
   */
-  @Prop() formFields: object[] | string[];
+  @Prop() formFields: FormFieldTypes | string[];
+
+  constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+    let content = [];
+  
+    if (formFields === undefined) return '';
+  
+    formFields.forEach((formField: FormFieldType | string) => 
+      content.push(componentFieldMapping[typeof formField === 'string' ? formField : formField.type](formField)));
+    
+    return content;
+  };
 
   render() {
     return (
       <div>
-        {content(this.formFields)}
+        {this.constructFormFieldOptions(this.formFields)}
       </div>
     );
   }

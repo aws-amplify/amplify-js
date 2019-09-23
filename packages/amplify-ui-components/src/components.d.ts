@@ -7,6 +7,9 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
+  FormFieldTypes,
+} from './components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
   ButtonTypes,
   TextFieldTypes,
 } from './common/types';
@@ -29,7 +32,7 @@ export namespace Components {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
-    'formFields': object[] | string[];
+    'formFields': FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator {
     'content': Function;
@@ -302,7 +305,7 @@ export namespace Components {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
-    'formFields': object[] | string[];
+    'formFields': FormFieldTypes | string[];
     /**
     * Fires when sign in form is submitted
     */
@@ -533,7 +536,7 @@ declare namespace LocalJSX {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
-    'formFields'?: object[] | string[];
+    'formFields'?: FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
     'content'?: Function;
@@ -807,7 +810,7 @@ declare namespace LocalJSX {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
-    'formFields'?: object[] | string[];
+    'formFields'?: FormFieldTypes | string[];
     /**
     * Fires when sign in form is submitted
     */
