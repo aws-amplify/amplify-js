@@ -13,7 +13,7 @@
 
 // the session tracker for web
 
-import { ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, JS, Constants } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
 
 const logger = new Logger('SessionTracker');
@@ -40,8 +40,8 @@ export class SessionTracker {
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
         this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
+        
         this.configure(this._config);
-
     }
 
     private _envCheck() {
@@ -79,7 +79,7 @@ export class SessionTracker {
             customAttrs
         );
 
-        if (document[this._hidden]) {
+        if (document.visibilityState === this._hidden) {
             this._tracker(
                 {
                     name: '_session.stop',
@@ -102,8 +102,9 @@ export class SessionTracker {
         }
     }
 
-    private _trackBeforeUnload() {
+    private _trackBeforeUnload(event) {
         // before unload callback cannot be async => https://github.com/aws-amplify/amplify-js/issues/2088
+
         const customAttrs = typeof this._config.attributes === 'function' ?
             Promise.resolve(this._config.attributes()) : Promise.resolve(this._config.attributes);
 
@@ -124,7 +125,6 @@ export class SessionTracker {
                 logger.debug('record session stop event failed.', e);
             });
         });
-
     }
 
     // to keep configure a synchronized function
@@ -136,8 +136,10 @@ export class SessionTracker {
             initialEventSent = true;
         }
 
-        const customAttrs = typeof this._config.attributes === 'function' ?
-            await this._config.attributes() : this._config.attributes;
+        const customAttrs = typeof this._config.attributes === 'function' 
+            ? await this._config.attributes() 
+            : this._config.attributes;
+        
         const attributes = Object.assign(
             {},
             customAttrs
