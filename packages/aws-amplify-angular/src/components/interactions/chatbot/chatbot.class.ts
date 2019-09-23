@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class ChatBotClass {
-  data: any;
+	data: any;
 }

@@ -12,7 +12,7 @@
  */
 
 import AuthClass, { CognitoHostedUIIdentityProvider } from './Auth';
-import { CognitoUser, CookieStorage, }from 'amazon-cognito-identity-js';
+import { CognitoUser, CookieStorage } from 'amazon-cognito-identity-js';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
@@ -20,12 +20,17 @@ const logger = new Logger('Auth');
 let _instance: AuthClass = null;
 
 if (!_instance) {
-    logger.debug('Create Auth Instance');
-    _instance = new AuthClass(null);
+	logger.debug('Create Auth Instance');
+	_instance = new AuthClass(null);
 }
 
 const Auth = _instance;
 Amplify.register(Auth);
 
 export default Auth;
-export { AuthClass, CognitoUser, CookieStorage, CognitoHostedUIIdentityProvider };
+export {
+	AuthClass,
+	CognitoUser,
+	CookieStorage,
+	CognitoHostedUIIdentityProvider,
+};

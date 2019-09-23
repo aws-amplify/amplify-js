@@ -13,5 +13,5 @@
  */
 // tslint:enable
 export class SignUpClass {
-  data: any;
+	data: any;
 }
