@@ -12,43 +12,49 @@
  */
 import { AWS } from '@aws-amplify/core';
 /**
-* Analytics instance options
-*/
+ * Analytics instance options
+ */
 export interface AnalyticsOptions {
-    appId: string;
-    platform?: string;
-    clientId?: string;
-    region?: string;
-    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
+	appId: string;
+	platform?: string;
+	clientId?: string;
+	region?: string;
+	credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
 }
 
 export interface EventAttributes {
-    [key: string]: string;
+	[key: string]: string;
 }
 
 export interface EventMetrics {
-    [key: string]: number;
+	[key: string]: number;
 }
 
 export interface pageViewTrackOpts {
-    enable: boolean,
-    type?: string
-    eventName?: string,
-    provider?: string,
-    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>),
-    getUrl?: (() => string)
+	enable: boolean;
+	type?: string;
+	eventName?: string;
+	provider?: string;
+	attributes?:
+		| EventAttributes
+		| (() => EventAttributes | Promise<EventAttributes>);
+	getUrl?: () => string;
 }
 
 export interface EventTrackOpts {
-    enable: boolean,
-    events?: Array<string>,
-    selectorPrefix?: string,
-    provider?: string,
-    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>)
+	enable: boolean;
+	events?: Array<string>;
+	selectorPrefix?: string;
+	provider?: string;
+	attributes?:
+		| EventAttributes
+		| (() => EventAttributes | Promise<EventAttributes>);
 }
 
 export interface SessionTrackOpts {
-    enable: boolean,
-    attributes?: EventAttributes | (()=> EventAttributes | Promise<EventAttributes>),
-    provider?: string,
+	enable: boolean;
+	attributes?:
+		| EventAttributes
+		| (() => EventAttributes | Promise<EventAttributes>);
+	provider?: string;
 }

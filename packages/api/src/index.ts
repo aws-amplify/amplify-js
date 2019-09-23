@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-
 import { API } from './API';
 
 export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';

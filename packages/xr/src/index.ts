@@ -19,8 +19,8 @@ const logger = new Logger('XR');
 let _instance: XRClass = null;
 
 if (!_instance) {
-    logger.debug('Create XR Instance');
-    _instance = new XRClass(null);
+	logger.debug('Create XR Instance');
+	_instance = new XRClass(null);
 }
 
 export const XR = _instance;

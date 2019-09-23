@@ -13,15 +13,15 @@
 import { version } from '../../package.json';
 
 export const Platform = {
-	'userAgent': `aws-amplify/${version} js`,
-	'product': '',
-	'navigator': null,
-	'isReactNative': false
+	userAgent: `aws-amplify/${version} js`,
+	product: '',
+	navigator: null,
+	isReactNative: false,
 };
 if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.product = navigator.product || '';
 	Platform.navigator = navigator || null;
-	switch(navigator.product) {
+	switch (navigator.product) {
 		case 'ReactNative':
 			Platform.userAgent = `aws-amplify/${version} react-native`;
 			Platform.isReactNative = true;

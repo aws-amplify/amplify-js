@@ -15,26 +15,28 @@ import * as React from 'react';
 import { Analytics } from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {
-    return class extends React.Component {
-        constructor(props) {
-            super(props);
-            this.trackerName = trackerName;
-        }
+	return class extends React.Component {
+		constructor(props) {
+			super(props);
+			this.trackerName = trackerName;
+		}
 
-        componentDidUpdate(prevProps, prevState) {
-            const attributes = Object.assign({}, this.props, this.state);
-            if (Analytics && typeof Analytics.record === 'function') {
-                Analytics.record({
-                    name: this.trackerName, 
-                    attributes
-                });
-            } else {
-                throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
-            }   
-        }
+		componentDidUpdate(prevProps, prevState) {
+			const attributes = Object.assign({}, this.props, this.state);
+			if (Analytics && typeof Analytics.record === 'function') {
+				Analytics.record({
+					name: this.trackerName,
+					attributes,
+				});
+			} else {
+				throw new Error(
+					'No Analytics module found, please ensure @aws-amplify/analytics is imported'
+				);
+			}
+		}
 
-        render() {
-            return <Comp {...this.props} />;
-        }
-    };
+		render() {
+			return <Comp {...this.props} />;
+		}
+	};
 }

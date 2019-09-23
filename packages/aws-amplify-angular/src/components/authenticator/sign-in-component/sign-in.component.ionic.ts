@@ -88,12 +88,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-sign-in-ionic',
-  template
+	selector: 'amplify-auth-sign-in-ionic',
+	template,
 })
 export class SignInComponentIonic extends SignInComponentCore {
-
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);    
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

@@ -10,43 +10,59 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
+} from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
+import { ComponentMount } from '../../component.mount';
 import { SumerianSceneClass } from './sumerian-scene.class';
 import { SumerianSceneComponentCore } from './sumerian-scene.component.core';
-import { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic'
+import { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic';
 
 @Component({
-  selector: 'amplify-sumerian-scene',
-  template: `
-              <ng-template component-host></ng-template>
-            `
+	selector: 'amplify-sumerian-scene',
+	template: `
+		<ng-template component-host></ng-template>
+	`,
 })
 export class SumerianSceneComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() sceneName: string;
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() sceneName: string;
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		let sumerianScene =
+			this.framework && this.framework.toLowerCase() === 'ionic'
+				? new ComponentMount(SumerianSceneComponentIonic, {
+						sceneName: this.sceneName,
+				  })
+				: new ComponentMount(SumerianSceneComponentCore, {
+						sceneName: this.sceneName,
+				  });
 
-    let sumerianScene = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SumerianSceneComponentIonic,{sceneName: this.sceneName}) : new ComponentMount(SumerianSceneComponentCore, {sceneName: this.sceneName});
+		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			sumerianScene.component
+		);
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(sumerianScene.component);
+		let viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<SumerianSceneClass>componentRef.instance).data = sumerianScene.data;
-  }
+		let componentRef = viewContainerRef.createComponent(componentFactory);
+		(<SumerianSceneClass>componentRef.instance).data = sumerianScene.data;
+	}
 }

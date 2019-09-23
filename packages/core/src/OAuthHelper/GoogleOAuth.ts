@@ -16,83 +16,82 @@ import { browserOrNode } from '../JS';
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-    if (!browserOrNode().isBrowser) {
-        logger.debug('not in the browser, directly resolved');
-        return res();
-    }
-    const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
-    if (ga) {
-        logger.debug('google api already loaded');
-        return res();
-    } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
-    }
-    
+	if (!browserOrNode().isBrowser) {
+		logger.debug('not in the browser, directly resolved');
+		return res();
+	}
+	const ga =
+		window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+	if (ga) {
+		logger.debug('google api already loaded');
+		return res();
+	} else {
+		setTimeout(() => {
+			return res();
+		}, 2000);
+	}
 });
 
 export class GoogleOAuth {
-    public initialized = false;
+	public initialized = false;
 
-    constructor() {
-        this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
-        this._refreshGoogleTokenImpl = this._refreshGoogleTokenImpl.bind(this);
-    }
+	constructor() {
+		this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
+		this._refreshGoogleTokenImpl = this._refreshGoogleTokenImpl.bind(this);
+	}
 
-    public async refreshGoogleToken() {
-        if (!this.initialized) {
-            logger.debug('need to wait for the Google SDK loaded');
-            await waitForInit;
-            this.initialized = true;
-            logger.debug('finish waiting');
-        }
+	public async refreshGoogleToken() {
+		if (!this.initialized) {
+			logger.debug('need to wait for the Google SDK loaded');
+			await waitForInit;
+			this.initialized = true;
+			logger.debug('finish waiting');
+		}
 
-        return this._refreshGoogleTokenImpl();
-    }
+		return this._refreshGoogleTokenImpl();
+	}
 
-    private _refreshGoogleTokenImpl() {
-        let ga = null;
-        if (browserOrNode().isBrowser) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
-        if (!ga) {
-            logger.debug('no gapi auth2 available');
-            return Promise.reject('no gapi auth2 available');
-        }
+	private _refreshGoogleTokenImpl() {
+		let ga = null;
+		if (browserOrNode().isBrowser)
+			ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+		if (!ga) {
+			logger.debug('no gapi auth2 available');
+			return Promise.reject('no gapi auth2 available');
+		}
 
-        return new Promise((res, rej) => {
-            ga.getAuthInstance().then((googleAuth) => {
-                if (!googleAuth) {
-                    console.log('google Auth undefiend');
-                    rej('google Auth undefiend');
-                }
+		return new Promise((res, rej) => {
+			ga.getAuthInstance()
+				.then(googleAuth => {
+					if (!googleAuth) {
+						console.log('google Auth undefiend');
+						rej('google Auth undefiend');
+					}
 
-                const googleUser = googleAuth.currentUser.get();
-                // refresh the token
-                if (googleUser.isSignedIn()) {
-                    logger.debug('refreshing the google access token');
-                    googleUser.reloadAuthResponse()
-                        .then((authResponse) => {
-                            const { id_token, expires_at } = authResponse;
-                            const profile = googleUser.getBasicProfile();
-                            const user = {
-                                email: profile.getEmail(),
-                                name: profile.getName()
-                            };
+					const googleUser = googleAuth.currentUser.get();
+					// refresh the token
+					if (googleUser.isSignedIn()) {
+						logger.debug('refreshing the google access token');
+						googleUser.reloadAuthResponse().then(authResponse => {
+							const { id_token, expires_at } = authResponse;
+							const profile = googleUser.getBasicProfile();
+							const user = {
+								email: profile.getEmail(),
+								name: profile.getName(),
+							};
 
-                            res({ token: id_token, expires_at });
-                        });
-                } else {
-                    rej('User is not signed in with Google');
-                }
-            }).catch(err => {
-                logger.debug('Failed to refresh google token', err);
-                rej('Failed to refresh google token');
-            });
-        });
-    }
+							res({ token: id_token, expires_at });
+						});
+					} else {
+						rej('User is not signed in with Google');
+					}
+				})
+				.catch(err => {
+					logger.debug('Failed to refresh google token', err);
+					rej('Failed to refresh google token');
+				});
+		});
+	}
 }
 
 /**

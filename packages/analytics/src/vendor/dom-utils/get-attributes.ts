@@ -10,17 +10,17 @@
  *     object is returned.
  */
 export function getAttributes(element) {
-  const attrs = {};
+	const attrs = {};
 
-  // Validate input.
-  if (!(element && element.nodeType === 1)) return attrs;
+	// Validate input.
+	if (!(element && element.nodeType === 1)) return attrs;
 
-  // Return an empty object if there are no attributes.
-  const map = element.attributes;
-  if (map.length === 0) return {};
+	// Return an empty object if there are no attributes.
+	const map = element.attributes;
+	if (map.length === 0) return {};
 
-  for (let i = 0, attr; attr = map[i]; i++) {
-    attrs[attr.name] = attr.value;
-  }
-  return attrs;
+	for (let i = 0, attr; (attr = map[i]); i++) {
+		attrs[attr.name] = attr.value;
+	}
+	return attrs;
 }

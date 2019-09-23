@@ -18,59 +18,59 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import { PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerInput = {
-    width: '100%',
-    height: '100%',
-    display: 'inline-block',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    opacity: 0,
-    cursor: 'pointer'
+	width: '100%',
+	height: '100%',
+	display: 'inline-block',
+	position: 'absolute',
+	left: 0,
+	top: 0,
+	opacity: 0,
+	cursor: 'pointer',
 };
 
 const logger = new Logger('Picker');
 
 export class Picker extends React.Component {
-    handleInput(e) {
-        const that = this;
+	handleInput(e) {
+		const that = this;
 
-        const file = e.target.files[0];
-        if (!file) { return; }
+		const file = e.target.files[0];
+		if (!file) {
+			return;
+		}
 
-        const { name, size, type } = file;
-        logger.debug(file);
+		const { name, size, type } = file;
+		logger.debug(file);
 
-        const { onPick } = this.props;
-        if (onPick) {
-            onPick({
-                file,
-                name,
-                size,
-                type
-            });
-        }
-    }
+		const { onPick } = this.props;
+		if (onPick) {
+			onPick({
+				file,
+				name,
+				size,
+				type,
+			});
+		}
+	}
 
-    render() {
-        const title = this.props.title || 'Pick a File';
-        const accept = this.props.accept || '*/*';
+	render() {
+		const title = this.props.title || 'Pick a File';
+		const accept = this.props.accept || '*/*';
 
-        const theme = this.props.theme || AmplifyTheme;
-        const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
+		const theme = this.props.theme || AmplifyTheme;
+		const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
-        return (
-            <div style={theme.pickerPicker}>
-                <PhotoPickerButton theme={theme}>
-                    {I18n.get(title)}
-                </PhotoPickerButton>
-                <input
-                    title={I18n.get(title)}
-                    type="file"
-                    accept={accept}
-                    style={inputStyle}
-                    onChange={(e) => this.handleInput(e)}
-                />
-            </div>
-        );
-    }
+		return (
+			<div style={theme.pickerPicker}>
+				<PhotoPickerButton theme={theme}>{I18n.get(title)}</PhotoPickerButton>
+				<input
+					title={I18n.get(title)}
+					type="file"
+					accept={accept}
+					style={inputStyle}
+					onChange={e => this.handleInput(e)}
+				/>
+			</div>
+		);
+	}
 }

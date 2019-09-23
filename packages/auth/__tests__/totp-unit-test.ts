@@ -1,393 +1,442 @@
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
-    const CognitoUserSession = () => {}
+	const CognitoUserSession = () => {};
 
-    CognitoUserSession.prototype.CognitoUserSession = (options) => {
-        CognitoUserSession.prototype.options = options;
-        return CognitoUserSession;
-    }
+	CognitoUserSession.prototype.CognitoUserSession = options => {
+		CognitoUserSession.prototype.options = options;
+		return CognitoUserSession;
+	};
 
-    CognitoUserSession.prototype.getIdToken = () => {
-        return {
-            getJwtToken: () => {
-                return null;
-            }
-        }
-    }
+	CognitoUserSession.prototype.getIdToken = () => {
+		return {
+			getJwtToken: () => {
+				return null;
+			},
+		};
+	};
 
-    return CognitoUserSession;
+	return CognitoUserSession;
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoIdToken', () => {
-    const CognitoIdToken = () => {}
+	const CognitoIdToken = () => {};
 
-    CognitoIdToken.prototype.CognitoIdToken = (value) => {
-        CognitoIdToken.prototype.idToken = value;
-        return CognitoIdToken;
-    }
+	CognitoIdToken.prototype.CognitoIdToken = value => {
+		CognitoIdToken.prototype.idToken = value;
+		return CognitoIdToken;
+	};
 
-    CognitoIdToken.prototype.getJwtToken = () => {
-        return 'jwtToken';
-    }
+	CognitoIdToken.prototype.getJwtToken = () => {
+		return 'jwtToken';
+	};
 
-
-    return CognitoIdToken;
+	return CognitoIdToken;
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
-    const CognitoUserPool = () => {};
+	const CognitoUserPool = () => {};
 
-    CognitoUserPool.prototype.CognitoUserPool = (options) => {
-        CognitoUserPool.prototype.options = options;
-        return CognitoUserPool;
-    }
+	CognitoUserPool.prototype.CognitoUserPool = options => {
+		CognitoUserPool.prototype.options = options;
+		return CognitoUserPool;
+	};
 
-    CognitoUserPool.prototype.getCurrentUser = () => {
-        return "currentUser";
-    }
+	CognitoUserPool.prototype.getCurrentUser = () => {
+		return 'currentUser';
+	};
 
-    CognitoUserPool.prototype.signUp = (username, password, signUpAttributeList, validationData, callback) => {
-        callback(null, 'signUpResult');
-    }
+	CognitoUserPool.prototype.signUp = (
+		username,
+		password,
+		signUpAttributeList,
+		validationData,
+		callback
+	) => {
+		callback(null, 'signUpResult');
+	};
 
-    return CognitoUserPool;
+	return CognitoUserPool;
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-    const CognitoUser = () => {}
+	const CognitoUser = () => {};
 
-    CognitoUser.prototype.CognitoUser = (options) => {
-        CognitoUser.prototype.options = options;
-        return CognitoUser;
-    }
+	CognitoUser.prototype.CognitoUser = options => {
+		CognitoUser.prototype.options = options;
+		return CognitoUser;
+	};
 
-    CognitoUser.prototype.getSession = (callback) => {
-       // throw 3;
-        callback(null, "session");
-    }
+	CognitoUser.prototype.getSession = callback => {
+		// throw 3;
+		callback(null, 'session');
+	};
 
-    CognitoUser.prototype.getUserAttributes = (callback) => {
-        callback(null, "attributes");
-    }
+	CognitoUser.prototype.getUserAttributes = callback => {
+		callback(null, 'attributes');
+	};
 
-    CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
-        callback.onSuccess("success");
-    }
+	CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
+		callback.onSuccess('success');
+	};
 
-    CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
-        callback.onSuccess("success");
-    }
+	CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
+		callback.onSuccess('success');
+	};
 
-    CognitoUser.prototype.authenticateUser = (authenticationDetails, callback) => {
-        callback.onSuccess('session');
-    }
+	CognitoUser.prototype.authenticateUser = (
+		authenticationDetails,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
 
-    CognitoUser.prototype.sendMFACode = (code, callback) => {
-        callback.onSuccess('session');
-    }
+	CognitoUser.prototype.sendMFACode = (code, callback) => {
+		callback.onSuccess('session');
+	};
 
-    CognitoUser.prototype.resendConfirmationCode = (callback) => {
-        callback(null, 'result');
-    }
+	CognitoUser.prototype.resendConfirmationCode = callback => {
+		callback(null, 'result');
+	};
 
-    CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
-        callback(null, 'SUCCESS');
-    }
+	CognitoUser.prototype.changePassword = (
+		oldPassword,
+		newPassword,
+		callback
+	) => {
+		callback(null, 'SUCCESS');
+	};
 
-    CognitoUser.prototype.forgotPassword = (callback) => {
-        callback.onSuccess();
-    }
+	CognitoUser.prototype.forgotPassword = callback => {
+		callback.onSuccess();
+	};
 
-    CognitoUser.prototype.confirmPassword = (code, password, callback) => {
-        callback.onSuccess();
-    }
+	CognitoUser.prototype.confirmPassword = (code, password, callback) => {
+		callback.onSuccess();
+	};
 
-    CognitoUser.prototype.signOut = () => {
+	CognitoUser.prototype.signOut = () => {};
 
-    }
+	CognitoUser.prototype.confirmRegistration = (
+		confirmationCode,
+		forceAliasCreation,
+		callback
+	) => {
+		callback(null, 'Success');
+	};
 
-    CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
-        callback(null, 'Success');
-    }
+	CognitoUser.prototype.completeNewPasswordChallenge = (
+		password,
+		requiredAttributes,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
 
-    CognitoUser.prototype.completeNewPasswordChallenge = (password, requiredAttributes, callback) => {
-        callback.onSuccess('session');
-    }
+	CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
+		callback(null, 'SUCCESS');
+	};
 
-    CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
-        callback(null, 'SUCCESS');
-    }
+	CognitoUser.prototype.getMFAOptions = callback => {
+		callback(null, 'mfaOptions');
+	};
 
-    CognitoUser.prototype.getMFAOptions = (callback) => {
-        callback(null, 'mfaOptions');
-    }
+	CognitoUser.prototype.disableMFA = callback => {
+		callback(null, 'Success');
+	};
 
-    CognitoUser.prototype.disableMFA = (callback) => {
-        callback(null, 'Success');
-    }
+	CognitoUser.prototype.enableMFA = callback => {
+		callback(null, 'Success');
+	};
 
-    CognitoUser.prototype.enableMFA = (callback) => {
-        callback(null, 'Success');
-    }
+	CognitoUser.prototype.associateSoftwareToken = callback => {
+		callback.associateSecretCode('secretCode');
+		//callback.onFailure()
+	};
 
-    CognitoUser.prototype.associateSoftwareToken = (callback) => {
-        callback.associateSecretCode('secretCode');
-        //callback.onFailure()
-    }
+	CognitoUser.prototype.verifySoftwareToken = (
+		challengeAnswer,
+		device,
+		callback
+	) => {
+		callback.onSuccess('Success');
+	};
 
-    CognitoUser.prototype.verifySoftwareToken = (challengeAnswer, device, callback) => {
-        callback.onSuccess('Success');
-    };
+	CognitoUser.prototype.setUserMfaPreference = (
+		smsMfaSettings,
+		totpMfaSettings,
+		callback
+	) => {
+		callback(null, 'Success');
+	};
 
-    CognitoUser.prototype.setUserMfaPreference = (smsMfaSettings, totpMfaSettings, callback) => {
-        callback(null, 'Success');
-    }
+	CognitoUser.prototype.getUserData = callback => {
+		callback(null, {
+			PreferredMfaSetting: 'SMS_MFA',
+		});
+	};
 
-    CognitoUser.prototype.getUserData = (callback) => {
-        callback(null, {
-            PreferredMfaSetting: 'SMS_MFA'
-        });
-    }
-
-    return CognitoUser;
+	return CognitoUser;
 });
-
-
 
 import { AuthOptions, SignUpParams } from '../src/types';
 import Auth from '../src/Auth';
 import Cache from '@aws-amplify/cache';
-import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
+import {
+	CognitoUserPool,
+	CognitoUser,
+	CognitoUserSession,
+	CognitoIdToken,
+	CognitoAccessToken,
+} from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-
 const authOptions = {
-    userPoolId: "awsUserPoolsId",
-    userPoolWebClientId: "awsUserPoolsWebClientId",
-    region: "region",
-    identityPoolId: "awsCognitoIdentityPoolId"
-}
+	userPoolId: 'awsUserPoolsId',
+	userPoolWebClientId: 'awsUserPoolsWebClientId',
+	region: 'region',
+	identityPoolId: 'awsCognitoIdentityPoolId',
+};
 
 const authOptionsWithNoUserPoolId = {
-    userPoolId: null,
-    userPoolWebClientId: "awsUserPoolsWebClientId",
-    region: "region",
-    identityPoolId: "awsCognitoIdentityPoolId"
-}
+	userPoolId: null,
+	userPoolWebClientId: 'awsUserPoolsWebClientId',
+	region: 'region',
+	identityPoolId: 'awsCognitoIdentityPoolId',
+};
 
 const userPool = new CognitoUserPool({
-    UserPoolId: authOptions.userPoolId,
-    ClientId: authOptions.userPoolWebClientId
+	UserPoolId: authOptions.userPoolId,
+	ClientId: authOptions.userPoolWebClientId,
 });
 
-const idToken = new CognitoIdToken({IdToken: 'idToken'});
-const accessToken = new CognitoAccessToken({AccessToken: 'accessToken'});
+const idToken = new CognitoIdToken({ IdToken: 'idToken' });
+const accessToken = new CognitoAccessToken({ AccessToken: 'accessToken' });
 
 const session = new CognitoUserSession({
-    IdToken: idToken,
-    AccessToken: accessToken
+	IdToken: idToken,
+	AccessToken: accessToken,
 });
 
 const user = new CognitoUser({
-    Username: "username",
-    Pool: userPool
+	Username: 'username',
+	Pool: userPool,
 });
 
 describe('auth unit test', () => {
-    describe('getMFAOptions test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('getMFAOptions test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "getMFAOptions");
-            expect(await auth.getMFAOptions(user)).toBe('mfaOptions');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'getMFAOptions');
+			expect(await auth.getMFAOptions(user)).toBe('mfaOptions');
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-        });
+			spyon.mockClear();
+		});
 
-        test('err case', async () => {
-            const auth = new Auth(authOptions);
+		test('err case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "getMFAOptions").mockImplementationOnce((callback) => {
-                callback('err', null);
-            });
-            try {
-                await auth.getMFAOptions(user);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'getMFAOptions')
+				.mockImplementationOnce(callback => {
+					callback('err', null);
+				});
+			try {
+				await auth.getMFAOptions(user);
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-    describe('disableMFA test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('disableMFA test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "disableMFA");
-            expect(await auth.disableSMS(user)).toBe('Success');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'disableMFA');
+			expect(await auth.disableSMS(user)).toBe('Success');
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-        });
+			spyon.mockClear();
+		});
 
-        test('err case', async () => {
-            const auth = new Auth(authOptions);
+		test('err case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "disableMFA").mockImplementationOnce((callback) => {
-                callback('err', null);
-            });
-            try {
-                await auth.disableSMS(user);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'disableMFA')
+				.mockImplementationOnce(callback => {
+					callback('err', null);
+				});
+			try {
+				await auth.disableSMS(user);
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-    describe('enableMFA test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('enableMFA test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "enableMFA");
-            expect(await auth.enableSMS(user)).toBe('Success');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'enableMFA');
+			expect(await auth.enableSMS(user)).toBe('Success');
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-        });
+			spyon.mockClear();
+		});
 
-        test('err case', async () => {
-            const auth = new Auth(authOptions);
+		test('err case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "enableMFA").mockImplementationOnce((callback) => {
-                callback('err', null);
-            });
-            try {
-                await auth.enableSMS(user);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'enableMFA')
+				.mockImplementationOnce(callback => {
+					callback('err', null);
+				});
+			try {
+				await auth.enableSMS(user);
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-    describe('setupTOTP test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('setupTOTP test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "associateSoftwareToken");
-            expect(await auth.setupTOTP(user)).toBe('secretCode');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'associateSoftwareToken');
+			expect(await auth.setupTOTP(user)).toBe('secretCode');
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-        });
+			spyon.mockClear();
+		});
 
-        test('err case', async () => {
-            const auth = new Auth(authOptions);
+		test('err case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "associateSoftwareToken").mockImplementationOnce((callback) => {
-                callback.onFailure('err');
-            });
-            try {
-                await auth.setupTOTP(user);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'associateSoftwareToken')
+				.mockImplementationOnce(callback => {
+					callback.onFailure('err');
+				});
+			try {
+				await auth.setupTOTP(user);
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-    describe('verifyTotpToken test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('verifyTotpToken test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "verifySoftwareToken");
-            expect(await auth.verifyTotpToken(user, 'challengeAnswer')).toBe('Success');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'verifySoftwareToken');
+			expect(await auth.verifyTotpToken(user, 'challengeAnswer')).toBe(
+				'Success'
+			);
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-        });
+			spyon.mockClear();
+		});
 
-        test('err case', async () => {
-            const auth = new Auth(authOptions);
+		test('err case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "verifySoftwareToken").mockImplementationOnce((challengeAnswer, device, callback) => {
-                callback.onFailure('err');
-            });
-            try {
-                await auth.verifyTotpToken(user, 'challengeAnswer');
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-    });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'verifySoftwareToken')
+				.mockImplementationOnce((challengeAnswer, device, callback) => {
+					callback.onFailure('err');
+				});
+			try {
+				await auth.verifyTotpToken(user, 'challengeAnswer');
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toBeCalled();
+			spyon.mockClear();
+		});
+	});
 
-    describe('setPreferredMFA test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+	describe('setPreferredMFA test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference");
-            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
-                return Promise.resolve('SMS_MFA')
-            });
-            expect(await auth.setPreferredMFA(user, 'TOTP')).toBe('Success');
-            expect(spyon).toBeCalled();
+			const spyon = jest.spyOn(CognitoUser.prototype, 'setUserMfaPreference');
+			const spyon2 = jest
+				.spyOn(Auth.prototype, 'getPreferredMFA')
+				.mockImplementationOnce(() => {
+					return Promise.resolve('SMS_MFA');
+				});
+			expect(await auth.setPreferredMFA(user, 'TOTP')).toBe('Success');
+			expect(spyon).toBeCalled();
 
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-        'User has not verified software token mfa'
+		'User has not verified software token mfa';
 
-        test('totp not setup but TOTP chosed', async () => {
-            const auth = new Auth(authOptions);
+		test('totp not setup but TOTP chosed', async () => {
+			const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference").mockImplementationOnce((smsMfaSettings, totpMfaSettings, callback) => {
-                const err = {
-                    message: 'User has not verified software token mfa'
-                }
-                callback(err, null);
-            });
-            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
-                return Promise.resolve('SMS_MFA')
-            });
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'setUserMfaPreference')
+				.mockImplementationOnce((smsMfaSettings, totpMfaSettings, callback) => {
+					const err = {
+						message: 'User has not verified software token mfa',
+					};
+					callback(err, null);
+				});
+			const spyon2 = jest
+				.spyOn(Auth.prototype, 'getPreferredMFA')
+				.mockImplementationOnce(() => {
+					return Promise.resolve('SMS_MFA');
+				});
 
-            try {
-                await auth.setPreferredMFA(user, 'TOTP');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-            expect(spyon).toBeCalled();
-   
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-    });
+			try {
+				await auth.setPreferredMFA(user, 'TOTP');
+			} catch (e) {
+				expect(e).not.toBeNull();
+			}
+			expect(spyon).toBeCalled();
 
-    describe('getPreferredMFA test', () => {
-        test('happy case', async () => {
-            const auth = new Auth(authOptions);
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+	});
 
-            expect(await auth.getPreferredMFA(user)).toBe('SMS_MFA');
-        });
+	describe('getPreferredMFA test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
 
-        test('error case', async () => {
-            const auth = new Auth(authOptions);
+			expect(await auth.getPreferredMFA(user)).toBe('SMS_MFA');
+		});
 
-            const spyon = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementationOnce(callback => {
-                callback('err', null);
-            })
-            try {
-                await auth.getPreferredMFA(user);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-        });
-    });
+		test('error case', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'getUserData')
+				.mockImplementationOnce(callback => {
+					callback('err', null);
+				});
+			try {
+				await auth.getPreferredMFA(user);
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+		});
+	});
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./dist/aws-amplify-storage.min.js');
+	module.exports = require('./dist/aws-amplify-storage.min.js');
 } else {
-  module.exports = require('./dist/aws-amplify-storage.js');
+	module.exports = require('./dist/aws-amplify-storage.js');
 }

@@ -22,119 +22,119 @@ const logger = new Logger('API');
  * Export Cloud Logic APIs
  */
 export class APIClass {
-    /**
-     * Initialize API with AWS configuration
-     * @param {Object} options - Configuration object for API
-     */
-    constructor() {}
+	/**
+	 * Initialize API with AWS configuration
+	 * @param {Object} options - Configuration object for API
+	 */
+	constructor() {}
 
-    public getModuleName() {
-        return 'API';
-    }
+	public getModuleName() {
+		return 'API';
+	}
 
-    /**
-     * Configure API part with aws configurations
-     * @param {Object} config - Configuration of the API
-     * @return {Object} - The current configuration
-     */
-    configure(options) {
-        const restAPIConfig = RestAPI.configure(options);
-        const graphQLAPIConfig = GraphQLAPI.configure(options);
+	/**
+	 * Configure API part with aws configurations
+	 * @param {Object} config - Configuration of the API
+	 * @return {Object} - The current configuration
+	 */
+	configure(options) {
+		const restAPIConfig = RestAPI.configure(options);
+		const graphQLAPIConfig = GraphQLAPI.configure(options);
 
-        return { ...restAPIConfig, ...graphQLAPIConfig };
-    }
+		return { ...restAPIConfig, ...graphQLAPIConfig };
+	}
 
-    /**
-     * Make a GET request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async get(apiName, path, init) {
-        return RestAPI.get(apiName, path, init);
-    }
+	/**
+	 * Make a GET request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async get(apiName, path, init) {
+		return RestAPI.get(apiName, path, init);
+	}
 
-    /**
-     * Make a POST request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async post(apiName, path, init) {
-        return RestAPI.post(apiName, path, init);
-    }
+	/**
+	 * Make a POST request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async post(apiName, path, init) {
+		return RestAPI.post(apiName, path, init);
+	}
 
-    /**
-     * Make a PUT request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async put(apiName, path, init) {
-        return RestAPI.put(apiName, path, init);
-    }
+	/**
+	 * Make a PUT request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async put(apiName, path, init) {
+		return RestAPI.put(apiName, path, init);
+	}
 
-    /**
-     * Make a PATCH request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async patch(apiName, path, init) {
-        return  RestAPI.patch(apiName, path, init);
-    }
+	/**
+	 * Make a PATCH request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async patch(apiName, path, init) {
+		return RestAPI.patch(apiName, path, init);
+	}
 
-    /**
-     * Make a DEL request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async del(apiName, path, init) {
-        return RestAPI.del(apiName, path, init);
-    }
+	/**
+	 * Make a DEL request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async del(apiName, path, init) {
+		return RestAPI.del(apiName, path, init);
+	}
 
-    /**
-     * Make a HEAD request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async head(apiName, path, init) {
-        return RestAPI.head(apiName, path, init);
-    }
+	/**
+	 * Make a HEAD request
+	 * @param {string} apiName  - The api name of the request
+	 * @param {string} path - The path of the request
+	 * @param {json} [init] - Request extra params
+	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 */
+	async head(apiName, path, init) {
+		return RestAPI.head(apiName, path, init);
+	}
 
-    /**
-     * to get the operation type
-     * @param operation 
-     */
-    getGraphqlOperationType(operation) {
-        return GraphQLAPI.getGraphqlOperationType(operation);
-    }
+	/**
+	 * to get the operation type
+	 * @param operation
+	 */
+	getGraphqlOperationType(operation) {
+		return GraphQLAPI.getGraphqlOperationType(operation);
+	}
 
-    /**
-     * Executes a GraphQL operation
-     *
-     * @param {GraphQLOptions} GraphQL Options
-     * @returns {Promise<GraphQLResult> | Observable<object>}
-     */
-    graphql(options: GraphQLOptions) {
-      return GraphQLAPI.graphql(options);
-    }
+	/**
+	 * Executes a GraphQL operation
+	 *
+	 * @param {GraphQLOptions} GraphQL Options
+	 * @returns {Promise<GraphQLResult> | Observable<object>}
+	 */
+	graphql(options: GraphQLOptions) {
+		return GraphQLAPI.graphql(options);
+	}
 }
 
 let _instance: APIClass = null;
 
 if (!_instance) {
-    logger.debug('Creating API Instance');
-    _instance = new APIClass();
-    Amplify.register(_instance);
+	logger.debug('Creating API Instance');
+	_instance = new APIClass();
+	Amplify.register(_instance);
 }
 
 export { _instance as API };

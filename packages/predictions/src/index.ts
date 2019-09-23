@@ -14,8 +14,10 @@ import { Predictions as PredictionsClass } from './Predictions';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
-    AmazonAIConvertPredictionsProvider, AmazonAIIdentifyPredictionsProvider,
-    AmazonAIPredictionsProvider, AmazonAIInterpretPredictionsProvider,
+	AmazonAIConvertPredictionsProvider,
+	AmazonAIIdentifyPredictionsProvider,
+	AmazonAIPredictionsProvider,
+	AmazonAIInterpretPredictionsProvider,
 } from './Providers';
 
 import { InterpretTextCategories } from './types';
@@ -24,15 +26,19 @@ const logger = new Logger('PubSub');
 let _instance: PredictionsClass = null;
 
 if (!_instance) {
-    logger.debug('Create Predictions Instance');
-    _instance = new PredictionsClass({});
+	logger.debug('Create Predictions Instance');
+	_instance = new PredictionsClass({});
 }
 
 const Predictions = _instance;
 
 export {
-    Predictions, AmazonAIIdentifyPredictionsProvider, AmazonAIConvertPredictionsProvider,
-    AmazonAIPredictionsProvider, AmazonAIInterpretPredictionsProvider, InterpretTextCategories
+	Predictions,
+	AmazonAIIdentifyPredictionsProvider,
+	AmazonAIConvertPredictionsProvider,
+	AmazonAIPredictionsProvider,
+	AmazonAIInterpretPredictionsProvider,
+	InterpretTextCategories,
 };
 
 /**

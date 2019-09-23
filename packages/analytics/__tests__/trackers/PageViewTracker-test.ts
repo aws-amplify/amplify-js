@@ -2,216 +2,224 @@ import { PageViewTracker } from '../../src/trackers/PageViewTracker';
 import { MethodEmbed } from '../../src/utils/MethodEmbed';
 
 const tracker = jest.fn().mockImplementation(() => {
-    return Promise.resolve();
+	return Promise.resolve();
 });
 
 class SessionStorageMock {
-    private store;
-    private maxSize;
-    private curSize;
-    private length;
+	private store;
+	private maxSize;
+	private curSize;
+	private length;
 
-    constructor() {
-        this.store = {};
-        this.maxSize = 5000;
-        this.curSize = 0;
-        this.length = 0;
-    }
+	constructor() {
+		this.store = {};
+		this.maxSize = 5000;
+		this.curSize = 0;
+		this.length = 0;
+	}
 
-    getByteLength(str) {
-        var ret = str.length
-        
-        for (var i = str.length; i >= 0; i--) {
-            var charCode = str.charCodeAt(i);
-            if (charCode > 0x7f && charCode <= 0x7ff) {
-                ++ret;
-            }
-            else if (charCode > 0x7ff && charCode <= 0xffff) {
-                ret += 2;
-            }
-            if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
-                i--; //trail surrogate
-            }
-        }
-        return ret;
-    }
+	getByteLength(str) {
+		var ret = str.length;
 
-    clear() {
-        this.store = {};
-        this.curSize = 0;
-    }
+		for (var i = str.length; i >= 0; i--) {
+			var charCode = str.charCodeAt(i);
+			if (charCode > 0x7f && charCode <= 0x7ff) {
+				++ret;
+			} else if (charCode > 0x7ff && charCode <= 0xffff) {
+				ret += 2;
+			}
+			if (charCode >= 0xdc00 && charCode <= 0xdfff) {
+				i--; //trail surrogate
+			}
+		}
+		return ret;
+	}
 
-    getItem(key) {
-        return this.store[key] || null;
-    }
+	clear() {
+		this.store = {};
+		this.curSize = 0;
+	}
 
-    setItem(key, value) {
-        if (key in this.store) {
-        this.removeItem(key);
-        }
-        if (this.curSize + this.getByteLength(value.toString()) > this.maxSize) {
-        throw new Error('session storage is full!');
-        }
-        else {
-        this.store[key] = value.toString();
-        this.curSize += this.getByteLength(this.store[key]);
-        ++this.length;
-        //console.log('current size in session storage: ' + this.curSize);
-        }
-    }
+	getItem(key) {
+		return this.store[key] || null;
+	}
 
-    removeItem(key) {
-        this.curSize -= this.getByteLength(this.store[key]);
-        delete this.store[key];
-        --this.length;
-    }
+	setItem(key, value) {
+		if (key in this.store) {
+			this.removeItem(key);
+		}
+		if (this.curSize + this.getByteLength(value.toString()) > this.maxSize) {
+			throw new Error('session storage is full!');
+		} else {
+			this.store[key] = value.toString();
+			this.curSize += this.getByteLength(this.store[key]);
+			++this.length;
+			//console.log('current size in session storage: ' + this.curSize);
+		}
+	}
 
-    showItems() {
-        var str = '';
-        for (var key in this.store){
-        str += key + '\n';
-        }
-        str = 'show items in mock cache: \n' + str;
-        console.log(str);
-    }
+	removeItem(key) {
+		this.curSize -= this.getByteLength(this.store[key]);
+		delete this.store[key];
+		--this.length;
+	}
 
-    setSize(size) {
-        this.maxSize = size;
-    }
+	showItems() {
+		var str = '';
+		for (var key in this.store) {
+			str += key + '\n';
+		}
+		str = 'show items in mock cache: \n' + str;
+		console.log(str);
+	}
 
-    getSize() {
-        return this.maxSize;
-    }
+	setSize(size) {
+		this.maxSize = size;
+	}
 
-    key(i) {
-        var keys = Object.keys(this.store);
-        return keys[i];
-    }
-};
+	getSize() {
+		return this.maxSize;
+	}
 
-window.sessionStorage = new SessionStorageMock;
+	key(i) {
+		var keys = Object.keys(this.store);
+		return keys[i];
+	}
+}
+
+window.sessionStorage = new SessionStorageMock();
 
 describe('PageViewTracker test', () => {
-    describe('constructor test', () => {
-        test('happy case with type SPA', () => {
-            const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
-                return;
-            });
-            const spyon2 = jest.spyOn(window, 'addEventListener').mockImplementation(() => {
-                return;
-            });
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true,
-                type: 'SPA'
-            });
+	describe('constructor test', () => {
+		test('happy case with type SPA', () => {
+			const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
+				return;
+			});
+			const spyon2 = jest
+				.spyOn(window, 'addEventListener')
+				.mockImplementation(() => {
+					return;
+				});
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+				type: 'SPA',
+			});
 
-            expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalled();
-            
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
 
-        test('type SPA, in unsupported env', () => {
-            let tmp = window.addEventListener;
-            window.addEventListener = undefined;
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-            const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
-                return;
-            });
+		test('type SPA, in unsupported env', () => {
+			let tmp = window.addEventListener;
+			window.addEventListener = undefined;
 
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true,
-                type: 'SPA'
-            });
+			const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
+				return;
+			});
 
-            expect(spyon).not.toBeCalled();
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+				type: 'SPA',
+			});
 
-            spyon.mockClear();
+			expect(spyon).not.toBeCalled();
 
-            window.addEventListener = tmp;
-        });
+			spyon.mockClear();
 
-        test.skip('happy case with type default', () => {
-            tracker.mockClear();
+			window.addEventListener = tmp;
+		});
 
-            const spyon = jest.spyOn(sessionStorage, 'getItem').mockImplementation(() => {
-                return 'url1';
-            });
+		test.skip('happy case with type default', () => {
+			tracker.mockClear();
 
-            const spyon2 = jest.spyOn(sessionStorage, 'setItem').mockImplementation(() => {
-                return;
-            });
+			const spyon = jest
+				.spyOn(sessionStorage, 'getItem')
+				.mockImplementation(() => {
+					return 'url1';
+				});
 
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
-            });
+			const spyon2 = jest
+				.spyOn(sessionStorage, 'setItem')
+				.mockImplementation(() => {
+					return;
+				});
 
-            expect(tracker).toBeCalled();
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+			});
 
-        test('type default, in unsupported env', () => {
-            tracker.mockClear();
+			expect(tracker).toBeCalled();
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 
-            let tmp = window.addEventListener;
-            window.addEventListener = undefined;
+		test('type default, in unsupported env', () => {
+			tracker.mockClear();
 
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
-            });
+			let tmp = window.addEventListener;
+			window.addEventListener = undefined;
 
-            expect(tracker).not.toBeCalled();
-            window.addEventListener = tmp;
-        });
-    });
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+			});
 
-    describe('configure test', () => {
-        test('happy case', () => {
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true
-            });
+			expect(tracker).not.toBeCalled();
+			window.addEventListener = tmp;
+		});
+	});
 
-            const getUrlMock = jest.fn();
-            expect(pageViewTracer.configure({
-                enable: true,
-                attributes: {
-                    attr: 'attr'
-                },
-                provider: 'myProvider',
-                getUrl: getUrlMock
-            })).toEqual({
-                enable: true,
-                attributes: {
-                    attr: 'attr'
-                },
-                provider: 'myProvider',
-                getUrl: getUrlMock
-            });
-        });
+	describe('configure test', () => {
+		test('happy case', () => {
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+			});
 
-        test('turn off autoTrack', () => {
-            const spyon = jest.spyOn(MethodEmbed, 'remove').mockImplementation(() => {
-                return;
-            });
-            const spyon2 = jest.spyOn(window, 'removeEventListener').mockImplementation(() => {
-                return;
-            });
-            const pageViewTracer = new PageViewTracker(tracker, {
-                enable: true,
-                type: 'SPA'
-            });
+			const getUrlMock = jest.fn();
+			expect(
+				pageViewTracer.configure({
+					enable: true,
+					attributes: {
+						attr: 'attr',
+					},
+					provider: 'myProvider',
+					getUrl: getUrlMock,
+				})
+			).toEqual({
+				enable: true,
+				attributes: {
+					attr: 'attr',
+				},
+				provider: 'myProvider',
+				getUrl: getUrlMock,
+			});
+		});
 
-            pageViewTracer.configure({
-                enable: false
-            });
+		test('turn off autoTrack', () => {
+			const spyon = jest.spyOn(MethodEmbed, 'remove').mockImplementation(() => {
+				return;
+			});
+			const spyon2 = jest
+				.spyOn(window, 'removeEventListener')
+				.mockImplementation(() => {
+					return;
+				});
+			const pageViewTracer = new PageViewTracker(tracker, {
+				enable: true,
+				type: 'SPA',
+			});
 
-            expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalled();
-            
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-    });
+			pageViewTracer.configure({
+				enable: false,
+			});
+
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
+
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+	});
 });

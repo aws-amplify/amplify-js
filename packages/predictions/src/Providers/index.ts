@@ -3,6 +3,8 @@ import { AmazonAIIdentifyPredictionsProvider } from './AmazonAIIdentifyPredictio
 import { AmazonAIInterpretPredictionsProvider } from './AmazonAIInterpretPredictionsProvider';
 import { AmazonAIPredictionsProvider } from './AmazonAIPredictionsProvider';
 export {
-    AmazonAIConvertPredictionsProvider, AmazonAIIdentifyPredictionsProvider,
-    AmazonAIInterpretPredictionsProvider, AmazonAIPredictionsProvider
+	AmazonAIConvertPredictionsProvider,
+	AmazonAIIdentifyPredictionsProvider,
+	AmazonAIInterpretPredictionsProvider,
+	AmazonAIPredictionsProvider,
 };
