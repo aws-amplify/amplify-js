@@ -1,11 +1,10 @@
 import { Component, Prop, h } from '@stencil/core';
-import { COMMON_CODE_TEXT } from '../../common/constants';
-
-const {
+import { 
   CODE_SUFFIX,
   CODE_LABEL,
-  CODE_PLACEHOLDER,
-} = COMMON_CODE_TEXT;
+  CODE_PLACEHOLDER
+} from '../../common/constants';
+
 
 @Component({
   tag: 'amplify-code-field',

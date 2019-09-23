@@ -1,11 +1,10 @@
 import { Component, Prop, h } from '@stencil/core';
-import { COMMON_EMAIL_TEXT } from '../../common/constants';
-
-const {
+import { 
   EMAIL_SUFFIX,
   EMAIL_LABEL,
-  EMAIL_PLACEHOLDER,
-} = COMMON_EMAIL_TEXT;
+  EMAIL_PLACEHOLDER
+} from '../../common/constants';
+
 
 @Component({
   tag: 'amplify-email-field',

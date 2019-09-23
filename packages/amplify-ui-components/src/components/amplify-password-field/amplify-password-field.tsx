@@ -1,12 +1,11 @@
 import { Component, Prop, h } from '@stencil/core';
-import { COMMON_PASSWORD_TEXT } from '../../common/constants';
 import { FunctionalComponent } from '@stencil/state-tunnel/dist/types/stencil.core';
-
-const {
+import {
   PASSWORD_SUFFIX,
   PASSWORD_LABEL,
   PASSWORD_PLACEHOLDER,
-  } = COMMON_PASSWORD_TEXT;
+} from '../../common/constants';
+
 
 @Component({
   tag: 'amplify-password-field',

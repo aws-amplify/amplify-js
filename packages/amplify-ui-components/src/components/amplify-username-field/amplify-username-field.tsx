@@ -1,11 +1,10 @@
 import { Component, Prop, h } from '@stencil/core';
-import { COMMON_USERNAME_TEXT } from '../../common/constants';
-
-const {
+import { 
   USERNAME_SUFFIX,
   USERNAME_LABEL,
-  USERNAME_PLACEHOLDER,
-} = COMMON_USERNAME_TEXT;
+  USERNAME_PLACEHOLDER
+} from '../../common/constants';
+
 
 @Component({
   tag: 'amplify-username-field',
