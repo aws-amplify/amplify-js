@@ -18,11 +18,13 @@
 
 ### Used by
 
+ - [amplify-country-dial-code](../amplify-country-dial-code)
  - [amplify-examples](../amplify-examples)
 
 ### Graph
 ```mermaid
 graph TD;
+  amplify-country-dial-code --> amplify-select
   amplify-examples --> amplify-select
   style amplify-select fill:#f9f,stroke:#333,stroke-width:4px
 ```
