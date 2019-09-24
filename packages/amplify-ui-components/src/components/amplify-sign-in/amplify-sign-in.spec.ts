@@ -1,5 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifySignIn } from './amplify-sign-in';
+import { AmplifySignIn, AmplifyForgotPasswordHint } from './amplify-sign-in';
 
 describe('amplify-sign-in spec:', () => {
   describe('Component logic ->', () => {
@@ -7,6 +7,32 @@ describe('amplify-sign-in spec:', () => {
 
     beforeEach(() => {
       signIn = new AmplifySignIn();
+    });
+
+    it('should render `SIGN IN COMPONENTS` on form fields by default', () => {
+
+      const result = [
+        {
+          type: 'username',
+          required: true,
+        },
+        {
+          type: 'password',
+          hint: {
+            "$attrs$": {
+              "forgotPasswordText": "Forgot your password?",
+              "resetPasswordText": "Reset password",
+            },
+            "$children$": null,
+            "$elm$": undefined,
+            "$flags$": 0,
+            "$tag$": AmplifyForgotPasswordHint,
+          },
+          required: true,
+        }
+      ];
+
+      expect(signIn.formFields).toEqual(result);
     });
 
     it('should render `handleSubmit` as undefined by default', () => {

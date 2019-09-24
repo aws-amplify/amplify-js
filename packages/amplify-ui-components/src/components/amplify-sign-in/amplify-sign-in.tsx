@@ -12,7 +12,7 @@ import {
 } from '../../common/constants';
 
 
-const AmplifyForgotPasswordHint: FC<AmplifyForgotPasswordHintProps> = ({ forgotPasswordText, resetPasswordText }) => (
+export const AmplifyForgotPasswordHint: FC<AmplifyForgotPasswordHintProps> = ({ forgotPasswordText, resetPasswordText }) => (
   <div>
     {forgotPasswordText} <amplify-link>{resetPasswordText}</amplify-link>
   </div>
