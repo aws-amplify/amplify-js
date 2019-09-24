@@ -14,6 +14,9 @@ import {
   TextFieldTypes,
 } from './common/types';
 import {
+  CountryCodeDialOptions,
+} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
+import {
   FunctionalComponent,
 } from '@stencil/core';
 import {
@@ -100,6 +103,16 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+  }
+  interface AmplifyCountryDialCode {
+    /**
+    * The options of the country dial code select input.
+    */
+    'options': CountryCodeDialOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
   }
   interface AmplifyEmailField {
     /**
@@ -397,6 +410,12 @@ declare global {
     new (): HTMLAmplifyCodeFieldElement;
   };
 
+  interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
+  var HTMLAmplifyCountryDialCodeElement: {
+    prototype: HTMLAmplifyCountryDialCodeElement;
+    new (): HTMLAmplifyCountryDialCodeElement;
+  };
+
   interface HTMLAmplifyEmailFieldElement extends Components.AmplifyEmailField, HTMLStencilElement {}
   var HTMLAmplifyEmailFieldElement: {
     prototype: HTMLAmplifyEmailFieldElement;
@@ -510,6 +529,7 @@ declare global {
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
@@ -605,6 +625,16 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+  }
+  interface AmplifyCountryDialCode extends JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement> {
+    /**
+    * The options of the country dial code select input.
+    */
+    'options'?: CountryCodeDialOptions;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
   }
   interface AmplifyEmailField extends JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement> {
     /**
@@ -875,6 +905,7 @@ declare namespace LocalJSX {
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-code-field': AmplifyCodeField;
+    'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
