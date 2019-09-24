@@ -36,7 +36,11 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.1.2"
+    "@aws-amplify/core": "^1.1.2",
+    "@aws-sdk/client-s3-browser": "^0.1.0-preview.2",
+    "@aws-sdk/s3-request-presigner": "^0.1.0-preview.2",
+    "@aws-sdk/util-create-request": "^0.1.0-preview.2",
+    "@aws-sdk/util-format-url": "^0.1.0-preview.1"
   },
   "jest": {
     "globals": {
