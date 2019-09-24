@@ -25,14 +25,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
-  "homepage": "https://github.com/aws/aws-amplify#readme",
+  "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/cache": "^1.0.34",
     "@aws-amplify/core": "^1.1.2",
