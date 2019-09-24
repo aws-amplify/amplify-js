@@ -1,7 +1,7 @@
-import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
-import { AmplifyForgotPasswordHintProps, SignInFormFooterProps } from './amplify-sign-in-interface';
+import { Component, Prop, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { signInFormFooter } from './amplify-sign-in.styles';
+import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
+import { SignInFormFooter } from './sign-in-form-footer';
 import {
   HEADER_TEXT,
   SUBMIT_BUTTON_TEXT,
@@ -10,20 +10,6 @@ import {
   FORGOT_PASSWORD_TEXT,
   RESET_PASSWORD_TEXT
 } from '../../common/constants';
-
-
-export const AmplifyForgotPasswordHint: FC<AmplifyForgotPasswordHintProps> = ({ forgotPasswordText, resetPasswordText }) => (
-  <div>
-    {forgotPasswordText} <amplify-link>{resetPasswordText}</amplify-link>
-  </div>
-);
-
-const SignInFormFooter: FC<SignInFormFooterProps> = ({ submitButtonText, noAccountText, createAccountText, overrideStyle = false }) => (
-  <div class={signInFormFooter}>
-    <span>{noAccountText} <amplify-link>{createAccountText}</amplify-link></span>
-    <amplify-button type="submit" overrideStyle={overrideStyle}>{submitButtonText}</amplify-button>
-  </div>
-);
 
 const SIGN_IN_COMPONENTS = [
   {
