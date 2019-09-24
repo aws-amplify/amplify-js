@@ -14,7 +14,7 @@ import * as Paho from '../src/vendor/paho-mqtt';
 
 const pahoClientMockCache = {};
 
-const mockConnect = jest.fn(options => {
+const mockConnect = jest.fn((options, callback) => {
 	options.onSuccess();
 });
 
@@ -349,5 +349,49 @@ describe('PubSub', () => {
 				pubsub.publish('topicA', 'my message AWSIoTProvider')
 			).rejects.toThrowError('Failed to publish');
 		});
+
+		test(
+			'For multiple observers, client should not be disconnected if there are ' +
+				'other observers connected when unsubscribing',
+			async () => {
+				const pubsub = new PubSub();
+
+				const spyDisconnect = jest.spyOn(
+					MqttOverWSProvider.prototype,
+					'disconnect'
+				);
+				const mqttOverWSProvider = new MqttOverWSProvider({
+					aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
+				});
+				pubsub.addPluggable(mqttOverWSProvider);
+
+				const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
+					next: _data => {
+						console.log({ _data });
+					},
+					complete: () => console.log('done'),
+					error: error => console.log('error', error),
+				});
+
+				pubsub.subscribe(['topic3', 'topic4']).subscribe({
+					next: _data => {
+						console.log({ _data });
+					},
+					complete: () => console.log('done'),
+					error: error => console.log('error', error),
+				});
+
+				// TODO: we should now when the connection is established to wait for that first
+				await (() => {
+					return new Promise(res => {
+						setTimeout(res, 100);
+					});
+				})();
+
+				subscription1.unsubscribe();
+				expect(spyDisconnect).not.toHaveBeenCalled();
+				// setTimeout(async () => await pubsub.publish('topic4', 'my message'), 100);
+			}
+		);
 	});
 });
