@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
 import {
     ConsoleLogger as Logger,
     ClientDevice,
@@ -37,6 +38,7 @@ const dispatchAnalyticsEvent = (event, data) => {
 const logger = new Logger('AWSPinpointProvider');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
+const MOBILE_SERVICE_NAME = "mobiletargeting";
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -215,6 +217,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         switch (event.name) {
             case '_update_endpoint':
                 return this._updateEndpoint(params, handlers);
+            case '_session.stop':
+                return this._pinpointSendStopSession(params, handlers);
             default:
                 return this._record(params, handlers);
         }
@@ -252,7 +256,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private async _pinpointPutEvents(params, handlers) {
         const { event : { eventId }, config : { endpointId } } = params;
         const eventParams = this._generateBatchItemContext(params);
-        logger.debug('pinpoint put events with params', eventParams);
 
         const request = this.pinpointClient.putEvents(eventParams);
         // in order to keep backward compatiblity
@@ -304,6 +307,40 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 }
             }
         });
+    }
+
+    private _pinpointSendStopSession(params, handlers): Promise<string> {
+        const eventParams = this._generateBatchItemContext(params);
+        
+        const { region } = this._config;
+        const { ApplicationId, EventsRequest } = eventParams;
+
+        const accessInfo = {
+            secret_key: this._config.credentials.secretAccessKey,
+            access_key: this._config.credentials.accessKeyId,
+            session_token: this._config.credentials.sessionToken,
+        };
+
+        const url = `https://pinpoint.${region}.amazonaws.com/v1/apps/${ApplicationId}/events`;
+        const body = JSON.stringify(EventsRequest);
+        const method = 'POST';
+
+        const request = {
+            url,
+            body,
+            method,
+        };
+
+        const serviceInfo = { region, service: MOBILE_SERVICE_NAME };
+
+        const requestUrl: string = Signer.signUrl(request, accessInfo, serviceInfo, null);
+
+        const success: boolean = navigator.sendBeacon(requestUrl, body);
+
+        if (success) {
+            return handlers.resolve('sendBeacon success');
+        }
+        return handlers.reject('sendBeacon failure');
     }
 
     private _retry(params, handlers) {
@@ -445,6 +482,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         logger.debug('init clients with credentials', credentials);
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
         this.pinpointClient = new Pinpoint({ region, credentials });
+          
         if (Platform.isReactNative) {
             this.pinpointClient.customizeRequests(function(request) {
                 request.on('build', function(req) {
