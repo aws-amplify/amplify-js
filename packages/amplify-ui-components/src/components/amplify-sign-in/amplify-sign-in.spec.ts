@@ -1,5 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifySignIn, AmplifyForgotPasswordHint } from './amplify-sign-in';
+import { AmplifySignIn } from './amplify-sign-in';
+import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
 
 describe('amplify-sign-in spec:', () => {
   describe('Component logic ->', () => {
