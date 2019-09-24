@@ -228,7 +228,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			case '_update_endpoint':
 				return this._updateEndpoint(params, handlers);
 			case '_session.stop':
-				return this._pinpointSendStopSession(params, handlers);
+				return await this._pinpointSendStopSession(params, handlers);
 			default:
 				return this._record(params, handlers);
 		}
@@ -320,7 +320,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _pinpointSendStopSession(params, handlers): Promise<string> {
+	private async _pinpointSendStopSession(params, handlers): Promise<string> {
 		const eventParams = this._generateBatchItemContext(params);
 
 		const { region } = this._config;
@@ -344,7 +344,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const serviceInfo = { region, service: MOBILE_SERVICE_NAME };
 
-		const requestUrl: string = Signer.signUrl(
+		const requestUrl: string = await Signer.signUrl(
 			request,
 			accessInfo,
 			serviceInfo,
