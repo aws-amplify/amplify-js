@@ -7,16 +7,16 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-xdkp27">
-            <h2>
+          <div class="amplify-ui--section-header css-1oug79q">
+            <h3>
               Amplify
-            </h2>
+            </h3>
           </div>
         </slot-fb>
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-1q62vzk">
+          <div class="amplify-ui--section-footer css-ny6ois">
             <amplify-button type="submit">
               Submit
             </amplify-button>
@@ -35,16 +35,16 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-xdkp27">
-            <h2>
+          <div class="amplify-ui--section-header css-1oug79q">
+            <h3>
               Amplify
-            </h2>
+            </h3>
           </div>
         </slot-fb>
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-1q62vzk">
+          <div class="amplify-ui--section-footer css-ny6ois">
             <amplify-button type="submit">
               Go
             </amplify-button>
@@ -64,9 +64,9 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
       <div>
         <slot-fb name="amplify-form-section-header">
           <div class="amplify-ui--section-header">
-            <h2>
+            <h3>
               Amplify
-            </h2>
+            </h3>
           </div>
         </slot-fb>
       </div>

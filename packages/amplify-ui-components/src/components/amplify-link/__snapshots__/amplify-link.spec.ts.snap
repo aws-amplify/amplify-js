@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-link spec: Render logic -> should render a link by default 1`] = `
+<amplify-link>
+  <!---->
+  <a class="amplify-ui--link css-3x35s3" role="navigation"></a>
+</amplify-link>
+`;
+
+exports[`amplify-link spec: Render logic -> should render only class \`amplify-ui--link\` when override style is set to true 1`] = `
+<amplify-link override-style="true">
+  <!---->
+  <a class="amplify-ui--link" role="navigation"></a>
+</amplify-link>
+`;

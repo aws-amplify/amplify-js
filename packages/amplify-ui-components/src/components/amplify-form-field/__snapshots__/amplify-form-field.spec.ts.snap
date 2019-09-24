@@ -4,7 +4,7 @@ exports[`amplify-form-field spec: Render logic -> renders a label and descriptio
 <amplify-form-field description="description" label="label">
   <!---->
   <div class="amplify-ui--form-field css-9s9ecg">
-    <div class="amplify-ui--form-field-label css-1h8rqh2">
+    <div class="amplify-ui--form-field-label css-1thad7n">
       <amplify-label>
         label
       </amplify-label>
@@ -38,7 +38,7 @@ exports[`amplify-form-field spec: Render logic -> renders with an id, if it is p
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
   <div class="amplify-ui--form-field css-9s9ecg">
-    <div class="amplify-ui--form-field-label css-1h8rqh2">
+    <div class="amplify-ui--form-field-label css-1thad7n">
       <amplify-label htmlfor="id">
         label
       </amplify-label>
@@ -80,7 +80,7 @@ exports[`amplify-form-field spec: Render logic -> replaces the input component, 
 <amplify-form-field description="description" field-id="id" label="label">
   <!---->
   <div class="amplify-ui--form-field css-9s9ecg">
-    <div class="amplify-ui--form-field-label css-1h8rqh2">
+    <div class="amplify-ui--form-field-label css-1thad7n">
       <amplify-label htmlfor="id">
         label
       </amplify-label>

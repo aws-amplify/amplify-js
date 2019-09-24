@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
 import { formField, formFieldLabel, formFieldDescription } from './amplify-form-field.style';
 import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types';
@@ -20,9 +20,11 @@ export class AmplifyFormField {
   /** The text of the description.  Goes between the label and the input. */
   @Prop() description: string | null;
   /** The text of a hint to the user as to how to fill out the input.  Goes just below the input. */
-  @Prop() hint: string | null;
+  @Prop() hint: string | FunctionalComponent | null;
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
+  /** The required flag in order to make an input required prior to submitting a form */
+  @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */
   @Prop() onInputChange?: (inputEvent: Event) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */

@@ -7,7 +7,6 @@ export const formField = css`
 export const formFieldLabel = css`
   display: block;
   font-size: 0.9em;
-  font-weight: bold;
   padding-bottom: 0.5em;
 `;
 

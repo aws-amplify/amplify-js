@@ -12,7 +12,7 @@ const AmplifyFormSectionHeader: FC<AmplifyFormSectionHeaderProps> = ({ headerTex
   <div>
     <slot name="amplify-form-section-header">
       <div class={styleNuker(overrideStyle, STATIC_SECTION_HEADER_CLASS_NAME, formSectionHeader)}>
-        <h2>{headerText}</h2>
+        <h3>{headerText}</h3>
       </div>
     </slot>
   </div>

@@ -7,18 +7,33 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
+  FormFieldTypes,
+} from './components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
   ButtonTypes,
   TextFieldTypes,
 } from './common/types';
 import {
+  FunctionalComponent,
+} from '@stencil/core';
+import {
   IconNameType,
 } from './components/amplify-icon/icons';
+import {
+  FunctionalComponent as FunctionalComponent1,
+} from '@stencil/state-tunnel/dist/types/stencil.core';
 import {
   SelectOptionsNumber,
   SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
+  interface AmplifyAuthFields {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+  }
   interface AmplifyAuthenticator {
     'content': Function;
     'override': boolean;
@@ -68,6 +83,42 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyCodeField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId': string;
+    /**
+    * Used for the code label
+    */
+    'label': string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder': string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
+  }
+  interface AmplifyEmailField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId': string;
+    /**
+    * Used for the EMAIL label
+    */
+    'label': string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder': string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
+  }
   interface AmplifyExamples {}
   interface AmplifyFormField {
     /**
@@ -81,7 +132,7 @@ export namespace Components {
     /**
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
-    'hint': string | null;
+    'hint': string | FunctionalComponent | null;
     /**
     * The text of the label.  Goes above the input. Ex: 'First name'
     */
@@ -98,6 +149,10 @@ export namespace Components {
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
     /**
     * The input type.  Can be any HTML input type.
     */
@@ -168,8 +223,30 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyLink {
+    'overrideStyle': boolean;
     'role': string;
-    'styleOverride': boolean;
+  }
+  interface AmplifyPasswordField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId': string;
+    /**
+    * Used as the hint in case you forgot your password, etc.
+    */
+    'hint': string | FunctionalComponent | null;
+    /**
+    * Used for the password label
+    */
+    'label': string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder': string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
   }
   interface AmplifyRadioButton {
     /**
@@ -225,49 +302,30 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifySignIn {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Fires when sign in form is submitted
+    */
     'handleSubmit': (Event) => void;
+    /**
+    * Used for header text in sign in component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
     'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in sign in component
+    */
+    'submitButtonText': string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
     'validationErrors': string;
-  }
-  interface AmplifySignInPasswordField {
-    'component': Function;
-    'description': string | null;
-    'fieldId': string;
-    'hint': string | null;
-    'inputProps': {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifySignInUsernameField {
-    'component': Function;
-    'description': string | null;
-    'fieldId': string;
-    'hint': string | null;
-    'inputProps': {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextField {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
-  }
-  interface AmplifyTextInput {
-    'description': string | null;
-    'fieldId': string;
-    'inputProps': {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label': string | null;
   }
   interface AmplifyTooltip {
     /**
@@ -283,6 +341,24 @@ export namespace Components {
     */
     'text': string;
   }
+  interface AmplifyUsernameField {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId': string;
+    /**
+    * Used for the username label
+    */
+    'label': string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder': string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
+  }
   interface RockPaperScissor {
     'icon': Function;
   }
@@ -290,6 +366,12 @@ export namespace Components {
 
 declare global {
 
+
+  interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {}
+  var HTMLAmplifyAuthFieldsElement: {
+    prototype: HTMLAmplifyAuthFieldsElement;
+    new (): HTMLAmplifyAuthFieldsElement;
+  };
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
   var HTMLAmplifyAuthenticatorElement: {
@@ -307,6 +389,18 @@ declare global {
   var HTMLAmplifyCheckboxElement: {
     prototype: HTMLAmplifyCheckboxElement;
     new (): HTMLAmplifyCheckboxElement;
+  };
+
+  interface HTMLAmplifyCodeFieldElement extends Components.AmplifyCodeField, HTMLStencilElement {}
+  var HTMLAmplifyCodeFieldElement: {
+    prototype: HTMLAmplifyCodeFieldElement;
+    new (): HTMLAmplifyCodeFieldElement;
+  };
+
+  interface HTMLAmplifyEmailFieldElement extends Components.AmplifyEmailField, HTMLStencilElement {}
+  var HTMLAmplifyEmailFieldElement: {
+    prototype: HTMLAmplifyEmailFieldElement;
+    new (): HTMLAmplifyEmailFieldElement;
   };
 
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
@@ -357,6 +451,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
+  var HTMLAmplifyPasswordFieldElement: {
+    prototype: HTMLAmplifyPasswordFieldElement;
+    new (): HTMLAmplifyPasswordFieldElement;
+  };
+
   interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
   var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
@@ -387,34 +487,16 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
-  interface HTMLAmplifySignInPasswordFieldElement extends Components.AmplifySignInPasswordField, HTMLStencilElement {}
-  var HTMLAmplifySignInPasswordFieldElement: {
-    prototype: HTMLAmplifySignInPasswordFieldElement;
-    new (): HTMLAmplifySignInPasswordFieldElement;
-  };
-
-  interface HTMLAmplifySignInUsernameFieldElement extends Components.AmplifySignInUsernameField, HTMLStencilElement {}
-  var HTMLAmplifySignInUsernameFieldElement: {
-    prototype: HTMLAmplifySignInUsernameFieldElement;
-    new (): HTMLAmplifySignInUsernameFieldElement;
-  };
-
-  interface HTMLAmplifyTextFieldElement extends Components.AmplifyTextField, HTMLStencilElement {}
-  var HTMLAmplifyTextFieldElement: {
-    prototype: HTMLAmplifyTextFieldElement;
-    new (): HTMLAmplifyTextFieldElement;
-  };
-
-  interface HTMLAmplifyTextInputElement extends Components.AmplifyTextInput, HTMLStencilElement {}
-  var HTMLAmplifyTextInputElement: {
-    prototype: HTMLAmplifyTextInputElement;
-    new (): HTMLAmplifyTextInputElement;
-  };
-
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
     new (): HTMLAmplifyTooltipElement;
+  };
+
+  interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
+  var HTMLAmplifyUsernameFieldElement: {
+    prototype: HTMLAmplifyUsernameFieldElement;
+    new (): HTMLAmplifyUsernameFieldElement;
   };
 
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
@@ -423,9 +505,12 @@ declare global {
     new (): HTMLRockPaperScissorElement;
   };
   interface HTMLElementTagNameMap {
+    'amplify-auth-fields': HTMLAmplifyAuthFieldsElement;
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
+    'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
@@ -434,21 +519,25 @@ declare global {
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
-    'amplify-sign-in-password-field': HTMLAmplifySignInPasswordFieldElement;
-    'amplify-sign-in-username-field': HTMLAmplifySignInUsernameFieldElement;
-    'amplify-text-field': HTMLAmplifyTextFieldElement;
-    'amplify-text-input': HTMLAmplifyTextInputElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
+    'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
 }
 
 declare namespace LocalJSX {
+  interface AmplifyAuthFields extends JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement> {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+  }
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
     'content'?: Function;
     'onAuthStateChange'?: (event: CustomEvent<any>) => void;
@@ -499,6 +588,42 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyCodeField extends JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId'?: string;
+    /**
+    * Used for the code label
+    */
+    'label'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
+  }
+  interface AmplifyEmailField extends JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId'?: string;
+    /**
+    * Used for the EMAIL label
+    */
+    'label'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
+  }
   interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
   interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     /**
@@ -512,7 +637,7 @@ declare namespace LocalJSX {
     /**
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
-    'hint'?: string | null;
+    'hint'?: string | FunctionalComponent | null;
     /**
     * The text of the label.  Goes above the input. Ex: 'First name'
     */
@@ -529,6 +654,10 @@ declare namespace LocalJSX {
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
     /**
     * The input type.  Can be any HTML input type.
     */
@@ -599,8 +728,30 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
+    'overrideStyle'?: boolean;
     'role'?: string;
-    'styleOverride'?: boolean;
+  }
+  interface AmplifyPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId'?: string;
+    /**
+    * Used as the hint in case you forgot your password, etc.
+    */
+    'hint'?: string | FunctionalComponent | null;
+    /**
+    * Used for the password label
+    */
+    'label'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
   }
   interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
@@ -656,49 +807,30 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Fires when sign in form is submitted
+    */
     'handleSubmit'?: (Event) => void;
+    /**
+    * Used for header text in sign in component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
     'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in sign in component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
     'validationErrors'?: string;
-  }
-  interface AmplifySignInPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifySignInPasswordFieldElement> {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifySignInUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifySignInUsernameFieldElement> {
-    'component'?: Function;
-    'description'?: string | null;
-    'fieldId'?: string;
-    'hint'?: string | null;
-    'inputProps'?: {
-      type?: TextFieldTypes;
-      onChange?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextField extends JSXBase.HTMLAttributes<HTMLAmplifyTextFieldElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
-  }
-  interface AmplifyTextInput extends JSXBase.HTMLAttributes<HTMLAmplifyTextInputElement> {
-    'description'?: string | null;
-    'fieldId'?: string;
-    'inputProps'?: {
-      type?: string;
-      onInput?: (Event) => void;
-    };
-    'label'?: string | null;
   }
   interface AmplifyTooltip extends JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement> {
     /**
@@ -714,15 +846,36 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
+  interface AmplifyUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement> {
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId'?: string;
+    /**
+    * Used for the username label
+    */
+    'label'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
+  }
   interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
     'onIconChange'?: (event: CustomEvent<any>) => void;
   }
 
   interface IntrinsicElements {
+    'amplify-auth-fields': AmplifyAuthFields;
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
+    'amplify-code-field': AmplifyCodeField;
+    'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
@@ -731,16 +884,14 @@ declare namespace LocalJSX {
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-password-field': AmplifyPasswordField;
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
-    'amplify-sign-in-password-field': AmplifySignInPasswordField;
-    'amplify-sign-in-username-field': AmplifySignInUsernameField;
-    'amplify-text-field': AmplifyTextField;
-    'amplify-text-input': AmplifyTextInput;
     'amplify-tooltip': AmplifyTooltip;
+    'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
 }
