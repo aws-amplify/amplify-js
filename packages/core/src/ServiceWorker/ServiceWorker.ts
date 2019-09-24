@@ -42,7 +42,7 @@ export class ServiceWorkerClass {
 	// The AWS Amplify logger
 	private _logger: Logger = new Logger('ServiceWorker');
 
-	constructor() {}
+	constructor() { }
 
 	/**
 	 * Get the currently active service worker
@@ -70,7 +70,7 @@ export class ServiceWorkerClass {
 			if (navigator && 'serviceWorker' in navigator) {
 				navigator.serviceWorker
 					.register(filePath, {
-						scope: scope,
+						scope,
 					})
 					.then(registration => {
 						if (registration.installing) {

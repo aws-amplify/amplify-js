@@ -47,6 +47,8 @@ import Cache from '@aws-amplify/cache';
 
 Amplify.Cache = Cache;
 Amplify.ServiceWorker = ServiceWorker;
-/* */
 
+/**
+ * @deprecated use named import
+ */
 export default Amplify;

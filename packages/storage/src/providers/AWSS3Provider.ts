@@ -22,7 +22,7 @@ import { StorageOptions, StorageProvider } from '../types';
 const logger = new Logger('AWSS3Provider');
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+	typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -266,7 +266,7 @@ export class AWSS3Provider implements StorageProvider {
 					} else {
 						logger.warn(
 							'progressCallback should be a function, not a ' +
-								typeof progressCallback
+							typeof progressCallback
 						);
 					}
 				}

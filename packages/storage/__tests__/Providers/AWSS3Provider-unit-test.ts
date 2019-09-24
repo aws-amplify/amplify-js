@@ -44,7 +44,7 @@ S3.prototype.listObjects = jest.fn((params, callback) => {
 	});
 });
 
-S3.ManagedUpload.prototype.send = jest.fn(() => {});
+S3.ManagedUpload.prototype.send = jest.fn(() => { });
 
 S3.ManagedUpload.prototype.promise = jest.fn(async => ({
 	Key: 'public/path/itemsKey',

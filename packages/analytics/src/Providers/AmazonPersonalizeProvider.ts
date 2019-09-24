@@ -224,7 +224,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 	private generateRequestParams(params, sessionInfo): RequestParams {
 		const requestParams = <RequestParams>{};
 		const { eventType, properties } = params.event;
-		requestParams.eventData = { eventType: eventType, properties: properties };
+		requestParams.eventData = { eventType, properties };
 		requestParams.sessionInfo = sessionInfo;
 		requestParams.sentAt = params.sentAt;
 		requestParams.credentials = params.credentials;

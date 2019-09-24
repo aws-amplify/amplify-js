@@ -1707,7 +1707,7 @@ Auth.currentCredentials().then(credentials => {
 });
 ```
 
-##### prefix: ```Amplify Customize `Withauthenticator``
+##### prefix: ``` Amplify Customize `Withauthenticator ``
 
 ```js
 import React, { Component } from 'react';
