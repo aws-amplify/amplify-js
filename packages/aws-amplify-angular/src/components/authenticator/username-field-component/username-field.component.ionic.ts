@@ -51,12 +51,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-username-field-ionic',
-  template,
+	selector: 'amplify-auth-username-field-ionic',
+	template,
 })
 export class UsernameFieldComponentIonic extends UsernameFieldComponentCore {
-
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }  
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

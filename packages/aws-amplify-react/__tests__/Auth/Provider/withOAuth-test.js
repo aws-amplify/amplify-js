@@ -4,62 +4,62 @@ import { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 
 describe('withOAuth test', () => {
-    describe('render test', () => {
-        test('render correctly', () => {
-            const MockComp = class extends Component {
-                render() {
-                    return <div />;
-                }
-            };
+	describe('render test', () => {
+		test('render correctly', () => {
+			const MockComp = class extends Component {
+				render() {
+					return <div />;
+				}
+			};
 
-            const Comp = withOAuth(MockComp);
-            const wrapper = shallow(<Comp/>);
-            expect(wrapper).toMatchSnapshot();
-        });
+			const Comp = withOAuth(MockComp);
+			const wrapper = shallow(<Comp />);
+			expect(wrapper).toMatchSnapshot();
+		});
 
-        test('render correctly with button', () => {
-            const wrapper = shallow(<OAuthButton/>);
-            expect(wrapper).toMatchSnapshot();
-        });
-    });
+		test('render correctly with button', () => {
+			const wrapper = shallow(<OAuthButton />);
+			expect(wrapper).toMatchSnapshot();
+		});
+	});
 
-    describe('signIn test', () => {
-        test('happy case with connected response', () => {
-            const MockComp = class extends Component {
-                render() {
-                    return <div />;
-                }
-            };
+	describe('signIn test', () => {
+		test('happy case with connected response', () => {
+			const MockComp = class extends Component {
+				render() {
+					return <div />;
+				}
+			};
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            
-            const Comp = withOAuth(MockComp);
-            const wrapper = mount(<Comp/>);
-            const comp = wrapper.instance();
+			const spyon = jest.spyOn(Auth, 'federatedSignIn');
 
-            comp.signIn();
+			const Comp = withOAuth(MockComp);
+			const wrapper = mount(<Comp />);
+			const comp = wrapper.instance();
 
-            expect(spyon).toBeCalledWith({ provider: undefined });
-            spyon.mockClear();
-        });
+			comp.signIn();
 
-        test('Passing in a social provider', () => {
-            const MockComp = class extends Component {
-                render() {
-                    return <div />;
-                }
-            };
+			expect(spyon).toBeCalledWith({ provider: undefined });
+			spyon.mockClear();
+		});
 
-            const spyon = jest.spyOn(Auth, 'federatedSignIn');
-            
-            const Comp = withOAuth(MockComp);
-            const wrapper = mount(<Comp/>);
-            const comp = wrapper.instance();
+		test('Passing in a social provider', () => {
+			const MockComp = class extends Component {
+				render() {
+					return <div />;
+				}
+			};
 
-            comp.signIn(expect.anything(), 'Facebook');
+			const spyon = jest.spyOn(Auth, 'federatedSignIn');
 
-            expect(spyon).toBeCalledWith({"provider": "Facebook"});
-            spyon.mockClear();
-        });
-    });
+			const Comp = withOAuth(MockComp);
+			const wrapper = mount(<Comp />);
+			const comp = wrapper.instance();
+
+			comp.signIn(expect.anything(), 'Facebook');
+
+			expect(spyon).toBeCalledWith({ provider: 'Facebook' });
+			spyon.mockClear();
+		});
+	});
 });

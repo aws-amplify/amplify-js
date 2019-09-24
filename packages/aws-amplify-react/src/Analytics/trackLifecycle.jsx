@@ -16,82 +16,87 @@ import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
-    'componentDidMount',
-    'componentDidUpdate',
-    'compomentWillUnmount',
-    'compomentDidCatch',
-    'render'
+	'componentDidMount',
+	'componentDidUpdate',
+	'compomentWillUnmount',
+	'compomentDidCatch',
+	'render',
 ];
 
-export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
-    return class WithTrackLifecycle extends Component {
-        constructor(props) {
-            super(props);
-            this.trackerName = trackerName;
-            this.trackEvents = events;
+export function trackLifecycle(
+	Comp,
+	trackerName,
+	events = Default_Track_Events
+) {
+	return class WithTrackLifecycle extends Component {
+		constructor(props) {
+			super(props);
+			this.trackerName = trackerName;
+			this.trackEvents = events;
 
-            this.track('constructor');
-        }
+			this.track('constructor');
+		}
 
-        track(event) {
-            const filtered = this.trackEvents.filter(item => item === event);
-            if (filtered.length > 0) {
-                if (Analytics && typeof Analytics.record === 'function') {
-                    Analytics.record({
-                        name: this.trackerName, 
-                        attributes: { event }
-                    });
-                } else {
-                    throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
-                }
-                
-            }
-        }
+		track(event) {
+			const filtered = this.trackEvents.filter(item => item === event);
+			if (filtered.length > 0) {
+				if (Analytics && typeof Analytics.record === 'function') {
+					Analytics.record({
+						name: this.trackerName,
+						attributes: { event },
+					});
+				} else {
+					throw new Error(
+						'No Analytics module found, please ensure @aws-amplify/analytics is imported'
+					);
+				}
+			}
+		}
 
-        componentWillMount() {
-            this.track('componentWillMount');
-        }
+		componentWillMount() {
+			this.track('componentWillMount');
+		}
 
-        componentDidMount() {
-            this.track('componentDidMount');
-        }
+		componentDidMount() {
+			this.track('componentDidMount');
+		}
 
-        componentWillUnmount() {
-            this.track('componentWillUnmount');
-        }
+		componentWillUnmount() {
+			this.track('componentWillUnmount');
+		}
 
-        componentDidCatch() {
-            this.track('componentDidCatch');
-        }
+		componentDidCatch() {
+			this.track('componentDidCatch');
+		}
 
-        componentWillReceiveProps() {
-            this.track('componentWillReceiveProps');
-        }
+		componentWillReceiveProps() {
+			this.track('componentWillReceiveProps');
+		}
 
-        shouldComponentUpdate() {
-            this.track('shouldComponentUpdate');
-            return true;
-        }
+		shouldComponentUpdate() {
+			this.track('shouldComponentUpdate');
+			return true;
+		}
 
-        componentWillUpdate() {
-            this.track('componentWillUpdate');
-        }
+		componentWillUpdate() {
+			this.track('componentWillUpdate');
+		}
 
-        componentDidUpdate() {
-            this.track('componentDidUpdate');
-        }
+		componentDidUpdate() {
+			this.track('componentDidUpdate');
+		}
 
-        setState() {
-            this.track('setState');
-        }
+		setState() {
+			this.track('setState');
+		}
 
-        forceUpdate() {
-            this.track('forceUpdate');
-        }
+		forceUpdate() {
+			this.track('forceUpdate');
+		}
 
-        render() {
-            this.track('render');
-            return <Comp {...this.props} />;
-        }
-    };
+		render() {
+			this.track('render');
+			return <Comp {...this.props} />;
+		}
+	};
 }

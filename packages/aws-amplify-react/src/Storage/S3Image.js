@@ -25,167 +25,194 @@ import { calcKey } from './Common';
 const logger = new Logger('Storage.S3Image');
 
 export default class S3Image extends Component {
-    _isMounted = false;
-    constructor(props) {
-        super(props);
+	_isMounted = false;
+	constructor(props) {
+		super(props);
 
-        this.handleOnLoad = this.handleOnLoad.bind(this);
-        this.handleOnError = this.handleOnError.bind(this);
-        this.handlePick = this.handlePick.bind(this);
-        this.handleClick = this.handleClick.bind(this);
+		this.handleOnLoad = this.handleOnLoad.bind(this);
+		this.handleOnError = this.handleOnError.bind(this);
+		this.handlePick = this.handlePick.bind(this);
+		this.handleClick = this.handleClick.bind(this);
 
-        const initSrc = this.props.src || transparent1X1;
+		const initSrc = this.props.src || transparent1X1;
 
-        this.state = { src: initSrc };
-    }
+		this.state = { src: initSrc };
+	}
 
-    getImageSource(key, level, track, identityId) {
-        if (!Storage || typeof Storage.get !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
-        }
-        Storage.get(key, { level: level ? level : 'public', track, identityId })
-            .then(url => {
-                if (this._isMounted) {
-                    this.setState({
-                        src: url
-                    });
-                }
-            })
-            .catch(err => logger.debug(err));
-    }
+	getImageSource(key, level, track, identityId) {
+		if (!Storage || typeof Storage.get !== 'function') {
+			throw new Error(
+				'No Storage module found, please ensure @aws-amplify/storage is imported'
+			);
+		}
+		Storage.get(key, { level: level ? level : 'public', track, identityId })
+			.then(url => {
+				if (this._isMounted) {
+					this.setState({
+						src: url,
+					});
+				}
+			})
+			.catch(err => logger.debug(err));
+	}
 
-    load() {
-        const { imgKey, path, body, contentType, level, track, identityId } = this.props;
-        if (!imgKey && !path) {
-            logger.debug('empty imgKey and path');
-            return;
-        }
+	load() {
+		const {
+			imgKey,
+			path,
+			body,
+			contentType,
+			level,
+			track,
+			identityId,
+		} = this.props;
+		if (!imgKey && !path) {
+			logger.debug('empty imgKey and path');
+			return;
+		}
 
-        const that = this;
-        const key = imgKey || path;
-        logger.debug('loading ' + key + '...');
-        if (body) {
-            const type = contentType || 'binary/octet-stream';
-            if (!Storage || typeof Storage.put !== 'function') {
-                throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
-            }
-            const ret = Storage.put(key, body, {
-                contentType: type,
-                level: level ? level : 'public',
-                track
-            });
-            ret.then(data => {
-                logger.debug(data);
-                that.getImageSource(key, level, track, identityId);
-            })
-                .catch(err => logger.debug(err));
-        } else {
-            that.getImageSource(key, level, track, identityId);
-        }
-    }
+		const that = this;
+		const key = imgKey || path;
+		logger.debug('loading ' + key + '...');
+		if (body) {
+			const type = contentType || 'binary/octet-stream';
+			if (!Storage || typeof Storage.put !== 'function') {
+				throw new Error(
+					'No Storage module found, please ensure @aws-amplify/storage is imported'
+				);
+			}
+			const ret = Storage.put(key, body, {
+				contentType: type,
+				level: level ? level : 'public',
+				track,
+			});
+			ret
+				.then(data => {
+					logger.debug(data);
+					that.getImageSource(key, level, track, identityId);
+				})
+				.catch(err => logger.debug(err));
+		} else {
+			that.getImageSource(key, level, track, identityId);
+		}
+	}
 
-    handleOnLoad(evt) {
-        const { onLoad } = this.props;
-        if (onLoad) { onLoad(this.state.src); }
-    }
+	handleOnLoad(evt) {
+		const { onLoad } = this.props;
+		if (onLoad) {
+			onLoad(this.state.src);
+		}
+	}
 
-    handleOnError(evt) {
-        const { onError } = this.props;
-        if (onError) { onError(this.state.src); }
-    }
+	handleOnError(evt) {
+		const { onError } = this.props;
+		if (onError) {
+			onError(this.state.src);
+		}
+	}
 
-    handlePick(data) {
-        const that = this;
+	handlePick(data) {
+		const that = this;
 
-        const path = this.props.path || '';
-        const { imgKey, level, fileToKey, track, identityId } = this.props;
-        const { file, name, size, type } = data;
-        const key = imgKey || (path + calcKey(data, fileToKey));
-        if (!Storage || typeof Storage.put !== 'function') {
-            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
-        }
-        Storage.put(key, file, {
-            level: level ? level : 'public',
-            contentType: type,
-            track
-        })
-            .then(data => {
-                logger.debug('handle pick data', data);
-                that.getImageSource(key, level, track, identityId);
-            })
-            .catch(err => logger.debug('handle pick error', err));
-    }
+		const path = this.props.path || '';
+		const { imgKey, level, fileToKey, track, identityId } = this.props;
+		const { file, name, size, type } = data;
+		const key = imgKey || path + calcKey(data, fileToKey);
+		if (!Storage || typeof Storage.put !== 'function') {
+			throw new Error(
+				'No Storage module found, please ensure @aws-amplify/storage is imported'
+			);
+		}
+		Storage.put(key, file, {
+			level: level ? level : 'public',
+			contentType: type,
+			track,
+		})
+			.then(data => {
+				logger.debug('handle pick data', data);
+				that.getImageSource(key, level, track, identityId);
+			})
+			.catch(err => logger.debug('handle pick error', err));
+	}
 
-    handleClick(evt) {
-        const { onClick } = this.props;
-        if (onClick) { onClick(evt); }
-    }
+	handleClick(evt) {
+		const { onClick } = this.props;
+		if (onClick) {
+			onClick(evt);
+		}
+	}
 
-    componentDidMount() {
-        this._isMounted = true;
-        this.load();
-    }
+	componentDidMount() {
+		this._isMounted = true;
+		this.load();
+	}
 
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
+	componentWillUnmount() {
+		this._isMounted = false;
+	}
 
-    componentDidUpdate(prevProps) {
-        const update = prevProps.path !== this.props.path ||
-            prevProps.imgKey !== this.props.imgKey ||
-            prevProps.body !== this.props.body ||
-            prevProps.level !== this.props.level;
-        if (update) {
-            this.load();
-        }
-    }
+	componentDidUpdate(prevProps) {
+		const update =
+			prevProps.path !== this.props.path ||
+			prevProps.imgKey !== this.props.imgKey ||
+			prevProps.body !== this.props.body ||
+			prevProps.level !== this.props.level;
+		if (update) {
+			this.load();
+		}
+	}
 
-    imageEl(src, theme) {
-        if (!src) { return null; }
+	imageEl(src, theme) {
+		if (!src) {
+			return null;
+		}
 
-        const { selected } = this.props;
-        const containerStyle = { position: 'relative' };
-        return (
-            <div style={containerStyle} onClick={this.handleClick}>
-                <img
-                    style={theme.photoImg}
-                    src={src}
-                    onLoad={this.handleOnLoad}
-                    onError={this.handleOnError}
-                />
-                <div style={selected ? theme.overlaySelected : theme.overlay}></div>
-            </div>
-        );
-    }
+		const { selected } = this.props;
+		const containerStyle = { position: 'relative' };
+		return (
+			<div style={containerStyle} onClick={this.handleClick}>
+				<img
+					style={theme.photoImg}
+					src={src}
+					onLoad={this.handleOnLoad}
+					onError={this.handleOnError}
+				/>
+				<div style={selected ? theme.overlaySelected : theme.overlay}></div>
+			</div>
+		);
+	}
 
-    render() {
-        const { hidden, style, picker, translate, imgKey } = this.props;
-        let src = this.state.src;
-        if (translate) {
-            src = (typeof translate === 'string') ? translate : translate({
-                type: 'image',
-                key: imgKey,
-                content: src
-            });
-        }
-        if (!src && !picker) { return null; }
+	render() {
+		const { hidden, style, picker, translate, imgKey } = this.props;
+		let src = this.state.src;
+		if (translate) {
+			src =
+				typeof translate === 'string'
+					? translate
+					: translate({
+							type: 'image',
+							key: imgKey,
+							content: src,
+					  });
+		}
+		if (!src && !picker) {
+			return null;
+		}
 
-        const theme = this.props.theme || AmplifyTheme;
-        const photoStyle = hidden ? AmplifyTheme.hidden
-            : Object.assign({}, theme.photo, style);
+		const theme = this.props.theme || AmplifyTheme;
+		const photoStyle = hidden
+			? AmplifyTheme.hidden
+			: Object.assign({}, theme.photo, style);
 
-        return (
-            <div style={photoStyle}>
-                {photoStyle ? this.imageEl(src, theme) : null}
-                {picker ? <div>
-                    <PhotoPicker
-                        key="picker"
-                        onPick={this.handlePick}
-                        theme={theme}
-                    />
-                </div> : null
-                }
-            </div>
-        );
-    }
+		return (
+			<div style={photoStyle}>
+				{photoStyle ? this.imageEl(src, theme) : null}
+				{picker ? (
+					<div>
+						<PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
+					</div>
+				) : null}
+			</div>
+		);
+	}
 }

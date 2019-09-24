@@ -89,147 +89,162 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-sign-in-core',
-  template
+	selector: 'amplify-auth-sign-in-core',
+	template,
 })
 export class SignInComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  _usernameAttributes: string = 'username';
-  username: string;
-  password: string;
-  errorMessage: string;
-  local_phone_number: string = '';
-  country_code: string = '1';
-  email: string = '';    
+	_authState: AuthState;
+	_show: boolean;
+	_usernameAttributes: string = 'username';
+	username: string;
+	password: string;
+	errorMessage: string;
+	local_phone_number: string = '';
+	country_code: string = '1';
+	email: string = '';
 
-  signInUsername = '';
-  protected logger: any;
+	signInUsername = '';
+	protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('SignInComponent');
-    this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		this.logger = this.amplifyService.logger('SignInComponent');
+		this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
+	}
 
-  @Input()
-  set data(data: any) {
-    this.hide = data.hide ? data.hide : this.hide;
-    this._usernameAttributes = data.usernameAttributes;
-  }
+	@Input()
+	set data(data: any) {
+		this.hide = data.hide ? data.hide : this.hide;
+		this._usernameAttributes = data.usernameAttributes;
+	}
 
-  @Input() hide: string[] = [];
+	@Input() hide: string[] = [];
 
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
-    this.username = authState.user? authState.user.username || '' : '';
-    this.email = authState.user? authState.user.email || '' : '';
-    this.country_code = authState.user &&
-      authState.user.country_code ?
-      authState.user.country_code  :
-      this.country_code;
-    this.local_phone_number = authState.user? authState.user.local_phone_number || '' : '';
-  }
+	@Input()
+	set authState(authState: AuthState) {
+		this._authState = authState;
+		this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
+		this.username = authState.user ? authState.user.username || '' : '';
+		this.email = authState.user ? authState.user.email || '' : '';
+		this.country_code =
+			authState.user && authState.user.country_code
+				? authState.user.country_code
+				: this.country_code;
+		this.local_phone_number = authState.user
+			? authState.user.local_phone_number || ''
+			: '';
+	}
 
-  @Input()
-  set usernameAttributes(usernameAttributes: string) {
-    this._usernameAttributes = usernameAttributes;
-  }
+	@Input()
+	set usernameAttributes(usernameAttributes: string) {
+		this._usernameAttributes = usernameAttributes;
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    }
-  }
+	ngOnInit() {
+		if (!this.amplifyService.auth()) {
+			throw new Error('Auth module not registered on AmplifyService provider');
+		}
+	}
 
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-      .length > 0;
-  }
+	shouldHide(comp) {
+		return this.hide.filter(item => item === comp).length > 0;
+	}
 
-  setUsername(username: string) {
-    this.username = username;
-  }
+	setUsername(username: string) {
+		this.username = username;
+	}
 
-  setPassword(password: string) {
-    this.password = password;
-  }
+	setPassword(password: string) {
+		this.password = password;
+	}
 
-  onSignIn() {
-    this.amplifyService.auth().signIn(this.getSignInUsername(), this.password)
-      .then(user => {
-        if (user['challengeName'] === 'SMS_MFA' || user['challengeName'] === 'SOFTWARE_TOKEN_MFA') {
-          this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
-        } else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
-          this.amplifyService.setAuthState({ state: 'requireNewPassword', user });
-        } else if (
-          user['challengeName'] === 'CUSTOM_CHALLENGE' &&
-          user.challengeParam &&
-          user.challengeParam.trigger === 'true'
-        ) {
-          this.amplifyService.setAuthState({ state: 'customConfirmSignIn', user });
-        }
-      })
-      .catch((err) => {
-        this._setError(err);
-      });
-  }
+	onSignIn() {
+		this.amplifyService
+			.auth()
+			.signIn(this.getSignInUsername(), this.password)
+			.then(user => {
+				if (
+					user['challengeName'] === 'SMS_MFA' ||
+					user['challengeName'] === 'SOFTWARE_TOKEN_MFA'
+				) {
+					this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
+				} else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
+					this.amplifyService.setAuthState({
+						state: 'requireNewPassword',
+						user,
+					});
+				} else if (
+					user['challengeName'] === 'CUSTOM_CHALLENGE' &&
+					user.challengeParam &&
+					user.challengeParam.trigger === 'true'
+				) {
+					this.amplifyService.setAuthState({
+						state: 'customConfirmSignIn',
+						user,
+					});
+				}
+			})
+			.catch(err => {
+				this._setError(err);
+			});
+	}
 
-  onAlertClose() {
-    this._setError(null);
-  }
+	onAlertClose() {
+		this._setError(null);
+	}
 
-  getUserObj() {
-    const user = this.username || this.email || this.local_phone_number? 
-      { 
-        username: this.username,
-        email: this.email,
-        local_phone_number: this.local_phone_number,
-        courtry_code: this.country_code
-      } 
-      : 
-      null;
+	getUserObj() {
+		const user =
+			this.username || this.email || this.local_phone_number
+				? {
+						username: this.username,
+						email: this.email,
+						local_phone_number: this.local_phone_number,
+						courtry_code: this.country_code,
+				  }
+				: null;
 
-    return user;
-  }
+		return user;
+	}
 
-  onForgotPassword() {
-    const user = this.getUserObj();
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'forgotPassword', user });
-  }
+	onForgotPassword() {
+		const user = this.getUserObj();
+		this.onAlertClose();
+		this.amplifyService.setAuthState({ state: 'forgotPassword', user });
+	}
 
-  onSignUp() {
-    const user = this.getUserObj();
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signUp', user });
-  }
+	onSignUp() {
+		const user = this.getUserObj();
+		this.onAlertClose();
+		this.amplifyService.setAuthState({ state: 'signUp', user });
+	}
 
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-    this.errorMessage = err.message || err;
-    this.logger.error(this.errorMessage);
-  }
+	_setError(err) {
+		if (!err) {
+			this.errorMessage = null;
+			return;
+		}
+		this.errorMessage = err.message || err;
+		this.logger.error(this.errorMessage);
+	}
 
-  onUsernameFieldChanged(event: UsernameFieldOutput) {
-    this.email = event.email || this.email;
-    this.username = event.username || this.username;
-    this.country_code = event.country_code || this.country_code;
-    this.local_phone_number = event.local_phone_number || this.local_phone_number;
-  }
+	onUsernameFieldChanged(event: UsernameFieldOutput) {
+		this.email = event.email || this.email;
+		this.username = event.username || this.username;
+		this.country_code = event.country_code || this.country_code;
+		this.local_phone_number =
+			event.local_phone_number || this.local_phone_number;
+	}
 
-  getSignInUsername() {
-    switch(this._usernameAttributes) {
-      case UsernameAttributes.EMAIL:
-        return this.email;
-      case UsernameAttributes.PHONE_NUMBER:
-        return composePhoneNumber(this.country_code, this.local_phone_number);
-      default:
-        return this.username;
-    }
-  }
+	getSignInUsername() {
+		switch (this._usernameAttributes) {
+			case UsernameAttributes.EMAIL:
+				return this.email;
+			case UsernameAttributes.PHONE_NUMBER:
+				return composePhoneNumber(this.country_code, this.local_phone_number);
+			default:
+				return this.username;
+		}
+	}
 }
