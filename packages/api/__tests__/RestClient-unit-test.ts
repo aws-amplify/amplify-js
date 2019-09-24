@@ -74,7 +74,7 @@ describe('RestClient test', () => {
 			expect.assertions(1);
 
 			try {
-				await restClient.ajax('url', 'method', { headers: { reject: true } });
+				await restClient.ajax('url', 'method', { headers: { reject: "true" } });
 			} catch (error) {
 				expect(error).toEqual({ data: 'error' });
 			}
