@@ -4,7 +4,7 @@ window.alert = msg => {
 	console.log(msg);
 };
 
-function noOp() {}
+function noOp() { }
 
 if (typeof window.URL.createObjectURL === 'undefined') {
 	Object.defineProperty(window.URL, 'createObjectURL', { value: noOp });
@@ -15,7 +15,7 @@ class Worker {
 	onmessage: any;
 	constructor(stringUrl) {
 		this.url = stringUrl;
-		this.onmessage = () => {};
+		this.onmessage = () => { };
 	}
 
 	postMessage(msg) {

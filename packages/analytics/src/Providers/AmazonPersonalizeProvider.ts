@@ -49,7 +49,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._config = config ? config : {};
 		this._config.flushSize =
 			this._config.flushSize > 0 &&
-			this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
+				this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
 				? this._config.flushSize
 				: FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
@@ -224,7 +224,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 	private generateRequestParams(params, sessionInfo): RequestParams {
 		const requestParams = <RequestParams>{};
 		const { eventType, properties } = params.event;
-		requestParams.eventData = { eventType: eventType, properties: properties };
+		requestParams.eventData = { eventType, properties };
 		requestParams.sessionInfo = sessionInfo;
 		requestParams.sentAt = params.sentAt;
 		requestParams.credentials = params.credentials;
