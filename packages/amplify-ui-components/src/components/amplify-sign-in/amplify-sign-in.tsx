@@ -1,7 +1,7 @@
 import { Component, Prop, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
-import { SignInFormFooter } from './sign-in-form-footer';
+import { AmplifySignInFormFooter } from './amplify-sign-in-form-footer';
 import {
   HEADER_TEXT,
   SUBMIT_BUTTON_TEXT,
@@ -61,7 +61,7 @@ export class AmplifySignIn {
       <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
         <amplify-auth-fields formFields={this.formFields} />
         <div slot="amplify-form-section-footer">
-          <SignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} />
+          <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} />
         </div>
       </amplify-form-section>
     );

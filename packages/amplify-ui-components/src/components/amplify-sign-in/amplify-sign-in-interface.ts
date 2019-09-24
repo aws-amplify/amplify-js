@@ -3,7 +3,7 @@ export interface AmplifyForgotPasswordHintProps {
   resetPasswordText: string;
 }
 
-export interface SignInFormFooterProps {
+export interface AmplifySignInFormFooterProps {
   submitButtonText: string;
   noAccountText: string;
   createAccountText: string;
