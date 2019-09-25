@@ -176,6 +176,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		Set<SubscriptionObserver<any>>
 	> = new Map();
 
+	protected _clientIdObservers: Map<
+		string,
+		Set<SubscriptionObserver<any>>
+	> = new Map();
+
 	private _onMessage(topic: string, msg: any) {
 		try {
 			const matchedTopicObservers = [];
@@ -221,6 +226,13 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			let client: Paho.Client;
 			const { clientId = this.clientId } = options;
 
+			let observersForClientId = this._clientIdObservers.get(clientId);
+			if (!observersForClientId) {
+				observersForClientId = new Set();
+			}
+			observersForClientId.add(observer);
+			this._clientIdObservers.set(clientId, observersForClientId);
+
 			(async () => {
 				const { url = await this.endpoint } = options;
 
@@ -238,6 +250,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
 				if (client) {
+					this._clientIdObservers.get(clientId).delete(observer);
 					targetTopics.forEach(topic => {
 						if (client.isConnected()) {
 							client.unsubscribe(topic);
@@ -252,7 +265,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 						observersForTopic.clear();
 					});
 
-					this.disconnect(clientId);
+					if (this._clientIdObservers.get(clientId).size === 0) {
+						this.disconnect(clientId);
+						this._clientIdObservers.delete(clientId);
+					}
 				}
 
 				return null;
