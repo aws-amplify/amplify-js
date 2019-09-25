@@ -1,10 +1,4 @@
-import {
-	AWS,
-	ClientDevice,
-	Parser,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
+import { Credentials } from '@aws-amplify/core';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -24,18 +18,6 @@ TranslateClient.prototype.send = jest.fn((command, callback) => {
 	}
 }) as any;
 
-// jest.mock('aws-sdk/clients/translate', () => {
-// 	const Translate = () => {
-// 		return;
-// 	};
-// 	const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-// 	Translate.prototype.translateText = (params, callback) => {
-// 		callback(null, result);
-// 	};
-
-// 	return Translate;
-// });
-
 PollyClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof SynthesizeSpeechCommand) {
 		const result = {
@@ -46,21 +28,6 @@ PollyClient.prototype.send = jest.fn((command, callback) => {
 		callback(null, result);
 	}
 }) as any;
-
-// jest.mock('aws-sdk/clients/polly', () => {
-// 	const TextToSpeech = () => {
-// 		return;
-// 	};
-// 	const result = {
-// 		AudioStream: {
-// 			buffer: 'dummyStream',
-// 		},
-// 	};
-// 	TextToSpeech.prototype.synthesizeSpeech = (params, callback) => {
-// 		callback(null, result);
-// 	};
-// 	return TextToSpeech;
-// });
 
 (global as any).WebSocket = jest.fn(url => {
 	let onCloseCallback = null;
@@ -95,14 +62,6 @@ const credentials = {
 	secretAccessKey: 'secretAccessKey',
 	identityId: 'identityId',
 	authenticated: true,
-};
-
-const clientInfo = {
-	appVersion: '1.0',
-	make: 'make',
-	model: 'model',
-	version: '1.0.0',
-	platform: 'platform',
 };
 
 const options = {
@@ -194,7 +153,7 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 			window.URL.createObjectURL = jest.fn();
-			const urlSpyOn = jest
+			jest
 				.spyOn(URL, 'createObjectURL')
 				.mockImplementation(blob => {
 					return 'dummyURL';
