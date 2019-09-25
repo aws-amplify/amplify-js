@@ -1,6 +1,8 @@
-import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
-import * as Translate from 'aws-sdk/clients/translate';
-import * as TextToSpeech from 'aws-sdk/clients/polly';
+import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractConvertPredictionsProvider";
+import { TranslateClient } from "@aws-sdk/client-translate-browser/TranslateClient";
+import { TranslateTextCommand } from "@aws-sdk/client-translate-browser/commands/TranslateTextCommand";
+import { PollyClient } from "@aws-sdk/client-polly-browser/PollyClient";
+import { SynthesizeSpeechCommand } from "@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand";
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -25,8 +27,8 @@ const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
 export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
-	private translate: Translate;
-	private textToSpeech: TextToSpeech;
+	private translateClient: TranslateClient;
+	private pollyClient: PollyClient;
 	constructor() {
 		super();
 	}
@@ -63,14 +65,17 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				return rej('Please provide both source and target language');
 			}
 
-			this.translate = new Translate({ region, credentials });
-			this.translate.translateText(
+			this.translateClient = new TranslateClient({ region, credentials });
+			const translateTextCommand = new TranslateTextCommand(
 				{
 					SourceLanguageCode: sourceLanguageCode,
 					TargetLanguageCode: targetLanguageCode,
 					Text: input.translateText.source.text,
 					// tslint:disable-next-line: align
-				},
+				}
+			)
+			this.translateClient.send(
+				translateTextCommand,
 				(err, data) => {
 					logger.debug({ err, data });
 					if (err) {
@@ -113,8 +118,8 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				return rej('VoiceId was undefined.');
 			}
 
-			this.textToSpeech = new TextToSpeech({ region, credentials });
-			this.textToSpeech.synthesizeSpeech(
+			this.pollyClient = new PollyClient({ region, credentials });
+			const synthesizeSpeechCommand = new SynthesizeSpeechCommand(
 				{
 					OutputFormat: 'mp3',
 					Text: input.textToSpeech.source.text,
@@ -122,12 +127,15 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					TextType: 'text',
 					SampleRate: '24000',
 					// tslint:disable-next-line: align
-				},
+				}
+			)
+			this.pollyClient.send(
+				synthesizeSpeechCommand,
 				(err, data) => {
 					if (err) {
 						rej(err);
 					} else {
-						const blob = new Blob([data.AudioStream as ArrayBuffer], {
+						const blob = new Blob([data.AudioStream], {
 							type: data.ContentType,
 						});
 						const url = URL.createObjectURL(blob);
@@ -317,7 +325,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		let offset = 0;
 		const buffer = new ArrayBuffer(input.length * 2);
 		const view = new DataView(buffer);
-		for (let i = 0; i < input.length; i++, offset += 2) {
+		for (let i = 0; i < input.length; i++ , offset += 2) {
 			const s = Math.max(-1, Math.min(1, input[i]));
 			view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
 		}

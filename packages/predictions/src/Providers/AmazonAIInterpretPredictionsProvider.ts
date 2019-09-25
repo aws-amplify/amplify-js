@@ -10,7 +10,12 @@ import {
 	TextSyntax,
 	KeyPhrases,
 } from '../types';
-import * as Comprehend from 'aws-sdk/clients/comprehend';
+import { ComprehendClient } from "@aws-sdk/client-comprehend-browser/ComprehendClient";
+import { DetectSyntaxCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectSyntaxCommand";
+import { DetectEntitiesCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectEntitiesCommand";
+import { DetectDominantLanguageCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectDominantLanguageCommand";
+import { DetectKeyPhrasesCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectKeyPhrasesCommand";
+import { DetectSentimentCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectSentimentCommand";
 
 export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
 	constructor() {
@@ -42,7 +47,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				text: { source: { language = undefined } = {} } = {},
 			} = ({} = input as any); // language is only required for specific interpret types
 
-			const comprehend = new Comprehend({
+			const comprehendClient = new ComprehendClient({
 				credentials,
 				region,
 			});
@@ -56,7 +61,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				};
 				languagePromise = this.detectLanguage(
 					languageDetectionParams,
-					comprehend
+					comprehendClient
 				);
 			}
 
@@ -72,7 +77,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				};
 				entitiesPromise = this.detectEntities(
 					entitiesDetectionParams,
-					comprehend
+					comprehendClient
 				);
 			}
 
@@ -86,7 +91,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				sentimentPromise = this.detectSentiment(sentimentParams, comprehend);
+				sentimentPromise = this.detectSentiment(sentimentParams, comprehendClient);
 			}
 
 			let syntaxPromise: Promise<Array<TextSyntax>>;
@@ -99,7 +104,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				syntaxPromise = this.detectSyntax(syntaxParams, comprehend);
+				syntaxPromise = this.detectSyntax(syntaxParams, comprehendClient);
 			}
 
 			let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
@@ -112,7 +117,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams, comprehend);
+				keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams, comprehendClient);
 			}
 			try {
 				const results = await Promise.all([
@@ -139,13 +144,14 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 
 	private detectKeyPhrases(params, comprehend): Promise<Array<KeyPhrases>> {
 		return new Promise((res, rej) => {
-			comprehend.detectKeyPhrases(params, (err, data) => {
+			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
+			comprehend.send(detectKeyPhrasesCommand, (err, data) => {
 				const { KeyPhrases = [] } = data || {};
 				if (err) {
 					if (err.code === 'AccessDeniedException') {
 						rej(
 							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
+							'amplify predictions add'
 						);
 					} else {
 						rej(err.message);
@@ -163,13 +169,14 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 
 	private detectSyntax(params, comprehend): Promise<Array<TextSyntax>> {
 		return new Promise((res, rej) => {
-			comprehend.detectSyntax(params, (err, data) => {
+			const detectSyntaxCommand = new DetectSyntaxCommand(params);
+			comprehend.send(detectSyntaxCommand, (err, data) => {
 				const { SyntaxTokens = [] } = data || {};
 				if (err) {
 					if (err.code === 'AccessDeniedException') {
 						rej(
 							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
+							'amplify predictions add'
 						);
 					} else {
 						rej(err.message);
@@ -195,12 +202,13 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 
 	private detectSentiment(params, comprehend): Promise<TextSentiment> {
 		return new Promise((res, rej) => {
-			comprehend.detectSentiment(params, (err, data) => {
+			const detectSentimentCommand = new DetectSentimentCommand(params);
+			comprehend.send(detectSentimentCommand, (err, data) => {
 				if (err) {
 					if (err.code === 'AccessDeniedException') {
 						rej(
 							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
+							'amplify predictions add'
 						);
 					} else {
 						rej(err.message);
@@ -222,14 +230,15 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 	}
 
 	private detectEntities(params, comprehend): Promise<Array<TextEntities>> {
-		return new Promise((res, rej) => {
-			comprehend.detectEntities(params, (err, data) => {
+		return new Promise(async (res, rej) => {
+			const detectEntitiesCommand = new DetectEntitiesCommand(params);
+			await comprehend.send(detectEntitiesCommand, (err, data) => {
 				const { Entities = [] } = data || {};
 				if (err) {
 					if (err.code === 'AccessDeniedException') {
 						rej(
 							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
+							'amplify predictions add'
 						);
 					} else {
 						rej(err.message);
@@ -252,13 +261,14 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 	}
 
 	private detectLanguage(params, comprehend): Promise<string> {
-		return new Promise((res, rej) => {
-			comprehend.detectDominantLanguage(params, (err, data) => {
+		return new Promise(async (res, rej) => {
+			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(params);
+			comprehend.send(detectDominantLanguageCommand, (err, data) => {
 				if (err) {
 					if (err.code === 'AccessDeniedException') {
 						rej(
 							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
+							'amplify predictions add'
 						);
 					} else {
 						rej(err.message);

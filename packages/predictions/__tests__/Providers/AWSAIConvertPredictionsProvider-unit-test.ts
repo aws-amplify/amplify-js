@@ -12,35 +12,55 @@ import {
 	SpeechToTextOutput,
 } from '../../src/types';
 import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
-import * as Translate from 'aws-sdk/clients/translate';
-import * as TextToSpeech from 'aws-sdk/clients/polly';
+import { TranslateClient } from '@aws-sdk/client-translate-browser/TranslateClient';
+import { TranslateTextCommand } from '@aws-sdk/client-translate-browser/commands/TranslateTextCommand';
+import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
+import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
 
-jest.mock('aws-sdk/clients/translate', () => {
-	const Translate = () => {
-		return;
-	};
-	const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-	Translate.prototype.translateText = (params, callback) => {
+const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
+TranslateClient.prototype.send = jest.fn((command, callback) => {
+	if (command instanceof TranslateTextCommand) {
 		callback(null, result);
-	};
+	}
+}) as any;
 
-	return Translate;
-});
+// jest.mock('aws-sdk/clients/translate', () => {
+// 	const Translate = () => {
+// 		return;
+// 	};
+// 	const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
+// 	Translate.prototype.translateText = (params, callback) => {
+// 		callback(null, result);
+// 	};
 
-jest.mock('aws-sdk/clients/polly', () => {
-	const TextToSpeech = () => {
-		return;
-	};
-	const result = {
-		AudioStream: {
-			buffer: 'dummyStream',
-		},
-	};
-	TextToSpeech.prototype.synthesizeSpeech = (params, callback) => {
+// 	return Translate;
+// });
+
+PollyClient.prototype.send = jest.fn((command, callback) => {
+	if (command instanceof SynthesizeSpeechCommand) {
+		const result = {
+			AudioStream: {
+				buffer: 'dummyStream',
+			},
+		};
 		callback(null, result);
-	};
-	return TextToSpeech;
-});
+	}
+}) as any;
+
+// jest.mock('aws-sdk/clients/polly', () => {
+// 	const TextToSpeech = () => {
+// 		return;
+// 	};
+// 	const result = {
+// 		AudioStream: {
+// 			buffer: 'dummyStream',
+// 		},
+// 	};
+// 	TextToSpeech.prototype.synthesizeSpeech = (params, callback) => {
+// 		callback(null, result);
+// 	};
+// 	return TextToSpeech;
+// });
 
 (global as any).WebSocket = jest.fn(url => {
 	let onCloseCallback = null;
@@ -155,8 +175,8 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			const translateSpy = jest
-				.spyOn(Translate.prototype, 'translateText')
+			jest
+				.spyOn(TranslateClient.prototype, 'send')
 				.mockImplementation((input, callback) => {
 					callback('error', null);
 				});
@@ -205,8 +225,8 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			const textToSpeechSpy = jest
-				.spyOn(TextToSpeech.prototype, 'synthesizeSpeech')
+			jest
+				.spyOn(PollyClient.prototype, 'send')
 				.mockImplementation((input, callback) => {
 					callback('error', null);
 				});
