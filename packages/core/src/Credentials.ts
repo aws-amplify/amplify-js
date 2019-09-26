@@ -302,13 +302,6 @@ export class CredentialsClass {
 		const { identityPoolId } = this._config;
 		return new Promise((res, rej) => {
 			credentials
-				.catch(err => {
-					if (err) {
-						logger.debug('Failed to load credentials', credentials);
-						rej(err);
-						return;
-					}
-				})
 				.then(async credentials => {
 					logger.debug('Load credentials successfully', credentials);
 					that._credentials = credentials;
@@ -344,6 +337,13 @@ export class CredentialsClass {
 					}
 					res(that._credentials);
 					return;
+				})
+				.catch(err => {
+					if (err) {
+						logger.debug('Failed to load credentials', credentials);
+						rej(err);
+						return;
+					}
 				});
 		});
 	}
