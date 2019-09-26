@@ -22,7 +22,9 @@
     "publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'"
   },
   "husky": {
-    "hooks": {}
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   },
   "workspaces": [
     "packages/*"
@@ -38,20 +40,21 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/node": "^8.9.5",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^8.9.5",
     "babel-loader": "^8.0.0",
     "codecov": "^1.0.1",
     "compression-webpack-plugin": "^1.1.3",
     "cypress": "^3.2.0",
-    "husky": "^1.3.1",
+    "husky": "^3.0.5",
     "jest": "^24.x.x",
     "json-loader": "^0.5.7",
     "lerna": "^3.13.1",
+    "pretty-quick": "^1.11.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.67.4",
     "rollup-plugin-commonjs": "^9.2.0",
