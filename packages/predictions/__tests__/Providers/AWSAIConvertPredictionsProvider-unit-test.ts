@@ -153,11 +153,9 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 			window.URL.createObjectURL = jest.fn();
-			jest
-				.spyOn(URL, 'createObjectURL')
-				.mockImplementation(blob => {
-					return 'dummyURL';
-				});
+			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+				return 'dummyURL';
+			});
 			return expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).resolves.toMatchObject({

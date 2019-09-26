@@ -1,8 +1,8 @@
-import { AbstractConvertPredictionsProvider } from "../types/Providers/AbstractConvertPredictionsProvider";
-import { TranslateClient } from "@aws-sdk/client-translate-browser/TranslateClient";
-import { TranslateTextCommand } from "@aws-sdk/client-translate-browser/commands/TranslateTextCommand";
-import { PollyClient } from "@aws-sdk/client-polly-browser/PollyClient";
-import { SynthesizeSpeechCommand } from "@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand";
+import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
+import { TranslateClient } from '@aws-sdk/client-translate-browser/TranslateClient';
+import { TranslateTextCommand } from '@aws-sdk/client-translate-browser/commands/TranslateTextCommand';
+import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
+import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -66,28 +66,23 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			}
 
 			this.translateClient = new TranslateClient({ region, credentials });
-			const translateTextCommand = new TranslateTextCommand(
-				{
-					SourceLanguageCode: sourceLanguageCode,
-					TargetLanguageCode: targetLanguageCode,
-					Text: input.translateText.source.text,
-					// tslint:disable-next-line: align
+			const translateTextCommand = new TranslateTextCommand({
+				SourceLanguageCode: sourceLanguageCode,
+				TargetLanguageCode: targetLanguageCode,
+				Text: input.translateText.source.text,
+				// tslint:disable-next-line: align
+			});
+			this.translateClient.send(translateTextCommand, (err, data) => {
+				logger.debug({ err, data });
+				if (err) {
+					return rej(err);
+				} else {
+					return res({
+						text: data.TranslatedText,
+						language: data.TargetLanguageCode,
+					} as TranslateTextOutput);
 				}
-			)
-			this.translateClient.send(
-				translateTextCommand,
-				(err, data) => {
-					logger.debug({ err, data });
-					if (err) {
-						return rej(err);
-					} else {
-						return res({
-							text: data.TranslatedText,
-							language: data.TargetLanguageCode,
-						} as TranslateTextOutput);
-					}
-				}
-			);
+			});
 		});
 	}
 
@@ -119,34 +114,29 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			}
 
 			this.pollyClient = new PollyClient({ region, credentials });
-			const synthesizeSpeechCommand = new SynthesizeSpeechCommand(
-				{
-					OutputFormat: 'mp3',
-					Text: input.textToSpeech.source.text,
-					VoiceId: voiceId,
-					TextType: 'text',
-					SampleRate: '24000',
-					// tslint:disable-next-line: align
+			const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
+				OutputFormat: 'mp3',
+				Text: input.textToSpeech.source.text,
+				VoiceId: voiceId,
+				TextType: 'text',
+				SampleRate: '24000',
+				// tslint:disable-next-line: align
+			});
+			this.pollyClient.send(synthesizeSpeechCommand, (err, data) => {
+				if (err) {
+					rej(err);
+				} else {
+					const blob = new Blob([data.AudioStream], {
+						type: data.ContentType,
+					});
+					const url = URL.createObjectURL(blob);
+					res({
+						speech: { url },
+						audioStream: (data.AudioStream as any).buffer,
+						text: input.textToSpeech.source.text,
+					} as TextToSpeechOutput);
 				}
-			)
-			this.pollyClient.send(
-				synthesizeSpeechCommand,
-				(err, data) => {
-					if (err) {
-						rej(err);
-					} else {
-						const blob = new Blob([data.AudioStream], {
-							type: data.ContentType,
-						});
-						const url = URL.createObjectURL(blob);
-						res({
-							speech: { url },
-							audioStream: (data.AudioStream as any).buffer,
-							text: input.textToSpeech.source.text,
-						} as TextToSpeechOutput);
-					}
-				}
-			);
+			});
 		});
 	}
 
@@ -325,7 +315,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		let offset = 0;
 		const buffer = new ArrayBuffer(input.length * 2);
 		const view = new DataView(buffer);
-		for (let i = 0; i < input.length; i++ , offset += 2) {
+		for (let i = 0; i < input.length; i++, offset += 2) {
 			const s = Math.max(-1, Math.min(1, input[i]));
 			view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
 		}

@@ -1,10 +1,10 @@
 import { Credentials } from '@aws-amplify/core';
 import { ComprehendClient } from '@aws-sdk/client-comprehend-browser/ComprehendClient';
-import { DetectSyntaxCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectSyntaxCommand";
-import { DetectEntitiesCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectEntitiesCommand";
-import { DetectDominantLanguageCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectDominantLanguageCommand";
-import { DetectKeyPhrasesCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectKeyPhrasesCommand";
-import { DetectSentimentCommand } from "@aws-sdk/client-comprehend-browser/commands/DetectSentimentCommand";
+import { DetectSyntaxCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectSyntaxCommand';
+import { DetectEntitiesCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectEntitiesCommand';
+import { DetectDominantLanguageCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectDominantLanguageCommand';
+import { DetectKeyPhrasesCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectKeyPhrasesCommand';
+import { DetectSentimentCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectSentimentCommand';
 
 ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectEntitiesCommand) {
@@ -210,10 +210,7 @@ describe('Predictions interpret provider test', () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			predictionsProvider.configure(happyConfig);
 
-			const detectEntitiesSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			expect.assertions(2);
 
 			await expect(
@@ -237,7 +234,10 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(detectEntitiesSpy).toBeCalledWith(new DetectEntitiesCommand(sdkParams), expect.any(Function));
+			expect(detectEntitiesSpy).toBeCalledWith(
+				new DetectEntitiesCommand(sdkParams),
+				expect.any(Function)
+			);
 		});
 
 		test('happy case credentials exists detectDominantLanguage', async () => {
@@ -311,7 +311,10 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(sentimentSpy).toBeCalledWith(new DetectSentimentCommand(sdkParams), expect.any(Function));
+			expect(sentimentSpy).toBeCalledWith(
+				new DetectSentimentCommand(sdkParams),
+				expect.any(Function)
+			);
 		});
 
 		test('happy case credentials exists detect syntax', async () => {
@@ -359,17 +362,17 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(syntaxSpy).toBeCalledWith(new DetectSyntaxCommand(sdkParams), expect.any(Function));
+			expect(syntaxSpy).toBeCalledWith(
+				new DetectSyntaxCommand(sdkParams),
+				expect.any(Function)
+			);
 		});
 
 		test('happy case credentials exists detect key phrases', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			predictionsProvider.configure(happyConfig);
 
-			const keyPhrasesSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const keyPhrasesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
 
@@ -398,7 +401,10 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(keyPhrasesSpy).toBeCalledWith(new DetectKeyPhrasesCommand(sdkParams), expect.any(Function));
+			expect(keyPhrasesSpy).toBeCalledWith(
+				new DetectKeyPhrasesCommand(sdkParams),
+				expect.any(Function)
+			);
 		});
 
 		test("happy case credentials type: 'ALL'", async () => {
@@ -449,20 +455,14 @@ describe('Predictions interpret provider test', () => {
 				},
 			});
 
-			const keyPhrasesSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const keyPhrasesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const syntaxSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const sentimentSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const dominantLanguageSpy = jest.spyOn(
 				ComprehendClient.prototype,
 				'send'
 			);
-			const detectEntitiesSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(6);
 
@@ -470,10 +470,22 @@ describe('Predictions interpret provider test', () => {
 				LanguageCode: 'en-US',
 				Text: textToTest,
 			};
-			expect(keyPhrasesSpy).toBeCalledWith(new DetectKeyPhrasesCommand(sdkParams), expect.any(Function));
-			expect(syntaxSpy).toBeCalledWith(new DetectSyntaxCommand(sdkParams), expect.any(Function));
-			expect(sentimentSpy).toBeCalledWith(new DetectSentimentCommand(sdkParams), expect.any(Function));
-			expect(detectEntitiesSpy).toBeCalledWith(new DetectEntitiesCommand(sdkParams), expect.any(Function));
+			expect(keyPhrasesSpy).toBeCalledWith(
+				new DetectKeyPhrasesCommand(sdkParams),
+				expect.any(Function)
+			);
+			expect(syntaxSpy).toBeCalledWith(
+				new DetectSyntaxCommand(sdkParams),
+				expect.any(Function)
+			);
+			expect(sentimentSpy).toBeCalledWith(
+				new DetectSentimentCommand(sdkParams),
+				expect.any(Function)
+			);
+			expect(detectEntitiesSpy).toBeCalledWith(
+				new DetectEntitiesCommand(sdkParams),
+				expect.any(Function)
+			);
 			expect(dominantLanguageSpy).toBeCalledWith(
 				new DetectDominantLanguageCommand({ Text: textToTest }),
 				expect.any(Function)

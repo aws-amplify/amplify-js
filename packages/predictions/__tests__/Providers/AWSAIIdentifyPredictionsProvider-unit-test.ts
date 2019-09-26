@@ -7,16 +7,34 @@ import {
 	IdentifyTextOutput,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
-	BlockList
+	BlockList,
 } from '../../src/types';
 import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
 import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
-import { DetectLabelsOutput, DetectLabelsCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectLabelsCommand';
-import { DetectModerationLabelsOutput, DetectModerationLabelsCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectModerationLabelsCommand';
-import { DetectFacesOutput, DetectFacesCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectFacesCommand';
-import { SearchFacesByImageOutput, SearchFacesByImageCommand } from '@aws-sdk/client-rekognition-browser/commands/SearchFacesByImageCommand';
-import { RecognizeCelebritiesOutput, RecognizeCelebritiesCommand } from '@aws-sdk/client-rekognition-browser/commands/RecognizeCelebritiesCommand';
-import { DetectTextOutput, DetectTextCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectTextCommand';
+import {
+	DetectLabelsOutput,
+	DetectLabelsCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectLabelsCommand';
+import {
+	DetectModerationLabelsOutput,
+	DetectModerationLabelsCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectModerationLabelsCommand';
+import {
+	DetectFacesOutput,
+	DetectFacesCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectFacesCommand';
+import {
+	SearchFacesByImageOutput,
+	SearchFacesByImageCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/SearchFacesByImageCommand';
+import {
+	RecognizeCelebritiesOutput,
+	RecognizeCelebritiesCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/RecognizeCelebritiesCommand';
+import {
+	DetectTextOutput,
+	DetectTextCommand,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectTextCommand';
 import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
 import { DetectDocumentTextCommand } from '@aws-sdk/client-textract-browser/commands/DetectDocumentTextCommand';
 import { AnalyzeDocumentCommand } from '@aws-sdk/client-textract-browser/commands/AnalyzeDocumentCommand';
@@ -28,7 +46,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			Labels: [
 				{
 					Name: 'test',
-					Instances: [{ BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } }],
+					Instances: [
+						{ BoundingBox: { Height: 0, Left: 0, Top: 0, Width: 0 } },
+					],
 				},
 			],
 			$metadata: null,
@@ -286,7 +306,7 @@ describe('Predictions identify provider test', () => {
 							TextDetections: [
 								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
 							],
-							$metadata: null
+							$metadata: null,
 						};
 						for (let i = 0; i < 50; ++i) {
 							plainBlocks.TextDetections.push({
@@ -551,7 +571,7 @@ describe('Predictions identify provider test', () => {
 					],
 				},
 			],
-			$metadata: null
+			$metadata: null,
 		};
 
 		test('happy case input source valid public s3object', () => {
