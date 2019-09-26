@@ -34,6 +34,8 @@ import {
 	Image,
 	Document,
 	FeatureTypes,
+	TextDetectionList,
+	BlockList
 } from '../types';
 import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
 import {
@@ -100,7 +102,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 						.catch(err => rej(err));
 				}
 				// everything else can be directly passed to Rekognition / Textract.
-				res({ Bytes: bytes });
+				res({ Bytes: bytes } as Image);
 			} else {
 				rej('Input source is not configured correctly.');
 			}
@@ -151,49 +153,43 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				const rekognitionParam: DetectTextInput = {
 					Image: inputDocument,
 				};
-				const detectTextCommand = new DetectTextCommand(rekognitionParam);
-				this.rekognitionClient.send(
-					detectTextCommand,
-					(rekognitionErr, rekognitionData) => {
-						if (rekognitionErr) return rej(rekognitionErr);
-						const rekognitionResponse = categorizeRekognitionBlocks(
-							rekognitionData.TextDetections
-						);
-						if (rekognitionResponse.text.words.length < 50) {
-							// did not hit the word limit, return the data
-							return res(rekognitionResponse);
-						}
-						const detectDocumentTextCommand = new DetectDocumentTextCommand(
-							textractParam
-						);
-						this.textractClient.send(
-							detectDocumentTextCommand,
-							(textractErr, textractData) => {
-								if (textractErr) return rej(textractErr);
-								// use the service that identified more texts.
-								if (
-									rekognitionData.TextDetections.length >
-									textractData.Blocks.length
-								) {
-									return res(rekognitionResponse);
-								} else {
-									return res(categorizeTextractBlocks(textractData.Blocks));
-								}
-							}
-						);
+				try {
+					const detectTextCommand = new DetectTextCommand(rekognitionParam);
+					const rekognitionData = await this.rekognitionClient.send(detectTextCommand);
+					const rekognitionResponse = categorizeRekognitionBlocks(
+						rekognitionData.TextDetections as TextDetectionList
+					);
+					if (rekognitionResponse.text.words.length < 50) {
+						// did not hit the word limit, return the data
+						return rekognitionResponse;
 					}
-				);
+					try {
+						const detectDocumentTextCommand = new DetectDocumentTextCommand(textractParam);
+						const textractData = await this.textractClient.send(detectDocumentTextCommand);
+						if (rekognitionData.TextDetections.length > textractData.Blocks.length) {
+							return rekognitionResponse;
+						} else {
+							return categorizeTextractBlocks(textractData.Blocks as BlockList);
+						}
+					} catch (textractErr) {
+						return textractErr;
+					}
+				} catch (rekognitionErr) {
+					return rekognitionErr;
+				}
 			} else {
 				const param: AnalyzeDocumentInput = {
 					Document: inputDocument,
 					FeatureTypes: featureTypes,
 				};
-				const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
-				this.textractClient.send(analyzeDocumentCommand, (err, data) => {
-					if (err) return rej(err);
+				try {
+					const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
+					const data = await this.textractClient.send(analyzeDocumentCommand);
 					const blocks = data.Blocks;
-					res(categorizeTextractBlocks(blocks));
-				});
+					return categorizeTextractBlocks(blocks as BlockList);
+				} catch (err) {
+					return err;
+				}
 			}
 		});
 	}
@@ -235,9 +231,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			if (entityType === 'UNSAFE' || entityType === 'ALL') {
 				servicePromises.push(this.detectModerationLabels(param));
 			}
-			// if (servicePromises.length === 0) {
-			//     rej('You must specify entity type: LABELS | UNSAFE | ALL');
-			// }
+
 			Promise.all(servicePromises)
 				.then(data => {
 					let identifyResult: IdentifyLabelsOutput = {};
