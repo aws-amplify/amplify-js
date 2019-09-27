@@ -22,9 +22,9 @@ import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObje
  * actually be using dispatchStorageEvent from Storage
  */
 
-S3Client.prototype.send = jest.fn((command, callback) => {
+S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
-		callback(null, {
+		return {
 			Contents: [
 				{
 					Key: 'public/path/itemsKey',
@@ -33,10 +33,10 @@ S3Client.prototype.send = jest.fn((command, callback) => {
 					Size: 'size',
 				},
 			],
-		});
+		};
 	}
-	callback(null, 'data');
-}) as any;
+	return 'data';
+});
 
 S3RequestPresigner.prototype.presignRequest = jest.fn((request, expires) => {
 	return new Promise<any>((res, rej) => {
@@ -185,8 +185,8 @@ describe('StorageProvider test', () => {
 			storage.configure(options_with_download);
 			const spyon = jest
 				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce((params, callback) => {
-					callback(null, { Body: [1, 2] } as any);
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
 				});
 
 			expect.assertions(2);
@@ -210,8 +210,8 @@ describe('StorageProvider test', () => {
 			storage.configure(options);
 			jest
 				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce((params, callback) => {
-					callback('err', null);
+				.mockImplementationOnce(async params => {
+					throw 'err';
 				});
 
 			expect.assertions(1);
@@ -474,8 +474,8 @@ describe('StorageProvider test', () => {
 			storage.configure(options);
 			const spyon = jest
 				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce((params, callback) => {
-					callback('err', null);
+				.mockImplementationOnce(async params => {
+					throw 'err';
 				});
 
 			expect.assertions(1);
@@ -596,8 +596,8 @@ describe('StorageProvider test', () => {
 			storage.configure(options);
 			const spyon = jest
 				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce((params, callback) => {
-					callback('err', null);
+				.mockImplementationOnce(async params => {
+					throw 'err';
 				});
 
 			expect.assertions(1);
@@ -727,8 +727,8 @@ describe('StorageProvider test', () => {
 			storage.configure(options);
 			const spyon = jest
 				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce((params, callback) => {
-					callback('err', null);
+				.mockImplementationOnce(async params => {
+					throw 'err';
 				});
 
 			expect.assertions(1);

@@ -133,66 +133,61 @@ export class AWSS3Provider implements StorageProvider {
 		};
 
 		if (download === true) {
-			return new Promise<any>((res, rej) => {
-				const getObjectCommand = new GetObjectCommand(params);
-				s3.send(getObjectCommand, (err, data) => {
-					if (err) {
-						dispatchStorageEvent(
-							track,
-							'download',
-							{
-								method: 'get',
-								result: 'failed',
-							},
-							null,
-							`Download failed with ${err.message}`
-						);
-						rej(err);
-					} else {
-						dispatchStorageEvent(
-							track,
-							'download',
-							{ method: 'get', result: 'success' },
-							{ fileSize: Number(data.Body['length']) },
-							`Download success for ${key}`
-						);
-						res(data);
-					}
-				});
-			});
+			const getObjectCommand = new GetObjectCommand(params);
+			try {
+				const response = await s3.send(getObjectCommand);
+				dispatchStorageEvent(
+					track,
+					'download',
+					{ method: 'get', result: 'success' },
+					{ fileSize: Number(response.Body['length']) },
+					`Download success for ${key}`
+				);
+				return response;
+			} catch (err) {
+				dispatchStorageEvent(
+					track,
+					'download',
+					{
+						method: 'get',
+						result: 'failed',
+					},
+					null,
+					`Download failed with ${err.message}`
+				);
+				throw err;
+			}
 		}
 
 		params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
 		params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
 
-		return new Promise<string>(async (res, rej) => {
-			try {
-				const signer = new S3RequestPresigner({ ...s3.config });
-				const request = await createRequest(s3, new GetObjectCommand(params));
-				const url = formatUrl((await signer.presignRequest(
-					request,
-					params.Expires
-				)) as any);
-				dispatchStorageEvent(
-					track,
-					'getSignedUrl',
-					{ method: 'get', result: 'success' },
-					null,
-					`Signed URL: ${url}`
-				);
-				res(url);
-			} catch (e) {
-				logger.warn('get signed url error', e);
-				dispatchStorageEvent(
-					track,
-					'getSignedUrl',
-					{ method: 'get', result: 'failed' },
-					null,
-					`Could not get a signed URL for ${key}`
-				);
-				rej(e);
-			}
-		});
+		try {
+			const signer = new S3RequestPresigner({ ...s3.config });
+			const request = await createRequest(s3, new GetObjectCommand(params));
+			const url = formatUrl((await signer.presignRequest(
+				request,
+				params.Expires
+			)) as any);
+			dispatchStorageEvent(
+				track,
+				'getSignedUrl',
+				{ method: 'get', result: 'success' },
+				null,
+				`Signed URL: ${url}`
+			);
+			return url;
+		} catch (e) {
+			logger.warn('get signed url error', e);
+			dispatchStorageEvent(
+				track,
+				'getSignedUrl',
+				{ method: 'get', result: 'failed' },
+				null,
+				`Could not get a signed URL for ${key}`
+			);
+			throw e;
+		}
 	}
 
 	/**
@@ -269,44 +264,42 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
-		return new Promise<any>((res, rej) => {
+		try {
 			const putObjectCommand = new PutObjectCommand(params);
-			s3.send(putObjectCommand, (err, data) => {
-				if (err) {
-					logger.warn('error uploading', err);
-					dispatchStorageEvent(
-						track,
-						'upload',
-						{ method: 'put', result: 'failed' },
-						null,
-						`Error uploading ${key}`
-					);
-					rej(err);
-				} else {
-					logger.debug('upload result', data);
-					dispatchStorageEvent(
-						track,
-						'upload',
-						{ method: 'put', result: 'success' },
-						null,
-						`Upload success for ${key}`
-					);
-					res({
-						key,
-					});
-				}
-			});
-			// This functionality is not available in V3 SDK. Amplify needs to implement it.
-			// .on('httpUploadProgress', progress => {
-			//     if (progressCallback) {
-			//         if (typeof progressCallback === 'function') {
-			//             progressCallback(progress);
-			//         } else {
-			//             logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
-			//         }
-			//     }
-			// });
-		});
+			const response = await s3.send(putObjectCommand);
+
+			logger.debug('upload result', response);
+			dispatchStorageEvent(
+				track,
+				'upload',
+				{ method: 'put', result: 'success' },
+				null,
+				`Upload success for ${key}`
+			);
+			return {
+				key,
+			};
+		} catch (err) {
+			logger.warn('error uploading', err);
+			dispatchStorageEvent(
+				track,
+				'upload',
+				{ method: 'put', result: 'failed' },
+				null,
+				`Error uploading ${key}`
+			);
+			throw err;
+		}
+		// This functionality is not available in V3 SDK. Amplify needs to implement it.
+		// .on('httpUploadProgress', progress => {
+		//     if (progressCallback) {
+		//         if (typeof progressCallback === 'function') {
+		//             progressCallback(progress);
+		//         } else {
+		//             logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+		//         }
+		//     }
+		// });
 	}
 
 	/**
@@ -336,29 +329,26 @@ export class AWSS3Provider implements StorageProvider {
 
 		const deleteObjectCommand = new DeleteObjectCommand(params);
 
-		return new Promise<any>((res, rej) => {
-			s3.send(deleteObjectCommand, (err, data) => {
-				if (err) {
-					dispatchStorageEvent(
-						track,
-						'delete',
-						{ method: 'remove', result: 'failed' },
-						null,
-						`Deletion of ${key} failed with ${err}`
-					);
-					rej(err);
-				} else {
-					dispatchStorageEvent(
-						track,
-						'delete',
-						{ method: 'remove', result: 'success' },
-						null,
-						`Deleted ${key} successfully`
-					);
-					res(data);
-				}
-			});
-		});
+		try {
+			const response = await s3.send(deleteObjectCommand);
+			dispatchStorageEvent(
+				track,
+				'delete',
+				{ method: 'remove', result: 'success' },
+				null,
+				`Deleted ${key} successfully`
+			);
+			return response;
+		} catch (err) {
+			dispatchStorageEvent(
+				track,
+				'delete',
+				{ method: 'remove', result: 'failed' },
+				null,
+				`Deletion of ${key} failed with ${err}`
+			);
+			throw err;
+		}
 	}
 
 	/**
@@ -388,39 +378,36 @@ export class AWSS3Provider implements StorageProvider {
 
 		const listObjectsCommand = new ListObjectsCommand(params);
 
-		return new Promise<any>((res, rej) => {
-			s3.send(listObjectsCommand, (err, data) => {
-				if (err) {
-					logger.warn('list error', err);
-					dispatchStorageEvent(
-						track,
-						'list',
-						{ method: 'list', result: 'failed' },
-						null,
-						`Listing items failed: ${err.message}`
-					);
-					rej(err);
-				} else {
-					const list = data.Contents.map(item => {
-						return {
-							key: item.Key.substr(prefix.length),
-							eTag: item.ETag,
-							lastModified: item.LastModified,
-							size: item.Size,
-						};
-					});
-					dispatchStorageEvent(
-						track,
-						'list',
-						{ method: 'list', result: 'success' },
-						null,
-						`${list.length} items returned from list operation`
-					);
-					logger.debug('list', list);
-					res(list);
-				}
+		try {
+			const response = await s3.send(listObjectsCommand);
+			const list = (response as any).Contents.map(item => {
+				return {
+					key: item.Key.substr(prefix.length),
+					eTag: item.ETag,
+					lastModified: item.LastModified,
+					size: item.Size,
+				};
 			});
-		});
+			dispatchStorageEvent(
+				track,
+				'list',
+				{ method: 'list', result: 'success' },
+				null,
+				`${list.length} items returned from list operation`
+			);
+			logger.debug('list', list);
+			return list;
+		} catch (err) {
+			logger.warn('list error', err);
+			dispatchStorageEvent(
+				track,
+				'list',
+				{ method: 'list', result: 'failed' },
+				null,
+				`Listing items failed: ${err.message}`
+			);
+			throw err;
+		}
 	}
 
 	/**
