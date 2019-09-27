@@ -6,7 +6,6 @@ env:
 settings:
   import/resolver: webpack
 rules:
-
   # Git-controlled
   linebreak-style: off
   # sjcl hmac breaks new-cap
