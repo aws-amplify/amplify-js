@@ -6,6 +6,14 @@ env:
 settings:
   import/resolver: webpack
 rules:
+  indent: 
+  - error
+  - tab
+  max-len: 
+  - 2
+  - 120
+  new-cap: false
+
   # Git-controlled
   linebreak-style: off
   # sjcl hmac breaks new-cap
