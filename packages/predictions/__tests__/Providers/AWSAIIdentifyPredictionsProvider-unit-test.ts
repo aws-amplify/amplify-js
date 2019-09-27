@@ -65,7 +65,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 		};
 
 		if (!callback) {
-			Promise.resolve(detectModerationLabelsResponse);
+			return Promise.resolve(detectModerationLabelsResponse);
 		}
 		callback(null, detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
@@ -74,7 +74,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			$metadata: null,
 		};
 		if (!callback) {
-			Promise.resolve(detectFacesResponse);
+			return Promise.resolve(detectFacesResponse);
 		}
 		callback(null, detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
@@ -91,7 +91,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			$metadata: null,
 		};
 		if (!callback) {
-			Promise.resolve(searchFacesByImageResponse);
+			return Promise.resolve(searchFacesByImageResponse);
 		}
 		callback(null, searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
@@ -118,7 +118,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			$metadata: null,
 		};
 		if (!callback) {
-			Promise.resolve(recognizeCelebritiesResponse);
+			return Promise.resolve(recognizeCelebritiesResponse);
 		}
 		callback(null, recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
@@ -131,7 +131,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			$metadata: null,
 		};
 		if (!callback) {
-			Promise.resolve(plainBlocks);
+			return Promise.resolve(plainBlocks);
 		}
 		callback(null, plainBlocks);
 	}
