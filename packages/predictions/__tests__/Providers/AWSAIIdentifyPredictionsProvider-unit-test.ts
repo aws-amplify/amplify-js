@@ -53,18 +53,29 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+
+		if (!callback) {
+			return Promise.resolve(detectlabelsResponse);
+		}
 		callback(null, detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsOutput = {
 			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
 			$metadata: null,
 		};
+
+		if (!callback) {
+			Promise.resolve(detectModerationLabelsResponse);
+		}
 		callback(null, detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
 			$metadata: null,
 		};
+		if (!callback) {
+			Promise.resolve(detectFacesResponse);
+		}
 		callback(null, detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
 		const searchFacesByImageResponse: SearchFacesByImageOutput = {
@@ -79,6 +90,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			Promise.resolve(searchFacesByImageResponse);
+		}
 		callback(null, searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
 		const recognizeCelebritiesResponse: RecognizeCelebritiesOutput = {
@@ -103,6 +117,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			Promise.resolve(recognizeCelebritiesResponse);
+		}
 		callback(null, recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
 		const plainBlocks: DetectTextOutput = {
@@ -113,6 +130,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			Promise.resolve(plainBlocks);
+		}
 		callback(null, plainBlocks);
 	}
 }) as any;
@@ -213,8 +233,14 @@ const analyzeDocumentResponse = {
 
 TextractClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectDocumentTextCommand) {
+		if (!callback) {
+			return Promise.resolve(detectDocumentTextResponse);
+		}
 		callback(null, detectDocumentTextResponse);
 	} else if (command instanceof AnalyzeDocumentCommand) {
+		if (!callback) {
+			return Promise.resolve(analyzeDocumentResponse);
+		}
 		callback(null, analyzeDocumentResponse);
 	}
 }) as any;
@@ -315,6 +341,9 @@ describe('Predictions identify provider test', () => {
 								ParentId: 1,
 								DetectedText: '',
 							});
+						}
+						if (!callback) {
+							return Promise.resolve(plainBlocks);
 						}
 						callback(null, plainBlocks);
 					});
