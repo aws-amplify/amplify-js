@@ -135,9 +135,9 @@ Amplify.configure(aws_exports);
 
 ```js
 Amplify.configure({
-  API: {
-    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
-  },
+	API: {
+		graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+	},
 });
 ```
 
@@ -165,16 +165,16 @@ Add user sign up and sign in using two of the many methods available to the [Aut
 import Auth from '@aws-amplify/auth';
 
 Auth.signUp({
-  username: 'AmandaB',
-  password: 'MyCoolPassword1!',
-  attributes: {
-    email: 'someemail@example.com',
-  },
+	username: 'AmandaB',
+	password: 'MyCoolPassword1!',
+	attributes: {
+		email: 'someemail@example.com',
+	},
 });
 
 Auth.signIn(username, password)
-  .then(success => console.log('successful sign in'))
-  .catch(err => console.log(err));
+	.then(success => console.log('successful sign in'))
+	.catch(err => console.log(err));
 ```
 
 See our [Authentication Developer Guide](https://aws.github.io/aws-amplify/media/authentication_guide) for detailed information.
@@ -249,20 +249,20 @@ To access a GraphQL API with your app, you need to make sure to configure the en
 ```js
 // configure a custom GraphQL endpoint
 Amplify.configure({
-  API: {
-    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
-  },
+	API: {
+		graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+	},
 });
 
 // Or configure an AWS AppSync endpoint.
 let myAppConfig = {
-  // ...
-  aws_appsync_graphqlEndpoint:
-    'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
-  aws_appsync_region: 'us-east-1',
-  aws_appsync_authenticationType: 'API_KEY',
-  aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
-  // ...
+	// ...
+	aws_appsync_graphqlEndpoint:
+		'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+	aws_appsync_region: 'us-east-1',
+	aws_appsync_authenticationType: 'API_KEY',
+	aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
+	// ...
 };
 
 Amplify.configure(myAppConfig);
@@ -302,10 +302,10 @@ const CreateEvent = `mutation CreateEvent($name: String!, $when: String!, $where
 }`;
 
 const eventDetails = {
-  name: 'Party tonight!',
-  when: '8:00pm',
-  where: 'Ballroom',
-  description: 'Coming together as a team!',
+	name: 'Party tonight!',
+	when: '8:00pm',
+	where: 'Ballroom',
+	description: 'Coming together as a team!',
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));
@@ -324,9 +324,9 @@ const SubscribeToEventComments = `subscription subscribeToComments {
 }`;
 
 const subscription = API.graphql(
-  graphqlOperation(SubscribeToEventComments)
+	graphqlOperation(SubscribeToEventComments)
 ).subscribe({
-  next: eventData => console.log(eventData),
+	next: eventData => console.log(eventData),
 });
 ```
 
@@ -338,16 +338,16 @@ AWS Amplify provides an easy-to-use API to store and get content from public or 
 
 ```js
 Storage.put(key, fileObj, { level: 'private' })
-  .then(result => console.log(result))
-  .catch(err => console.log(err));
+	.then(result => console.log(result))
+	.catch(err => console.log(err));
 
 // Store data with specifying its MIME type
 Storage.put(key, fileObj, {
-  level: 'private',
-  contentType: 'text/plain',
+	level: 'private',
+	contentType: 'text/plain',
 })
-  .then(result => console.log(result))
-  .catch(err => console.log(err));
+	.then(result => console.log(result))
+	.catch(err => console.log(err));
 ```
 
 See our [Storage Developer Guide](https://aws.github.io/aws-amplify/media/storage_guide) for detailed information.

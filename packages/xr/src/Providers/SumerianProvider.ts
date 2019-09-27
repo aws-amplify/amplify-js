@@ -146,10 +146,7 @@ export class SumerianProvider extends AbstractXRProvider {
 				accessInfo,
 				serviceInfo
 			);
-			fetchOptions.headers = {
-				...fetchOptions.headers,
-				...request.headers,
-			};
+			fetchOptions.headers = { ...fetchOptions.headers, ...request.headers };
 			url = request.url;
 		} catch (e) {
 			logger.debug('No credentials available, the request will be unsigned');

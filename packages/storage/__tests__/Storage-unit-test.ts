@@ -197,10 +197,7 @@ describe('Storage', () => {
 
 			storage.configure(aws_options);
 			const config = storage.configure({
-				AWSS3: {
-					bucket: 'another-s3-bucket',
-					region: 'another-s3-region',
-				},
+				AWSS3: { bucket: 'another-s3-bucket', region: 'another-s3-region' },
 			});
 			expect(config).toEqual({
 				AWSS3: {
@@ -233,11 +230,7 @@ describe('Storage', () => {
 			expect.assertions(3);
 			storage.vault.configure = jest.fn().mockImplementation(configure => {
 				expect(configure).toEqual({
-					AWSS3: {
-						bucket: 'bucket',
-						level: 'private',
-						region: 'region',
-					},
+					AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
 				});
 			});
 			const aws_options = {
@@ -335,9 +328,7 @@ describe('Storage', () => {
 			};
 
 			storage.configure(awsconfig);
-			const config = storage.configure({
-				SSECustomerAlgorithm: '23s2sc',
-			});
+			const config = storage.configure({ SSECustomerAlgorithm: '23s2sc' });
 			expect(config).toEqual({
 				AWSS3: {
 					bucket: 'thisIsABucket',

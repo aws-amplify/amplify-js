@@ -51,9 +51,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				if (typeof this._botsCompleteCallback[botname] === 'function') {
 					setTimeout(
 						() =>
-							this._botsCompleteCallback[botname](null, {
-								slots: data.slots,
-							}),
+							this._botsCompleteCallback[botname](null, { slots: data.slots }),
 						0
 					);
 				}
@@ -63,10 +61,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					typeof this._config[botname].onComplete === 'function'
 				) {
 					setTimeout(
-						() =>
-							this._config[botname].onComplete(null, {
-								slots: data.slots,
-							}),
+						() => this._config[botname].onComplete(null, { slots: data.slots }),
 						0
 					);
 				}

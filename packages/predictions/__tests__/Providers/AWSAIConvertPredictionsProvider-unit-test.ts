@@ -19,10 +19,7 @@ jest.mock('aws-sdk/clients/translate', () => {
 	const Translate = () => {
 		return;
 	};
-	const result = {
-		TranslatedText: 'translatedText',
-		TargetLanguageCode: 'es',
-	};
+	const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 	Translate.prototype.translateText = (params, callback) => {
 		callback(null, result);
 	};
@@ -140,10 +137,7 @@ describe('Predictions convert provider test', () => {
 			});
 			return expect(
 				predictionsProvider.convert(validTranslateTextInput)
-			).resolves.toMatchObject({
-				language: 'es',
-				text: 'translatedText',
-			});
+			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
 		});
 		test('error case credentials do not exist', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();

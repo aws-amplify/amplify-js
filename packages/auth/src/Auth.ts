@@ -1090,8 +1090,7 @@ export default class AuthClass {
 										) {
 											rej(err);
 										} else {
-											// the error may also be thrown when lack
-											// of permissions to get user info etc
+											// the error may also be thrown when lack of permissions to get user info etc
 											// in that case we just bypass the error
 											res(user);
 										}
@@ -1110,10 +1109,7 @@ export default class AuthClass {
 									}
 
 									const attributes = that.attributesToObject(attributeList);
-									Object.assign(user, {
-										attributes,
-										preferredMFA,
-									});
+									Object.assign(user, { attributes, preferredMFA });
 									return res(user);
 								},
 								{ bypassCache }
@@ -1736,12 +1732,8 @@ export default class AuthClass {
 				} = await this._oAuthHandler.handleAuthResponse(currentUrl);
 				const session = new CognitoUserSession({
 					IdToken: new CognitoIdToken({ IdToken: idToken }),
-					RefreshToken: new CognitoRefreshToken({
-						RefreshToken: refreshToken,
-					}),
-					AccessToken: new CognitoAccessToken({
-						AccessToken: accessToken,
-					}),
+					RefreshToken: new CognitoRefreshToken({ RefreshToken: refreshToken }),
+					AccessToken: new CognitoAccessToken({ AccessToken: accessToken }),
 				});
 
 				let credentials;

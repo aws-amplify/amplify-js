@@ -2423,10 +2423,7 @@ describe('auth unit test', () => {
 			});
 
 			expect(await auth.verifiedContact(user)).toEqual({
-				unverified: {
-					email: 'email@amazon.com',
-					phone_number: '+12345678901',
-				},
+				unverified: { email: 'email@amazon.com', phone_number: '+12345678901' },
 				verified: {},
 			});
 
@@ -2467,10 +2464,7 @@ describe('auth unit test', () => {
 
 			expect(await auth.verifiedContact(user)).toEqual({
 				unverified: {},
-				verified: {
-					email: 'email@amazon.com',
-					phone_number: '+12345678901',
-				},
+				verified: { email: 'email@amazon.com', phone_number: '+12345678901' },
 			});
 
 			spyon.mockClear();
@@ -2509,9 +2503,7 @@ describe('auth unit test', () => {
 			const spyon4 = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
-					return new CognitoAccessToken({
-						AccessToken: 'accessToken',
-					});
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
 				});
 
 			const spyon5 = jest
@@ -2639,9 +2631,7 @@ describe('auth unit test', () => {
 			const spyon4 = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
-					return new CognitoAccessToken({
-						AccessToken: 'accessToken',
-					});
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
 				});
 
 			const spyon5 = jest
@@ -2697,9 +2687,7 @@ describe('auth unit test', () => {
 			const spyon4 = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
-					return new CognitoAccessToken({
-						AccessToken: 'accessToken',
-					});
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
 				});
 
 			const spyon5 = jest
@@ -2750,9 +2738,7 @@ describe('auth unit test', () => {
 			const spyon4 = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
-					return new CognitoAccessToken({
-						AccessToken: 'accessToken',
-					});
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
 				});
 
 			const spyon5 = jest

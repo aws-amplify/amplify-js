@@ -92,18 +92,12 @@ export class AuthenticatorComponentCore implements OnInit {
 				.currentAuthenticatedUser()
 				.then(user => {
 					if (this.authState.state === 'loading' && user) {
-						this.amplifyService.setAuthState({
-							state: 'signedIn',
-							user,
-						});
+						this.amplifyService.setAuthState({ state: 'signedIn', user });
 					}
 				})
 				.catch(e => {
 					if (this.authState.state === 'loading') {
-						this.amplifyService.setAuthState({
-							state: 'signIn',
-							user: null,
-						});
+						this.amplifyService.setAuthState({ state: 'signIn', user: null });
 					}
 				});
 		}

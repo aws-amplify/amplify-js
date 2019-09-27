@@ -62,10 +62,7 @@ describe('ServiceWorker test', () => {
 	describe('Send messages', () => {
 		test('no message is sent if not registered', () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {
@@ -80,10 +77,7 @@ describe('ServiceWorker test', () => {
 		});
 		test('can send string message after registration', async () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {
@@ -99,10 +93,7 @@ describe('ServiceWorker test', () => {
 		});
 		test('can send object message after registration', async () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {

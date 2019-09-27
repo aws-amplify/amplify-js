@@ -36,10 +36,7 @@ export class Credentials {
 		// If the developer has provided an object of refresh handlers,
 		// then we can merge the provided handlers with the current handlers.
 		if (refreshHandlers) {
-			this._refreshHandlers = {
-				...this._refreshHandlers,
-				...refreshHandlers,
-			};
+			this._refreshHandlers = { ...this._refreshHandlers, ...refreshHandlers };
 		}
 
 		this._storage = this._config.storage;

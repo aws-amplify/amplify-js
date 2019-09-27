@@ -345,9 +345,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: 'custom event', immediate: true },
-				};
+				const params = { event: { name: 'custom event', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
 				expect(spyon).toBeCalledWith({
@@ -397,9 +395,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: 'custom event', immediate: true },
-				};
+				const params = { event: { name: 'custom event', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
@@ -428,9 +424,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_session.start', immediate: true },
-				};
+				const params = { event: { name: '_session.start', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
 				expect(spyon).toBeCalledWith({
@@ -479,9 +473,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_session.start', immediate: true },
-				};
+				const params = { event: { name: '_session.start', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
 				//expect(resolve).not.toBeCalled();
@@ -505,9 +497,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_session.stop', immediate: true },
-				};
+				const params = { event: { name: '_session.stop', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
 				const expectedUrl =
@@ -557,9 +547,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_session.stop', immediate: true },
-				};
+				const params = { event: { name: '_session.stop', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
@@ -581,9 +569,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_update_endpoint', immediate: true },
-				};
+				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 				expect(spyon.mock.calls[0][0]).toEqual({
 					ApplicationId: 'appId',
@@ -625,9 +611,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_update_endpoint', immediate: true },
-				};
+				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 				expect(spyon.mock.calls[0][0]).toEqual({
 					ApplicationId: 'appId',
@@ -671,9 +655,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_update_endpoint', immediate: true },
-				};
+				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
 				expect(spyon.mock.calls[0][0]).toEqual({
@@ -802,9 +784,7 @@ describe('AnalyticsProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 
-				const params = {
-					event: { name: '_update_endpoint', immediate: true },
-				};
+				const params = { event: { name: '_update_endpoint', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();

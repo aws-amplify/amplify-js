@@ -78,10 +78,7 @@ export default class Connect extends Component {
 
 		if (hasValidMutation) {
 			mutationProp = async variables => {
-				const result = await API.graphql({
-					query: mutation,
-					variables,
-				});
+				const result = await API.graphql({ query: mutation, variables });
 
 				this.forceUpdate();
 				return result;
