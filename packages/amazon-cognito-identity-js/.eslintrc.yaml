@@ -1,17 +1,12 @@
 root: true
 extends:
-- airbnb-base
+- prettier
 env:
   browser: true
 settings:
   import/resolver: webpack
 rules:
-  indent: 
-  - error
-  - tab
-  max-len: 
-  - 2
-  - 120
+
   # Git-controlled
   linebreak-style: off
   # sjcl hmac breaks new-cap
