@@ -347,7 +347,7 @@ describe('Predictions identify provider test', () => {
 						}
 						callback(null, plainBlocks);
 					});
-				// confirm that textract service has been called.
+				// confirm that textract service has been called
 				const spy = jest.spyOn(TextractClient.prototype, 'send');
 				await predictionsProvider.identify(detectTextInput);
 				expect(spy).toHaveBeenCalled();
