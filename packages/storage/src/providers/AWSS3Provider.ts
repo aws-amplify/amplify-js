@@ -144,7 +144,7 @@ export class AWSS3Provider implements StorageProvider {
 					`Download success for ${key}`
 				);
 				return response;
-			} catch (err) {
+			} catch (error) {
 				dispatchStorageEvent(
 					track,
 					'download',
@@ -153,9 +153,9 @@ export class AWSS3Provider implements StorageProvider {
 						result: 'failed',
 					},
 					null,
-					`Download failed with ${err.message}`
+					`Download failed with ${error.message}`
 				);
-				throw err;
+				throw error;
 			}
 		}
 
@@ -177,8 +177,8 @@ export class AWSS3Provider implements StorageProvider {
 				`Signed URL: ${url}`
 			);
 			return url;
-		} catch (e) {
-			logger.warn('get signed url error', e);
+		} catch (error) {
+			logger.warn('get signed url error', error);
 			dispatchStorageEvent(
 				track,
 				'getSignedUrl',
@@ -186,7 +186,7 @@ export class AWSS3Provider implements StorageProvider {
 				null,
 				`Could not get a signed URL for ${key}`
 			);
-			throw e;
+			throw error;
 		}
 	}
 
@@ -279,8 +279,8 @@ export class AWSS3Provider implements StorageProvider {
 			return {
 				key,
 			};
-		} catch (err) {
-			logger.warn('error uploading', err);
+		} catch (error) {
+			logger.warn('error uploading', error);
 			dispatchStorageEvent(
 				track,
 				'upload',
@@ -288,7 +288,7 @@ export class AWSS3Provider implements StorageProvider {
 				null,
 				`Error uploading ${key}`
 			);
-			throw err;
+			throw error;
 		}
 		// This functionality is not available in V3 SDK. Amplify needs to implement it.
 		// .on('httpUploadProgress', progress => {
@@ -339,15 +339,15 @@ export class AWSS3Provider implements StorageProvider {
 				`Deleted ${key} successfully`
 			);
 			return response;
-		} catch (err) {
+		} catch (error) {
 			dispatchStorageEvent(
 				track,
 				'delete',
 				{ method: 'remove', result: 'failed' },
 				null,
-				`Deletion of ${key} failed with ${err}`
+				`Deletion of ${key} failed with ${error}`
 			);
-			throw err;
+			throw error;
 		}
 	}
 
@@ -397,16 +397,16 @@ export class AWSS3Provider implements StorageProvider {
 			);
 			logger.debug('list', list);
 			return list;
-		} catch (err) {
-			logger.warn('list error', err);
+		} catch (error) {
+			logger.warn('list error', error);
 			dispatchStorageEvent(
 				track,
 				'list',
 				{ method: 'list', result: 'failed' },
 				null,
-				`Listing items failed: ${err.message}`
+				`Listing items failed: ${error.message}`
 			);
-			throw err;
+			throw error;
 		}
 	}
 
@@ -423,8 +423,8 @@ export class AWSS3Provider implements StorageProvider {
 
 				return true;
 			})
-			.catch(err => {
-				logger.warn('ensure credentials error', err);
+			.catch(error => {
+				logger.warn('ensure credentials error', error);
 				return false;
 			});
 	}

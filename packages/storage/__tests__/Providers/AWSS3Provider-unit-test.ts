@@ -39,9 +39,7 @@ S3Client.prototype.send = jest.fn(async command => {
 });
 
 S3RequestPresigner.prototype.presignRequest = jest.fn((request, expires) => {
-	return new Promise<any>((res, rej) => {
-		res();
-	});
+	return (Promise as any).resolve();
 });
 
 const credentials = {
@@ -414,9 +412,9 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 
 			expect.assertions(2);
-			expect(await storage.put('key', 'obejct', {})).toEqual({ key: 'key' });
+			expect(await storage.put('key', 'object', {})).toEqual({ key: 'key' });
 			expect(spyon.mock.calls[0][0].input).toEqual({
-				Body: 'obejct',
+				Body: 'object',
 				Bucket: 'bucket',
 				ContentType: 'binary/octet-stream',
 				Key: 'public/key',
@@ -436,11 +434,11 @@ describe('StorageProvider test', () => {
 			const spyon2 = jest.spyOn(Hub, 'dispatch');
 
 			expect.assertions(3);
-			expect(await storage.put('key', 'obejct', { track: true })).toEqual({
+			expect(await storage.put('key', 'object', { track: true })).toEqual({
 				key: 'key',
 			});
 			expect(spyon.mock.calls[0][0].input).toEqual({
-				Body: 'obejct',
+				Body: 'object',
 				Bucket: 'bucket',
 				ContentType: 'binary/octet-stream',
 				Key: 'public/key',
@@ -480,7 +478,7 @@ describe('StorageProvider test', () => {
 
 			expect.assertions(1);
 			try {
-				await storage.put('key', 'obejct', {});
+				await storage.put('key', 'object', {});
 			} catch (e) {
 				expect(e).toBe('err');
 			}
@@ -501,13 +499,13 @@ describe('StorageProvider test', () => {
 
 			expect.assertions(2);
 			expect(
-				await storage.put('key', 'obejct', {
+				await storage.put('key', 'object', {
 					level: 'private',
 					contentType: 'text/plain',
 				})
 			).toEqual({ key: 'key' });
 			expect(spyon.mock.calls[0][0].input).toEqual({
-				Body: 'obejct',
+				Body: 'object',
 				Bucket: 'bucket',
 				ContentType: 'text/plain',
 				Key: 'private/id/key',
