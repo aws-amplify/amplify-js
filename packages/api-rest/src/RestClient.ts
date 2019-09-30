@@ -18,7 +18,7 @@ import {
 	Credentials,
 } from '@aws-amplify/core';
 
-import { RestClientOptions, AWSCredentials, apiOptions } from './types';
+import { apiOptions } from './types';
 import axios from 'axios';
 
 const logger = new Logger('RestClient'),
@@ -285,6 +285,7 @@ export class RestClient {
 		logger.debug('Signed Request: ', signed_params);
 
 		delete signed_params.headers['host'];
+
 		return axios(signed_params)
 			.then(response => (isAllResponse ? response : response.data))
 			.catch(error => {

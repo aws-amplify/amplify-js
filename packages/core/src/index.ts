@@ -14,6 +14,7 @@
 import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
 import Amplify from './Amplify';
+import Platform from './Platform';
 
 export * from './Facet';
 export { default as ClientDevice } from './ClientDevice';
@@ -31,8 +32,8 @@ export { default as ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { default as StorageHelper, MemoryStorage } from './StorageHelper';
 export { default as Platform } from './Platform';
+export * from './constants';
 
-import Platform from './Platform';
 export const Constants = {
 	userAgent: Platform.userAgent,
 };

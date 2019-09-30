@@ -33,6 +33,8 @@
   "dependencies": {
     "@aws-amplify/analytics": "^1.2.25",
     "@aws-amplify/api": "^1.1.3",
+    "@aws-amplify/api-graphql": "^1.0.0",
+    "@aws-amplify/api-rest": "^1.0.0",
     "@aws-amplify/auth": "^1.3.3",
     "@aws-amplify/cache": "^1.0.34",
     "@aws-amplify/core": "^1.1.2",

@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/api",
-  "version": "1.1.3",
-  "description": "Api category of aws-amplify",
+  "name": "@aws-amplify/api-rest",
+  "version": "1.0.0",
+  "description": "Api-rest category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
@@ -33,8 +33,10 @@
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
     "prettier": "^1.7.4",
-    "@aws-amplify/api-rest": "^1.0.0",
-    "@aws-amplify/api-graphql": "^1.0.0"
+    "@aws-amplify/core": "^1.1.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.0"
   },
   "jest": {
     "globals": {
