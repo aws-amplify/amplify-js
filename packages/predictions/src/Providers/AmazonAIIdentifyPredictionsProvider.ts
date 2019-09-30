@@ -31,12 +31,14 @@ import {
 	isIdentifyCelebrities,
 	isIdentifyFromCollection,
 	IdentifyFromCollection,
+} from '../types';
+import {
 	Image,
 	Document,
 	FeatureTypes,
 	TextDetectionList,
-	BlockList
-} from '../types';
+	BlockList,
+} from '../types/Providers/AmazonAIIdentifyPredictionsProvider';
 import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
 import {
 	DetectDocumentTextCommand,
@@ -179,7 +181,9 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 								) {
 									return res(rekognitionResponse);
 								} else {
-									return res(categorizeTextractBlocks(textractData.Blocks as BlockList));
+									return res(
+										categorizeTextractBlocks(textractData.Blocks as BlockList)
+									);
 								}
 							}
 						);

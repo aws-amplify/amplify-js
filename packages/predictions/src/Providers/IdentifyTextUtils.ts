@@ -6,11 +6,13 @@ import {
 	Content,
 	BoundingBox,
 	Polygon,
+} from '../types';
+import {
 	Geometry,
 	Block,
 	BlockList,
 	TextDetectionList,
-} from '../types';
+} from '../types/Providers/AmazonAIIdentifyPredictionsProvider';
 import { makeCamelCaseArray, makeCamelCase } from './Utils';
 
 function getBoundingBox(geometry: Geometry): BoundingBox {

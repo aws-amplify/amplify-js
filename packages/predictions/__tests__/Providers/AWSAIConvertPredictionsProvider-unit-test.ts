@@ -14,6 +14,9 @@ import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 TranslateClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof TranslateTextCommand) {
+		if (!callback) {
+			return Promise.resolve(result);
+		}
 		callback(null, result);
 	}
 }) as any;
@@ -25,6 +28,9 @@ PollyClient.prototype.send = jest.fn((command, callback) => {
 				buffer: 'dummyStream',
 			},
 		};
+		if (!callback) {
+			return Promise.resolve(result);
+		}
 		callback(null, result);
 	}
 }) as any;
@@ -134,11 +140,9 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			jest
-				.spyOn(TranslateClient.prototype, 'send')
-				.mockImplementation((input, callback) => {
-					callback('error', null);
-				});
+			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
+				return Promise.reject('error');
+			});
 			return expect(
 				predictionsProvider.convert(validTranslateTextInput)
 			).rejects.toMatch('error');
@@ -182,11 +186,9 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			jest
-				.spyOn(PollyClient.prototype, 'send')
-				.mockImplementation((input, callback) => {
-					callback('error', null);
-				});
+			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
+				return Promise.reject('error');
+			});
 			return expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).rejects.toMatch('error');

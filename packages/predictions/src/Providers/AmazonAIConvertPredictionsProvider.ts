@@ -37,164 +37,156 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return 'AmazonAIConvertPredictionsProvider';
 	}
 
-	protected translateText(
+	protected async translateText(
 		input: TranslateTextInput
 	): Promise<TranslateTextOutput> {
 		logger.debug('Starting translation');
-		return new Promise(async (res, rej) => {
+		const {
+			translateText: {
+				defaults: { sourceLanguage = '', targetLanguage = '' } = {},
+				region = '',
+			} = {},
+		} = this._config;
+
+		if (!region) {
+			return Promise.reject('region not configured for transcription');
+		}
+
+		const credentials = await Credentials.get();
+		if (!credentials) {
+			return Promise.reject('No credentials');
+		}
+		const sourceLanguageCode =
+			input.translateText.source.language || sourceLanguage;
+		const targetLanguageCode =
+			input.translateText.targetLanguage || targetLanguage;
+		if (!sourceLanguageCode || !targetLanguageCode) {
+			return Promise.reject('Please provide both source and target language');
+		}
+
+		this.translateClient = new TranslateClient({ region, credentials });
+		const translateTextCommand = new TranslateTextCommand({
+			SourceLanguageCode: sourceLanguageCode,
+			TargetLanguageCode: targetLanguageCode,
+			Text: input.translateText.source.text,
+		});
+		try {
+			const data = await this.translateClient.send(translateTextCommand);
+			return {
+				text: data.TranslatedText,
+				language: data.TargetLanguageCode,
+			} as TranslateTextOutput;
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	protected async convertTextToSpeech(
+		input: TextToSpeechInput
+	): Promise<TextToSpeechOutput> {
+		const credentials = await Credentials.get();
+		if (!credentials) {
+			return Promise.reject('No credentials');
+		}
+		const {
+			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
+		} = this._config;
+
+		if (!input.textToSpeech.source) {
+			return Promise.reject('Source needs to be provided in the input');
+		}
+		const voiceId = input.textToSpeech.voiceId || VoiceId;
+
+		if (!region) {
+			return Promise.reject(
+				'Region was undefined. Did you enable speech generator using amplify CLI?'
+			);
+		}
+
+		if (!voiceId) {
+			return Promise.reject('VoiceId was undefined.');
+		}
+
+		this.pollyClient = new PollyClient({ region, credentials });
+		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
+			OutputFormat: 'mp3',
+			Text: input.textToSpeech.source.text,
+			VoiceId: voiceId,
+			TextType: 'text',
+			SampleRate: '24000',
+			// tslint:disable-next-line: align
+		});
+		try {
+			const data = await this.pollyClient.send(synthesizeSpeechCommand);
+			const blob = new Blob([data.AudioStream], {
+				type: data.ContentType,
+			});
+			const url = URL.createObjectURL(blob);
+			return {
+				speech: { url },
+				audioStream: (data.AudioStream as any).buffer,
+				text: input.textToSpeech.source.text,
+			} as TextToSpeechOutput;
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	protected async convertSpeechToText(
+		input: SpeechToTextInput
+	): Promise<SpeechToTextOutput> {
+		try {
+			logger.debug('starting transcription..');
+			const credentials = await Credentials.get();
+			if (!credentials) {
+				return Promise.reject('No credentials');
+			}
 			const {
-				translateText: {
-					defaults: { sourceLanguage = '', targetLanguage = '' } = {},
+				transcription: {
+					defaults: { language: languageCode = '' } = {},
 					region = '',
 				} = {},
 			} = this._config;
-
 			if (!region) {
-				return rej('region not configured for transcription');
+				return Promise.reject('region not configured for transcription');
 			}
-
-			const credentials = await Credentials.get();
-			if (!credentials) {
-				return rej('No credentials');
-			}
-			const sourceLanguageCode =
-				input.translateText.source.language || sourceLanguage;
-			const targetLanguageCode =
-				input.translateText.targetLanguage || targetLanguage;
-			if (!sourceLanguageCode || !targetLanguageCode) {
-				return rej('Please provide both source and target language');
-			}
-
-			this.translateClient = new TranslateClient({ region, credentials });
-			const translateTextCommand = new TranslateTextCommand({
-				SourceLanguageCode: sourceLanguageCode,
-				TargetLanguageCode: targetLanguageCode,
-				Text: input.translateText.source.text,
-				// tslint:disable-next-line: align
-			});
-			this.translateClient.send(translateTextCommand, (err, data) => {
-				logger.debug({ err, data });
-				if (err) {
-					return rej(err);
-				} else {
-					return res({
-						text: data.TranslatedText,
-						language: data.TargetLanguageCode,
-					} as TranslateTextOutput);
-				}
-			});
-		});
-	}
-
-	protected convertTextToSpeech(
-		input: TextToSpeechInput
-	): Promise<TextToSpeechOutput> {
-		return new Promise(async (res, rej) => {
-			const credentials = await Credentials.get();
-			if (!credentials) {
-				return rej('No credentials');
-			}
-			const {
-				speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
-			} = this._config;
-
-			if (!input.textToSpeech.source) {
-				return rej('Source needs to be provided in the input');
-			}
-			const voiceId = input.textToSpeech.voiceId || VoiceId;
-
-			if (!region) {
-				return rej(
-					'Region was undefined. Did you enable speech generator using amplify CLI?'
+			if (!languageCode) {
+				return Promise.reject(
+					'languageCode not configured or provided for transcription'
 				);
 			}
+			const {
+				transcription: { source, language = languageCode },
+			} = input;
 
-			if (!voiceId) {
-				return rej('VoiceId was undefined.');
+			if (isBytesSource(source)) {
+				const connection = await this.openConnectionWithTranscribe({
+					credentials,
+					region,
+					languageCode: language,
+				});
+
+				try {
+					const fullText = await this.sendDataToTranscribe({
+						connection,
+						raw: source.bytes,
+					});
+					return {
+						transcription: {
+							fullText,
+						},
+					};
+				} catch (err) {
+					Promise.reject(err);
+				}
 			}
 
-			this.pollyClient = new PollyClient({ region, credentials });
-			const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
-				OutputFormat: 'mp3',
-				Text: input.textToSpeech.source.text,
-				VoiceId: voiceId,
-				TextType: 'text',
-				SampleRate: '24000',
-				// tslint:disable-next-line: align
-			});
-			this.pollyClient.send(synthesizeSpeechCommand, (err, data) => {
-				if (err) {
-					rej(err);
-				} else {
-					const blob = new Blob([data.AudioStream], {
-						type: data.ContentType,
-					});
-					const url = URL.createObjectURL(blob);
-					res({
-						speech: { url },
-						audioStream: (data.AudioStream as any).buffer,
-						text: input.textToSpeech.source.text,
-					} as TextToSpeechOutput);
-				}
-			});
-		});
-	}
-
-	protected convertSpeechToText(
-		input: SpeechToTextInput
-	): Promise<SpeechToTextOutput> {
-		return new Promise(async (res, rej) => {
-			try {
-				logger.debug('starting transcription..');
-				const credentials = await Credentials.get();
-				if (!credentials) {
-					return rej('No credentials');
-				}
-				const {
-					transcription: {
-						defaults: { language: languageCode = '' } = {},
-						region = '',
-					} = {},
-				} = this._config;
-				if (!region) {
-					return rej('region not configured for transcription');
-				}
-				if (!languageCode) {
-					return rej(
-						'languageCode not configured or provided for transcription'
-					);
-				}
-				const {
-					transcription: { source, language = languageCode },
-				} = input;
-
-				if (isBytesSource(source)) {
-					const connection = await this.openConnectionWithTranscribe({
-						credentials,
-						region,
-						languageCode: language,
-					});
-
-					try {
-						const fullText = await this.sendDataToTranscribe({
-							connection,
-							raw: source.bytes,
-						});
-						return res({
-							transcription: {
-								fullText,
-							},
-						});
-					} catch (err) {
-						rej(err);
-					}
-				}
-
-				return rej('Source types other than byte source are not supported.');
-			} catch (err) {
-				return rej(err.name + ': ' + err.message);
-			}
-		});
+			return Promise.reject(
+				'Source types other than byte source are not supported.'
+			);
+		} catch (err) {
+			return Promise.reject(err.name + ': ' + err.message);
+		}
 	}
 
 	public static serializeDataFromTranscribe(message) {
