@@ -117,91 +117,92 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	 * @param {IdentifySource} source - Object containing the source image and feature types to analyze.
 	 * @return {Promise<IdentifyTextOutput>} - Promise resolving to object containing identified texts.
 	 */
-	protected identifyText(
+	protected async identifyText(
 		input: IdentifyTextInput
 	): Promise<IdentifyTextOutput> {
-		return new Promise(async (res, rej) => {
-			const credentials = await Credentials.get();
-			if (!credentials) return rej('No credentials');
-			const {
-				identifyText: {
-					region = '',
-					defaults: { format: configFormat = 'PLAIN' } = {},
-				} = {},
-			} = this._config;
-			this.rekognitionClient = new RekognitionClient({ region, credentials });
-			this.textractClient = new TextractClient({ region, credentials });
-			let inputDocument: Document;
-			await this.configureSource(input.text.source)
-				.then(data => (inputDocument = data))
-				.catch(err => {
-					rej(err);
-				});
+		const credentials = await Credentials.get();
+		if (!credentials) return Promise.reject('No credentials');
+		const {
+			identifyText: {
+				region = '',
+				defaults: { format: configFormat = 'PLAIN' } = {},
+			} = {},
+		} = this._config;
+		this.rekognitionClient = new RekognitionClient({ region, credentials });
+		this.textractClient = new TextractClient({ region, credentials });
+		let inputDocument: Document;
 
-			// get default value if format isn't specified in the input.
-			const format = input.text.format || configFormat;
-			const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
-			if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
-			if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
-			if (featureTypes.length === 0) {
-				/**
-				 * Empty featureTypes indicates that we will identify plain text. We will use rekognition (suitable
-				 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
-				 * we call textract and use the data that identify more words.
-				 */
-				const textractParam: DetectDocumentTextInput = {
-					Document: inputDocument,
-				};
-				const rekognitionParam: DetectTextInput = {
-					Image: inputDocument,
-				};
+		try {
+			inputDocument = await this.configureSource(input.text.source);
+		} catch (err) {
+			return Promise.reject(err);
+		}
+
+		// get default value if format isn't specified in the input.
+		const format = input.text.format || configFormat;
+		const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
+		if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
+		if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
+
+		if (featureTypes.length === 0) {
+			/**
+			 * Empty featureTypes indicates that we will identify plain text. We will use rekognition (suitable
+			 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
+			 * we call textract and use the data that identify more words.
+			 */
+			const textractParam: DetectDocumentTextInput = {
+				Document: inputDocument,
+			};
+			const rekognitionParam: DetectTextInput = {
+				Image: inputDocument,
+			};
+
+			try {
 				const detectTextCommand = new DetectTextCommand(rekognitionParam);
-				this.rekognitionClient.send(
-					detectTextCommand,
-					(rekognitionErr, rekognitionData) => {
-						if (rekognitionErr) return rej(rekognitionErr);
-						const rekognitionResponse = categorizeRekognitionBlocks(
-							rekognitionData.TextDetections as TextDetectionList
-						);
-						if (rekognitionResponse.text.words.length < 50) {
-							// did not hit the word limit, return the data
-							return res(rekognitionResponse);
-						}
-						const detectDocumentTextCommand = new DetectDocumentTextCommand(
-							textractParam
-						);
-						this.textractClient.send(
-							detectDocumentTextCommand,
-							(textractErr, textractData) => {
-								if (textractErr) return rej(textractErr);
-								// use the service that identified more texts.
-								if (
-									rekognitionData.TextDetections.length >
-									textractData.Blocks.length
-								) {
-									return res(rekognitionResponse);
-								} else {
-									return res(
-										categorizeTextractBlocks(textractData.Blocks as BlockList)
-									);
-								}
-							}
-						);
-					}
+				const rekognitionData = await this.rekognitionClient.send(
+					detectTextCommand
 				);
-			} else {
-				const param: AnalyzeDocumentInput = {
-					Document: inputDocument,
-					FeatureTypes: featureTypes,
-				};
-				const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
-				this.textractClient.send(analyzeDocumentCommand, (err, data) => {
-					if (err) return rej(err);
-					const blocks = data.Blocks;
-					res(categorizeTextractBlocks(blocks as BlockList));
-				});
+
+				const rekognitionResponse = categorizeRekognitionBlocks(
+					rekognitionData.TextDetections as TextDetectionList
+				);
+				if (rekognitionResponse.text.words.length < 50) {
+					// did not hit the word limit, return the data
+					return rekognitionResponse;
+				}
+
+				const detectDocumentTextCommand = new DetectDocumentTextCommand(
+					textractParam
+				);
+
+				const { Blocks } = await this.textractClient.send(
+					detectDocumentTextCommand
+				);
+
+				if (rekognitionData.TextDetections.length > Blocks.length) {
+					return rekognitionResponse;
+				}
+
+				return categorizeTextractBlocks(Blocks as BlockList);
+			} catch (err) {
+				Promise.reject(err);
 			}
-		});
+		} else {
+			const param: AnalyzeDocumentInput = {
+				Document: inputDocument,
+				FeatureTypes: featureTypes,
+			};
+
+			try {
+				const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
+				const { Blocks } = await this.textractClient.send(
+					analyzeDocumentCommand
+				);
+				return categorizeTextractBlocks(Blocks as BlockList);
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		}
 	}
 
 	/**

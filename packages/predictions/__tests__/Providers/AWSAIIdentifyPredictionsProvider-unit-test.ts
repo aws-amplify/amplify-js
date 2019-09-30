@@ -7,8 +7,8 @@ import {
 	IdentifyTextOutput,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
-	BlockList,
 } from '../../src/types';
+import { BlockList } from '../../src/types/Providers/AmazonAIIdentifyPredictionsProvider';
 import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
 import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
 import {
@@ -53,18 +53,29 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+
+		if (!callback) {
+			return Promise.resolve(detectlabelsResponse);
+		}
 		callback(null, detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsOutput = {
 			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
 			$metadata: null,
 		};
+
+		if (!callback) {
+			return Promise.resolve(detectModerationLabelsResponse);
+		}
 		callback(null, detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
 			$metadata: null,
 		};
+		if (!callback) {
+			return Promise.resolve(detectFacesResponse);
+		}
 		callback(null, detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
 		const searchFacesByImageResponse: SearchFacesByImageOutput = {
@@ -79,6 +90,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			return Promise.resolve(searchFacesByImageResponse);
+		}
 		callback(null, searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
 		const recognizeCelebritiesResponse: RecognizeCelebritiesOutput = {
@@ -103,6 +117,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			return Promise.resolve(recognizeCelebritiesResponse);
+		}
 		callback(null, recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
 		const plainBlocks: DetectTextOutput = {
@@ -113,6 +130,9 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
+		if (!callback) {
+			return Promise.resolve(plainBlocks);
+		}
 		callback(null, plainBlocks);
 	}
 }) as any;
@@ -213,8 +233,14 @@ const analyzeDocumentResponse = {
 
 TextractClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectDocumentTextCommand) {
+		if (!callback) {
+			return Promise.resolve(detectDocumentTextResponse);
+		}
 		callback(null, detectDocumentTextResponse);
 	} else if (command instanceof AnalyzeDocumentCommand) {
+		if (!callback) {
+			return Promise.resolve(analyzeDocumentResponse);
+		}
 		callback(null, analyzeDocumentResponse);
 	}
 }) as any;
@@ -316,9 +342,12 @@ describe('Predictions identify provider test', () => {
 								DetectedText: '',
 							});
 						}
+						if (!callback) {
+							return Promise.resolve(plainBlocks);
+						}
 						callback(null, plainBlocks);
 					});
-				// confirm that textract service has been called.
+				// confirm that textract service has been called
 				const spy = jest.spyOn(TextractClient.prototype, 'send');
 				await predictionsProvider.identify(detectTextInput);
 				expect(spy).toHaveBeenCalled();
