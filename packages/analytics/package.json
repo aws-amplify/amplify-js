@@ -16,7 +16,7 @@
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {

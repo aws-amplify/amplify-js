@@ -15,7 +15,7 @@
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
   },
   "devDependencies": {
