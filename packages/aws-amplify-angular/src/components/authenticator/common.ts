@@ -14,15 +14,15 @@
 // tslint:enable
 
 export function includes(ary, match) {
-  return ary.filter(item => item === match).length > 0;
+	return ary.filter(item => item === match).length > 0;
 }
 
 export const labelMap = {
-  email: 'Email',
-  phone_number: 'Phone Number',
-  username: 'Username'
+	email: 'Email',
+	phone_number: 'Phone Number',
+	username: 'Username',
 };
 
 export const composePhoneNumber = (countryCode, local_phone_number) => {
-    return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
-}
+	return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
+};

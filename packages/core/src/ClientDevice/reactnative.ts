@@ -12,17 +12,22 @@
  */
 
 import { Platform } from 'react-native';
-import * as iOS from './ios';
-import * as Android from './android';
+import { clientInfo as iOSClientInfo } from './ios';
+import { clientInfo as androidClientInfo } from './android';
 
 const { OS } = Platform;
 
-export default class ClientDevice {
-    static clientInfo() {
-        if (OS === 'ios') {
-            return iOS.clientInfo();
-        } else {
-            return Android.clientInfo();
-        }
-    }
+export class ClientDevice {
+	static clientInfo() {
+		if (OS === 'ios') {
+			return iOSClientInfo();
+		} else {
+			return androidClientInfo();
+		}
+	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default ClientDevice;

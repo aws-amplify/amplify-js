@@ -34,12 +34,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-greetings-ionic',
-  template
+	selector: 'amplify-auth-greetings-ionic',
+	template,
 })
 export class GreetingComponentIonic extends GreetingComponentCore {
-
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

@@ -11,5 +11,5 @@
  * and limitations under the License.
  */
 export interface InteractionsResponse {
-    [key: string]: any,
+	[key: string]: any;
 }

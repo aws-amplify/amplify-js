@@ -82,17 +82,17 @@ const template = `
 `;
 
 @Component({
-  selector: 'sumerian-scene-loading-core',
-  template
+	selector: 'sumerian-scene-loading-core',
+	template,
 })
 export class SumerianSceneLoadingComponentCore {
-  @Input() loadPercentage: number;
-  @Input() sceneName: string;
-  @Input() sceneError: string | null;
+	@Input() loadPercentage: number;
+	@Input() sceneName: string;
+	@Input() sceneError: string | null;
 
-  AmplifyUI: any;
+	AmplifyUI: any;
 
-  constructor() {
-    this.AmplifyUI = AmplifyUI;
-  }
+	constructor() {
+		this.AmplifyUI = AmplifyUI;
+	}
 }
