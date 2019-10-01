@@ -10,6 +10,8 @@
   <a href="https://codecov.io/gh/aws-amplify/amplify-js">
     <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/master/graph/badge.svg" />
   </a>
+  <a href="https://lgtm.com/projects/g/aws-amplify/amplify-js/context:javascript"><img alt="Language grade: JavaScript" src="https://img.shields.io/lgtm/grade/javascript/g/aws-amplify/amplify-js.svg?logo=lgtm&logoWidth=18"/>
+  </a>
   <a href="https://circleci.com/gh/aws-amplify/amplify-js">
     <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
   </a>
