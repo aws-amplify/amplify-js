@@ -27,17 +27,17 @@
 //   async loadAndSetupScene(sceneName, sceneDomId) {
 //     this.loading = true;
 //     const sceneOptions = {
-//       progressCallback: (progress) => {
+//       progressCallback: progress => {
 //         this.loadPercentage = progress * 100;
-//       }
+//       },
 //     };
 //     try {
 //       await XR.loadScene(sceneName, sceneDomId, sceneOptions);
 //     } catch (e) {
 //       this.sceneError = {
 //         displayText: 'Failed to load scene',
-//         error: e
-//       }
+//         error: e,
+//       };
 //       return;
 //     }
 
@@ -47,18 +47,21 @@
 //     this.isVRPresentationActive = XR.isVRPresentationActive(sceneName);
 //     this.loading = false;
 
-//     XR.onSceneEvent(sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-//     XR.onSceneEvent(sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
+//     XR.onSceneEvent(sceneName, 'AudioEnabled', () => (this.showEnableAudio = false));
+//     XR.onSceneEvent(sceneName, 'AudioDisabled', () => (this.showEnableAudio = true));
 //   }
 
 //   render() {
 //     return (
 //       <div id={SCENE_CONTAINER_DOM_ID} class={sceneContainer}>
 //         <div id={SCENE_DOM_ID} class={scene}>
-//           {this.loading
-//             ? <amplify-scene-loading scene-name={this.sceneName} load-percentage={this.loadPercentage} scene-error={this.sceneError} />
-//             : null
-//           }
+//           {this.loading ? (
+//             <amplify-scene-loading
+//               scene-name={this.sceneName}
+//               load-percentage={this.loadPercentage}
+//               scene-error={this.sceneError}
+//             />
+//           ) : null}
 //         </div>
 
 //         <div class={sceneBar}>
