@@ -7,18 +7,9 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type       | Default     |
-| ---------- | ---------- | ----------- | ---------- | ----------- |
-| `content`  | --         |             | `Function` | `undefined` |
-| `override` | `override` |             | `boolean`  | `false`     |
-| `signIn`   | --         |             | `Function` | `undefined` |
-
-
-## Events
-
-| Event             | Description | Type               |
-| ----------------- | ----------- | ------------------ |
-| `authStateChange` |             | `CustomEvent<any>` |
+| Property | Attribute | Description | Type     | Default     |
+| -------- | --------- | ----------- | -------- | ----------- |
+| `state`  | `state`   |             | `string` | `'loading'` |
 
 
 ## Dependencies
@@ -42,6 +33,7 @@ graph TD;
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
+  amplify-sign-in --> context-consumer
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-auth-fields --> amplify-username-field

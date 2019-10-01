@@ -27,7 +27,6 @@
  - [amplify-auth-fields](../amplify-auth-fields)
  - [amplify-code-field](../amplify-code-field)
  - [amplify-email-field](../amplify-email-field)
- - [amplify-examples](../amplify-examples)
  - [amplify-password-field](../amplify-password-field)
  - [amplify-username-field](../amplify-username-field)
 
@@ -46,7 +45,6 @@ graph TD;
   amplify-auth-fields --> amplify-form-field
   amplify-code-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
-  amplify-examples --> amplify-form-field
   amplify-password-field --> amplify-form-field
   amplify-username-field --> amplify-form-field
   style amplify-form-field fill:#f9f,stroke:#333,stroke-width:4px

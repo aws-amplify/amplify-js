@@ -35,9 +35,7 @@ export namespace Components {
     'formFields': FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator {
-    'content': Function;
-    'override': boolean;
-    'signIn': Function;
+    'state': string;
   }
   interface AmplifyButton {
     /**
@@ -549,19 +547,16 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface AmplifyAuthFields {
+  interface AmplifyAuthFields extends JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement> {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
   }
-  interface AmplifyAuthenticator {
-    'content'?: Function;
-    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
-    'override'?: boolean;
-    'signIn'?: Function;
+  interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
+    'state'?: string;
   }
-  interface AmplifyButton {
+  interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
     /**
     * (Optional) Callback called when a user clicks on the button
     */
@@ -575,7 +570,7 @@ declare namespace LocalJSX {
     */
     'type'?: ButtonTypes;
   }
-  interface AmplifyCheckbox {
+  interface AmplifyCheckbox extends JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement> {
     /**
     * If `true`, the checkbox is selected.
     */
@@ -605,7 +600,7 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
-  interface AmplifyCodeField {
+  interface AmplifyCodeField extends JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement> {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -623,7 +618,7 @@ declare namespace LocalJSX {
     */
     'required'?: boolean;
   }
-  interface AmplifyCountryDialCode {
+  interface AmplifyCountryDialCode extends JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement> {
     /**
     * The options of the country dial code select input.
     */
@@ -633,7 +628,7 @@ declare namespace LocalJSX {
     */
     'overrideStyle'?: boolean;
   }
-  interface AmplifyEmailField {
+  interface AmplifyEmailField extends JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement> {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -651,8 +646,8 @@ declare namespace LocalJSX {
     */
     'required'?: boolean;
   }
-  interface AmplifyExamples {}
-  interface AmplifyFormField {
+  interface AmplifyExamples extends JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement> {}
+  interface AmplifyFormField extends JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement> {
     /**
     * The text of the description.  Goes between the label and the input.
     */
@@ -690,7 +685,7 @@ declare namespace LocalJSX {
     */
     'type'?: TextFieldTypes;
   }
-  interface AmplifyFormSection {
+  interface AmplifyFormSection extends JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement> {
     /**
     * (Required) Function called upon submission of form
     */
@@ -708,13 +703,13 @@ declare namespace LocalJSX {
     */
     'submitButtonText'?: string;
   }
-  interface AmplifyHint {
+  interface AmplifyHint extends JSXBase.HTMLAttributes<HTMLAmplifyHintElement> {
     /**
     * (Optional) Override default styling
     */
     'overrideStyle'?: boolean;
   }
-  interface AmplifyIcon {
+  interface AmplifyIcon extends JSXBase.HTMLAttributes<HTMLAmplifyIconElement> {
     /**
     * (Required) Name of icon used to determine the icon rendered
     */
@@ -724,7 +719,7 @@ declare namespace LocalJSX {
     */
     'overrideStyle'?: boolean;
   }
-  interface AmplifyInput {
+  interface AmplifyInput extends JSXBase.HTMLAttributes<HTMLAmplifyInputElement> {
     /**
     * The text of the description.  Goes just below the label.
     */
@@ -750,15 +745,15 @@ declare namespace LocalJSX {
     */
     'type'?: TextFieldTypes;
   }
-  interface AmplifyLabel {
+  interface AmplifyLabel extends JSXBase.HTMLAttributes<HTMLAmplifyLabelElement> {
     'htmlFor'?: string;
     'overrideStyle'?: boolean;
   }
-  interface AmplifyLink {
+  interface AmplifyLink extends JSXBase.HTMLAttributes<HTMLAmplifyLinkElement> {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
-  interface AmplifyPasswordField {
+  interface AmplifyPasswordField extends JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement> {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -780,7 +775,7 @@ declare namespace LocalJSX {
     */
     'required'?: boolean;
   }
-  interface AmplifyRadioButton {
+  interface AmplifyRadioButton extends JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement> {
     /**
     * If `true`, the radio button is selected.
     */
@@ -810,16 +805,16 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
-  interface AmplifySceneLoading {
+  interface AmplifySceneLoading extends JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement> {
     'loadPercentage'?: number;
     'sceneError'?: object;
     'sceneName'?: string;
   }
-  interface AmplifySection {
+  interface AmplifySection extends JSXBase.HTMLAttributes<HTMLAmplifySectionElement> {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
-  interface AmplifySelect {
+  interface AmplifySelect extends JSXBase.HTMLAttributes<HTMLAmplifySelectElement> {
     /**
     * Used for id field
     */
@@ -833,7 +828,7 @@ declare namespace LocalJSX {
     */
     'overrideStyle'?: boolean;
   }
-  interface AmplifySignIn {
+  interface AmplifySignIn extends JSXBase.HTMLAttributes<HTMLAmplifySignInElement> {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
@@ -859,7 +854,7 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
-  interface AmplifyTooltip {
+  interface AmplifyTooltip extends JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement> {
     /**
     * (Optional) Override default styling
     */
@@ -873,7 +868,7 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
-  interface AmplifyUsernameField {
+  interface AmplifyUsernameField extends JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement> {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -891,7 +886,7 @@ declare namespace LocalJSX {
     */
     'required'?: boolean;
   }
-  interface RockPaperScissor {
+  interface RockPaperScissor extends JSXBase.HTMLAttributes<HTMLRockPaperScissorElement> {
     'icon'?: Function;
     'onIconChange'?: (event: CustomEvent<any>) => void;
   }
@@ -929,32 +924,7 @@ export { LocalJSX as JSX };
 
 declare module "@stencil/core" {
   export namespace JSX {
-    interface IntrinsicElements {
-      'amplify-auth-fields': LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
-      'amplify-authenticator': LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
-      'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
-      'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
-      'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
-      'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
-      'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
-      'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
-      'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
-      'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
-      'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
-      'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
-      'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
-      'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
-      'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
-      'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
-      'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
-      'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
-      'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
-      'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
-      'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
-      'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
-      'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
-      'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
-    }
+    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
   }
 }
 
