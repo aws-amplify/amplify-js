@@ -1504,10 +1504,20 @@ export default class AuthClass {
 				},
 				onFailure: err => {
 					logger.debug('forgot password failure', err);
+					dispatchAuthEvent(
+						'forgotPassword_failure',
+						err,
+						`${username} forgotPassword failed`
+					);
 					reject(err);
 					return;
 				},
 				inputVerificationCode: data => {
+					dispatchAuthEvent(
+						'forgotPassword',
+						user,
+						`${username} has initiated forgot password flow`
+					);
 					resolve(data);
 					return;
 				},
@@ -1544,10 +1554,20 @@ export default class AuthClass {
 		return new Promise((resolve, reject) => {
 			user.confirmPassword(code, password, {
 				onSuccess: () => {
+					dispatchAuthEvent(
+						'forgotPasswordSubmit',
+						user,
+						`${username} forgotPasswordSubmit successful`
+					);
 					resolve();
 					return;
 				},
 				onFailure: err => {
+					dispatchAuthEvent(
+						'forgotPasswordSubmit_failure',
+						err,
+						`${username} forgotPasswordSubmit failed`
+					);
 					reject(err);
 					return;
 				},
