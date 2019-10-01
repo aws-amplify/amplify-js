@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type     | Default     |
-| -------- | --------- | ----------- | -------- | ----------- |
-| `state`  | `state`   |             | `string` | `'loading'` |
+| Property | Attribute | Description                                                                         | Type     | Default     |
+| -------- | --------- | ----------------------------------------------------------------------------------- | -------- | ----------- |
+| `state`  | `state`   | Allows customers to pass a starting state e.g. signup for which component will show | `string` | `'loading'` |
 
 
 ## Dependencies

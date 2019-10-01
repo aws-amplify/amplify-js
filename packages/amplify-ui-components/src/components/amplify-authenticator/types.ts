@@ -17,11 +17,11 @@ export enum AuthState {
   settingMFA = 'settingMFA'
 }
 
-export interface UserData {
-  username?: string;
-}
-
-export interface Creds {
-  username?: string;
-  password?: string;
-}
+export const authenticatorMapping = {
+  'signup': AuthState.SignUp,
+  'signin': AuthState.SignIn,
+  'signout': AuthState.SignOut,
+  '': AuthState.Loading,
+  'loading': AuthState.Loading,
+  'forgotpassword': AuthState.ForgotPassword,
+};
