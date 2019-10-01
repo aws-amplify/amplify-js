@@ -20,6 +20,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-examples](../amplify-examples)
+
 ### Depends on
 
 - [amplify-label](../amplify-label)
@@ -28,6 +32,7 @@
 ```mermaid
 graph TD;
   amplify-checkbox --> amplify-label
+  amplify-examples --> amplify-checkbox
   style amplify-checkbox fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

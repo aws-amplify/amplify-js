@@ -22,7 +22,6 @@
 ### Used by
 
  - [amplify-authenticator](../amplify-authenticator)
- - [amplify-examples](../amplify-examples)
 
 ### Depends on
 
@@ -56,7 +55,6 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
   amplify-authenticator --> amplify-sign-in
-  amplify-examples --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

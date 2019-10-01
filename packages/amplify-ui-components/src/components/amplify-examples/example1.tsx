@@ -8,8 +8,8 @@ const handleSampleFormSubmit = event => {
 
 const Example1 = () => (
   <div>
-    {/* <amplify-authenticator /> */}
-    <amplify-sign-in />
+    <amplify-checkbox name="hey" value="hey" label="hey" fieldId="hey"></amplify-checkbox>
+    <amplify-radio-button label="woooo"></amplify-radio-button>
     <form onSubmit={handleSampleFormSubmit}>
       <fieldset>
         <legend>Sample form</legend>

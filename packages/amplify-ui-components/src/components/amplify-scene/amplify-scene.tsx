@@ -1,12 +1,6 @@
 // import { Component, Element, Prop, State, h } from '@stencil/core';
 // import { sceneContainer, scene, sceneActions, sceneBar } from './amplify-scene.style';
-
-// import Auth from '@aws-amplify/auth';
 // import XR from '@aws-amplify/xr';
-// import aws_exports from './aws-exports';
-
-// Auth.configure(aws_exports);
-// XR.configure(aws_exports);
 
 // const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 // const SCENE_DOM_ID = 'scene-dom-id';
@@ -27,7 +21,7 @@
 //   @State() sceneError: object;
 
 //   async componentDidLoad() {
-//     await this.loadAndSetupScene("scene1", SCENE_DOM_ID);
+//     await this.loadAndSetupScene(this.sceneName, SCENE_DOM_ID);
 //   }
 
 //   async loadAndSetupScene(sceneName, sceneDomId) {
