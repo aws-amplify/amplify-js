@@ -38,6 +38,9 @@ export namespace Components {
     'formFields': FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator {
+    /**
+    * Allows customers to pass a starting state e.g. signup for which component will show
+    */
     'state': string;
   }
   interface AmplifyButton {
@@ -557,6 +560,9 @@ declare namespace LocalJSX {
     'formFields'?: FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
+    /**
+    * Allows customers to pass a starting state e.g. signup for which component will show
+    */
     'state'?: string;
   }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {

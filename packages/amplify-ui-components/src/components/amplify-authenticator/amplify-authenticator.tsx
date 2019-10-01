@@ -1,53 +1,49 @@
 import { Component, State, Prop, h } from '@stencil/core';
-import { AuthState } from './types';
+import { AuthState, authenticatorMapping } from './types';
 import Tunnel from '../../data/auth-state';
 
 let content;
-
-const authenticatorMapping = {
-  'signup': AuthState.SignUp,
-  'signin': AuthState.SignIn,
-  'signout': AuthState.SignOut,
-  '': AuthState.Loading,
-  'loading': AuthState.Loading,
-  'forgotpassword': AuthState.ForgotPassword,
-};
 
 @Component({
   tag: 'amplify-authenticator',
   shadow: false,
 })
 export class AmplifyAuthenticator {
+  /** Allows customers to pass a starting state e.g. signup for which component will show */
   @Prop() state: string = 'loading';
+  /** First initial load when the component mounts in order to set Loading to SignIn by default */
   @State() firstInitialLoad: boolean = true;
+  /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
 
-  onAuthStateChange= (stateOfAuth?: string) => {
+  onAuthStateChange = (stateOfAuth?: string) => {
     if (stateOfAuth === undefined) return console.info('stateOfAuth cannot be undefined');
 
-    // Current auth state
     console.info('Inside onAuthStateChange Method current authState:', this.authState);
     this.authState = authenticatorMapping[stateOfAuth];
 
-    // Updated auth state
     console.info(`authState has been updated to ${this.authState}`);
     return this.buildUIContent(this.authState);
   }
 
   buildUIContent(authState) {
     if (authState === 'loading') {
+      // TODO: add loading component
       content = 'Loading...';
     }
     if(authState === 'signin') {
       content = <amplify-sign-in />
     }
     if (authState === 'signout') {
+      // TODO: add sign out component
       content = <div>Sign Out Component</div>
     }
     if (authState === 'signup') {
+      // TODO: add sign up component
       content = <div>Sign Up Component</div>
     }
     if (authState === 'forgotpassword') {
+      // TODO: add forgot password component
       content = <div>Forgot Password Component</div>
     }
   }
