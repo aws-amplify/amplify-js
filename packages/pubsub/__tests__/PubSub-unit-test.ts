@@ -56,7 +56,7 @@ const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
 });
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
-	new Promise((resolve, reject) => {
+	new Promise(async (resolve, reject) => {
 		const obs = pubsub.subscribe(topic, options).subscribe({
 			next: data => {
 				expect(data.value).toEqual(message);
@@ -67,7 +67,7 @@ const testPubSubAsync = (pubsub, topic, message, options?) =>
 			error: reject,
 		});
 
-		pubsub.publish(topic, message, options);
+		await pubsub.publish(topic, message, options);
 	});
 
 const testAppSyncAsync = (pubsub, topic, message) =>
@@ -108,6 +108,10 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 		const testClient = new Paho.Client(testUrl, testClientId);
 		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
 	});
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
 
 describe('PubSub', () => {
 	describe('constructor test', () => {
