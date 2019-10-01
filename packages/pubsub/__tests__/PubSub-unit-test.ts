@@ -345,7 +345,7 @@ describe('PubSub', () => {
 
 			expect(
 				pubsub.publish('topicA', 'my message AWSIoTProvider')
-			).rejects.toThrowError('Failed to publish');
+			).rejects.toMatch('Failed to publish');
 		});
 
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
@@ -379,6 +379,7 @@ describe('PubSub', () => {
 			expect(spyDisconnect).toHaveBeenCalled();
 			spyDisconnect.mockClear();
 		});
+
 		test(
 			'For multiple observers, client should not be disconnected if there are ' +
 				'other observers connected when unsubscribing',
