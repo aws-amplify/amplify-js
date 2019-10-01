@@ -1891,4 +1891,9 @@ export default class AuthClass {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
 	}
+
+	private doNothing() {
+		console.log('Yo');
+		return 'Codecov, what do you think of this?';
+	}
 }
