@@ -1,6 +1,20 @@
+
 export enum AuthState {
-  LoggedOut = 'LoggedOut',
-  LoggedIn = 'LoggedIn',
+  SignUp = 'signup',
+  SignOut = 'signout',
+  SignIn = 'signin',
+  Loading = 'loading',
+  signedOut = 'signedout',
+  signedIn = 'signedin',
+  signingUp = 'signingup',
+  confirmingSignUp = 'confirmsignup',
+  confirmingSignUpCustomFlow = 'confirmsignupcustomflow',
+  confirmingSignIn = 'confirmingsignin',
+  confirmingSignInCustomFlow = 'confirmingsignincustomflow',
+  verifyingAttributes = 'verifyingattributes',
+  ForgotPassword = 'forgotpassword',
+  resettingPassword = 'resettingpassword',
+  settingMFA = 'settingMFA'
 }
 
 export interface UserData {

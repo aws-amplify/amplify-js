@@ -2,6 +2,7 @@ import { Component, Prop, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
 import { AmplifySignInFormFooter } from './amplify-sign-in-form-footer';
+import AuthState from '../../data/auth-state';
 import {
   HEADER_TEXT,
   SUBMIT_BUTTON_TEXT,
@@ -18,7 +19,10 @@ const SIGN_IN_COMPONENTS = [
   },
   {
     type: 'password',
-    hint: <AmplifyForgotPasswordHint forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />,
+    hint: 
+      <AuthState.Consumer>
+        {({onAuthStateChange}) => (<AmplifyForgotPasswordHint onAuthStateChange={onAuthStateChange} forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />)}
+      </AuthState.Consumer>,
     required: true,
   },
 ];
@@ -54,16 +58,20 @@ export class AmplifySignIn {
    * ]
    * ```
   */
-  @Prop() formFields: FormFieldTypes | string[] = SIGN_IN_COMPONENTS; 
+  @Prop() formFields: FormFieldTypes | string[] = SIGN_IN_COMPONENTS;
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
-        <amplify-auth-fields formFields={this.formFields} />
-        <div slot="amplify-form-section-footer">
-          <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} />
-        </div>
-      </amplify-form-section>
+      <AuthState.Consumer>
+        {({ onAuthStateChange, authState }) => (
+          <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
+            <amplify-auth-fields formFields={this.formFields} />
+            <div slot="amplify-form-section-footer">
+              <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} onAuthStateChange={onAuthStateChange} authState={authState} />
+            </div>
+          </amplify-form-section>
+        )}
+      </AuthState.Consumer>
     );
   }
 }

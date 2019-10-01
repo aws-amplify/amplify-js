@@ -38,9 +38,7 @@ export namespace Components {
     'formFields': FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator {
-    'content': Function;
-    'override': boolean;
-    'signIn': Function;
+    'state': string;
   }
   interface AmplifyButton {
     /**
@@ -559,10 +557,7 @@ declare namespace LocalJSX {
     'formFields'?: FormFieldTypes | string[];
   }
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
-    'content'?: Function;
-    'onAuthStateChange'?: (event: CustomEvent<any>) => void;
-    'override'?: boolean;
-    'signIn'?: Function;
+    'state'?: string;
   }
   interface AmplifyButton extends JSXBase.HTMLAttributes<HTMLAmplifyButtonElement> {
     /**

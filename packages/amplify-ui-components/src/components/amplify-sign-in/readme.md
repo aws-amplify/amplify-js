@@ -22,7 +22,6 @@
 ### Used by
 
  - [amplify-authenticator](../amplify-authenticator)
- - [amplify-examples](../amplify-examples)
 
 ### Depends on
 
@@ -31,6 +30,7 @@
 - [amplify-link](../amplify-link)
 - [amplify-link](../amplify-link)
 - [amplify-button](../amplify-button)
+- context-consumer
 
 ### Graph
 ```mermaid
@@ -40,6 +40,7 @@ graph TD;
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
+  amplify-sign-in --> context-consumer
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-auth-fields --> amplify-username-field
@@ -56,7 +57,6 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
   amplify-authenticator --> amplify-sign-in
-  amplify-examples --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
