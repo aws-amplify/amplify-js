@@ -42,7 +42,7 @@ jest.mock('uuid', () => {
 	return { v1: mockfn };
 });
 
-import { AWS, JS, Credentials, ClientDevice } from '@aws-amplify/core';
+import { Credentials, ClientDevice } from '@aws-amplify/core';
 import AnalyticsProvider from '../../src/Providers/AWSPinpointProvider';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Cache from '@aws-amplify/core';
