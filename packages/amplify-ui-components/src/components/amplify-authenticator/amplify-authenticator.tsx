@@ -15,7 +15,7 @@ export class AmplifyAuthenticator {
   @State() firstInitialLoad: boolean = true;
   /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
-
+  
   onAuthStateChange = (stateOfAuth?: string) => {
     if (stateOfAuth === undefined) return console.info('stateOfAuth cannot be undefined');
 
