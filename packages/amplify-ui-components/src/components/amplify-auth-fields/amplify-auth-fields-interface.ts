@@ -1,11 +1,11 @@
-import { FunctionalComponent } from '@stencil/state-tunnel/dist/types/stencil.core';
+import { FunctionalComponent } from '@stencil/core';
 
 export interface FormFieldType {
   type: string;
   label?: string;
   placeholder?: string;
-  hint?: string | FunctionalComponent | null; 
+  hint?: string | FunctionalComponent | null;
   required?: boolean;
 }
 
-export interface FormFieldTypes extends Array<FormFieldType> {};
+export interface FormFieldTypes extends Array<FormFieldType> { };

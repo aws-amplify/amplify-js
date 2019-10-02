@@ -1,0 +1,54 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "amplify-examples-dev-20190910190021-authRole",
+			"UnauthRoleArn": "arn:aws:iam::902789148998:role/amplify-examples-dev-20190910190021-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::902789148998:role/amplify-examples-dev-20190910190021-authRole",
+			"Region": "us-east-1",
+			"DeploymentBucketName": "amplify-examples-dev-20190910190021-deployment",
+			"UnauthRoleName": "amplify-examples-dev-20190910190021-unauthRole",
+			"StackName": "amplify-examples-dev-20190910190021",
+			"StackId": "arn:aws:cloudformation:us-east-1:902789148998:stack/amplify-examples-dev-20190910190021/e9f0e840-d437-11e9-b324-0eb2970e4f5e"
+		}
+	},
+	"auth": {
+		"cognito5e8d6bdf": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/amplify-examples-dev-20190910190021-deployment/amplify-cfn-templates/auth/cognito5e8d6bdf-cloudformation-template.yml",
+				"logicalId": "authcognito5e8d6bdf"
+			},
+			"lastPushTimeStamp": "2019-09-11T17:41:45.418Z",
+			"output": {
+				"IdentityPoolId": "us-east-1:dbc96cc0-bdb5-4948-9b87-6b940c807917",
+				"IdentityPoolName": "amplify_examples_identitypool_e004c03c__dev",
+				"AppClientSecret": "aptrt64u2e0enba6nbkmj546dntdtfoeeipg0a50v906ujaedki",
+				"UserPoolId": "us-east-1_TufyikTmJ",
+				"AppClientIDWeb": "710g497prt1uacj8mq5bp8kmre",
+				"AppClientID": "60q9iubfro7n7ko5rgmdn8qjci",
+				"UserPoolName": "cognito5e8d6bdf_userpool_6d1058b2"
+			},
+			"lastPushDirHash": "VLMM3WygjD1sJRIKKvqWYmi4Dfw=",
+			"dependsOn": []
+		}
+	},
+	"xr": {
+		"scene1": {
+			"service": "Sumerian",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/amplify-examples-dev-20190910190021-deployment/amplify-cfn-templates/xr/template.json",
+				"logicalId": "xrscene1"
+			},
+			"lastPushTimeStamp": "2019-09-11T17:41:45.429Z",
+			"output": {
+				"sceneId": "b3711a0b52e24cb09dc73f1c70d74da4.scene",
+				"region": "us-east-1",
+				"projectName": "Drafts-assumed-role/Admin/jranz-Isengard",
+				"url": "https://sumerian.us-east-1.amazonaws.com/20180801/projects/Drafts-assumed-role%2FAdmin%2Fjranz-Isengard/release/authTokens?sceneId=b3711a0b52e24cb09dc73f1c70d74da4.scene"
+			},
+			"lastPushDirHash": "bGyvbkhLHf2yccFz6l0KEPRUxlw="
+		}
+	}
+}

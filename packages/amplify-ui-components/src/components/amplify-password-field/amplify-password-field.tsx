@@ -1,11 +1,5 @@
-import { Component, Prop, h } from '@stencil/core';
-import { FunctionalComponent } from '@stencil/state-tunnel/dist/types/stencil.core';
-import {
-  PASSWORD_SUFFIX,
-  PASSWORD_LABEL,
-  PASSWORD_PLACEHOLDER,
-} from '../../common/constants';
-
+import { Component, Prop, FunctionalComponent, h } from '@stencil/core';
+import { PASSWORD_SUFFIX, PASSWORD_LABEL, PASSWORD_PLACEHOLDER } from '../../common/constants';
 
 @Component({
   tag: 'amplify-password-field',
@@ -25,7 +19,13 @@ export class AmplifyPasswordField {
 
   render() {
     return (
-      <amplify-form-field fieldId={this.fieldId} label={this.label} placeholder={this.placeholder} hint={this.hint} required={this.required} />
+      <amplify-form-field
+        fieldId={this.fieldId}
+        label={this.label}
+        placeholder={this.placeholder}
+        hint={this.hint}
+        required={this.required}
+      />
     );
   }
 }
