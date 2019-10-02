@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\` by default 1`] = `
+<amplify-authenticator>
+  <div>
+    <amplify-sign-in></amplify-sign-in>
+  </div>
+</amplify-authenticator>
+`;
