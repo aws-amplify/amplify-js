@@ -4,7 +4,7 @@ import { AuthState } from '../components/amplify-authenticator/types';
 
 export interface State {
   authState: AuthState;
-  onAuthStateChange?: (stateOfAuth?: string, authState?: string) => void;
+  onAuthStateChange?: (stateOfAuth?: string) => void;
 }
 
 export default createProviderConsumer<State>({
