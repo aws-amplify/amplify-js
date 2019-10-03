@@ -1,0 +1,15 @@
+{
+    "auth": {
+        "cognito5e8d6bdf": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "dependsOn": []
+        }
+    },
+    "xr": {
+        "scene1": {
+            "service": "Sumerian",
+            "providerPlugin": "awscloudformation"
+        }
+    }
+}
