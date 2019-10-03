@@ -179,19 +179,18 @@ export default class Greetings extends AuthPiece<
 		// @ts-ignore
 		const auth0_config = auth0 || oauth.auth0;
 
-		let SignOutComponent = SignOut;
 		// @ts-ignore
-		if (googleClientId) SignOutComponent = withGoogle(SignOut);
+		if (googleClientId) SignOut = withGoogle(SignOut);
 		// @ts-ignore
-		if (facebookAppId) SignOutComponent = withFacebook(SignOut);
+		if (facebookAppId) SignOut = withFacebook(SignOut);
 		// @ts-ignore
-		if (amazonClientId) SignOutComponent = withAmazon(SignOut);
+		if (amazonClientId) SignOut = withAmazon(SignOut);
 		// @ts-ignore
-		if (auth0_config) SignOutComponent = withAuth0(SignOut);
+		if (auth0_config) SignOut = withAuth0(SignOut);
 
 		const stateAndProps = Object.assign({}, this.props, this.state);
 
-		return <SignOutComponent {...stateAndProps} />;
+		return <SignOut {...stateAndProps} />;
 	}
 
 	noUserGreetings(theme) {

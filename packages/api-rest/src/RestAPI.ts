@@ -11,10 +11,7 @@
  * and limitations under the License.
  */
 import { RestClient } from './RestClient';
-import Amplify, {
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('RestAPI');
 

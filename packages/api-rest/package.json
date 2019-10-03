@@ -32,11 +32,11 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "prettier": "^1.7.4",
-    "@aws-amplify/core": "^1.1.2"
+    "prettier": "^1.7.4"
   },
   "dependencies": {
-    "axios": "^0.19.0"
+    "axios": "^0.19.0",
+    "@aws-amplify/core": "^1.1.2"
   },
   "jest": {
     "globals": {

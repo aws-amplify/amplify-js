@@ -32,7 +32,9 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "prettier": "^1.7.4",
+    "prettier": "^1.7.4"
+  },
+  "dependencies": {
     "@aws-amplify/api-rest": "^1.0.0",
     "@aws-amplify/api-graphql": "^1.0.0"
   },
