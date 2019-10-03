@@ -16,7 +16,7 @@ import { InteractionsOptions, InteractionsMessage } from '../types';
 import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
 import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
 import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
-import { ConsoleLogger as Logger, AWS, Credentials } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -91,9 +91,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
         if (!credentials) {
             return Promise.reject('No credentials');
         }
-        AWS.config.update({
-            credentials,
-        });
 
         this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
             region: this._config[botname].region,
@@ -113,7 +110,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
             try {
                 const postTextCommand = new PostTextCommand(params);
-                const data = this.lexRuntimeServiceClient.send(postTextCommand);
+                const data = await this.lexRuntimeServiceClient.send(postTextCommand);
                 this.responseCallback(data, botname);
                 return data;
             } catch (err) {
@@ -144,7 +141,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
             try {
                 const postContentCommand = new PostContentCommand(params);
-                const data = this.lexRuntimeServiceClient.send(postContentCommand);
+                const data = await this.lexRuntimeServiceClient.send(postContentCommand);
                 this.responseCallback(data, botname);
                 return data;
             } catch (err) {

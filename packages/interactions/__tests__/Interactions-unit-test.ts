@@ -1,6 +1,5 @@
 import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
 import Interactions from '../src/Interactions';
-import { findInterfacesAddedToObjectTypes } from 'graphql/utilities/findBreakingChanges';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
 import { Credentials } from '@aws-amplify/core';
 import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
