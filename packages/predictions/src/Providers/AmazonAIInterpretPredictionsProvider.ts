@@ -148,50 +148,45 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		});
 	}
 
-	private detectKeyPhrases(params, comprehend): Promise<Array<KeyPhrases>> {
-		return new Promise((res, rej) => {
+	private async detectKeyPhrases(
+		params,
+		comprehend
+	): Promise<Array<KeyPhrases>> {
+		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
-			comprehend.send(detectKeyPhrasesCommand, (err, data) => {
-				const { KeyPhrases = [] } = data || {};
-				if (err) {
-					if (err.code === 'AccessDeniedException') {
-						rej(
-							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
-						);
-					} else {
-						rej(err.message);
-					}
-				} else {
-					res(
-						KeyPhrases.map(({ Text: text }) => {
-							return { text };
-						})
-					);
-				}
+			const data = await comprehend.send(detectKeyPhrasesCommand);
+			const { KeyPhrases = [] } = data || {};
+			return KeyPhrases.map(({ Text: text }) => {
+				return { text };
 			});
-		});
+		} catch (err) {
+			if (err.code === 'AccessDeniedException') {
+				Promise.reject(
+					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
+						'amplify predictions add'
+				);
+			} else {
+				Promise.reject(err.message);
+			}
+		}
 	}
 
-	private detectSyntax(params, comprehend): Promise<Array<TextSyntax>> {
-		return new Promise((res, rej) => {
+	private async detectSyntax(params, comprehend): Promise<Array<TextSyntax>> {
+		try {
 			const detectSyntaxCommand = new DetectSyntaxCommand(params);
-			comprehend.send(detectSyntaxCommand, (err, data) => {
-				const { SyntaxTokens = [] } = data || {};
-				if (err) {
-					if (err.code === 'AccessDeniedException') {
-						rej(
-							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
-						);
-					} else {
-						rej(err.message);
-					}
-				} else {
-					res(this.serializeSyntaxFromComprehend(SyntaxTokens));
-				}
-			});
-		});
+			const data = await comprehend.send(detectSyntaxCommand);
+			const { SyntaxTokens = [] } = data || {};
+			return this.serializeSyntaxFromComprehend(SyntaxTokens);
+		} catch (err) {
+			if (err.code === 'AccessDeniedException') {
+				Promise.reject(
+					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
+						'amplify predictions add'
+				);
+			} else {
+				Promise.reject(err.message);
+			}
+		}
 	}
 
 	private serializeSyntaxFromComprehend(tokens): Array<TextSyntax> {
@@ -206,54 +201,51 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return response;
 	}
 
-	private detectSentiment(params, comprehend): Promise<TextSentiment> {
-		return new Promise((res, rej) => {
+	private async detectSentiment(params, comprehend): Promise<TextSentiment> {
+		try {
 			const detectSentimentCommand = new DetectSentimentCommand(params);
-			comprehend.send(detectSentimentCommand, (err, data) => {
-				if (err) {
-					if (err.code === 'AccessDeniedException') {
-						rej(
-							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
-						);
-					} else {
-						rej(err.message);
-					}
-				} else {
-					const {
-						Sentiment: predominant = '',
-						SentimentScore: {
-							Positive: positive = 0,
-							Negative: negative = 0,
-							Neutral: neutral = 0,
-							Mixed: mixed = 0,
-						} = {},
-					} = ({} = data);
-					res({ predominant, positive, negative, neutral, mixed });
-				}
-			});
-		});
+			const data = await comprehend.send(detectSentimentCommand);
+			const {
+				Sentiment: predominant = '',
+				SentimentScore: {
+					Positive: positive = 0,
+					Negative: negative = 0,
+					Neutral: neutral = 0,
+					Mixed: mixed = 0,
+				} = {},
+			} = ({} = data);
+			return { predominant, positive, negative, neutral, mixed };
+		} catch (err) {
+			if (err.code === 'AccessDeniedException') {
+				Promise.reject(
+					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
+						'amplify predictions add'
+				);
+			} else {
+				Promise.reject(err.message);
+			}
+		}
 	}
 
-	private detectEntities(params, comprehend): Promise<Array<TextEntities>> {
-		return new Promise(async (res, rej) => {
+	private async detectEntities(
+		params,
+		comprehend
+	): Promise<Array<TextEntities>> {
+		try {
 			const detectEntitiesCommand = new DetectEntitiesCommand(params);
-			await comprehend.send(detectEntitiesCommand, (err, data) => {
-				const { Entities = [] } = data || {};
-				if (err) {
-					if (err.code === 'AccessDeniedException') {
-						rej(
-							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
-						);
-					} else {
-						rej(err.message);
-					}
-				} else {
-					res(this.serializeEntitiesFromComprehend(Entities));
-				}
-			});
-		});
+			const data = await comprehend.send(detectEntitiesCommand);
+			const { Entities = [] } = data || {};
+			return this.serializeEntitiesFromComprehend(Entities);
+		} catch (err) {
+			if (err.code === 'AccessDeniedException') {
+				Promise.reject(
+					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
+						'amplify predictions add'
+				);
+			} else {
+				Promise.reject(err.message);
+			}
+		}
 	}
 
 	private serializeEntitiesFromComprehend(data): Array<TextEntities> {
@@ -266,30 +258,27 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return response;
 	}
 
-	private detectLanguage(params, comprehend): Promise<string> {
-		return new Promise(async (res, rej) => {
+	private async detectLanguage(params, comprehend): Promise<string> {
+		try {
 			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(
 				params
 			);
-			comprehend.send(detectDominantLanguageCommand, (err, data) => {
-				if (err) {
-					if (err.code === 'AccessDeniedException') {
-						rej(
-							'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-								'amplify predictions add'
-						);
-					} else {
-						rej(err.message);
-					}
-				} else {
-					const { Languages: [{ LanguageCode }] = [''] } = ({} = data || {});
-					if (!LanguageCode) {
-						rej('Language not detected');
-					}
-					res(data.Languages[0].LanguageCode);
-				}
-			});
-		});
+			const data = await comprehend.send(detectDominantLanguageCommand);
+			const { Languages: [{ LanguageCode }] = [''] } = ({} = data || {});
+			if (!LanguageCode) {
+				Promise.reject('Language not detected');
+			}
+			return data.Languages[0].LanguageCode;
+		} catch (err) {
+			if (err.code === 'AccessDeniedException') {
+				Promise.reject(
+					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
+						'amplify predictions add'
+				);
+			} else {
+				Promise.reject(err.message);
+			}
+		}
 	}
 }
 

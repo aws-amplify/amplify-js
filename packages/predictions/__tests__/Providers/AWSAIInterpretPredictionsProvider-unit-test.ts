@@ -19,12 +19,12 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
-		callback(null, resultDetectEntities);
+		return Promise.resolve(resultDetectEntities);
 	} else if (command instanceof DetectDominantLanguageCommand) {
 		const resultDominantLanguage = {
 			Languages: [{ LanguageCode: 'en-US' }],
 		};
-		callback(null, resultDominantLanguage);
+		return Promise.resolve(resultDominantLanguage);
 	} else if (command instanceof DetectSentimentCommand) {
 		const resultDetectSentiment = {
 			Sentiment: 'NEUTRAL',
@@ -35,7 +35,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				Positive: 0.1282072812318802,
 			},
 		};
-		callback(null, resultDetectSentiment);
+		return Promise.resolve(resultDetectSentiment);
 	} else if (command instanceof DetectSyntaxCommand) {
 		const resultSyntax = {
 			SyntaxTokens: [
@@ -146,7 +146,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
-		callback(null, resultSyntax);
+		return Promise.resolve(resultSyntax);
 	} else if (command instanceof DetectKeyPhrasesCommand) {
 		const resultKeyPhrases = {
 			KeyPhrases: [
@@ -170,7 +170,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
-		callback(null, resultKeyPhrases);
+		return Promise.resolve(resultKeyPhrases);
 	}
 }) as any;
 
@@ -194,6 +194,9 @@ const textToTest =
 	'Well this is the end, William what do you think about global warming?';
 
 describe('Predictions interpret provider test', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 	describe('interpretText tests', () => {
 		const happyConfig = {
 			interpretText: {
@@ -234,10 +237,7 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(detectEntitiesSpy).toBeCalledWith(
-				new DetectEntitiesCommand(sdkParams),
-				expect.any(Function)
-			);
+			expect(detectEntitiesSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
 		test('happy case credentials exists detectDominantLanguage', async () => {
@@ -270,10 +270,7 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(dominantLanguageSpy).toBeCalledWith(
-				new DetectDominantLanguageCommand(sdkParams),
-				expect.any(Function)
-			);
+			expect(dominantLanguageSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
 		test('happy case credentials exists detect sentiment', async () => {
@@ -311,10 +308,7 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(sentimentSpy).toBeCalledWith(
-				new DetectSentimentCommand(sdkParams),
-				expect.any(Function)
-			);
+			expect(sentimentSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
 		test('happy case credentials exists detect syntax', async () => {
@@ -362,10 +356,7 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(syntaxSpy).toBeCalledWith(
-				new DetectSyntaxCommand(sdkParams),
-				expect.any(Function)
-			);
+			expect(syntaxSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
 		test('happy case credentials exists detect key phrases', async () => {
@@ -401,10 +392,7 @@ describe('Predictions interpret provider test', () => {
 				Text: textToTest,
 			};
 
-			expect(keyPhrasesSpy).toBeCalledWith(
-				new DetectKeyPhrasesCommand(sdkParams),
-				expect.any(Function)
-			);
+			expect(keyPhrasesSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
 		test("happy case credentials type: 'ALL'", async () => {
@@ -470,26 +458,14 @@ describe('Predictions interpret provider test', () => {
 				LanguageCode: 'en-US',
 				Text: textToTest,
 			};
-			expect(keyPhrasesSpy).toBeCalledWith(
-				new DetectKeyPhrasesCommand(sdkParams),
-				expect.any(Function)
-			);
-			expect(syntaxSpy).toBeCalledWith(
-				new DetectSyntaxCommand(sdkParams),
-				expect.any(Function)
-			);
-			expect(sentimentSpy).toBeCalledWith(
-				new DetectSentimentCommand(sdkParams),
-				expect.any(Function)
-			);
-			expect(detectEntitiesSpy).toBeCalledWith(
-				new DetectEntitiesCommand(sdkParams),
-				expect.any(Function)
-			);
-			expect(dominantLanguageSpy).toBeCalledWith(
-				new DetectDominantLanguageCommand({ Text: textToTest }),
-				expect.any(Function)
-			);
+
+			expect(keyPhrasesSpy.mock.calls[4][0].input).toEqual(sdkParams);
+			expect(syntaxSpy.mock.calls[3][0].input).toEqual(sdkParams);
+			expect(sentimentSpy.mock.calls[2][0].input).toEqual(sdkParams);
+			expect(detectEntitiesSpy.mock.calls[1][0].input).toEqual(sdkParams);
+			expect(dominantLanguageSpy.mock.calls[0][0].input).toEqual({
+				Text: textToTest,
+			});
 		});
 	});
 });

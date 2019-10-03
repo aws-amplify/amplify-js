@@ -414,7 +414,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(detectLabelInput)
@@ -438,7 +438,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(detectModerationInput)
@@ -470,7 +470,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(detectModerationInput)
@@ -521,7 +521,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(detectFacesInput)
@@ -550,7 +550,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(recognizeCelebritiesInput)
@@ -581,7 +581,7 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce((_input, callback) => {
-						callback('error', null);
+						return Promise.reject('error');
 					});
 				return expect(
 					predictionsProvider.identify(searchByFacesInput)
@@ -609,32 +609,28 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, callback) => {
+				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('public/key');
-					callback(null, detectlabelsResponse);
+					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
 		});
 
-		test('happy case input source valid private s3object', done => {
+		test('happy case input source valid private s3object', async () => {
 			const detectLabelInput: IdentifyLabelsInput = {
 				labels: { source: { key: 'key', level: 'private' }, type: 'LABELS' },
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce((command, _callback) => {
-					try {
-						expect(
-							(command as DetectLabelsCommand).input.Image.S3Object.Name
-						).toMatch('private/identityId/key');
-						done();
-					} catch (err) {
-						done(err);
-					}
+					expect(
+						(command as DetectLabelsCommand).input.Image.S3Object.Name
+					).toMatch('private/identityId/key');
+					return {};
 				});
-			predictionsProvider.identify(detectLabelInput);
+			await predictionsProvider.identify(detectLabelInput);
 		});
 
 		test('happy case input source valid protected s3object', () => {
@@ -650,11 +646,11 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, callback) => {
+				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('protected/identityId/key');
-					callback(null, detectlabelsResponse);
+					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
 		});
@@ -665,16 +661,16 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, callback) => {
+				.mockImplementationOnce(command => {
 					expect((command as DetectLabelsCommand).input.Image.Bytes).toMatch(
 						'bytes'
 					);
-					callback(null, detectlabelsResponse);
+					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
 		});
 
-		test('happy case input source valid bytes', done => {
+		test('happy case input source valid bytes', async () => {
 			const fileInput = new Blob([Buffer.from('file')]);
 			const detectLabelInput: IdentifyLabelsInput = {
 				labels: { source: { bytes: fileInput }, type: 'LABELS' },
@@ -682,19 +678,15 @@ describe('Predictions identify provider test', () => {
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce((command, _callback) => {
-					try {
-						expect(
-							(command as DetectLabelsCommand).input.Image.Bytes
-						).toMatchObject(fileInput);
-						done();
-					} catch (err) {
-						done(err);
-					}
+					expect(
+						(command as DetectLabelsCommand).input.Image.Bytes
+					).toMatchObject(fileInput);
+					return {};
 				});
-			predictionsProvider.identify(detectLabelInput);
+			await predictionsProvider.identify(detectLabelInput);
 		});
 
-		test('happy case input source valid file', done => {
+		test('happy case input source valid file', async () => {
 			const fileInput = new File([Buffer.from('file')], 'file');
 			const detectLabelInput: IdentifyLabelsInput = {
 				labels: { source: { file: fileInput }, type: 'LABELS' },
@@ -702,16 +694,12 @@ describe('Predictions identify provider test', () => {
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce((command, _callback) => {
-					try {
-						expect(
-							(command as DetectLabelsCommand).input.Image.Bytes
-						).toMatchObject(fileInput);
-						done();
-					} catch (err) {
-						done(err);
-					}
+					expect(
+						(command as DetectLabelsCommand).input.Image.Bytes
+					).toMatchObject(fileInput);
+					return {};
 				});
-			predictionsProvider.identify(detectLabelInput);
+			await predictionsProvider.identify(detectLabelInput);
 		});
 
 		test('error case invalid input source', () => {
