@@ -63,11 +63,11 @@ export class AmplifySignIn {
   render() {
     return (
       <AuthState.Consumer>
-        {({ onAuthStateChange, authState }) => (
+        {({ onAuthStateChange }) => (
           <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
             <amplify-auth-fields formFields={this.formFields} />
             <div slot="amplify-form-section-footer">
-              <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} onAuthStateChange={onAuthStateChange} authState={authState} />
+              <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} onAuthStateChange={onAuthStateChange} />
             </div>
           </amplify-form-section>
         )}
