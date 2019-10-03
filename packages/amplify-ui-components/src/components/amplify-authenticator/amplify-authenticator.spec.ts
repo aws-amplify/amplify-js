@@ -22,23 +22,22 @@ describe('amplify-authenticator spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    // Need to Address: https://stenciljs.com/docs/templating-jsx#avoid-shared-jsx-nodes
-    // it('should render a `sign up` by passing `signup` into state prop', async () => {
-    //   const page = await newSpecPage({
-    //     components: [AmplifyAuthenticator],
-    //     html: `<amplify-authenticator state="signup"></amplify-authenticator>`
-    //   });
+    it('should render a `sign up` by passing `signup` into state prop', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyAuthenticator],
+        html: `<amplify-authenticator state="signup"></amplify-authenticator>`
+      });
 
-    //   expect(page.root).toMatchSnapshot();
-    // });
-    // it('should render a `forgot password` by passing `forgotpassword` into state prop', async () => {
-    //   const page = await newSpecPage({
-    //     components: [AmplifyAuthenticator],
-    //     html: `<amplify-authenticator state="forgotpassword"></amplify-authenticator>`
-    //   });
+      expect(page.root).toMatchSnapshot();
+    });
+    it('should render a `forgot password` by passing `forgotpassword` into state prop', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyAuthenticator],
+        html: `<amplify-authenticator state="forgotpassword"></amplify-authenticator>`
+      });
 
-      // expect(page.root).toMatchSnapshot();
-    // });
+      expect(page.root).toMatchSnapshot();
+    });
 
     it('should render a `sign in` by default', async () => {
       const page = await newSpecPage({

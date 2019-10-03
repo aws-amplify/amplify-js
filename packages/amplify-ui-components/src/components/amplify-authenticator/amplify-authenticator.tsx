@@ -2,8 +2,6 @@ import { Component, State, Prop, h } from '@stencil/core';
 import { AuthState, authenticatorMapping } from './types';
 import Tunnel from '../../data/auth-state';
 
-let content;
-
 @Component({
   tag: 'amplify-authenticator',
   shadow: false,
@@ -26,25 +24,25 @@ export class AmplifyAuthenticator {
     return this.buildUIContent(this.authState);
   }
 
-  buildUIContent(authState) {
+  buildUIContent(authState: AuthState) {
     if (authState === 'loading') {
       // TODO: add loading component
-      content = 'Loading...';
+      return 'Loading...';
     }
     if(authState === 'signin') {
-      content = <amplify-sign-in />
+      return <amplify-sign-in />
     }
     if (authState === 'signout') {
       // TODO: add sign out component
-      content = <div>Sign Out Component</div>
+      return <div>Sign Out Component</div>
     }
     if (authState === 'signup') {
       // TODO: add sign up component
-      content = <div>Sign Up Component</div>
+      return <div>Sign Up Component</div>
     }
     if (authState === 'forgotpassword') {
       // TODO: add forgot password component
-      content = <div>Forgot Password Component</div>
+      return <div>Forgot Password Component</div>
     }
   }
   
@@ -74,7 +72,7 @@ export class AmplifyAuthenticator {
     return (
       <Tunnel.Provider state={tunnelState}>
         <div>
-          {content}
+          {this.buildUIContent(this.authState)}
         </div>
       </Tunnel.Provider>
     );
