@@ -27,5 +27,8 @@
     },
     "include": [
         "src/**/*"
+    ],
+    "exclude": [
+        "src/setupTests.ts"
     ]
 }

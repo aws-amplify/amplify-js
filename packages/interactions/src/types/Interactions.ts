@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
 export interface InteractionsOptions {
-    [key: string]: any,
+	[key: string]: any;
 }
 
 export interface InteractionsMessage {
-    content: string | Object;
-    options: {
-        [key: string]: string
-    }
+	content: string | Object;
+	options: {
+		[key: string]: string;
+	};
 }

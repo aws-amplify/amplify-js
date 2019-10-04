@@ -12,5 +12,5 @@
  */
 
 export class I18nOptions {
-    language = null;
+	language = null;
 }

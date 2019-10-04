@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.2.13",
+  "version": "0.2.17",
   "license": "Apache-2.0",
   "private": false,
   "author": "Amazon Web Services",
@@ -16,7 +16,7 @@
     "lodash.orderby": "^4.6.0",
     "qrcode.vue": "^1.6.0",
     "vue": "^2.5.17",
-    "vue2-filters": "^0.3.0"
+    "vue2-filters": "^0.7.2"
   },
   "devDependencies": {
     "@aws-amplify/ui": "1.0.10-unstable.0",

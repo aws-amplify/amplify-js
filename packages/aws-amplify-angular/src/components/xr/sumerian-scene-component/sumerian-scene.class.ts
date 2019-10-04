@@ -11,5 +11,5 @@
  * and limitations under the License.
  */
 export class SumerianSceneClass {
-  data: any;
+	data: any;
 }

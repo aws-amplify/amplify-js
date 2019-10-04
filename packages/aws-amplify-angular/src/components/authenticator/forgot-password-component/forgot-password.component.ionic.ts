@@ -113,28 +113,29 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-forgot-password-ionic',
-  template
+	selector: 'amplify-auth-forgot-password-ionic',
+	template,
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	onCodeChange(val) {
+		this.country_code = val;
+	}
 
-  onCodeChange(val) {
-    this.country_code = val;
-  }
+	onNumberChange(val) {
+		this.local_phone_number = val;
+	}
 
-  onNumberChange(val) {
-    this.local_phone_number = val;
-  }
+	setUsername(username: string) {
+		this.username = username;
+	}
 
-  setUsername(username: string) {
-    this.username = username;
-  }
-
-  setEmail(email: string) {
-    this.email = email;
-  }
+	setEmail(email: string) {
+		this.email = email;
+	}
 }

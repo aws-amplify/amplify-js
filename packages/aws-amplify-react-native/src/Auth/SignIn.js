@@ -12,96 +12,90 @@
  */
 
 import React from 'react';
-import {
-    View,
-    TouchableWithoutFeedback,
-    Keyboard
-} from 'react-native';
-import {
-    Auth,
-    I18n,
-    Logger,
-    JS
-} from 'aws-amplify';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import {
-    AmplifyButton,
-    FormField,
-    LinkCell,
-    Header,
-    ErrorRow
+	AmplifyButton,
+	FormField,
+	LinkCell,
+	Header,
+	ErrorRow,
 } from '../AmplifyUI';
 
 const logger = new Logger('SignIn');
 
 export default class SignIn extends AuthPiece {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
-        this.state = {
-            username: null,
-            password: null,
-            error: null
-        }
+		this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
+		this.state = {
+			username: null,
+			password: null,
+			error: null,
+		};
 
-        this.checkContact = this.checkContact.bind(this);
-        this.signIn = this.signIn.bind(this);
-    }
+		this.checkContact = this.checkContact.bind(this);
+		this.signIn = this.signIn.bind(this);
+	}
 
-    signIn() {
-        const username = this.getUsernameFromInput() || '';
-        const { password } = this.state;
-        logger.debug('Sign In for ' + username);
-        Auth.signIn(username, password)
-            .then(user => {
-                logger.debug(user);
-                const requireMFA = (user.Session !== null);
-                if (user.challengeName === 'SMS_MFA') {
-                    this.changeState('confirmSignIn', user);
-                } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-                    logger.debug('require new password', user.challengeParam);
-                    this.changeState('requireNewPassword', user);
-                } else {
-                    this.checkContact(user);
-                }
-            })
-            .catch(err => this.error(err));
-    }
+	signIn() {
+		const username = this.getUsernameFromInput() || '';
+		const { password } = this.state;
+		logger.debug('Sign In for ' + username);
+		Auth.signIn(username, password)
+			.then(user => {
+				logger.debug(user);
+				const requireMFA = user.Session !== null;
+				if (user.challengeName === 'SMS_MFA') {
+					this.changeState('confirmSignIn', user);
+				} else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+					logger.debug('require new password', user.challengeParam);
+					this.changeState('requireNewPassword', user);
+				} else {
+					this.checkContact(user);
+				}
+			})
+			.catch(err => this.error(err));
+	}
 
-    showComponent(theme) {
-        return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
-                    <View style={theme.sectionBody}>
-                        {this.renderUsernameField(theme)}
-                        <FormField
-                            theme={theme}
-                            onChangeText={(text) => this.setState({ password: text })}
-                            label={I18n.get('Password')}
-                            placeholder={I18n.get('Enter your password')}
-                            secureTextEntry={true}
-                            required={true}
-                        />
-                        <AmplifyButton
-                            text={I18n.get('Sign In').toUpperCase()}
-                            theme={theme}
-                            onPress={this.signIn}
-                            disabled={!this.getUsernameFromInput() && this.state.password}
-                        />
-                    </View>
-                    <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.changeState('forgotPassword')}>
-                            {I18n.get('Forgot Password')}
-                        </LinkCell>
-                        <LinkCell theme={theme} onPress={() => this.changeState('signUp')}>
-                            {I18n.get('Sign Up')}
-                        </LinkCell>
-                    </View>
-                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-                </View>
-            </TouchableWithoutFeedback>
-        );
-    }
+	showComponent(theme) {
+		return (
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+				<View style={theme.section}>
+					<Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
+					<View style={theme.sectionBody}>
+						{this.renderUsernameField(theme)}
+						<FormField
+							theme={theme}
+							onChangeText={text => this.setState({ password: text })}
+							label={I18n.get('Password')}
+							placeholder={I18n.get('Enter your password')}
+							secureTextEntry={true}
+							required={true}
+						/>
+						<AmplifyButton
+							text={I18n.get('Sign In').toUpperCase()}
+							theme={theme}
+							onPress={this.signIn}
+							disabled={!this.getUsernameFromInput() && this.state.password}
+						/>
+					</View>
+					<View style={theme.sectionFooter}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('forgotPassword')}
+						>
+							{I18n.get('Forgot Password')}
+						</LinkCell>
+						<LinkCell theme={theme} onPress={() => this.changeState('signUp')}>
+							{I18n.get('Sign Up')}
+						</LinkCell>
+					</View>
+					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+				</View>
+			</TouchableWithoutFeedback>
+		);
+	}
 }
