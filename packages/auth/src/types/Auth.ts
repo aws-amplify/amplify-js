@@ -48,6 +48,7 @@ export interface AuthOptions {
 	storage?: ICognitoStorage;
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
+	clientMetadata?: any;
 }
 
 export enum CognitoHostedUIIdentityProvider {
@@ -199,7 +200,9 @@ export interface AuthErrorMessage {
 }
 
 // We can extend this in the future if needed
-export type SignInOpts = UsernamePasswordOpts;
+export type SignInOpts = UsernamePasswordOpts & {
+	clientMetadata: any;
+};
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;

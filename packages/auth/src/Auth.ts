@@ -152,6 +152,7 @@ export default class AuthClass {
 			mandatorySignIn,
 			refreshHandlers,
 			identityPoolRegion,
+			clientMetadata,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -212,6 +213,7 @@ export default class AuthClass {
 					responseType: cognitoHostedUIConfig['responseType'],
 					Storage: this._storage,
 					urlOpener: cognitoHostedUIConfig['urlOpener'],
+					clientMetadata,
 				},
 				cognitoHostedUIConfig['options']
 			);
@@ -398,6 +400,7 @@ export default class AuthClass {
 		}
 		let username = null;
 		let password = null;
+		let clientMetadata = null;
 		let validationData = {};
 		// for backward compatibility
 		if (typeof usernameOrSignInOpts === 'string') {
@@ -412,6 +415,12 @@ export default class AuthClass {
 			username = usernameOrSignInOpts.username;
 			password = usernameOrSignInOpts.password;
 			validationData = usernameOrSignInOpts.validationData;
+
+			if (usernameOrSignInOpts.clientMetadata) {
+				clientMetadata = usernameOrSignInOpts.clientMetadata;
+			} else if (this._config.clientMetadata) {
+				clientMetadata = this._config.clientMetadata;
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.InvalidUsername);
 		}
@@ -422,6 +431,7 @@ export default class AuthClass {
 			Username: username,
 			Password: password,
 			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
 		});
 		if (password) {
 			return this.signInWithPassword(authDetails);

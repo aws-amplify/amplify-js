@@ -260,7 +260,8 @@ export default class CognitoUser {
 				AuthFlow: this.authenticationFlowType,
 				ClientId: this.pool.getClientId(),
 				AuthParameters: authParameters,
-				ClientMetadata: authDetails.getValidationData(),
+				ClientMetadata:
+					authDetails.getValidationData() || authDetails.ClientMetadata,
 			};
 			if (this.getUserContextData(this.username)) {
 				jsonReq.UserContextData = this.getUserContextData(this.username);
@@ -399,7 +400,8 @@ export default class CognitoUser {
 			AuthFlow: 'USER_PASSWORD_AUTH',
 			ClientId: this.pool.getClientId(),
 			AuthParameters: authParameters,
-			ClientMetadata: authDetails.getValidationData(),
+			ClientMetadata:
+				authDetails.getValidationData() || authDetails.ClientMetadata,
 		};
 		if (this.getUserContextData(this.username)) {
 			jsonReq.UserContextData = this.getUserContextData(this.username);
