@@ -20,8 +20,8 @@ const logger = new Logger('API');
 let _instance: APIClass = null;
 
 if (!_instance) {
-    logger.debug('Create API Instance');
-    _instance = new APIClass(null);
+	logger.debug('Create API Instance');
+	_instance = new APIClass(null);
 }
 
 const API = _instance;

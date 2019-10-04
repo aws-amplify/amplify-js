@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.2.23",
+  "version": "1.2.25",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -10,8 +10,10 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:watch": "tslint 'src/**/*.ts' && jest --watch",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
+    "build:watch": "npm run clean && tsc --watch",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
@@ -51,8 +53,8 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/cache": "^1.0.32",
-    "@aws-amplify/core": "^1.1.0",
+    "@aws-amplify/cache": "^1.0.34",
+    "@aws-amplify/core": "^1.1.2",
     "uuid": "^3.2.1"
   },
   "jest": {
@@ -79,6 +81,9 @@
     },
     "coveragePathIgnorePatterns": [
       "/node_modules/"
+    ],
+    "setupFiles": [
+      "<rootDir>/src/setupTests.ts"
     ]
   }
 }

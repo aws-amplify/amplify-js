@@ -84,13 +84,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'sumerian-scene-ionic',
-  template
+	selector: 'sumerian-scene-ionic',
+	template,
 })
 export class SumerianSceneComponentIonic extends SumerianSceneComponentCore {
-  amplifyUI: any;
+	amplifyUI: any;
 
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }
