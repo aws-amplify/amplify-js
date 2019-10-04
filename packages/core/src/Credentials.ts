@@ -2,7 +2,6 @@ import { ConsoleLogger as Logger } from './Logger';
 import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
-import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
@@ -307,7 +306,6 @@ export class Credentials {
 			}
 		);
 
-		const that = this;
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
