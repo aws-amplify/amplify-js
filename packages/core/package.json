@@ -12,6 +12,7 @@
     "test": "jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
+    "build:watch": "npm run clean && tsc --watch",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
