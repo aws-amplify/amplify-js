@@ -668,20 +668,22 @@ export default class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
 	): Promise<string> {
 		const userData = await this._getUserData(user, { bypassCache: true });
 		let smsMfaSettings = null;
 		let totpMfaSettings = null;
 
 		switch (mfaMethod) {
-			case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
+			case 'TOTP':
+			case 'SOFTWARE_TOKEN_MFA':
 				totpMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
-			case 'SMS' || 'SMS_MFA':
+			case 'SMS':
+			case 'SMS_MFA':	
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
