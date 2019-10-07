@@ -8,7 +8,7 @@ import {
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
 } from '../../src/types';
-import { BlockList } from '../../src/types/Providers/AmazonAIIdentifyPredictionsProvider';
+import { BlockList } from '../../src/types/AWSTypes';
 import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
 import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
 import {
@@ -40,7 +40,7 @@ import { DetectDocumentTextCommand } from '@aws-sdk/client-textract-browser/comm
 import { AnalyzeDocumentCommand } from '@aws-sdk/client-textract-browser/commands/AnalyzeDocumentCommand';
 
 // valid response
-RekognitionClient.prototype.send = jest.fn((command, callback) => {
+RekognitionClient.prototype.send = jest.fn(command => {
 	if (command instanceof DetectLabelsCommand) {
 		const detectlabelsResponse: DetectLabelsOutput = {
 			Labels: [
@@ -53,30 +53,19 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
-
-		if (!callback) {
-			return Promise.resolve(detectlabelsResponse);
-		}
-		callback(null, detectlabelsResponse);
+		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsOutput = {
 			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
 			$metadata: null,
 		};
-
-		if (!callback) {
-			return Promise.resolve(detectModerationLabelsResponse);
-		}
-		callback(null, detectModerationLabelsResponse);
+		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
 			$metadata: null,
 		};
-		if (!callback) {
-			return Promise.resolve(detectFacesResponse);
-		}
-		callback(null, detectFacesResponse);
+		return Promise.resolve(detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
 		const searchFacesByImageResponse: SearchFacesByImageOutput = {
 			FaceMatches: [
@@ -90,10 +79,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
-		if (!callback) {
-			return Promise.resolve(searchFacesByImageResponse);
-		}
-		callback(null, searchFacesByImageResponse);
+		return Promise.resolve(searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
 		const recognizeCelebritiesResponse: RecognizeCelebritiesOutput = {
 			CelebrityFaces: [
@@ -117,10 +103,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
-		if (!callback) {
-			return Promise.resolve(recognizeCelebritiesResponse);
-		}
-		callback(null, recognizeCelebritiesResponse);
+		return Promise.resolve(recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
 		const plainBlocks: DetectTextOutput = {
 			TextDetections: [
@@ -130,10 +113,7 @@ RekognitionClient.prototype.send = jest.fn((command, callback) => {
 			],
 			$metadata: null,
 		};
-		if (!callback) {
-			return Promise.resolve(plainBlocks);
-		}
-		callback(null, plainBlocks);
+		return Promise.resolve(plainBlocks);
 	}
 }) as any;
 
@@ -231,17 +211,11 @@ const analyzeDocumentResponse = {
 	Blocks: TableAndFormBlocks,
 };
 
-TextractClient.prototype.send = jest.fn((command, callback) => {
+TextractClient.prototype.send = jest.fn(command => {
 	if (command instanceof DetectDocumentTextCommand) {
-		if (!callback) {
-			return Promise.resolve(detectDocumentTextResponse);
-		}
-		callback(null, detectDocumentTextResponse);
+		return Promise.resolve(detectDocumentTextResponse);
 	} else if (command instanceof AnalyzeDocumentCommand) {
-		if (!callback) {
-			return Promise.resolve(analyzeDocumentResponse);
-		}
-		callback(null, analyzeDocumentResponse);
+		return Promise.resolve(analyzeDocumentResponse);
 	}
 }) as any;
 
@@ -327,7 +301,7 @@ describe('Predictions identify provider test', () => {
 				// we only call textract if rekognition.detectText reaches word limit of 50. Mock this:
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_param, callback) => {
+					.mockImplementationOnce(() => {
 						const plainBlocks: DetectTextOutput = {
 							TextDetections: [
 								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
@@ -342,10 +316,7 @@ describe('Predictions identify provider test', () => {
 								DetectedText: '',
 							});
 						}
-						if (!callback) {
-							return Promise.resolve(plainBlocks);
-						}
-						callback(null, plainBlocks);
+						return Promise.resolve(plainBlocks);
 					});
 				// confirm that textract service has been called
 				const spy = jest.spyOn(TextractClient.prototype, 'send');
@@ -413,7 +384,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -437,7 +408,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -469,7 +440,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -520,7 +491,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -549,7 +520,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -580,7 +551,7 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
-					.mockImplementationOnce((_input, callback) => {
+					.mockImplementationOnce(() => {
 						return Promise.reject('error');
 					});
 				return expect(
@@ -624,7 +595,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, _callback) => {
+				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('private/identityId/key');
@@ -677,7 +648,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, _callback) => {
+				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.Bytes
 					).toMatchObject(fileInput);
@@ -693,7 +664,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce((command, _callback) => {
+				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.Bytes
 					).toMatchObject(fileInput);

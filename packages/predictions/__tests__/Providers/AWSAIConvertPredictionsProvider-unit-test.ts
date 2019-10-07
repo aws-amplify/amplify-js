@@ -12,26 +12,20 @@ import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
 import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-TranslateClient.prototype.send = jest.fn((command, callback) => {
+TranslateClient.prototype.send = jest.fn(command => {
 	if (command instanceof TranslateTextCommand) {
-		if (!callback) {
-			return Promise.resolve(result);
-		}
-		callback(null, result);
+		return Promise.resolve(result);
 	}
 }) as any;
 
-PollyClient.prototype.send = jest.fn((command, callback) => {
+PollyClient.prototype.send = jest.fn(command => {
 	if (command instanceof SynthesizeSpeechCommand) {
 		const result = {
 			AudioStream: {
 				buffer: 'dummyStream',
 			},
 		};
-		if (!callback) {
-			return Promise.resolve(result);
-		}
-		callback(null, result);
+		return Promise.resolve(result);
 	}
 }) as any;
 
