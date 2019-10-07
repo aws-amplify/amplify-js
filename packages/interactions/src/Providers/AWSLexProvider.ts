@@ -33,7 +33,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
         return 'AWSLexProvider';
     }
 
-    responseCallback(data, botname) {
+    reportBotStatus(data, botname) {
         // Check if state is fulfilled to resolve onFullfilment promise
         logger.debug('postContent state', data.dialogState);
         if (
@@ -111,7 +111,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
             try {
                 const postTextCommand = new PostTextCommand(params);
                 const data = await this.lexRuntimeServiceClient.send(postTextCommand);
-                this.responseCallback(data, botname);
+                this.reportBotStatus(data, botname);
                 return data;
             } catch (err) {
                 return Promise.reject(err);
@@ -142,7 +142,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
             try {
                 const postContentCommand = new PostContentCommand(params);
                 const data = await this.lexRuntimeServiceClient.send(postContentCommand);
-                this.responseCallback(data, botname);
+                this.reportBotStatus(data, botname);
                 return data;
             } catch (err) {
                 return Promise.reject(err);
