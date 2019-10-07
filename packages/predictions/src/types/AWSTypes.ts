@@ -1,15 +1,4 @@
-import { BoundingBox, Point } from '../Predictions';
-export interface Geometry {
-	/**
-	 * <p>An axis-aligned coarse representation of the detected text's location on the image.</p>
-	 */
-	BoundingBox?: BoundingBox;
-
-	/**
-	 * <p>Within the bounding box, a fine-grained polygon around the detected text.</p>
-	 */
-	Polygon?: Array<Point> | Iterable<Point>;
-}
+import { Geometry, Relationship } from './Predictions';
 
 export type BlockList = Block[];
 export interface Block {
@@ -123,18 +112,6 @@ export interface TextDetection {
 	Geometry?: Geometry;
 }
 
-export interface Relationship {
-	/**
-	 * <p>The type of relationship that the blocks in the IDs array have with the current block. The relationship can be <code>VALUE</code> or <code>CHILD</code>.</p>
-	 */
-	Type?: 'VALUE' | 'CHILD' | string;
-
-	/**
-	 * <p>An array of IDs for related blocks. You can get the type of the relationship from the <code>Type</code> element.</p>
-	 */
-	Ids?: Array<string> | Iterable<string>;
-}
-
 export interface Image {
 	/**
 	 * <p>Blob of image bytes up to 5 MBs.</p>
@@ -180,6 +157,3 @@ export interface Document {
 	 */
 	S3Object?: S3Object;
 }
-
-export type FeatureType = 'TABLES' | 'FORMS' | string;
-export type FeatureTypes = FeatureType[];

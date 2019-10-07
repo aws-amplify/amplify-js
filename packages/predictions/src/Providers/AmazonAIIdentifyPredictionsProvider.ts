@@ -31,14 +31,14 @@ import {
 	isIdentifyCelebrities,
 	isIdentifyFromCollection,
 	IdentifyFromCollection,
+	FeatureTypes,
 } from '../types';
 import {
 	Image,
 	Document,
-	FeatureTypes,
 	TextDetectionList,
 	BlockList,
-} from '../types/Providers/AmazonAIIdentifyPredictionsProvider';
+} from '../types/AWSTypes';
 import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
 import {
 	DetectDocumentTextCommand,

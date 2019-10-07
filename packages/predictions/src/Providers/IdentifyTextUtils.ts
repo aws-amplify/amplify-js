@@ -6,13 +6,9 @@ import {
 	Content,
 	BoundingBox,
 	Polygon,
-} from '../types';
-import {
 	Geometry,
-	Block,
-	BlockList,
-	TextDetectionList,
-} from '../types/Providers/AmazonAIIdentifyPredictionsProvider';
+} from '../types';
+import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
 import { makeCamelCaseArray, makeCamelCase } from './Utils';
 
 function getBoundingBox(geometry: Geometry): BoundingBox {
@@ -22,7 +18,7 @@ function getBoundingBox(geometry: Geometry): BoundingBox {
 
 function getPolygon(geometry: Geometry): Polygon {
 	if (!geometry) return undefined;
-	return makeCamelCaseArray(geometry.Polygon);
+	return makeCamelCaseArray(Array.from(geometry.Polygon));
 }
 
 /**
@@ -167,7 +163,8 @@ export function categorizeTextractBlocks(
 		const keyValueResponse: KeyValue[] = Array();
 		keyValueBlocks.forEach(keyValue => {
 			// We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
-			if (keyValue.EntityTypes.indexOf('KEY') !== -1) {
+			const entityTypes = Array.from(keyValue.EntityTypes);
+			if (entityTypes.indexOf('KEY') !== -1) {
 				keyValueResponse.push(constructKeyValue(keyValue, blockMap));
 			}
 		});
@@ -188,8 +185,8 @@ export function constructTable(
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
-	table.Relationships.forEach(tableRelation => {
-		tableRelation.Ids.forEach(cellId => {
+	for (let tableRelation of table.Relationships) {
+		for (let cellId of tableRelation.Ids) {
 			const cellBlock: Block = blockMap[cellId];
 			const row = cellBlock.RowIndex - 1; // textract starts indexing at 1, so subtract it by 1.
 			const col = cellBlock.ColumnIndex - 1; // textract starts indexing at 1, so subtract it by 1.
@@ -205,8 +202,8 @@ export function constructTable(
 			};
 			if (!tableMatrix[row]) tableMatrix[row] = [];
 			tableMatrix[row][col] = cell;
-		});
-	});
+		}
+	}
 	const rowSize = tableMatrix.length;
 	const columnSize = tableMatrix[0].length;
 	// Note that we leave spanned cells undefined for distinction
@@ -230,21 +227,21 @@ export function constructKeyValue(
 	let keyText: string = '';
 	let valueText: string = '';
 	let valueSelected: boolean;
-	keyBlock.Relationships.forEach(keyValueRelation => {
+	for (let keyValueRelation of keyBlock.Relationships) {
 		if (keyValueRelation.Type === 'CHILD') {
 			// relation refers to key
 			const contents = extractContentsFromBlock(keyBlock, blockMap);
 			keyText = contents.text;
 		} else if (keyValueRelation.Type === 'VALUE') {
 			// relation refers to value
-			keyValueRelation.Ids.forEach(valueId => {
+			for (let valueId of keyValueRelation.Ids) {
 				const valueBlock = blockMap[valueId];
 				const contents = extractContentsFromBlock(valueBlock, blockMap);
 				valueText = contents.text;
 				if (contents.selected != null) valueSelected = contents.selected;
-			});
+			}
 		}
-	});
+	}
 	return {
 		key: keyText,
 		value: { text: valueText, selected: valueSelected },
@@ -269,16 +266,16 @@ export function extractContentsFromBlock(
 		// some block might have no content
 		return { text: '', selected: undefined };
 	}
-	block.Relationships.forEach(relation => {
-		relation.Ids.forEach(contentId => {
+	for (let relation of block.Relationships) {
+		for (let contentId of relation.Ids) {
 			const contentBlock = blockMap[contentId];
 			if (contentBlock.BlockType === 'WORD') {
 				words += contentBlock.Text + ' ';
 			} else if (contentBlock.BlockType === 'SELECTION_ELEMENT') {
 				isSelected = contentBlock.SelectionStatus === 'SELECTED' ? true : false;
 			}
-		});
-	});
+		}
+	}
 
 	words = words.substr(0, words.length - 1); // remove trailing space.
 	return { text: words, selected: isSelected };
