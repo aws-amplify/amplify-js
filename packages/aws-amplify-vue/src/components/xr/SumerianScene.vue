@@ -140,15 +140,17 @@
   </div>
 </template>
 
-
-<script>
+<script lang="ts">
 import * as AmplifyUI from '@aws-amplify/ui';
+import BaseComponent, { PropType } from '../base';
 import { sumerianScene } from '../../assets/data-test-attributes';
 
-export default {
+export default BaseComponent.extend({
   name: 'SumerianScene',
-  props: ['sceneName'],
-  data () {
+  props: {
+    sceneName: String as PropType<string>,
+  },
+  data() {
     return {
       loading: false,
       loadPercentage: 0,
@@ -159,39 +161,46 @@ export default {
       amplifyUI: AmplifyUI,
       sumerianScene,
       sceneError: null,
-      isVRPresentationActive: false
-    }
+      isVRPresentationActive: false,
+      SCENE_CONTAINER_DOM_ID: '',
+      SCENE_DOM_ID: '',
+    };
   },
-  created () {
-    this.SCENE_CONTAINER_DOM_ID = "scene-container-dom-id"
-    this.SCENE_DOM_ID = "scene-dom-id";
+  created() {
+    this.SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
+    this.SCENE_DOM_ID = 'scene-dom-id';
   },
   mounted() {
-    document.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
-    document.addEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
-
+    const onFullscreenChange = this.onFullscreenChange.bind(this);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('mozfullscreenchange', onFullscreenChange);
+    document.addEventListener('MSFullscreenChange', onFullscreenChange);
     this.loadAndStartScene();
   },
   destroyed() {
-    document.removeEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('mozfullscreenchange', this.onFullscreenChange.bind(this));
-    document.removeEventListener('MSFullscreenChange', this.onFullscreenChange.bind(this));
+    const onFullscreenChange = this.onFullscreenChange.bind(this);
+    document.removeEventListener('fullscreenchange', onFullscreenChange);
+    document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.removeEventListener('mozfullscreenchange', onFullscreenChange);
+    document.removeEventListener('MSFullscreenChange', onFullscreenChange);
   },
   methods: {
-    progressCallback: function(progress) {
+    progressCallback(progress) {
       const percentage = progress * 100;
       this.loadPercentage = percentage;
     },
     async loadAndStartScene() {
       this.loading = true;
-      const sceneOptions = { 
-        progressCallback: this.progressCallback
+      const sceneOptions = {
+        progressCallback: this.progressCallback,
       };
       try {
-        await this.$Amplify.XR.loadScene(this.sceneName, this.SCENE_DOM_ID, sceneOptions);
+        await this.$Amplify.XR.loadScene(
+          this.sceneName,
+          this.SCENE_DOM_ID,
+          sceneOptions
+        );
       } catch (e) {
         this.sceneError = 'Failed to load scene';
         return;
@@ -202,10 +211,20 @@ export default {
       this.muted = this.$Amplify.XR.isMuted(this.sceneName);
 
       this.isVRCapable = this.$Amplify.XR.isVRCapable(this.sceneName);
-      this.isVRPresentationActive = this.$Amplify.XR.isVRPresentationActive(this.sceneName);
+      this.isVRPresentationActive = this.$Amplify.XR.isVRPresentationActive(
+        this.sceneName
+      );
 
-      this.$Amplify.XR.onSceneEvent(this.sceneName, 'AudioEnabled', () => this.showEnableAudio = false);
-      this.$Amplify.XR.onSceneEvent(this.sceneName, 'AudioDisabled', () => this.showEnableAudio = true);
+      this.$Amplify.XR.onSceneEvent(
+        this.sceneName,
+        'AudioEnabled',
+        () => (this.showEnableAudio = false)
+      );
+      this.$Amplify.XR.onSceneEvent(
+        this.sceneName,
+        'AudioDisabled',
+        () => (this.showEnableAudio = true)
+      );
     },
     setMuted(muted) {
       this.muted = muted;
@@ -222,8 +241,8 @@ export default {
         } else {
           this.$Amplify.XR.enterVR(this.sceneName);
         }
-      } catch(e) {
-        logger.error('Unable to start/stop WebVR System: ' + e.message);
+      } catch (e) {
+        this.logger.error('Unable to start/stop WebVR System: ' + e.message);
         return;
       }
       this.isVRPresentationActive = !this.isVRPresentationActive;
@@ -233,20 +252,26 @@ export default {
       this.isFullscreen = doc.fullscreenElement !== null;
     },
     async maximize() {
-      const sceneDomElement = document.getElementById(this.SCENE_CONTAINER_DOM_ID);
-      const requestFullScreen = sceneDomElement.requestFullscreen || sceneDomElement.msRequestFullscreen || sceneDomElement.mozRequestFullScreen || sceneDomElement.webkitRequestFullscreen;
+      const sceneDomElement = document.getElementById(
+        this.SCENE_CONTAINER_DOM_ID
+      ) as any;
+      const requestFullScreen =
+        sceneDomElement.requestFullscreen ||
+        sceneDomElement.msRequestFullscreen ||
+        sceneDomElement.mozRequestFullScreen ||
+        sceneDomElement.webkitRequestFullscreen;
       requestFullScreen.call(sceneDomElement);
     },
     async minimize() {
-      const doc = document;
-      if(doc.exitFullscreen) {
+      const doc = document as any;
+      if (doc.exitFullscreen) {
         doc.exitFullscreen();
-      } else if(doc.mozCancelFullScreen) {
+      } else if (doc.mozCancelFullScreen) {
         doc.mozCancelFullScreen();
-      } else if(doc.webkitExitFullscreen) {
+      } else if (doc.webkitExitFullscreen) {
         doc.webkitExitFullscreen();
       }
-    }
-  }
-}
+    },
+  },
+});
 </script>

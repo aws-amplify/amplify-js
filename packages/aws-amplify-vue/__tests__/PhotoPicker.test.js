@@ -10,17 +10,24 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('PhotoPicker', () => {
+	let photoPicker;
+
+	beforeEach(() => {
+		photoPicker = new PhotoPicker();
+  });
+
 	it('has a mounted hook', () => {
-		expect(typeof PhotoPicker.mounted).toBe('function');
+		expect(photoPicker.$options.mounted.length).toEqual(1);
+		expect(typeof photoPicker.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof PhotoPicker.data).toBe('function');
-		const defaultData = PhotoPicker.data();
+		expect(typeof photoPicker.$options.data).toBe('function');
+		const defaultData = photoPicker.$options.data();
 		expect(defaultData.file).toBe(null);
 		expect(defaultData.s3ImagePath).toEqual('');
 		expect(defaultData.photoUrl).toEqual('');
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 
@@ -142,7 +149,7 @@ describe('PhotoPicker', () => {
 		it('...should call completeFileUpload when upload is clicked', () => {
 			wrapper.vm.upload();
 			wrapper.vm.file = { foo: 'bar' };
-			wrapper.vm.s3ImageFile = 'testImage';
+			wrapper.vm.s3ImagePath = 'testImage';
 			wrapper.vm.$Amplify.Storage.put(
 				'testPath',
 				{ type: 'fakeFile' },
@@ -151,7 +158,7 @@ describe('PhotoPicker', () => {
 				.then(res => {
 					expect(mockCompleteFileUpload).toHaveBeenCalledWith(res.key);
 					expect(wrapper.vm.file).toBe(null);
-					expect(wrapper.vm.s3ImageFile).toBe(null);
+					expect(wrapper.vm.s3ImagePath).toBe(null);
 				})
 				.catch(e => e);
 		});

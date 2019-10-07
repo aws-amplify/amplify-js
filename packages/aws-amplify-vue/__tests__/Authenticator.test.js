@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils'; // eslint-disable-line
 import Authenticator from '../src/components/authenticator/Authenticator.vue';
 import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import * as components from '../src/components';
-import * as AmplifyEntry from '../src/Amplify.vue'; //eslint-disable-line
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 import dependency from '../src/services/getUser';
@@ -12,15 +11,22 @@ Vue.use(AmplifyPlugin, AmplifyMocks);
 jest.mock('../src/services/getUser');
 
 describe('Authenticator', () => {
+	let authenticator;
+
+	beforeEach(() => {
+		authenticator = new Authenticator();
+	});
+
 	it('has a mounted hook', () => {
-		expect(typeof Authenticator.mounted).toBe('function');
+		expect(authenticator.$options.mounted.length).toEqual(1);
+		expect(typeof authenticator.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof Authenticator.data).toBe('function');
-		const defaultData = Authenticator.data();
-		expect(defaultData.user.username).toBe(null);
-		expect(defaultData.logger).toEqual({});
+		expect(typeof authenticator.$options.data).toEqual('function');
+		const defaultData = authenticator.$options.data();
+		expect(defaultData.user).toBe(null);
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.displayMap).toEqual({});
 		expect(defaultData.error).toEqual('');
 	});

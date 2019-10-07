@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-/* eslint-enable */
 
 import Vue from 'vue';
 
@@ -36,13 +34,13 @@ Vue.component('amplify-set-mfa', SetMfa);
 Vue.component('amplify-require-new-password', RequireNewPassword);
 
 export {
-	Authenticator,
-	SignIn,
-	SignUp,
-	SignOut,
-	ConfirmSignUp,
-	ConfirmSignIn,
-	ForgotPassword,
-	SetMfa,
-	RequireNewPassword,
+  Authenticator,
+  SignIn,
+  SignUp,
+  SignOut,
+  ConfirmSignUp,
+  ConfirmSignIn,
+  ForgotPassword,
+  SetMfa,
+  RequireNewPassword,
 };

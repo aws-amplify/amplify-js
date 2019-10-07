@@ -11,15 +11,17 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('SignIn', () => {
-	it('has a mounted hook', () => {
-		expect(typeof SignIn.mounted).toBe('function');
-	});
+	let signIn;
+
+	beforeEach(() => {
+		signIn = new SignIn();
+  });
 
 	it('sets the correct default data', () => {
-		expect(typeof SignIn.data).toBe('function');
-		const defaultData = SignIn.data();
+		expect(typeof signIn.$options.data).toBe('function');
+		const defaultData = signIn.$options.data();
 		expect(defaultData.password).toBe('');
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 

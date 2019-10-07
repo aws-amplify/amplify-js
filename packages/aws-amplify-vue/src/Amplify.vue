@@ -2,9 +2,9 @@
   <div></div>
 </template>
 
-<script>
+<script lang="ts">
 // TODO: FIX SPREAD OPERATOR ERROR IN CIRCLECI TO ELIMINATE EXPLICIT IMPORTS AND USE BARRELS
-import { 
+import {
   Authenticator,
   SignIn,
   SignUp,
@@ -19,7 +19,7 @@ import {
   S3Image,
   SumerianScene,
   RequireNewPassword,
-  Connect
+  Connect,
 } from './components';
 import AmplifyPlugin from './plugins/AmplifyPlugin';
 import AmplifyEventBus from './events/AmplifyEventBus';
@@ -41,16 +41,16 @@ export default {
     S3Image,
     SumerianScene,
     RequireNewPassword,
-    Connect
+    Connect,
   },
   AmplifyPlugin,
   AmplifyEventBus,
-}
+};
 </script>
 
-<style src='@aws-amplify/ui/dist/style.css'></style>
+<style src="@aws-amplify/ui/dist/style.css"></style>
 <style>
-  .invalid {
-    border-color: red;
-  }
+.invalid {
+  border-color: red;
+}
 </style>

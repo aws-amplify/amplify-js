@@ -10,9 +10,11 @@ import countries from '../src/assets/countries';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('PhoneField', () => {
+  let phoneField;
 	let wrapper = null;
 	const mockPhoneNumberChanged = jest.fn();
 	beforeEach(() => {
+    phoneField = new PhoneField();
 		wrapper = shallowMount(PhoneField, {
 			methods: {
 				emitPhoneNumberChanged: mockPhoneNumberChanged,
@@ -25,8 +27,8 @@ describe('PhoneField', () => {
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof PhoneField.data).toBe('function');
-		const defaultData = PhoneField.data();
+		expect(typeof phoneField.$options.data).toBe('function');
+		const defaultData = phoneField.$options.data();
 		expect(defaultData.countryCode).toEqual('1');
 		expect(defaultData.local_phone_number).toEqual('');
 		expect(defaultData.countries).toEqual(countries);

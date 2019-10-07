@@ -62,71 +62,107 @@
   </div>
 </template>
 
-<script>
-import AmplifyEventBus from "../../events/AmplifyEventBus";
+<script lang="ts">
+import { PostContentResponse } from 'aws-sdk/clients/lexruntime';
+import { AudioControl, ISilenceDetectionConfig } from './aws-lex-audio-shim';
+import BaseComponent, { PropType } from '../base';
+import AmplifyEventBus from '../../events/AmplifyEventBus';
 
-let audioControl;
+type ILexResponse = PostContentResponse;
 
-const STATES = {
-  INITIAL: { MESSAGE: "Type your message or click  🎤", ICON: "🎤" },
-  LISTENING: { MESSAGE: "Listening... click 🔴 again to cancel", ICON: "🔴" },
-  SENDING: { MESSAGE: "Please wait...", ICON: "🔊" },
-  SPEAKING: { MESSAGE: "Speaking...", ICON: "..." }
+interface IVoiceConfig {
+  silenceDetectionConfig: ISilenceDetectionConfig;
+}
+
+interface IChatbotConfig {
+  bot?: string;
+  clearComplete: boolean;
+  botTitle: string;
+  conversationModeOn: boolean;
+  voiceConfig: IVoiceConfig;
+  voiceEnabled: boolean;
+  textEnabled: boolean;
+}
+
+interface IMessage {
+  me: string;
+  meSentTime: string;
+  bot: string;
+  botSentTime: string;
+}
+
+interface IState {
+  MESSAGE: string;
+  ICON: string;
+}
+
+const STATES: { [state: string]: IState } = {
+  INITIAL: {
+    MESSAGE: 'Type your message or click  🎤',
+    ICON: '🎤',
+  },
+  LISTENING: {
+    MESSAGE: 'Listening... click 🔴 again to cancel',
+    ICON: '🔴',
+  },
+  SENDING: { MESSAGE: 'Please wait...', ICON: '🔊' },
+  SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' },
 };
-const defaultVoiceConfig = {
+
+const defaultVoiceConfig: IVoiceConfig = {
   silenceDetectionConfig: {
     time: 2000,
-    amplitude: 0.2
-  }
+    amplitude: 0.2,
+  },
 };
 
-export default {
-  name: "Chatbot",
-  props: ["chatbotConfig"],
-  STATES: STATES,
-  defaultVoiceConfig: defaultVoiceConfig,
-  audioControl: audioControl,
+let audioControl: AudioControl = null;
+
+export default BaseComponent.extend({
+  name: 'Chatbot',
+  props: {
+    chatbotConfig: {} as PropType<IChatbotConfig>,
+  },
   data() {
     return {
-      inputText: "",
-      error: "",
-      messages: [],
-      logger: {},
+      inputText: '',
+      messages: [] as IMessage[],
       currentVoiceState: STATES.INITIAL.MESSAGE,
       inputDisabled: false,
       micText: STATES.INITIAL.ICON,
       continueConversation: false,
-      micButtonDisabled: false
+      micButtonDisabled: false,
+      audioInput: null as Blob,
+      lexResponse: null as ILexResponse,
     };
   },
   computed: {
-    options() {
+    options(): IChatbotConfig {
       const defaults = {
         clearComplete: true,
-        botTitle: "Chatbot",
+        botTitle: 'Chatbot',
         conversationModeOn: false,
         voiceConfig: defaultVoiceConfig,
         voiceEnabled: false,
-        textEnabled: true
+        textEnabled: true,
       };
       return Object.assign(defaults, this.chatbotConfig || {});
     }
   },
   mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
     if (!this.options.bot) {
-      this.setError("Bot not provided.");
+      this.setError('Bot not provided.');
     }
     if (this.options.voiceEnabled) {
-      require("./aws-lex-audio.js");
-      audioControl = new global.LexAudio.audioControl();
+      require('./aws-lex-audio.js');
+      audioControl = new window.LexAudio.audioControl();
     }
     if (!this.options.textEnabled && this.options.voiceEnabled) {
-      STATES.INITIAL.MESSAGE = "Click the mic button";
+      STATES.INITIAL.MESSAGE = 'Click the mic button';
       this.currentVoiceState = STATES.INITIAL.MESSAGE;
     }
     if (this.options.textEnabled && !this.options.voiceEnabled) {
-      STATES.INITIAL.MESSAGE = "Type a message";
+      STATES.INITIAL.MESSAGE = 'Type a message';
       this.currentVoiceState = STATES.INITIAL.MESSAGE;
     }
 
@@ -137,41 +173,37 @@ export default {
   },
   methods: {
     performOnComplete(evt) {
-      AmplifyEventBus.$emit("chatComplete", this.options.botTitle);
+      AmplifyEventBus.$emit('chatComplete', this.options.botTitle);
       if (this.options.clearComplete) {
         this.messages = [];
       }
     },
     keymonitor(event) {
-      if (event.key.toLowerCase() == "enter") {
-        this.onSubmit(this.inputText);
+      if (event.key.toLowerCase() === 'enter') {
+        this.onSubmit();
       }
     },
-    onSubmit(e) {
+    onSubmit() {
       if (!this.inputText) {
         return;
       }
-      let message = {
+      const message: IMessage = {
         me: this.inputText,
         meSentTime: new Date().toLocaleTimeString(),
-        bot: "",
-        botSentTime: ""
+        bot: '',
+        botSentTime: '',
       };
       this.$Amplify.Interactions.send(this.options.bot, this.inputText)
         .then(response => {
-          AmplifyEventBus.$emit("chatResponse", response);
-          this.inputText = "";
+          AmplifyEventBus.$emit('chatResponse', response);
+          this.inputText = '';
           if (response.message) {
             message.bot = response.message;
             message.botSentTime = new Date().toLocaleTimeString();
             this.messages.push(message);
           }
         })
-        .catch(e => this.setError(e));
-    },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+        .catch(er => this.setError(er));
     },
     async micButtonHandler() {
       if (this.continueConversation) {
@@ -195,7 +227,7 @@ export default {
         return;
       }
 
-      audioControl.exportWAV(blob => {
+      audioControl.exportWAV((blob: Blob) => {
         this.currentVoiceState = STATES.SENDING.MESSAGE;
         this.audioInput = blob;
         this.micText = STATES.SENDING.ICON;
@@ -211,8 +243,8 @@ export default {
       const interactionsMessage = {
         content: this.audioInput,
         options: {
-          messageType: "voice"
-        }
+          messageType: 'voice',
+        },
       };
 
       const response = await this.$Amplify.Interactions.send(
@@ -225,21 +257,21 @@ export default {
       this.micText = STATES.SPEAKING.ICON;
       this.micButtonDisabled = true;
 
-      let message = {
+      const message: IMessage = {
         me: this.lexResponse.inputTranscript,
         meSentTime: new Date().toLocaleTimeString(),
-        bot: "",
-        botSentTime: ""
+        bot: '',
+        botSentTime: '',
       };
 
-      this.inputText = "";
+      this.inputText = '';
       if (response.message) {
         message.bot = response.message;
         message.botSentTime = new Date().toLocaleTimeString();
         this.messages.push(message);
       }
 
-      this.inputText = "";
+      this.inputText = '';
 
       this.doneSpeakingHandler();
     },
@@ -247,12 +279,12 @@ export default {
       if (!this.continueConversation) {
         return;
       }
-      if (this.lexResponse.contentType === "audio/mpeg") {
+      if (this.lexResponse.contentType === 'audio/mpeg') {
         audioControl.play(this.lexResponse.audioStream, () => {
           if (
-            this.lexResponse.dialogState === "ReadyForFulfillment" ||
-            this.lexResponse.dialogState === "Fulfilled" ||
-            this.lexResponse.dialogState === "Failed" ||
+            this.lexResponse.dialogState === 'ReadyForFulfillment' ||
+            this.lexResponse.dialogState === 'Fulfilled' ||
+            this.lexResponse.dialogState === 'Failed' ||
             !this.options.conversationModeOn
           ) {
             this.inputDisabled = false;
@@ -281,15 +313,15 @@ export default {
     },
     reset() {
       audioControl.clear();
-      this.inputText = "";
+      this.inputText = '';
       this.currentVoiceState = STATES.INITIAL.MESSAGE;
       this.inputDisabled = false;
       this.micText = STATES.INITIAL.ICON;
       this.continueConversation = false;
       this.micButtonDisabled = false;
-    }
-  }
-};
+    },
+  },
+});
 </script>
 
 <style scoped>
@@ -308,7 +340,7 @@ export default {
 }
 
 .amplify-interactions-button {
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAApCAYAAABHomvIAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAG2SURBVFiF7dfPKwRhHMfx9+xqhaItIg5KikgOlER2TzhQ4i+QwtndQe4O4uhCSQ57sC6SkotfR1uK2nWgrGJr8yvsjsO2bWtb+8w+88zOYT6nmWfmeebV95lfj6bruo6N4yo1oFAcoGwcoGwcoGwcoGxsDyyz5CqxawhtwPsTNA1C5wxobqGumvJv8d0+HM5B4jvT1jICw1tC3dVO8ds9VNaD25PdHj6A6LnQEOqAkSBs90HsBsZ2wVOVfTweFhpGDTAShMPZ1LQeL+QiNQ1qu0sETOOSidS+ruciu6bB2yE0nLkPyV9c1pU08K9AQx9Ut4AmVhvzKvgfDlKVfDyFmlZhHJgFLIQDaJ+CoVXDQ8sDRXG+dUOVS0cOqBgHMkARXJscDooFiuL8cjgoBmghDoy+B+MR2BmA5I8lODBSQT0JiU/oX8x/jsk4MAJ8CcHeBDQNwcCSJTgwAoxewkcMgpO5SEU4MHIPHs3DbSC1XeGF8QA8nMDzFfjWlODAyC9/9Cyz/fUKF8swvAkuT/4+JkQc2DwKVY3Q0At1PeAuV8jKRP2aRDK2X3Y6QNk4QNk4QNnYHvgLzPueuQw6nCEAAAAASUVORK5CYII=")
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAApCAYAAABHomvIAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAG2SURBVFiF7dfPKwRhHMfx9+xqhaItIg5KikgOlER2TzhQ4i+QwtndQe4O4uhCSQ57sC6SkotfR1uK2nWgrGJr8yvsjsO2bWtb+8w+88zOYT6nmWfmeebV95lfj6bruo6N4yo1oFAcoGwcoGwcoGwcoGxsDyyz5CqxawhtwPsTNA1C5wxobqGumvJv8d0+HM5B4jvT1jICw1tC3dVO8ds9VNaD25PdHj6A6LnQEOqAkSBs90HsBsZ2wVOVfTweFhpGDTAShMPZ1LQeL+QiNQ1qu0sETOOSidS+ruciu6bB2yE0nLkPyV9c1pU08K9AQx9Ut4AmVhvzKvgfDlKVfDyFmlZhHJgFLIQDaJ+CoVXDQ8sDRXG+dUOVS0cOqBgHMkARXJscDooFiuL8cjgoBmghDoy+B+MR2BmA5I8lODBSQT0JiU/oX8x/jsk4MAJ8CcHeBDQNwcCSJTgwAoxewkcMgpO5SEU4MHIPHs3DbSC1XeGF8QA8nMDzFfjWlODAyC9/9Cyz/fUKF8swvAkuT/4+JkQc2DwKVY3Q0At1PeAuV8jKRP2aRDK2X3Y6QNk4QNk4QNnYHvgLzPueuQw6nCEAAAAASUVORK5CYII=')
     center no-repeat var(--color-white);
   border: none;
   cursor: pointer;
@@ -333,14 +365,14 @@ export default {
   margin-right: -1.9em;
 }
 
-.amplify-interactions-actions > input[type="text"] {
+.amplify-interactions-actions > input[type='text'] {
   border: none;
   margin-top: 0px;
   margin-bottom: 0px;
   margin-left: 0px;
 }
 
-.amplify-interactions-actions > input[type="text"]:focus {
+.amplify-interactions-actions > input[type='text']:focus {
   border: 0px solid var(--color-white) !important;
 }
 

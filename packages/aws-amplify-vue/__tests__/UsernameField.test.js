@@ -10,9 +10,15 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('UsernameField', () => {
+	let usernameField;
+
+	beforeEach(() => {
+		usernameField = new UsernameField();
+  });
+
 	it('sets the correct default data', () => {
-		expect(typeof UsernameField.data).toBe('function');
-		const defaultData = UsernameField.data();
+		expect(typeof usernameField.$options.data).toBe('function');
+		const defaultData = usernameField.$options.data();
 		expect(defaultData.username).toEqual('');
 		expect(defaultData.email).toEqual('');
 		expect(defaultData.phoneNumberRequired).toEqual(true);

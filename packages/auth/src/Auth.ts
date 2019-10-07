@@ -59,6 +59,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	CognitoSigninChallenge,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -857,7 +858,7 @@ export default class AuthClass {
 	public confirmSignIn(
 		user: CognitoUser | any,
 		code: string,
-		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null
+		mfaType?: CognitoSigninChallenge | null
 	): Promise<CognitoUser | any> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
@@ -1767,7 +1768,7 @@ export default class AuthClass {
 					logger.debug('AWS credentials', credentials);
 				}
 
-				/* 
+				/*
                 Prior to the request we do sign the custom state along with the state we set. This check will verify
                 if there is a dash indicated when setting custom state from the request. If a dash is contained
                 then there is custom state present on the state string.

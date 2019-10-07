@@ -11,15 +11,22 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('ConfirmSignIn', () => {
+	let confirmSignIn;
+
+	beforeEach(() => {
+		confirmSignIn = new ConfirmSignIn();
+	});
+
 	it('has a mounted hook', () => {
-		expect(typeof ConfirmSignIn.mounted).toBe('function');
+		expect(confirmSignIn.$options.mounted.length).toEqual(1);
+		expect(typeof confirmSignIn.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof ConfirmSignIn.data).toBe('function');
-		const defaultData = ConfirmSignIn.data();
+		expect(typeof confirmSignIn.$options.data).toBe('function');
+		const defaultData = confirmSignIn.$options.data();
 		expect(defaultData.code).toBe('');
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 
@@ -62,16 +69,16 @@ describe('ConfirmSignIn', () => {
 
 		it('...have default options', () => {
 			expect(wrapper.vm.options.header).toEqual('i18n Confirm Sign In');
-			expect(Object.keys(wrapper.vm.options.user).length).toEqual(0);
+			expect(wrapper.vm.options.user).toEqual(null);
 		});
 
 		it('...should set the error property when a valid user is not received', () => {
 			expect(wrapper.vm.error).toEqual('i18n Valid user not received.');
 		});
 
-		it('...should call Auth.confirmSignIn when submit function is called', () => {
+		it('...should call not Auth.confirmSignIn when submit function is called', () => {
 			wrapper.vm.submit();
-			expect(AmplifyMocks.Auth.confirmSignIn).toHaveBeenCalled();
+			expect(AmplifyMocks.Auth.confirmSignIn).toHaveBeenCalledTimes(0);
 		});
 
 		it('...should call emit the authState event when signIn function is called', () => {

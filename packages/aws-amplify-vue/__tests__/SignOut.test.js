@@ -10,15 +10,17 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('SignOut', () => {
-	it('has a mounted hook', () => {
-		expect(typeof SignOut.mounted).toBe('function');
-	});
+	let signOut;
+
+	beforeEach(() => {
+		signOut = new SignOut();
+  });
 
 	it('sets the correct default data', () => {
-		expect(typeof SignOut.data).toBe('function');
-		const defaultData = SignOut.data();
+		expect(typeof signOut.$options.data).toBe('function');
+		const defaultData = signOut.$options.data();
 		expect(defaultData.show).toBe(false);
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 

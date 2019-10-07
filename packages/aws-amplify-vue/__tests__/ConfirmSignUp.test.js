@@ -11,15 +11,22 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('ConfirmSignUp', () => {
+	let confirmSignUp;
+
+	beforeEach(() => {
+		confirmSignUp = new ConfirmSignUp();
+  });
+
 	it('has a mounted hook', () => {
-		expect(typeof ConfirmSignUp.mounted).toBe('function');
+		expect(confirmSignUp.$options.mounted.length).toEqual(1);
+		expect(typeof confirmSignUp.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof ConfirmSignUp.data).toBe('function');
-		const defaultData = ConfirmSignUp.data();
+		expect(typeof confirmSignUp.$options.data).toBe('function');
+		const defaultData = confirmSignUp.$options.data();
 		expect(defaultData.code).toBe('');
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 

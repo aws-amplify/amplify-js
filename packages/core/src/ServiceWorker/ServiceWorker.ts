@@ -66,11 +66,11 @@ class ServiceWorkerClass {
 	register(filePath: string = '/service-worker.js', scope: string = '/') {
 		this._logger.debug(`registering ${filePath}`);
 		this._logger.debug(`registering service worker with scope ${scope}`);
-		return new Promise((resolve, reject) => {
+		return new Promise<ServiceWorkerRegistration>((resolve, reject) => {
 			if (navigator && 'serviceWorker' in navigator) {
 				navigator.serviceWorker
 					.register(filePath, {
-						scope: scope,
+						scope,
 					})
 					.then(registration => {
 						if (registration.installing) {
@@ -111,7 +111,7 @@ class ServiceWorkerClass {
 	enablePush(publicKey: string) {
 		if (!this._registration) throw new Error('Service Worker not registered');
 		this._publicKey = publicKey;
-		return new Promise((resolve, reject) => {
+		return new Promise<PushSubscription>((resolve, reject) => {
 			if (JS.browserOrNode().isBrowser) {
 				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {

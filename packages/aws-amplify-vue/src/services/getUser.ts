@@ -11,12 +11,18 @@
  * and limitations under the License.
  */
 
-export const labelMap = {
-	email: 'Email',
-	phone_number: 'Phone Number',
-	username: 'Username',
-};
+import { AuthClass } from '@aws-amplify/auth';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
-export const composePhoneNumber = (countryCode, local_phone_number) => {
-	return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
-};
+export default async function GetUser({ Auth }: { Auth: AuthClass }): Promise<CognitoUser | Error | null> {
+  try {
+    // TODO: this should throw an error, to be a symantically correct promise
+    const user = await Auth.currentAuthenticatedUser();
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (e) {
+    return e;
+  }
+}

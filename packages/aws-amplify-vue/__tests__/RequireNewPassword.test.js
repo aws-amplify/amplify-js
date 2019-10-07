@@ -7,17 +7,23 @@ import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 /* eslint-enable */
+
 Vue.use(AmplifyPlugin, AmplifyMocks);
+
 describe('RequireNewPassword', () => {
-	it('has a mounted hook', () => {
-		expect(typeof RequireNewPassword.mounted).toBe('function');
-	});
+	let requireNewPassword;
+
+	beforeEach(() => {
+		requireNewPassword = new RequireNewPassword();
+  });
+
 	it('sets the correct default data', () => {
-		expect(typeof RequireNewPassword.data).toBe('function');
-		const defaultData = RequireNewPassword.data();
-		expect(defaultData.logger).toEqual({});
+		expect(typeof requireNewPassword.$options.data).toBe('function');
+		const defaultData = requireNewPassword.$options.data();
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
-	});
+  });
+
 	let wrapper;
 	let header;
 	let testState;
@@ -31,7 +37,6 @@ describe('RequireNewPassword', () => {
 			testState = null;
 		});
 		it('...it should use the amplify plugin with passed modules', () => {
-			console.log('wrapper', wrapper);
 			expect(wrapper.vm.$Amplify).toBeTruthy();
 		});
 		it('...it should be named RequireNewPassword', () => {

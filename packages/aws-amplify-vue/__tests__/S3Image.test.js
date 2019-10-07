@@ -22,7 +22,7 @@ describe('S3Image', () => {
 			global.open = jest.fn();
 			wrapper = shallowMount(S3Image, {
 				propsData: {
-					path: 'testPath',
+					imagePath: 'testPath',
 				},
 			});
 		});
@@ -52,7 +52,6 @@ describe('S3Image', () => {
 		});
 
 		it('...should call $Amplify.Storage.get when getImages is called with imagePath', () => {
-			wrapper.vm.imagePath = 'testPath';
 			wrapper.vm.getImage();
 			expect(wrapper.vm.$Amplify.Storage.get).toHaveBeenCalled();
 		});

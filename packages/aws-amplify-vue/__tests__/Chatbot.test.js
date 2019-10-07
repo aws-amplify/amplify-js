@@ -11,16 +11,23 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('Chatbot', () => {
+	let chatbot;
+
+	beforeEach(() => {
+		chatbot = new Chatbot();
+  });
+
 	it('has a mounted hook', () => {
-		expect(typeof Chatbot.mounted).toBe('function');
+		expect(chatbot.$options.mounted.length).toEqual(1);
+		expect(typeof chatbot.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof Chatbot.data).toBe('function');
-		const defaultData = Chatbot.data();
+		expect(typeof chatbot.$options.data).toBe('function');
+		const defaultData = chatbot.$options.data();
 		expect(defaultData.inputText).toBe('');
 		expect(defaultData.messages.length).toEqual(0);
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 

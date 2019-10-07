@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,14 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-/* eslint-enable */
 
 import Vue from 'vue';
 
-import Chatbot from './Chatbot.vue';
+import PhotoPicker from './PhotoPicker.vue';
+import S3Album from './S3Album.vue';
+import S3Image from './S3Image.vue';
 
-Vue.component('amplify-chatbot', Chatbot);
+Vue.component('amplify-photo-picker', PhotoPicker);
+Vue.component('amplify-s3-album', S3Album);
+Vue.component('amplify-s3-image', S3Image);
 
-export {
-	Chatbot, // eslint-disable-line
-};
+export { PhotoPicker, S3Album, S3Image };

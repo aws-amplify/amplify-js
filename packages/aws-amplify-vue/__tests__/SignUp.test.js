@@ -6,7 +6,8 @@ import SignUp from '../src/components/authenticator/SignUp.vue';
 import PhoneField from '../src/components/authenticator/PhoneField.vue';
 import AmplifyPlugin from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
-import signUpWithUsername, {
+import {
+  signUpWithUsername,
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
 } from '../src/assets/default-sign-up-fields';
@@ -15,14 +16,16 @@ import signUpWithUsername, {
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('SignUp', () => {
-	it('has a mounted hook', () => {
-		expect(typeof SignUp.mounted).toBe('function');
-	});
+	let signUp;
+
+	beforeEach(() => {
+		signUp = new SignUp();
+  });
 
 	it('sets the correct default data', () => {
-		expect(typeof SignUp.data).toBe('function');
-		const defaultData = SignUp.data();
-		expect(defaultData.logger).toEqual({});
+		expect(typeof signUp.$options.data).toBe('function');
+		const defaultData = signUp.$options.data();
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 		expect(defaultData.phoneNumber).toEqual('');
 		expect(defaultData.defaultSignUpFields).toEqual(signUpWithUsername);

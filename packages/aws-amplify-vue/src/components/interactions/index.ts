@@ -11,15 +11,12 @@
  * and limitations under the License.
  */
 
-function GetUser(amplify) {
-	return amplify.Auth.currentAuthenticatedUser()
-		.then(user => {
-			if (!user) {
-				return null;
-			}
-			return user;
-		})
-		.catch(e => new Error(e));
-}
+import Vue from 'vue';
 
-export default GetUser;
+import Chatbot from './Chatbot.vue';
+
+Vue.component('amplify-chatbot', Chatbot);
+
+export {
+  Chatbot, // eslint-disable-line
+};

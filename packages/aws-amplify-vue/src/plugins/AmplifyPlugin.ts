@@ -15,26 +15,28 @@
   This plugin is a mechanism for avoiding the importation of Amplify into Amplify-Vue,
   while also making Amplify available to the entire host application.
 */
+
+import Amplify from '@aws-amplify/core';
+import { PluginObject, VueConstructor } from 'vue';
 const requiredModules = ['Auth', 'AuthClass', 'I18n', 'Logger'];
 
-const AmplifyPlugin = {
-	install(Vue, AmplifyModules) {
-		const missingModules = [];
-		requiredModules.forEach(r => {
-			if (!Object.keys(AmplifyModules).includes(r)) {
-				missingModules.push(r);
-			}
-		});
-		if (missingModules.length > 0) {
-			return new Error(
-				`AmplifyPlugin installation method did not receive required modules: ${missingModules.join(
-					', '
-				)}.`
-			); //eslint-disable-line
-		}
+const AmplifyPlugin: PluginObject<Amplify> = {
+  install(Vue: VueConstructor, AmplifyModules?: Amplify) {
+    const missingModules: string[] = [];
+    const availableModules = Object.keys(AmplifyModules || {});
+    requiredModules.forEach(r => {
+      if (!availableModules.includes(r)) {
+        missingModules.push(r);
+      }
+    });
+    if (missingModules.length > 0) {
+      const label =
+        'AmplifyPlugin installation method did not receive required modules';
+      return new Error(`${label}: ${missingModules.join(', ')}.`);
+    }
 
-		Vue.prototype.$Amplify = AmplifyModules;
-	},
+    Vue.prototype.$Amplify = AmplifyModules;
+  },
 };
 
-export default AmplifyPlugin; //eslint-disable-line
+export default AmplifyPlugin;

@@ -57,13 +57,27 @@ declare module 'amazon-cognito-identity-js' {
 		Storage?: ICognitoStorage;
 	}
 
+	export type CognitoSigninChallenge = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+	export type CognitoChallenge =
+		| CognitoSigninChallenge
+		| 'CUSTOM_CHALLENGE'
+		| 'DEVICE_SRP_AUTH'
+		| 'MFA_SETUP'
+		| 'NEW_PASSWORD_REQUIRED'
+		| 'SELECT_MFA_TYPE'
+		| 'DEVICE_PASSWORD_VERIFIER';
+
 	export class CognitoUser {
+		challengeName?: CognitoChallenge;
+
 		constructor(data: ICognitoUserData);
 
 		public setSignInUserSession(
 			signInUserSession: CognitoUserSession
 		): void;
 		public getSignInUserSession(): CognitoUserSession | null;
+		// TODO: remove this accessor. only `getUsername` should be used
+		public username: string;
 		public getUsername(): string;
 
 		public getAuthenticationFlowType(): string;
@@ -316,10 +330,10 @@ declare module 'amazon-cognito-identity-js' {
 		public isValid(): boolean;
 	}
 	/*
-    export class CognitoIdentityServiceProvider {
-        public config: AWS.CognitoIdentityServiceProvider.Types.ClientConfiguration;
-    }
-    */
+	export class CognitoIdentityServiceProvider {
+		public config: AWS.CognitoIdentityServiceProvider.Types.ClientConfiguration;
+	}
+	*/
 	export class CognitoAccessToken {
 		payload: { [key: string]: any };
 

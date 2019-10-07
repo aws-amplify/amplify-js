@@ -15,28 +15,28 @@
   <div v-bind:class="amplifyUI.formSection" v-bind:data-test="auth.forgotPassword.section">
     <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.forgotPassword.headerSection">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.forgotPassword.bodySection">
-      <amplify-username-field 
-        v-bind:usernameAttributes="usernameAttributes" 
+      <amplify-username-field
+        v-bind:usernameAttributes="usernameAttributes"
         v-on:username-field-changed="usernameFieldChanged">
       </amplify-username-field>
       <div v-bind:class="amplifyUI.formField" v-if="sent">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" autofocus v-bind:data-test="auth.forgotPassword.codeInput" />
+        <div v-bind:class="amplifyUI.inputLabel">{{I18n.get('Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="I18n.get('Code')" autofocus v-bind:data-test="auth.forgotPassword.codeInput" />
       </div>
       <div v-bind:class="amplifyUI.formField" v-if="sent">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('New Password')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('New Password')" autofocus v-bind:data-test="auth.forgotPassword.newPasswordInput" />
+        <div v-bind:class="amplifyUI.inputLabel">{{I18n.get('New Password')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="I18n.get('New Password')" autofocus v-bind:data-test="auth.forgotPassword.newPasswordInput" />
       </div>
     </div>
 
   <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!forgotPwUsername" v-bind:data-test="auth.forgotPassword.sendCodeButton">{{$Amplify.I18n.get('Send Code')}}</button>
-        <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!forgotPwUsername" v-bind:data-test="auth.forgotPassword.submitButton">{{$Amplify.I18n.get('Submit')}}</button>
+        <button v-if="!sent" v-bind:class="amplifyUI.button" v-on:click="submit" :disabled="!forgotPwUsername" v-bind:data-test="auth.forgotPassword.sendCodeButton">{{I18n.get('Send Code')}}</button>
+        <button v-if="sent" v-bind:class="amplifyUI.button" v-on:click="verify" :disabled="!forgotPwUsername" v-bind:data-test="auth.forgotPassword.submitButton">{{I18n.get('Submit')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.forgotPassword.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>
-        <a v-if="sent" v-bind:class="amplifyUI.a" v-on:click="submit" v-bind:data-test="auth.forgotPassword.resentCodeLink">{{$Amplify.I18n.get('Resend Code')}}</a>
+        <a v-if="!sent" v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.forgotPassword.backToSignInLink">{{I18n.get('Back to Sign In')}}</a>
+        <a v-if="sent" v-bind:class="amplifyUI.a" v-on:click="submit" v-bind:data-test="auth.forgotPassword.resentCodeLink">{{I18n.get('Resend Code')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -45,68 +45,71 @@
   </div>
 </template>
 
-<script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
+<script lang="ts">
 import * as AmplifyUI from '@aws-amplify/ui';
-import Vue from 'vue';
-import UsernameField from './UsernameField';
+import BaseComponent, { PropType } from '../base';
+import AmplifyEventBus from '../../events/AmplifyEventBus';
+import UsernameField from './UsernameField.vue';
 import { auth } from '../../assets/data-test-attributes';
 
-Vue.component('amplify-username-field', UsernameField);
+export interface IForgotPasswordConfig {
+  header?: string;
+}
 
-export default {
+export default BaseComponent.extend({
   name: 'ForgotPassword',
-  props: ['forgotPasswordConfig', 'usernameAttributes'],
-  data () {
+  components: { 'amplify-username-field': UsernameField },
+  props: {
+    forgotPasswordConfig: {} as PropType<IForgotPasswordConfig>,
+    usernameAttributes: String as PropType<string>,
+  },
+  data() {
     return {
-        code: '',
-        password: '',
-        error: '',
-        sent: false,
-        logger: {},
-        amplifyUI: AmplifyUI,
-        forgotPwUsername: '',
-        auth
-    }
+      code: '',
+      password: '',
+      sent: false,
+      amplifyUI: AmplifyUI,
+      forgotPwUsername: '',
+      auth,
+    };
   },
   computed: {
-    options() {
+    options(): IForgotPasswordConfig {
       const defaults = {
-        header: this.$Amplify.I18n.get('Reset your password'),
-      }
-      return Object.assign(defaults, this.forgotPasswordConfig || {})
-    }
-  },
-  mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
+        header: this.I18n.get('Reset your password'),
+      };
+      return Object.assign(defaults, this.forgotPasswordConfig || {});
+    },
   },
   methods: {
-    submit: function() {
-      this.$Amplify.Auth.forgotPassword(this.forgotPwUsername)
-        .then(() => {
-          this.sent = true;
-          this.logger.info('forgotPassword success');
-        })
-        .catch(e => this.setError(e));
+    async submit() {
+      try {
+        await this.Auth.forgotPassword(this.forgotPwUsername);
+        this.sent = true;
+        this.logger.info('forgotPassword success');
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    verify: function() {
-      this.$Amplify.Auth.forgotPasswordSubmit(this.forgotPwUsername, this.code, this.password)
-        .then(() => {
-          this.logger.info('forgotPasswordSubmit success');
-          AmplifyEventBus.$emit('authState', 'signIn');
-        })
-        .catch(e => this.setError(e));
+    async verify() {
+      try {
+        await this.Auth.forgotPasswordSubmit(
+          this.forgotPwUsername,
+          this.code,
+          this.password
+        );
+        this.logger.info('forgotPasswordSubmit success');
+        AmplifyEventBus.$emit('authState', 'signIn');
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    signIn: function() {
+    signIn() {
       AmplifyEventBus.$emit('authState', 'signIn');
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
-    },
-    usernameFieldChanged: function(data) {
+    usernameFieldChanged(data) {
       const { usernameField, username, email, phoneNumber } = data;
-      switch(usernameField) {
+      switch (usernameField) {
         case 'username':
           this.forgotPwUsername = username;
           break;
@@ -120,6 +123,6 @@ export default {
           break;
       }
     },
-  }
-}
+  },
+});
 </script>

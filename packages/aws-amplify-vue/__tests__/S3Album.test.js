@@ -81,7 +81,7 @@ describe('S3Album', () => {
 		});
 
 		it('...should call pushImage when fileUpload event occurs', () => {
-			AmplifyEventBus.$emit('fileUpload', { foo: 'bar' });
+			AmplifyEventBus.$emit('fileUpload', 'randomstring');
 			expect(mockPushImage).toHaveBeenCalled();
 		});
 	});

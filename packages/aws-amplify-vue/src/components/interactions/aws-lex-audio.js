@@ -12,6 +12,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// tslint:disable
 (function e(t, n, r) {
 	function s(o, u) {
 		if (!n[o]) {

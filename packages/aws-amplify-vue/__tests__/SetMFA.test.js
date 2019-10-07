@@ -9,18 +9,25 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('SetMFA', () => {
+	let setMFA;
+
+	beforeEach(() => {
+		setMFA = new SetMFA();
+  });
+
 	it('has a mounted hook', () => {
-		expect(typeof SetMFA.mounted).toBe('function');
+		expect(setMFA.$options.mounted.length).toEqual(1);
+		expect(typeof setMFA.$options.mounted[0]).toBe('function');
 	});
 
 	it('sets the correct default data', () => {
-		expect(typeof SetMFA.data).toBe('function');
-		const defaultData = SetMFA.data();
+		expect(typeof setMFA.$options.data).toBe('function');
+		const defaultData = setMFA.$options.data();
 		expect(defaultData.user).toBe(null);
 		expect(defaultData.mfaPreference).toBe(null);
 		expect(defaultData.token).toBe('');
 		expect(defaultData.displayTotpSetup).toBe(false);
-		expect(defaultData.logger).toEqual({});
+		expect(defaultData.logger).toEqual(null);
 		expect(defaultData.error).toEqual('');
 	});
 
@@ -101,7 +108,7 @@ describe('SetMFA', () => {
 			});
 		});
 		it('...should call Auth.setupTOTP when setup function is called', async () => {
-			wrapper.vm.setup();
+			await wrapper.vm.setup();
 			let testToken = `otpauth://totp/AWSCognito:${wrapper.vm.user.username}?secret=gibberish&issuer=AWSCognito`;
 			await expect(wrapper.vm.$Amplify.Auth.setupTOTP).toBeCalledWith(
 				wrapper.vm.user
