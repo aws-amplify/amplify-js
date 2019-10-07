@@ -21,59 +21,66 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import BaseComponent, { PropType } from '../base';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 
-export default {
+export interface IS3ImageConfig {
+  level?: 'private' | 'protected' | 'public';
+  download?: boolean;
+  expires?: number;
+  track?: boolean;
+}
+
+export default BaseComponent.extend({
   name: 'S3Image',
-  props: ['imagePath', 's3ImageConfig'],
-  data () {
+  props: {
+    s3ImageConfig: {} as PropType<IS3ImageConfig>,
+    imagePath: String as PropType<string>,
+  },
+  data() {
     return {
       url: null,
-      error: '',
-      logger: {},
-    }
+    };
   },
   computed: {
-    options() {
-      //retain for future use
-      const defaults = {}
-      return Object.assign(defaults, this.s3ImageConfig || {})
+    options(): IS3ImageConfig {
+      // retain for future use
+      const defaults = {};
+      return Object.assign(defaults, this.s3ImageConfig || {});
     }
   },
   mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
     this.getImage();
   },
   methods: {
-    getImage() {
+    async getImage() {
       if (!this.imagePath) {
-        return this.setError('Image path not provided.')
+        this.setError('Image path not provided.');
+        return;
       }
-      this.$Amplify.Storage
-        .get(this.imagePath, this.options)
-        .then((url) => {
-          this.url = url
-          })
-        .catch(e => this.setError(e));
+      try {
+        this.url = await this.$Amplify.Storage.get(
+          this.imagePath,
+          this.options
+        );
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    blowUp(url) {
+    blowUp(url: string) {
       window.open(url);
-    },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
     }
   }
-}
+});
 </script>
 
 <style scoped>
-  .amplify-image {
-    width: 30%;
-    margin: 0.2em;
-    border-radius: 6px;
-    border: 2px solid var(--color-white);
-    cursor: pointer;
-  }
+.amplify-image {
+  width: 30%;
+  margin: 0.2em;
+  border-radius: 6px;
+  border: 2px solid var(--color-white);
+  cursor: pointer;
+}
 </style>

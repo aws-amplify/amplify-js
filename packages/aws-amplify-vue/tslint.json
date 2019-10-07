@@ -1,0 +1,50 @@
+{
+  "defaultSeverity": "warning",
+  "extends": ["tslint:recommended"],
+  "linterOptions": {
+    "exclude": ["node_modules/**"]
+  },
+  "plugins": ["prettier"],
+  "jsRules": {},
+  "rules": {
+    "prefer-const": true,
+    "max-line-length": [true, 120],
+    "no-empty-interface": true,
+    "no-var-keyword": true,
+    "no-eval": true,
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "never",
+        "named": "never"
+      }
+    ],
+    "no-parameter-reassignment": true,
+    "align": [true, "parameters"],
+    "no-duplicate-imports": true,
+    "one-variable-per-declaration": [false, "ignore-for-loop"],
+    "triple-equals": [true, "allow-null-check"],
+    "indent": [true, "spaces", 2],
+    "quotemark": [true, "single"],
+    "whitespace": [
+      false,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-preblock"
+    ],
+    "eofline": true,
+    "variable-name": [
+      true,
+      "check-format",
+      "allow-pascal-case",
+      "allow-snake-case",
+      "allow-leading-underscore"
+    ],
+    "trailing-comma": [false],
+    "arrow-parens": [false],
+    "ordered-imports": [false],
+    "object-literal-sort-keys": [false],
+    "member-access": [false]
+  }
+}

@@ -23,25 +23,54 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { CognitoUser } from '@aws-amplify/auth';
+import BaseComponent, { PropType } from '../base';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import GetUser from '../../services/getUser';
+import { IConfirmSignInConfig } from './ConfirmSignIn.vue';
+import { IConfirmSignUpConfig } from './ConfirmSignUp.vue';
+import { IForgotPasswordConfig } from './ForgotPassword.vue';
+import { IRequireNewPasswordConfig } from './RequireNewPassword.vue';
+import { IMFAConfig } from './SetMFA.vue';
+import { ISignInConfig } from './SignIn.vue';
+import { ISignUpConfig } from './SignUp.vue';
 
-export default {
+interface IAuthConfig {
+  signInConfig: ISignInConfig;
+  signUpConfig: ISignUpConfig;
+  confirmSignUpConfig: IConfirmSignUpConfig;
+  confirmSignInConfig: IConfirmSignInConfig;
+  forgotPasswordConfig: IForgotPasswordConfig;
+  mfaConfig: IMFAConfig;
+  requireNewPasswordConfig: IRequireNewPasswordConfig;
+  usernameAttributes: string;
+}
+
+interface IDisplayMap {
+  showSignIn: boolean;
+  showSignUp: boolean;
+  showConfirmSignUp: boolean;
+  showConfirmSignIn: boolean;
+  showForgotPassword: boolean;
+  showSignOut: boolean;
+  showMfa: boolean;
+  requireNewPassword: boolean;
+}
+
+export default BaseComponent.extend({
   name: 'Authenticator',
-  props: ['authConfig'],
-  data () {
+  props: {
+    authConfig: {} as PropType<IAuthConfig>,
+  },
+  data() {
     return {
-        user: {
-          username: null
-        },
-        displayMap: {},
-        error: '',
-        logger: {},
-    }
+      user: null as CognitoUser,
+      displayMap: {},
+    };
   },
   computed: {
-    options() {
+    options(): IAuthConfig {
       const defaults = {
         signInConfig: {},
         signUpConfig: {},
@@ -50,34 +79,39 @@ export default {
         forgotPasswordConfig: {},
         mfaConfig: {},
         requireNewPasswordConfig: {},
-        usernameAttributes: 'username'
+        usernameAttributes: 'username',
       };
-      return Object.assign(defaults, this.authConfig || {})
-    }
+      return Object.assign(defaults, this.authConfig || {});
+    },
   },
-  async mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
-    AmplifyEventBus.$on('localUser', user => {
+  async mounted(): Promise<void> {
+    AmplifyEventBus.$on('localUser', (user: CognitoUser) => {
       this.user = user;
-      this.options.signInConfig.username = this.user.username;
-      this.options.confirmSignInConfig.user = this.user;
-      this.options.confirmSignUpConfig.username = this.user.username;
-      this.options.requireNewPasswordConfig.user = this.user;
+      const options = this.options;
+      options.signInConfig.username = user.getUsername();
+      options.confirmSignInConfig.user = user;
+      options.confirmSignUpConfig.username = user.getUsername();
+      options.requireNewPasswordConfig.user = user;
     });
+
     AmplifyEventBus.$on('authState', data => {
-      this.displayMap = this.updateDisplayMap(data)
+      this.displayMap = this.updateDisplayMap(data);
     });
-    GetUser(this.$Amplify).then((val) => {
+
+    try {
+      const val = await GetUser(this.$Amplify);
       if (val instanceof Error) {
-        return this.displayMap = this.updateDisplayMap('signedOut')
+        this.displayMap = this.updateDisplayMap('signedOut');
+        return;
       }
       this.user = val;
-      return this.displayMap = this.updateDisplayMap('signedIn');
-    })
-    .catch(e => this.setError(e))
+      this.displayMap = this.updateDisplayMap('signedIn');
+    } catch (e) {
+      this.setError(e);
+    }
   },
   methods: {
-    updateDisplayMap: state => {
+    updateDisplayMap(state): IDisplayMap {
       return {
         showSignIn: state === 'signedOut' || state === 'signIn',
         showSignUp: state === 'signUp',
@@ -86,13 +120,9 @@ export default {
         showForgotPassword: state === 'forgotPassword',
         showSignOut: state === 'signedIn',
         showMfa: state === 'setMfa',
-        requireNewPassword: state === 'requireNewPassword'
-      }
-    },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error)
+        requireNewPassword: state === 'requireNewPassword',
+      };
     }
   }
-}
+});
 </script>

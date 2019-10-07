@@ -13,6 +13,12 @@
 import { ConsoleLogger as Logger } from '../Logger';
 import JS from '../JS';
 
+interface RefreshTokenResponse {
+	token: string;
+	expires_at: number;
+	user: any;
+}
+
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
@@ -60,7 +66,7 @@ export default class GoogleOAuth {
 			return Promise.reject('no gapi auth2 available');
 		}
 
-		return new Promise((res, rej) => {
+		return new Promise<RefreshTokenResponse>((res, rej) => {
 			ga.getAuthInstance()
 				.then(googleAuth => {
 					if (!googleAuth) {
@@ -80,7 +86,7 @@ export default class GoogleOAuth {
 								name: profile.getName(),
 							};
 
-							res({ token: id_token, expires_at });
+							res({ token: id_token as string, expires_at, user });
 						});
 					} else {
 						rej('User is not signed in with Google');

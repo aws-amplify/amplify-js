@@ -19,42 +19,52 @@
     <template v-else>
       <slot :loading="loading" :data="data" :errors="errors" />
     </template>
-  </div>  
+  </div>
 </template>
 
-<script>
+<script lang="ts">
+import Amplify from '@aws-amplify/core';
+import BaseComponent, { PropType } from '../../base';
+import { GraphQLResult } from '@aws-amplify/api/lib/types';
+import Observable from 'zen-observable';
 
-import Vue from 'vue';
+interface IQuery {
+  query: string;
+  variables: object;
+}
 
-export default {
+interface ISubscription {
+  query: string;
+}
+
+type SubscriptionMsgHandler = (any) => any;
+
+export default BaseComponent.extend({
   name: 'Connect',
-
-  props: [
-    'query',
-    'mutation',
-    'subscription',
-    'onSubscriptionMsg',
-  ],
-
-  data () {
+  props: {
+    query: {} as PropType<IQuery>,
+    mutation: {} as PropType<IQuery>,
+    subscription: {} as PropType<ISubscription>,
+    onSubscriptionMsg: ((data) => data) as PropType<SubscriptionMsgHandler>,
+  },
+  data() {
     return {
-      logger: {},
       loading: false,
       data: {},
       errors: [],
       watchedSubscription: null,
       isMutation: false,
       internalMutation: null,
-    }
+    };
   },
 
   watch: {
-    query: function(val) {
+    query(val) {
       if (!this.loading) {
         this._fetchData();
       }
     },
-    mutation: function(val) {
+    mutation(val) {
       if (!this.loading) {
         this._fetchData();
       }
@@ -62,7 +72,6 @@ export default {
   },
 
   beforeMount() {
-    this.logger = new this.$Amplify.Logger('Connect');
     this._fetchData();
   },
 
@@ -72,7 +81,9 @@ export default {
 
   methods: {
     async mutate() {
-      if (!this.isMutation) { return; }
+      if (!this.isMutation) {
+        return;
+      }
 
       this.loading = true;
       await this.internalMutation();
@@ -97,14 +108,16 @@ export default {
 
       this._setDefaultState();
 
-      if (!this.$Amplify.API || typeof this.$Amplify.API.graphql !== 'function' || typeof this.$Amplify.API.getGraphqlOperationType !== 'function') {
-        throw new Error('No API module found, please ensure @aws-amplify/api is imported');
+      if (typeof this.API.graphql !== 'function' || typeof this.API.getGraphqlOperationType !== 'function') {
+        throw new Error(
+          'No API module found, please ensure @aws-amplify/api is imported'
+        );
       }
 
-      const hasValidQuery = query && this.$Amplify.API.getGraphqlOperationType(query) === 'query';
-      const hasValidMutation = mutation && this.$Amplify.API.getGraphqlOperationType(mutation) === 'mutation';
-      const hasValidSubscription = subscription && subscription.query
-          && this.$Amplify.API.getGraphqlOperationType(subscription.query) === 'subscription';
+      const hasValidQuery = query && this.API.getGraphqlOperationType(query) === 'query';
+      const hasValidMutation = mutation && this.API.getGraphqlOperationType(mutation) === 'mutation';
+      const hasValidSubscription = subscription!.query &&
+        this.API.getGraphqlOperationType(subscription.query) === 'subscription';
 
       if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
         this.logger.warn('No query, mutation, or subscription was specified');
@@ -114,7 +127,7 @@ export default {
         try {
           this.data = {};
           this.loading = true;
-          const response = await this.$Amplify.API.graphql({ query, variables });
+          const response = await this.API.graphql({ query, variables }) as GraphQLResult;
           this.data = response.data;
         } catch (error) {
           this.logger.warn(error);
@@ -126,22 +139,24 @@ export default {
       if (hasValidMutation) {
         this.isMutation = true;
         this.internalMutation = async () => {
-          this.$Amplify.API.graphql({ query: mutation, variables: mutationVariables }).then((result) => {
+          try {
+            const result = await this.API.graphql({ query: mutation, variables: mutationVariables }) as GraphQLResult;
             this.$emit('done', result);
-            return result;
-          })
-          .catch((error) => {
+          } catch (error) {
             this.logger.warn(error);
             this.errors = error.errors;
-            return this.$emit('error', error);
-          })
+            this.$emit('error', error);
+          }
         };
       }
 
       if (hasValidSubscription) {
         const { query: subscriptionQuery, variables: subscriptionVariables } = subscription;
         try {
-          const observable = this.$Amplify.API.graphql({ query: subscriptionQuery, variables: subscriptionVariables });
+          const observable = this.API.graphql({
+            query: subscriptionQuery,
+            variables: subscriptionVariables,
+          }) as Observable<{value: { data: any }}>;
 
           this.watchedSubscription = observable.subscribe({
             next: ({ value: { data }}) => {
@@ -166,7 +181,7 @@ export default {
       if (this.watchedSubscription) {
         this.watchedSubscription.unsubscribe();
       }
-    },
-  },
-}
+    }
+  }
+});
 </script>

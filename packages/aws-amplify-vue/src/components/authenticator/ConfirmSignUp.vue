@@ -16,25 +16,25 @@
     <div v-bind:class="amplifyUI.sectionHeader" v-bind:data-test="auth.confirmSignUp.headerSection">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody" v-bind:data-test="auth.confirmSignUp.bodySection">
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get(getUsernameLabel())}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get(getUsernameLabel())" autofocus v-bind:data-test="auth.confirmSignUp.usernameInput"/>
+        <div v-bind:class="amplifyUI.inputLabel">{{I18n.get(getUsernameLabel())}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="I18n.get(getUsernameLabel())" autofocus v-bind:data-test="auth.confirmSignUp.usernameInput"/>
       </div>
       <div v-bind:class="amplifyUI.formField">
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" name="code" :placeholder="$Amplify.I18n.get('Confirmation Code')" v-bind:data-test="auth.confirmSignUp.confirmationCodeInput" />
+        <div v-bind:class="amplifyUI.inputLabel">{{I18n.get('Confirmation Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" name="code" :placeholder="I18n.get('Confirmation Code')" v-bind:data-test="auth.confirmSignUp.confirmationCodeInput" />
         <div v-bind:class="amplifyUI.hint">
-          {{$Amplify.I18n.get('Lost your code? ')}}
-          <a v-bind:class="amplifyUI.a" v-on:click="resend" v-bind:data-test="auth.confirmSignUp.resendCodeLink">{{$Amplify.I18n.get('Resend Code')}}</a>
+          {{I18n.get('Lost your code? ')}}
+          <a v-bind:class="amplifyUI.a" v-on:click="resend" v-bind:data-test="auth.confirmSignUp.resendCodeLink">{{I18n.get('Resend Code')}}</a>
         </div>
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="confirm" v-bind:data-test="auth.confirmSignUp.confirmButton">{{$Amplify.I18n.get('Confirm')}}</button>
+        <button v-bind:class="amplifyUI.button" v-on:click="confirm" v-bind:data-test="auth.confirmSignUp.confirmButton">{{I18n.get('Confirm')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        {{$Amplify.I18n.get('Have an account? ')}}
-        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.confirmSignUp.backToSignInLink">{{$Amplify.I18n.get('Back to Sign In')}}</a>
+        {{I18n.get('Have an account? ')}}
+        <a v-bind:class="amplifyUI.a" v-on:click="signIn" v-bind:data-test="auth.confirmSignUp.backToSignInLink">{{I18n.get('Back to Sign In')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -43,65 +43,70 @@
   </div>
 </template>
 
-<script>
-import AmplifyEventBus from '../../events/AmplifyEventBus';
+<script lang="ts">
 import * as AmplifyUI from '@aws-amplify/ui';
+import AmplifyEventBus from '../../events/AmplifyEventBus';
+import BaseComponent, { PropType } from '../base';
 import { labelMap } from './common';
 import { auth } from '../../assets/data-test-attributes';
 
-export default {
+export interface IConfirmSignUpConfig {
+  username?: string;
+  header?: string;
+}
+
+export default BaseComponent.extend({
   name: 'ConfirmSignUp',
-  props: ['confirmSignUpConfig', 'usernameAttributes'],
-  data () {
+  props: {
+    confirmSignUpConfig: {} as PropType<IConfirmSignUpConfig>,
+    usernameAttributes: String as PropType<string>,
+  },
+  data() {
     return {
-        code: '',
-        error: '',
-        logger: {},
-        amplifyUI: AmplifyUI,
-        auth
-    }
-  },
-  computed: {
-    options() {
-      const defaults = {
-        username: '',
-        header: this.$Amplify.I18n.get('Confirm Sign Up'),
-      }
-      return Object.assign(defaults, this.confirmSignUpConfig || {})
-    }
-  },
-  mounted: function() {
-    this.logger = new this.$Amplify.Logger(this.$options.name)
-    if (!this.options.username) {
-      return this.setError('Valid username not received.');
+      code: '',
+      amplifyUI: AmplifyUI,
+      auth,
     };
   },
-  methods: {
-    confirm() {
-        this.$Amplify.Auth.confirmSignUp(this.options.username, this.code)
-          .then(() => {
-            this.logger.info('confirmSignUp success')
-            AmplifyEventBus.$emit('authState', 'signIn')
-          })
-          .catch(e => this.setError(e));
+  computed: {
+    options(): IConfirmSignUpConfig {
+      const defaults = {
+        username: '',
+        header: this.I18n.get('Confirm Sign Up'),
+      };
+      return Object.assign(defaults, this.confirmSignUpConfig || {});
     },
-    resend() {
-        this.$Amplify.Auth.resendSignUp(this.options.username)
-            .then(() => {
-              this.logger.info('resendSignUp success')
-            })
-            .catch(e => this.setError(e));
+  },
+  mounted() {
+    if (!this.options.username) {
+      this.setError('Valid username not received.');
+      return;
+    }
+  },
+  methods: {
+    async confirm() {
+      try {
+        await this.Auth.confirmSignUp(this.options.username, this.code);
+        this.logger.info('confirmSignUp success');
+        AmplifyEventBus.$emit('authState', 'signIn');
+      } catch (e) {
+        this.setError(e);
+      }
+    },
+    async resend() {
+      try {
+        await this.Auth.resendSignUp(this.options.username);
+        this.logger.info('resendSignUp success');
+      } catch (e) {
+        this.setError(e);
+      }
     },
     signIn() {
-        AmplifyEventBus.$emit('authState', 'signIn')
-    },
-    setError(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+      AmplifyEventBus.$emit('authState', 'signIn');
     },
     getUsernameLabel() {
       return labelMap[this.usernameAttributes] || this.usernameAttributes;
     }
   }
-}
+});
 </script>

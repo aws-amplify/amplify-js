@@ -18,7 +18,7 @@
         {{options.mfaDescription}}
       </div>
     </div>
-    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.headerSection">{{$Amplify.I18n.get('Verify Authentication Token')}}
+    <div v-bind:class="amplifyUI.sectionHeader" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.headerSection">{{I18n.get('Verify Authentication Token')}}
       <div style="font-size: 16px; color: #828282; margin-top: 10px;">
         {{options.tokenInstructions}}
       </div>
@@ -29,16 +29,16 @@
           <input v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="SMS" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.smsInput" />
             {{options.smsDescription}}
         </div>
-      </div>      
+      </div>
       <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('TOTP')">
         <div v-bind:class="amplifyUI.inputLabel">
-          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="TOTP" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.totpInput" />  
+          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="TOTP" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.totpInput" />
             {{options.totpDescription}}
         </div>
       </div>
       <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('None')">
         <div v-bind:class="amplifyUI.inputLabel">
-          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="NOMFA" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.noMfaInput" />  
+          <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="NOMFA" v-model="mfaPreference" v-bind:data-test="auth.setMFAComp.noMfaInput" />
             {{options.noMfaDescription}}
         </div>
       </div>
@@ -46,17 +46,17 @@
     <div v-bind:class="amplifyUI.sectionBody" v-if="displayTotpSetup">
       <qrcode-vue v-bind:class="amplifyUI.totpQrcode" :value="token" :size="300" level="H"></qrcode-vue>
       <div v-bind:class="amplifyUI.formField" >
-        <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Verification Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Verification Code')" autofocus v-bind:data-test="auth.setMFAComp.verificationCodeInput" />
+        <div v-bind:class="amplifyUI.inputLabel">{{I18n.get('Verification Code')}} *</div>
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="I18n.get('Verification Code')" autofocus v-bind:data-test="auth.setMFAComp.verificationCodeInput" />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup" v-bind:data-test="auth.setMFAComp.setMfaButton">{{$Amplify.I18n.get('Set MFA')}}</button>
-        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.verifyTotpTokenButton">{{$Amplify.I18n.get('Verify Token')}}</button>
+        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup" v-bind:data-test="auth.setMFAComp.setMfaButton">{{I18n.get('Set MFA')}}</button>
+        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup" v-bind:data-test="auth.setMFAComp.verifyTotpTokenButton">{{I18n.get('Verify Token')}}</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
-        <a v-bind:class="amplifyUI.a" v-on:click="cancel" v-bind:data-test="auth.setMFAComp.cancelButton">{{$Amplify.I18n.get('Cancel')}}</a>
+        <a v-bind:class="amplifyUI.a" v-on:click="cancel" v-bind:data-test="auth.setMFAComp.cancelButton">{{I18n.get('Cancel')}}</a>
       </span>
     </div>
     <div class="error" v-if="error">
@@ -65,48 +65,57 @@
   </div>
 </template>
 
-<script>
-// import Auth from '@aws-amplify/auth';
-import AmplifyEventBus from '../../events/AmplifyEventBus';
+<script lang="ts">
+import { CognitoUser } from '@aws-amplify/auth';
 import * as AmplifyUI from '@aws-amplify/ui';
 import QrcodeVue from 'qrcode.vue';
+import BaseComponent, { PropType } from '../base';
+import AmplifyEventBus from '../../events/AmplifyEventBus';
 import { auth } from '../../assets/data-test-attributes';
 
-export default {
+export interface IMFAConfig {
+  header?: string;
+  mfaDescription?: string;
+  tokenInstructions?: string;
+  smsDescription?: string;
+  totpDescription?: string;
+  noMfaDescription?: string;
+  mfaTypes?: string[];
+}
+
+export default BaseComponent.extend({
   name: 'SetMfa',
-  props: ['mfaConfig'],
+  components: { 'qrcode-vue': QrcodeVue },
+  props: {
+    mfaConfig: {} as PropType<IMFAConfig>,
+  },
   data () {
     return {
-        user: null,
-        mfaPreference: null,
-        code: null,
-        token: '',
-        error: '',
-        displayTotpSetup: false,
-        amplifyUI: AmplifyUI,
-        auth,
-        logger: {},
-    }
-  },
-  components: {
-    QrcodeVue
+      user: null,
+      mfaPreference: null,
+      code: null,
+      token: '',
+      displayTotpSetup: false,
+      amplifyUI: AmplifyUI,
+      auth,
+    };
   },
   mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
     this.setUser();
   },
   computed: {
-    options() {
+    options(): IMFAConfig {
       const defaults = {
         header: 'Multifactor Authentication Preference',
-        mfaDescription: 'AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password.',
+        mfaDescription: 'AWS Multi-Factor Authentication (MFA) adds an extra layer ' +
+          'of protection on top of your user name and password.',
         tokenInstructions: 'Scan the QR Code with your phone camera or authentication app to get the MFA code.',
         smsDescription: 'SMS text messaging (receive a code on your mobile device)',
         totpDescription: 'One-time password (use a QR code and MFA app to save a token on your mobile device)',
         noMfaDescription: 'Do not enable MFA',
         mfaTypes: [],
-      }
-      return Object.assign(defaults, this.mfaConfig || {})
+      };
+      return Object.assign(defaults, this.mfaConfig || {});
     },
   },
   watch: {
@@ -117,57 +126,64 @@ export default {
     }
   },
   methods: {
-    setup() {
-      this.$Amplify.Auth.setupTOTP(this.user)
-        .then((data) => {
-          this.logger.info('setTOTP success');
-          this.token = "otpauth://totp/AWSCognito:"+ this.user.username + "?secret=" + data + "&issuer=AWSCognito";
-        })
-        .catch(e => this.setError(e));
+    async setup() {
+      try {
+        const data = await this.Auth.setupTOTP(this.user);
+        this.logger.info('setTOTP success');
+        this.token =
+          'otpauth://totp/AWSCognito:' +
+          this.user.username +
+          '?secret=' +
+          data +
+          '&issuer=AWSCognito';
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    setUser: async function() {
-      await this.$Amplify.Auth.currentAuthenticatedUser()
-        .then((user) => {
-          this.logger.info('currentAuthenticatedUser success')
-          if (user) { 
-            this.user = user;
-          } else {
-            this.user = null;
-          }
-          return this.user;
-        })
-        .catch((e) => {
+    async setUser(): Promise<CognitoUser> {
+      try {
+        const user = await this.Auth.currentAuthenticatedUser();
+        this.logger.info('currentAuthenticatedUser success');
+        if (user) {
+          this.user = user;
+        } else {
           this.user = null;
-          this.setError(e);
-          return this.user;
-        })
+        }
+        return this.user;
+      } catch (e) {
+        this.user = null;
+        this.setError(e);
+        return this.user;
+      }
     },
-    setMFA: function() {
-      this.$Amplify.Auth.setPreferredMFA(this.user, this.mfaPreference).then((data) => {
+    async setMFA(): Promise<void> {
+      try {
+        const data = await this.Auth.setPreferredMFA(
+          this.user,
+          this.mfaPreference
+        );
         AmplifyEventBus.$emit('authState', 'signedIn');
         this.$destroy();
-      }).catch(e => {
-        if (e.message = 'User has not verified software token mfa'){
-          return this.displayTotpSetup = true
-        }; 
+      } catch (e) {
+        if (e.message === 'User has not verified software token mfa') {
+          this.displayTotpSetup = true;
+          return;
+        }
         this.setError(e);
-      });
+      }
     },
-    verifyTotpToken() {
-      this.$Amplify.Auth.verifyTotpToken(this.user, this.code)
-          .then(() => {
-            this.logger.info('verifyTotpToken success')
-            this.setMFA()
-          })
-          .catch(e => this.setError(e));
+    async verifyTotpToken(): Promise<void> {
+      try {
+        await this.Auth.verifyTotpToken(this.user, this.code);
+        this.logger.info('verifyTotpToken success');
+        this.setMFA();
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
-    },
-    cancel: function() {
+    cancel() {
       return this.options.cancelHandler ? this.options.cancelHandler() : null;
     }
   }
-}
+});
 </script>

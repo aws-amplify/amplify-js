@@ -19,13 +19,21 @@
     "vue2-filters": "^0.7.2"
   },
   "devDependencies": {
-    "@aws-amplify/ui": "1.0.10-unstable.0",
+    "@aws-amplify/api": "^1.1.3",
+    "@aws-amplify/auth": "^1.3.3",
+    "@aws-amplify/core": "^1.1.2",
+    "@aws-amplify/ui": "^1.0.25",
+    "@types/jest": "22.2.3",
     "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
+    "jest": "22.4.4",
     "postcss-loader": "^2.1.6",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.3",
     "vue-template-compiler": "^2.5.17"
   },
   "postcss": {

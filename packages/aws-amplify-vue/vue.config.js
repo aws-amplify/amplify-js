@@ -13,7 +13,6 @@
 
 module.exports = {
 	css: {
-		modules: true,
 		/*
       ! IMPORTANT !
       If css.extract is true (which it is by default),

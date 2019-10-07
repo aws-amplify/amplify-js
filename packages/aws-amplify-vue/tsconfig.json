@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "outDir": "dist",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "es2016"],
+    "declaration": true,
+    "allowJs": false,
+    "strict": true,
+    "noImplicitThis": true,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "stripInternal": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "inlineSources": false,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["node_modules"]
+}

@@ -13,68 +13,71 @@
 
 <template>
 <div>
-    <div v-if="isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Phone number')}} *</div>
-    <div v-if="!isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Phone number')}}</div>
+    <div v-if="isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{I18n.get('Phone number')}} *</div>
+    <div v-if="!isPhoneNumberRequired" v-bind:class="amplifyUI.inputLabel">{{I18n.get('Phone number')}}</div>
     <div v-bind:class="amplifyUI.selectInput">
         <select v-model="countryCode" v-on:change="emitPhoneNumberChanged"
             data-test="dial-code-select">
-             <option v-for="_country in countries" 
-                v-bind:key="_country.label" 
-                v-bind:value="_country.value" 
+             <option v-for="_country in countries"
+                v-bind:key="_country.label"
+                v-bind:value="_country.value"
                 v-bind:data-test="auth.genericAttrs.dialCodeSelect"
-               >{{_country.label}}</option> 
+               >{{_country.label}}</option>
         </select>
         <input
             type="tel"
             v-model="local_phone_number"
             v-bind:class="[amplifyUI.input, isInvalid ? 'invalid': '']"
-            :placeholder="$Amplify.I18n.get(getPlaceholder)"
-            autofocus 
-            v-on:keyup="emitPhoneNumberChanged" 
+            :placeholder="I18n.get(getPlaceholder)"
+            autofocus
+            v-on:keyup="emitPhoneNumberChanged"
             v-bind:data-test="auth.genericAttrs.phoneNumberInput"
         />
     </div>
 </div>
 </template>
-<script>
+
+<script lang="ts">
+import BaseComponent, { PropType } from '../base';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
 import { auth } from '../../assets/data-test-attributes';
 
-export default {
-    name: 'PhoneField',
-    props: ['required', 'invalid', 'placeholder', 'defaultCountryCode'],
-    data() {
-        return {
-            countryCode: this.defaultCountryCode || '1',
-            local_phone_number: '',
-            countries,
-            amplifyUI: AmplifyUI,
-            auth,
-        }
+export default BaseComponent.extend({
+  name: 'PhoneField',
+  props: {
+    required: Boolean as PropType<boolean>,
+    invalid: Boolean as PropType<boolean>,
+    placeholder: String as PropType<string>,
+    defaultCountryCode: String as PropType<string>,
+  },
+  data() {
+    return {
+      countryCode: this.defaultCountryCode || '1',
+      local_phone_number: '',
+      countries,
+      amplifyUI: AmplifyUI,
+      auth,
+    };
+  },
+  computed: {
+    isPhoneNumberRequired(): boolean {
+      return this.required;
     },
-    computed: {
-        isPhoneNumberRequired() {
-            return this.required;
-        },
-        isInvalid() {
-            return !!this.invalid;
-        },
-        getPlaceholder() {
-            return this.placeholder || 'Enter your phone number';
-        },
+    isInvalid(): boolean {
+      return !!this.invalid;
     },
-    methods: {
-        emitPhoneNumberChanged() {
-            this.$emit('phone-number-changed', 
-                {
-                    countryCode: this.countryCode,
-                    local_phone_number: this.local_phone_number
-                }
-            );
-        }
+    getPlaceholder(): string {
+      return this.placeholder || 'Enter your phone number';
+    },
+  },
+  methods: {
+    emitPhoneNumberChanged() {
+      this.$emit('phone-number-changed', {
+        countryCode: this.countryCode,
+        local_phone_number: this.local_phone_number,
+      });
     }
-}
-
-
+  }
+});
 </script>

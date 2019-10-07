@@ -2,9 +2,9 @@
   <div v-bind:class="amplifyUI.formSection" style="width: 380px">
     <div v-bind:class="amplifyUI.sectionHeader">{{options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
-      <img 
-        v-if="file" 
-        :src="photoUrl" 
+      <img
+        v-if="file"
+        :src="photoUrl"
         style="max-width: 100%"
       />
       <div v-bind:class="amplifyUI.photoPlaceholder"  v-if="!file">
@@ -17,7 +17,7 @@
         </div>
       </div>
       <input
-        ref="file_input"  
+        ref="file_input"
         type="file"
         :accept="options.accept"
         @change="pick"
@@ -30,82 +30,93 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import * as AmplifyUI from '@aws-amplify/ui';
+import BaseComponent, { PropType } from '../base';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 
-export default {
+interface IPhotoPickerConfig {
+  header: string;
+  title: string;
+  accept: string;
+  storageOptions?: {
+    contentType?: string;
+  };
+  path?: string;
+  defaultName?: string;
+}
+
+export default BaseComponent.extend({
   name: 'PhotoPicker',
-  props: ['photoPickerConfig'],
-  data () {
+  props: {
+    photoPickerConfig: {} as PropType<IPhotoPickerConfig>,
+  },
+  data() {
     return {
-      logger: {},
       file: null,
       s3ImagePath: '',
       photoUrl: '',
-      error: '',
       amplifyUI: AmplifyUI,
-    }
+    };
   },
   computed: {
-    options() {
+    options(): IPhotoPickerConfig {
       const defaults = {
-        header: this.$Amplify.I18n.get('File Upload'),
-        title: this.$Amplify.I18n.get('Upload'),
+        header: this.I18n.get('File Upload'),
+        title: this.I18n.get('Upload'),
         accept: '*/*',
-        storageOptions: {}
-      }
-      return Object.assign(defaults, this.photoPickerConfig || {})
-    },
+        storageOptions: {},
+      };
+      return Object.assign(defaults, this.photoPickerConfig || {});
+    }
   },
   mounted() {
-    this.logger = new this.$Amplify.Logger(this.$options.name);
     if (!this.options.path) {
       return this.setError('File path not provided.');
     }
-    if (this.options.path.substr(this.options.path.length -1) !== '/') {
-      this.options.path = this.options.path + '/'; 
+    if (this.options.path.substr(this.options.path.length - 1) !== '/') {
+      this.options.path = this.options.path + '/';
     }
   },
   methods: {
-    upload: function() {
-      this.$Amplify.Storage.put(
-        this.s3ImagePath,
-        this.file, 
-        this.options.storageOptions,
-      )
-      .then((result) => {
-        this.completeFileUpload(result.key)
-      })
-      .catch(e => this.setError(e));
+    async upload() {
+      try {
+        const result = await this.$Amplify.Storage.put(
+          this.s3ImagePath,
+          this.file,
+          this.options.storageOptions
+        );
+        this.completeFileUpload(result.key);
+      } catch (e) {
+        this.setError(e);
+      }
     },
-    pick: function(evt) {
-      this.file = evt.target.files[0];
-      if (!this.file) { return ;};
+    pick(evt: Event) {
+      const target = evt.target as HTMLInputElement;
+      this.file = target.files[0];
+      if (!this.file) {
+        return;
+      }
       if (!this.options.storageOptions.contentType) {
         this.options.storageOptions.contentType = this.file.type;
-      };
-      const name = this.options.defaultName ? this.options.defaultName : this.file.name;
-      this.s3ImagePath = `${this.options.path}${name}`;
-      const that = this;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const target = e.target;
-        const url  = target.result;
-        that.photoUrl = url;
       }
+
+      const name = this.options.defaultName
+        ? this.options.defaultName
+        : this.file.name;
+      this.s3ImagePath = `${this.options.path}${name}`;
+      const reader = new FileReader();
+      reader.onload = e => {
+        this.photoUrl = e.target.result as string;
+      };
       reader.readAsDataURL(this.file);
     },
-    completeFileUpload: function(img) {
+    completeFileUpload(imgUrl: string) {
       this.file = null;
-      this.s3ImageFile = null;
-      this.$refs.file_input.value = null;
-      AmplifyEventBus.$emit('fileUpload', img);
-    },
-    setError: function(e) {
-      this.error = this.$Amplify.I18n.get(e.message || e);
-      this.logger.error(this.error);
+      this.s3ImagePath = null;
+      (this.$refs.file_input as HTMLInputElement).value = null;
+      AmplifyEventBus.$emit('fileUpload', imgUrl);
     }
   }
-}
+});
 </script>

@@ -10,9 +10,13 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode, GraphQLError } from 'graphql';
-import { print } from 'graphql/language/printer';
-import { parse } from 'graphql/language/parser';
+import {
+	OperationDefinitionNode,
+	OperationTypeNode,
+	GraphQLError,
+	parse,
+	print,
+} from 'graphql';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
 import Amplify, {
@@ -40,8 +44,7 @@ export default class APIClass {
 	 * @private
 	 */
 	private _options;
-	private _api = null;
-	private _pubSub = Amplify.PubSub;
+	private _api: RestClass = null;
 
 	/**
 	 * Initialize Storage with AWS configuration
@@ -334,7 +337,7 @@ export default class APIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation) {
+	getGraphqlOperationType(operation: string): OperationTypeNode {
 		const doc = parse(operation);
 		const {
 			definitions: [{ operation: operationType }],

@@ -13,6 +13,11 @@
 import { ConsoleLogger as Logger } from '../Logger';
 import JS from '../JS';
 
+interface RefreshTokenResponse {
+	token: string;
+	expires_at: number;
+}
+
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
@@ -58,7 +63,7 @@ export default class FacebookOAuth {
 			return Promise.reject('no fb sdk available');
 		}
 
-		return new Promise((res, rej) => {
+		return new Promise<RefreshTokenResponse>((res, rej) => {
 			fb.getLoginStatus(
 				fbResponse => {
 					if (!fbResponse || !fbResponse.authResponse) {
@@ -76,7 +81,7 @@ export default class FacebookOAuth {
 						logger.debug('the jwtToken is undefined');
 						rej('the jwtToken is undefined');
 					}
-					res({ token: accessToken, expires_at });
+					res({ token: accessToken as string, expires_at });
 				},
 				{ scope: 'public_profile,email' }
 			);
