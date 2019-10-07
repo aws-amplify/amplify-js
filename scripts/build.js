@@ -20,6 +20,7 @@ async function buildRollUp() {
 	const file = `${currentPath}${packageInfo.main.slice(
 		packageInfo.main.indexOf('/')
 	)}`;
++ 	// For more info see: https://github.com/rollup/rollup/issues/1518#issuecomment-321875784
 	const onwarn = warning => {
 		if (warning.code === 'THIS_IS_UNDEFINED') {
 			return;
