@@ -17,19 +17,19 @@ export class AmplifyScene {
   @Prop() sceneName: string;
 
   /* Whether or not the scene is loading */
-  @State() loading: boolean;
+  @State() loading: boolean = false;
   /* Value between 0-100 that represents the scene's percentage loaded */
-  @State() loadPercentage: number;
+  @State() loadPercentage: number = 0;
   /* Whether or not to show a tooltip to enable audio due to browser security requiring it to be disabled on load*/
-  @State() showEnableAudio: boolean;
+  @State() showEnableAudio: boolean = false;
   /* Whether or not the scene volume is muted or not */
-  @State() muted: boolean;
+  @State() muted: boolean = false;
   /* Whether or not the scene's VR presentation is active */
-  @State() isVRPresentationActive: boolean;
+  @State() isVRPresentationActive: boolean = false;
   /* Scene error object */
-  @State() sceneError: object;
+  @State() sceneError: object | null = null;
   /* Whether or not the scene is fullscreen */
-  @State() isFullscreen: boolean;
+  @State() isFullscreen: boolean = false;
 
   async componentDidLoad() {
     this.listenForFullscreenChange();
