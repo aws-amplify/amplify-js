@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from './Logger';
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 

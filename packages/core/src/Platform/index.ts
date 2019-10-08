@@ -34,10 +34,7 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 }
 
 const appendUserAgentMiddleware = next => args => {
-	const {
-		request,
-		request: { headers },
-	} = args;
+	const { request } = args;
 	appendToUserAgent(request, Platform.userAgent);
 	return next({
 		...args,
