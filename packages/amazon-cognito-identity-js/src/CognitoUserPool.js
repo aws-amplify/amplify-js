@@ -90,13 +90,21 @@ export default class CognitoUserPool {
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
 	 * @returns {void}
 	 */
-	signUp(username, password, userAttributes, validationData, callback) {
+	signUp(
+		username,
+		password,
+		userAttributes,
+		validationData,
+		callback,
+		authDetails
+	) {
 		const jsonReq = {
 			ClientId: this.clientId,
 			Username: username,
 			Password: password,
 			UserAttributes: userAttributes,
 			ValidationData: validationData,
+			ClientMetadata: authDetails.ClientMetadata,
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);

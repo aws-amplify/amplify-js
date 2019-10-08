@@ -158,7 +158,8 @@ export default class CognitoUser {
 			AuthFlow: 'CUSTOM_AUTH',
 			ClientId: this.pool.getClientId(),
 			AuthParameters: authParameters,
-			ClientMetadata: authDetails.getValidationData(),
+			ClientMetadata:
+				authDetails.getValidationData() || authDetails.ClientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -569,7 +570,12 @@ export default class CognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
+	completeNewPasswordChallenge(
+		newPassword,
+		requiredAttributeData,
+		callback,
+		authDetails
+	) {
 		if (!newPassword) {
 			return callback.onFailure(new Error('New password is required.'));
 		}
@@ -593,6 +599,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			ChallengeResponses: finalUserAttributes,
 			Session: this.Session,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -625,7 +632,7 @@ export default class CognitoUser {
 	 * @returns {void}
 	 * @private
 	 */
-	getDeviceResponse(callback) {
+	getDeviceResponse(callback, authDetails) {
 		const authenticationHelper = new AuthenticationHelper(this.deviceGroupKey);
 		const dateHelper = new DateHelper();
 
@@ -645,6 +652,7 @@ export default class CognitoUser {
 				ChallengeName: 'DEVICE_SRP_AUTH',
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
+				ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -735,12 +743,18 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	confirmRegistration(confirmationCode, forceAliasCreation, callback) {
+	confirmRegistration(
+		confirmationCode,
+		forceAliasCreation,
+		callback,
+		authDetails
+	) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			ConfirmationCode: confirmationCode,
 			Username: this.username,
 			ForceAliasCreation: forceAliasCreation,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -763,7 +777,7 @@ export default class CognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	sendCustomChallengeAnswer(answerChallenge, callback) {
+	sendCustomChallengeAnswer(answerChallenge, callback, authDetails) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.ANSWER = answerChallenge;
@@ -781,6 +795,7 @@ export default class CognitoUser {
 			ChallengeResponses: challengeResponses,
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -807,7 +822,7 @@ export default class CognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	sendMFACode(confirmationCode, callback, mfaType) {
+	sendMFACode(confirmationCode, callback, mfaType, authDetails) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.SMS_MFA_CODE = confirmationCode;
@@ -825,6 +840,7 @@ export default class CognitoUser {
 			ChallengeResponses: challengeResponses,
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -926,7 +942,7 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	changePassword(oldUserPassword, newUserPassword, callback) {
+	changePassword(oldUserPassword, newUserPassword, callback, authDetails) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -937,6 +953,7 @@ export default class CognitoUser {
 				PreviousPassword: oldUserPassword,
 				ProposedPassword: newUserPassword,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 			},
 			err => {
 				if (err) {
@@ -1045,7 +1062,7 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	deleteUser(callback) {
+	deleteUser(callback, authDetails) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1054,6 +1071,7 @@ export default class CognitoUser {
 			'DeleteUser',
 			{
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 			},
 			err => {
 				if (err) {
@@ -1075,7 +1093,7 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	updateAttributes(attributes, callback) {
+	updateAttributes(attributes, callback, authDetails) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1085,6 +1103,7 @@ export default class CognitoUser {
 			{
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 				UserAttributes: attributes,
+				ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 			},
 			err => {
 				if (err) {
@@ -1242,10 +1261,11 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	resendConfirmationCode(callback) {
+	resendConfirmationCode(callback, authDetails) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 
 		this.client.request('ResendConfirmationCode', jsonReq, (err, result) => {
@@ -1331,7 +1351,7 @@ export default class CognitoUser {
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	refreshSession(refreshToken, callback) {
+	refreshSession(refreshToken, callback, authDetails) {
 		const authParameters = {};
 		authParameters.REFRESH_TOKEN = refreshToken.getToken();
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
@@ -1348,6 +1368,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters: authParameters,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1530,10 +1551,11 @@ export default class CognitoUser {
 	 * @param {onSuccess} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	forgotPassword(callback) {
+	forgotPassword(callback, authDetails) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1558,12 +1580,13 @@ export default class CognitoUser {
 	 * @param {onSuccess<void>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	confirmPassword(confirmationCode, newPassword, callback) {
+	confirmPassword(confirmationCode, newPassword, callback, authDetails) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
 			ConfirmationCode: confirmationCode,
 			Password: newPassword,
+			ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1584,7 +1607,7 @@ export default class CognitoUser {
 	 * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
 	 * @returns {void}
 	 */
-	getAttributeVerificationCode(attributeName, callback) {
+	getAttributeVerificationCode(attributeName, callback, authDetails) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1594,6 +1617,7 @@ export default class CognitoUser {
 			{
 				AttributeName: attributeName,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: authDetails ? authDetails.ClientMetadata : undefined,
 			},
 			(err, data) => {
 				if (err) {
@@ -1936,7 +1960,7 @@ export default class CognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
+	verifySoftwareToken(totpCode, friendlyDeviceName, callback, authDetails) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			this.client.request(
 				'VerifySoftwareToken',
@@ -1957,6 +1981,7 @@ export default class CognitoUser {
 						ClientId: this.pool.getClientId(),
 						ChallengeResponses: challengeResponses,
 						Session: this.Session,
+						ClientMetadata: authDetails.ClientMetadata,
 					};
 					if (this.getUserContextData()) {
 						jsonReq.UserContextData = this.getUserContextData();

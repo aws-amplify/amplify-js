@@ -88,32 +88,38 @@ declare module 'amazon-cognito-identity-js' {
 		public confirmRegistration(
 			code: string,
 			forceAliasCreation: boolean,
-			callback: NodeCallback<any, any>
+			callback: NodeCallback<any, any>,
+			clientMetadata?: any
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
 			callback: IAuthenticationCallback
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>
+			callback: NodeCallback<Error, 'SUCCESS'>,
+			authDetails?: { clientMetadata: any }
 		): void;
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
 			callback: NodeCallback<Error, 'SUCCESS'>
 		): void;
-		public forgotPassword(callbacks: {
-			onSuccess: (data: any) => void;
-			onFailure: (err: Error) => void;
-			inputVerificationCode?: (data: any) => void;
-		}): void;
+		public forgotPassword(
+			callbacks: {
+				onSuccess: (data: any) => void;
+				onFailure: (err: Error) => void;
+				inputVerificationCode?: (data: any) => void;
+			},
+			authDetails?: { clientMetadata: any }
+		): void;
 		public confirmPassword(
 			verificationCode: string,
 			newPassword: string,
 			callbacks: {
 				onSuccess: () => void;
 				onFailure: (err: Error) => void;
-			}
+			},
+			authDetails?: { clientMetadata: any }
 		): void;
 		public setDeviceStatusRemembered(callbacks: {
 			onSuccess: (success: string) => void;
