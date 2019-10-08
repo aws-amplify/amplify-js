@@ -1,66 +1,69 @@
-jest.mock('aws-sdk/clients/lexruntime', () => {
-	const LexRuntime = () => {};
-	LexRuntime.prototype.postText = (params, callback) => {
-		if (params.inputText === 'done') {
-			callback(null, {
-				message: 'echo:' + params.inputText,
+import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
+import Interactions from '../src/Interactions';
+import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
+import { Credentials } from '@aws-amplify/core';
+import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
+import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
+
+LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
+	if (command instanceof PostTextCommand) {
+		if (command.input.inputText === 'done') {
+			const result = {
+				message: 'echo:' + command.input.inputText,
 				dialogState: 'ReadyForFulfillment',
 				slots: {
 					m1: 'hi',
 					m2: 'done',
 				},
-			});
+			};
+			return Promise.resolve(result);
 		} else {
-			callback(null, {
-				message: 'echo:' + params.inputText,
+			const result = {
+				message: 'echo:' + command.input.inputText,
 				dialogState: 'ElicitSlot',
-			});
+			};
+			return Promise.resolve(result);
 		}
-	};
-
-	LexRuntime.prototype.postContent = (params, callback) => {
-		if (params.contentType === 'audio/x-l16; sample-rate=16000') {
-			if (params.inputStream === 'voice:done') {
-				callback(null, {
-					message: 'voice:echo:' + params.inputStream,
+	} else if (command instanceof PostContentCommand) {
+		if (command.input.contentType === 'audio/x-l16; sample-rate=16000') {
+			if (command.input.inputStream === 'voice:done') {
+				const result = {
+					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
 					slots: {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
-				});
+				};
+				return Promise.resolve(result);
 			} else {
-				callback(null, {
-					message: 'voice:echo:' + params.inputStream,
+				const result = {
+					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-				});
+				};
+				return Promise.resolve(result);
 			}
 		} else {
-			if (params.inputStream === 'done') {
-				callback(null, {
-					message: 'echo:' + params.inputStream,
+			if (command.input.inputStream === 'done') {
+				const result = {
+					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
 					slots: {
 						m1: 'hi',
 						m2: 'done',
 					},
-				});
+				};
+				return Promise.resolve(result);
 			} else {
-				callback(null, {
-					message: 'echo:' + params.inputStream,
+				const result = {
+					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-				});
+				};
+				return Promise.resolve(result);
 			}
 		}
-	};
-
-	return LexRuntime;
-});
-
-import Interactions from '../src/Interactions';
-import { findInterfacesAddedToObjectTypes } from 'graphql/utilities/findBreakingChanges';
-import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
-import { Credentials } from '@aws-amplify/core';
+	}
+}) as any;
 
 class AWSLexProvider2 extends AWSLexProvider {
 	getProviderName() {
@@ -81,7 +84,7 @@ class AWSLexProviderWrong extends AbstractInteractionsProvider {
 	}
 
 	sendMessage(message: string | Object): Promise<Object> {
-		return new Promise(async (res, rej) => {});
+		return new Promise(async (res, rej) => { });
 	}
 
 	async onComplete() {
@@ -732,7 +735,7 @@ describe('Interactions', () => {
 				});
 
 				try {
-					await interactions.onComplete('BookTrip', () => {});
+					await interactions.onComplete('BookTrip', () => { });
 				} catch (err) {
 					expect(err.message).toEqual('Bot BookTrip does not exist');
 				}
