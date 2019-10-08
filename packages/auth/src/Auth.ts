@@ -290,6 +290,10 @@ export class AuthClass {
 				validationData,
 				(err, data) => {
 					if (err) {
+						if (err.code === 'InvalidParameterException') {
+							err.message =
+								'Username could not be created. Please make sure that the username you have entered is between 1 and 128 characters.';
+						}
 						dispatchAuthEvent(
 							'signUp_failure',
 							err,
@@ -1494,10 +1498,20 @@ export class AuthClass {
 				},
 				onFailure: err => {
 					logger.debug('forgot password failure', err);
+					dispatchAuthEvent(
+						'forgotPassword_failure',
+						err,
+						`${username} forgotPassword failed`
+					);
 					reject(err);
 					return;
 				},
 				inputVerificationCode: data => {
+					dispatchAuthEvent(
+						'forgotPassword',
+						user,
+						`${username} has initiated forgot password flow`
+					);
 					resolve(data);
 					return;
 				},
@@ -1534,10 +1548,20 @@ export class AuthClass {
 		return new Promise((resolve, reject) => {
 			user.confirmPassword(code, password, {
 				onSuccess: () => {
+					dispatchAuthEvent(
+						'forgotPasswordSubmit',
+						user,
+						`${username} forgotPasswordSubmit successful`
+					);
 					resolve();
 					return;
 				},
 				onFailure: err => {
+					dispatchAuthEvent(
+						'forgotPasswordSubmit_failure',
+						err,
+						`${username} forgotPasswordSubmit failed`
+					);
 					reject(err);
 					return;
 				},

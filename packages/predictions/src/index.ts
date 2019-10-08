@@ -21,7 +21,7 @@ import {
 } from './Providers';
 
 import { InterpretTextCategories } from './types';
-const logger = new Logger('PubSub');
+const logger = new Logger('Predictions');
 
 let _instance: PredictionsClass = null;
 
