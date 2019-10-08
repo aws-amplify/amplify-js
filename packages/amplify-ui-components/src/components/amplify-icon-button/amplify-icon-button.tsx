@@ -6,10 +6,11 @@ import { IconNameType } from '../amplify-icon/icons';
   tag: 'amplify-icon-button',
   shadow: false,
 })
-export class AmplifySceneLoading {
+export class AmplifyIconButton {
   @Prop() name: IconNameType;
-  @Prop() tooltip: string;
-  @Prop() autoShowTooltip: boolean;
+  @Prop() tooltip: string | null = null;
+  @Prop() autoShowTooltip: boolean = false;
+  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (

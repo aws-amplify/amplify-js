@@ -191,7 +191,8 @@ export namespace Components {
   interface AmplifyIconButton {
     autoShowTooltip: boolean;
     name: IconNameType;
-    tooltip: string;
+    overrideStyle: boolean;
+    tooltip: string | null;
   }
   interface AmplifyInput {
     /**
@@ -733,7 +734,8 @@ declare namespace LocalJSX {
   interface AmplifyIconButton {
     autoShowTooltip?: boolean;
     name?: IconNameType;
-    tooltip?: string;
+    overrideStyle?: boolean;
+    tooltip?: string | null;
   }
   interface AmplifyInput {
     /**

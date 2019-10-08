@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-icon-button spec: Render logic -> renders with button text FOO 1`] = `
+<amplify-icon-button>
+  FOO
+  <button class="css-yqf6lz">
+    <amplify-icon></amplify-icon>
+  </button>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders with danger class when button type is reset 1`] = `
+<amplify-icon-button type="reset">
+  FOO
+  <button class="css-yqf6lz">
+    <amplify-icon></amplify-icon>
+  </button>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders with no button text 1`] = `
+<amplify-icon-button>
+  <button class="css-yqf6lz">
+    <amplify-icon></amplify-icon>
+  </button>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
+<amplify-icon-button override-style="true">
+  FOO
+  <button class="css-yqf6lz">
+    <amplify-icon></amplify-icon>
+  </button>
+</amplify-icon-button>
+`;
