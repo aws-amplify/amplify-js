@@ -198,7 +198,7 @@ export class CredentialsClass {
 		cognitoClient.middlewareStack.remove('SIGNATURE');
 
 		let credentials = undefined;
-		if (identityId) {
+		if (identityId && identityId !== 'undefined') {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
 				identityId,
 				client: cognitoClient,
