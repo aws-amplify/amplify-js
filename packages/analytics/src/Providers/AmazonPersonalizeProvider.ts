@@ -12,17 +12,17 @@
  */
 
 import { ConsoleLogger as Logger, Credentials, JS } from '@aws-amplify/core';
-import * as PersonalizeEvents from 'aws-sdk/clients/personalizeevents';
+import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient';
+import { PutEventsCommand } from '@aws-sdk/client-personalize-events-browser/commands/PutEventsCommand';
+import { PutEventsInput } from '@aws-sdk/client-personalize-events-browser/types/PutEventsInput';
 import {
 	SessionInfo,
 	RequestParams,
 	RecordEventPayload,
 	SessionInfoManager,
-	RecordEventListPayload,
 	MediaAutoTrack,
 } from './AmazonPersonalizeHelper';
-import { isEmpty, isEqual, map, get } from 'lodash';
-import { v1 as uuid } from 'uuid';
+import { isEmpty, isEqual, get } from 'lodash';
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AmazonPersonalizeProvider');
@@ -41,7 +41,6 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 	private _timer;
 	private _sessionInfo: SessionInfo;
 	private _sessionManager;
-	private _listViewEventsCache;
 	private _isBrowser;
 
 	constructor(config?) {
@@ -69,7 +68,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		if (this._timer) {
 			clearInterval(this._timer);
 		}
-		const { flushSize, flushInterval } = this._config;
+		const { flushInterval } = this._config;
 		const that = this;
 		this._timer = setInterval(() => {
 			that._sendFromBuffer();
@@ -257,12 +256,17 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				);
 				events.push(eventPayload);
 			}
-			const payload = <RecordEventListPayload>{};
+			const payload = <PutEventsInput>{};
 			payload.trackingId = sessionInfo.trackingId;
 			payload.sessionId = sessionInfo.sessionId;
 			payload.userId = sessionInfo.userId;
-			payload.eventList = events;
-			this._personalize.putEvents(payload, (err, data) => {
+			payload.eventList = [];
+			events.forEach(event => {
+				// @ts-ignore
+				payload.eventList.push(event);
+			});
+			const command: PutEventsCommand = new PutEventsCommand(payload);
+			this._personalize.send(command, err => {
 				if (err) logger.debug('Failed to call putEvents in Personalize', err);
 				else logger.debug('Put events');
 			});
@@ -366,8 +370,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = config;
 		logger.debug('initialize personalize with credentials', credentials);
-		this._personalize = new PersonalizeEvents({
-			apiVersion: '2018-03-22',
+		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
 		});
