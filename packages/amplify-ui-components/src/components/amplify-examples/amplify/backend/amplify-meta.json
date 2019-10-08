@@ -38,7 +38,7 @@
         "IdentityPoolName": "amplify_examples_identitypool_e004c03c__dev",
         "UserPoolName": "cognito5e8d6bdf_userpool_6d1058b2"
       },
-      "lastPushTimeStamp": "2019-10-01T21:23:08.971Z",
+      "lastPushTimeStamp": "2019-10-08T04:01:55.903Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-examples-dev-20190910190021-deployment/amplify-cfn-templates/auth/cognito5e8d6bdf-cloudformation-template.yml",
         "logicalId": "authcognito5e8d6bdf"
@@ -55,7 +55,7 @@
         "projectName": "Drafts-assumed-role/Admin/jranz-Isengard",
         "url": "https://sumerian.us-east-1.amazonaws.com/20180801/projects/Drafts-assumed-role%2FAdmin%2Fjranz-Isengard/release/authTokens?sceneId=b3711a0b52e24cb09dc73f1c70d74da4.scene"
       },
-      "lastPushTimeStamp": "2019-10-01T21:23:08.972Z",
+      "lastPushTimeStamp": "2019-10-08T04:01:55.904Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-examples-dev-20190910190021-deployment/amplify-cfn-templates/xr/template.json",
         "logicalId": "xrscene1"

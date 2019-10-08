@@ -4,6 +4,7 @@ export const sceneContainer = css`
   width: 100%;
   height: 600px;
   position: relative;
+  background-color: black; // TODO: Remove
 `;
 
 export const scene = css`
@@ -21,7 +22,5 @@ export const sceneBar = css`
 `;
 
 export const sceneActions = css`
-  margin-left: auto;
-  margin-right: 16px;
-  margin-bottom: 16px;
+  margin: 1em 1em 1em auto;
 `;

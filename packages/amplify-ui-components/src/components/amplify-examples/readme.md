@@ -1,9 +1,6 @@
 # sample-app
 
-
-
 <!-- Auto Generated Below -->
-
 
 ## Dependencies
 
@@ -21,8 +18,10 @@
 - [amplify-authenticator](../amplify-authenticator)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
+- [amplify-scene](../amplify-scene)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-examples --> amplify-checkbox
@@ -37,6 +36,7 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
+  amplify-examples --> amplify-scene
   amplify-checkbox --> amplify-label
   amplify-radio-button --> amplify-label
   amplify-form-field --> amplify-label
@@ -62,9 +62,12 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
   rock-paper-scissor --> amplify-button
+  amplify-scene --> amplify-icon-button
+  amplify-scene --> amplify-scene-loading
+  amplify-icon-button --> amplify-icon
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

@@ -188,6 +188,11 @@ export namespace Components {
      */
     overrideStyle: boolean;
   }
+  interface AmplifyIconButton {
+    autoShowTooltip: boolean;
+    name: IconNameType;
+    tooltip: string;
+  }
   interface AmplifyInput {
     /**
      * The text of the description.  Goes just below the label.
@@ -273,6 +278,9 @@ export namespace Components {
      * (Optional) Value of radio button
      */
     value?: string;
+  }
+  interface AmplifyScene {
+    sceneName: string;
   }
   interface AmplifySceneLoading {
     loadPercentage: number;
@@ -433,6 +441,12 @@ declare global {
     new (): HTMLAmplifyIconElement;
   };
 
+  interface HTMLAmplifyIconButtonElement extends Components.AmplifyIconButton, HTMLStencilElement {}
+  var HTMLAmplifyIconButtonElement: {
+    prototype: HTMLAmplifyIconButtonElement;
+    new (): HTMLAmplifyIconButtonElement;
+  };
+
   interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
   var HTMLAmplifyInputElement: {
     prototype: HTMLAmplifyInputElement;
@@ -461,6 +475,12 @@ declare global {
   var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
     new (): HTMLAmplifyRadioButtonElement;
+  };
+
+  interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
+  var HTMLAmplifySceneElement: {
+    prototype: HTMLAmplifySceneElement;
+    new (): HTMLAmplifySceneElement;
   };
 
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
@@ -517,11 +537,13 @@ declare global {
     'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
+    'amplify-icon-button': HTMLAmplifyIconButtonElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
+    'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
@@ -708,6 +730,11 @@ declare namespace LocalJSX {
      */
     overrideStyle?: boolean;
   }
+  interface AmplifyIconButton {
+    autoShowTooltip?: boolean;
+    name?: IconNameType;
+    tooltip?: string;
+  }
   interface AmplifyInput {
     /**
      * The text of the description.  Goes just below the label.
@@ -793,6 +820,9 @@ declare namespace LocalJSX {
      * (Optional) Value of radio button
      */
     value?: string;
+  }
+  interface AmplifyScene {
+    sceneName?: string;
   }
   interface AmplifySceneLoading {
     loadPercentage?: number;
@@ -893,11 +923,13 @@ declare namespace LocalJSX {
     'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
+    'amplify-icon-button': AmplifyIconButton;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-radio-button': AmplifyRadioButton;
+    'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
@@ -926,11 +958,13 @@ declare module '@stencil/core' {
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
       'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
+      'amplify-icon-button': LocalJSX.AmplifyIconButton & JSXBase.HTMLAttributes<HTMLAmplifyIconButtonElement>;
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
+      'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
