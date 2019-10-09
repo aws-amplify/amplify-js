@@ -10,7 +10,6 @@ import { ButtonTypes, TextFieldTypes } from './common/types';
 import { CountryCodeDialOptions } from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
 import { FunctionalComponent } from '@stencil/core';
 import { IconNameType } from './components/amplify-icon/icons';
-import { FunctionalComponent as FunctionalComponent1 } from '@stencil/state-tunnel/dist/types/stencil.core';
 import { SelectOptionsNumber, SelectOptionsString } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
