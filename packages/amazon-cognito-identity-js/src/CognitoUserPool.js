@@ -96,7 +96,7 @@ export default class CognitoUserPool {
 		userAttributes,
 		validationData,
 		callback,
-		authDetails
+		clientMetadata
 	) {
 		const jsonReq = {
 			ClientId: this.clientId,
@@ -104,7 +104,7 @@ export default class CognitoUserPool {
 			Password: password,
 			UserAttributes: userAttributes,
 			ValidationData: validationData,
-			ClientMetadata: authDetails.ClientMetadata,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);

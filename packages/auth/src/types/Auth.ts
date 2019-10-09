@@ -25,6 +25,7 @@ export interface SignUpParams {
 	password: string;
 	attributes?: object;
 	validationData?: CognitoUserAttribute[];
+	clientMetadata?: any;
 }
 
 export interface AuthCache {
@@ -201,9 +202,7 @@ export interface AuthErrorMessage {
 }
 
 // We can extend this in the future if needed
-export type SignInOpts = UsernamePasswordOpts & {
-	clientMetadata: any;
-};
+export type SignInOpts = UsernamePasswordOpts;
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;

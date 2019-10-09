@@ -256,7 +256,7 @@ export default class AuthClass {
 		let password: string = null;
 		const attributes: object[] = [];
 		let validationData: object[] = null;
-		let authDetails;
+		let clientMetadata;
 
 		if (params && typeof params === 'string') {
 			username = params;
@@ -269,9 +269,13 @@ export default class AuthClass {
 		} else if (params && typeof params === 'object') {
 			username = params['username'];
 			password = params['password'];
-			authDetails = params['clientMetadata']
-				? { clientMetadata: params['clientMetadata'] }
-				: null;
+
+			if (params && params.clientMetadata) {
+				clientMetadata = params.clientMetadata;
+			} else if (this._config.clientMetadata) {
+				clientMetadata = this._config.clientMetadata;
+			}
+
 			const attrs = params['attributes'];
 			if (attrs) {
 				Object.keys(attrs).map(key => {
@@ -321,7 +325,7 @@ export default class AuthClass {
 						resolve(data);
 					}
 				},
-				authDetails
+				clientMetadata
 			);
 		});
 	}
@@ -354,10 +358,12 @@ export default class AuthClass {
 				? options.forceAliasCreation
 				: true;
 
-		const authDetails =
-			options && options.clientMetadata
-				? { clientMetadata: options.clientMetadata }
-				: null;
+		let clientMetadata;
+		if (options && options.clientMetadata) {
+			clientMetadata = options.clientMetadata;
+		} else if (this._config.clientMetadata) {
+			clientMetadata = this._config.clientMetadata;
+		}
 		return new Promise((resolve, reject) => {
 			user.confirmRegistration(
 				code,
@@ -369,7 +375,7 @@ export default class AuthClass {
 						resolve(data);
 					}
 				},
-				authDetails
+				clientMetadata
 			);
 		});
 	}
@@ -379,15 +385,16 @@ export default class AuthClass {
 	 * @param {String} username - The username to be confirmed
 	 * @return - A promise resolves data if success
 	 */
-	public resendSignUp(username: string, clientMetadata?): Promise<string> {
+	public resendSignUp(
+		username: string,
+		clientMetadata: any = this._config.clientMetadata
+	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
 		if (!username) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
 		}
-
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
@@ -397,7 +404,7 @@ export default class AuthClass {
 				} else {
 					resolve(data);
 				}
-			}, authDetails);
+			}, clientMetadata);
 		});
 	}
 
@@ -409,15 +416,16 @@ export default class AuthClass {
 	 */
 	public signIn(
 		usernameOrSignInOpts: string | SignInOpts,
-		pw?: string
+		pw?: string,
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
 		let username = null;
 		let password = null;
-		let clientMetadata = null;
 		let validationData = {};
+
 		// for backward compatibility
 		if (typeof usernameOrSignInOpts === 'string') {
 			username = usernameOrSignInOpts;
@@ -431,12 +439,6 @@ export default class AuthClass {
 			username = usernameOrSignInOpts.username;
 			password = usernameOrSignInOpts.password;
 			validationData = usernameOrSignInOpts.validationData;
-
-			if (usernameOrSignInOpts.clientMetadata) {
-				clientMetadata = usernameOrSignInOpts.clientMetadata;
-			} else if (this._config.clientMetadata) {
-				clientMetadata = this._config.clientMetadata;
-			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.InvalidUsername);
 		}
@@ -857,10 +859,9 @@ export default class AuthClass {
 	public verifyTotpToken(
 		user: CognitoUser | any,
 		challengeAnswer: string,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<CognitoUserSession> {
 		logger.debug('verfication totp token', user, challengeAnswer);
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -887,14 +888,13 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		code: string,
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
 		}
 
 		const that = this;
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			user.sendMFACode(
 				code,
@@ -920,7 +920,7 @@ export default class AuthClass {
 					},
 				},
 				mfaType,
-				authDetails
+				clientMetadata
 			);
 		});
 	}
@@ -929,14 +929,13 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		password: string,
 		requiredAttributes: any,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
 		}
 
 		const that = this;
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			user.completeNewPasswordChallenge(
 				password,
@@ -978,7 +977,7 @@ export default class AuthClass {
 						resolve(user);
 					},
 				},
-				authDetails
+				clientMetadata
 			);
 		});
 	}
@@ -991,7 +990,7 @@ export default class AuthClass {
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
 		challengeResponses: string,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1001,7 +1000,6 @@ export default class AuthClass {
 		}
 
 		const that = this;
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			user.sendCustomChallengeAnswer(
 				challengeResponses,
@@ -1019,11 +1017,10 @@ export default class AuthClass {
 	public updateUserAttributes(
 		user: CognitoUser | any,
 		attributes: object,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<string> {
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			that.userSession(user).then(session => {
 				for (const key in attributes) {
@@ -1044,7 +1041,7 @@ export default class AuthClass {
 							return resolve(result);
 						}
 					},
-					authDetails
+					clientMetadata
 				);
 			});
 		});
@@ -1348,9 +1345,8 @@ export default class AuthClass {
 	public verifyUserAttribute(
 		user: CognitoUser | any,
 		attr: string,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<void> {
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			user.getAttributeVerificationCode(attr, {
 				onSuccess() {
@@ -1359,7 +1355,7 @@ export default class AuthClass {
 				onFailure(err) {
 					return reject(err);
 				},
-				authDetails,
+				clientMetadata,
 			});
 		});
 	}
@@ -1518,9 +1514,8 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		oldPassword: string,
 		newPassword: string,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<'SUCCESS'> {
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
 				user.changePassword(
@@ -1534,7 +1529,7 @@ export default class AuthClass {
 							return resolve(data);
 						}
 					},
-					authDetails
+					clientMetadata
 				);
 			});
 		});
@@ -1545,15 +1540,16 @@ export default class AuthClass {
 	 * @param {String} username - the username to change password
 	 * @return - A promise resolves if success
 	 */
-	public forgotPassword(username: string, clientMetadata?): Promise<any> {
+	public forgotPassword(
+		username: string,
+		clientMetadata: any = this._config.clientMetadata
+	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
 		if (!username) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
 		}
-
-		const authDetails = clientMetadata ? { clientMetadata } : null;
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
@@ -1583,7 +1579,7 @@ export default class AuthClass {
 						return;
 					},
 				},
-				authDetails
+				clientMetadata
 			);
 		});
 	}
@@ -1599,7 +1595,7 @@ export default class AuthClass {
 		username: string,
 		code: string,
 		password: string,
-		clientMetadata?: any
+		clientMetadata: any = this._config.clientMetadata
 	): Promise<void> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1616,7 +1612,6 @@ export default class AuthClass {
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			const authDetails = clientMetadata ? { clientMetadata } : null;
 			user.confirmPassword(
 				code,
 				password,
@@ -1640,7 +1635,7 @@ export default class AuthClass {
 						return;
 					},
 				},
-				authDetails
+				clientMetadata
 			);
 		});
 	}
