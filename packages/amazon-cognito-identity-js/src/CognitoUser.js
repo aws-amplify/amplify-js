@@ -350,6 +350,7 @@ export default class CognitoUser {
 							ClientId: this.pool.getClientId(),
 							ChallengeResponses: challengeResponses,
 							Session: data.Session,
+							ClientMetadata: clientMetaData,
 						};
 						if (this.getUserContextData()) {
 							jsonReqResp.UserContextData = this.getUserContextData();
