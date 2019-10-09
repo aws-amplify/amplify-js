@@ -26,7 +26,7 @@ For example:
 
 ## Local Development
 
-To run Amplify Amplify JS locally, follow the guide [here](https://github.com/aws-amplify/amplify-js/wiki/Local-Development) in our Wiki.
+To run Amplify JS locally, follow the guide [here](https://github.com/aws-amplify/amplify-js/wiki/Local-Development) in our Wiki.
 
 ## Tests
 
