@@ -6,9 +6,10 @@
 
 | Property          | Attribute           | Description | Type                                                                             | Default     |
 | ----------------- | ------------------- | ----------- | -------------------------------------------------------------------------------- | ----------- |
-| `autoShowTooltip` | `auto-show-tooltip` |             | `boolean`                                                                        | `undefined` |
+| `autoShowTooltip` | `auto-show-tooltip` |             | `boolean`                                                                        | `false`     |
 | `name`            | `name`              |             | `"enter-vr" \| "exit-vr" \| "maximize" \| "minimize" \| "sound" \| "sound-mute"` | `undefined` |
-| `tooltip`         | `tooltip`           |             | `string`                                                                         | `undefined` |
+| `overrideStyle`   | `override-style`    |             | `boolean`                                                                        | `false`     |
+| `tooltip`         | `tooltip`           |             | `string`                                                                         | `null`      |
 
 ## Dependencies
 
