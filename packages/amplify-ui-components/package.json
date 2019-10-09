@@ -4,7 +4,9 @@
   "description": "Stencil Component Starter",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
-  "unpkg": "dist/ionic.js",
+  "es2015": "dist/esm/index.mjs",
+  "es2017": "dist/esm/index.mjs",
+  "unpkg": "dist/amplify-ui-components/amplify-ui-components.js",
   "types": "dist/types/components.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "files": [

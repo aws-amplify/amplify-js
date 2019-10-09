@@ -22,5 +22,4 @@ export const config: Config = {
     },
   ],
   globalStyle: 'src/global/variables.css',
-  hashFileNames: false,
 };
