@@ -51,7 +51,8 @@ const template = `
       </div>
       <div class="amplify-form-row" *ngIf="code_sent">
       <label class="amplify-input-label" for="password">
-        {{ this.amplifyService.i18n().get('New Password *') }}
+        {{ this.amplifyService.i18n().get('New Password') }}
+        <span>*</span>
       </label>
       <input #password
         (keyup)="setPassword(password.value)"

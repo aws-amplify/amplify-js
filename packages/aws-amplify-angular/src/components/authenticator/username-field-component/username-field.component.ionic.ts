@@ -21,7 +21,10 @@ import { auth } from '../../../assets/data-test-attributes';
 const template = `
 
     <ion-item lines="none" *ngIf="this._usernameAttributes === 'email'">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" for="emailField" position="stacked">{{ this.amplifyService.i18n().get('Email *') }}</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" for="emailField" position="stacked">
+          {{ this.amplifyService.i18n().get('Email') }}
+          <span>*</span>
+        </ion-label>
         <ion-input type="text"
             #emailField
             class="amplify-form-input"
@@ -30,14 +33,17 @@ const template = `
             (keyup)="setEmail($event.target.value)"
             data-test="${auth.genericAttrs.emailInput}"
         ></ion-input>
-    </ion-item> 
+    </ion-item>
     <ion-item lines="none" *ngIf="this._usernameAttributes === 'phone_number'">
        <amplify-auth-phone-field-ionic
             (phoneFieldChanged)="onPhoneFieldChanged($event)"
         ></amplify-auth-phone-field-ionic>
     </ion-item>
     <ion-item lines="none" *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">
-        <ion-label class="amplify-input-label amplify-input-label-ionic" for="usernameField" position="stacked">{{ this.amplifyService.i18n().get(getUsernameLabel()) }} *</ion-label>
+        <ion-label class="amplify-input-label amplify-input-label-ionic" for="usernameField" position="stacked">
+          {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
+          <span>*</span>
+        </ion-label>
         <ion-input type="text"
             #usernameField
             class="amplify-form-input"

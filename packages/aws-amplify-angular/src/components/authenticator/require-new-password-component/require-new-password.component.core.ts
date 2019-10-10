@@ -27,7 +27,8 @@ const template = `
   </div>
   <div class="amplify-form-row">
     <label class="amplify-input-label" for="password">
-      {{ this.amplifyService.i18n().get('Password *') }}
+      {{ this.amplifyService.i18n().get('Password') }}
+      <span>*</span>
     </label>
     <input #password
       (keyup)="setPassword(password.value)"

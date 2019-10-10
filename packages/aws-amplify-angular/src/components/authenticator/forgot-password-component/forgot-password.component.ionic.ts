@@ -56,7 +56,8 @@ const template = `
     </ion-item>
     <ion-item lines="none" *ngIf="code_sent">
       <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
-        {{ this.amplifyService.i18n().get('Password *') }}
+        {{ this.amplifyService.i18n().get('Password') }}
+        <span>*</span>
       </ion-label>
       <ion-input
         #password

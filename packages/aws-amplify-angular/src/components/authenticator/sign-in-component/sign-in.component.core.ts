@@ -33,7 +33,8 @@ const template = `
       ></amplify-auth-username-field-core>
       <div class="amplify-form-row amplify-signin-password">
         <label class="amplify-input-label" for="passwordField">
-          {{ this.amplifyService.i18n().get('Password *') }}
+          {{ this.amplifyService.i18n().get('Password') }}
+          <span>*</span>
         </label>
         <input #passwordField
           (keyup)="setPassword(passwordField.value)"

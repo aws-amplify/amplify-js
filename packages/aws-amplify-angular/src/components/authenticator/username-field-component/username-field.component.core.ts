@@ -33,7 +33,10 @@ import { auth } from '../../../assets/data-test-attributes';
 const template = `
 <div class="amplify-amplify-form-row amplify-signin-username">
     <div *ngIf="this._usernameAttributes === 'email'">
-        <label class="amplify-input-label" for="emailField"> {{ this.amplifyService.i18n().get('Email') }} *</label>
+        <label class="amplify-input-label" for="emailField">
+          {{ this.amplifyService.i18n().get('Email') }}
+          <span>*</span>
+        </label>
         <input
             #emailField
             class="amplify-form-input"
@@ -49,7 +52,10 @@ const template = `
         ></amplify-auth-phone-field-core>
     </div>
     <div *ngIf="this._usernameAttributes !== 'email' && this._usernameAttributes !== 'phone_number'">
-        <label class="amplify-input-label" for="usernameField"> {{ this.amplifyService.i18n().get(getUsernameLabel()) }} *</label>
+        <label class="amplify-input-label" for="usernameField">
+          {{ this.amplifyService.i18n().get(getUsernameLabel()) }}
+          <span>*</span>
+        </label>
         <input
             #usernameField
             class="amplify-form-input"

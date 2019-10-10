@@ -36,7 +36,8 @@ const template = `
       ></amplify-auth-username-field-ionic>
       <ion-item lines="none">
         <ion-label class="amplify-input-label" for="password" position="stacked">
-          {{ this.amplifyService.i18n().get('Password *') }}
+          {{ this.amplifyService.i18n().get('Password') }}
+          <span>*</span>
         </ion-label>
         <ion-input
           #password
