@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.1.2...@aws-amplify/core@1.2.0) (2019-10-10)
+
+
+### Bug Fixes
+
+* Pinpoint analytics stopSession event ([422806e](https://github.com/aws/aws-amplify/commit/422806e58525490b0fec28055a818024f2681769)), closes [#3786](https://github.com/aws/aws-amplify/issues/3786) [#3042](https://github.com/aws/aws-amplify/issues/3042)
+* **@aws-amplify/core:** removed unused variables ([#3926](https://github.com/aws/aws-amplify/issues/3926)) ([b63ac72](https://github.com/aws/aws-amplify/commit/b63ac72ab2c3d5e9105885d3f7a4f1a346878c81))
+
+
+### Features
+
+* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
+
+
+
+
+
 ## [1.1.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.1.1...@aws-amplify/core@1.1.2) (2019-09-05)
 
 **Note:** Version bump only for package @aws-amplify/core
