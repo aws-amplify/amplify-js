@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from './Logger';
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
@@ -29,7 +28,7 @@ export { Credentials } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
-export { Platform } from './Platform';
+export { Platform, appendAmplifyUserAgent } from './Platform';
 export * from './constants';
 
 export const Constants = {
