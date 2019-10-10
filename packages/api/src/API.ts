@@ -391,10 +391,6 @@ export default class APIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
-		if (!customGraphqlEndpoint) {
-			additionalHeaders[USER_AGENT_HEADER] = Constants.userAgent;
-		}
-
 		const headers = {
 			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode))),
 			...(customGraphqlEndpoint &&
@@ -403,6 +399,9 @@ export default class APIClass {
 					: { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
+			...(!customGraphqlEndpoint && {
+				[USER_AGENT_HEADER]: Constants.userAgent,
+			}),
 		};
 
 		const body = {
