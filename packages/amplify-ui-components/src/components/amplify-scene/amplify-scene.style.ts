@@ -4,7 +4,6 @@ export const sceneContainer = css`
   width: 100%;
   height: 600px;
   position: relative;
-  background-color: black; // TODO: Remove
 `;
 
 export const scene = css`

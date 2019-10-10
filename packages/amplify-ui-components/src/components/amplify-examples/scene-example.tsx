@@ -1,10 +1,10 @@
 import { h } from '@stencil/core';
 import Auth from '@aws-amplify/auth';
 import XR from '@aws-amplify/xr';
-import awsExports from './src/aws-exports';
+import awsexports from './src/aws-exports';
 
-Auth.configure(awsExports);
-XR.configure(awsExports);
+Auth.configure(awsexports);
+XR.configure(awsexports);
 
 const sceneExample = () => <amplify-scene sceneName={'scene1'} />;
 

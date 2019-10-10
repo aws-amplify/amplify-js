@@ -15,7 +15,6 @@ const SCENE_DOM_ID = 'scene-dom-id';
 export class AmplifyScene {
   /* The name of the scene being loaded and rendered */
   @Prop() sceneName: string;
-
   /* Whether or not the scene is loading */
   @State() loading: boolean = false;
   /* Value between 0-100 that represents the scene's percentage loaded */
@@ -78,18 +77,16 @@ export class AmplifyScene {
   }
 
   onFullscreenChange() {
-    const doc = document;
-    this.isFullscreen = doc.fullscreenElement !== null;
+    this.isFullscreen = document.fullscreenElement !== null;
   }
 
   async minimize() {
-    const doc = document;
-    if (doc['exitFullscreen']) {
-      doc['exitFullscreen']();
-    } else if (doc['mozCancelFullScreen']) {
-      doc['mozCancelFullScreen']();
-    } else if (doc['webkitExitFullscreen']) {
-      doc['webkitExitFullscreen']();
+    if (document['exitFullscreen']) {
+      document['exitFullscreen']();
+    } else if (document['mozCancelFullScreen']) {
+      document['mozCancelFullScreen']();
+    } else if (document['webkitExitFullscreen']) {
+      document['webkitExitFullscreen']();
     }
   }
 
