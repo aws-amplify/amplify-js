@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.2.0...@aws-amplify/core@1.2.2) (2019-10-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 # [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.1.2...@aws-amplify/core@1.2.0) (2019-10-10)
 
 
