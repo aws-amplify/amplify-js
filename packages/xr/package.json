@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -49,7 +49,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.2.0"
+    "@aws-amplify/core": "^1.2.1"
   },
   "jest": {
     "transform": {
