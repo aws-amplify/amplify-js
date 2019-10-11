@@ -152,11 +152,12 @@ export class CredentialsClass {
 			logger.debug('no credentials for expiration check');
 			return true;
 		}
-		logger.debug('is this credentials expired?', credentials);
-		const ts = new Date().getTime();
-		const delta = 10 * 60 * 1000; // 10 minutes
-		const { expired, expiration } = credentials;
-		if (!expired && expiration > ts + delta) {
+		logger.debug('are these credentials expired?', credentials);
+		const ts = Math.floor(Date.now() / 1000);
+		const delta = 10 * 60; // 10 minutes in seconds
+		const { expiration } = credentials; // returns unix time stamp
+
+		if (expiration > ts + delta) {
 			return false;
 		}
 		return true;
