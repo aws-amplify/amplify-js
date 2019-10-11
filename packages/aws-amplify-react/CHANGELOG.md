@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.5.0...aws-amplify-react@2.5.2) (2019-10-10)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+# [2.5.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.4.4...aws-amplify-react@2.5.0) (2019-10-10)
+
+
+### Bug Fixes
+
+* Pinpoint analytics stopSession event ([422806e](https://github.com/aws/aws-amplify/commit/422806e58525490b0fec28055a818024f2681769)), closes [#3786](https://github.com/aws/aws-amplify/issues/3786) [#3042](https://github.com/aws/aws-amplify/issues/3042)
+
+
+### Features
+
+* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
+
+
+
+
+
 ## [2.4.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.4.2...aws-amplify-react@2.4.4) (2019-09-13)
 
 **Note:** Version bump only for package aws-amplify-react
