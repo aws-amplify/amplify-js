@@ -19,10 +19,7 @@ const SIGN_IN_COMPONENTS = [
   },
   {
     type: 'password',
-    hint: 
-      <AuthState.Consumer>
-        {({onAuthStateChange}) => (<AmplifyForgotPasswordHint onAuthStateChange={onAuthStateChange} forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />)}
-      </AuthState.Consumer>,
+    hint: <AmplifyForgotPasswordHint forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />,
     required: true,
   },
 ];

@@ -24,9 +24,9 @@ graph TD;
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
-  amplify-sign-in --> context-consumer
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-auth-fields --> amplify-username-field

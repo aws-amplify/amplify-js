@@ -36,7 +36,7 @@ export namespace Components {
   }
   interface AmplifyAuthenticator {
     /**
-    * Allows customers to pass a starting state e.g. signup for which component will show
+    * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
     'state': string;
   }
@@ -558,7 +558,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyAuthenticator extends JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement> {
     /**
-    * Allows customers to pass a starting state e.g. signup for which component will show
+    * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
     'state'?: string;
   }

@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                                         | Type     | Default     |
-| -------- | --------- | ----------------------------------------------------------------------------------- | -------- | ----------- |
-| `state`  | `state`   | Allows customers to pass a starting state e.g. signup for which component will show | `string` | `'loading'` |
+| Property | Attribute | Description                                                                                                                     | Type     | Default     |
+| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| `state`  | `state`   | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `string` | `'loading'` |
 
 
 ## Dependencies
@@ -31,9 +31,9 @@ graph TD;
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
-  amplify-sign-in --> context-consumer
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-auth-fields --> amplify-username-field
