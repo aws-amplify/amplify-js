@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.2.0...@aws-amplify/xr@0.2.2) (2019-10-10)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+# [0.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.24...@aws-amplify/xr@0.2.0) (2019-10-10)
+
+
+### Features
+
+* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
+
+
+
+
+
 ## [0.1.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/xr@0.1.23...@aws-amplify/xr@0.1.24) (2019-09-05)
 
 **Note:** Version bump only for package @aws-amplify/xr
