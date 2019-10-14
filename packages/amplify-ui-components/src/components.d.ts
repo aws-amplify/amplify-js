@@ -23,6 +23,9 @@ import {
   IconNameType,
 } from './components/amplify-icon/icons';
 import {
+  AmplifySceneError,
+} from './components/amplify-scene/amplify-scene-interface';
+import {
   SelectOptionsNumber,
   SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
@@ -205,6 +208,9 @@ export namespace Components {
   interface AmplifyIconButton {
     'autoShowTooltip': boolean;
     'name': IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle': boolean;
     'tooltip': string | null;
   }
@@ -299,7 +305,7 @@ export namespace Components {
   }
   interface AmplifySceneLoading {
     'loadPercentage': number;
-    'sceneError': object;
+    'sceneError': AmplifySceneError | null;
     'sceneName': string;
   }
   interface AmplifySection {
@@ -750,6 +756,9 @@ declare namespace LocalJSX {
   interface AmplifyIconButton {
     'autoShowTooltip'?: boolean;
     'name'?: IconNameType;
+    /**
+    * (Optional) Override default styling
+    */
     'overrideStyle'?: boolean;
     'tooltip'?: string | null;
   }
@@ -844,7 +853,7 @@ declare namespace LocalJSX {
   }
   interface AmplifySceneLoading {
     'loadPercentage'?: number;
-    'sceneError'?: object;
+    'sceneError'?: AmplifySceneError | null;
     'sceneName'?: string;
   }
   interface AmplifySection {

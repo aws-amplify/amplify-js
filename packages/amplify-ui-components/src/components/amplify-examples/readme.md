@@ -64,6 +64,7 @@ graph TD;
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
+  amplify-icon-button --> amplify-tooltip
   amplify-icon-button --> amplify-icon
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```

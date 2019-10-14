@@ -1,19 +1,21 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { sceneContainer, scene, sceneBar, sceneActions } from './amplify-scene.style';
+import { AmplifySceneError } from './amplify-scene-interface';
 // import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import XR from '@aws-amplify/xr';
 
 const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 const SCENE_DOM_ID = 'scene-dom-id';
 
-// const logger = new Logger('SumerianScene');
+// TODO: Add logger after Stencil PR is merged: https://github.com/ionic-team/stencil/pull/1773
+// const logger = new Logger('amplify-scene');
 
 @Component({
   tag: 'amplify-scene',
   shadow: false,
 })
 export class AmplifyScene {
-  /* The name of the scene being loaded and rendered */
+  /* The name of the scene being downloaded and rendered */
   @Prop() sceneName: string;
   /* Whether or not the scene is loading */
   @State() loading: boolean = false;
@@ -26,7 +28,7 @@ export class AmplifyScene {
   /* Whether or not the scene's VR presentation is active */
   @State() isVRPresentationActive: boolean = false;
   /* Scene error object */
-  @State() sceneError: object | null = null;
+  @State() sceneError: AmplifySceneError | null = null;
   /* Whether or not the scene is fullscreen */
   @State() isFullscreen: boolean = false;
 
@@ -158,9 +160,9 @@ export class AmplifyScene {
         <div id={SCENE_DOM_ID} class={scene}>
           {this.loading ? (
             <amplify-scene-loading
-              scene-name={this.sceneName}
-              load-percentage={this.loadPercentage}
-              scene-error={this.sceneError}
+              sceneName={this.sceneName}
+              loadPercentage={this.loadPercentage}
+              sceneError={this.sceneError}
             />
           ) : null}
         </div>

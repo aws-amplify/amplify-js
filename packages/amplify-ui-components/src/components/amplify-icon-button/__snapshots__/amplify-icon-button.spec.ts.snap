@@ -2,48 +2,72 @@
 
 exports[`amplify-icon-button spec: Render logic -> renders enter-vr icon button correctly 1`] = `
 <amplify-icon-button name="enter-vr">
-  <button class="css-yqf6lz">
-    <amplify-icon name="enter-vr"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="enter-vr"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;
 
 exports[`amplify-icon-button spec: Render logic -> renders exit-vr icon button correctly 1`] = `
 <amplify-icon-button name="exit-vr">
-  <button class="css-yqf6lz">
-    <amplify-icon name="exit-vr"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="exit-vr"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;
 
 exports[`amplify-icon-button spec: Render logic -> renders maximize icon button correctly 1`] = `
 <amplify-icon-button name="maximize">
-  <button class="css-yqf6lz">
-    <amplify-icon name="maximize"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="maximize"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;
 
 exports[`amplify-icon-button spec: Render logic -> renders minimize icon button correctly 1`] = `
 <amplify-icon-button name="minimize">
-  <button class="css-yqf6lz">
-    <amplify-icon name="minimize"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="minimize"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;
 
 exports[`amplify-icon-button spec: Render logic -> renders sound icon button correctly 1`] = `
 <amplify-icon-button name="sound">
-  <button class="css-yqf6lz">
-    <amplify-icon name="sound"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="sound"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;
 
 exports[`amplify-icon-button spec: Render logic -> renders sound-mute icon button correctly 1`] = `
 <amplify-icon-button name="sound-mute">
-  <button class="css-yqf6lz">
-    <amplify-icon name="sound-mute"></amplify-icon>
-  </button>
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="sound-mute"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
 </amplify-icon-button>
 `;

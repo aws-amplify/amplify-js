@@ -1,12 +1,14 @@
-// import { newSpecPage } from '@stencil/core/testing';
+import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyScene } from './amplify-scene';
+import { XR } from 'aws-amplify';
 
-describe('amplify-sign-in spec:', () => {
+describe('amplify-scene spec:', () => {
   describe('Component logic ->', () => {
     let amplifyScene;
 
     beforeEach(() => {
       amplifyScene = new AmplifyScene();
+      amplifyScene.loadAndSetupScene = jest.fn();
     });
 
     it('`sceneName` should be undefined by default', () => {
@@ -18,13 +20,28 @@ describe('amplify-sign-in spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    // TODO: Add snapshot testing
-    // it('should render', async () => {
-    // 	const page = await newSpecPage({
-    // 		components: [AmplifyScene],
-    // 		html: `<amplify-scene sceneName={'scene1'} />`
-    // 	});
-    // 	expect(page.root).toMatchSnapshot();
-    // });
+    beforeEach(() => {
+      XR.loadScene = jest.fn();
+      XR.isSceneLoaded = jest.fn(() => false);
+      XR.isMuted = jest.fn(() => false);
+      XR.isVRPresentationActive = jest.fn();
+      XR.isVRCapable = jest.fn();
+      XR.getSceneController = jest.fn();
+    });
+    it(`should render loading overlay by default`, async () => {
+      const page = await newSpecPage({
+        components: [AmplifyScene],
+        html: `<amplify-scene sceneName={'scene1'} />`
+      });
+      expect(page.root).toMatchSnapshot();
+    });
+    it(`should render scene action bar when 'isSceneLoaded' is true`, async () => {
+      XR.isSceneLoaded = jest.fn(() => true);
+      const page = await newSpecPage({
+        components: [AmplifyScene],
+        html: `<amplify-scene sceneName={'scene1'} />`
+      });
+      expect(page.root).toMatchSnapshot();
+    });
   });
 });

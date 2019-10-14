@@ -25,14 +25,14 @@ describe('amplify-sign-in spec:', () => {
               "resetPasswordText": "Reset password",
             },
             "$children$": null,
-            "$elm$": undefined,
+            "$elm$": null,
             "$flags$": 0,
             "$tag$": AmplifyForgotPasswordHint,
+            "$text$": null,
           },
           required: true,
         }
       ];
-
       expect(signIn.formFields).toEqual(result);
     });
 

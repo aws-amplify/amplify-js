@@ -26,6 +26,7 @@
 graph TD;
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
+  amplify-icon-button --> amplify-tooltip
   amplify-icon-button --> amplify-icon
   amplify-examples --> amplify-scene
   style amplify-scene fill:#f9f,stroke:#333,stroke-width:4px
