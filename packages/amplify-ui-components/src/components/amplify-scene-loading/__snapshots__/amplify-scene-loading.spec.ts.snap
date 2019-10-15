@@ -3,7 +3,7 @@
 exports[`amplify-scene spec: Render logic -> should render 1`] = `
 <amplify-scene-loading scenename="{'scene1'}">
   <!---->
-  <div class="css-1p4to1k" data-test="sumerianScene.loading">
+  <div class="css-1rxjahl" data-test="sumerianScene.loading">
     <div class="css-1hs3667">
       <div class="css-1gjm50j">
         <slot-fb name="amplify-scene-loading-logo">
@@ -30,7 +30,7 @@ exports[`amplify-scene spec: Render logic -> should render 1`] = `
 exports[`amplify-scene spec: Render logic -> should render with 'loadPercentage' 1`] = `
 <amplify-scene-loading loadpercentage="{50}" scenename="{'scene1'}">
   <!---->
-  <div class="css-1p4to1k" data-test="sumerianScene.loading">
+  <div class="css-1rxjahl" data-test="sumerianScene.loading">
     <div class="css-1hs3667">
       <div class="css-1gjm50j">
         <slot-fb name="amplify-scene-loading-logo">
@@ -57,7 +57,7 @@ exports[`amplify-scene spec: Render logic -> should render with 'loadPercentage'
 exports[`amplify-scene spec: Render logic -> should render with 'sceneError' 1`] = `
 <amplify-scene-loading object]}="" sceneerror="{[object" scenename="{'scene1'}">
   <!---->
-  <div class="css-1p4to1k" data-test="sumerianScene.loading">
+  <div class="css-1rxjahl" data-test="sumerianScene.loading">
     <div class="css-1hs3667">
       <div class="css-1gjm50j">
         <slot-fb name="amplify-scene-loading-logo">
