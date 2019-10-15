@@ -50,7 +50,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest --passWithNoTests",
+    "test": "jest -w 1 --passWithNoTests",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",

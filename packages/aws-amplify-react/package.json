@@ -6,7 +6,7 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage --updateSnapshot --maxWorkers 2",
+    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage --updateSnapshot --maxWorkers 2",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",

@@ -8,7 +8,7 @@
   "scripts": {
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
-    "test": "jest --maxWorkers 2",
+    "test": "jest -w 1 --maxWorkers 2",
     "transpile": "ngc",
     "package": "rollup -c rollup.config.js",
     "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
