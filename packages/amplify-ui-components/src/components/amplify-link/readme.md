@@ -17,13 +17,11 @@
 
 ### Used by
 
- - [amplify-examples](../amplify-examples)
  - [amplify-sign-in](../amplify-sign-in)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-examples --> amplify-link
   amplify-sign-in --> amplify-link
   style amplify-link fill:#f9f,stroke:#333,stroke-width:4px
 ```

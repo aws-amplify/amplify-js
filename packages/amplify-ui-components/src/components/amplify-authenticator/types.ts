@@ -1,13 +1,27 @@
+
 export enum AuthState {
-  LoggedOut = 'LoggedOut',
-  LoggedIn = 'LoggedIn',
+  SignUp = 'signup',
+  SignOut = 'signout',
+  SignIn = 'signin',
+  Loading = 'loading',
+  signedOut = 'signedout',
+  signedIn = 'signedin',
+  signingUp = 'signingup',
+  confirmingSignUp = 'confirmsignup',
+  confirmingSignUpCustomFlow = 'confirmsignupcustomflow',
+  confirmingSignIn = 'confirmingsignin',
+  confirmingSignInCustomFlow = 'confirmingsignincustomflow',
+  verifyingAttributes = 'verifyingattributes',
+  ForgotPassword = 'forgotpassword',
+  resettingPassword = 'resettingpassword',
+  settingMFA = 'settingMFA'
 }
 
-export interface UserData {
-  username?: string;
-}
-
-export interface Creds {
-  username?: string;
-  password?: string;
-}
+export const authenticatorMapping = {
+  'signup': AuthState.SignUp,
+  'signin': AuthState.SignIn,
+  'signout': AuthState.SignOut,
+  '': AuthState.Loading,
+  'loading': AuthState.Loading,
+  'forgotpassword': AuthState.ForgotPassword,
+};

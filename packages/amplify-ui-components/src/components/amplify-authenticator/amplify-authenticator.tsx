@@ -1,72 +1,84 @@
-import { Component, State, Prop, Event, EventEmitter, Watch, h } from '@stencil/core';
-import { AuthState, UserData, Creds } from './types';
-import Tunnel from './Tunnel';
+import { Component, State, Prop, h } from '@stencil/core';
+import { AuthState, authenticatorMapping } from './types';
+import Tunnel from '../../data/auth-state';
 
 @Component({
   tag: 'amplify-authenticator',
+  shadow: false,
 })
 export class AmplifyAuthenticator {
-  @Prop() signIn: Function;
-  @Prop() content: Function;
-  @Prop() override: boolean = false;
+  /** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
+  @Prop() state: string = 'loading';
+  /** First initial load when the component mounts in order to set Loading to SignIn by default */
+  @State() firstInitialLoad: boolean = true;
+  /** Used as a flag in order to trigger the content displayed */
+  @State() authState: AuthState = AuthState.Loading;
+  
+  onAuthStateChange = (nextAuthState?: string) => {
+    if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
 
-  @State() authState: AuthState = AuthState.LoggedOut;
-  @State() userData: UserData = {};
-  @State() validationErrors: string;
-  @Event() authStateChange: EventEmitter;
+    // TODO add Logger
+    console.info('Inside onAuthStateChange Method current authState:', this.authState);
+    this.authState = authenticatorMapping[nextAuthState];
 
-  @Watch('authState')
-  watchAuthState(authState) {
-    this.authStateChange.emit(authState);
+    // TODO add Logger
+    console.info(`authState has been updated to ${this.authState}`);
+    return this.buildUIContent(this.authState);
   }
 
-  private creds: Creds = {};
-
-  private handleUsernameChange = event => {
-    this.creds.username = event.target.value;
-  };
-
-  private handlePasswordChange = event => {
-    this.creds.password = event.target.value;
-  };
-
-  private handleSignInSubmit = event => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    console.log('amplify-authenticator signIn', this.creds);
-    if (!this.creds.username || !this.creds.password) {
-      this.validationErrors = 'empty fields';
-      return;
+  buildUIContent(authState: AuthState) {
+    if (authState === 'loading') {
+      // TODO: add loading component
+      return 'Loading...';
     }
+    if(authState === 'signin') {
+      return <amplify-sign-in />;
+    }
+    if (authState === 'signout') {
+      // TODO: add sign out component
+      return <div>Sign Out Component</div>
+    }
+    if (authState === 'signup') {
+      // TODO: add sign up component
+      return <div>Sign Up Component</div>
+    }
+    if (authState === 'forgotpassword') {
+      // TODO: add forgot password component
+      return <div>Forgot Password Component</div>;
+    }
+  }
+  /**
+   * When the componentDidLoad is triggered, this method is triggered in order to 
+   * handle the component to displayed to the view. If the component has `firstInitialLoad`
+   * set to `true` and `this.state` is set to 'loading', the default component displayed
+   * is set to `AmplifySignIn`
+   */
+  handleStateChange() {
+    if (this.firstInitialLoad) {
+      if (this.state == AuthState.Loading) {
+        this.authState = AuthState.SignIn;
+        this.firstInitialLoad = false;
 
-    this.validationErrors = null;
+        return this.buildUIContent(this.authState);
+      } else {
+        return this.buildUIContent(this.authState = authenticatorMapping[this.state]);
+      }
+    }
+    return this.buildUIContent(this.authState = authenticatorMapping[this.state]);
+  }
 
-    // TODO: sign-in using Amplify Auth module
-
-    this.authState = AuthState.LoggedIn;
-    this.userData = { username: this.creds.username };
-    this.creds = {};
-  };
-
-  private handleSignOut = () => {
-    this.authState = AuthState.LoggedOut;
-    this.userData = {};
-    this.creds = {};
-  };
+  componentDidLoad() {
+    this.handleStateChange();
+  }
 
   render() {
-    const tunnerState = {
-      handleUsernameChange: this.handleUsernameChange,
-      handlePasswordChange: this.handlePasswordChange,
+    const tunnelState = {
+      authState: this.authState,
+      onAuthStateChange: this.onAuthStateChange
     };
-    const signInProps = { handleSubmit: this.handleSignInSubmit, validationErrors: this.validationErrors, overrideStyle: this.override };
-    const contentProps = { ...this.userData, signOut: this.handleSignOut };
     return (
-      <Tunnel.Provider state={tunnerState}>
-        {this.authState === AuthState.LoggedOut &&
-          (this.signIn ? this.signIn(signInProps) : <amplify-sign-in {...signInProps} />)}
-        {this.authState === AuthState.LoggedIn && this.content && this.content(contentProps)}
+      <Tunnel.Provider state={tunnelState}>
+        {this.buildUIContent(this.authState)}
       </Tunnel.Provider>
     );
   }

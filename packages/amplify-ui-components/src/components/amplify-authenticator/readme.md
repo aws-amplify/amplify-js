@@ -7,18 +7,9 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type       | Default     |
-| ---------- | ---------- | ----------- | ---------- | ----------- |
-| `content`  | --         |             | `Function` | `undefined` |
-| `override` | `override` |             | `boolean`  | `false`     |
-| `signIn`   | --         |             | `Function` | `undefined` |
-
-
-## Events
-
-| Event             | Description | Type               |
-| ----------------- | ----------- | ------------------ |
-| `authStateChange` |             | `CustomEvent<any>` |
+| Property | Attribute | Description                                                                                                                     | Type     | Default     |
+| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| `state`  | `state`   | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `string` | `'loading'` |
 
 
 ## Dependencies
@@ -40,6 +31,7 @@ graph TD;
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-section

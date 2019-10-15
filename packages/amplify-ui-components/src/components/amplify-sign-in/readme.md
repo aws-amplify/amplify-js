@@ -22,13 +22,13 @@
 ### Used by
 
  - [amplify-authenticator](../amplify-authenticator)
- - [amplify-examples](../amplify-examples)
 
 ### Depends on
 
 - [amplify-form-section](../amplify-form-section)
 - [amplify-auth-fields](../amplify-auth-fields)
 - [amplify-link](../amplify-link)
+- context-consumer
 - [amplify-link](../amplify-link)
 - [amplify-button](../amplify-button)
 
@@ -38,6 +38,7 @@ graph TD;
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-section
@@ -56,7 +57,6 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
   amplify-authenticator --> amplify-sign-in
-  amplify-examples --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -1,6 +1,7 @@
 export interface AmplifyForgotPasswordHintProps {
   forgotPasswordText: string;
   resetPasswordText: string;
+  onAuthStateChange?: any;
 }
 
 export interface AmplifySignInFormFooterProps {
@@ -8,4 +9,5 @@ export interface AmplifySignInFormFooterProps {
   noAccountText: string;
   createAccountText: string;
   overrideStyle?: boolean;
+  onAuthStateChange?: any;
 }
