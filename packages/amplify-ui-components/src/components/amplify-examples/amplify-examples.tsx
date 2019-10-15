@@ -3,18 +3,9 @@ import example1 from './example1';
 import example2 from './example2';
 import example3 from './example3';
 import example4 from './example4';
-import example5 from './example5';
+import sceneExample from './scene-example';
 
-import Auth from '@aws-amplify/auth';
-import XR from '@aws-amplify/xr';
-// import Amplify from 'aws-amplify';
-import aws_exports from './src/aws-exports';
-
-Auth.configure(aws_exports);
-XR.configure(aws_exports);
-// Amplify.configure(aws_exports);
-
-const examples = [example1, example2, example3, example4, example5];
+const examples = [sceneExample, example1, example2, example3, example4];
 
 const Tabs = ({ active, set }) => (
   <ul>
