@@ -11,22 +11,23 @@
  * and limitations under the License.
  */
 import { GraphQLError } from 'graphql/error/GraphQLError';
+// @ts-ignore
 import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
-import {
-	Amplify,
+import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,
+	// @ts-ignore
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import { PubSub } from '@aws-amplify/pubsub';
-import { Auth } from '@aws-amplify/auth';
+import PubSub from '@aws-amplify/pubsub';
+import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { v4 as uuid } from 'uuid';
-import { RestClient as RestClass } from './RestClient';
+import { RestClient } from '@aws-amplify/api-rest';
 
 const logger = new Logger('GraphQLAPI');
 
@@ -65,8 +66,15 @@ export class GraphQLAPIClass {
 	 */
 	configure(options) {
 		const { API = {}, ...otherOptions } = options || {};
-		const opt = { ...otherOptions, ...API };
+		let opt = { ...otherOptions, ...API };
 		logger.debug('configure GraphQL API', { opt });
+
+		if (opt['aws_project_region']) {
+			opt = Object.assign({}, opt, {
+				region: opt['aws_project_region'],
+				header: {},
+			});
+		}
 
 		if (
 			typeof opt.graphql_headers !== 'undefined' &&
@@ -88,9 +96,9 @@ export class GraphQLAPIClass {
 	 * @return - A promise of true if Success
 	 */
 	createInstance() {
-		logger.debug('create Rest API instance');
+		logger.debug('create Rest instance');
 		if (this._options) {
-			this._api = new RestClass(this._options);
+			this._api = new RestClient(this._options);
 			return true;
 		} else {
 			return Promise.reject('API not configured');
