@@ -190,22 +190,26 @@ import {
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authOptions = {
-	userPoolId: 'awsUserPoolsId',
-	userPoolWebClientId: 'awsUserPoolsWebClientId',
-	region: 'region',
-	identityPoolId: 'awsCognitoIdentityPoolId',
+	Auth: {
+		userPoolId: 'awsUserPoolsId',
+		userPoolWebClientId: 'awsUserPoolsWebClientId',
+		region: 'region',
+		identityPoolId: 'awsCognitoIdentityPoolId',
+	},
 };
 
 const authOptionsWithNoUserPoolId = {
-	userPoolId: null,
-	userPoolWebClientId: 'awsUserPoolsWebClientId',
-	region: 'region',
-	identityPoolId: 'awsCognitoIdentityPoolId',
+	Auth: {
+		userPoolId: null,
+		userPoolWebClientId: 'awsUserPoolsWebClientId',
+		region: 'region',
+		identityPoolId: 'awsCognitoIdentityPoolId',
+	},
 };
 
 const userPool = new CognitoUserPool({
-	UserPoolId: authOptions.userPoolId,
-	ClientId: authOptions.userPoolWebClientId,
+	UserPoolId: authOptions.Auth.userPoolId,
+	ClientId: authOptions.Auth.userPoolWebClientId,
 });
 
 const idToken = new CognitoIdToken({ IdToken: 'idToken' });
@@ -414,6 +418,15 @@ describe('auth unit test', () => {
 
 			spyon.mockClear();
 			spyon2.mockClear();
+		});
+
+		test('incorrect mfa type', async () => {
+			const auth = new Auth(authOptions);
+			try {
+				await auth.setPreferredMFA(user, 'incorrect mfa type');
+			} catch (e) {
+				expect(e).not.toBeNull();
+			}
 		});
 	});
 
