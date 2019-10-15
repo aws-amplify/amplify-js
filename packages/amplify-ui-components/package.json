@@ -16,8 +16,8 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "eslint --fix --ext .js,.ts,.tsx .",
     "pretest": "npm run lint",
-    "test": "stencil test --spec --e2e --coverage",
-    "test:screenshot": "stencil test --spec --e2e --screenshot --coverage",
+    "test": "stencil test --spec --e2e",
+    "test:screenshot": "stencil test --spec --e2e --screenshot",
     "test:update-screenshot": "rm -f screenshot/builds/master.json && rm -f screenshot/images/* && stencil test --spec --e2e --screenshot --update-screenshot",
     "test:watch": "stencil test --spec --e2e --watchAll",
     "stencil": "stencil build --docs-readme",
@@ -33,7 +33,9 @@
     "emotion": "^10.0.9"
   },
   "devDependencies": {
-    "@stencil/core": "^1.2.3",
+    "@aws-amplify/auth": "^1.3.1",
+    "@aws-amplify/core": "latest",
+    "@aws-amplify/xr": "^0.1.24",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -54,14 +56,14 @@
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
     "prettier": "^1.17.1",
-    "puppeteer": "1.17.0",
+    "puppeteer": "1.19.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3"
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn run test:screenshot"
+      "pre-push": "npm run test"
     }
   },
   "peerDependencies": {},

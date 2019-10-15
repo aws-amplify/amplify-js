@@ -10,10 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import GoogleOAuthClass from './GoogleOAuth';
-import FacebookOAuthClass from './FacebookOAuth';
+import { GoogleOAuth as GoogleOAuthClass } from './GoogleOAuth';
+import { FacebookOAuth as FacebookOAuthClass } from './FacebookOAuth';
 
-const GoogleOAuth = new GoogleOAuthClass();
-const FacebookOAuth = new FacebookOAuthClass();
-
-export { GoogleOAuth, FacebookOAuth };
+export const GoogleOAuth = new GoogleOAuthClass();
+export const FacebookOAuth = new FacebookOAuthClass();

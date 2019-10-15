@@ -1,12 +1,6 @@
-jest.mock('@aws-amplify/core/lib/Signer', () => {
-    return {
-        default: {
-            sign: (request: any, access_info: any, service_info?: any) => {
-                return request;
-            }
-        }
-    }
-});
+import {Signer} from '@aws-amplify/core';
+
+jest.spyOn(Signer, 'sign').mockImplementation((request: any, access_info: any, service_info?: any) => request);
 
 jest.mock('axios', () => {
     return {
@@ -35,7 +29,7 @@ jest.mock('axios', () => {
     };
 });
 
-import { RestClient } from '../src/RestClient';
+import {RestClient} from '../src/RestClient';
 
 describe('RestClient test', () => {
     describe('ajax', () => {
@@ -71,9 +65,9 @@ describe('RestClient test', () => {
             expect.assertions(1);
 
             try {
-                await restClient.ajax('url', 'method', { headers: { reject: true } });
+                await restClient.ajax('url', 'method', {headers: {reject: true}});
             } catch (error) {
-                expect(error).toEqual({ data: 'error' });
+                expect(error).toEqual({data: 'error'});
             }
         });
 
@@ -121,7 +115,7 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual('data');
+            expect(await restClient.ajax('url', 'method', {body: 'body'})).toEqual('data');
         });
 
         test('ajax with custom responseType', async () => {
@@ -153,7 +147,7 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect(await restClient.ajax('url', 'method', { headers: { Authorization: 'authorization' } })).toEqual('data');
+            expect(await restClient.ajax('url', 'method', {headers: {Authorization: 'authorization'}})).toEqual('data');
         });
 
         test('ajax with withCredentials set to true', async () => {

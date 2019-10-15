@@ -37,39 +37,30 @@ import { SumerianSceneLoadingComponentIonic } from './components/xr/sumerian-sce
 // tslint:enable:max-line-length
 
 const components = [
-  AuthenticatorIonicComponent,
-  ConfirmSignInComponentIonic,
-  ConfirmSignUpComponentIonic,
-  ForgotPasswordComponentIonic,
-  GreetingComponentIonic,
-  SignInComponentIonic,
-  SignUpComponentIonic,
-  UsernameFieldComponentIonic,
-  PhoneFieldComponentIonic,
-  RequireNewPasswordComponentIonic,
-  PhotoPickerIonicComponent,
-  S3AlbumComponentIonic,
-  S3ImageComponentIonic,
-  ChatbotComponentIonic,
-  SumerianSceneComponentIonic,
-  SumerianSceneLoadingComponentIonic
+	AuthenticatorIonicComponent,
+	ConfirmSignInComponentIonic,
+	ConfirmSignUpComponentIonic,
+	ForgotPasswordComponentIonic,
+	GreetingComponentIonic,
+	SignInComponentIonic,
+	SignUpComponentIonic,
+	UsernameFieldComponentIonic,
+	PhoneFieldComponentIonic,
+	RequireNewPasswordComponentIonic,
+	PhotoPickerIonicComponent,
+	S3AlbumComponentIonic,
+	S3ImageComponentIonic,
+	ChatbotComponentIonic,
+	SumerianSceneComponentIonic,
+	SumerianSceneLoadingComponentIonic,
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  declarations: [
-    ...components,
-  ],
-  entryComponents: [
-    ...components
-  ],
-  providers: [AmplifyService],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  exports: [
-    ...components
-  ]
+	imports: [CommonModule, FormsModule],
+	declarations: [...components],
+	entryComponents: [...components],
+	providers: [AmplifyService],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	exports: [...components],
 })
-export class AmplifyIonicModule { }
+export class AmplifyIonicModule {}

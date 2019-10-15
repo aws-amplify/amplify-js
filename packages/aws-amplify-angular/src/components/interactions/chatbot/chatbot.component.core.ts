@@ -20,12 +20,11 @@ import {
 	EventEmitter,
 	OnInit,
 	ChangeDetectorRef,
-	Inject
+	Inject,
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { isUndefined } from 'util';
 require('./aws-lex-audio.js');
-
 
 const template = `
 <div class="amplify-interactions">
@@ -86,23 +85,23 @@ const STATES = {
 	INITIAL: { MESSAGE: 'Type your message or click  🎤', ICON: '🎤' },
 	LISTENING: { MESSAGE: 'Listening... click 🔴 again to cancel', ICON: '🔴' },
 	SENDING: { MESSAGE: 'Please wait...', ICON: '🔊' },
-	SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' }
+	SPEAKING: { MESSAGE: 'Speaking...', ICON: '...' },
 };
 
 const defaultVoiceConfig = {
 	silenceDetectionConfig: {
 		time: 2000,
-		amplitude: 0.2
-	}
+		amplitude: 0.2,
+	},
 };
 
 @Component({
 	selector: 'amplify-interactions-core',
-	template
+	template,
 })
-export class ChatbotComponentCore implements OnInit  {
+export class ChatbotComponentCore implements OnInit {
 	errorMessage: string;
-	inputText: string = "";
+	inputText: string = '';
 	botName: string;
 	chatTitle: string;
 	clearComplete: boolean = false;
@@ -126,7 +125,10 @@ export class ChatbotComponentCore implements OnInit  {
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
 
-	constructor(ref: ChangeDetectorRef, @Inject(AmplifyService) protected amplifyService: AmplifyService) {
+	constructor(
+		ref: ChangeDetectorRef,
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
 		this.ref = ref;
 		this.continueConversation = false;
 		this.logger = this.amplifyService.logger('ChatbotComponent');
@@ -137,21 +139,27 @@ export class ChatbotComponentCore implements OnInit  {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
-		this.conversationModeOn = isUndefined(data.conversationModeOn) ? false : data.conversationModeOn;
-		this.voiceEnabled = isUndefined(data.voiceEnabled) ? false : data.voiceEnabled;
+		this.conversationModeOn = isUndefined(data.conversationModeOn)
+			? false
+			: data.conversationModeOn;
+		this.voiceEnabled = isUndefined(data.voiceEnabled)
+			? false
+			: data.voiceEnabled;
 		this.textEnabled = isUndefined(data.textEnabled) ? true : data.textEnabled;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
-		this.amplifyService.interactions().onComplete(this.botName, this.performOnComplete);
+		this.amplifyService
+			.interactions()
+			.onComplete(this.botName, this.performOnComplete);
 
 		if (!this.textEnabled && this.voiceEnabled) {
-			this.currentVoiceState = "Click the mic button";
-			STATES.INITIAL.MESSAGE = "Click the mic button";
+			this.currentVoiceState = 'Click the mic button';
+			STATES.INITIAL.MESSAGE = 'Click the mic button';
 		}
 
 		if (!this.voiceEnabled && this.textEnabled) {
-			this.currentVoiceState = "Type a message";
-			STATES.INITIAL.MESSAGE = "Type a message";
+			this.currentVoiceState = 'Type a message';
+			STATES.INITIAL.MESSAGE = 'Type a message';
 		}
 
 		if (this.voiceEnabled) {
@@ -159,12 +167,13 @@ export class ChatbotComponentCore implements OnInit  {
 		}
 	}
 
-
 	@Input()
 	set bot(botName: string) {
 		this.botName = botName;
 		this.performOnComplete = this.performOnComplete.bind(this);
-		this.amplifyService.interactions().onComplete(botName, this.performOnComplete);
+		this.amplifyService
+			.interactions()
+			.onComplete(botName, this.performOnComplete);
 	}
 
 	@Input()
@@ -178,10 +187,12 @@ export class ChatbotComponentCore implements OnInit  {
 	}
 
 	ngOnInit() {
-    if (!this.amplifyService.interactions()){
-      throw new Error('Interactions module not registered on AmplifyService provider');
-    }
-  }
+		if (!this.amplifyService.interactions()) {
+			throw new Error(
+				'Interactions module not registered on AmplifyService provider'
+			);
+		}
+	}
 
 	performOnComplete(evt) {
 		this.complete.emit(evt);
@@ -199,26 +210,28 @@ export class ChatbotComponentCore implements OnInit  {
 			return;
 		}
 		const message = {
-			'me': this.inputText,
-			'meSentTime': new Date().toLocaleTimeString(),
-			'bot': '',
-			'botSentTime': ''
+			me: this.inputText,
+			meSentTime: new Date().toLocaleTimeString(),
+			bot: '',
+			botSentTime: '',
 		};
-		this.amplifyService.interactions().send(this.botName, this.inputText)
+		this.amplifyService
+			.interactions()
+			.send(this.botName, this.inputText)
 			.then((response: any) => {
-				this.inputText = "";
+				this.inputText = '';
 				message.bot = response.message;
 				message.botSentTime = new Date().toLocaleTimeString();
 				this.messages.push(message);
 			})
-			.catch((error) => this.logger.error(error));
+			.catch(error => this.logger.error(error));
 	}
 
 	onSilenceHandler = () => {
 		if (!this.continueConversation) {
 			return;
 		}
-		this.audioControl.exportWAV((blob) => {
+		this.audioControl.exportWAV(blob => {
 			this.currentVoiceState = STATES.SENDING.MESSAGE;
 			this.audioInput = blob;
 			this.micText = STATES.SENDING.ICON;
@@ -226,7 +239,7 @@ export class ChatbotComponentCore implements OnInit  {
 			this.lexResponseHandler();
 		});
 		this.ref.detectChanges();
-	}
+	};
 
 	reset() {
 		this.audioControl.clear();
@@ -248,14 +261,16 @@ export class ChatbotComponentCore implements OnInit  {
 			return;
 		}
 
-        const interactionsMessage = {
-            content: this.audioInput,
-            options: {
-                messageType: 'voice'
-            }
+		const interactionsMessage = {
+			content: this.audioInput,
+			options: {
+				messageType: 'voice',
+			},
 		};
-		
-		const response = await this.amplifyService.interactions().send(this.botName, interactionsMessage);
+
+		const response = await this.amplifyService
+			.interactions()
+			.send(this.botName, interactionsMessage);
 
 		this.lexResponse = response;
 		this.currentVoiceState = STATES.SPEAKING.MESSAGE;
@@ -263,13 +278,13 @@ export class ChatbotComponentCore implements OnInit  {
 		this.micButtonDisabled = true;
 
 		const message = {
-			'me': this.lexResponse.inputTranscript,
-			'meSentTime': new Date().toLocaleTimeString(),
-			'bot': '',
-			'botSentTime': ''
+			me: this.lexResponse.inputTranscript,
+			meSentTime: new Date().toLocaleTimeString(),
+			bot: '',
+			botSentTime: '',
 		};
 
-		this.inputText = "";
+		this.inputText = '';
 		message.bot = this.lexResponse.message;
 		message.botSentTime = new Date().toLocaleTimeString();
 		this.messages.push(message);
@@ -283,10 +298,12 @@ export class ChatbotComponentCore implements OnInit  {
 		}
 		if (this.lexResponse.contentType === 'audio/mpeg') {
 			this.audioControl.play(this.lexResponse.audioStream, () => {
-				if (this.lexResponse.dialogState === 'ReadyForFulfillment' ||
+				if (
+					this.lexResponse.dialogState === 'ReadyForFulfillment' ||
 					this.lexResponse.dialogState === 'Fulfilled' ||
 					this.lexResponse.dialogState === 'Failed' ||
-					!this.conversationModeOn) {
+					!this.conversationModeOn
+				) {
 					this.inputDisabled = false;
 					this.currentVoiceState = STATES.INITIAL.MESSAGE;
 					this.micText = STATES.INITIAL.ICON;

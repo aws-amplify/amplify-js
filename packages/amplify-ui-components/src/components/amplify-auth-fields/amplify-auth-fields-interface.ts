@@ -8,4 +8,4 @@ export interface FormFieldType {
   required?: boolean;
 }
 
-export interface FormFieldTypes extends Array<FormFieldType> { };
+export interface FormFieldTypes extends Array<FormFieldType> {}
