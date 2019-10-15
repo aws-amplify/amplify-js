@@ -10,12 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { RestClient as RestClass } from './RestClient';
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
+import { RestClient } from './RestClient';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('RestAPI');
 
@@ -96,7 +92,7 @@ export class RestAPIClass {
 	createInstance() {
 		logger.debug('create Rest API instance');
 		if (this._options) {
-			this._api = new RestClass(this._options);
+			this._api = new RestClient(this._options);
 			return true;
 		} else {
 			return Promise.reject('API not configured');
@@ -255,24 +251,6 @@ export class RestAPIClass {
 			}
 		}
 		return this._api.endpoint(apiName);
-	}
-
-	/**
-	 * @private
-	 */
-	_ensureCredentials() {
-		return Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for api', cred);
-
-				return true;
-			})
-			.catch(err => {
-				logger.warn('ensure credentials error', err);
-				return false;
-			});
 	}
 }
 

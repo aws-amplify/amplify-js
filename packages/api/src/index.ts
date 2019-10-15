@@ -13,9 +13,8 @@
 
 import { API } from './API';
 
-export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
-export { RestAPI, RestAPIClass } from './RestAPI';
 export { API, APIClass } from './API';
+export { graphqlOperation } from '@aws-amplify/api-graphql';
 
 /*
  * @deprecated use named import

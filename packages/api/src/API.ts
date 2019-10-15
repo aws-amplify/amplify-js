@@ -10,15 +10,19 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { RestAPI } from './RestAPI';
-import { GraphQLAPI } from './GraphQLAPI';
-import { GraphQLOptions } from './types';
+import { RestAPIClass } from '@aws-amplify/api-rest';
+import {
+	GraphQLAPIClass,
+	GraphQLOptions,
+	GraphQLResult,
+} from '@aws-amplify/api-graphql';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as Observable from 'zen-observable';
 
 const logger = new Logger('API');
 /**
  * @deprecated
+ * Use RestApi or GraphQLAPI to reduce your application bundle size
  * Export Cloud Logic APIs
  */
 export class APIClass {
@@ -26,7 +30,20 @@ export class APIClass {
 	 * Initialize API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
-	constructor() {}
+	private _options;
+	private _restApi;
+	private _graphqlApi;
+
+	/**
+	 * Initialize API with AWS configuration
+	 * @param {Object} options - Configuration object for API
+	 */
+	constructor(options) {
+		this._options = options;
+		this._restApi = new RestAPIClass(options);
+		this._graphqlApi = new GraphQLAPIClass(options);
+		logger.debug('API Options', this._options);
+	}
 
 	public getModuleName() {
 		return 'API';
@@ -38,8 +55,9 @@ export class APIClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options) {
-		const restAPIConfig = RestAPI.configure(options);
-		const graphQLAPIConfig = GraphQLAPI.configure(options);
+		this._options = Object.assign({}, this._options, options);
+		const restAPIConfig = this._restApi.configure(this._options);
+		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
 		return { ...restAPIConfig, ...graphQLAPIConfig };
 	}
@@ -52,7 +70,7 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async get(apiName, path, init) {
-		return RestAPI.get(apiName, path, init);
+		return this._restApi.get(apiName, path, init);
 	}
 
 	/**
@@ -63,7 +81,7 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async post(apiName, path, init) {
-		return RestAPI.post(apiName, path, init);
+		return this._restApi.post(apiName, path, init);
 	}
 
 	/**
@@ -74,7 +92,7 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async put(apiName, path, init) {
-		return RestAPI.put(apiName, path, init);
+		return this._restApi.put(apiName, path, init);
 	}
 
 	/**
@@ -85,7 +103,7 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async patch(apiName, path, init) {
-		return RestAPI.patch(apiName, path, init);
+		return this._restApi.patch(apiName, path, init);
 	}
 
 	/**
@@ -96,7 +114,7 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async del(apiName, path, init) {
-		return RestAPI.del(apiName, path, init);
+		return this._restApi.del(apiName, path, init);
 	}
 
 	/**
@@ -107,7 +125,16 @@ export class APIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async head(apiName, path, init) {
-		return RestAPI.head(apiName, path, init);
+		return this._restApi.head(apiName, path, init);
+	}
+
+	/**
+	 * Getting endpoint for API
+	 * @param {string} apiName - The name of the api
+	 * @return {string} - The endpoint of the api
+	 */
+	async endpoint(apiName) {
+		return this._restApi.endpoint(apiName);
 	}
 
 	/**
@@ -115,7 +142,7 @@ export class APIClass {
 	 * @param operation
 	 */
 	getGraphqlOperationType(operation) {
-		return GraphQLAPI.getGraphqlOperationType(operation);
+		return this._graphqlApi.getGraphqlOperationType(operation);
 	}
 
 	/**
@@ -124,8 +151,10 @@ export class APIClass {
 	 * @param {GraphQLOptions} GraphQL Options
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
-	graphql(options: GraphQLOptions) {
-		return GraphQLAPI.graphql(options);
+	graphql(
+		options: GraphQLOptions
+	): Promise<GraphQLResult> | Observable<object> {
+		return this._graphqlApi.graphql(options);
 	}
 }
 
@@ -133,7 +162,7 @@ let _instance: APIClass = null;
 
 if (!_instance) {
 	logger.debug('Creating API Instance');
-	_instance = new APIClass();
+	_instance = new APIClass(null);
 	Amplify.register(_instance);
 }
 
