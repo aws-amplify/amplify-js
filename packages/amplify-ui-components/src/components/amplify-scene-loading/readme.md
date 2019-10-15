@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property         | Attribute         | Description | Type     | Default     |
-| ---------------- | ----------------- | ----------- | -------- | ----------- |
-| `loadPercentage` | `load-percentage` |             | `number` | `0`         |
-| `sceneError`     | `scene-error`     |             | `any`    | `undefined` |
-| `sceneName`      | `scene-name`      |             | `string` | `undefined` |
+| Property         | Attribute         | Description | Type                | Default     |
+| ---------------- | ----------------- | ----------- | ------------------- | ----------- |
+| `loadPercentage` | `load-percentage` |             | `number`            | `0`         |
+| `sceneError`     | --                |             | `AmplifySceneError` | `null`      |
+| `sceneName`      | `scene-name`      |             | `string`            | `undefined` |
 
 
 ## Dependencies

@@ -4,7 +4,7 @@ exports[`amplify-scene spec: Render logic -> should render loading overlay by de
 <amplify-scene scenename="{'scene1'}">
   <div class="css-etfphl" id="scene-container-dom-id">
     <div class="css-s08p0c" id="scene-dom-id">
-      <amplify-scene-loading loadpercentage="0"></amplify-scene-loading>
+      <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
     </div>
     <div class="css-xdndw7">
       <span class="css-31nfqj"></span>
@@ -17,7 +17,7 @@ exports[`amplify-scene spec: Render logic -> should render scene action bar when
 <amplify-scene scenename="{'scene1'}">
   <div class="css-etfphl" id="scene-container-dom-id">
     <div class="css-s08p0c" id="scene-dom-id">
-      <amplify-scene-loading loadpercentage="0"></amplify-scene-loading>
+      <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
     </div>
     <div class="css-xdndw7">
       <span class="css-31nfqj">

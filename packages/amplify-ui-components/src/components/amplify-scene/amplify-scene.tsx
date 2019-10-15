@@ -160,9 +160,9 @@ export class AmplifyScene {
         <div id={SCENE_DOM_ID} class={scene}>
           {this.loading ? (
             <amplify-scene-loading
-              sceneName={this.sceneName}
-              loadPercentage={this.loadPercentage}
-              sceneError={this.sceneError}
+              scene-name={this.sceneName}
+              load-percentage={this.loadPercentage}
+              scene-error={this.sceneError}
             />
           ) : null}
         </div>
