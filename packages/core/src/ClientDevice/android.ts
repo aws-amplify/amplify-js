@@ -17,15 +17,15 @@ import { ConsoleLogger as Logger } from '../Logger';
 const logger = new Logger('DeviceInfo');
 
 export const clientInfo = () => {
-    const dim = Dimensions.get('screen');
-    logger.debug(Platform, dim);
+	const dim = Dimensions.get('screen');
+	logger.debug(Platform, dim);
 
-    const OS = 'android';
-    const { Version } = Platform;
+	const OS = 'android';
+	const { Version } = Platform;
 
-    return {
-        platform: OS,
-        version: String(Version),
-        appVersion: [OS, String(Version)].join('/')
-    };
+	return {
+		platform: OS,
+		version: String(Version),
+		appVersion: [OS, String(Version)].join('/'),
+	};
 };

@@ -1,9 +1,9 @@
 import { Component, State, h } from '@stencil/core';
 import example1 from './example1';
 import example4 from './example4';
-import example5 from './example5';
+import sceneExample from './scene-example';
 
-const examples = [example1, example4, example5];
+const examples = [sceneExample, example1, example4];
 
 const Tabs = ({ active, set }) => (
   <ul>

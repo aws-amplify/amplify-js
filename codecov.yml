@@ -4,7 +4,9 @@ codecov:
 
 coverage:
   status:
-    project:
+    project: off
+    patch: off
+    changes:
       default:
-        target: 90%
+        target: 82%
         if_not_found: success

@@ -13,6 +13,7 @@ export const loadingOverlay = css`
   width: 100%;
   height: 100%;
   background-color: ${lightSquidInk};
+  min-height: 400px;
 `;
 
 export const loadingContainer = css`
@@ -31,7 +32,7 @@ export const loadingLogo = css`
 export const loadingSceneName = css`
   color: ${white};
   margin: 0 2px 20px 2px;
-  font-size: 18px;
+  font-size: 1em;
   font-family: 'Amazon Ember';
 `;
 

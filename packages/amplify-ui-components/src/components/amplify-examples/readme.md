@@ -1,7 +1,5 @@
 # sample-app
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -12,6 +10,7 @@
 - [amplify-authenticator](../amplify-authenticator)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
+- [amplify-scene](../amplify-scene)
 
 ### Graph
 ```mermaid
@@ -19,6 +18,7 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
+  amplify-examples --> amplify-scene
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-form-section
@@ -43,6 +43,10 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
   rock-paper-scissor --> amplify-button
+  amplify-scene --> amplify-icon-button
+  amplify-scene --> amplify-scene-loading
+  amplify-icon-button --> amplify-tooltip
+  amplify-icon-button --> amplify-icon
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

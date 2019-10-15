@@ -1,0 +1,545 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = `
+<Component
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "amazonSignInButton": Object {},
+      "button": Object {},
+      "container": Object {},
+      "facebookSignInButton": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "googleSignInButton": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "label": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
+      "oAuthSignInButton": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+      "toast": Object {},
+    }
+  }
+>
+  <Component
+    onClose={[Function]}
+  >
+    message
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Scan then enter verification code
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    <div>
+      <div
+        className="Totp__totpQrcode___1crLx"
+      >
+        <Component
+          value="code"
+        />
+      </div>
+      <Component
+        theme={
+          Object {
+            "a": Object {},
+            "actionRow": Object {},
+            "amazonSignInButton": Object {},
+            "button": Object {},
+            "container": Object {},
+            "facebookSignInButton": Object {},
+            "formContainer": Object {},
+            "formField": Object {},
+            "formRow": Object {},
+            "formSection": Object {},
+            "googleSignInButton": Object {},
+            "hint": Object {},
+            "input": Object {},
+            "inputLabel": Object {},
+            "label": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
+            "oAuthSignInButton": Object {},
+            "photoPickerButton": Object {},
+            "photoPlaceholder": Object {},
+            "radio": Object {},
+            "sectionBody": Object {},
+            "sectionFooter": Object {},
+            "sectionFooterPrimaryContent": Object {},
+            "sectionFooterSecondaryContent": Object {},
+            "sectionHeader": Object {},
+            "signInButton": Object {},
+            "signInButtonContent": Object {},
+            "signInButtonIcon": Object {},
+            "strike": Object {},
+            "strikeContent": Object {},
+            "toast": Object {},
+          }
+        }
+      >
+        Enter Security Code:
+      </Component>
+      <Component
+        autoFocus={true}
+        key="totpCode"
+        name="totpCode"
+        onChange={[Function]}
+        theme={
+          Object {
+            "a": Object {},
+            "actionRow": Object {},
+            "amazonSignInButton": Object {},
+            "button": Object {},
+            "container": Object {},
+            "facebookSignInButton": Object {},
+            "formContainer": Object {},
+            "formField": Object {},
+            "formRow": Object {},
+            "formSection": Object {},
+            "googleSignInButton": Object {},
+            "hint": Object {},
+            "input": Object {},
+            "inputLabel": Object {},
+            "label": Object {},
+            "nav": Object {},
+            "navBar": Object {},
+            "navButton": Object {},
+            "navItem": Object {},
+            "navRight": Object {},
+            "oAuthSignInButton": Object {},
+            "photoPickerButton": Object {},
+            "photoPlaceholder": Object {},
+            "radio": Object {},
+            "sectionBody": Object {},
+            "sectionFooter": Object {},
+            "sectionFooterPrimaryContent": Object {},
+            "sectionFooterSecondaryContent": Object {},
+            "sectionHeader": Object {},
+            "signInButton": Object {},
+            "signInButtonContent": Object {},
+            "signInButtonIcon": Object {},
+            "strike": Object {},
+            "strikeContent": Object {},
+            "toast": Object {},
+          }
+        }
+      />
+    </div>
+    message
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    <Component
+      onClick={[Function]}
+      style={
+        Object {
+          "width": "100%",
+        }
+      }
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "amazonSignInButton": Object {},
+          "button": Object {},
+          "container": Object {},
+          "facebookSignInButton": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "googleSignInButton": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "label": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
+          "oAuthSignInButton": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+          "toast": Object {},
+        }
+      }
+    >
+      Verify Security Token
+    </Component>
+  </Component>
+</Component>
+`;
+
+exports[`TOTPSetupComp test render test render without code or setupMessage 1`] = `
+<Component
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "amazonSignInButton": Object {},
+      "button": Object {},
+      "container": Object {},
+      "facebookSignInButton": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "googleSignInButton": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "label": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
+      "oAuthSignInButton": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+      "toast": Object {},
+    }
+  }
+>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Scan then enter verification code
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  />
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    <Component
+      onClick={[Function]}
+      style={
+        Object {
+          "width": "100%",
+        }
+      }
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "amazonSignInButton": Object {},
+          "button": Object {},
+          "container": Object {},
+          "facebookSignInButton": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "googleSignInButton": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "label": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
+          "oAuthSignInButton": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+          "toast": Object {},
+        }
+      }
+    >
+      Verify Security Token
+    </Component>
+  </Component>
+</Component>
+`;
