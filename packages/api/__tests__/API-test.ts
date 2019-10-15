@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
+import { Signer, Credentials, Constants } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import API, { graphqlOperation } from '../src/API';
 import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
@@ -91,6 +91,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -163,6 +164,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -257,6 +259,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -332,6 +335,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -401,7 +405,9 @@ describe('API test', () => {
 			const doc = parse(GetEvent);
 			const query = print(doc);
 
-			const headers = {};
+			const headers = {
+				'x-amz-user-agent': Constants.userAgent,
+			};
 
 			const body = {
 				query,
@@ -477,6 +483,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -728,6 +735,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -921,6 +929,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
