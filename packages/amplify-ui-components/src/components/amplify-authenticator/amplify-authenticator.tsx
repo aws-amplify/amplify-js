@@ -78,9 +78,7 @@ export class AmplifyAuthenticator {
     };
     return (
       <Tunnel.Provider state={tunnelState}>
-        <div>
-          {this.buildUIContent(this.authState)}
-        </div>
+        {this.buildUIContent(this.authState)}
       </Tunnel.Provider>
     );
   }
