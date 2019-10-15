@@ -11,12 +11,8 @@
  * and limitations under the License.
  */
 
-import { API } from './API';
+import { RestAPI } from './RestAPI';
 
-export { API, APIClass } from './API';
-export { graphqlOperation } from '@aws-amplify/api-graphql';
-
-/*
- * @deprecated use named import
- */
-export default API;
+export { RestAPI, RestAPIClass } from './RestAPI';
+export { RestClient } from './RestClient';
+export default RestAPI;
