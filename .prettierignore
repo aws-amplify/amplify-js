@@ -4,3 +4,5 @@
 **/yarn.lock
 **/package-lock.json
 **/.eslintrc.js
+**/amplify-ui-components/src/components.d.ts
+**/amplify-ui-components/src/components/**/readme.md
