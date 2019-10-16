@@ -19,6 +19,15 @@ describe('amplify-input spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
+
+    it('renders with a name for the input', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyInput],
+        html: `<amplify-input name="seattle"></amplify-input>`,
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
   });
   describe('Component logic ->', () => {
     let input;
