@@ -362,6 +362,40 @@ export namespace Components {
     */
     'validationErrors': string;
   }
+  interface AmplifySignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit': (submitEvent: Event) => void;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'haveAccountText': string;
+    /**
+    * Used for header text in sign up component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'signInText': string;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'submitButtonText': string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -540,6 +574,12 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
+  interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
+  const HTMLAmplifySignUpElement: {
+    prototype: HTMLAmplifySignUpElement;
+    new (): HTMLAmplifySignUpElement;
+  };
+
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   const HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
@@ -581,6 +621,7 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
+    'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
@@ -918,6 +959,40 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
+  interface AmplifySignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit'?: (submitEvent: Event) => void;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'haveAccountText'?: string;
+    /**
+    * Used for header text in sign up component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'signInText'?: string;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -979,6 +1054,7 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-up': AmplifySignUp;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
@@ -1014,6 +1090,7 @@ declare module "@stencil/core" {
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
+      'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;

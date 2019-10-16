@@ -21,12 +21,14 @@
 ### Depends on
 
 - [amplify-sign-in](../amplify-sign-in)
+- [amplify-sign-up](../amplify-sign-up)
 - context-consumer
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-authenticator --> amplify-sign-in
+  amplify-authenticator --> amplify-sign-up
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
@@ -49,6 +51,11 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-sign-up --> amplify-form-section
+  amplify-sign-up --> amplify-auth-fields
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> context-consumer
   amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```

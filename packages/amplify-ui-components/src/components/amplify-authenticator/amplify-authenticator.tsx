@@ -13,7 +13,7 @@ export class AmplifyAuthenticator {
   @State() firstInitialLoad: boolean = true;
   /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
-  
+
   onAuthStateChange = (nextAuthState?: string) => {
     if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
 
@@ -24,23 +24,23 @@ export class AmplifyAuthenticator {
     // TODO add Logger
     console.info(`authState has been updated to ${this.authState}`);
     return this.buildUIContent(this.authState);
-  }
+  };
 
   buildUIContent(authState: AuthState) {
     if (authState === 'loading') {
       // TODO: add loading component
       return 'Loading...';
     }
-    if(authState === 'signin') {
+    if (authState === 'signin') {
       return <amplify-sign-in />;
     }
     if (authState === 'signout') {
       // TODO: add sign out component
-      return <div>Sign Out Component</div>
+      return <div>Sign Out Component</div>;
     }
     if (authState === 'signup') {
       // TODO: add sign up component
-      return <div>Sign Up Component</div>
+      return <amplify-sign-up />;
     }
     if (authState === 'forgotpassword') {
       // TODO: add forgot password component
@@ -48,7 +48,7 @@ export class AmplifyAuthenticator {
     }
   }
   /**
-   * When the componentDidLoad is triggered, this method is triggered in order to 
+   * When the componentDidLoad is triggered, this method is triggered in order to
    * handle the component to displayed to the view. If the component has `firstInitialLoad`
    * set to `true` and `this.state` is set to 'loading', the default component displayed
    * is set to `AmplifySignIn`
@@ -61,10 +61,10 @@ export class AmplifyAuthenticator {
 
         return this.buildUIContent(this.authState);
       } else {
-        return this.buildUIContent(this.authState = authenticatorMapping[this.state]);
+        return this.buildUIContent((this.authState = authenticatorMapping[this.state]));
       }
     }
-    return this.buildUIContent(this.authState = authenticatorMapping[this.state]);
+    return this.buildUIContent((this.authState = authenticatorMapping[this.state]));
   }
 
   componentDidLoad() {
@@ -74,12 +74,8 @@ export class AmplifyAuthenticator {
   render() {
     const tunnelState = {
       authState: this.authState,
-      onAuthStateChange: this.onAuthStateChange
+      onAuthStateChange: this.onAuthStateChange,
     };
-    return (
-      <Tunnel.Provider state={tunnelState}>
-        {this.buildUIContent(this.authState)}
-      </Tunnel.Provider>
-    );
+    return <Tunnel.Provider state={tunnelState}>{this.buildUIContent(this.authState)}</Tunnel.Provider>;
   }
 }
