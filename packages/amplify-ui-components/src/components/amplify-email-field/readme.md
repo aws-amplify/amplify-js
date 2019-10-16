@@ -7,12 +7,13 @@
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                     | Type      | Default             |
-| ------------- | ------------- | ------------------------------------------------------------------------------- | --------- | ------------------- |
-| `fieldId`     | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.         | `string`  | `EMAIL_SUFFIX`      |
-| `label`       | `label`       | Used for the EMAIL label                                                        | `string`  | `EMAIL_LABEL`       |
-| `placeholder` | `placeholder` | Used for the placeholder label                                                  | `string`  | `EMAIL_PLACEHOLDER` |
-| `required`    | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean` | `false`             |
+| Property            | Attribute     | Description                                                                     | Type                          | Default             |
+| ------------------- | ------------- | ------------------------------------------------------------------------------- | ----------------------------- | ------------------- |
+| `fieldId`           | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.         | `string`                      | `EMAIL_SUFFIX`      |
+| `handleInputChange` | --            | The callback, called when the input is modified by the user.                    | `(inputEvent: Event) => void` | `undefined`         |
+| `label`             | `label`       | Used for the EMAIL label                                                        | `string`                      | `EMAIL_LABEL`       |
+| `placeholder`       | `placeholder` | Used for the placeholder label                                                  | `string`                      | `EMAIL_PLACEHOLDER` |
+| `required`          | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean`                     | `false`             |
 
 
 ## Dependencies
