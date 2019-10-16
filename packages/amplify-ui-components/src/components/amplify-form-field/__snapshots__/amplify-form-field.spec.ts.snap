@@ -55,6 +55,27 @@ exports[`amplify-form-field spec: Render logic -> renders with an id, if it is p
 </amplify-form-field>
 `;
 
+exports[`amplify-form-field spec: Render logic -> renders with an name, if it is provided 1`] = `
+<amplify-form-field description="description" field-id="id" label="label" name="seattle">
+  <!---->
+  <div class="amplify-ui--form-field css-9s9ecg">
+    <div class="amplify-ui--form-field-label css-1thad7n">
+      <amplify-label htmlfor="id">
+        label
+      </amplify-label>
+    </div>
+    <div class="amplify-ui--form-field-description css-10lf99y" data-test="form-field-description" id="id-description">
+      description
+    </div>
+    <div>
+      <slot-fb name="input">
+        <amplify-input description="description" fieldid="id" name="seattle" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
+</amplify-form-field>
+`;
+
 exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS classes when style override is true 1`] = `
 <amplify-form-field description="description" field-id="id" label="label" override-style="true">
   <!---->

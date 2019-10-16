@@ -23,6 +23,8 @@ export class AmplifyInput {
   @Prop() placeholder?: string = '';
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
+  /** (Optional) String value for the name of the input. */
+  @Prop() name?: string;
 
   render() {
     return (
@@ -32,6 +34,7 @@ export class AmplifyInput {
         type={this.type}
         onInput={this.onInputChange}
         placeholder={this.placeholder}
+        name={this.name}
         class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
       />
     );

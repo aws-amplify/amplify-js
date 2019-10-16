@@ -153,6 +153,10 @@ export namespace Components {
     */
     'label': string | null;
     /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
+    /**
     * The callback, called when the input is modified by the user.
     */
     'onInputChange'?: (inputEvent: Event) => void;
@@ -225,6 +229,10 @@ export namespace Components {
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId': string;
+    /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
     /**
     * The callback, called when the input is modified by the user.
     */
@@ -701,6 +709,10 @@ declare namespace LocalJSX {
     */
     'label'?: string | null;
     /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
+    /**
     * The callback, called when the input is modified by the user.
     */
     'onInputChange'?: (inputEvent: Event) => void;
@@ -773,6 +785,10 @@ declare namespace LocalJSX {
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId'?: string;
+    /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
     /**
     * The callback, called when the input is modified by the user.
     */
