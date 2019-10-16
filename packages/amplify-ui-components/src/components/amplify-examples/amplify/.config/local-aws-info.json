@@ -2,6 +2,6 @@
   "dev": {
     "configLevel": "project",
     "useProfile": true,
-    "profileName": "jranz"
+    "profileName": "amplify-js-jranz"
   }
 }
