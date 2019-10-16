@@ -168,6 +168,10 @@ export namespace Components {
     */
     'label': string | null;
     /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
+    /**
     * (Optional) Override default styling
     */
     'overrideStyle'?: boolean;
@@ -240,6 +244,10 @@ export namespace Components {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
     /**
     * (Optional) Override default styling
     */
@@ -733,6 +741,10 @@ declare namespace LocalJSX {
     */
     'label'?: string | null;
     /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
+    /**
     * (Optional) Override default styling
     */
     'overrideStyle'?: boolean;
@@ -805,6 +817,10 @@ declare namespace LocalJSX {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
     /**
     * (Optional) Override default styling
     */
