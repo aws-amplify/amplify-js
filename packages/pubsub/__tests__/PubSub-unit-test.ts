@@ -56,7 +56,7 @@ const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
 });
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
-	new Promise(async (resolve, reject) => {
+	new Promise((resolve, reject) => {
 		const obs = pubsub.subscribe(topic, options).subscribe({
 			next: data => {
 				expect(data.value).toEqual(message);
@@ -67,7 +67,7 @@ const testPubSubAsync = (pubsub, topic, message, options?) =>
 			error: reject,
 		});
 
-		await pubsub.publish(topic, message, options);
+		pubsub.publish(topic, message, options);
 	});
 
 const testAppSyncAsync = (pubsub, topic, message) =>
@@ -109,7 +109,7 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
 	});
 
-afterEach(() => {
+beforeEach(() => {
 	jest.restoreAllMocks();
 });
 
@@ -132,7 +132,7 @@ describe('PubSub', () => {
 			expect(config).toEqual(options);
 		});
 
-		test('should accept PubSub key in configuration object', async () => {
+		test('should accept PubSub key in configuration object', () => {
 			const pubsub = new PubSub({});
 
 			const options = {
@@ -307,7 +307,7 @@ describe('PubSub', () => {
 			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
 		});
 
-		test('error is thrown if provider name is not found', async () => {
+		test('error is thrown if provider name is not found', () => {
 			const testProviderName = 'FooProvider';
 			const pubsub = new PubSub();
 
