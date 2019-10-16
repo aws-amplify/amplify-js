@@ -6,6 +6,7 @@ export interface FormFieldType {
   placeholder?: string;
   hint?: string | FunctionalComponent | null;
   required?: boolean;
+  handleInputChange?: (inputEvent: Event) => void;
 }
 
 export interface FormFieldTypes extends Array<FormFieldType> {}
