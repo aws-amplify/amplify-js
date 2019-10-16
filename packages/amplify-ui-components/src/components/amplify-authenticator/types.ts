@@ -1,4 +1,3 @@
-
 export enum AuthState {
   SignUp = 'signup',
   SignOut = 'signout',
@@ -13,15 +12,32 @@ export enum AuthState {
   confirmingSignInCustomFlow = 'confirmingsignincustomflow',
   verifyingAttributes = 'verifyingattributes',
   ForgotPassword = 'forgotpassword',
-  resettingPassword = 'resettingpassword',
-  settingMFA = 'settingMFA'
+  ResetPassword = 'resettingpassword',
+  settingMFA = 'settingMFA',
 }
 
-export const authenticatorMapping = {
-  'signup': AuthState.SignUp,
-  'signin': AuthState.SignIn,
-  'signout': AuthState.SignOut,
-  '': AuthState.Loading,
-  'loading': AuthState.Loading,
-  'forgotpassword': AuthState.ForgotPassword,
-};
+// export const authenticatorMapping = {
+//   'signup': AuthState.SignUp,
+//   'signin': AuthState.SignIn,
+//   'signout': AuthState.SignOut,
+//   '': AuthState.Loading,
+//   'loading': AuthState.Loading,
+//   'forgotpassword': AuthState.ForgotPassword,
+// };
+
+export type AuthStateType =
+  | 'signup'
+  | 'signout'
+  | 'signIn'
+  | 'loading'
+  | 'signedout'
+  | 'signedin'
+  | 'signingup'
+  | 'confirmSignup'
+  | 'confirmsignupcustomflow'
+  | 'confirmingsignin'
+  | 'confirmingsignincustomflow'
+  | 'verifyingattributes'
+  | 'forgotpassword'
+  | 'resettingPassword'
+  | 'settingMFA';
