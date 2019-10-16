@@ -49,12 +49,6 @@ const credentials = {
 	authenticated: true,
 };
 
-const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-	return new Promise((res, rej) => {
-		res(credentials);
-	});
-});
-
 const testPubSubAsync = (pubsub, topic, message, options?) =>
 	new Promise((resolve, reject) => {
 		const obs = pubsub.subscribe(topic, options).subscribe({
@@ -110,6 +104,14 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 	});
 
 beforeEach(() => {
+	const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+		return new Promise((res, rej) => {
+			res(credentials);
+		});
+	});
+});
+
+afterEach(() => {
 	jest.restoreAllMocks();
 });
 
@@ -160,13 +162,6 @@ describe('PubSub', () => {
 					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				},
 			};
-
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return new Promise((res, rej) => {
-					res(credentials);
-				});
-			});
-
 			const pubsub = new PubSub({});
 			pubsub.configure(config);
 
@@ -270,12 +265,6 @@ describe('PubSub', () => {
 
 	describe('multiple providers', () => {
 		test('subscribe and publish to specific provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return new Promise((res, rej) => {
-					res(credentials);
-				});
-			});
-
 			const pubsub = new PubSub();
 
 			const awsIotProvider = new AWSIoTProvider({
