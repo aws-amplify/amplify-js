@@ -6,7 +6,7 @@ import awsexports from './src/aws-exports';
 Auth.configure(awsexports);
 XR.configure(awsexports);
 
-const sceneExample = () => <amplify-scene sceneName={'scene1'} />;
+const sceneExample = () => <amplify-scene sceneName={'classroom'} />;
 
 export default {
   title: 'Scene example',
