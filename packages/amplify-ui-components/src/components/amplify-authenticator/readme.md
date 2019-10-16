@@ -24,6 +24,9 @@
 - [amplify-sign-up](../amplify-sign-up)
 - [amplify-forgot-password](../amplify-forgot-password)
 - context-consumer
+- context-consumer
+- context-consumer
+- context-consumer
 
 ### Graph
 ```mermaid
@@ -32,11 +35,50 @@ graph TD;
   amplify-authenticator --> amplify-sign-up
   amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> context-consumer
-  amplify-sign-in --> amplify-link
+  amplify-authenticator --> context-consumer
+  amplify-authenticator --> context-consumer
+  amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
-  amplify-form-section --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field

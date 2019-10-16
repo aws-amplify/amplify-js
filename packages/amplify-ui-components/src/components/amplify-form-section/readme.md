@@ -28,14 +28,17 @@
 ### Depends on
 
 - [amplify-button](../amplify-button)
-- [amplify-section](../amplify-section)
+- [amplify-button](../amplify-button)
+- [amplify-button](../amplify-button)
+- [amplify-button](../amplify-button)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-form-section --> amplify-button
-  amplify-form-section --> amplify-section
-  amplify-forgot-password --> amplify-form-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
   amplify-sign-in --> amplify-form-section
   amplify-sign-up --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
