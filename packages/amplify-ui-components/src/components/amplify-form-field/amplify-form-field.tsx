@@ -31,6 +31,8 @@ export class AmplifyFormField {
   @Prop() placeholder?: string = '';
   /** (Optional) Override default styling */
   @Prop() overrideStyle?: boolean = false;
+  /** (Optional) String value for the name of the input. */
+  @Prop() name?: string;
 
   render() {
     return (
@@ -52,7 +54,7 @@ export class AmplifyFormField {
           </div>
         )}
         <div>
-          <slot name='input'>
+          <slot name="input">
             <amplify-input
               fieldId={this.fieldId}
               description={this.description}
@@ -60,11 +62,14 @@ export class AmplifyFormField {
               onInputChange={this.onInputChange}
               placeholder={this.placeholder}
               overrideStyle={this.overrideStyle}
+              name={this.name}
             />
           </slot>
         </div>
         {this.hint && (
-          <amplify-hint id={`${this.fieldId}-hint`} overrideStyle={this.overrideStyle}>{this.hint}</amplify-hint>
+          <amplify-hint id={`${this.fieldId}-hint`} overrideStyle={this.overrideStyle}>
+            {this.hint}
+          </amplify-hint>
         )}
       </div>
     );

@@ -1,5 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifyFormField } from './amplify-form-field'
+import { AmplifyFormField } from './amplify-form-field';
 
 describe('amplify-form-field spec:', () => {
   describe('Component logic ->', () => {
@@ -7,6 +7,34 @@ describe('amplify-form-field spec:', () => {
 
     beforeEach(() => {
       formField = new AmplifyFormField();
+    });
+
+    it('should have fieldId prop be undefined by default', () => {
+      expect(formField.fieldId).toBeUndefined();
+    });
+
+    it('should have label prop be undefined by default', () => {
+      expect(formField.label).toBeUndefined();
+    });
+
+    it('should have description prop be undefined by default', () => {
+      expect(formField.description).toBeUndefined();
+    });
+
+    it('should have type set to `text` by default', () => {
+      expect(formField.type).toEqual('text');
+    });
+
+    it('should have required set to false by default', () => {
+      expect(formField.required).toBe(false);
+    });
+
+    it('should have placeholder prop set to an empty string by default', () => {
+      expect(formField.placeholder).toEqual('');
+    });
+
+    it('should have name prop be undefined by default', () => {
+      expect(formField.name).toBeUndefined();
     });
 
     it('should have style override prop set to false by default', () => {
@@ -36,6 +64,15 @@ describe('amplify-form-field spec:', () => {
       const page = await newSpecPage({
         components: [AmplifyFormField],
         html: `<amplify-form-field label='label' description='description' field-id='id'></amplify-form-field>`,
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
+
+    it('renders with an name, if it is provided', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyFormField],
+        html: `<amplify-form-field label='label' description='description' field-id='id' name='seattle'></amplify-form-field>`,
       });
 
       expect(page.root).toMatchSnapshot();

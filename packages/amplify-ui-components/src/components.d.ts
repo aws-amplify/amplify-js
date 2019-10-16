@@ -153,6 +153,10 @@ export namespace Components {
     */
     'label': string | null;
     /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
+    /**
     * The callback, called when the input is modified by the user.
     */
     'onInputChange'?: (inputEvent: Event) => void;
@@ -704,6 +708,10 @@ declare namespace LocalJSX {
     * The text of the label.  Goes above the input. Ex: 'First name'
     */
     'label'?: string | null;
+    /**
+    * (Optional) String value for the name of the input.
+    */
+    'name'?: string;
     /**
     * The callback, called when the input is modified by the user.
     */
