@@ -50,8 +50,11 @@ export class AmplifySignIn {
    */
   @Prop() formFields: FormFieldTypes | string[];
 
+  /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
+  /* The username value in the sign-in form */
   @State() username: string;
+  /* The password value in the sign-in form */
   @State() password: string;
 
   componentWillLoad() {
