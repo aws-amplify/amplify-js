@@ -1,8 +1,8 @@
 {
-  "identityPoolName": "amplify_examples_identitypool_e004c03c",
-  "allowUnauthenticatedIdentities": false,
-  "resourceNameTruncated": "cognit6d1058b2",
-  "userPoolName": "cognito5e8d6bdf_userpool_6d1058b2",
+  "identityPoolName": "amplifyexamples54d66013_identitypool_54d66013",
+  "allowUnauthenticatedIdentities": true,
+  "resourceNameTruncated": "amplif54d66013",
+  "userPoolName": "amplifyexamples54d66013_userpool_54d66013",
   "autoVerifiedAttributes": ["email"],
   "mfaConfiguration": "OFF",
   "mfaTypes": ["SMS Text Message"],
@@ -18,10 +18,10 @@
   "userpoolClientRefreshTokenValidity": 30,
   "userpoolClientWriteAttributes": ["email"],
   "userpoolClientReadAttributes": ["email"],
-  "userpoolClientLambdaRole": "cognit6d1058b2_userpoolclient_lambda_role",
+  "userpoolClientLambdaRole": "amplif54d66013_userpoolclient_lambda_role",
   "userpoolClientSetAttributes": false,
+  "resourceName": "amplifyexamples54d66013",
   "authSelections": "identityPoolAndUserPool",
-  "resourceName": "cognito5e8d6bdf",
   "authRoleArn": {
     "Fn::GetAtt": ["AuthRole", "Arn"]
   },

@@ -1,13 +1,13 @@
 {
   "auth": {
-    "cognito5e8d6bdf": {
+    "amplifyexamples54d66013": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": []
     }
   },
   "xr": {
-    "scene1": {
+    "classroom": {
       "service": "Sumerian",
       "providerPlugin": "awscloudformation"
     }

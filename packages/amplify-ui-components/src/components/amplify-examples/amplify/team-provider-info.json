@@ -1,27 +1,27 @@
 {
-    "dev": {
-        "awscloudformation": {
-            "AuthRoleName": "amplify-examples-dev-20190910190021-authRole",
-            "UnauthRoleArn": "arn:aws:iam::902789148998:role/amplify-examples-dev-20190910190021-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::902789148998:role/amplify-examples-dev-20190910190021-authRole",
-            "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-examples-dev-20190910190021-deployment",
-            "UnauthRoleName": "amplify-examples-dev-20190910190021-unauthRole",
-            "StackName": "amplify-examples-dev-20190910190021",
-            "StackId": "arn:aws:cloudformation:us-east-1:902789148998:stack/amplify-examples-dev-20190910190021/e9f0e840-d437-11e9-b324-0eb2970e4f5e"
-        },
-        "categories": {
-            "auth": {
-                "cognito5e8d6bdf": {}
-            },
-            "xr": {
-                "scene1": {
-                    "url": "https://sumerian.us-east-1.amazonaws.com/20180801/projects/Drafts-assumed-role%2FAdmin%2Fjranz-Isengard/release/authTokens?sceneId=b3711a0b52e24cb09dc73f1c70d74da4.scene",
-                    "sceneId": "b3711a0b52e24cb09dc73f1c70d74da4.scene",
-                    "region": "us-east-1",
-                    "projectName": "Drafts-assumed-role/Admin/jranz-Isengard"
-                }
-            }
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-examples-dev-20191015164009-authRole",
+      "UnauthRoleArn": "arn:aws:iam::114066865359:role/amplify-examples-dev-20191015164009-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::114066865359:role/amplify-examples-dev-20191015164009-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-examples-dev-20191015164009-deployment",
+      "UnauthRoleName": "amplify-examples-dev-20191015164009-unauthRole",
+      "StackName": "amplify-examples-dev-20191015164009",
+      "StackId": "arn:aws:cloudformation:us-east-1:114066865359:stack/amplify-examples-dev-20191015164009/20584990-efa5-11e9-9a5b-0e194fb09f5c"
+    },
+    "categories": {
+      "auth": {
+        "amplifyexamples54d66013": {}
+      },
+      "xr": {
+        "classroom": {
+          "url": "https://sumerian.us-east-1.amazonaws.com/20180801/projects/sumerian-scene-web-component/release/authTokens?sceneId=0d50182be2864de5ae0e8d8b8d9284db.scene",
+          "sceneId": "0d50182be2864de5ae0e8d8b8d9284db.scene",
+          "region": "us-east-1",
+          "projectName": "sumerian-scene-web-component"
         }
+      }
     }
+  }
 }
