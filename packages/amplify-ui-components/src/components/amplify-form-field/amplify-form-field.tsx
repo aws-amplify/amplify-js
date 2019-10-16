@@ -1,7 +1,7 @@
 import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
 import { formField, formFieldLabel, formFieldDescription } from './amplify-form-field.style';
 import { styleNuker } from '../../common/helpers';
-import { TextFieldTypes } from '../../common/types';
+import { TextFieldTypes } from '../../common/types/ui-types';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
 const STATIC_FORM_FIELD_LABEL_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--form-field-label`;
@@ -26,7 +26,7 @@ export class AmplifyFormField {
   /** The required flag in order to make an input required prior to submitting a form */
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */
-  @Prop() onInputChange?: (inputEvent: Event) => void;
+  @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
   /** (Optional) Override default styling */
@@ -52,19 +52,21 @@ export class AmplifyFormField {
           </div>
         )}
         <div>
-          <slot name='input'>
+          <slot name="input">
             <amplify-input
               fieldId={this.fieldId}
               description={this.description}
               type={this.type}
-              onInputChange={this.onInputChange}
+              handleInputChange={this.handleInputChange}
               placeholder={this.placeholder}
               overrideStyle={this.overrideStyle}
             />
           </slot>
         </div>
         {this.hint && (
-          <amplify-hint id={`${this.fieldId}-hint`} overrideStyle={this.overrideStyle}>{this.hint}</amplify-hint>
+          <amplify-hint id={`${this.fieldId}-hint`} overrideStyle={this.overrideStyle}>
+            {this.hint}
+          </amplify-hint>
         )}
       </div>
     );

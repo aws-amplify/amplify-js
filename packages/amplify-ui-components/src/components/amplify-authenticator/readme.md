@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                                                                                     | Type     | Default     |
-| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| `state`  | `state`   | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `string` | `'loading'` |
+| Property           | Attribute            | Description                                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                             | Default            |
+| ------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.confirmingSignIn \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUp \| AuthState.confirmingSignUpCustomFlow \| AuthState.settingMFA \| AuthState.signedIn \| AuthState.signedOut \| AuthState.signingUp \| AuthState.verifyingAttributes` | `AuthState.SignIn` |
 
 
 ## Dependencies
@@ -22,11 +22,17 @@
 
 - [amplify-sign-in](../amplify-sign-in)
 - context-consumer
+- context-consumer
+- context-consumer
+- context-consumer
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-authenticator --> amplify-sign-in
+  amplify-authenticator --> context-consumer
+  amplify-authenticator --> context-consumer
+  amplify-authenticator --> context-consumer
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
@@ -34,8 +40,41 @@ graph TD;
   amplify-sign-in --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> context-consumer
+  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-button
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-form-field
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
