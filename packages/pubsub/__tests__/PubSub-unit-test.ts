@@ -160,6 +160,13 @@ describe('PubSub', () => {
 					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				},
 			};
+
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return new Promise((res, rej) => {
+					res(credentials);
+				});
+			});
+
 			const pubsub = new PubSub({});
 			pubsub.configure(config);
 
@@ -263,6 +270,12 @@ describe('PubSub', () => {
 
 	describe('multiple providers', () => {
 		test('subscribe and publish to specific provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return new Promise((res, rej) => {
+					res(credentials);
+				});
+			});
+
 			const pubsub = new PubSub();
 
 			const awsIotProvider = new AWSIoTProvider({
