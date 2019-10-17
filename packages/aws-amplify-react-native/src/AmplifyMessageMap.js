@@ -17,7 +17,11 @@ export const MapEntries = [
 	['User does not exist', /user.*not.*exist/i],
 	['User already exists', /user.*already.*exist/i],
 	['Incorrect username or password', /incorrect.*username.*password/i],
-	['Invalid password format', /validation.*password/i],
+	[
+		'Invalid password format. Please make sure to use supported characters',
+		/password.*constraint.*regular/i,
+	],
+	['Invalid username format', /username.*constraint.*regular/i],
 	[
 		'Invalid phone number format',
 		/invalid.*phone/i,
@@ -26,13 +30,19 @@ export const MapEntries = [
 ];
 
 export default message => {
-	const match = MapEntries.filter(entry => entry[1].test(message));
-	if (match.length === 0) {
-		return message;
+	const messages = message.split(';');
+	const newMessages = [];
+	if (messages && messages.length) {
+		messages.forEach(el => {
+			const match = MapEntries.filter(entry => new RegExp(entry[1]).test(el));
+			if (match.length === 0) {
+				newMessages.push(I18n.get(el));
+			} else {
+				const entry = match[0];
+				const msg = entry.length > 2 ? entry[2] : entry[0];
+				newMessages.push(I18n.get(entry[0], msg));
+			}
+		});
 	}
-
-	const entry = match[0];
-	const msg = entry.length > 2 ? entry[2] : entry[0];
-
-	return I18n.get(entry[0], msg);
+	return newMessages.join('; ');
 };

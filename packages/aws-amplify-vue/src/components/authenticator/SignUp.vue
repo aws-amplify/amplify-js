@@ -92,6 +92,7 @@ import orderBy from 'lodash.orderby';
 import AmplifyEventBus from '../../events/AmplifyEventBus';
 import * as AmplifyUI from '@aws-amplify/ui';
 import countries from '../../assets/countries';
+import AmplifyMessageMap from '../../assets/amplify-message-map';
 import signUpWithUsername, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
@@ -260,30 +261,6 @@ export default {
 					return AmplifyEventBus.$emit('authState', 'signIn');
 				})
 				.catch(err => {
-					if (err.code === 'InvalidParameterException') {
-						try {
-							const errFields = [];
-							const regexp = new RegExp('Value at', 'g');
-							const fieldIndices = Array.from(err.message.matchAll(regexp));
-							fieldIndices.forEach(i => {
-								let field = i.input.substring(i.index);
-								const firstQuote = field.indexOf("'") + 1;
-								field = field.slice(firstQuote);
-								field = field.slice(0, field.indexOf("'"));
-								if (errFields.indexOf(field) === -1 && field)
-									errFields.push(field);
-							});
-							if (errFields.length > 0) {
-								err.message = `User could not be created. Please make sure that the following fields are formatted properly: ${errFields.join(
-									', '
-								)}.`;
-							}
-						} catch (e) {
-							logger.warn(e);
-							err.message =
-								'User could not be created. Please make sure that all fields are formatted properly.';
-						}
-					}
 					return this.setError(err);
 				});
 		},
@@ -312,7 +289,7 @@ export default {
 			}
 		},
 		setError: function(e) {
-			this.error = this.$Amplify.I18n.get(e.message || e);
+			this.error = this.$Amplify.I18n.get(AmplifyMessageMap(e.message) || e);
 			this.logger.error(this.error);
 		},
 

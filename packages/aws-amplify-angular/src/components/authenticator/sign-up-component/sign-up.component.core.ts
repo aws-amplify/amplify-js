@@ -18,6 +18,7 @@ import defaultSignUpFieldAssets, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
 } from '../../../assets/default-sign-up-fields';
+import AmplifyMessageMap from '../../../assets/amplify-message-map';
 import { UsernameAttributes, PhoneFieldOutput } from '../types';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
@@ -285,30 +286,6 @@ export class SignUpComponentCore implements OnInit {
 				});
 			})
 			.catch(err => {
-				if (err.code === 'InvalidParameterException') {
-					try {
-						const errFields: Array<string> = [];
-						const regexp = new RegExp('Value at', 'g');
-						const fieldIndices = Array.from(err.message.matchAll(regexp));
-						fieldIndices.forEach((i: any) => {
-							let field = i.input.substring(i.index);
-							const firstQuote = field.indexOf("'") + 1;
-							field = field.slice(firstQuote);
-							field = field.slice(0, field.indexOf("'"));
-							if (errFields.indexOf(field) === -1 && field)
-								errFields.push(field);
-						});
-						if (errFields.length > 0) {
-							err.message = `User could not be created. Please make sure that the following fields are formatted properly: ${errFields.join(
-								', '
-							)}.`;
-						}
-					} catch (e) {
-						this.logger.warn(e);
-						err.message =
-							'User could not be created. Please make sure that all fields are formatted properly.';
-					}
-				}
 				this._setError(err);
 			});
 	}
@@ -435,7 +412,7 @@ export class SignUpComponentCore implements OnInit {
 			return;
 		}
 
-		this.errorMessage = err.message || err;
+		this.errorMessage = AmplifyMessageMap(err.message) || err;
 	}
 
 	getUsernameLabel() {
