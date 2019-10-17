@@ -131,7 +131,7 @@ export class AmplifySignUp {
 
       this.handleAuthStateChange(AuthState.ConfirmSignUp, user);
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
     }
   }
 
