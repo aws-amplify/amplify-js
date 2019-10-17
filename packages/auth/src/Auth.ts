@@ -152,7 +152,7 @@ export default class AuthClass {
 			mandatorySignIn,
 			refreshHandlers,
 			identityPoolRegion,
-            endpoint
+			endpoint,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -174,13 +174,13 @@ export default class AuthClass {
 			this._storageSync = this._storage['sync']();
 		}
 
-        if (userPoolId) {
-            const userPoolData: ICognitoUserPoolData = {
-                endpoint,
-                UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId,
-            };
-            userPoolData.Storage = this._storage;
+		if (userPoolId) {
+			const userPoolData: ICognitoUserPoolData = {
+				endpoint,
+				UserPoolId: userPoolId,
+				ClientId: userPoolWebClientId,
+			};
+			userPoolData.Storage = this._storage;
 
 			this.userPool = new CognitoUserPool(userPoolData);
 		}

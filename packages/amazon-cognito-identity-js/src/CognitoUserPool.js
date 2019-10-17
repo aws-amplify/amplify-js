@@ -24,7 +24,7 @@ export default class CognitoUserPool {
 	/**
 	 * Constructs a new CognitoUserPool object
 	 * @param {object} data Creation options.
-   * @param {string} data.endpoint the base endpoint to invoke.
+	 * @param {string} data.endpoint the base endpoint to invoke.
 	 * @param {string} data.UserPoolId Cognito user pool id.
 	 * @param {string} data.ClientId User pool application client id.
 	 * @param {object} data.Storage Optional storage object.
@@ -46,10 +46,12 @@ export default class CognitoUserPool {
 		if (!/^[\w-]+_.+$/.test(UserPoolId)) {
 			throw new Error('Invalid UserPoolId format.');
 		}
-    // eslint-disable-next-line max-len
-    if (endpoint && !/^(http|https):\/\/.+/.test(endpoint)) {
-      throw new Error(`endpoint was supplied as ${endpoint} but did not match the expected format`);
-    }
+		// eslint-disable-next-line max-len
+		if (endpoint && !/^(http|https):\/\/.+/.test(endpoint)) {
+			throw new Error(
+				`endpoint was supplied as ${endpoint} but did not match the expected format`
+			);
+		}
 
 		const region = UserPoolId.split('_')[0];
 
