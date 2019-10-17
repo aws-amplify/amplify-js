@@ -29,10 +29,10 @@ export class AmplifyAuthenticator {
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.Loading:
+        // TODO: add loading component
         return <div>Loading...</div>;
       case AuthState.SignIn:
         return <amplify-sign-in handleAuthStateChange={this.onAuthStateChange} />;
-      // return <amplify-button>test</amplify-button>;
       case AuthState.SignOut:
         // TODO: add sign out component
         return <div>Sign Out Component</div>;
