@@ -2,9 +2,7 @@
 
 exports[`amplify-authenticator spec: Render logic -> should render a \`forgot password\` by passing \`forgotpassword\` into state prop 1`] = `
 <amplify-authenticator state="forgotpassword">
-  <div>
-    Forgot Password Component
-  </div>
+  <amplify-sign-in></amplify-sign-in>
 </amplify-authenticator>
 `;
 
@@ -16,8 +14,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\`
 
 exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\` by passing \`signup\` into state prop 1`] = `
 <amplify-authenticator state="signup">
-  <div>
-    <amplify-sign-up></amplify-sign-up>
-  </div>
+  <amplify-sign-in></amplify-sign-in>
 </amplify-authenticator>
 `;

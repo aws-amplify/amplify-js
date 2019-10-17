@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, h, State } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   SIGN_UP_HEADER_TEXT,
@@ -7,32 +7,10 @@ import {
   SIGN_IN_TEXT,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
-import AuthState from '../../data/auth-state';
+import { AuthStateTunnel } from '../../data/auth-state';
+import { AuthState } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-
-const SIGN_UP_COMPONENTS = [
-  {
-    type: 'username',
-    placeholder: 'Create a username',
-    required: true,
-  },
-  {
-    type: 'password',
-    placeholder: 'Create a password',
-    required: true,
-  },
-  {
-    type: 'email',
-    required: true,
-  },
-  {
-    type: 'phone',
-    label: 'Phone Number *',
-    placeholder: '555-555-5555',
-    required: true,
-  },
-];
 
 @Component({
   tag: 'amplify-sign-up',
@@ -40,7 +18,7 @@ const SIGN_UP_COMPONENTS = [
 })
 export class AmplifySignUp {
   /** Fires when sign up form is submitted */
-  @Prop() handleSubmit: (submitEvent: Event) => void = e => this.signUp(e);
+  @Prop() handleSubmit: (submitEvent: Event) => void = () => this.signUp();
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign up component */
@@ -69,29 +47,91 @@ export class AmplifySignUp {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[] = SIGN_UP_COMPONENTS;
+  @Prop() formFields: FormFieldTypes | string[];
 
-  async signUp(event) {
-    //Avoid form submission
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+
+  @State() username: string;
+  @State() password: string;
+  @State() email: string;
+  @State() phone_number: string;
+
+  componentWillLoad() {
+    this.formFields = [
+      {
+        type: 'username',
+        placeholder: 'Create a username',
+        required: true,
+        handleInputChange: event => this.handleUsernameChange(event),
+      },
+      {
+        type: 'password',
+        placeholder: 'Create a password',
+        required: true,
+        handleInputChange: event => this.handlePasswordChange(event),
+      },
+      {
+        type: 'email',
+        required: true,
+        handleInputChange: event => this.handleEmailChange(event),
+      },
+      {
+        type: 'phone',
+        label: 'Phone Number *',
+        placeholder: '555-555-5555',
+        required: true,
+        handleInputChange: event => this.handlePhoneNumberChange(event),
+      },
+    ];
+  }
+
+  handleUsernameChange(event) {
+    this.username = event.target.value;
+  }
+
+  handlePasswordChange(event) {
+    this.password = event.target.value;
+  }
+
+  handleEmailChange(event) {
+    this.email = event.target.value;
+  }
+
+  handlePhoneNumberChange(event) {
+    this.phone_number = event.target.value;
+  }
+
+  // TODO: Add validation
+  // TODO: Prefix
+  async signUp() {
     if (event) {
-      console.log(event);
       event.preventDefault();
     }
+    if (!Auth || typeof Auth.signUp !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
 
-    const username = event.target[0].value;
-    const password = event.target[1].value;
+    const signUpAttrs = {
+      username: this.username,
+      password: this.password,
+      attributes: {
+        email: this.email,
+        phone_number: this.phone_number,
+      },
+    };
 
     try {
-      const user = await Auth.signUp(username, password);
-      console.log(user);
+      const user = await Auth.signUp(signUpAttrs);
+
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, user);
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
     }
   }
 
   render() {
     return (
-      <AuthState.Consumer>
+      <AuthStateTunnel.Consumer>
         {({ onAuthStateChange }) => (
           <amplify-form-section
             headerText={this.headerText}
@@ -109,7 +149,7 @@ export class AmplifySignUp {
             </div>
           </amplify-form-section>
         )}
-      </AuthState.Consumer>
+      </AuthStateTunnel.Consumer>
     );
   }
 }

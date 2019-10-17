@@ -10,7 +10,7 @@ describe('amplify-sign-in spec:', () => {
     });
 
     it('should render `handleSubmit` as undefined by default', () => {
-      expect(signUp.handleSubmit).toBeUndefined();
+      expect(signUp.handleSubmit).toBeDefined();
     });
 
     it('should render `validationErrors` as undefined by default', () => {
