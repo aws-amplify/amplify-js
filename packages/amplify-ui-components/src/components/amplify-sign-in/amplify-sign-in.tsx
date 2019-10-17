@@ -13,7 +13,10 @@ import {
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
 
+import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
+
+const logger = new Logger('SignIn');
 
 @Component({
   tag: 'amplify-sign-in',
@@ -114,33 +117,32 @@ export class AmplifySignIn {
     this.loading = true;
     try {
       const user = await Auth.signIn(this.username, this.password);
-      console.log(user);
-      // logger.debug(user);
+      logger.debug(user);
       if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
-        // logger.debug('confirm user with ' + user.challengeName);
+        logger.debug('confirm user with ' + user.challengeName);
         this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
       } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-        // logger.debug('require new password', user.challengeParam);
+        logger.debug('require new password', user.challengeParam);
         this.handleAuthStateChange(AuthState.ResetPassword, user);
       } else if (user.challengeName === 'MFA_SETUP') {
-        // logger.debug('TOTP setup', user.challengeParam);
+        logger.debug('TOTP setup', user.challengeParam);
         this.handleAuthStateChange(AuthState.TOTPSetup, user);
       } else if (
         user.challengeName === 'CUSTOM_CHALLENGE' &&
         user.challengeParam &&
         user.challengeParam.trigger === 'true'
       ) {
-        // logger.debug('custom challenge', user.challengeParam);
+        logger.debug('custom challenge', user.challengeParam);
         this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
       } else {
         this.checkContact(user);
       }
     } catch (error) {
       if (error.code === 'UserNotConfirmedException') {
-        // logger.debug('the user is not confirmed');
+        logger.debug('the user is not confirmed');
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });
       } else if (error.code === 'PasswordResetRequiredException') {
-        // logger.debug('the user requires a new password');
+        logger.debug('the user requires a new password');
         this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
       } else {
         throw new Error(error);

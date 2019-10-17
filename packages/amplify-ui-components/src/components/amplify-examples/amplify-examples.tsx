@@ -5,6 +5,8 @@ import sceneExample from './scene-example';
 
 const examples = [example1, example4, sceneExample];
 
+(window as any).LOG_LEVEL = 'DEBUG';
+
 const Tabs = ({ active, set }) => (
   <ul>
     {examples.map(({ title }, index) => (
