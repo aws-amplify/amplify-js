@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "licenses": [
@@ -50,7 +50,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest --passWithNoTests",
+    "test": "jest -w 1 --passWithNoTests",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
