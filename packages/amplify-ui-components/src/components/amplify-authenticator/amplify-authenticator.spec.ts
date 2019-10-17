@@ -9,16 +9,8 @@ describe('amplify-authenticator spec:', () => {
       authenticator = new AmplifyAuthenticator();
     });
 
-    it('should render `firstInitialLoad` to true by default', () => {
-      expect(authenticator.firstInitialLoad).toBe(true);
-    });
-
     it('should render `authState` as `loading` by default', () => {
       expect(authenticator.authState).toEqual('loading');
-    });
-
-    it('should render `state` as `loading` by default', () => {
-      expect(authenticator.state).toEqual('loading');
     });
   });
   describe('Render logic ->', () => {

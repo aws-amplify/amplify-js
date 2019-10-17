@@ -27,7 +27,7 @@ describe('amplify-button e2e:', () => {
     // This block here, and the .exposeFunction() above, are both necessary
     // if you ever want to pass a function into an object's props
     await page.$eval('amplify-button', (componentElement: any) => {
-      componentElement.onButtonClick = this.exposedfunc;
+      componentElement.handleButtonClick = this.exposedfunc;
     });
     await page.waitForChanges();
 
