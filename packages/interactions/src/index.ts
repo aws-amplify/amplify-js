@@ -19,8 +19,8 @@ const logger = new Logger('Interactions');
 let _instance: InteractionsClass = null;
 
 if (!_instance) {
-    logger.debug('Create Interactions Instance');
-    _instance = new InteractionsClass(null);
+	logger.debug('Create Interactions Instance');
+	_instance = new InteractionsClass(null);
 }
 
 const Interactions = _instance;
@@ -30,4 +30,4 @@ export default Interactions;
 
 export * from './Providers/AWSLexProvider';
 
-export {InteractionsClass};
+export { InteractionsClass };

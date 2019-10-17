@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Greetings normal case render correctly with authState signedIn 1`] = `
+<Component
+  data-test="greetings-nav-bar"
+  theme="theme"
+>
+  <Component
+    data-test="greetings-nav"
+    theme="theme"
+  >
+    <Component
+      data-test="greetings-nav-right"
+      theme="theme"
+    >
+      <span>
+        <Component
+          theme="theme"
+        >
+          Hello username
+        </Component>
+        <SignOut
+          authData={
+            Object {
+              "attributes": Object {
+                "name": "username",
+              },
+            }
+          }
+          authState="signedIn"
+          theme="theme"
+        />
+      </span>
+    </Component>
+  </Component>
+</Component>
+`;
+
+exports[`Greetings normal case render correctly with hide 1`] = `""`;
+
+exports[`Greetings render corrently with other authStates 1`] = `""`;
+
+exports[`Greetings render corrently with other authStates 2`] = `""`;
+
+exports[`Greetings render corrently with other authStates 3`] = `""`;
+
+exports[`Greetings render corrently with other authStates 4`] = `""`;
+
+exports[`Greetings render corrently with other authStates 5`] = `""`;
+
+exports[`Greetings render corrently with other authStates 6`] = `""`;
+
+exports[`Greetings render corrently with other authStates 7`] = `""`;
+
+exports[`Greetings render corrently with other authStates 8`] = `""`;

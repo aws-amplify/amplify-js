@@ -19,8 +19,8 @@ const logger = new Logger('PubSub');
 let _instance: PubSubClass = null;
 
 if (!_instance) {
-    logger.debug('Create PubSub Instance');
-    _instance = new PubSubClass(null);
+	logger.debug('Create PubSub Instance');
+	_instance = new PubSubClass(null);
 }
 
 const PubSub = _instance;
