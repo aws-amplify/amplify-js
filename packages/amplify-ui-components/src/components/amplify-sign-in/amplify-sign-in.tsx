@@ -87,6 +87,20 @@ export class AmplifySignIn {
     this.password = event.target.value;
   }
 
+  checkContact(user) {
+    if (!Auth || typeof Auth.verifiedContact !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+    Auth.verifiedContact(user).then(data => {
+      if (Object.keys(data.verified).length === 0) {
+        this.handleAuthStateChange(AuthState.SignedIn, user);
+      } else {
+        user = Object.assign(user, data);
+        this.handleAuthStateChange(AuthState.VerifyContact, user);
+      }
+    });
+  }
+
   async signIn(event) {
     console.log(event);
     // avoid submitting the form
@@ -119,7 +133,7 @@ export class AmplifySignIn {
         // logger.debug('custom challenge', user.challengeParam);
         this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
       } else {
-        // this.checkContact(user);
+        this.checkContact(user);
       }
     } catch (error) {
       if (error.code === 'UserNotConfirmedException') {

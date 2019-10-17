@@ -4,7 +4,7 @@ export enum AuthState {
   SignIn = 'signin',
   Loading = 'loading',
   signedOut = 'signedout',
-  signedIn = 'signedin',
+  SignedIn = 'signedin',
   signingUp = 'signingup',
   ConfirmSignUp = 'confirmSignUp',
   confirmingSignUpCustomFlow = 'confirmsignupcustomflow',
@@ -16,4 +16,5 @@ export enum AuthState {
   settingMFA = 'settingMFA',
   TOTPSetup = 'TOTPSetup',
   CustomConfirmSignIn = 'customConfirmSignIn',
+  VerifyContact = 'verifyContact',
 }
