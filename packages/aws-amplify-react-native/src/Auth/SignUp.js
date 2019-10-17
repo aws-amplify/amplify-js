@@ -217,7 +217,33 @@ export default class SignUp extends AuthPiece {
 			.then(data => {
 				this.changeState('confirmSignUp', data.user.username);
 			})
-			.catch(err => this.error(err));
+			.catch(err => {
+				if (err.code === 'InvalidParameterException') {
+					try {
+						const errFields = [];
+						const regexp = new RegExp('Value at', 'g');
+						const fieldIndices = Array.from(err.message.matchAll(regexp));
+						fieldIndices.forEach(i => {
+							let field = i.input.substring(i.index);
+							const firstQuote = field.indexOf("'") + 1;
+							field = field.slice(firstQuote);
+							field = field.slice(0, field.indexOf("'"));
+							if (errFields.indexOf(field) === -1 && field)
+								errFields.push(field);
+						});
+						if (errFields.length > 0) {
+							err.message = `User could not be created. Please make sure that the following fields are formatted properly: ${errFields.join(
+								', '
+							)}.`;
+						}
+					} catch (e) {
+						logger.warn(e);
+						err.message =
+							'User could not be created. Please make sure that all fields are formatted properly.';
+					}
+				}
+				return this.error(err);
+			});
 	}
 
 	showComponent(theme) {
