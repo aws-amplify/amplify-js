@@ -12,7 +12,7 @@ describe('amplify-form-field e2e:', () => {
     await page.setContent(
       `<amplify-form-field field-id="id" label="Label test" description="Description test" hint="Hint test" placeholder="Placeholder test"></amplify-form-field>`,
     );
-    const screenshot = await page.compareScreenshot('Amplify Form Field', {fullPage: true});
+    const screenshot = await page.compareScreenshot('Amplify Form Field', { fullPage: true });
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
 
     const fieldElement = await page.find('amplify-form-field');
@@ -43,7 +43,7 @@ describe('amplify-form-field e2e:', () => {
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-form-field', (fieldElement: any) => {
-      fieldElement.onInputChange = this.exposedfunc;
+      fieldElement.handleInputChange = this.exposedfunc;
       fieldElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();

@@ -34,7 +34,7 @@ describe('amplify-sign-in spec:', () => {
     //   expect(signIn.formFields).toEqual(result);
     // });
 
-    it('should render `handleSubmit` as undefined by default', () => {
+    it('should render `handleSubmit` as defined by default', () => {
       expect(signIn.handleSubmit).toBeDefined();
     });
 

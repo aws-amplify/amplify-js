@@ -16,4 +16,5 @@ export enum AuthState {
   settingMFA = 'settingMFA',
   TOTPSetup = 'TOTPSetup',
   CustomConfirmSignIn = 'customConfirmSignIn',
+  VerifyContact = 'verifycontact',
 }
