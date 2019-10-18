@@ -96,7 +96,7 @@ export class AmplifySignIn {
     }
     Auth.verifiedContact(user).then(data => {
       if (Object.keys(data.verified).length === 0) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
+        this.handleAuthStateChange(AuthState.signedIn, user);
       } else {
         user = Object.assign(user, data);
         this.handleAuthStateChange(AuthState.VerifyContact, user);
