@@ -2,7 +2,7 @@ import { h } from '@stencil/core';
 
 const Example1 = () => (
   <div>
-    <amplify-authenticator />
+    <amplify-authenticator initial-auth-state="signup" />
   </div>
 );
 

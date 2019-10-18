@@ -8,7 +8,7 @@ describe('amplify-input e2e:', () => {
     await page.setContent(
       `<amplify-input field-id="id" description="Description test" placeholder="Placeholder test"></amplify-input>`,
     );
-    const screenshot = await page.compareScreenshot('Amplify Input', {fullPage: true});
+    const screenshot = await page.compareScreenshot('Amplify Input', { fullPage: true });
     expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: pixelThreshold });
 
     const inputElement = await page.find('amplify-input');
@@ -24,7 +24,7 @@ describe('amplify-input e2e:', () => {
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-input', (inputElement: any) => {
-      inputElement.onInputChange = this.exposedfunc;
+      inputElement.handleInputChange = this.exposedfunc;
       inputElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();
@@ -48,7 +48,7 @@ describe('amplify-input e2e:', () => {
     await page.exposeFunction('exposedfunc', func);
 
     await page.$eval('amplify-input', (inputElement: any) => {
-      inputElement.onInputChange = this.exposedfunc;
+      inputElement.handleInputChange = this.exposedfunc;
       inputElement.label = 'adding a label so that the component rerenders';
     });
     await page.waitForChanges();

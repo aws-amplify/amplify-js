@@ -3,7 +3,9 @@ import example1 from './example1';
 import example4 from './example4';
 import sceneExample from './scene-example';
 
-const examples = [sceneExample, example1, example4];
+const examples = [example1, example4, sceneExample];
+
+(window as any).LOG_LEVEL = 'DEBUG';
 
 const Tabs = ({ active, set }) => (
   <ul>
