@@ -117,6 +117,37 @@ export namespace Components {
     */
     'value': string;
   }
+  interface AmplifyConfirmSignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit': (submitEvent: Event) => void;
+    /**
+    * Used for header text in confirm sign up component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for `Back to Sign In` text passed to footer component
+    */
+    'signInText': string;
+    /**
+    * Used for the submit button text in confirm sign up component
+    */
+    'submitButtonText': string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
+  }
   interface AmplifyCountryDialCode {
     /**
     * The options of the country dial code select input.
@@ -435,7 +466,6 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -545,6 +575,12 @@ declare global {
   const HTMLAmplifyCodeFieldElement: {
     prototype: HTMLAmplifyCodeFieldElement;
     new (): HTMLAmplifyCodeFieldElement;
+  };
+
+  interface HTMLAmplifyConfirmSignUpElement extends Components.AmplifyConfirmSignUp, HTMLStencilElement {}
+  const HTMLAmplifyConfirmSignUpElement: {
+    prototype: HTMLAmplifyConfirmSignUpElement;
+    new (): HTMLAmplifyConfirmSignUpElement;
   };
 
   interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
@@ -690,6 +726,7 @@ declare global {
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-confirm-sign-up': HTMLAmplifyConfirmSignUpElement;
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
@@ -798,6 +835,37 @@ declare namespace LocalJSX {
     * The value of the content inside of the input field
     */
     'value'?: string;
+  }
+  interface AmplifyConfirmSignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit'?: (submitEvent: Event) => void;
+    /**
+    * Used for header text in confirm sign up component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for `Back to Sign In` text passed to footer component
+    */
+    'signInText'?: string;
+    /**
+    * Used for the submit button text in confirm sign up component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
   }
   interface AmplifyCountryDialCode {
     /**
@@ -1117,7 +1185,6 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -1202,6 +1269,7 @@ declare namespace LocalJSX {
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-code-field': AmplifyCodeField;
+    'amplify-confirm-sign-up': AmplifyConfirmSignUp;
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
@@ -1239,6 +1307,7 @@ declare module "@stencil/core" {
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
       'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
+      'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;

@@ -33,6 +33,7 @@
 ```mermaid
 graph TD;
   amplify-form-section --> amplify-button
+  amplify-confirm-sign-up --> amplify-form-section
   amplify-sign-in --> amplify-form-section
   amplify-sign-up --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
