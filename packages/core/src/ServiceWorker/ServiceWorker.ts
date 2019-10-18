@@ -70,7 +70,7 @@ class ServiceWorkerClass {
 			if (navigator && 'serviceWorker' in navigator) {
 				navigator.serviceWorker
 					.register(filePath, {
-						scope: scope,
+						scope,
 					})
 					.then(registration => {
 						if (registration.installing) {

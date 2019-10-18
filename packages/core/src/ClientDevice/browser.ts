@@ -42,13 +42,13 @@ function browserClientInfo() {
 	const timezone = browserTimezone();
 
 	return {
-		platform: platform,
+		platform,
 		make: product || vendor,
 		model: type.type,
 		version: type.version,
 		appVersion: [type.type, type.version].join('/'),
-		language: language,
-		timezone: timezone,
+		language,
+		timezone,
 	};
 }
 

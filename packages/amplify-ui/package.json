@@ -13,7 +13,7 @@
     "clean": "rimraf dist lib",
     "build": "npm run clean && webpack && copyfiles -u 1 ./src/*.css.d.ts ./lib"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "autoprefixer": "^9.5.1",
     "copyfiles": "^2.1.0",

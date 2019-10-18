@@ -49,7 +49,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._config = config ? config : {};
 		this._config.flushSize =
 			this._config.flushSize > 0 &&
-			this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
+				this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
 				? this._config.flushSize
 				: FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
