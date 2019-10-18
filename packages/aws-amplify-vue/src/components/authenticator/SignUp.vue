@@ -260,9 +260,7 @@ export default {
 					}
 					return AmplifyEventBus.$emit('authState', 'signIn');
 				})
-				.catch(err => {
-					return this.setError(err);
-				});
+				.catch(e => this.setError(e));
 		},
 		validate: function() {
 			let invalids = [];
@@ -289,7 +287,7 @@ export default {
 			}
 		},
 		setError: function(e) {
-			this.error = this.$Amplify.I18n.get(AmplifyMessageMap(e.message) || e);
+			this.error = this.$Amplify.I18n.get(AmplifyMessageMap(e.message)) || e;
 			this.logger.error(this.error);
 		},
 

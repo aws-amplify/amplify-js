@@ -11,8 +11,6 @@
  * and limitations under the License.
  */
 
-import { I18n } from '@aws-amplify/core';
-
 export const MapEntries = [
 	['User does not exist', /user.*not.*exist/i],
 	['User already exists', /user.*already.*exist/i],
@@ -37,11 +35,11 @@ export default function AmplifyMessageMap(message) {
 		messages.forEach(el => {
 			const match = MapEntries.filter(entry => new RegExp(entry[1]).test(el));
 			if (match.length === 0) {
-				newMessages.push(I18n.get(el));
+				newMessages.push(el);
 			} else {
 				const entry = match[0];
 				const msg = entry.length > 2 ? entry[2] : entry[0];
-				newMessages.push(I18n.get(entry[0], msg));
+				newMessages.push(msg);
 			}
 		});
 	}
