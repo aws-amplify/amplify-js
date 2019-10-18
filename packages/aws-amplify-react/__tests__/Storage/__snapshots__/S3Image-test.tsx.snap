@@ -35,6 +35,7 @@ exports[`S3Image render test render with className 1`] = `
     }
   >
     <img
+      className="shadow"
       onError={[Function]}
       onLoad={[Function]}
       src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
