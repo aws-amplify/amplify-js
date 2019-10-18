@@ -14,18 +14,18 @@ describe('amplify-authenticator spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it('should render a `sign up` by passing `signup` into state prop', async () => {
+    it('should render a `sign up` if initialAuthState is `signup`', async () => {
       const page = await newSpecPage({
         components: [AmplifyAuthenticator],
-        html: `<amplify-authenticator state="signup"></amplify-authenticator>`
+        html: `<amplify-authenticator initial-auth-state="signup"></amplify-authenticator>`
       });
 
       expect(page.root).toMatchSnapshot();
     });
-    it('should render a `forgot password` by passing `forgotpassword` into state prop', async () => {
+    it('should render a `forgot password` if initialAuthState is `forgotpassword`', async () => {
       const page = await newSpecPage({
         components: [AmplifyAuthenticator],
-        html: `<amplify-authenticator state="forgotpassword"></amplify-authenticator>`
+        html: `<amplify-authenticator initial-auth-state="forgotpassword"></amplify-authenticator>`
       });
 
       expect(page.root).toMatchSnapshot();
