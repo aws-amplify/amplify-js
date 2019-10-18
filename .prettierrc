@@ -1,5 +1,14 @@
 {
 	"trailingComma": "es5",
 	"singleQuote": true,
-	"useTabs": true
+	"useTabs": true,
+	"overrides": [
+		{
+			"files": "*.vue",
+			"options": {
+				"htmlWhitespaceSensitivity": "ignore",
+				"printWidth": 120
+			}
+		}
+	]
 }
