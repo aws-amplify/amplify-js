@@ -1,13 +1,11 @@
 import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
 
 describe('withOAuth test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -26,7 +24,7 @@ describe('withOAuth test', () => {
 
 	describe('signIn test', () => {
 		test('happy case with connected response', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -45,7 +43,7 @@ describe('withOAuth test', () => {
 		});
 
 		test('Passing in a social provider', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
