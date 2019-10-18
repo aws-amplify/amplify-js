@@ -112,6 +112,7 @@ export default class AuthPiece<
 						theme={theme}
 						key="email"
 						name="email"
+						type="email"
 						onChange={this.handleInputChange}
 						data-test={auth.genericAttrs.emailInput}
 					/>
