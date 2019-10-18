@@ -1,7 +1,7 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySignUp } from './amplify-sign-up';
 
-describe('amplify-sign-in spec:', () => {
+describe('amplify-sign-up spec:', () => {
   describe('Component logic ->', () => {
     let signUp;
 
@@ -30,7 +30,7 @@ describe('amplify-sign-in spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it('should render a `sign in` form by default', async () => {
+    it('should render a `sign up` form by default', async () => {
       const page = await newSpecPage({
         components: [AmplifySignUp],
         html: `<amplify-sign-up></amplify-sign-up>`,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form by default 1`] = `
+exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form by default 1`] = `
 <amplify-sign-up>
   <context-consumer></context-consumer>
 </amplify-sign-up>
