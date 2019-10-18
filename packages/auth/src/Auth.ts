@@ -1422,6 +1422,7 @@ export default class AuthClass {
 	public async signOut(opts?: SignOutOpts): Promise<any> {
 		try {
 			await this.cleanCachedItems();
+			this._storage.removeItem('aws-amplify-federatedInfo');
 		} catch (e) {
 			logger.debug('failed to clear cached items');
 		}
