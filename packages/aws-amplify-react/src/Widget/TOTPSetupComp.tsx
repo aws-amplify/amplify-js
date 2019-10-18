@@ -131,10 +131,11 @@ export default class TOTPSetupComp extends Component<
 		Auth.verifyTotpToken(user, totpCode)
 			.then(() => {
 				// set it to preferred mfa
-				Auth.setPreferredMFA(user, 'TOTP');
-				this.setState({ setupMessage: 'Setup TOTP successfully!' });
-				logger.debug('set up totp success!');
-				this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+				Auth.setPreferredMFA(user, 'TOTP').then(() => {
+					this.setState({ setupMessage: 'Setup TOTP successfully!' });
+					logger.debug('set up totp success!');
+					this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+				});
 			})
 			.catch(err => {
 				this.setState({ setupMessage: 'Setup TOTP failed!' });

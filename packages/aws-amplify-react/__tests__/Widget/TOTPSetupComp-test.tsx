@@ -143,14 +143,16 @@ describe('TOTPSetupComp test', () => {
 			const spyon2 = jest
 				.spyOn(Auth, 'setPreferredMFA')
 				.mockImplementationOnce(() => {
-					return;
+					return new Promise((res, rej) => {
+						res();
+					});
 				});
 			const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
 
 			await instance.verifyTotpToken();
 
 			expect(spyon).toBeCalled();
-			expect(spyon2).toBeCalled();
+			await expect(spyon2).toBeCalled();
 			expect(spyon3).toBeCalled();
 
 			spyon.mockClear();
