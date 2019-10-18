@@ -296,10 +296,6 @@ export default class AuthClass {
 				validationData,
 				(err, data) => {
 					if (err) {
-						if (err.code === 'InvalidParameterException') {
-							err.message =
-								'Username could not be created. Please make sure that the username you have entered is between 1 and 128 characters.';
-						}
 						dispatchAuthEvent(
 							'signUp_failure',
 							err,
