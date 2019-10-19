@@ -40,6 +40,7 @@ const packageFolderMap = {
 	core: '@aws-amplify/core',
 	interactions: '@aws-amplify/interactions',
 	pubsub: '@aws-amplify/pubsub',
+	predictions: '@aws-amplify/predictions',
 	pushnotification: '@aws-amplify/pushnotification',
 	storage: '@aws-amplify/storage',
 	xr: '@aws-amplify/xr',
@@ -47,8 +48,7 @@ const packageFolderMap = {
 
 const folders = Object.keys(packageFolderMap);
 const nodeModules = '/node_modules/';
-const webpackPrefix = 'webpack:///';
-const webpackNodeModules = webpackPrefix + '.' + nodeModules;
+const webpackNodeModules = '~/';
 
 function devtoolModuleFilenameTemplate(info) {
 	const resource = info.resource;
@@ -59,8 +59,7 @@ function devtoolModuleFilenameTemplate(info) {
 		const after = start + nodeModules.length;
 		return webpackNodeModules + resource.substring(after);
 	} else if (resource.includes('../')) {
-		// handle relative paths to other packages in this monorepo by converting them into absolute
-		// paths pointing at node_modules
+		// handle relative paths to other packages in this monorepo
 		for (let i = 0; i < folders.length; i++) {
 			const folder = folders[i];
 			const relative = '../' + folder;
@@ -74,9 +73,22 @@ function devtoolModuleFilenameTemplate(info) {
 				);
 			}
 		}
+	} else if (resource.startsWith('./')) {
+		// The only time we get here is when there's a bug in the toolchain upstream from
+		// us that causes imported files (I've seen this only for CSS files and package.json)
+		// to have paths that are relative to the package root instead of being relative to
+		// the /dist or /lib output folder. Fix this by prefixing with an extra dot.
+		return '.' + resource;
 	}
-	// fall-through (e.g. relative paths in this package, webpack builtins, unknown package paths)
-	return webpackPrefix + resource;
+
+	// If we get here, the resource is one of these cases:
+	//   1) a relative path to a parent folder, e.g. '../src/foo.js'
+	//   2) a plain filename (no path), e.g. 'foo.min.js'
+	//   3) one of the invalid paths that webpack itself adds, e.g. 'webpack/universalModuleDefinition',
+	//      or 'webpack/bootstrap 21c2cca6cf7a65b395b7' (the space is actually included by webpack!)
+	//   4) node-only modules that are ignored on the browser, e.g. 'fs (ignored)'
+	// For all these cases, it's fine to just use the same input path. No transforms needed.
+	return resource;
 }
 
 module.exports = {

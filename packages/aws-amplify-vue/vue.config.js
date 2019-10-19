@@ -23,4 +23,8 @@ module.exports = {
     */
 		extract: false,
 	},
+	configureWebpack: config => {
+		config.devtool = 'source-map';
+		config.output.devtoolModuleFilenameTemplate = require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate;
+	},
 };

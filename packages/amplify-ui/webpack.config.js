@@ -33,6 +33,7 @@ module.exports = {
 					{
 						loader: MiniCssExtractPlugin.loader,
 						options: {
+							sourceMap: true,
 							hmr: process.env.NODE_ENV === 'development',
 						},
 					},
@@ -48,10 +49,16 @@ module.exports = {
 						options: {
 							modules: true,
 							importLoaders: 1,
+							sourceMap: true,
 							localIdentName: '[name]__[local]___[hash:base64:5]',
 						},
 					},
-					'postcss-loader',
+					{
+						loader: 'postcss-loader',
+						options: {
+							sourceMap: true,
+						},
+					},
 				],
 			},
 		],
