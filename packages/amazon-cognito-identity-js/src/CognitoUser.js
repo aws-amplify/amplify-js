@@ -1987,7 +1987,7 @@ export default class CognitoUser {
 	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	verifySoftwareToken(totpCode, friendlyDeviceName, callback, clientMetadata) {
+	verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			this.client.request(
 				'VerifySoftwareToken',
@@ -2008,7 +2008,6 @@ export default class CognitoUser {
 						ClientId: this.pool.getClientId(),
 						ChallengeResponses: challengeResponses,
 						Session: this.Session,
-						ClientMetadata: clientMetadata,
 					};
 					if (this.getUserContextData()) {
 						jsonReq.UserContextData = this.getUserContextData();

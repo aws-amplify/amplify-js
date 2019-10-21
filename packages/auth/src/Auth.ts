@@ -854,8 +854,7 @@ export default class AuthClass {
 	 */
 	public verifyTotpToken(
 		user: CognitoUser | any,
-		challengeAnswer: string,
-		clientMetadata: any = this._config.clientMetadata
+		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verfication totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
@@ -870,7 +869,6 @@ export default class AuthClass {
 					res(data);
 					return;
 				},
-				clientMetadata,
 			});
 		});
 	}
