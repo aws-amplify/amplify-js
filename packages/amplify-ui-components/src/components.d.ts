@@ -18,11 +18,11 @@ import {
   TextFieldTypes,
 } from './common/types/ui-types';
 import {
-  CountryCodeDialOptions,
-} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
-import {
   FunctionalComponent,
 } from '@stencil/core';
+import {
+  CountryCodeDialOptions,
+} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
 import {
   IconNameType,
 } from './components/amplify-icon/icons';
@@ -101,6 +101,10 @@ export namespace Components {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint': string | FunctionalComponent | null;
+    /**
     * Used for the code label
     */
     'label': string;
@@ -122,7 +126,7 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object | string) => void;
     /**
     * Fires when sign up form is submitted
     */
@@ -820,6 +824,10 @@ declare namespace LocalJSX {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint'?: string | FunctionalComponent | null;
+    /**
     * Used for the code label
     */
     'label'?: string;
@@ -841,7 +849,7 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object | string) => void;
     /**
     * Fires when sign up form is submitted
     */

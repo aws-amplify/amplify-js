@@ -17,6 +17,8 @@ export class AmplifyAuthenticator {
   }
 
   onAuthStateChange = (nextAuthState: AuthState, data?: object) => {
+    // Possibly add a if (data) this.data = data;
+    // Can make it a State Prop
     console.log(data);
     if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
 
@@ -37,7 +39,6 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignUp:
-        // TODO: add confirm sign up component
         return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ForgotPassword:
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;

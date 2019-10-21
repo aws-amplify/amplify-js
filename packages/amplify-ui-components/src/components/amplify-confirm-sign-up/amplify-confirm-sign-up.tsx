@@ -6,6 +6,7 @@ import {
   CONFIRM_SIGN_IN_TEXT,
 } from '../../common/constants';
 import { AmplifyConfirmSignUpFormFooter } from './amplify-confirm-sign-up-form-footer';
+import { AmplifyConfirmSignUpHint } from './amplify-confirm-sign-up-hint';
 import { AuthStateTunnel } from '../../data/auth-state';
 import { AuthState } from '../../common/types/auth-types';
 
@@ -46,7 +47,7 @@ export class AmplifyConfirmSignUp {
    */
   @Prop() formFields: FormFieldTypes | string[];
 
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object | string) => void;
 
   @State() username: string;
   @State() code: string;
@@ -64,6 +65,13 @@ export class AmplifyConfirmSignUp {
         label: 'Confirmation Code',
         placeholder: 'Enter your code',
         required: true,
+        hint: (
+          <AmplifyConfirmSignUpHint
+            forgotCodeText={'Lost your code?'}
+            resendCodeText={'Resend Code'}
+            resendConfirmCode={this.resendConfirmCode}
+          />
+        ),
         handleInputChange: event => this.handleCodeChange(event),
       },
     ];
@@ -77,13 +85,31 @@ export class AmplifyConfirmSignUp {
     this.code = event.target.value;
   }
 
+  async resendConfirmCode() {
+    if (event) {
+      event.preventDefault();
+    }
+    if (!Auth || typeof Auth.resendSignUp !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+    try {
+      // TODO: Change from hard code to calling for username first;
+      // Similar in /amplify-js/packages/aws-amplify-react/src/Auth/ConfirmSignUp.tsx has usernameFromAuthData();
+      const resendCode = await Auth.resendSignUp('samlmar_test');
+
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   // TODO: Add validation
   // TODO: Prefix
   async confirmSignUp() {
     if (event) {
       event.preventDefault();
     }
-    if (!Auth || typeof Auth.signUp !== 'function') {
+    if (!Auth || typeof Auth.confirmSignUp !== 'function') {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
 

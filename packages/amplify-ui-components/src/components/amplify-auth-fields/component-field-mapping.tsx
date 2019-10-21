@@ -34,6 +34,7 @@ const componentFieldMapping = {
     <amplify-code-field
       label={ff.label}
       placeholder={ff.placeholder}
+      hint={ff.hint}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
