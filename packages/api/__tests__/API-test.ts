@@ -8,7 +8,6 @@ import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
