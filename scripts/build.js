@@ -59,6 +59,10 @@ function tsc(fileNames, options) {
 	let program = ts.createProgram(fileNames, options);
 	let emitResult = program.emit();
 
+	let allDiagnostics = ts
+		.getPreEmitDiagnostics(program)
+		.concat(emitResult.diagnostics);
+
 	allDiagnostics.forEach(diagnostic => {
 		if (diagnostic.file) {
 			let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
