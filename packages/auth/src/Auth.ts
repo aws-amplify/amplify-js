@@ -296,10 +296,6 @@ export default class AuthClass {
 				validationData,
 				(err, data) => {
 					if (err) {
-						if (err.code === 'InvalidParameterException') {
-							err.message =
-								'Username could not be created. Please make sure that the username you have entered is between 1 and 128 characters.';
-						}
 						dispatchAuthEvent(
 							'signUp_failure',
 							err,
@@ -1694,9 +1690,13 @@ export default class AuthClass {
 			const provider = providerOrOptions;
 			// To check if the user is already logged in
 			try {
-				const loggedInUser = await this.currentAuthenticatedUser();
-				logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
-                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
+				const loggedInUser = JSON.stringify(
+					JSON.parse(this._storage.getItem('aws-amplify-federatedInfo')).user
+				);
+				if (loggedInUser) {
+					logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
+																	You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
+				}
 			} catch (e) {}
 
 			const { token, identity_id, expires_at } = response;

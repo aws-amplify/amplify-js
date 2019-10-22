@@ -2,8 +2,9 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
+
 ---
 
 **Describe the bug**
@@ -16,6 +17,10 @@ Steps to reproduce the behavior:
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
+
+-- or --
+
+Link to sample code
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -35,6 +40,10 @@ If applicable, add screenshots to help explain your problem.
 - OS: [e.g. iOS8.1]
 - Browser [e.g. stock browser, safari]
 - Version [e.g. 22]
+
+**Amplify context**
+- Framework (e.g. React, Angular, Vue, React Native)
+- Versions of Amplify you are using
 
 **Additional context**
 Add any other context about the problem here.

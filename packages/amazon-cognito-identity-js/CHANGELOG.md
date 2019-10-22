@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.1.0...amazon-cognito-identity-js@3.1.2) (2019-10-10)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+# [3.1.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.15...amazon-cognito-identity-js@3.1.0) (2019-10-10)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** linting config ([#4097](https://github.com/aws/aws-amplify/issues/4097)) ([82b1dd8](https://github.com/aws/aws-amplify/commit/82b1dd8acc9b1dc165707945d585ce282fce60ba))
+
+
+### Features
+
+* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
+
+
+
+
+
 ## [3.0.15](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@3.0.14...amazon-cognito-identity-js@3.0.15) (2019-07-30)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
