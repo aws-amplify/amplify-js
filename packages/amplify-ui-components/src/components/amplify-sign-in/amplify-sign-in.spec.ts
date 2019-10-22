@@ -58,7 +58,7 @@ describe('amplify-sign-in spec:', () => {
     it('should render a `sign in` form by default', async () => {
       const page = await newSpecPage({
         components: [AmplifySignIn],
-        html: `<amplify-sign-in></amplify-sign-in>`
+        html: `<amplify-sign-in></amplify-sign-in>`,
       });
 
       expect(page.root).toMatchSnapshot();

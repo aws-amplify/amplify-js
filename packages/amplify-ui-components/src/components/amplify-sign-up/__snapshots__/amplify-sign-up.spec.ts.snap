@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form by default 1`] = `
+<amplify-sign-up>
+  <amplify-form-section headertext="Create a new account">
+    <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-1r8ajg4">
+        <span>
+          Have an account?
+          <amplify-link>
+            Sign in
+          </amplify-link>
+        </span>
+        <amplify-button type="submit">
+          Create account
+        </amplify-button>
+      </div>
+    </div>
+  </amplify-form-section>
+</amplify-sign-up>
+`;
