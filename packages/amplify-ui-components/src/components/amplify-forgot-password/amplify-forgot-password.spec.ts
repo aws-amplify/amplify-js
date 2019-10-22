@@ -18,14 +18,6 @@ describe('amplify-forgot-password spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    beforeEach(() => {
-      // XR.loadScene = jest.fn();
-      // XR.isSceneLoaded = jest.fn(() => false);
-      // XR.isMuted = jest.fn(() => false);
-      // XR.isVRPresentationActive = jest.fn();
-      // XR.isVRCapable = jest.fn();
-      // XR.getSceneController = jest.fn();
-    });
     it(`should render loading overlay by default`, async () => {
       const page = await newSpecPage({
         components: [AmplifyForgotPassword],
