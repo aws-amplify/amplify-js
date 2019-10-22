@@ -257,7 +257,6 @@ export namespace Components {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
-    'inputProps': object;
     /**
     * (Optional) String value for the name of the input.
     */
@@ -854,7 +853,6 @@ declare namespace LocalJSX {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
-    'inputProps'?: object;
     /**
     * (Optional) String value for the name of the input.
     */

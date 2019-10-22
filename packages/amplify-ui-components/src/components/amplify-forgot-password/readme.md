@@ -7,13 +7,15 @@
 
 ## Properties
 
-| Property                | Attribute            | Description | Type                                                | Default                 |
-| ----------------------- | -------------------- | ----------- | --------------------------------------------------- | ----------------------- |
-| `formFields`            | --                   |             | `FormFieldTypes`                                    | `undefined`             |
-| `handleAuthStateChange` | --                   |             | `(nextAuthState: AuthState, data?: object) => void` | `undefined`             |
-| `headerText`            | `header-text`        |             | `string`                                            | `'Reset your password'` |
-| `overrideStyle`         | `override-style`     |             | `boolean`                                           | `false`                 |
-| `submitButtonText`      | `submit-button-text` |             | `string`                                            | `'Send Code'`           |
+| Property                | Attribute            | Description | Type                                                | Default                       |
+| ----------------------- | -------------------- | ----------- | --------------------------------------------------- | ----------------------------- |
+| `formFields`            | --                   |             | `FormFieldTypes`                                    | `undefined`                   |
+| `handleAuthStateChange` | --                   |             | `(nextAuthState: AuthState, data?: object) => void` | `undefined`                   |
+| `handleSend`            | --                   |             | `(event: Event) => void`                            | `event => this.send(event)`   |
+| `handleSubmit`          | --                   |             | `(event: Event) => void`                            | `event => this.submit(event)` |
+| `headerText`            | `header-text`        |             | `string`                                            | `'Reset your password'`       |
+| `overrideStyle`         | `override-style`     |             | `boolean`                                           | `false`                       |
+| `submitButtonText`      | `submit-button-text` |             | `string`                                            | `'Send Code'`                 |
 
 
 ## Dependencies
