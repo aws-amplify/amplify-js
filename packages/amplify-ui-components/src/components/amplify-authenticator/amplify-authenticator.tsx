@@ -28,7 +28,6 @@ export class AmplifyAuthenticator {
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.Loading:
-        // TODO: add loading component
         return <div>Loading...</div>;
       case AuthState.SignIn:
         return <amplify-sign-in handleAuthStateChange={this.onAuthStateChange} />;
@@ -36,8 +35,10 @@ export class AmplifyAuthenticator {
         // TODO: add sign out component
         return <div>Sign Out Component</div>;
       case AuthState.SignUp:
-        // TODO: add sign up component
-        return <div>Sign Up Component</div>;
+        return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
+      case AuthState.ConfirmSignUp:
+        // TODO: add confirm sign up component
+        return <div>Confirm Sign Up Component</div>;
       case AuthState.ForgotPassword:
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:

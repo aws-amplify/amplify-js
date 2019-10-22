@@ -17,7 +17,7 @@ describe('amplify-authenticator spec:', () => {
     it('should render a `sign up` if initialAuthState is `signup`', async () => {
       const page = await newSpecPage({
         components: [AmplifyAuthenticator],
-        html: `<amplify-authenticator initial-auth-state="signup"></amplify-authenticator>`
+        html: `<amplify-authenticator initial-auth-state="signup"></amplify-authenticator>`,
       });
 
       expect(page.root).toMatchSnapshot();
@@ -25,7 +25,7 @@ describe('amplify-authenticator spec:', () => {
     it('should render a `forgot password` if initialAuthState is `forgotpassword`', async () => {
       const page = await newSpecPage({
         components: [AmplifyAuthenticator],
-        html: `<amplify-authenticator initial-auth-state="forgotpassword"></amplify-authenticator>`
+        html: `<amplify-authenticator initial-auth-state="forgotpassword"></amplify-authenticator>`,
       });
 
       expect(page.root).toMatchSnapshot();
@@ -34,7 +34,7 @@ describe('amplify-authenticator spec:', () => {
     it('should render a `sign in` by default', async () => {
       const page = await newSpecPage({
         components: [AmplifyAuthenticator],
-        html: `<amplify-authenticator></amplify-authenticator>`
+        html: `<amplify-authenticator></amplify-authenticator>`,
       });
 
       expect(page.root).toMatchSnapshot();

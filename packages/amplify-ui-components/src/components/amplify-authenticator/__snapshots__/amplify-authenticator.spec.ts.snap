@@ -16,8 +16,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\`
 
 exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\` if initialAuthState is \`signup\` 1`] = `
 <amplify-authenticator initial-auth-state="signup">
-  <div>
-    Sign Up Component
-  </div>
+  <amplify-sign-up></amplify-sign-up>
 </amplify-authenticator>
 `;

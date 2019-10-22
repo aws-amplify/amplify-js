@@ -19,12 +19,14 @@
 ### Used by
 
  - [amplify-form-section](../amplify-form-section)
+ - [amplify-sign-up](../amplify-sign-up)
  - [rock-paper-scissor](../amplify-examples/rock-paper-scissor)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-form-section --> amplify-button
+  amplify-sign-up --> amplify-button
   rock-paper-scissor --> amplify-button
   style amplify-button fill:#f9f,stroke:#333,stroke-width:4px
 ```

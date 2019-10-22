@@ -23,6 +23,7 @@
 
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-sign-up](../amplify-sign-up)
 
 ### Depends on
 
@@ -36,6 +37,7 @@ graph TD;
   amplify-form-section --> amplify-section
   amplify-forgot-password --> amplify-form-section
   amplify-sign-in --> amplify-form-section
+  amplify-sign-up --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
