@@ -1,7 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
-import { AmplifySignInFormFooter } from './amplify-sign-in-form-footer';
+// import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
 import { AuthState } from '../../common/types/auth-types';
 
 import {
@@ -70,10 +69,12 @@ export class AmplifySignIn {
       {
         type: 'password',
         hint: (
-          <AmplifyForgotPasswordHint
-            forgotPasswordText={FORGOT_PASSWORD_TEXT}
-            resetPasswordText={RESET_PASSWORD_TEXT}
-          />
+          <div>
+            {FORGOT_PASSWORD_TEXT}{' '}
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}>
+              {RESET_PASSWORD_TEXT}
+            </amplify-link>
+          </div>
         ),
         required: true,
         handleInputChange: event => this.handlePasswordChange(event),
@@ -158,16 +159,16 @@ export class AmplifySignIn {
         headerText={this.headerText}
         overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
+        secondaryFooterContent={
+          <span>
+            {NO_ACCOUNT_TEXT}{' '}
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignUp)}>
+              {CREATE_ACCOUNT_TEXT}
+            </amplify-link>
+          </span>
+        }
       >
         <amplify-auth-fields formFields={this.formFields} />
-        <div slot="amplify-form-section-footer">
-          <AmplifySignInFormFooter
-            submitButtonText={this.submitButtonText}
-            createAccountText={CREATE_ACCOUNT_TEXT}
-            noAccountText={NO_ACCOUNT_TEXT}
-            onAuthStateChange={this.handleAuthStateChange}
-          />
-        </div>
       </amplify-form-section>
     );
   }

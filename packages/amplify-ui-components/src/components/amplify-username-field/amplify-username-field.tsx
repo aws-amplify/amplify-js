@@ -17,6 +17,8 @@ export class AmplifyUsernameField {
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
 
+  @Prop() value?: string;
+
   render() {
     return (
       <amplify-form-field
@@ -25,6 +27,7 @@ export class AmplifyUsernameField {
         placeholder={this.placeholder}
         required={this.required}
         handleInputChange={this.handleInputChange}
+        value={this.value}
       />
     );
   }

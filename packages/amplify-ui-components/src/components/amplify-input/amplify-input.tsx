@@ -26,16 +26,22 @@ export class AmplifyInput {
   /** (Optional) String value for the name of the input. */
   @Prop() name?: string;
 
+  @Prop() value: string;
+
+  @Prop() inputProps: object;
+
   render() {
     return (
       <input
         id={this.fieldId}
         aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-        type={this.type}
+        // type={this.type}
         onInput={this.handleInputChange}
-        placeholder={this.placeholder}
-        name={this.name}
+        // placeholder={this.placeholder}
+        // name={this.name}
         class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
+        // value={this.value}
+        {...this.inputProps}
       />
     );
   }

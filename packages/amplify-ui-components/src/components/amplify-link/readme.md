@@ -17,11 +17,13 @@
 
 ### Used by
 
+ - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
 
 ### Graph
 ```mermaid
 graph TD;
+  amplify-forgot-password --> amplify-link
   amplify-sign-in --> amplify-link
   style amplify-link fill:#f9f,stroke:#333,stroke-width:4px
 ```

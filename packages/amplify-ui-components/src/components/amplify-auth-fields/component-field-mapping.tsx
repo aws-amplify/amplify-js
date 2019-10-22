@@ -8,6 +8,7 @@ const componentFieldMapping = {
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
   password: (ff: FormFieldType) => (
@@ -17,6 +18,7 @@ const componentFieldMapping = {
       hint={ff.hint}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
   email: (ff: FormFieldType) => (
@@ -33,6 +35,7 @@ const componentFieldMapping = {
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
   // TODO: Will create a phone field component once the dial country code component is in

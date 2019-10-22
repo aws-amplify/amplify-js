@@ -112,6 +112,7 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    'value': string;
   }
   interface AmplifyCountryDialCode {
     /**
@@ -146,6 +147,15 @@ export namespace Components {
     'required': boolean;
   }
   interface AmplifyExamples {}
+  interface AmplifyForgotPassword {
+    'formFields': FormFieldTypes;
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleSend': (event: Event) => void;
+    'handleSubmit': (event: Event) => void;
+    'headerText': string;
+    'overrideStyle': boolean;
+    'submitButtonText': string;
+  }
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -187,6 +197,7 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    'value': string;
   }
   interface AmplifyFormSection {
     /**
@@ -201,6 +212,8 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    'primaryFooterContent': string | FunctionalComponent;
+    'secondaryFooterContent': string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot
     */
@@ -244,6 +257,7 @@ export namespace Components {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    'inputProps': object;
     /**
     * (Optional) String value for the name of the input.
     */
@@ -260,6 +274,7 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    'value': string;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -294,6 +309,7 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    'value'?: string;
   }
   interface AmplifyRadioButton {
     /**
@@ -413,6 +429,7 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    'value'?: string;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -468,6 +485,12 @@ declare global {
   const HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
     new (): HTMLAmplifyExamplesElement;
+  };
+
+  interface HTMLAmplifyForgotPasswordElement extends Components.AmplifyForgotPassword, HTMLStencilElement {}
+  const HTMLAmplifyForgotPasswordElement: {
+    prototype: HTMLAmplifyForgotPasswordElement;
+    new (): HTMLAmplifyForgotPasswordElement;
   };
 
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
@@ -586,6 +609,7 @@ declare global {
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
+    'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
@@ -685,6 +709,7 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    'value'?: string;
   }
   interface AmplifyCountryDialCode {
     /**
@@ -719,6 +744,15 @@ declare namespace LocalJSX {
     'required'?: boolean;
   }
   interface AmplifyExamples {}
+  interface AmplifyForgotPassword {
+    'formFields'?: FormFieldTypes;
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleSend'?: (event: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
+    'headerText'?: string;
+    'overrideStyle'?: boolean;
+    'submitButtonText'?: string;
+  }
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -760,6 +794,7 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    'value'?: string;
   }
   interface AmplifyFormSection {
     /**
@@ -774,6 +809,8 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    'primaryFooterContent'?: string | FunctionalComponent;
+    'secondaryFooterContent'?: string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot
     */
@@ -817,6 +854,7 @@ declare namespace LocalJSX {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    'inputProps'?: object;
     /**
     * (Optional) String value for the name of the input.
     */
@@ -833,6 +871,7 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    'value'?: string;
   }
   interface AmplifyLabel {
     'htmlFor'?: string;
@@ -867,6 +906,7 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    'value'?: string;
   }
   interface AmplifyRadioButton {
     /**
@@ -986,6 +1026,7 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    'value'?: string;
   }
   interface RockPaperScissor {
     'icon'?: Function;
@@ -1001,6 +1042,7 @@ declare namespace LocalJSX {
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
+    'amplify-forgot-password': AmplifyForgotPassword;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
@@ -1036,6 +1078,7 @@ declare module "@stencil/core" {
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
+      'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;

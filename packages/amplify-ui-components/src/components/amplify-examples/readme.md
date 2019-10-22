@@ -20,15 +20,13 @@ graph TD;
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
   amplify-authenticator --> amplify-sign-in
+  amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> context-consumer
+  amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
-  amplify-sign-in --> amplify-link
-  amplify-sign-in --> context-consumer
-  amplify-sign-in --> amplify-link
-  amplify-sign-in --> amplify-button
-  amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-section
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
@@ -42,6 +40,9 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-forgot-password --> amplify-form-section
+  amplify-forgot-password --> amplify-link
+  amplify-forgot-password --> amplify-auth-fields
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading

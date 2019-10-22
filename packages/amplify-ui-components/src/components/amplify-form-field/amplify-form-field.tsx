@@ -34,6 +34,8 @@ export class AmplifyFormField {
   /** (Optional) String value for the name of the input. */
   @Prop() name?: string;
 
+  @Prop() value: string;
+
   render() {
     return (
       <div class={styleNuker(this.overrideStyle, STATIC_FORM_FIELD_CLASS_NAME, formField)}>
@@ -63,6 +65,7 @@ export class AmplifyFormField {
               placeholder={this.placeholder}
               overrideStyle={this.overrideStyle}
               name={this.name}
+              value={this.value}
             />
           </slot>
         </div>

@@ -17,6 +17,8 @@ export class AmplifyCodeField {
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
 
+  @Prop() value: string;
+
   render() {
     return (
       <amplify-form-field
@@ -26,6 +28,7 @@ export class AmplifyCodeField {
         type="number"
         required={this.required}
         handleInputChange={this.handleInputChange}
+        value={this.value}
       />
     );
   }

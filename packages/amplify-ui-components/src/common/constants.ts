@@ -33,6 +33,7 @@ export const RESET_PASSWORD_TEXT = 'Reset password';
 export const PASSWORD_SUFFIX = 'password';
 export const PASSWORD_LABEL = 'Password *';
 export const PASSWORD_PLACEHOLDER = 'Enter your password'
+export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
 // Sign In common constants
 export const HEADER_TEXT = 'Sign into your account';
