@@ -4,21 +4,22 @@ window.alert = msg => {
 	console.log(msg);
 };
 
-function noOp() {}
+function noOp(): any {}
 
 if (typeof window.URL.createObjectURL === 'undefined') {
 	Object.defineProperty(window.URL, 'createObjectURL', { value: noOp });
 }
 
-class Worker {
-	constructor(stringUrl) {
-		this.url = stringUrl;
-		this.onmessage = () => {};
-	}
-
-	postMessage(msg) {
-		this.onmessage(msg);
+class MockWorker implements Worker {
+	onmessage = noOp;
+	postMessage = noOp;
+	terminate = noOp;
+	addEventListener = noOp;
+	removeEventListener = noOp;
+	onerror = noOp;
+	dispatchEvent(event: Event): boolean {
+		throw new Error('Method not implemented.');
 	}
 }
 
-window.Worker = Worker;
+window.Worker = MockWorker;
