@@ -3,5 +3,14 @@ export interface AmplifySignUpFormFooterProps {
   haveAcccountText: string;
   signInText: string;
   overrideStyle?: boolean;
-  onAuthStateChange?: any;
+  handleAuthStateChange?: any;
+}
+
+export interface AmplifySignUpAttributes {
+  username: string;
+  password: string;
+  attributes?: {
+    email?: string;
+    phone_number?: string;
+  };
 }

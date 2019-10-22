@@ -7,11 +7,11 @@ export const AmplifySignUpFormFooter: FC<AmplifySignUpFormFooterProps> = ({
   haveAcccountText,
   signInText,
   overrideStyle = false,
-  onAuthStateChange,
+  handleAuthStateChange,
 }) => (
   <div class={signUpFormFooter}>
     <span>
-      {haveAcccountText} <amplify-link onClick={() => onAuthStateChange('signin')}>{signInText}</amplify-link>
+      {haveAcccountText} <amplify-link onClick={() => handleAuthStateChange('signin')}>{signInText}</amplify-link>
     </span>
     <amplify-button type="submit" overrideStyle={overrideStyle}>
       {submitButtonText}

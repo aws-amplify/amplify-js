@@ -47,7 +47,6 @@ graph TD;
   amplify-sign-up --> amplify-auth-fields
   amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
-  amplify-sign-up --> context-consumer
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading

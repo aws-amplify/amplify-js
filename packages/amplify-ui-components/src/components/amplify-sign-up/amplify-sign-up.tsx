@@ -5,10 +5,14 @@ import {
   SIGN_UP_SUBMIT_BUTTON_TEXT,
   HAVE_ACCOUNT_TEXT,
   SIGN_IN_TEXT,
+  SIGN_UP_USERNAME_PLACEHOLDER,
+  SIGN_UP_PASSWORD_PLACEHOLDER,
+  SIGN_UP_PHONE_NUMBER_LABEL,
+  SIGN_UP_PHONE_NUMBER_PLACEHOLDER,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
-import { AuthStateTunnel } from '../../data/auth-state';
 import { AuthState } from '../../common/types/auth-types';
+import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
 
@@ -48,7 +52,9 @@ export class AmplifySignUp {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[];
-
+  /** Passed from the Authenticatior component in order to change Authentication states
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
 
   @State() username: string;
@@ -60,13 +66,13 @@ export class AmplifySignUp {
     this.formFields = [
       {
         type: 'username',
-        placeholder: 'Create a username',
+        placeholder: SIGN_UP_USERNAME_PLACEHOLDER,
         required: true,
         handleInputChange: event => this.handleUsernameChange(event),
       },
       {
         type: 'password',
-        placeholder: 'Create a password',
+        placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
         required: true,
         handleInputChange: event => this.handlePasswordChange(event),
       },
@@ -77,8 +83,8 @@ export class AmplifySignUp {
       },
       {
         type: 'phone',
-        label: 'Phone Number *',
-        placeholder: '555-555-5555',
+        label: SIGN_UP_PHONE_NUMBER_LABEL,
+        placeholder: SIGN_UP_PHONE_NUMBER_PLACEHOLDER,
         required: true,
         handleInputChange: event => this.handlePhoneNumberChange(event),
       },
@@ -111,7 +117,7 @@ export class AmplifySignUp {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
 
-    const signUpAttrs = {
+    const signUpAttrs: AmplifySignUpAttributes = {
       username: this.username,
       password: this.password,
       attributes: {
@@ -125,31 +131,27 @@ export class AmplifySignUp {
 
       this.handleAuthStateChange(AuthState.ConfirmSignUp, user);
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
   render() {
     return (
-      <AuthStateTunnel.Consumer>
-        {({ onAuthStateChange }) => (
-          <amplify-form-section
-            headerText={this.headerText}
-            overrideStyle={this.overrideStyle}
-            handleSubmit={this.handleSubmit}
-          >
-            <amplify-auth-fields formFields={this.formFields} />
-            <div slot="amplify-form-section-footer">
-              <AmplifySignUpFormFooter
-                submitButtonText={this.submitButtonText}
-                haveAcccountText={this.haveAccountText}
-                signInText={this.signInText}
-                onAuthStateChange={onAuthStateChange}
-              />
-            </div>
-          </amplify-form-section>
-        )}
-      </AuthStateTunnel.Consumer>
+      <amplify-form-section
+        headerText={this.headerText}
+        overrideStyle={this.overrideStyle}
+        handleSubmit={this.handleSubmit}
+      >
+        <amplify-auth-fields formFields={this.formFields} />
+        <div slot="amplify-form-section-footer">
+          <AmplifySignUpFormFooter
+            submitButtonText={this.submitButtonText}
+            haveAcccountText={this.haveAccountText}
+            signInText={this.signInText}
+            handleAuthStateChange={this.handleAuthStateChange}
+          />
+        </div>
+      </amplify-form-section>
     );
   }
 }
