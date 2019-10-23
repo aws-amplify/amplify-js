@@ -16,10 +16,10 @@ describe('amplify-forgot-password spec:', () => {
 
     it('`submitButtonText` should be set by default', () => {
       expect(amplifyForgotPassword.submitButtonText).toBe(SEND_CODE);
-    })
+    });
 
     it('`overrideStyle` should be false by default', () => {
-      expect(amplifyForgotPassword.overrideStyle).toBeFalsy();
+      expect(amplifyForgotPassword.overrideStyle).toBe(false);
     });
   });
   describe('Render logic ->', () => {
