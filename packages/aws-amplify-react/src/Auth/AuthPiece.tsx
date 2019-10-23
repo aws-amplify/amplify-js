@@ -12,19 +12,16 @@
  */
 
 import * as React from 'react';
-import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import countryDialCodes from './common/country-dial-codes';
+import { I18n } from '@aws-amplify/core';
 import {
 	FormField,
 	Input,
 	InputLabel,
-	SelectInput,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import { UsernameAttributes } from './common/types';
 import { PhoneField } from './PhoneField';
 import { auth } from '../Amplify-UI/data-test-attributes';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const labelMap = {
 	[UsernameAttributes.EMAIL]: 'Email',
@@ -201,15 +198,12 @@ export default class AuthPiece<
 	handleInputChange(evt) {
 		this.inputs = this.inputs || {};
 		const { name, value, type, checked } = evt.target;
-		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
 		this.inputs[name] = check_type ? checked : value;
 		this.inputs['checkedValue'] = check_type ? value : null;
 	}
 
-	// @ts-ignore
 	render() {
-		// @ts-ignore
 		if (!this._validAuthStates.includes(this.props.authState)) {
 			this._isHidden = true;
 			this.inputs = {};
@@ -226,7 +220,7 @@ export default class AuthPiece<
 		return this.showComponent(this.props.theme || AmplifyTheme);
 	}
 
-	showComponent(theme) {
+	showComponent(_theme?: any): React.ReactNode {
 		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
 	}
 }
