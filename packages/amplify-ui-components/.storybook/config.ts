@@ -12,6 +12,7 @@ addDecorator((storyFn, context) => {
 
   return storyFn(context);
 });
+
 addDecorator(withKnobs);
 addDecorator(withA11y);
 
@@ -22,3 +23,13 @@ function loadStories() {
 }
 
 configure(loadStories, module);
+
+if (module.hot) {
+  // Listening for `dispose` indicates when a build has taken place so that
+  // we can reload the iframe `window` with changes from stencil's build process.
+  // (`module.hot.accept` will refresh the sidebar as well, since `req.id`).
+  module.hot.dispose(() => {
+    window.history.pushState(null, null, window.location.href);
+    window.location.reload();
+  });
+}
