@@ -204,6 +204,10 @@ export interface AuthErrorMessage {
 // We can extend this in the future if needed
 export type SignInOpts = UsernamePasswordOpts;
 
+export type ClientMetaData = {
+	[k: string]: string;
+};
+
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;
 }
