@@ -25,7 +25,13 @@ import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 
 import Cache from '@aws-amplify/cache';
 
-import { AnalyticsProvider, PromiseHandlers } from '../types';
+import {
+	AnalyticsProvider,
+	PromiseHandlers,
+	PutEventsResponse,
+	EventBuffer,
+	EventMap,
+} from '../types';
 import { v1 as uuid } from 'uuid';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
@@ -45,6 +51,9 @@ const BEACON_SUPPORTED =
 	typeof navigator !== 'undefined' &&
 	navigator &&
 	typeof navigator.sendBeacon === 'function';
+const UPDATE_ENDPOINT = '_update_endpoint';
+const SESSION_START = '_session.start';
+const SESSION_STOP = '_session.stop';
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -62,13 +71,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	private pinpointClient;
 	private _sessionId;
 	private _sessionStartTimestamp;
-	private _buffer;
+	private _buffer: EventBuffer;
+	private _endpointBuffer: EventBuffer;
 	private _clientInfo;
 	private _timer;
 	private _endpointGenerating = true;
 
 	constructor(config?) {
 		this._buffer = [];
+		this._endpointBuffer = [];
 		this._config = config ? config : {};
 		this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
 		this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
@@ -81,34 +92,72 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		if (this._timer) {
 			clearInterval(this._timer);
 		}
+
 		const { flushSize, flushInterval } = this._config;
 		const that = this;
-		this._timer = setInterval(() => {
-			const size =
-				this._buffer.length < flushSize ? this._buffer.length : flushSize;
-			for (let i = 0; i < size; i += 1) {
-				const { params, handlers } = this._buffer.shift();
-				that._send(params, handlers);
+
+		this._timer = setInterval(async () => {
+			await that._getCredentials(); // TODO: set class creds here
+
+			const batchSize =
+				that._buffer.length < flushSize ? that._buffer.length : flushSize;
+
+			const endpointBatchSize =
+				that._endpointBuffer.length < flushSize
+					? that._endpointBuffer.length
+					: flushSize;
+
+			if (!batchSize && !endpointBatchSize) {
+				return;
+			}
+
+			if (that._endpointGenerating && endpointBatchSize) {
 				// If this is the first request sent by Analytics module, we should stop sending remaining requests
 				// to prevent race condition of updating one endpoint when it's being created in the backend
-				if (this._endpointGenerating) break;
+				const firstEvent = that._endpointBuffer.shift();
+				const [{ params, handlers }] = Object.values(firstEvent);
+				that._send(params, handlers);
+				return;
 			}
+
+			const endpointBufferSubset = that._endpointBuffer.splice(
+				0,
+				endpointBatchSize
+			);
+			const bufferSubset: EventBuffer = that._buffer.splice(0, batchSize);
+
+			// TODO: need to introduce a breaking change (add mobiletargeting:UpdateEndpointsBatch permission through the CLI)
+			// in order to enable batch endpoint updates
+			// endpointBatchSize && that._updateEndpointsBatch(endpointBufferSubset);
+			endpointBatchSize && that._flushEndpointUpdates(endpointBufferSubset);
+			batchSize && that._pinpointPutEventsBatch(bufferSubset);
 		}, flushInterval);
 	}
 
 	/**
 	 * @private
-	 * @param params - params for the event recording
+	 * @param params - params for event recording
 	 * Put events into buffer
 	 */
 	private _putToBuffer(params, handlers) {
 		const { bufferSize } = this._config;
 		if (this._buffer.length < bufferSize) {
-			this._buffer.push({ params, handlers });
+			const {
+				event: { eventId, name },
+			} = params;
+
+			const bufferElement = { [eventId]: { params, handlers } };
+
+			if (name === UPDATE_ENDPOINT) {
+				this._endpointBuffer.push(bufferElement);
+				return;
+			}
+
+			this._buffer.push(bufferElement);
 		} else {
-			logger.debug('exceed analytics events buffer size');
+			logger.debug('Exceeded analytics events buffer size');
 			return handlers.reject(
-				new Error('Exceed the size of analytics events buffer')
+				new Error('Exceeded the size of analytics events buffer')
 			);
 		}
 	}
@@ -133,16 +182,16 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	 */
 	public configure(config): object {
 		logger.debug('configure Analytics', config);
-		const conf = config ? config : {};
+		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
 
 		if (this._config['appId'] && !this._config['disabled']) {
-			if (!this._config['endpointId']) {
-				const cacheKey = this.getProviderName() + '_' + this._config['appId'];
+			if (!this._config.endpointId) {
+				const cacheKey = this.getProviderName() + '_' + this._config.appId;
 				this._getEndpointId(cacheKey)
 					.then(endpointId => {
 						logger.debug('setting endpoint id from the cache', endpointId);
-						this._config['endpointId'] = endpointId;
+						this._config.endpointId = endpointId;
 						dispatchAnalyticsEvent('pinpointProvider_configured', null);
 					})
 					.catch(e => {
@@ -180,6 +229,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		params.event.eventId = uuid();
 
 		Object.assign(params, { timestamp, config: this._config, credentials });
+
 		if (params.event.immediate) {
 			return this._send(params, handlers);
 		} else {
@@ -192,7 +242,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const { event } = params;
 
 		switch (event.name) {
-			case '_session.start':
+			case SESSION_START:
 				// refresh the session id and session start time
 				this._sessionStartTimestamp = new Date().getTime();
 				this._sessionId = uuid();
@@ -201,7 +251,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 					StartTimestamp: new Date(this._sessionStartTimestamp).toISOString(),
 				};
 				break;
-			case '_session.stop':
+			case SESSION_STOP:
 				const stopTimestamp = new Date().getTime();
 				this._sessionStartTimestamp =
 					this._sessionStartTimestamp || new Date().getTime();
@@ -228,20 +278,28 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private async _send(params, handlers) {
-		const { event, config } = params;
+		const { event } = params;
 
 		switch (event.name) {
-			case '_update_endpoint':
+			case UPDATE_ENDPOINT:
 				return this._updateEndpoint(params, handlers);
-			case '_session.stop':
+			case SESSION_STOP:
 				return this._pinpointSendStopSession(params, handlers);
 			default:
 				return this._record(params, handlers);
 		}
 	}
 
+	// TODO: delete this when we enable batch endpoint updates
+	private _flushEndpointUpdates(endpointsBuffer: EventBuffer) {
+		endpointsBuffer.forEach(endpoint => {
+			const [{ params, handlers }] = Object.values(endpoint);
+			this._updateEndpoint(params, handlers);
+		});
+	}
+
 	private _generateBatchItemContext(params) {
-		const { event, timestamp, config, credentials } = params;
+		const { event, timestamp, config } = params;
 		const { name, attributes, metrics, eventId, session } = event;
 		const { appId, endpointId } = config;
 
@@ -256,17 +314,144 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 		eventParams.EventsRequest.BatchItem[endpointId] = {};
 		const endpointObj = eventParams.EventsRequest.BatchItem[endpointId];
-		endpointObj['Endpoint'] = endpointContext;
-		endpointObj['Events'] = {};
-		endpointObj['Events'][eventId] = {
-			EventType: name,
-			Timestamp: new Date(timestamp).toISOString(),
-			Attributes: attributes,
-			Metrics: metrics,
-			Session: session,
+		endpointObj.Endpoint = endpointContext;
+		endpointObj.Events = {
+			[eventId]: {
+				EventType: name,
+				Timestamp: new Date(timestamp).toISOString(),
+				Attributes: attributes,
+				Metrics: metrics,
+				Session: session,
+			},
 		};
 
 		return eventParams;
+	}
+
+	private _batchEndpoints(endpointUpdates: EventMap) {
+		const batchEndpointParams = {
+			ApplicationId: '',
+			EndpointBatchRequest: {
+				Item: [],
+			},
+		};
+
+		const items = Object.values(endpointUpdates).map(item => {
+			const { config, event } = item.params;
+			const { appId } = config;
+
+			batchEndpointParams.ApplicationId =
+				batchEndpointParams.ApplicationId || appId;
+
+			return this._endpointRequest(
+				config,
+				JS.transferKeyToLowerCase(
+					event,
+					[],
+					['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
+				)
+			);
+		});
+
+		batchEndpointParams.EndpointBatchRequest.Item = items;
+
+		return batchEndpointParams;
+	}
+
+	private _batchEvents(eventMap: EventMap) {
+		const batchEventParams = {
+			ApplicationId: '',
+			EventsRequest: {
+				BatchItem: {},
+			},
+		};
+
+		Object.values(eventMap).forEach(item => {
+			const { params } = item;
+			const { event, timestamp, config } = params;
+			const { name, attributes, metrics, eventId, session } = event;
+			const { appId, endpointId } = config;
+
+			const batchItem = batchEventParams.EventsRequest.BatchItem;
+
+			batchEventParams.ApplicationId = batchEventParams.ApplicationId || appId;
+
+			if (!batchItem[endpointId]) {
+				batchItem[endpointId] = {
+					Endpoint: {},
+					Events: {},
+				};
+			}
+
+			batchItem[endpointId].Events[eventId] = {
+				EventType: name,
+				Timestamp: new Date(timestamp).toISOString(),
+				Attributes: attributes,
+				Metrics: metrics,
+				Session: session,
+			};
+		});
+
+		return batchEventParams;
+	}
+
+	private _processPutEventsResponse(
+		data: PutEventsResponse,
+		eventMap: EventMap
+	) {
+		const { Results } = data.EventsResponse;
+
+		Object.entries(Results).forEach(([endpointId, endpointValues]) => {
+			const responses = endpointValues.EventsItemResponse;
+
+			Object.entries(responses).forEach(
+				([eventId, { StatusCode, Message }]) => {
+					const { params, handlers } = eventMap[eventId];
+
+					// manually crafting handlers response to keep API consistant
+					const response = {
+						EventsResponse: {
+							Results: {
+								[endpointId]: {
+									EventsItemResponse: {
+										[eventId]: { StatusCode, Message },
+									},
+								},
+							},
+						},
+					};
+
+					if (ACCEPTED_CODES.includes(StatusCode)) {
+						return handlers.resolve(response);
+					}
+
+					if (RETRYABLE_CODES.includes(StatusCode)) {
+						return this._retry(params, handlers);
+					}
+
+					logger.error(
+						`Event ${eventId} is not accepted, the error is ${Message}`
+					);
+					return handlers.reject(response);
+				}
+			);
+		});
+	}
+
+	private async _pinpointPutEventsBatch(eventBuffer: EventBuffer) {
+		const eventMap: EventMap = this._bufferToMap(eventBuffer);
+
+		const batchEventParams = this._batchEvents(eventMap);
+		const request = this.pinpointClient.putEvents(batchEventParams);
+
+		request.on('build', () => {
+			request.httpRequest.path = request.httpRequest.path + '/legacy';
+		});
+
+		request.send((err, data: PutEventsResponse) => {
+			if (err) return this._eventError(err);
+			this._processPutEventsResponse(data, eventMap);
+		});
 	}
 
 	private async _pinpointPutEvents(params, handlers) {
@@ -277,24 +462,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const eventParams = this._generateBatchItemContext(params);
 
 		const request = this.pinpointClient.putEvents(eventParams);
-		// in order to keep backward compatiblity
-		// we are using a legacy api: /apps/{appid}/events/legacy
-		// so that users don't need to update their IAM Policy
-		// will use the formal one in the next break release
+
 		request.on('build', function() {
 			request.httpRequest.path = request.httpRequest.path + '/legacy';
 		});
 
 		request.send((err, data) => {
 			if (err) {
-				logger.error('record event failed. ', err);
-				logger.warn(
-					'If you have not updated your Pinpoint IAM Policy' +
-						' with the Action: "mobiletargeting:PutEvents" yet, please do it.' +
-						' This action is not necessary for now' +
-						' but in order to avoid breaking changes in the future,' +
-						' please update it as soon as possible.'
-				);
+				logger.error('record event failed.', err);
 				return handlers.reject(err);
 			} else {
 				const {
@@ -343,7 +518,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			session_token: this._config.credentials.sessionToken,
 		};
 
-		const url = `https://pinpoint.${region}.amazonaws.com/v1/apps/${ApplicationId}/events`;
+		const url = `https://pinpoint.${region}.amazonaws.com/v1/apps/${ApplicationId}/events/legacy`;
 		const body = JSON.stringify(EventsRequest);
 		const method = 'POST';
 
@@ -371,6 +546,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _retry(params, handlers) {
+		logger.debug('_retry', params, handlers);
 		const {
 			config: { resendLimit },
 		} = params;
@@ -391,15 +567,39 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _record(params, handlers) {
 		// credentials updated
-		const { event, timestamp, config, credentials } = params;
+		const { config, credentials } = params;
 		this._initClients(config, credentials);
 		return this._pinpointPutEvents(params, handlers);
 	}
 
+	// Not in use untill we allow batch endpoint updates
+	private async _updateEndpointsBatch(endpointsBuffer) {
+		const endpointsMap = endpointsBuffer.reduce((acc, curVal) => {
+			const [[key, value]] = Object.entries(curVal);
+			acc[key] = value;
+			return acc;
+		});
+
+		const batchEndpointUpdates = this._batchEndpoints(endpointsMap);
+		logger.debug('batchEndpointUpdates', batchEndpointUpdates);
+
+		try {
+			const data = await this.pinpointClient
+				.updateEndpointsBatch(batchEndpointUpdates)
+				.promise();
+
+			// TODO: handle response
+
+			logger.debug('_updateEndpointsBatch success', data);
+		} catch (err) {
+			logger.debug('_updateEndpointsBatch failed', err);
+		}
+	}
+
 	private async _updateEndpoint(params, handlers) {
 		// credentials updated
-		const { timestamp, config, credentials, event } = params;
-		const { appId, region, endpointId } = config;
+		const { config, credentials, event } = params;
+		const { appId, endpointId } = config;
 
 		this._initClients(config, credentials);
 
@@ -417,36 +617,35 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			EndpointRequest: request,
 		};
 
-		const that = this;
-		logger.debug('updateEndpoint with params: ', update_params);
+		try {
+			const data = await this.pinpointClient
+				.updateEndpoint(update_params)
+				.promise();
 
-		that.pinpointClient.updateEndpoint(update_params, (err, data) => {
-			if (err) {
-				logger.debug('updateEndpoint failed', err);
-				if (
-					err.message.startsWith('Exceeded maximum endpoint per user count')
-				) {
-					this._removeUnusedEndpoints(appId, request.User.UserId)
-						.then(() => {
-							logger.debug('Remove the unused endpoints successfully');
-							this._retry(params, handlers);
-						})
-						.catch(e => {
-							logger.warn(`Failed to remove unused endpoints with error: ${e}`);
-							logger.warn(
-								`Please ensure you have updated your Pinpoint IAM Policy ` +
-									`with the Action: "mobiletargeting:GetUserEndpoints" ` +
-									`in order to get endpoints info of the user`
-							);
-							return handlers.reject(err);
-						});
-				} else return handlers.reject(err);
+			logger.debug('updateEndpoint success', data);
+			this._endpointGenerating = false;
+			return handlers.resolve(data);
+		} catch (err) {
+			logger.debug('updateEndpoint failed', err);
+			if (err.message.startsWith('Exceeded maximum endpoint per user count')) {
+				try {
+					await this._removeUnusedEndpoints(appId, request.User.UserId);
+
+					logger.debug('Removed the unused endpoints successfully');
+					this._retry(params, handlers);
+				} catch (e) {
+					logger.warn(`Failed to remove unused endpoints with error: ${e}`);
+					logger.warn(
+						`Please ensure you have updated your Pinpoint IAM Policy ` +
+							`with the Action: "mobiletargeting:GetUserEndpoints" ` +
+							`in order to get endpoints info of the user`
+					);
+					return handlers.reject(err);
+				}
 			} else {
-				logger.debug('updateEndpoint success', data);
-				this._endpointGenerating = false;
-				return handlers.resolve(data);
+				handlers.reject(err);
 			}
-		});
+		}
 	}
 
 	private async _removeUnusedEndpoints(appId, userId) {
@@ -646,12 +845,26 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		);
 	}
 
-	/**
-	 * @private
-	 * check if current credentials exists
-	 */
+	// convert buffer to map, i.e. { eventId1: {params, handler}, eventId2: {params, handlers}}
+	// this allows us to easily access the handlers after receiving a batch response
+	private _bufferToMap(buffer: EventBuffer) {
+		return buffer.reduce((acc, curVal) => {
+			const [[key, value]] = Object.entries(curVal);
+			acc[key] = value;
+			return acc;
+		}, {});
+	}
+
+	private _eventError(err: any) {
+		logger.error('record event failed.', err);
+		logger.warn(
+			`Please ensure you have updated your Pinpoint IAM Policy ` +
+				`with the Action: "mobiletargeting:PutEvents" ` +
+				`in order to record events`
+		);
+	}
+
 	private _getCredentials() {
-		const that = this;
 		return Credentials.get()
 			.then(credentials => {
 				if (!credentials) return null;

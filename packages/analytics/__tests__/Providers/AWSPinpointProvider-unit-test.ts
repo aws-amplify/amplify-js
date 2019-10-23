@@ -501,7 +501,8 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 
 				const expectedUrl =
-					'https://pinpoint.region.amazonaws.com/v1/apps/appId/events?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=accessKeyId%2FisoStrin%2Fregion%2Fmobiletargeting%2Faws4_request&X-Amz-Date=isoString&X-Amz-Security-Token=sessionToken&X-Amz-SignedHeaders=host&X-Amz-Signature=c43336d302010144ca492cc6f42d5545e0ef01c00bc71d99dc7597351f027810';
+					'https://pinpoint.region.amazonaws.com/v1/apps/appId/events/legacy?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=accessKeyId%2FisoStrin%2Fregion%2Fmobiletargeting%2Faws4_request&X-Amz-Date=isoString&X-Amz-Security-Token=sessionToken&X-Amz-SignedHeaders=host&X-Amz-Signature=9dfa2a29782d344c56a9ab99fe58db6d1748e097ae418c398b26ab372a23f22f';
+
 				const expectedData = JSON.stringify({
 					BatchItem: {
 						endpointId: {
@@ -561,9 +562,9 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(Pinpoint.prototype, 'updateEndpoint')
-					.mockImplementationOnce((params, callback) => {
-						callback(null, 'data');
-					});
+					.mockImplementationOnce(params => ({
+						promise: jest.fn(() => Promise.resolve('data')),
+					}));
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -603,9 +604,9 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithClientContext);
 				const spyon = jest
 					.spyOn(Pinpoint.prototype, 'updateEndpoint')
-					.mockImplementationOnce((params, callback) => {
-						callback(null, 'data');
-					});
+					.mockImplementationOnce(params => ({
+						promise: jest.fn(() => Promise.resolve('data')),
+					}));
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -647,9 +648,9 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithDefaultEndpointConfigure);
 				const spyon = jest
 					.spyOn(Pinpoint.prototype, 'updateEndpoint')
-					.mockImplementationOnce((params, callback) => {
-						callback(null, 'data');
-					});
+					.mockImplementationOnce(params => ({
+						promise: jest.fn(() => Promise.resolve('data')),
+					}));
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -706,9 +707,9 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithDefaultEndpointConfigure);
 				const spyon = jest
 					.spyOn(Pinpoint.prototype, 'updateEndpoint')
-					.mockImplementationOnce((params, callback) => {
-						callback(null, 'data');
-					});
+					.mockImplementationOnce(params => ({
+						promise: jest.fn(() => Promise.resolve('data')),
+					}));
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
