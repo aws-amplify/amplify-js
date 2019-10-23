@@ -8,7 +8,6 @@ export class AmplifyFederatedSignIn {
   render() {
     return (
       <div>
-        Howdy there!
         <slot />
       </div>
     );

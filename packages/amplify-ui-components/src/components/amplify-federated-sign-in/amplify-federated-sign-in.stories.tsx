@@ -1,5 +1,3 @@
-import { storiesOf } from '@storybook/html';
+export default { title: 'amplify-federated-sign-in' };
 
-storiesOf('amplify-federated-sign-in', module).add('default', () => {
-  return `<amplify-federated-sign-in>there</amplify-federated-sign-in>`;
-});
+export const withDefaults = () => '<amplify-federated-sign-in></amplify-federated-sign-in>';
