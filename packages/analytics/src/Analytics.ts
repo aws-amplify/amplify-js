@@ -254,7 +254,7 @@ export default class AnalyticsClass {
 	}
 
 	public async updateEndpoint(attrs, provider?) {
-		const event = Object.assign({ name: '_update_endpoint' }, attrs);
+		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}
