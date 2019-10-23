@@ -1,7 +1,8 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState } from '../../common/types/auth-types';
-import { BACK_TO_SIGN_IN } from '../../common/constants';
+import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN } from '../../common/constants';
+import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
@@ -13,18 +14,25 @@ const logger = new Logger('ForgotPassword');
   shadow: false,
 })
 export class AmplifyForgotPassword {
-  @Prop() headerText: string = 'Reset your password';
-  @Prop() submitButtonText: string = 'Send Code';
-  @Prop() overrideStyle: boolean = false;
+  /** The header text of the forgot password section */
+  @Prop() headerText: string = RESET_YOUR_PASSWORD;
+  /** The text displayed inside of the submit button for the form */
+  @Prop() submitButtonText: string = SEND_CODE;
+  /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes;
+  /** (Optional) Overrides default styling */
+  @Prop() overrideStyle: boolean = false;
+  /** The function called when making a request to reset password */
   @Prop() handleSend: (event: Event) => void = event => this.send(event);
+  /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
+  /** Passed from the Authenticatior component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
 
   @State() username: string;
   @State() password: string;
   @State() code: string;
-  @State() delivery: 'SMS' | 'EMAIL' | null = null;
+  @State() delivery: CodeDeliveryType | null = null;
 
   componentWillLoad() {
     this.formFields = [
@@ -39,7 +47,6 @@ export class AmplifyForgotPassword {
 
   handleUsernameChange(event) {
     this.username = event.target.value;
-    console.log(this.username);
   }
 
   handlePasswordChange(event) {
@@ -77,7 +84,6 @@ export class AmplifyForgotPassword {
         },
       ];
       this.delivery = data.CodeDeliveryDetails;
-      console.log(this.username);
     } catch (error) {
       logger.error(error);
       throw new Error(error);

@@ -112,6 +112,9 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value': string;
   }
   interface AmplifyCountryDialCode {
@@ -145,15 +148,40 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyForgotPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
     'formFields': FormFieldTypes;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when making a request to reset password
+    */
     'handleSend': (event: Event) => void;
+    /**
+    * The function called when submitting a new password
+    */
     'handleSubmit': (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
     'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
     'overrideStyle': boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
     'submitButtonText': string;
   }
   interface AmplifyFormField {
@@ -197,6 +225,9 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
     'value': string;
   }
   interface AmplifyFormSection {
@@ -273,6 +304,9 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
     'value': string;
   }
   interface AmplifyLabel {
@@ -308,6 +342,9 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface AmplifyRadioButton {
@@ -399,7 +436,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -466,6 +503,9 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface RockPaperScissor {
@@ -753,6 +793,9 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface AmplifyCountryDialCode {
@@ -786,15 +829,40 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyForgotPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
     'formFields'?: FormFieldTypes;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when making a request to reset password
+    */
     'handleSend'?: (event: Event) => void;
+    /**
+    * The function called when submitting a new password
+    */
     'handleSubmit'?: (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
     'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
     'overrideStyle'?: boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
     'submitButtonText'?: string;
   }
   interface AmplifyFormField {
@@ -838,6 +906,9 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface AmplifyFormSection {
@@ -914,6 +985,9 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface AmplifyLabel {
@@ -949,6 +1023,9 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface AmplifyRadioButton {
@@ -1040,7 +1117,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1107,6 +1184,9 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
     'value'?: string;
   }
   interface RockPaperScissor {

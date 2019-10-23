@@ -26,10 +26,12 @@ export const EMAIL_PLACEHOLDER = 'amplify@example.com';
 export const CODE_SUFFIX = 'code';
 export const CODE_LABEL = 'Verification code';
 export const CODE_PLACEHOLDER = 'Enter code';
+export const SEND_CODE = 'Send Code';
 
 // Password common constants
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
 export const RESET_PASSWORD_TEXT = 'Reset password';
+export const RESET_YOUR_PASSWORD = 'Reset your password';
 export const PASSWORD_SUFFIX = 'password';
 export const PASSWORD_LABEL = 'Password *';
 export const PASSWORD_PLACEHOLDER = 'Enter your password';

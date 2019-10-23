@@ -27,6 +27,7 @@ const componentFieldMapping = {
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
   code: (ff: FormFieldType) => (
@@ -46,6 +47,7 @@ const componentFieldMapping = {
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
   default: (ff: FormFieldType) => (
@@ -54,6 +56,7 @@ const componentFieldMapping = {
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
+      value={ff.value}
     />
   ),
 };
