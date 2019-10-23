@@ -34,7 +34,7 @@ declare module 'amazon-cognito-identity-js' {
 		Username: string;
 		Password?: string;
 		ValidationData?: { [key: string]: any };
-		ClientMetadata?: any;
+		ClientMetadata?: { [key: string]: string };
 	}
 
 	export class AuthenticationDetails {
@@ -89,7 +89,7 @@ declare module 'amazon-cognito-identity-js' {
 			code: string,
 			forceAliasCreation: boolean,
 			callback: NodeCallback<any, any>,
-			clientMetadata?: any
+			clientMetadata?: { [key: string]: string }
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
@@ -97,7 +97,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public resendConfirmationCode(
 			callback: NodeCallback<Error, 'SUCCESS'>,
-			authDetails?: { clientMetadata: any }
+			authDetails?: { [key: string]: string } | undefined
 		): void;
 		public changePassword(
 			oldPassword: string,
@@ -110,7 +110,7 @@ declare module 'amazon-cognito-identity-js' {
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: any) => void;
 			},
-			authDetails?: { clientMetadata: any }
+			authDetails?: { [key: string]: string } | undefined
 		): void;
 		public confirmPassword(
 			verificationCode: string,
@@ -119,7 +119,7 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: () => void;
 				onFailure: (err: Error) => void;
 			},
-			authDetails?: { clientMetadata: any }
+			authDetails?: { [key: string]: string } | undefined
 		): void;
 		public setDeviceStatusRemembered(callbacks: {
 			onSuccess: (success: string) => void;
