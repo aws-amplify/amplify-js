@@ -135,6 +135,7 @@ export namespace Components {
     'required': boolean;
   }
   interface AmplifyExamples {}
+  interface AmplifyFederatedSignIn {}
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -450,6 +451,12 @@ declare global {
     new (): HTMLAmplifyExamplesElement;
   };
 
+  interface HTMLAmplifyFederatedSignInElement extends Components.AmplifyFederatedSignIn, HTMLStencilElement {}
+  const HTMLAmplifyFederatedSignInElement: {
+    prototype: HTMLAmplifyFederatedSignInElement;
+    new (): HTMLAmplifyFederatedSignInElement;
+  };
+
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
   const HTMLAmplifyFormFieldElement: {
     prototype: HTMLAmplifyFormFieldElement;
@@ -566,6 +573,7 @@ declare global {
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
+    'amplify-federated-sign-in': HTMLAmplifyFederatedSignInElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
@@ -691,6 +699,7 @@ declare namespace LocalJSX {
     'required'?: boolean;
   }
   interface AmplifyExamples {}
+  interface AmplifyFederatedSignIn {}
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -964,6 +973,7 @@ declare namespace LocalJSX {
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
+    'amplify-federated-sign-in': AmplifyFederatedSignIn;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
@@ -999,6 +1009,7 @@ declare module "@stencil/core" {
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
+      'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
