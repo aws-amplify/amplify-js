@@ -7,12 +7,13 @@
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                     | Type      | Default            |
-| ------------- | ------------- | ------------------------------------------------------------------------------- | --------- | ------------------ |
-| `fieldId`     | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.         | `string`  | `CODE_SUFFIX`      |
-| `label`       | `label`       | Used for the code label                                                         | `string`  | `CODE_LABEL`       |
-| `placeholder` | `placeholder` | Used for the placeholder label                                                  | `string`  | `CODE_PLACEHOLDER` |
-| `required`    | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean` | `false`            |
+| Property            | Attribute     | Description                                                                     | Type                          | Default            |
+| ------------------- | ------------- | ------------------------------------------------------------------------------- | ----------------------------- | ------------------ |
+| `fieldId`           | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.         | `string`                      | `CODE_SUFFIX`      |
+| `handleInputChange` | --            | The callback, called when the input is modified by the user.                    | `(inputEvent: Event) => void` | `undefined`        |
+| `label`             | `label`       | Used for the code label                                                         | `string`                      | `CODE_LABEL`       |
+| `placeholder`       | `placeholder` | Used for the placeholder label                                                  | `string`                      | `CODE_PLACEHOLDER` |
+| `required`          | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean`                     | `false`            |
 
 
 ## Dependencies

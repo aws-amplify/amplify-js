@@ -32,10 +32,22 @@ export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
 export const RESET_PASSWORD_TEXT = 'Reset password';
 export const PASSWORD_SUFFIX = 'password';
 export const PASSWORD_LABEL = 'Password *';
-export const PASSWORD_PLACEHOLDER = 'Enter your password'
+export const PASSWORD_PLACEHOLDER = 'Enter your password';
 
 // Sign In common constants
+// TODO: Change to SIGN_IN_HEADER_TEXT
 export const HEADER_TEXT = 'Sign into your account';
+// TODO: Change to SIGN_IN_SUBMIT_BUTTON_TEXT
 export const SUBMIT_BUTTON_TEXT = 'Sign in';
 export const CREATE_ACCOUNT_TEXT = 'Create account';
 export const NO_ACCOUNT_TEXT = 'No account?';
+
+// Sign Up common constants
+export const SIGN_UP_HEADER_TEXT = 'Create a new account';
+export const SIGN_UP_SUBMIT_BUTTON_TEXT = 'Create account';
+export const HAVE_ACCOUNT_TEXT = 'Have an account?';
+export const SIGN_IN_TEXT = 'Sign in';
+export const SIGN_UP_USERNAME_PLACEHOLDER = 'Create a username';
+export const SIGN_UP_PASSWORD_PLACEHOLDER = 'Create a password';
+export const SIGN_UP_PHONE_NUMBER_LABEL = 'Phone Number *';
+export const SIGN_UP_PHONE_NUMBER_PLACEHOLDER = '+15555555555';

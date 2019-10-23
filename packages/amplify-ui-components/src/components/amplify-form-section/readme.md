@@ -20,6 +20,7 @@
 ### Used by
 
  - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-sign-up](../amplify-sign-up)
 
 ### Depends on
 
@@ -32,6 +33,7 @@ graph TD;
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-sign-in --> amplify-form-section
+  amplify-sign-up --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
