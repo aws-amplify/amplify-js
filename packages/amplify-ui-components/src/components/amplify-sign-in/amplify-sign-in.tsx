@@ -1,6 +1,5 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-// import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
 import { AuthState } from '../../common/types/auth-types';
 
 import {
