@@ -104,7 +104,6 @@ export default class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
-
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		if (AWS.config) {
