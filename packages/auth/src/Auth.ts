@@ -147,7 +147,6 @@ export default class AuthClass {
 			userPoolWebClientId,
 			cookieStorage,
 			oauth,
-			endpoint,
 			region,
 			identityPoolId,
 			mandatorySignIn,
@@ -178,7 +177,7 @@ export default class AuthClass {
 			const userPoolData: ICognitoUserPoolData = {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
-				endpoint: endpoint,
+				endpoint: this._config.endpoint,
 			};
 			userPoolData.Storage = this._storage;
 
