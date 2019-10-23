@@ -11,9 +11,12 @@ import {
   FormFieldTypes,
 } from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
+  AuthState,
+} from './common/types/auth-types';
+import {
   ButtonTypes,
   TextFieldTypes,
-} from './common/types';
+} from './common/types/ui-types';
 import {
   CountryCodeDialOptions,
 } from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
@@ -42,13 +45,13 @@ export namespace Components {
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
-    'state': string;
+    'initialAuthState': AuthState;
   }
   interface AmplifyButton {
     /**
     * (Optional) Callback called when a user clicks on the button
     */
-    'onButtonClick': (evt: Event) => void;
+    'handleButtonClick': (evt: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -94,6 +97,10 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Used for the code label
     */
     'label': string;
@@ -122,6 +129,10 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Used for the EMAIL label
     */
     'label': string;
@@ -145,6 +156,10 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
     'hint': string | FunctionalComponent | null;
@@ -156,10 +171,6 @@ export namespace Components {
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
-    /**
-    * The callback, called when the input is modified by the user.
-    */
-    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -230,13 +241,13 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
-    /**
-    * The callback, called when the input is modified by the user.
-    */
-    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -263,6 +274,10 @@ export namespace Components {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * Used as the hint in case you forgot your password, etc.
     */
@@ -341,6 +356,7 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
     */
@@ -355,6 +371,44 @@ export namespace Components {
     'overrideStyle': boolean;
     /**
     * Used for the submit button text in sign in component
+    */
+    'submitButtonText': string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
+  }
+  interface AmplifySignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit': (submitEvent: Event) => void;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'haveAccountText': string;
+    /**
+    * Used for header text in sign up component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'signInText': string;
+    /**
+    * Used for the submit button text in sign up component
     */
     'submitButtonText': string;
     /**
@@ -381,6 +435,10 @@ export namespace Components {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * Used for the username label
     */
@@ -540,6 +598,12 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
+  interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
+  const HTMLAmplifySignUpElement: {
+    prototype: HTMLAmplifySignUpElement;
+    new (): HTMLAmplifySignUpElement;
+  };
+
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   const HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
@@ -581,6 +645,7 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
+    'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
@@ -598,13 +663,13 @@ declare namespace LocalJSX {
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
-    'state'?: string;
+    'initialAuthState'?: AuthState;
   }
   interface AmplifyButton {
     /**
     * (Optional) Callback called when a user clicks on the button
     */
-    'onButtonClick'?: (evt: Event) => void;
+    'handleButtonClick'?: (evt: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -650,6 +715,10 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Used for the code label
     */
     'label'?: string;
@@ -678,6 +747,10 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Used for the EMAIL label
     */
     'label'?: string;
@@ -701,6 +774,10 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
     'hint'?: string | FunctionalComponent | null;
@@ -712,10 +789,6 @@ declare namespace LocalJSX {
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
-    /**
-    * The callback, called when the input is modified by the user.
-    */
-    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -786,13 +859,13 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
-    /**
-    * The callback, called when the input is modified by the user.
-    */
-    'onInputChange'?: (inputEvent: Event) => void;
     /**
     * (Optional) Override default styling
     */
@@ -819,6 +892,10 @@ declare namespace LocalJSX {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * Used as the hint in case you forgot your password, etc.
     */
@@ -897,6 +974,7 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
     */
@@ -911,6 +989,44 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     /**
     * Used for the submit button text in sign in component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
+  }
+  interface AmplifySignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit'?: (submitEvent: Event) => void;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'haveAccountText'?: string;
+    /**
+    * Used for header text in sign up component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in sign up component
+    */
+    'signInText'?: string;
+    /**
+    * Used for the submit button text in sign up component
     */
     'submitButtonText'?: string;
     /**
@@ -937,6 +1053,10 @@ declare namespace LocalJSX {
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * Used for the username label
     */
@@ -979,6 +1099,7 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-up': AmplifySignUp;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
@@ -1014,6 +1135,7 @@ declare module "@stencil/core" {
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
+      'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;

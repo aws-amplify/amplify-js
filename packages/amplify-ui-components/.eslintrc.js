@@ -13,6 +13,7 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': 0,
     '@typescript-eslint/no-empty-interface': 0,
     '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/no-unused-vars': 0
+    '@typescript-eslint/no-unused-vars': 0,
+    '@typescript-eslint/camelcase': 0
   },
 };

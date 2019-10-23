@@ -34,8 +34,8 @@ describe('amplify-sign-in spec:', () => {
     //   expect(signIn.formFields).toEqual(result);
     // });
 
-    it('should render `handleSubmit` as undefined by default', () => {
-      expect(signIn.handleSubmit).toBeUndefined();
+    it('should render `handleSubmit` as defined by default', () => {
+      expect(signIn.handleSubmit).toBeDefined();
     });
 
     it('should render `validationErrors` as undefined by default', () => {
@@ -58,7 +58,7 @@ describe('amplify-sign-in spec:', () => {
     it('should render a `sign in` form by default', async () => {
       const page = await newSpecPage({
         components: [AmplifySignIn],
-        html: `<amplify-sign-in></amplify-sign-in>`
+        html: `<amplify-sign-in></amplify-sign-in>`,
       });
 
       expect(page.root).toMatchSnapshot();
