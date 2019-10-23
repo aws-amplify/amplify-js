@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -28,7 +27,7 @@ import Constants from '../common/constants';
 const logger = new Logger('withGoogle');
 
 export default function withGoogle(Comp) {
-	return class extends Component<any, any> {
+	return class extends React.Component<any, any> {
 		constructor(props: any) {
 			super(props);
 
@@ -150,7 +149,7 @@ export default function withGoogle(Comp) {
 			});
 		}
 
-		render() {
+		render(): React.ReactNode {
 			const ga =
 				window.gapi && window.gapi.auth2
 					? window.gapi.auth2.getAuthInstance()

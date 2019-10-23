@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import Authenticator from './Authenticator';
 
@@ -36,8 +35,6 @@ export { default as Loading } from './Loading';
 
 export * from './Provider';
 
-import Greetings from './Greetings';
-
 export function withAuthenticator(
 	Comp,
 	includeGreetings = false,
@@ -46,7 +43,7 @@ export function withAuthenticator(
 	theme = null,
 	signUpConfig = {}
 ) {
-	return class extends Component<any, any> {
+	return class extends React.Component<any, any> {
 		public authConfig: any;
 
 		constructor(props) {
@@ -128,7 +125,7 @@ export function withAuthenticator(
 	};
 }
 
-export class AuthenticatorWrapper extends Component {
+export class AuthenticatorWrapper extends React.Component {
 	constructor(props) {
 		super(props);
 
