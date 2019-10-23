@@ -25,7 +25,7 @@ export interface SignUpParams {
 	password: string;
 	attributes?: object;
 	validationData?: CognitoUserAttribute[];
-	clientMetadata?: any;
+	clientMetadata?: { [key: string]: string };
 }
 
 export interface AuthCache {
