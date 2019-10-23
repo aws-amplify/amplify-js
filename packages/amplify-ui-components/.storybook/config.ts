@@ -16,13 +16,7 @@ addDecorator((storyFn, context) => {
 addDecorator(withKnobs);
 addDecorator(withA11y);
 
-const req = require.context('../src/components', true, /.stories.tsx$/);
-
-function loadStories() {
-  req.keys().forEach(filename => req(filename));
-}
-
-configure(loadStories, module);
+configure(require.context('../src/components', true, /.stories.tsx$/), module);
 
 if (module.hot) {
   // Listening for `dispose` indicates when a build has taken place so that
