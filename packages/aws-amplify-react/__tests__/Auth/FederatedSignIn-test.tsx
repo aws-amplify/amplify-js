@@ -67,7 +67,7 @@ describe('FederatedButtons test', () => {
 			expect(render(wrapper)).toMatchSnapshot();
 		});
 
-		test('render with correct authState and only google id', () => {
+		test('render with correct authState and only facebook id', () => {
 			const wrapper = shallow(<FederatedButtons />);
 
 			wrapper.setProps({
@@ -80,7 +80,7 @@ describe('FederatedButtons test', () => {
 			expect(render(wrapper)).toMatchSnapshot();
 		});
 
-		test('render with correct authState and only facebook id', () => {
+		test('render with correct authState and only google id', () => {
 			const wrapper = shallow(<FederatedButtons />);
 
 			wrapper.setProps({
