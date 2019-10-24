@@ -41,6 +41,8 @@ const logger = new Logger('AWSPinpointProvider');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 const MOBILE_SERVICE_NAME = 'mobiletargeting';
+const BEACON_SUPPORTED =
+	navigator && typeof navigator.sendBeacon === 'function';
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -323,6 +325,11 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _pinpointSendStopSession(params, handlers): Promise<string> {
+		if (!BEACON_SUPPORTED) {
+			this._record(params, handlers);
+			return;
+		}
+
 		const eventParams = this._generateBatchItemContext(params);
 
 		const { region } = this._config;
@@ -370,7 +377,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending event ${params.eventName} with ${params.resendLimit} retry times left`
+				`resending event ${params.eventName} with ${
+					params.resendLimit
+				} retry times left`
 			);
 			this._putToBuffer(params, handlers);
 		} else {
