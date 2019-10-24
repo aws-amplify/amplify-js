@@ -28,6 +28,18 @@ describe('amplify-input spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
+
+    it('renders with inputProps spread', async () => {
+      const inputProps = {
+        required: true,
+      };
+      const page = await newSpecPage({
+        components: [AmplifyInput],
+        html: `<amplify-input inputProps="${inputProps}"></amplify-input>`,
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
   });
   describe('Component logic ->', () => {
     let input;

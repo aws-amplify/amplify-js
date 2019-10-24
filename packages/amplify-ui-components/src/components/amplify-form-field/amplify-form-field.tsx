@@ -35,6 +35,8 @@ export class AmplifyFormField {
   @Prop() name?: string;
   /** The value of the content inside of the input field */
   @Prop() value: string;
+  /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
+  @Prop() inputProps?: object;
 
   render() {
     return (
@@ -66,6 +68,7 @@ export class AmplifyFormField {
               overrideStyle={this.overrideStyle}
               name={this.name}
               value={this.value}
+              inputProps={this.inputProps}
             />
           </slot>
         </div>

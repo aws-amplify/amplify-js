@@ -18,6 +18,8 @@ export class AmplifyUsernameField {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** The value of the content inside of the input field */
   @Prop() value?: string;
+  /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
+  @Prop() inputProps?: object;
 
   render() {
     return (
@@ -28,6 +30,7 @@ export class AmplifyUsernameField {
         required={this.required}
         handleInputChange={this.handleInputChange}
         value={this.value}
+        inputProps={this.inputProps}
       />
     );
   }
