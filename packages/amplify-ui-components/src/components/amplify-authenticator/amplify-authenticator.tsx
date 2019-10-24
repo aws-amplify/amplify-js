@@ -19,8 +19,6 @@ export class AmplifyAuthenticator {
   }
 
   onAuthStateChange = (nextAuthState: AuthState, data?: object) => {
-    // Possibly add a if (data) this.data = data;
-    // Can make it a State Prop
     if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
 
     console.info('Inside onAuthStateChange Method current authState:', this.authState);
