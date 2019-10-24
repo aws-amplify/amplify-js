@@ -29,15 +29,19 @@ describe('amplify-input spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('renders with inputProps spread', async () => {
-      const inputProps = {
-        required: true,
-      };
+    it('renders with complex prop: inputProps spread on the input element', async () => {
       const page = await newSpecPage({
         components: [AmplifyInput],
-        html: `<amplify-input inputProps="${inputProps}"></amplify-input>`,
+        html: `<div></div>`,
       });
 
+      let cmp = page.doc.createElement('amplify-input');
+      (cmp as any).inputProps = {
+        required: true,
+        disabled: true,
+      };
+      page.root.appendChild(cmp);
+      await page.waitForChanges();
       expect(page.root).toMatchSnapshot();
     });
   });
