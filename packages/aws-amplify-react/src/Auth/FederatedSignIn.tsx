@@ -27,11 +27,14 @@ export interface IFederatedButtonsProps {
 	federated: any;
 	onAuthEvent?: any;
 	onStateChange: any;
-	theme: any;
+	theme?: any;
 }
 
-export class FederatedButtons extends React.Component<IFederatedButtonsProps, {}> {
-		google(google_client_id) {
+export class FederatedButtons extends React.Component<
+	IFederatedButtonsProps,
+	{}
+> {
+	google(google_client_id) {
 		if (!google_client_id) {
 			return null;
 		}
