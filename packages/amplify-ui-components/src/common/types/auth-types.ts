@@ -18,3 +18,7 @@ export enum AuthState {
   CustomConfirmSignIn = 'customConfirmSignIn',
   VerifyContact = 'verifycontact',
 }
+
+export interface User {
+  username?: string;
+}

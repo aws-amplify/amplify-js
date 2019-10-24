@@ -12,6 +12,7 @@ import {
 } from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
+  User,
 } from './common/types/auth-types';
 import {
   ButtonTypes,
@@ -126,6 +127,9 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object | string) => void;
     /**
     * Fires when sign up form is submitted
@@ -147,6 +151,10 @@ export namespace Components {
     * Used for the submit button text in confirm sign up component
     */
     'submitButtonText': string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'userData': User;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -849,6 +857,9 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object | string) => void;
     /**
     * Fires when sign up form is submitted
@@ -870,6 +881,10 @@ declare namespace LocalJSX {
     * Used for the submit button text in confirm sign up component
     */
     'submitButtonText'?: string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'userData'?: User;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */

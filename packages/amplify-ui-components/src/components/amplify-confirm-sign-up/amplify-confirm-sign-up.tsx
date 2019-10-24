@@ -8,7 +8,7 @@ import {
 import { AmplifyConfirmSignUpFormFooter } from './amplify-confirm-sign-up-form-footer';
 import { AmplifyConfirmSignUpHint } from './amplify-confirm-sign-up-hint';
 import { AuthStateTunnel } from '../../data/auth-state';
-import { AuthState } from '../../common/types/auth-types';
+import { AuthState, User } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
 
@@ -46,8 +46,12 @@ export class AmplifyConfirmSignUp {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[];
-
+  /** Passed from the Authenticatior component in order to change Authentication states
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object | string) => void;
+  /** Used for the username to be passed to resend code */
+  @Prop() userData: User;
 
   @State() username: string;
   @State() code: string;
@@ -93,11 +97,16 @@ export class AmplifyConfirmSignUp {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
     try {
-      // TODO: Change from hard code to calling for username first;
-      // Similar in /amplify-js/packages/aws-amplify-react/src/Auth/ConfirmSignUp.tsx has usernameFromAuthData();
-      const resendCode = await Auth.resendSignUp('samlmar_test');
+      if (this.username === undefined) {
+        if (this.userData === undefined) throw new Error();
+        const { username } = this.userData;
 
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+        const resendCode = await Auth.resendSignUp(username);
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+      } else {
+        const resendCode = await Auth.resendSignUp(this.username);
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+      }
     } catch (error) {
       throw new Error(error);
     }
@@ -116,7 +125,7 @@ export class AmplifyConfirmSignUp {
     try {
       const user = await Auth.confirmSignUp(this.username, this.code);
 
-      this.handleAuthStateChange(AuthState.SignedIn, user);
+      this.handleAuthStateChange(AuthState.SignedIn, { username: user.username });
     } catch (error) {
       throw new Error(error);
     }
