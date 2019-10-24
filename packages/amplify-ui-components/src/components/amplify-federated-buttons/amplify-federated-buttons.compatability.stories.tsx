@@ -9,17 +9,19 @@ import { render } from 'react-dom';
 Auth.configure = () => ({});
 
 const noop = () => {};
-const withReact = story => () => {
-  const node = document.createElement('main');
-  render(<StrictMode>{story()}</StrictMode>, node);
-  return node;
+
+export default {
+  title: 'amplify-federated-buttons/FederatedButtons',
+  decorators: [
+    story => {
+      const node = document.createElement('main');
+      render(<StrictMode>{story()}</StrictMode>, node);
+      return node;
+    },
+  ],
 };
 
-export default { title: 'amplify-federated-buttons' };
-
-export const withDefaults = () => '<amplify-federated-buttons></amplify-federated-buttons>';
-
-export const renderWithCorrectAuthState = withReact(() => (
+export const renderWithCorrectAuthState = () => (
   <FederatedButtons
     authState="signIn"
     federated={{
@@ -28,9 +30,9 @@ export const renderWithCorrectAuthState = withReact(() => (
     }}
     onStateChange={noop}
   />
-));
+);
 
-export const renderWithCorrectAuthStateAndOnlyFacebookId = withReact(() => (
+export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
   <FederatedButtons
     authState="signIn"
     federated={{
@@ -38,9 +40,9 @@ export const renderWithCorrectAuthStateAndOnlyFacebookId = withReact(() => (
     }}
     onStateChange={noop}
   />
-));
+);
 
-export const renderWithCorrectAuthStateAndOnlyGoogleId = withReact(() => (
+export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
   <FederatedButtons
     authState="signIn"
     federated={{
@@ -48,12 +50,12 @@ export const renderWithCorrectAuthStateAndOnlyGoogleId = withReact(() => (
     }}
     onStateChange={noop}
   />
-));
+);
 
-export const renderNothingWithIncorrectAuthState = withReact(() => (
+export const renderNothingWithIncorrectAuthState = () => (
   <FederatedButtons authState="signedIn" federated={{}} onStateChange={noop} />
-));
+);
 
-export const renderNothingWithNoFederatedProp = withReact(() => (
+export const renderNothingWithNoFederatedProp = () => (
   <FederatedButtons authState="signedIn" federated={undefined} onStateChange={noop} />
-));
+);
