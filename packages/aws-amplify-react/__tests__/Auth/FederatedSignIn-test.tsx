@@ -22,6 +22,7 @@ describe('FederatedSignIn test', () => {
 				onStateChange: jest.fn(),
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render nothing with incorrect authState', () => {
@@ -33,6 +34,7 @@ describe('FederatedSignIn test', () => {
 				onStateChange: jest.fn(),
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render nothing with no federated prop', () => {
@@ -44,6 +46,7 @@ describe('FederatedSignIn test', () => {
 				onStateChange: jest.fn(),
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });
@@ -61,6 +64,7 @@ describe('FederatedButtons test', () => {
 				authState: 'signIn',
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render with correct authState and only google id', () => {
@@ -73,6 +77,7 @@ describe('FederatedButtons test', () => {
 				authState: 'signIn',
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render with correct authState and only facebook id', () => {
@@ -85,6 +90,7 @@ describe('FederatedButtons test', () => {
 				authState: 'signIn',
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render nothing with incorrect authState', () => {
@@ -95,6 +101,7 @@ describe('FederatedButtons test', () => {
 				authState: 'signedIn',
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render nothing with no federated prop', () => {
@@ -105,6 +112,7 @@ describe('FederatedButtons test', () => {
 				authState: 'signIn',
 			});
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });
