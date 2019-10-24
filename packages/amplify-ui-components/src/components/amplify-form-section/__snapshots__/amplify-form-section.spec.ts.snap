@@ -16,7 +16,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-ny6ois">
+          <div class="amplify-ui--section-footer css-ejevcw">
             <amplify-button type="submit">
               Submit
             </amplify-button>
@@ -44,7 +44,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-ny6ois">
+          <div class="amplify-ui--section-footer css-ejevcw">
             <amplify-button type="submit">
               Go
             </amplify-button>

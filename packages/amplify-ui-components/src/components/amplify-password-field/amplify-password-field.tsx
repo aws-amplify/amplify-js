@@ -18,6 +18,8 @@ export class AmplifyPasswordField {
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
+  /** The value of the content inside of the input field */
+  @Prop() value?: string;
 
   render() {
     return (
@@ -29,6 +31,7 @@ export class AmplifyPasswordField {
         hint={this.hint}
         required={this.required}
         handleInputChange={this.handleInputChange}
+        value={this.value}
       />
     );
   }

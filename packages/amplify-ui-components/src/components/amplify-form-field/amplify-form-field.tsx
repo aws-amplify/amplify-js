@@ -33,6 +33,8 @@ export class AmplifyFormField {
   @Prop() overrideStyle?: boolean = false;
   /** (Optional) String value for the name of the input. */
   @Prop() name?: string;
+  /** The value of the content inside of the input field */
+  @Prop() value: string;
 
   render() {
     return (
@@ -63,6 +65,7 @@ export class AmplifyFormField {
               placeholder={this.placeholder}
               overrideStyle={this.overrideStyle}
               name={this.name}
+              value={this.value}
             />
           </slot>
         </div>

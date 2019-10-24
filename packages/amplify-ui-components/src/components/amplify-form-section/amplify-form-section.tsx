@@ -1,14 +1,16 @@
-import { Component, FunctionalComponent as FC, Prop, h } from '@stencil/core';
+import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 import { formSectionHeader, formSectionFooter } from './amplify-form-section.style';
 import { AmplifyFormSectionHeaderProps, AmplifyFormSectionFooterProps } from './amplify-form-section-interface';
 
-const STATIC_SECTION_HEADER_CLASS_NAME =  `${AMPLIFY_UI_PREFIX}--section-header`;
+const STATIC_SECTION_HEADER_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--section-header`;
 const STATIC_FORM_SECTION_FOOTER_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--section-footer`;
 
-
-const AmplifyFormSectionHeader: FC<AmplifyFormSectionHeaderProps> = ({ headerText, overrideStyle = false }) => (
+const AmplifyFormSectionHeader: FunctionalComponent<AmplifyFormSectionHeaderProps> = ({
+  headerText,
+  overrideStyle = false,
+}) => (
   <div>
     <slot name="amplify-form-section-header">
       <div class={styleNuker(overrideStyle, STATIC_SECTION_HEADER_CLASS_NAME, formSectionHeader)}>
@@ -18,11 +20,16 @@ const AmplifyFormSectionHeader: FC<AmplifyFormSectionHeaderProps> = ({ headerTex
   </div>
 );
 
-const AmplifyFormSectionFooter: FC<AmplifyFormSectionFooterProps> = ({ submitButtonText, overrideStyle = false }) => (
+const AmplifyFormSectionFooter: FunctionalComponent<AmplifyFormSectionFooterProps> = ({
+  primaryContent,
+  secondaryContent,
+  overrideStyle = false,
+}) => (
   <div>
     <slot name="amplify-form-section-footer">
       <div class={styleNuker(overrideStyle, STATIC_FORM_SECTION_FOOTER_CLASS_NAME, formSectionFooter)}>
-        <amplify-button type="submit" overrideStyle={overrideStyle}>{submitButtonText}</amplify-button>
+        {primaryContent}
+        {secondaryContent}
       </div>
     </slot>
   </div>
@@ -42,13 +49,24 @@ export class AmplifyFormSection {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle?: boolean = false;
 
+  @Prop() primaryFooterContent: string | FunctionalComponent = (
+    <amplify-button type="submit" overrideStyle={this.overrideStyle}>
+      {this.submitButtonText}
+    </amplify-button>
+  );
+  @Prop() secondaryFooterContent: string | FunctionalComponent | null = null;
+
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
         <amplify-section overrideStyle={this.overrideStyle}>
           <AmplifyFormSectionHeader headerText={this.headerText} overrideStyle={this.overrideStyle} />
           <slot />
-          <AmplifyFormSectionFooter submitButtonText={this.submitButtonText} overrideStyle={this.overrideStyle} />
+          <AmplifyFormSectionFooter
+            primaryContent={this.primaryFooterContent}
+            secondaryContent={this.secondaryFooterContent}
+            overrideStyle={this.overrideStyle}
+          />
         </amplify-section>
       </form>
     );
