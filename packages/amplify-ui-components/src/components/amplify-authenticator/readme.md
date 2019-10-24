@@ -22,6 +22,7 @@
 
 - [amplify-sign-in](../amplify-sign-in)
 - [amplify-sign-up](../amplify-sign-up)
+- [amplify-forgot-password](../amplify-forgot-password)
 - context-consumer
 
 ### Graph
@@ -29,15 +30,13 @@
 graph TD;
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> amplify-sign-up
+  amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> context-consumer
+  amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-auth-fields
-  amplify-sign-in --> amplify-link
-  amplify-sign-in --> context-consumer
-  amplify-sign-in --> amplify-link
-  amplify-sign-in --> amplify-button
-  amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-section
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
@@ -55,6 +54,9 @@ graph TD;
   amplify-sign-up --> amplify-auth-fields
   amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
+  amplify-forgot-password --> amplify-form-section
+  amplify-forgot-password --> amplify-link
+  amplify-forgot-password --> amplify-auth-fields
   amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```

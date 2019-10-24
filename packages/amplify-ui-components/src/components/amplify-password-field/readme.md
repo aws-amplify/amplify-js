@@ -15,6 +15,7 @@
 | `label`             | `label`       | Used for the password label                                                     | `string`                            | `PASSWORD_LABEL`       |
 | `placeholder`       | `placeholder` | Used for the placeholder label                                                  | `string`                            | `PASSWORD_PLACEHOLDER` |
 | `required`          | `required`    | The required flag in order to make an input required prior to submitting a form | `boolean`                           | `false`                |
+| `value`             | `value`       | The value of the content inside of the input field                              | `string`                            | `undefined`            |
 
 
 ## Dependencies

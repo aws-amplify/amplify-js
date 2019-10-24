@@ -52,7 +52,7 @@ export class AmplifySignUp {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[];
-  /** Passed from the Authenticatior component in order to change Authentication states
+  /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
