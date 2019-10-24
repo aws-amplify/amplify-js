@@ -125,7 +125,7 @@ describe('signUp without signUpConfig prop', () => {
 			spyon_changeState.mockClear();
 		});
 
-		test('state.requestPending shoudl be true when signUp execution begins', () => {
+		test('state.requestPending should be true when signUp execution begins', () => {
 			const wrapper = shallow(<SignUp />);
 			wrapper.setProps({
 				authState: 'signUp',
