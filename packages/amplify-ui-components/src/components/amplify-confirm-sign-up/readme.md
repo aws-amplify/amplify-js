@@ -44,8 +44,8 @@ graph TD;
   amplify-confirm-sign-up --> amplify-button
   amplify-confirm-sign-up --> amplify-link
   amplify-confirm-sign-up --> context-consumer
-  amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-section
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
