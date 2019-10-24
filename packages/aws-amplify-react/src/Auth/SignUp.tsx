@@ -63,6 +63,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 	constructor(props: ISignUpProps) {
 		super(props);
+		this.state = { requestPending: false };
 
 		this._validAuthStates = ['signUp'];
 		this.signUp = this.signUp.bind(this);
@@ -202,6 +203,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	}
 
 	signUp() {
+		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
 		}
@@ -264,9 +266,13 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		Auth.signUp(signup_info)
 			.then(data => {
 				// @ts-ignore
+				this.setState({ requestPending: false });
 				this.changeState('confirmSignUp', data.user.username);
 			})
-			.catch(err => this.error(err));
+			.catch(err => {
+				this.setState({ requestPending: false });
+				return this.error(err);
+			});
 	}
 
 	showComponent(theme): React.ReactNode {
@@ -327,6 +333,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				<SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
 					<SectionFooterPrimaryContent theme={theme}>
 						<Button
+							disabled={this.state.requestPending}
 							onClick={this.signUp}
 							theme={theme}
 							data-test={auth.signUp.createAccountButton}
