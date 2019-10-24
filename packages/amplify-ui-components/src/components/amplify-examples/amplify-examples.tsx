@@ -1,9 +1,9 @@
 import { Component, State, h } from '@stencil/core';
-import example1 from './example1';
+import authenticator from './authenticator';
 import example4 from './example4';
 import sceneExample from './scene-example';
 
-const examples = [example1, example4, sceneExample];
+const examples = [authenticator, example4, sceneExample];
 
 (window as any).LOG_LEVEL = 'DEBUG';
 

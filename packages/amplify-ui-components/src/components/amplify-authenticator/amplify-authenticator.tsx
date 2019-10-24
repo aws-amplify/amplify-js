@@ -12,6 +12,8 @@ export class AmplifyAuthenticator {
   /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
 
+  @State() authData: object;
+
   componentWillLoad() {
     this.authState = this.initialAuthState;
   }
@@ -22,6 +24,7 @@ export class AmplifyAuthenticator {
 
     console.info('Inside onAuthStateChange Method current authState:', this.authState);
     this.authState = nextAuthState;
+    this.authData = data;
     console.info(`authState has been updated to ${this.authState}`);
   };
 
@@ -31,6 +34,8 @@ export class AmplifyAuthenticator {
         return <div>Loading...</div>;
       case AuthState.SignIn:
         return <amplify-sign-in handleAuthStateChange={this.onAuthStateChange} />;
+      case AuthState.ConfirmSignIn:
+        return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.SignOut:
         // TODO: add sign out component
         return <div>Sign Out Component</div>;

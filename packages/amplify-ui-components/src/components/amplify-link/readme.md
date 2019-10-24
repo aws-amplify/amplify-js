@@ -17,6 +17,7 @@
 
 ### Used by
 
+ - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-up](../amplify-sign-up)
@@ -24,6 +25,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-confirm-sign-in --> amplify-link
   amplify-forgot-password --> amplify-link
   amplify-sign-in --> amplify-link
   amplify-sign-up --> amplify-link

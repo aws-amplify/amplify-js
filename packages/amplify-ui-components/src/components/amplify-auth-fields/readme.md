@@ -16,6 +16,7 @@
 
 ### Used by
 
+ - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-up](../amplify-sign-up)
@@ -45,6 +46,7 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-confirm-sign-in --> amplify-auth-fields
   amplify-forgot-password --> amplify-auth-fields
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-up --> amplify-auth-fields

@@ -19,7 +19,9 @@ export class AmplifyCodeField {
   /** The value of the content inside of the input field */
   @Prop() value?: string;
   /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
-  @Prop() inputProps?: object;
+  @Prop() inputProps?: object = {
+    autoComplete: 'off',
+  };
 
   render() {
     return (

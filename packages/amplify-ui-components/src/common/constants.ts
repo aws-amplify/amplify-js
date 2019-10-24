@@ -27,6 +27,7 @@ export const CODE_SUFFIX = 'code';
 export const CODE_LABEL = 'Verification code';
 export const CODE_PLACEHOLDER = 'Enter code';
 export const SEND_CODE = 'Send Code';
+export const CONFIRM = 'Confirm';
 
 // Password common constants
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
