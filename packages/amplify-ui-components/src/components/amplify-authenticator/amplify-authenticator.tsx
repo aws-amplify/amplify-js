@@ -1,5 +1,5 @@
 import { Component, State, Prop, h } from '@stencil/core';
-import { AuthState, User } from '../../common/types/auth-types';
+import { AuthState, CognitoUserType } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
 
 @Component({
@@ -12,7 +12,7 @@ export class AmplifyAuthenticator {
   /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
 
-  @State() authData: User;
+  @State() authData: CognitoUserType;
 
   componentWillLoad() {
     this.authState = this.initialAuthState;
@@ -44,7 +44,7 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignUp:
-        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} userData={this.authData} />;
+        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData.user} />;
       case AuthState.ForgotPassword:
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:

@@ -127,9 +127,9 @@ export class AmplifySignUp {
     };
 
     try {
-      const user = await Auth.signUp(signUpAttrs);
+      const data = await Auth.signUp(signUpAttrs);
 
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, user);
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, data);
     } catch (error) {
       console.log(error);
     }

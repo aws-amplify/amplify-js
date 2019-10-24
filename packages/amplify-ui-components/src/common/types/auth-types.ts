@@ -19,6 +19,28 @@ export enum AuthState {
   VerifyContact = 'verifycontact',
 }
 
-export interface User {
+export interface CognitoUserType {
+  codeDeliveryDetails?: {
+    AttributeName?: string;
+    DeliveryMedium?: string;
+    Destination?: string;
+  };
+  user?: {
+    Session?: string | null;
+    authenticationFlowType?: string;
+    client?: {
+      endpoint?: string;
+      userAgent?: string;
+    };
+    keyPrefix?: string;
+    pool?: {
+      advancedSecurityDataCollectionFlag?: boolean;
+      clientId?: string;
+      userPoolId?: string;
+    };
+    username?: string;
+    userConfirmed?: boolean;
+    userSub?: string;
+  };
   username?: string;
 }

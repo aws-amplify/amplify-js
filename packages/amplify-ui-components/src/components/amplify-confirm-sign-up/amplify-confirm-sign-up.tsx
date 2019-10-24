@@ -4,11 +4,14 @@ import {
   CONFIRM_SIGN_UP_HEADER_TEXT,
   CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT,
   CONFIRM_SIGN_IN_TEXT,
+  USERNAME_PLACEHOLDER,
+  CONFIRM_SIGN_UP_CODE_LABEL,
+  CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
+  CONFIRM_SIGN_UP_LOST_CODE,
+  CONFIRM_SIGN_UP_RESEND_CODE,
 } from '../../common/constants';
 import { AmplifyConfirmSignUpFormFooter } from './amplify-confirm-sign-up-form-footer';
-import { AmplifyConfirmSignUpHint } from './amplify-confirm-sign-up-hint';
-import { AuthStateTunnel } from '../../data/auth-state';
-import { AuthState, User } from '../../common/types/auth-types';
+import { AuthState, CognitoUserType } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
 
@@ -51,7 +54,7 @@ export class AmplifyConfirmSignUp {
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object | string) => void;
   /** Used for the username to be passed to resend code */
-  @Prop() userData: User;
+  @Prop() user: CognitoUserType;
 
   @State() username: string;
   @State() code: string;
@@ -60,21 +63,21 @@ export class AmplifyConfirmSignUp {
     this.formFields = [
       {
         type: 'username',
-        placeholder: 'Enter your username',
+        placeholder: USERNAME_PLACEHOLDER,
         required: true,
         handleInputChange: event => this.handleUsernameChange(event),
+        value: this.user ? this.user.username : null,
       },
       {
         type: 'code',
-        label: 'Confirmation Code',
-        placeholder: 'Enter your code',
+        label: CONFIRM_SIGN_UP_CODE_LABEL,
+        placeholder: CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
         required: true,
         hint: (
-          <AmplifyConfirmSignUpHint
-            forgotCodeText={'Lost your code?'}
-            resendCodeText={'Resend Code'}
-            resendConfirmCode={this.resendConfirmCode}
-          />
+          <div>
+            {CONFIRM_SIGN_UP_LOST_CODE}{' '}
+            <amplify-link onClick={() => this.resendConfirmCode()}>{CONFIRM_SIGN_UP_RESEND_CODE}</amplify-link>
+          </div>
         ),
         handleInputChange: event => this.handleCodeChange(event),
       },
@@ -98,14 +101,13 @@ export class AmplifyConfirmSignUp {
     }
     try {
       if (this.username === undefined) {
-        if (this.userData === undefined) throw new Error();
-        const { username } = this.userData;
+        if (this.user === undefined) throw new Error();
 
-        const resendCode = await Auth.resendSignUp(username);
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+        await Auth.resendSignUp(this.user.username);
+        this.handleAuthStateChange(AuthState.ConfirmSignUp);
       } else {
-        const resendCode = await Auth.resendSignUp(this.username);
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, resendCode);
+        await Auth.resendSignUp(this.username);
+        this.handleAuthStateChange(AuthState.ConfirmSignUp);
       }
     } catch (error) {
       throw new Error(error);
@@ -133,24 +135,20 @@ export class AmplifyConfirmSignUp {
 
   render() {
     return (
-      <AuthStateTunnel.Consumer>
-        {({ onAuthStateChange }) => (
-          <amplify-form-section
-            headerText={this.headerText}
-            overrideStyle={this.overrideStyle}
-            handleSubmit={this.handleSubmit}
-          >
-            <amplify-auth-fields formFields={this.formFields} />
-            <div slot="amplify-form-section-footer">
-              <AmplifyConfirmSignUpFormFooter
-                submitButtonText={this.submitButtonText}
-                signInText={this.signInText}
-                onAuthStateChange={onAuthStateChange}
-              />
-            </div>
-          </amplify-form-section>
-        )}
-      </AuthStateTunnel.Consumer>
+      <amplify-form-section
+        headerText={this.headerText}
+        overrideStyle={this.overrideStyle}
+        handleSubmit={this.handleSubmit}
+      >
+        <amplify-auth-fields formFields={this.formFields} />
+        <div slot="amplify-form-section-footer">
+          <AmplifyConfirmSignUpFormFooter
+            submitButtonText={this.submitButtonText}
+            signInText={this.signInText}
+            handleAuthStateChange={this.handleAuthStateChange}
+          />
+        </div>
+      </amplify-form-section>
     );
   }
 }
