@@ -16,6 +16,7 @@
 | `overrideStyle`     | `override-style` | (Optional) Override default styling                                                                                                                | `boolean`                                                                                       | `false`     |
 | `placeholder`       | `placeholder`    | (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. | `string`                                                                                        | `''`        |
 | `type`              | `type`           | The input type.  Can be any HTML input type.                                                                                                       | `"date" \| "email" \| "number" \| "password" \| "search" \| "tel" \| "text" \| "time" \| "url"` | `'text'`    |
+| `value`             | `value`          | The value of the content inside of the input field                                                                                                 | `string`                                                                                        | `undefined` |
 
 
 ## Dependencies

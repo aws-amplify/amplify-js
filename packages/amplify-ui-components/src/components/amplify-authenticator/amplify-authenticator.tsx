@@ -20,7 +20,6 @@ export class AmplifyAuthenticator {
     console.log(data);
     if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
 
-    // TODO add Logger
     console.info('Inside onAuthStateChange Method current authState:', this.authState);
     this.authState = nextAuthState;
     console.info(`authState has been updated to ${this.authState}`);
@@ -41,8 +40,7 @@ export class AmplifyAuthenticator {
         // TODO: add confirm sign up component
         return <div>Confirm Sign Up Component</div>;
       case AuthState.ForgotPassword:
-        // TODO: add forgot password component
-        return <div>Forgot Password Component</div>;
+        return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:
         // TODO: add forgot password component
         return <div>Reset Password Component</div>;

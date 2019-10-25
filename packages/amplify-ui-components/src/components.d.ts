@@ -112,6 +112,10 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value': string;
   }
   interface AmplifyCountryDialCode {
     /**
@@ -144,6 +148,10 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFederatedButtons {
@@ -157,6 +165,36 @@ export namespace Components {
     'federated': any;
   }
   interface AmplifyFederatedSignIn {}
+  interface AmplifyForgotPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields': FormFieldTypes;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when making a request to reset password
+    */
+    'handleSend': (event: Event) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit': (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText': string;
+  }
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -198,6 +236,10 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value': string;
   }
   interface AmplifyFormSection {
     /**
@@ -212,6 +254,8 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    'primaryFooterContent': string | FunctionalComponent;
+    'secondaryFooterContent': string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot
     */
@@ -271,6 +315,10 @@ export namespace Components {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value': string;
   }
   interface AmplifyLabel {
     'htmlFor': string;
@@ -305,6 +353,10 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyRadioButton {
     /**
@@ -395,7 +447,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -462,6 +514,10 @@ export namespace Components {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface RockPaperScissor {
     'icon': Function;
@@ -529,6 +585,12 @@ declare global {
   var HTMLAmplifyFederatedSignInElement: {
     prototype: HTMLAmplifyFederatedSignInElement;
     new (): HTMLAmplifyFederatedSignInElement;
+  };
+
+  interface HTMLAmplifyForgotPasswordElement extends Components.AmplifyForgotPassword, HTMLStencilElement {}
+  var HTMLAmplifyForgotPasswordElement: {
+    prototype: HTMLAmplifyForgotPasswordElement;
+    new (): HTMLAmplifyForgotPasswordElement;
   };
 
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
@@ -655,6 +717,7 @@ declare global {
     'amplify-examples': HTMLAmplifyExamplesElement;
     'amplify-federated-buttons': HTMLAmplifyFederatedButtonsElement;
     'amplify-federated-sign-in': HTMLAmplifyFederatedSignInElement;
+    'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-hint': HTMLAmplifyHintElement;
@@ -755,6 +818,10 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyCountryDialCode {
     /**
@@ -787,6 +854,10 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFederatedButtons {
@@ -804,6 +875,36 @@ declare namespace LocalJSX {
     'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyFederatedSignIn {}
+  interface AmplifyForgotPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields'?: FormFieldTypes;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when making a request to reset password
+    */
+    'handleSend'?: (event: Event) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit'?: (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText'?: string;
+  }
   interface AmplifyFormField {
     /**
     * The text of the description.  Goes between the label and the input.
@@ -845,6 +946,10 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyFormSection {
     /**
@@ -859,6 +964,8 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    'primaryFooterContent'?: string | FunctionalComponent;
+    'secondaryFooterContent'?: string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot
     */
@@ -918,6 +1025,10 @@ declare namespace LocalJSX {
     * The input type.  Can be any HTML input type.
     */
     'type'?: TextFieldTypes;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyLabel {
     'htmlFor'?: string;
@@ -952,6 +1063,10 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface AmplifyRadioButton {
     /**
@@ -1042,7 +1157,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1109,6 +1224,10 @@ declare namespace LocalJSX {
     * The required flag in order to make an input required prior to submitting a form
     */
     'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
   }
   interface RockPaperScissor {
     'icon'?: Function;
@@ -1126,6 +1245,7 @@ declare namespace LocalJSX {
     'amplify-examples': AmplifyExamples;
     'amplify-federated-buttons': AmplifyFederatedButtons;
     'amplify-federated-sign-in': AmplifyFederatedSignIn;
+    'amplify-forgot-password': AmplifyForgotPassword;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
     'amplify-hint': AmplifyHint;
@@ -1164,6 +1284,7 @@ declare module "@stencil/core" {
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
       'amplify-federated-buttons': LocalJSX.AmplifyFederatedButtons & JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
       'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
+      'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
