@@ -1747,6 +1747,7 @@ export default class AuthClass {
 			.find(([k]) => k === 'access_token' || k === 'error');
 
 		if (hasCodeOrError || hasTokenOrError) {
+			this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 			try {
 				const {
 					accessToken,

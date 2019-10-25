@@ -85,15 +85,16 @@ export default class Authenticator extends React.Component<
 			Amplify.configure(config);
 		}
 		this._isMounted = true;
-		// the workaround for Cognito Hosted UI
-		// don't check the user immediately if redirected back from Hosted UI
-		// instead waiting for the hub event sent from Auth module
-		// the item in the localStorage is a mark to indicate whether
-		// the app is redirected back from Hosted UI or not
+		// The workaround for Cognito Hosted UI:
+		// Don't check the user immediately if redirected back from Hosted UI as
+		// it might take some time for credentials to be available, instead
+		// wait for the hub event sent from Auth module. This item in the
+		// localStorage is a mark to indicate whether the app is just redirected
+		// back from Hosted UI or not and is set in Auth:handleAuthResponse.
 		const byHostedUI = localStorage.getItem(
-			Constants.SIGNING_IN_WITH_HOSTEDUI_KEY
+			Constants.REDIRECTED_FROM_HOSTED_UI
 		);
-		localStorage.removeItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+		localStorage.removeItem(Constants.REDIRECTED_FROM_HOSTED_UI);
 		if (byHostedUI !== 'true') this.checkUser();
 	}
 
@@ -138,6 +139,7 @@ export default class Authenticator extends React.Component<
 		if (channel === 'auth') {
 			switch (payload.event) {
 				case 'cognitoHostedUI':
+					localStorage.setItem(Constants.REDIRECTED_FROM_HOSTED_UI, 'true');
 					this.handleStateChange('signedIn', payload.data);
 					break;
 				case 'cognitoHostedUI_failure':
@@ -151,9 +153,6 @@ export default class Authenticator extends React.Component<
 					break;
 				case 'customGreetingSignOut':
 					this.handleStateChange('signIn', null);
-					break;
-				case 'parsingCallbackUrl':
-					localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
 					break;
 				default:
 					break;
