@@ -142,7 +142,9 @@ export default class AuthPiece<
 
 	getUsernameLabel() {
 		const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
-		return labelMap[usernameAttributes] || usernameAttributes;
+		return (
+			labelMap[usernameAttributes as UsernameAttributes] || usernameAttributes
+		);
 	}
 
 	// extract username from authData
