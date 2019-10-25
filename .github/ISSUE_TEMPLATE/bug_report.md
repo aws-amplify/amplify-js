@@ -29,14 +29,14 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 <details>
-  <summary><strong>Environment></strong>
+  <summary><strong>Environment></strong></summary>
 
 <!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
 ```
-npx envinfo --system --binaries --npmPackages @angular/core,react,react-dom,react-native,vue,aws-amplify,aws-amplilfy-angular,aws-amplify-react,aws-amplify-vue,aws-amplify-react-native,@aws-amplify/cli --markdown
+npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
 ```
 
-</summary>
+</details>
 
 
 **Smartphone (please complete the following information):**
