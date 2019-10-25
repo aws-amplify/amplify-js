@@ -5,6 +5,9 @@
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "react-native": {
+    "./index": "./lib/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
