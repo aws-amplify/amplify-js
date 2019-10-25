@@ -146,7 +146,16 @@ export namespace Components {
     'required': boolean;
   }
   interface AmplifyExamples {}
-  interface AmplifyFederatedButtons {}
+  interface AmplifyFederatedButtons {
+    /**
+    * The current authentication state.
+    */
+    'authState': 'signIn' | 'signedOut' | 'signedUp';
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated': any;
+  }
   interface AmplifyFederatedSignIn {}
   interface AmplifyFormField {
     /**
@@ -780,7 +789,20 @@ declare namespace LocalJSX {
     'required'?: boolean;
   }
   interface AmplifyExamples {}
-  interface AmplifyFederatedButtons {}
+  interface AmplifyFederatedButtons {
+    /**
+    * The current authentication state.
+    */
+    'authState'?: 'signIn' | 'signedOut' | 'signedUp';
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: any;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
+  }
   interface AmplifyFederatedSignIn {}
   interface AmplifyFormField {
     /**
