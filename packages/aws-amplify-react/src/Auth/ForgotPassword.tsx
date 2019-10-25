@@ -84,7 +84,6 @@ export default class ForgotPassword extends AuthPiece<
 		Auth.forgotPasswordSubmit(username, code, password)
 			.then(data => {
 				logger.debug(data);
-				// @ts-ignore
 				this.changeState('signIn');
 				this.setState({ delivery: null });
 			})

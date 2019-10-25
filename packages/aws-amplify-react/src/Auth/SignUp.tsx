@@ -25,7 +25,6 @@ import {
 	FormField,
 	Input,
 	InputLabel,
-	SelectInput,
 	Button,
 	Link,
 	SectionFooterPrimaryContent,
@@ -38,10 +37,9 @@ import countryDialCodes from './common/country-dial-codes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
+	ISignUpField,
 } from './common/default-sign-up-fields';
 import { UsernameAttributes } from './common/types';
-import { ISignUpField } from './common/default-sign-up-fields';
-import { valid } from 'semver';
 import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
@@ -117,7 +115,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
 			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
-				// @ts-ignore
 				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
 			});
 		}
@@ -128,7 +125,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				!this.props.signUpConfig.hideAllDefaults
 			) {
 				// see if fields passed to component should override defaults
-				this.defaultSignUpFields.forEach((f, i) => {
+				this.defaultSignUpFields.forEach(f => {
 					const matchKey = this.signUpFields.findIndex(d => {
 						return d.key === f.key;
 					});
@@ -189,10 +186,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	getDefaultDialCode() {
 		return this.props.signUpConfig &&
 			this.props.signUpConfig.defaultCountryCode &&
-			// @ts-ignore
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -232,7 +228,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 		inputKeys.forEach((key, index) => {
 			if (
-				// @ts-ignore
 				!['username', 'password', 'checkedValue', 'dial_code'].includes(key)
 			) {
 				if (
@@ -274,7 +269,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			.catch(err => this.error(err));
 	}
 
-	showComponent(theme) {
+	showComponent(theme): React.ReactNode {
 		const { hide } = this.props;
 		if (hide && hide.includes(SignUp)) {
 			return null;
