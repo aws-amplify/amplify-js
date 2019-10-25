@@ -28,13 +28,16 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Environment**:
+<details>
+  <summary><strong>Environment></strong>
 
-<!--
-  Please run the following command inside your project and copy/paste its contents here:
+<!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
+```
+npx envinfo --system --binaries --npmPackages @angular/core,react,react-dom,react-native,vue,aws-amplify,aws-amplilfy-angular,aws-amplify-react,aws-amplify-vue,aws-amplify-react-native,@aws-amplify/cli --markdown
+```
 
-  npx envinfo --system --binaries --npmPackages @angular/core,react,react-dom,react-native,vue,aws-amplify,aws-amplilfy-angular,aws-amplify-react,aws-amplify-vue,aws-amplify-react-native,@aws-amplify/cli --markdown
--->
+</summary>
+
 
 **Smartphone (please complete the following information):**
 
