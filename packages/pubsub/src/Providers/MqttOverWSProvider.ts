@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import * as Paho from '../vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
 
@@ -117,6 +117,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}: MqttProvidertOptions): Promise<any> {
 		logger.debug('Creating new MQTT client', clientId);
 
+		// @ts-ignore
 		const client = new Paho.Client(url, clientId);
 		// client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
 		client.onMessageArrived = ({
@@ -223,6 +224,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				observersForTopic.add(observer);
 			});
 
+			// @ts-ignore
 			let client: Paho.Client;
 			const { clientId = this.clientId } = options;
 
