@@ -28,11 +28,13 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+**Environment**:
 
-- OS: [e.g. iOS]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
+<!--
+  Please run the following command inside your project and copy/paste its contents here:
+
+  npx envinfo --system --binaries --npmPackages @angular/core,react,react-dom,react-native,vue,aws-amplify,aws-amplilfy-angular,aws-amplify-react,aws-amplify-vue,aws-amplify-react-native,@aws-amplify/cli --markdown
+-->
 
 **Smartphone (please complete the following information):**
 
@@ -40,10 +42,6 @@ If applicable, add screenshots to help explain your problem.
 - OS: [e.g. iOS8.1]
 - Browser [e.g. stock browser, safari]
 - Version [e.g. 22]
-
-**Amplify context**
-- Framework (e.g. React, Angular, Vue, React Native)
-- Versions of Amplify you are using
 
 **Additional context**
 Add any other context about the problem here.
