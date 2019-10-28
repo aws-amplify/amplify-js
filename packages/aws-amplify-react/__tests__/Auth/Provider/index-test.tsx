@@ -12,6 +12,7 @@ describe('withFederated test', () => {
 			const Comp = withFederated(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });

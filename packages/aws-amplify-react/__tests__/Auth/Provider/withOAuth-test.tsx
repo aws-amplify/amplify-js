@@ -14,11 +14,13 @@ describe('withOAuth test', () => {
 			const Comp = withOAuth(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 
 		test('render correctly with button', () => {
 			const wrapper = shallow(<OAuthButton />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 

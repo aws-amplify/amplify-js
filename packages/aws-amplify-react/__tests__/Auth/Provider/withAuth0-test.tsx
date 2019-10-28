@@ -24,6 +24,7 @@ describe('withAuth0 test', () => {
 			const Comp = withAuth0(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 
@@ -223,6 +224,7 @@ describe('Auth0Button test', () => {
 			const wrapper = shallow(<Auth0Button />);
 
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });

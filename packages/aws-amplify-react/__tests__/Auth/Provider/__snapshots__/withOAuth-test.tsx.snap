@@ -6,8 +6,24 @@ exports[`withOAuth test render test render correctly 1`] = `
 />
 `;
 
+exports[`withOAuth test render test render correctly 2`] = `<div />`;
+
 exports[`withOAuth test render test render correctly with button 1`] = `
 <Button
   OAuthSignIn={[Function]}
 />
+`;
+
+exports[`withOAuth test render test render correctly with button 2`] = `
+<button
+  class="Button__signInButton___3bUH-"
+  id="Button__oAuthSignInButton___3UGOl"
+  variant="oAuthSignInButton"
+>
+  <span
+    class="Button__signInButtonContent___xqTXJ"
+  >
+    Sign in with AWS
+  </span>
+</button>
 `;

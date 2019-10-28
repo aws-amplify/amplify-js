@@ -8,6 +8,35 @@ exports[`Auth0Button test render test render correctly 1`] = `
 />
 `;
 
+exports[`Auth0Button test render test render correctly 2`] = `
+<button
+  class="Button__signInButton___3bUH-"
+  id="Button__auth0SignInButton___znnCj"
+  variant="auth0SignInButton"
+>
+  <span
+    class="Button__signInButtonIcon___ihN75"
+  >
+    <svg
+      id="artwork"
+      viewBox="0 0 193.7 216.6"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        class="st0"
+        d="M189,66.9L167.2,0H96.8l21.8,66.9H189z M96.8,0H26.5L4.8,66.9h70.4L96.8,0z M4.8,66.9L4.8,66.9	c-13,39.9,1.2,83.6,35.2,108.3l21.7-66.9L4.8,66.9z M189,66.9L189,66.9l-57,41.4l21.7,66.9l0,0C187.7,150.6,201.9,106.8,189,66.9	L189,66.9z M39.9,175.2L39.9,175.2l56.9,41.4l56.9-41.4l-56.9-41.4L39.9,175.2z"
+        id="NEW"
+      />
+    </svg>
+  </span>
+  <span
+    class="Button__signInButtonContent___xqTXJ"
+  >
+    Sign In with Auth0
+  </span>
+</button>
+`;
+
 exports[`withAuth0 test render test render correctly 1`] = `
 <class_1
   auth0={null}
@@ -15,3 +44,5 @@ exports[`withAuth0 test render test render correctly 1`] = `
   auth0SignOut={[Function]}
 />
 `;
+
+exports[`withAuth0 test render test render correctly 2`] = `<div />`;
