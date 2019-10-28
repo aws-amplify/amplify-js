@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -28,8 +27,8 @@ import Constants from '../common/constants';
 
 const logger = new Logger('withAuth0');
 
-export default function withAuth0(Comp, options) {
-	return class extends Component<any, any> {
+export default function withAuth0(Comp, options?) {
+	return class extends React.Component<any, any> {
 		public _auth0;
 
 		constructor(props: any) {
@@ -62,7 +61,7 @@ export default function withAuth0(Comp, options) {
 			const { oauth = {} } = Auth.configure();
 			// @ts-ignore
 			const config = this.props.auth0 || options || oauth.auth0;
-			const { onError, onStateChange, authState, onAuthEvent } = this.props;
+			const { onError, onStateChange, authState } = this.props;
 			if (!config) {
 				logger.debug('Auth0 is not configured');
 				return;
@@ -117,7 +116,7 @@ export default function withAuth0(Comp, options) {
 							},
 							{ name: username, email }
 						)
-							.then(cred => {
+							.then(() => {
 								if (onStateChange) {
 									Auth.currentAuthenticatedUser().then(user => {
 										onStateChange('signedIn', user);
@@ -155,7 +154,7 @@ export default function withAuth0(Comp, options) {
 			});
 		}
 
-		render() {
+		render(): React.ReactNode {
 			return (
 				<Comp
 					{...this.props}
@@ -194,5 +193,4 @@ const Button = props => (
 	</SignInButton>
 );
 
-// @ts-ignore
 export const Auth0Button = withAuth0(Button);
