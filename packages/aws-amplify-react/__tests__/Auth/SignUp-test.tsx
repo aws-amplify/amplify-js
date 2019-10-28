@@ -125,6 +125,39 @@ describe('signUp without signUpConfig prop', () => {
 			spyon_changeState.mockClear();
 		});
 
+		test('state.requestPending should be true when signUp execution begins', () => {
+			const wrapper = shallow(<SignUp />);
+			wrapper.setProps({
+				authState: 'signUp',
+				theme: AmplifyTheme,
+			});
+
+			const button = wrapper.find(Button);
+			expect(button.props().disabled).toEqual(false);
+
+			button.simulate('click');
+			expect(wrapper.state().requestPending).toEqual(true);
+		});
+
+		test('the signup button should be disabled when state.requestPending is true', async () => {
+			const wrapper = shallow(<SignUp />);
+			wrapper.setProps({
+				authState: 'signUp',
+				theme: AmplifyTheme,
+			});
+
+			wrapper.setState({
+				requestPending: true,
+			});
+
+			expect(
+				wrapper
+					.update()
+					.find(Button)
+					.props().disabled
+			).toEqual(true);
+		});
+
 		test('when clicking signUp with another format of phone number', async () => {
 			const wrapper = shallow(<SignUp />);
 			wrapper.setProps({
