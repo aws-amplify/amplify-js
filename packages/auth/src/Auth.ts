@@ -379,11 +379,12 @@ export default class AuthClass {
 	/**
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
+	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
 	 * @return - A promise resolves data if success
 	 */
 	public resendSignUp(
 		username: string,
-		clientMetadata: any = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -413,7 +414,7 @@ export default class AuthClass {
 	public signIn(
 		usernameOrSignInOpts: string | SignInOpts,
 		pw?: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -882,7 +883,7 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		code: string,
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
@@ -923,7 +924,7 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		password: string,
 		requiredAttributes: any,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
@@ -984,7 +985,7 @@ export default class AuthClass {
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
 		challengeResponses: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1011,7 +1012,7 @@ export default class AuthClass {
 	public updateUserAttributes(
 		user: CognitoUser | any,
 		attributes: object,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<string> {
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
@@ -1339,7 +1340,7 @@ export default class AuthClass {
 	public verifyUserAttribute(
 		user: CognitoUser | any,
 		attr: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
 			user.getAttributeVerificationCode(attr, {
@@ -1508,7 +1509,7 @@ export default class AuthClass {
 		user: CognitoUser | any,
 		oldPassword: string,
 		newPassword: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<'SUCCESS'> {
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
@@ -1536,7 +1537,7 @@ export default class AuthClass {
 	 */
 	public forgotPassword(
 		username: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1589,7 +1590,7 @@ export default class AuthClass {
 		username: string,
 		code: string,
 		password: string,
-		clientMetadata: ClientMetaData | undefined = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();

@@ -9,6 +9,8 @@ declare module 'amazon-cognito-identity-js' {
 		Destination: string;
 	}
 
+	export type ClientMetadata = { [key: string]: string };
+
 	export interface IAuthenticationCallback {
 		onSuccess: (
 			session: CognitoUserSession,
@@ -34,7 +36,7 @@ declare module 'amazon-cognito-identity-js' {
 		Username: string;
 		Password?: string;
 		ValidationData?: { [key: string]: any };
-		ClientMetadata?: { [key: string]: string };
+		ClientMetadata?: ClientMetadata;
 	}
 
 	export class AuthenticationDetails {
@@ -89,7 +91,7 @@ declare module 'amazon-cognito-identity-js' {
 			code: string,
 			forceAliasCreation: boolean,
 			callback: NodeCallback<any, any>,
-			clientMetadata?: { [key: string]: string }
+			clientMetadata?: ClientMetadata
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
@@ -97,7 +99,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public resendConfirmationCode(
 			callback: NodeCallback<Error, 'SUCCESS'>,
-			authDetails?: { [key: string]: string } | undefined
+			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
 			oldPassword: string,
@@ -175,7 +177,8 @@ declare module 'amazon-cognito-identity-js' {
 					challengeName: any,
 					challengeParameters: any
 				) => void;
-			}
+			},
+			clientMetadata: ClientMetadata
 		): void;
 		public signOut(): void;
 		public globalSignOut(callbacks: {
@@ -368,6 +371,4 @@ declare module 'amazon-cognito-identity-js' {
 		removeItem(key: string): void;
 		clear(): void;
 	}
-
-	export type ClientMetadata = { [key: string]: string };
 }

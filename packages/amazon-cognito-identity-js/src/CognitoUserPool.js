@@ -87,6 +87,7 @@ export default class CognitoUserPool {
 	 * @param {string} password Plain-text initial password entered by user.
 	 * @param {(AttributeArg[])=} userAttributes New user attributes.
 	 * @param {(AttributeArg[])=} validationData Application metadata.
+	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
 	 * @returns {void}
 	 */

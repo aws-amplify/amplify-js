@@ -581,7 +581,7 @@ export default class CognitoUser {
 	 * @param {customChallenge} callback.customChallenge Custom challenge
 	 *         response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	completeNewPasswordChallenge(

@@ -69,7 +69,7 @@ export default class AuthenticationDetails {
 	}
 
 	/**
-	 * @returns {Object} the clientMetadata for a Lambda trigger
+	 * @returns {ClientMetadata} the clientMetadata for a Lambda trigger
 	 */
 	getClientMetadata() {
 		return this.clientMetadata;

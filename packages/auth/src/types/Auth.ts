@@ -158,7 +158,7 @@ export type OAuthOpts = AwsCognitoOAuthOpts | Auth0OAuthOpts;
 
 export interface ConfirmSignUpOptions {
 	forceAliasCreation?: boolean;
-	clientMetadata?: any;
+	clientMetadata?: ClientMetaData;
 }
 
 export interface SignOutOpts {
