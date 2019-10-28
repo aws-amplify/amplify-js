@@ -9,7 +9,7 @@ declare module 'amazon-cognito-identity-js' {
 		Destination: string;
 	}
 
-	export type ClientMetadata = { [key: string]: string };
+	export type ClientMetadata = { [key: string]: string } | undefined;
 
 	export interface IAuthenticationCallback {
 		onSuccess: (
