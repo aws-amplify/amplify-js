@@ -265,8 +265,8 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		}
 		Auth.signUp(signup_info)
 			.then(data => {
-				// @ts-ignore
 				this.setState({ requestPending: false });
+				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
 			.catch(err => {
