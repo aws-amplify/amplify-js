@@ -139,7 +139,6 @@ export default class Authenticator extends React.Component<
 		if (channel === 'auth') {
 			switch (payload.event) {
 				case 'cognitoHostedUI':
-					localStorage.setItem(Constants.REDIRECTED_FROM_HOSTED_UI, 'true');
 					this.handleStateChange('signedIn', payload.data);
 					break;
 				case 'cognitoHostedUI_failure':
