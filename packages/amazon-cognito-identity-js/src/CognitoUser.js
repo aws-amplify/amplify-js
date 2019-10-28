@@ -1572,7 +1572,7 @@ export default class CognitoUser {
 	 * @param {inputVerificationCode?} callback.inputVerificationCode
 	 *    Optional callback raised instead of onSuccess with response data.
 	 * @param {onSuccess} callback.onSuccess Called on success.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	forgotPassword(callback, clientMetadata) {
@@ -1984,7 +1984,6 @@ export default class CognitoUser {
 	 * @param {string} totpCode The MFA code entered by the user.
 	 * @param {string} friendlyDeviceName The device name we are assigning to the device.
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	verifySoftwareToken(totpCode, friendlyDeviceName, callback) {

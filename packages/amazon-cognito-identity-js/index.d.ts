@@ -112,7 +112,7 @@ declare module 'amazon-cognito-identity-js' {
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: any) => void;
 			},
-			authDetails?: { [key: string]: string } | undefined
+			clientMetaData?: ClientMetadata
 		): void;
 		public confirmPassword(
 			verificationCode: string,
@@ -121,7 +121,7 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: () => void;
 				onFailure: (err: Error) => void;
 			},
-			authDetails?: { [key: string]: string } | undefined
+			clientMetaData?: ClientMetadata
 		): void;
 		public setDeviceStatusRemembered(callbacks: {
 			onSuccess: (success: string) => void;
