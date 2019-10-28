@@ -20,6 +20,8 @@ export class AmplifyCodeField {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** The value of the content inside of the input field */
   @Prop() value: string;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -32,6 +34,7 @@ export class AmplifyCodeField {
         required={this.required}
         handleInputChange={this.handleInputChange}
         value={this.value}
+        disabled={this.disabled}
       />
     );
   }

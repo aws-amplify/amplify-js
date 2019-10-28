@@ -27,6 +27,8 @@ export class AmplifyInput {
   @Prop() name?: string;
   /** The value of the content inside of the input field */
   @Prop() value: string;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -39,6 +41,7 @@ export class AmplifyInput {
         name={this.name}
         class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
         value={this.value}
+        disabled={this.disabled}
       />
     );
   }

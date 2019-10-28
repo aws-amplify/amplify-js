@@ -9,6 +9,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
   password: (ff: FormFieldType) => (
@@ -19,6 +20,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
   email: (ff: FormFieldType) => (
@@ -28,6 +30,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
   code: (ff: FormFieldType) => (
@@ -38,6 +41,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
   // TODO: Will create a phone field component once the dial country code component is in
@@ -49,6 +53,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
   default: (ff: FormFieldType) => (
@@ -58,6 +63,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      disabled={ff.disabled}
     />
   ),
 };

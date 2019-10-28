@@ -94,6 +94,10 @@ export namespace Components {
   }
   interface AmplifyCodeField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
@@ -172,6 +176,10 @@ export namespace Components {
   }
   interface AmplifyEmailField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
@@ -232,6 +240,10 @@ export namespace Components {
     * The text of the description.  Goes between the label and the input.
     */
     'description': string | null;
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
@@ -324,6 +336,10 @@ export namespace Components {
     */
     'description': string | null;
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId': string;
@@ -361,6 +377,10 @@ export namespace Components {
     'role': string;
   }
   interface AmplifyPasswordField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -526,6 +546,10 @@ export namespace Components {
     'text': string;
   }
   interface AmplifyUsernameField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -824,6 +848,10 @@ declare namespace LocalJSX {
   }
   interface AmplifyCodeField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
@@ -902,6 +930,10 @@ declare namespace LocalJSX {
   }
   interface AmplifyEmailField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
@@ -962,6 +994,10 @@ declare namespace LocalJSX {
     * The text of the description.  Goes between the label and the input.
     */
     'description'?: string | null;
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
@@ -1054,6 +1090,10 @@ declare namespace LocalJSX {
     */
     'description'?: string | null;
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId'?: string;
@@ -1091,6 +1131,10 @@ declare namespace LocalJSX {
     'role'?: string;
   }
   interface AmplifyPasswordField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -1256,6 +1300,10 @@ declare namespace LocalJSX {
     'text'?: string;
   }
   interface AmplifyUsernameField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */

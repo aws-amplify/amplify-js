@@ -56,7 +56,7 @@ export class AmplifyConfirmSignUp {
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserType;
 
-  @State() username: string;
+  @State() username: string = this.user ? this.user.username : null;
   @State() code: string;
 
   componentWillLoad() {
@@ -67,6 +67,7 @@ export class AmplifyConfirmSignUp {
         required: true,
         handleInputChange: event => this.handleUsernameChange(event),
         value: this.user ? this.user.username : null,
+        disabled: this.user && this.user.username ? true : false,
       },
       {
         type: 'code',
@@ -127,7 +128,7 @@ export class AmplifyConfirmSignUp {
     try {
       const user = await Auth.confirmSignUp(this.username, this.code);
 
-      this.handleAuthStateChange(AuthState.SignedIn, { username: user.username });
+      this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       throw new Error(error);
     }
