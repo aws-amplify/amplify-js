@@ -42,6 +42,7 @@ export interface IAuthPieceProps {
 
 export interface IAuthPieceState {
 	username?: any;
+	requestPending?: boolean;
 }
 
 export default class AuthPiece<
