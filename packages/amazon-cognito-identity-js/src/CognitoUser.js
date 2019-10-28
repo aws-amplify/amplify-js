@@ -643,7 +643,7 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 * @private
 	 */
@@ -756,7 +756,7 @@ export default class CognitoUser {
 	 * @param {string} confirmationCode Code entered by user.
 	 * @param {bool} forceAliasCreation Allow migrating from an existing email / phone number.
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	confirmRegistration(
@@ -791,7 +791,7 @@ export default class CognitoUser {
 	 * @param {customChallenge} callback.customChallenge
 	 *    Custom challenge response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata) {
@@ -837,7 +837,7 @@ export default class CognitoUser {
 	 * @param {string} mfaType The mfa we are replying to.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	sendMFACode(confirmationCode, callback, mfaType, clientMetadata) {
@@ -958,7 +958,7 @@ export default class CognitoUser {
 	 * @param {string} oldUserPassword The current password.
 	 * @param {string} newUserPassword The requested new password.
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	changePassword(oldUserPassword, newUserPassword, callback, clientMetadata) {
@@ -1079,7 +1079,7 @@ export default class CognitoUser {
 	/**
 	 * This is used by an authenticated user to delete itself
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	deleteUser(callback, clientMetadata) {
@@ -1111,7 +1111,7 @@ export default class CognitoUser {
 	 * This is used by an authenticated user to change a list of attributes
 	 * @param {AttributeArg[]} attributes A list of the new user attributes.
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	updateAttributes(attributes, callback, clientMetadata) {
@@ -1280,7 +1280,7 @@ export default class CognitoUser {
 	/**
 	 * This is used by a user to resend a confirmation code
 	 * @param {nodeCallback<string>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	resendConfirmationCode(callback, clientMetadata) {
@@ -1371,7 +1371,7 @@ export default class CognitoUser {
 	 * This uses the refreshToken to retrieve a new session
 	 * @param {CognitoRefreshToken} refreshToken A previous session's refresh token.
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata) {
@@ -1602,7 +1602,7 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<void>} callback.onSuccess Called on success.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	confirmPassword(confirmationCode, newPassword, callback, clientMetadata) {
@@ -1630,7 +1630,7 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
-	 * @param {object} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	getAttributeVerificationCode(attributeName, callback, clientMetadata) {
