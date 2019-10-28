@@ -89,7 +89,6 @@ function tsc(fileNames, options) {
 
 async function buildES5() {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
-	const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
 		noImplicitAny: false,
@@ -99,8 +98,8 @@ async function buildES5() {
 		target: 'es5',
 		module: 'commonjs',
 		moduleResolution: 'node',
-		allowJs: allowJs,
 		declaration: true,
+		noEmitOnError: true,
 		typeRoots: [
 			`${currentPath}/node_modules/@types`,
 			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,
@@ -130,7 +129,6 @@ async function buildES5() {
 
 function buildES6() {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
-	const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
 	// tsconfig for ESM generating
 	let compilerOptions = {
 		noImplicitAny: false,
@@ -140,8 +138,8 @@ function buildES6() {
 		target: 'es5',
 		module: 'es2015',
 		moduleResolution: 'node',
-		allowJs: allowJs,
 		declaration: true,
+		noEmitOnError: true,
 		typeRoots: [
 			`${currentPath}/node_modules/@types`,
 			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,
