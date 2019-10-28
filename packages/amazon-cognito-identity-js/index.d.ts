@@ -178,7 +178,7 @@ declare module 'amazon-cognito-identity-js' {
 					challengeParameters: any
 				) => void;
 			},
-			clientMetadata: ClientMetadata
+			clientMetadata?: ClientMetadata
 		): void;
 		public signOut(): void;
 		public globalSignOut(callbacks: {

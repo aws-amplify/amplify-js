@@ -2148,18 +2148,18 @@ describe('auth unit test', () => {
 	});
 
 	describe('forgotPasswordSubmit', () => {
-		// 	test('happy case', async () => {
-		// 		const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
+		test('happy case', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
 
-		// 		const auth = new Auth(authOptions);
+			const auth = new Auth(authOptions);
 
-		// 		expect.assertions(1);
-		// 		expect(
-		// 			await auth.forgotPasswordSubmit('username', 'code', 'password')
-		// 		).toBeUndefined();
+			expect.assertions(1);
+			expect(
+				await auth.forgotPasswordSubmit('username', 'code', 'password')
+			).toBeUndefined();
 
-		// 		spyon.mockClear();
-		// 	});
+			spyon.mockClear();
+		});
 
 		test('happy case', async () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
@@ -2193,7 +2193,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case clientMetadata default', async () => {
+		test('happy case clientMetadata parameter', async () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const username = 'username';
@@ -2504,7 +2504,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case clientMetadata default', async () => {
+		test('happy case clientMetadata parameter', async () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const user = new CognitoUser({
