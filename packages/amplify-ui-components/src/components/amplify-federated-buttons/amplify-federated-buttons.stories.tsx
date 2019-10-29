@@ -10,7 +10,7 @@ export default {
 
 export const renderWithCorrectAuthState = () => (
   <amplify-federated-buttons
-    auth-state="signIn"
+    authState="signIn"
     federated={{
       google_client_id: 'google_client_id',
       facebook_app_id: 'facebook_app_id',
@@ -21,7 +21,7 @@ export const renderWithCorrectAuthState = () => (
 
 export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
   <amplify-federated-buttons
-    auth-state="signIn"
+    authState="signIn"
     federated={{
       facebook_app_id: 'facebook_app_id',
     }}
@@ -31,7 +31,7 @@ export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
 
 export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
   <amplify-federated-buttons
-    auth-state="signIn"
+    authState="signIn"
     federated={{
       google_client_id: 'google_client_id',
     }}
@@ -40,9 +40,9 @@ export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
 );
 
 export const renderNothingWithIncorrectAuthState = () => (
-  <amplify-federated-buttons auth-state="signedIn" federated={{}} onStateChange={handleStateChange} />
+  <amplify-federated-buttons authState="signedIn" federated={{}} onStateChange={handleStateChange} />
 );
 
 export const renderNothingWithNoFederatedProp = () => (
-  <amplify-federated-buttons auth-state="signedIn" federated={undefined} onStateChange={handleStateChange} />
+  <amplify-federated-buttons authState="signedIn" federated={undefined} onStateChange={handleStateChange} />
 );

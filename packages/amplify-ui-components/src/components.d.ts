@@ -154,6 +154,12 @@ export namespace Components {
     'value'?: string;
   }
   interface AmplifyExamples {}
+  interface AmplifyFacebookButton {
+    /**
+    * App-specific client ID from Facebook
+    */
+    'facebook_app_id': string;
+  }
   interface AmplifyFederatedButtons {
     /**
     * The current authentication state.
@@ -457,7 +463,7 @@ export namespace Components {
     'validationErrors': string;
   }
   interface AmplifySignInButton {
-    'class'?: string;
+    'provider': 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -591,6 +597,12 @@ declare global {
   var HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
     new (): HTMLAmplifyExamplesElement;
+  };
+
+  interface HTMLAmplifyFacebookButtonElement extends Components.AmplifyFacebookButton, HTMLStencilElement {}
+  var HTMLAmplifyFacebookButtonElement: {
+    prototype: HTMLAmplifyFacebookButtonElement;
+    new (): HTMLAmplifyFacebookButtonElement;
   };
 
   interface HTMLAmplifyFederatedButtonsElement extends Components.AmplifyFederatedButtons, HTMLStencilElement {}
@@ -745,6 +757,7 @@ declare global {
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
+    'amplify-facebook-button': HTMLAmplifyFacebookButtonElement;
     'amplify-federated-buttons': HTMLAmplifyFederatedButtonsElement;
     'amplify-federated-sign-in': HTMLAmplifyFederatedSignInElement;
     'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
@@ -892,6 +905,16 @@ declare namespace LocalJSX {
     'value'?: string;
   }
   interface AmplifyExamples {}
+  interface AmplifyFacebookButton {
+    /**
+    * App-specific client ID from Facebook
+    */
+    'facebook_app_id'?: string;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
+  }
   interface AmplifyFederatedButtons {
     /**
     * The current authentication state.
@@ -1203,7 +1226,7 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifySignInButton {
-    'class'?: string;
+    'provider'?: 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -1297,6 +1320,7 @@ declare namespace LocalJSX {
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
+    'amplify-facebook-button': AmplifyFacebookButton;
     'amplify-federated-buttons': AmplifyFederatedButtons;
     'amplify-federated-sign-in': AmplifyFederatedSignIn;
     'amplify-forgot-password': AmplifyForgotPassword;
@@ -1338,6 +1362,7 @@ declare module "@stencil/core" {
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
+      'amplify-facebook-button': LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;
       'amplify-federated-buttons': LocalJSX.AmplifyFederatedButtons & JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
       'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
       'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
