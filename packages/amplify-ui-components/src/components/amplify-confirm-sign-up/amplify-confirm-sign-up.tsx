@@ -27,8 +27,6 @@ export class AmplifyConfirmSignUp {
   @Prop() headerText: string = CONFIRM_SIGN_UP_HEADER_TEXT;
   /** Used for the submit button text in confirm sign up component */
   @Prop() submitButtonText: string = CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT;
-  /** Used for `Back to Sign In` text passed to footer component */
-  @Prop() signInText: string = CONFIRM_SIGN_IN_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /**
@@ -139,7 +137,7 @@ export class AmplifyConfirmSignUp {
           <div>
             <span>
               <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-                {this.signInText}
+                {CONFIRM_SIGN_IN_TEXT}
               </amplify-link>
             </span>
           </div>

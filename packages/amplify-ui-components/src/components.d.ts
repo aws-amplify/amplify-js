@@ -148,10 +148,6 @@ export namespace Components {
     */
     'overrideStyle': boolean;
     /**
-    * Used for `Back to Sign In` text passed to footer component
-    */
-    'signInText': string;
-    /**
     * Used for the submit button text in confirm sign up component
     */
     'submitButtonText': string;
@@ -901,10 +897,6 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
-    /**
-    * Used for `Back to Sign In` text passed to footer component
-    */
-    'signInText'?: string;
     /**
     * Used for the submit button text in confirm sign up component
     */
