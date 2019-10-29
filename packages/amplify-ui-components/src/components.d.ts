@@ -164,7 +164,16 @@ export namespace Components {
     */
     'federated': any;
   }
-  interface AmplifyFederatedSignIn {}
+  interface AmplifyFederatedSignIn {
+    /**
+    * The current authentication state.
+    */
+    'authState': 'signIn' | 'signedOut' | 'signedUp';
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated': any;
+  }
   interface AmplifyForgotPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -260,6 +269,12 @@ export namespace Components {
     * (Optional) Used as a the default value within the default footer slot
     */
     'submitButtonText'?: string;
+  }
+  interface AmplifyGoogleButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'google_client_id': string;
   }
   interface AmplifyHint {
     /**
@@ -441,6 +456,9 @@ export namespace Components {
     */
     'validationErrors': string;
   }
+  interface AmplifySignInButton {
+    'class'?: string;
+  }
   interface AmplifySignUp {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -605,6 +623,12 @@ declare global {
     new (): HTMLAmplifyFormSectionElement;
   };
 
+  interface HTMLAmplifyGoogleButtonElement extends Components.AmplifyGoogleButton, HTMLStencilElement {}
+  var HTMLAmplifyGoogleButtonElement: {
+    prototype: HTMLAmplifyGoogleButtonElement;
+    new (): HTMLAmplifyGoogleButtonElement;
+  };
+
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
@@ -683,6 +707,12 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
+  interface HTMLAmplifySignInButtonElement extends Components.AmplifySignInButton, HTMLStencilElement {}
+  var HTMLAmplifySignInButtonElement: {
+    prototype: HTMLAmplifySignInButtonElement;
+    new (): HTMLAmplifySignInButtonElement;
+  };
+
   interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
   var HTMLAmplifySignUpElement: {
     prototype: HTMLAmplifySignUpElement;
@@ -720,6 +750,7 @@ declare global {
     'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
+    'amplify-google-button': HTMLAmplifyGoogleButtonElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-icon-button': HTMLAmplifyIconButtonElement;
@@ -733,6 +764,7 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
+    'amplify-sign-in-button': HTMLAmplifySignInButtonElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
@@ -869,12 +901,21 @@ declare namespace LocalJSX {
     * Federated credentials & configuration.
     */
     'federated'?: any;
+  }
+  interface AmplifyFederatedSignIn {
+    /**
+    * The current authentication state.
+    */
+    'authState'?: 'signIn' | 'signedOut' | 'signedUp';
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: any;
     /**
     * Listener when `authState` changes
     */
     'onStateChange'?: (event: CustomEvent<any>) => void;
   }
-  interface AmplifyFederatedSignIn {}
   interface AmplifyForgotPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -970,6 +1011,16 @@ declare namespace LocalJSX {
     * (Optional) Used as a the default value within the default footer slot
     */
     'submitButtonText'?: string;
+  }
+  interface AmplifyGoogleButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'google_client_id'?: string;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyHint {
     /**
@@ -1151,6 +1202,9 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
+  interface AmplifySignInButton {
+    'class'?: string;
+  }
   interface AmplifySignUp {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -1248,6 +1302,7 @@ declare namespace LocalJSX {
     'amplify-forgot-password': AmplifyForgotPassword;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
+    'amplify-google-button': AmplifyGoogleButton;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-icon-button': AmplifyIconButton;
@@ -1261,6 +1316,7 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-in-button': AmplifySignInButton;
     'amplify-sign-up': AmplifySignUp;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
@@ -1287,6 +1343,7 @@ declare module "@stencil/core" {
       'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
+      'amplify-google-button': LocalJSX.AmplifyGoogleButton & JSXBase.HTMLAttributes<HTMLAmplifyGoogleButtonElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
       'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
       'amplify-icon-button': LocalJSX.AmplifyIconButton & JSXBase.HTMLAttributes<HTMLAmplifyIconButtonElement>;
@@ -1300,6 +1357,7 @@ declare module "@stencil/core" {
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
+      'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
