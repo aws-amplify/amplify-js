@@ -35,6 +35,12 @@ import {
 } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
+  interface AmplifyAmazonButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'amazon_client_id': string;
+  }
   interface AmplifyAuthFields {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -463,7 +469,7 @@ export namespace Components {
     'validationErrors': string;
   }
   interface AmplifySignInButton {
-    'provider': 'facebook' | 'google';
+    'provider': 'amazon' | 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -550,6 +556,12 @@ export namespace Components {
 
 declare global {
 
+
+  interface HTMLAmplifyAmazonButtonElement extends Components.AmplifyAmazonButton, HTMLStencilElement {}
+  var HTMLAmplifyAmazonButtonElement: {
+    prototype: HTMLAmplifyAmazonButtonElement;
+    new (): HTMLAmplifyAmazonButtonElement;
+  };
 
   interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {}
   var HTMLAmplifyAuthFieldsElement: {
@@ -749,6 +761,7 @@ declare global {
     new (): HTMLRockPaperScissorElement;
   };
   interface HTMLElementTagNameMap {
+    'amplify-amazon-button': HTMLAmplifyAmazonButtonElement;
     'amplify-auth-fields': HTMLAmplifyAuthFieldsElement;
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
@@ -786,6 +799,16 @@ declare global {
 }
 
 declare namespace LocalJSX {
+  interface AmplifyAmazonButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'amazon_client_id'?: string;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
+  }
   interface AmplifyAuthFields {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -1226,7 +1249,7 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifySignInButton {
-    'provider'?: 'facebook' | 'google';
+    'provider'?: 'amazon' | 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -1312,6 +1335,7 @@ declare namespace LocalJSX {
   }
 
   interface IntrinsicElements {
+    'amplify-amazon-button': AmplifyAmazonButton;
     'amplify-auth-fields': AmplifyAuthFields;
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
@@ -1354,6 +1378,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'amplify-amazon-button': LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
       'amplify-auth-fields': LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
       'amplify-authenticator': LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;

@@ -17,6 +17,13 @@ export const Host = css`
     }
   }
 
+  &.amazon button {
+    background-color: var(--amazonOrange);
+    border: none;
+    color: var(--white);
+    font-family: 'Amazon Ember';
+  }
+
   &.facebook button {
     background-color: #4267b2;
     border-color: #4267b2;
@@ -34,6 +41,12 @@ export const Host = css`
   .icon {
     position: absolute;
     left: 0;
+  }
+
+  &.amazon .icon {
+    padding: 10px;
+    height: 32px;
+    width: 32px;
   }
 
   &.facebook .icon {
