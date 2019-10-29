@@ -521,6 +521,7 @@ export namespace Components {
     */
     'validationErrors': string;
   }
+  interface AmplifyStrike {}
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -767,6 +768,12 @@ declare global {
     new (): HTMLAmplifySignUpElement;
   };
 
+  interface HTMLAmplifyStrikeElement extends Components.AmplifyStrike, HTMLStencilElement {}
+  var HTMLAmplifyStrikeElement: {
+    prototype: HTMLAmplifyStrikeElement;
+    new (): HTMLAmplifyStrikeElement;
+  };
+
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
@@ -818,6 +825,7 @@ declare global {
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-button': HTMLAmplifySignInButtonElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
+    'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
@@ -1335,6 +1343,7 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
+  interface AmplifyStrike {}
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -1414,6 +1423,7 @@ declare namespace LocalJSX {
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-button': AmplifySignInButton;
     'amplify-sign-up': AmplifySignUp;
+    'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
@@ -1459,6 +1469,7 @@ declare module "@stencil/core" {
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
       'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
+      'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
