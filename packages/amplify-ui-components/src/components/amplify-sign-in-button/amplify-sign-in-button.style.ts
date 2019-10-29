@@ -45,6 +45,11 @@ export const Host = css`
     color: var(--white);
   }
 
+  &.oauth button {
+    background-color: var(--white);
+    color: var(--deepSquidInk);
+  }
+
   .icon {
     position: absolute;
     left: 0;

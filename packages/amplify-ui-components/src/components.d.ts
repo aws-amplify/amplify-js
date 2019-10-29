@@ -361,6 +361,12 @@ export namespace Components {
     'overrideStyle': boolean;
     'role': string;
   }
+  interface AmplifyOauthButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'oauth_config': any;
+  }
   interface AmplifyPasswordField {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
@@ -475,7 +481,7 @@ export namespace Components {
     'validationErrors': string;
   }
   interface AmplifySignInButton {
-    'provider': 'amazon' | 'auth0' | 'facebook' | 'google';
+    'provider': 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignUp {
     /**
@@ -701,6 +707,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyOauthButtonElement extends Components.AmplifyOauthButton, HTMLStencilElement {}
+  var HTMLAmplifyOauthButtonElement: {
+    prototype: HTMLAmplifyOauthButtonElement;
+    new (): HTMLAmplifyOauthButtonElement;
+  };
+
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
   var HTMLAmplifyPasswordFieldElement: {
     prototype: HTMLAmplifyPasswordFieldElement;
@@ -796,6 +808,7 @@ declare global {
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-oauth-button': HTMLAmplifyOauthButtonElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene': HTMLAmplifySceneElement;
@@ -1158,6 +1171,16 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
+  interface AmplifyOauthButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'oauth_config'?: any;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
+  }
   interface AmplifyPasswordField {
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
@@ -1272,7 +1295,7 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifySignInButton {
-    'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google';
+    'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignUp {
     /**
@@ -1381,6 +1404,7 @@ declare namespace LocalJSX {
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-oauth-button': AmplifyOauthButton;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene': AmplifyScene;
@@ -1425,6 +1449,7 @@ declare module "@stencil/core" {
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
+      'amplify-oauth-button': LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;

@@ -5,7 +5,7 @@ import * as classNames from './amplify-sign-in-button.style';
 
 @Component({ tag: 'amplify-sign-in-button' })
 export class AmplifySignInButton {
-  @Prop() provider: 'amazon' | 'auth0' | 'facebook' | 'google';
+  @Prop() provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
 
   render() {
     return (
