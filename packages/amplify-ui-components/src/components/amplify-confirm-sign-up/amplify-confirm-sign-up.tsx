@@ -3,7 +3,7 @@ import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-inter
 import {
   CONFIRM_SIGN_UP_HEADER_TEXT,
   CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT,
-  CONFIRM_SIGN_IN_TEXT,
+  BACK_TO_SIGN_IN,
   USERNAME_PLACEHOLDER,
   CONFIRM_SIGN_UP_CODE_LABEL,
   CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
@@ -137,7 +137,7 @@ export class AmplifyConfirmSignUp {
           <div>
             <span>
               <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-                {CONFIRM_SIGN_IN_TEXT}
+                {BACK_TO_SIGN_IN}
               </amplify-link>
             </span>
           </div>
