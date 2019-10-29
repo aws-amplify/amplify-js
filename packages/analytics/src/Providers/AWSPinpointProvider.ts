@@ -94,9 +94,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const { flushSize, flushInterval } = this._config;
 		const that = this;
 
-		// TODO: make sure there are no issues from their being async
-		// Maybe we could just call _getCreds without awaiting and
-		// set the class creds from within that method?
 		this._timer = setInterval(async () => {
 			await that._getCredentials(); // TODO: set class creds here
 
