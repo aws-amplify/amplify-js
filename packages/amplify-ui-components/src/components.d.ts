@@ -12,7 +12,7 @@ import {
 } from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
-  CognitoUserType,
+  CognitoUserInterface,
 } from './common/types/auth-types';
 import {
   ButtonTypes,
@@ -158,7 +158,7 @@ export namespace Components {
     /**
     * Used for the username to be passed to resend code
     */
-    'user': CognitoUserType;
+    'user': CognitoUserInterface;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -912,7 +912,7 @@ declare namespace LocalJSX {
     /**
     * Used for the username to be passed to resend code
     */
-    'user'?: CognitoUserType;
+    'user'?: CognitoUserInterface;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */

@@ -16,7 +16,7 @@
 | `overrideStyle`         | `override-style`     | (Optional) Overrides default styling                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `boolean`                                                     | `false`                              |
 | `signInText`            | `sign-in-text`       | Used for `Back to Sign In` text passed to footer component                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `string`                                                      | `CONFIRM_SIGN_IN_TEXT`               |
 | `submitButtonText`      | `submit-button-text` | Used for the submit button text in confirm sign up component                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `string`                                                      | `CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT` |
-| `user`                  | --                   | Used for the username to be passed to resend code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `CognitoUserType`                                             | `undefined`                          |
+| `user`                  | --                   | Used for the username to be passed to resend code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `CognitoUserInterface`                                        | `undefined`                          |
 | `validationErrors`      | `validation-errors`  | Engages when invalid actions occur, such as missing field, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `string`                                                      | `undefined`                          |
 
 
@@ -31,8 +31,6 @@
 - [amplify-link](../amplify-link)
 - [amplify-form-section](../amplify-form-section)
 - [amplify-auth-fields](../amplify-auth-fields)
-- [amplify-link](../amplify-link)
-- [amplify-button](../amplify-button)
 
 ### Graph
 ```mermaid
@@ -40,8 +38,6 @@ graph TD;
   amplify-confirm-sign-up --> amplify-link
   amplify-confirm-sign-up --> amplify-form-section
   amplify-confirm-sign-up --> amplify-auth-fields
-  amplify-confirm-sign-up --> amplify-link
-  amplify-confirm-sign-up --> amplify-button
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-auth-fields --> amplify-username-field

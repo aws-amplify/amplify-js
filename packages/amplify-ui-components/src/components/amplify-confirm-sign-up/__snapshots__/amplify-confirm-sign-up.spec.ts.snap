@@ -2,20 +2,8 @@
 
 exports[`amplify-confirm-sign-up spec: Render logic -> should render a \`confirm sign up\` form by default 1`] = `
 <amplify-confirm-sign-up>
-  <amplify-form-section headertext="Confirm Sign up">
+  <amplify-form-section headertext="Confirm Sign up" submitbuttontext="Confirm">
     <amplify-auth-fields></amplify-auth-fields>
-    <div slot="amplify-form-section-footer">
-      <div class="css-1pvt25k">
-        <span>
-          <amplify-link>
-            Back to Sign In
-          </amplify-link>
-        </span>
-        <amplify-button type="submit">
-          Confirm
-        </amplify-button>
-      </div>
-    </div>
   </amplify-form-section>
 </amplify-confirm-sign-up>
 `;

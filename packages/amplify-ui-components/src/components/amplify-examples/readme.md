@@ -49,8 +49,6 @@ graph TD;
   amplify-confirm-sign-up --> amplify-link
   amplify-confirm-sign-up --> amplify-form-section
   amplify-confirm-sign-up --> amplify-auth-fields
-  amplify-confirm-sign-up --> amplify-link
-  amplify-confirm-sign-up --> amplify-button
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields

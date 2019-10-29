@@ -19,7 +19,7 @@ export enum AuthState {
   VerifyContact = 'verifycontact',
 }
 
-export interface CognitoUserType {
+export interface CognitoUserInterface {
   codeDeliveryDetails?: {
     AttributeName?: string;
     DeliveryMedium?: string;

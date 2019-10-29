@@ -1,5 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyConfirmSignUp } from './amplify-confirm-sign-up';
+import { CONFIRM_SIGN_UP_HEADER_TEXT, CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT } from '../../common/constants';
 
 describe('amplify-confirm-sign-up spec:', () => {
   describe('Component logic ->', () => {
@@ -18,11 +19,11 @@ describe('amplify-confirm-sign-up spec:', () => {
     });
 
     it('should render `headerText` to `Confirm Sign up` by default', () => {
-      expect(confirmSignUp.headerText).toEqual('Confirm Sign up');
+      expect(confirmSignUp.headerText).toEqual(CONFIRM_SIGN_UP_HEADER_TEXT);
     });
 
     it('should render `submitButtonText` to `Confirm` by default', () => {
-      expect(confirmSignUp.submitButtonText).toEqual('Confirm');
+      expect(confirmSignUp.submitButtonText).toEqual(CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT);
     });
 
     it('should render `overrideStyle` to false by default', () => {
