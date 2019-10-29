@@ -29,6 +29,7 @@ import {
 	LegacyProvider,
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
+	ClientMetaData,
 } from './types';
 
 import {
@@ -103,7 +104,6 @@ export default class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
-
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		if (AWS.config) {
@@ -152,6 +152,7 @@ export default class AuthClass {
 			mandatorySignIn,
 			refreshHandlers,
 			identityPoolRegion,
+			clientMetadata,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -212,6 +213,7 @@ export default class AuthClass {
 					responseType: cognitoHostedUIConfig['responseType'],
 					Storage: this._storage,
 					urlOpener: cognitoHostedUIConfig['urlOpener'],
+					clientMetadata,
 				},
 				cognitoHostedUIConfig['options']
 			);
@@ -254,6 +256,7 @@ export default class AuthClass {
 		let password: string = null;
 		const attributes: object[] = [];
 		let validationData: object[] = null;
+		let clientMetadata;
 
 		if (params && typeof params === 'string') {
 			username = params;
@@ -266,6 +269,13 @@ export default class AuthClass {
 		} else if (params && typeof params === 'object') {
 			username = params['username'];
 			password = params['password'];
+
+			if (params && params.clientMetadata) {
+				clientMetadata = params.clientMetadata;
+			} else if (this._config.clientMetadata) {
+				clientMetadata = this._config.clientMetadata;
+			}
+
 			const attrs = params['attributes'];
 			if (attrs) {
 				Object.keys(attrs).map(key => {
@@ -310,7 +320,8 @@ export default class AuthClass {
 						);
 						resolve(data);
 					}
-				}
+				},
+				clientMetadata
 			);
 		});
 	}
@@ -343,23 +354,38 @@ export default class AuthClass {
 				? options.forceAliasCreation
 				: true;
 
+		let clientMetadata;
+		if (options && options.clientMetadata) {
+			clientMetadata = options.clientMetadata;
+		} else if (this._config.clientMetadata) {
+			clientMetadata = this._config.clientMetadata;
+		}
 		return new Promise((resolve, reject) => {
-			user.confirmRegistration(code, forceAliasCreation, (err, data) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(data);
-				}
-			});
+			user.confirmRegistration(
+				code,
+				forceAliasCreation,
+				(err, data) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(data);
+					}
+				},
+				clientMetadata
+			);
 		});
 	}
 
 	/**
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
+	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
 	 * @return - A promise resolves data if success
 	 */
-	public resendSignUp(username: string): Promise<string> {
+	public resendSignUp(
+		username: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
+	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -375,7 +401,7 @@ export default class AuthClass {
 				} else {
 					resolve(data);
 				}
-			});
+			}, clientMetadata);
 		});
 	}
 
@@ -387,7 +413,8 @@ export default class AuthClass {
 	 */
 	public signIn(
 		usernameOrSignInOpts: string | SignInOpts,
-		pw?: string
+		pw?: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -395,6 +422,7 @@ export default class AuthClass {
 		let username = null;
 		let password = null;
 		let validationData = {};
+
 		// for backward compatibility
 		if (typeof usernameOrSignInOpts === 'string') {
 			username = usernameOrSignInOpts;
@@ -418,6 +446,7 @@ export default class AuthClass {
 			Username: username,
 			Password: password,
 			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
 		});
 		if (password) {
 			return this.signInWithPassword(authDetails);
@@ -853,7 +882,8 @@ export default class AuthClass {
 	public confirmSignIn(
 		user: CognitoUser | any,
 		code: string,
-		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null
+		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
@@ -884,7 +914,8 @@ export default class AuthClass {
 						reject(err);
 					},
 				},
-				mfaType
+				mfaType,
+				clientMetadata
 			);
 		});
 	}
@@ -892,7 +923,8 @@ export default class AuthClass {
 	public completeNewPassword(
 		user: CognitoUser | any,
 		password: string,
-		requiredAttributes: any
+		requiredAttributes: any,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
@@ -900,43 +932,48 @@ export default class AuthClass {
 
 		const that = this;
 		return new Promise((resolve, reject) => {
-			user.completeNewPasswordChallenge(password, requiredAttributes, {
-				onSuccess: async session => {
-					logger.debug(session);
-					try {
-						await Credentials.clear();
-						const cred = await Credentials.set(session, 'session');
-						logger.debug('succeed to get cognito credentials', cred);
-					} catch (e) {
-						logger.debug('cannot get cognito credentials', e);
-					} finally {
-						that.user = user;
-						dispatchAuthEvent('signIn', user, `${user} has signed in`);
+			user.completeNewPasswordChallenge(
+				password,
+				requiredAttributes,
+				{
+					onSuccess: async session => {
+						logger.debug(session);
+						try {
+							await Credentials.clear();
+							const cred = await Credentials.set(session, 'session');
+							logger.debug('succeed to get cognito credentials', cred);
+						} catch (e) {
+							logger.debug('cannot get cognito credentials', e);
+						} finally {
+							that.user = user;
+							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							resolve(user);
+						}
+					},
+					onFailure: err => {
+						logger.debug('completeNewPassword failure', err);
+						dispatchAuthEvent(
+							'completeNewPassword_failure',
+							err,
+							`${this.user} failed to complete the new password flow`
+						);
+						reject(err);
+					},
+					mfaRequired: (challengeName, challengeParam) => {
+						logger.debug('signIn MFA required');
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
 						resolve(user);
-					}
+					},
+					mfaSetup: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
 				},
-				onFailure: err => {
-					logger.debug('completeNewPassword failure', err);
-					dispatchAuthEvent(
-						'completeNewPassword_failure',
-						err,
-						`${this.user} failed to complete the new password flow`
-					);
-					reject(err);
-				},
-				mfaRequired: (challengeName, challengeParam) => {
-					logger.debug('signIn MFA required');
-					user['challengeName'] = challengeName;
-					user['challengeParam'] = challengeParam;
-					resolve(user);
-				},
-				mfaSetup: (challengeName, challengeParam) => {
-					logger.debug('signIn mfa setup', challengeName);
-					user['challengeName'] = challengeName;
-					user['challengeParam'] = challengeParam;
-					resolve(user);
-				},
-			});
+				clientMetadata
+			);
 		});
 	}
 
@@ -947,7 +984,8 @@ export default class AuthClass {
 	 */
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
-		challengeResponses: string
+		challengeResponses: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -960,7 +998,8 @@ export default class AuthClass {
 		return new Promise((resolve, reject) => {
 			user.sendCustomChallengeAnswer(
 				challengeResponses,
-				this.authCallbacks(user, resolve, reject)
+				this.authCallbacks(user, resolve, reject),
+				clientMetadata
 			);
 		});
 	}
@@ -972,7 +1011,8 @@ export default class AuthClass {
 	 **/
 	public updateUserAttributes(
 		user: CognitoUser | any,
-		attributes: object
+		attributes: object,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<string> {
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
@@ -987,13 +1027,17 @@ export default class AuthClass {
 						attributeList.push(attr);
 					}
 				}
-				user.updateAttributes(attributeList, (err, result) => {
-					if (err) {
-						return reject(err);
-					} else {
-						return resolve(result);
-					}
-				});
+				user.updateAttributes(
+					attributeList,
+					(err, result) => {
+						if (err) {
+							return reject(err);
+						} else {
+							return resolve(result);
+						}
+					},
+					clientMetadata
+				);
 			});
 		});
 	}
@@ -1295,7 +1339,8 @@ export default class AuthClass {
 	 */
 	public verifyUserAttribute(
 		user: CognitoUser | any,
-		attr: string
+		attr: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
 			user.getAttributeVerificationCode(attr, {
@@ -1305,6 +1350,7 @@ export default class AuthClass {
 				onFailure(err) {
 					return reject(err);
 				},
+				clientMetadata,
 			});
 		});
 	}
@@ -1462,18 +1508,24 @@ export default class AuthClass {
 	public changePassword(
 		user: CognitoUser | any,
 		oldPassword: string,
-		newPassword: string
+		newPassword: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<'SUCCESS'> {
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
-				user.changePassword(oldPassword, newPassword, (err, data) => {
-					if (err) {
-						logger.debug('change password failure', err);
-						return reject(err);
-					} else {
-						return resolve(data);
-					}
-				});
+				user.changePassword(
+					oldPassword,
+					newPassword,
+					(err, data) => {
+						if (err) {
+							logger.debug('change password failure', err);
+							return reject(err);
+						} else {
+							return resolve(data);
+						}
+					},
+					clientMetadata
+				);
 			});
 		});
 	}
@@ -1483,7 +1535,10 @@ export default class AuthClass {
 	 * @param {String} username - the username to change password
 	 * @return - A promise resolves if success
 	 */
-	public forgotPassword(username: string): Promise<any> {
+	public forgotPassword(
+		username: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
+	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1493,31 +1548,34 @@ export default class AuthClass {
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			user.forgotPassword({
-				onSuccess: () => {
-					resolve();
-					return;
+			user.forgotPassword(
+				{
+					onSuccess: () => {
+						resolve();
+						return;
+					},
+					onFailure: err => {
+						logger.debug('forgot password failure', err);
+						dispatchAuthEvent(
+							'forgotPassword_failure',
+							err,
+							`${username} forgotPassword failed`
+						);
+						reject(err);
+						return;
+					},
+					inputVerificationCode: data => {
+						dispatchAuthEvent(
+							'forgotPassword',
+							user,
+							`${username} has initiated forgot password flow`
+						);
+						resolve(data);
+						return;
+					},
 				},
-				onFailure: err => {
-					logger.debug('forgot password failure', err);
-					dispatchAuthEvent(
-						'forgotPassword_failure',
-						err,
-						`${username} forgotPassword failed`
-					);
-					reject(err);
-					return;
-				},
-				inputVerificationCode: data => {
-					dispatchAuthEvent(
-						'forgotPassword',
-						user,
-						`${username} has initiated forgot password flow`
-					);
-					resolve(data);
-					return;
-				},
-			});
+				clientMetadata
+			);
 		});
 	}
 
@@ -1531,7 +1589,8 @@ export default class AuthClass {
 	public forgotPasswordSubmit(
 		username: string,
 		code: string,
-		password: string
+		password: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1548,26 +1607,31 @@ export default class AuthClass {
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			user.confirmPassword(code, password, {
-				onSuccess: () => {
-					dispatchAuthEvent(
-						'forgotPasswordSubmit',
-						user,
-						`${username} forgotPasswordSubmit successful`
-					);
-					resolve();
-					return;
+			user.confirmPassword(
+				code,
+				password,
+				{
+					onSuccess: () => {
+						dispatchAuthEvent(
+							'forgotPasswordSubmit',
+							user,
+							`${username} forgotPasswordSubmit successful`
+						);
+						resolve();
+						return;
+					},
+					onFailure: err => {
+						dispatchAuthEvent(
+							'forgotPasswordSubmit_failure',
+							err,
+							`${username} forgotPasswordSubmit failed`
+						);
+						reject(err);
+						return;
+					},
 				},
-				onFailure: err => {
-					dispatchAuthEvent(
-						'forgotPasswordSubmit_failure',
-						err,
-						`${username} forgotPasswordSubmit failed`
-					);
-					reject(err);
-					return;
-				},
-			});
+				clientMetadata
+			);
 		});
 	}
 
