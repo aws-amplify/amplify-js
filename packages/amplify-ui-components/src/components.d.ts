@@ -47,6 +47,12 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
   }
+  interface AmplifyAuth0Button {
+    /**
+    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+    */
+    'auth0': any;
+  }
   interface AmplifyAuthenticator {
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
@@ -469,7 +475,7 @@ export namespace Components {
     'validationErrors': string;
   }
   interface AmplifySignInButton {
-    'provider': 'amazon' | 'facebook' | 'google';
+    'provider': 'amazon' | 'auth0' | 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -567,6 +573,12 @@ declare global {
   var HTMLAmplifyAuthFieldsElement: {
     prototype: HTMLAmplifyAuthFieldsElement;
     new (): HTMLAmplifyAuthFieldsElement;
+  };
+
+  interface HTMLAmplifyAuth0ButtonElement extends Components.AmplifyAuth0Button, HTMLStencilElement {}
+  var HTMLAmplifyAuth0ButtonElement: {
+    prototype: HTMLAmplifyAuth0ButtonElement;
+    new (): HTMLAmplifyAuth0ButtonElement;
   };
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
@@ -763,6 +775,7 @@ declare global {
   interface HTMLElementTagNameMap {
     'amplify-amazon-button': HTMLAmplifyAmazonButtonElement;
     'amplify-auth-fields': HTMLAmplifyAuthFieldsElement;
+    'amplify-auth0-button': HTMLAmplifyAuth0ButtonElement;
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
@@ -814,6 +827,16 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
+  }
+  interface AmplifyAuth0Button {
+    /**
+    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+    */
+    'auth0'?: any;
+    /**
+    * Listener when `authState` changes
+    */
+    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyAuthenticator {
     /**
@@ -1249,7 +1272,7 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifySignInButton {
-    'provider'?: 'amazon' | 'facebook' | 'google';
+    'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google';
   }
   interface AmplifySignUp {
     /**
@@ -1337,6 +1360,7 @@ declare namespace LocalJSX {
   interface IntrinsicElements {
     'amplify-amazon-button': AmplifyAmazonButton;
     'amplify-auth-fields': AmplifyAuthFields;
+    'amplify-auth0-button': AmplifyAuth0Button;
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
@@ -1380,6 +1404,7 @@ declare module "@stencil/core" {
     interface IntrinsicElements {
       'amplify-amazon-button': LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
       'amplify-auth-fields': LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
+      'amplify-auth0-button': LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
       'amplify-authenticator': LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;

@@ -24,6 +24,13 @@ export const Host = css`
     font-family: 'Amazon Ember';
   }
 
+  &.auth0 button {
+    background-color: #eb5424;
+    font-family: Roboto;
+    border: 1px solid #e14615;
+    color: #fff;
+  }
+
   &.facebook button {
     background-color: #4267b2;
     border-color: #4267b2;
@@ -47,6 +54,14 @@ export const Host = css`
     padding: 10px;
     height: 32px;
     width: 32px;
+  }
+
+  &.auth0 .icon {
+    border-radius: 4px 0 0 4px;
+    height: 28px;
+    width: 28px;
+    padding: 12px;
+    color: #fff;
   }
 
   &.facebook .icon {
