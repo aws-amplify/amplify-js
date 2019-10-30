@@ -1,12 +1,10 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 @Component({ tag: 'amplify-amazon-button' })
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */
   @Prop() amazon_client_id: string;
-  /** Listener when `authState` changes */
-  @Event() stateChange: EventEmitter;
 
   render() {
     return (

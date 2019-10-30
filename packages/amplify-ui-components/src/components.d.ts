@@ -838,10 +838,6 @@ declare namespace LocalJSX {
     * App-specific client ID from Google
     */
     'amazon_client_id'?: string;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyAuthFields {
     /**
@@ -854,10 +850,6 @@ declare namespace LocalJSX {
     * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
     */
     'auth0'?: any;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyAuthenticator {
     /**
@@ -977,10 +969,6 @@ declare namespace LocalJSX {
     * App-specific client ID from Facebook
     */
     'facebook_app_id'?: string;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -1001,10 +989,6 @@ declare namespace LocalJSX {
     * Federated credentials & configuration.
     */
     'federated'?: any;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyForgotPassword {
     /**
@@ -1107,10 +1091,6 @@ declare namespace LocalJSX {
     * App-specific client ID from Google
     */
     'google_client_id'?: string;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyHint {
     /**
@@ -1184,10 +1164,6 @@ declare namespace LocalJSX {
     * App-specific client ID from Google
     */
     'oauth_config'?: any;
-    /**
-    * Listener when `authState` changes
-    */
-    'onStateChange'?: (event: CustomEvent<any>) => void;
   }
   interface AmplifyPasswordField {
     /**

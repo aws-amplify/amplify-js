@@ -1,12 +1,10 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 @Component({ tag: 'amplify-facebook-button' })
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
   @Prop() facebook_app_id: string;
-  /** Listener when `authState` changes */
-  @Event() stateChange: EventEmitter;
 
   render() {
     return (

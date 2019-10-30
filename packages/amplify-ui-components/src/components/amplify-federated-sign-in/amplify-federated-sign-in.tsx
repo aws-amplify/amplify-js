@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 const logger = new Logger('amplify-federated-sign-in');
 
@@ -13,8 +13,6 @@ export class AmplifyFederatedSignIn {
   @Prop() authState: 'signIn' | 'signedOut' | 'signedUp' = 'signIn';
   /** Federated credentials & configuration. */
   @Prop() federated: any = {};
-  /** Listener when `authState` changes */
-  @Event() stateChange: EventEmitter;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
