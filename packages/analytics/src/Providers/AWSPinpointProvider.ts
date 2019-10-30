@@ -468,7 +468,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 		request.send((err, data) => {
 			if (err) {
-				logger.error('record event failed. ', err);
+				logger.error('record event failed.', err);
 				return handlers.reject(err);
 			} else {
 				const {
@@ -630,7 +630,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 				try {
 					await this._removeUnusedEndpoints(appId, request.User.UserId);
 
-					logger.debug('Remove the unused endpoints successfully');
+					logger.debug('Removed the unused endpoints successfully');
 					this._retry(params, handlers);
 				} catch (e) {
 					logger.warn(`Failed to remove unused endpoints with error: ${e}`);
@@ -855,7 +855,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _eventError(err: any) {
-		logger.error('record event failed. ', err);
+		logger.error('record event failed.', err);
 		logger.warn(
 			`Please ensure you have updated your Pinpoint IAM Policy ` +
 				`with the Action: "mobiletargeting:PutEvents" ` +

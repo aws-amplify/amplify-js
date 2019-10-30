@@ -158,7 +158,7 @@ export class Credentials {
 		}
 		logger.debug('is this credentials expired?', credentials);
 		const ts = new Date().getTime();
-		const delta = 10 * 60 * 1000 - 5000; // 10 minutes minus 5 seconds
+		const delta = 10 * 60 * 1000; // 10 minutes
 		const { expired, expireTime } = credentials;
 		if (!expired && expireTime > ts + delta) {
 			return false;
