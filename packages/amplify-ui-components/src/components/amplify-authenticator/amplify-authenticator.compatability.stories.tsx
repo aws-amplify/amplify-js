@@ -1,15 +1,26 @@
+/* @jsx createElement */
+
 import * as knobs from '@storybook/addon-knobs';
-import { h } from '../../common/jsx2dom';
+import { Authenticator } from 'aws-amplify-react';
+import { createElement, StrictMode } from 'react';
+import { render } from 'react-dom';
 
 export default {
-  title: 'amplify-authenticator',
+  title: 'amplify-authenticator/compatability',
+  decorators: [
+    story => {
+      const node = document.createElement('main');
+      render(<StrictMode>{story()}</StrictMode>, node);
+      return node;
+    },
+  ],
 };
 
-export const defaults = () => <amplify-authenticator />;
+export const defaults = () => <Authenticator />;
 
 export const withFederated = () => {
   return (
-    <amplify-authenticator
+    <Authenticator
       federated={{
         amazon_client_id: knobs.text('Amazon client ID', 'amazon_client_id'),
         auth0: {
