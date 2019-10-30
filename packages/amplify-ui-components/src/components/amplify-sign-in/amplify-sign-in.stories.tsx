@@ -1,9 +1,8 @@
-import { storiesOf } from '@storybook/html';
+import { h } from '../../common/jsx2dom';
 import { knobs } from '../../common/testing';
 
-const selectStories = storiesOf('amplify-sign-in', module);
+export default {
+  title: 'amplify-sign-in',
+};
 
-selectStories.add('default', () => {
-  const override = knobs.overrideStyleKnob();
-  return `<amplify-sign-in override-style=${override}></amplify-sign-in>`;
-});
+export const withOverrideStyle = () => <amplify-sign-in overrideStyle={knobs.overrideStyleKnob()}></amplify-sign-in>;
