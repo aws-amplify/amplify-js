@@ -31,6 +31,8 @@ export class AmplifySignIn {
   @Prop() submitButtonText: string = SUBMIT_BUTTON_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
+  /** Federated credentials & configuration. */
+  @Prop() federated: any = {};
 
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**
@@ -167,6 +169,7 @@ export class AmplifySignIn {
           </span>
         }
       >
+        <amplify-federated-buttons federated={this.federated} />
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>
     );

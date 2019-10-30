@@ -17,6 +17,8 @@ export class AmplifyAuthenticator {
   @State() authState: AuthState = AuthState.Loading;
 
   @State() authData: CognitoUserInterface;
+  /** Federated credentials & configuration. */
+  @Prop() federated: any = {};
 
   componentWillLoad() {
     this.authState = this.initialAuthState;
@@ -39,7 +41,7 @@ export class AmplifyAuthenticator {
       case AuthState.Loading:
         return <div>Loading...</div>;
       case AuthState.SignIn:
-        return <amplify-sign-in handleAuthStateChange={this.onAuthStateChange} />;
+        return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.SignOut:
         // TODO: add sign out component
         return <div>Sign Out Component</div>;
