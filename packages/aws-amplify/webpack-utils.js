@@ -30,6 +30,8 @@ const packageFolderMap = {
 	'amplify-ui': '@aws-amplify/ui',
 	analytics: '@aws-amplify/analytics',
 	api: '@aws-amplify/api',
+	'api-rest': '@aws-amplify/api-rest',
+	'api-graphql': '@aws-amplify/api-graphql',
 	auth: '@aws-amplify/auth',
 	'aws-amplify': 'aws-amplify',
 	'aws-amplify-angular': 'aws-amplify-angular',

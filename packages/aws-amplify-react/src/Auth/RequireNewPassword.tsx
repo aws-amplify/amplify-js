@@ -17,7 +17,6 @@ import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
 	FormSection,
 	SectionHeader,

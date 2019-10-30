@@ -11,6 +11,7 @@ import {
 	Credentials,
 	// @ts-ignore
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+	Constants,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
@@ -82,6 +83,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -154,6 +156,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -248,6 +251,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -323,6 +327,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -392,7 +397,9 @@ describe('API test', () => {
 			const doc = parse(GetEvent);
 			const query = print(doc);
 
-			const headers = {};
+			const headers = {
+				'x-amz-user-agent': Constants.userAgent,
+			};
 
 			const body = {
 				query,
@@ -468,6 +475,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -719,6 +727,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -910,6 +919,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {

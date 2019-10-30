@@ -20,6 +20,7 @@ async function buildRollUp() {
 	const file = `${currentPath}${packageInfo.main.slice(
 		packageInfo.main.indexOf('/')
 	)}`;
+	// For more info see: https://github.com/rollup/rollup/issues/1518#issuecomment-321875784
 	const onwarn = warning => {
 		if (warning.code === 'THIS_IS_UNDEFINED') {
 			return;
@@ -58,6 +59,10 @@ function tsc(fileNames, options) {
 	let program = ts.createProgram(fileNames, options);
 	let emitResult = program.emit();
 
+	let allDiagnostics = ts
+		.getPreEmitDiagnostics(program)
+		.concat(emitResult.diagnostics);
+
 	allDiagnostics.forEach(diagnostic => {
 		if (diagnostic.file) {
 			let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
@@ -84,7 +89,6 @@ function tsc(fileNames, options) {
 
 async function buildES5() {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
-	const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
 		noImplicitAny: false,
@@ -94,8 +98,8 @@ async function buildES5() {
 		target: 'es5',
 		module: 'commonjs',
 		moduleResolution: 'node',
-		allowJs: allowJs,
 		declaration: true,
+		noEmitOnError: true,
 		typeRoots: [
 			`${currentPath}/node_modules/@types`,
 			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,
@@ -125,7 +129,6 @@ async function buildES5() {
 
 function buildES6() {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
-	const allowJs = packageInfo.name === 'aws-amplify-react' ? true : false;
 	// tsconfig for ESM generating
 	let compilerOptions = {
 		noImplicitAny: false,
@@ -135,8 +138,8 @@ function buildES6() {
 		target: 'es5',
 		module: 'es2015',
 		moduleResolution: 'node',
-		allowJs: allowJs,
 		declaration: true,
+		noEmitOnError: true,
 		typeRoots: [
 			`${currentPath}/node_modules/@types`,
 			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,

@@ -8,7 +8,7 @@ import {
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
-import * as Paho from '../src/vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 
 const pahoClientMockCache = {};
 
@@ -48,12 +48,6 @@ const credentials = {
 	identityId: 'identityId',
 	authenticated: true,
 };
-
-const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-	return new Promise((res, rej) => {
-		res(credentials);
-	});
-});
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
 	new Promise((resolve, reject) => {
@@ -109,6 +103,18 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
 	});
 
+beforeEach(() => {
+	const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+		return new Promise((res, rej) => {
+			res(credentials);
+		});
+	});
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
+
 describe('PubSub', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
@@ -128,7 +134,7 @@ describe('PubSub', () => {
 			expect(config).toEqual(options);
 		});
 
-		test('should accept PubSub key in configuration object', async () => {
+		test('should accept PubSub key in configuration object', () => {
 			const pubsub = new PubSub({});
 
 			const options = {
@@ -303,7 +309,7 @@ describe('PubSub', () => {
 			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
 		});
 
-		test('error is thrown if provider name is not found', async () => {
+		test('error is thrown if provider name is not found', () => {
 			const testProviderName = 'FooProvider';
 			const pubsub = new PubSub();
 
