@@ -1,6 +1,5 @@
 import { Component, Prop, h } from '@stencil/core';
 import { EMAIL_SUFFIX, EMAIL_LABEL, EMAIL_PLACEHOLDER } from '../../common/constants';
-
 @Component({
   tag: 'amplify-email-field',
   shadow: false,
@@ -18,6 +17,8 @@ export class AmplifyEmailField {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** The value of the content inside of the input field */
   @Prop() value?: string;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -29,6 +30,7 @@ export class AmplifyEmailField {
         required={this.required}
         handleInputChange={this.handleInputChange}
         value={this.value}
+        disabled={this.disabled}
       />
     );
   }

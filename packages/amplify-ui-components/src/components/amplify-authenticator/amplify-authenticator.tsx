@@ -1,6 +1,10 @@
 import { Component, State, Prop, h } from '@stencil/core';
-import { AuthState } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
+
+import { Logger } from '@aws-amplify/core';
+
+const logger = new Logger('Authenticator');
 
 @Component({
   tag: 'amplify-authenticator',
@@ -12,17 +16,22 @@ export class AmplifyAuthenticator {
   /** Used as a flag in order to trigger the content displayed */
   @State() authState: AuthState = AuthState.Loading;
 
+  @State() authData: CognitoUserInterface;
+
   componentWillLoad() {
     this.authState = this.initialAuthState;
   }
 
   onAuthStateChange = (nextAuthState: AuthState, data?: object) => {
-    console.log(data);
-    if (nextAuthState === undefined) return console.info('nextAuthState cannot be undefined');
+    if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
 
-    console.info('Inside onAuthStateChange Method current authState:', this.authState);
+    logger.info('Inside onAuthStateChange Method current authState:', this.authState);
     this.authState = nextAuthState;
-    console.info(`authState has been updated to ${this.authState}`);
+    if (data !== undefined) {
+      this.authData = data;
+      logger.log('Auth Data was set:', this.authData);
+    }
+    logger.info(`authState has been updated to ${this.authState}`);
   };
 
   renderAuthComponent(authState: AuthState) {
@@ -37,8 +46,7 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignUp:
-        // TODO: add confirm sign up component
-        return <div>Confirm Sign Up Component</div>;
+        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData.user} />;
       case AuthState.ForgotPassword:
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:

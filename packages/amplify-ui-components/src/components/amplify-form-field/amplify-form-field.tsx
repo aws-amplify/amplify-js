@@ -35,6 +35,8 @@ export class AmplifyFormField {
   @Prop() name?: string;
   /** The value of the content inside of the input field */
   @Prop() value: string;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -66,6 +68,7 @@ export class AmplifyFormField {
               overrideStyle={this.overrideStyle}
               name={this.name}
               value={this.value}
+              disabled={this.disabled}
             />
           </slot>
         </div>

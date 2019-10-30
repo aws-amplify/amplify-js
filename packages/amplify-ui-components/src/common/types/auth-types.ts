@@ -18,3 +18,29 @@ export enum AuthState {
   CustomConfirmSignIn = 'customConfirmSignIn',
   VerifyContact = 'verifycontact',
 }
+
+export interface CognitoUserInterface {
+  codeDeliveryDetails?: {
+    AttributeName?: string;
+    DeliveryMedium?: string;
+    Destination?: string;
+  };
+  user?: {
+    Session?: string | null;
+    authenticationFlowType?: string;
+    client?: {
+      endpoint?: string;
+      userAgent?: string;
+    };
+    keyPrefix?: string;
+    pool?: {
+      advancedSecurityDataCollectionFlag?: boolean;
+      clientId?: string;
+      userPoolId?: string;
+    };
+    username?: string;
+    userConfirmed?: boolean;
+    userSub?: string;
+  };
+  username?: string;
+}
