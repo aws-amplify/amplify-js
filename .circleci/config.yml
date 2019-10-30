@@ -44,6 +44,8 @@ jobs:
           command: |
             yarn run test --scope @aws-amplify/auth
             yarn run test --scope @aws-amplify/api
+            yarn run test --scope @aws-amplify/api-rest
+            yarn run test --scope @aws-amplify/api-graphql
             yarn run test --scope @aws-amplify/analytics
             yarn run test --scope @aws-amplify/cache
             yarn run test --scope @aws-amplify/core
