@@ -1,25 +1,33 @@
 'use strict';
 
+const path = require('path');
 const utility = require('./utility');
 const ts = require('typescript');
 const externals = require('./rollup-externals');
 
-const currentPath = process.argv[1].slice(0, process.argv[1].lastIndexOf('/'));
-const tscES5OutDir = `/lib`;
-const tscES6OutDir = `/lib-esm`;
-const packageInfo = require(`${currentPath}/package`);
+// path of root
+const rootPath = path.resolve(__dirname, '../');
+// path of each package
+const pkgRootPath = process.cwd();
+
+const pkgTscES5OutDir = path.join(pkgRootPath, 'lib');
+const pkgTscES6OutDir = path.join(pkgRootPath, 'lib-esm');
+const pkgSrcDir = path.join(pkgRootPath, 'src');
+const typeRoots = [rootPath, pkgRootPath].map(basePath =>
+	path.join(basePath, 'node_modules/@types')
+);
+const packageJsonPath = path.join(pkgRootPath, 'package');
+const packageInfo = require(packageJsonPath);
+const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
+const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 
 async function buildRollUp() {
-	console.log(`Building Roll up bundle file under ${currentPath}`);
+	console.log(`Building Roll up bundle file under ${pkgRootPath}`);
 	const rollup = require('rollup');
 	const resolve = require('rollup-plugin-node-resolve');
 	const sourceMaps = require('rollup-plugin-sourcemaps');
 	const json = require('rollup-plugin-json');
 
-	const input = `${currentPath}${tscES5OutDir}/index.js`;
-	const file = `${currentPath}${packageInfo.main.slice(
-		packageInfo.main.indexOf('/')
-	)}`;
 	// For more info see: https://github.com/rollup/rollup/issues/1518#issuecomment-321875784
 	const onwarn = warning => {
 		if (warning.code === 'THIS_IS_UNDEFINED') {
@@ -29,14 +37,14 @@ async function buildRollUp() {
 	};
 
 	const inputOptions = {
-		input,
+		pkgRollUpInputFile,
 		plugins: [json(), resolve({ extensions: ['.js', '.json'] }), sourceMaps()],
 		external: externals[packageInfo.name],
 		onwarn,
 	};
 
 	const outputOptions = {
-		file,
+		pkgRollUpOutputFile,
 		format: 'cjs',
 		name: 'index',
 		sourcemap: true,
@@ -100,17 +108,14 @@ async function buildES5() {
 		moduleResolution: 'node',
 		declaration: true,
 		noEmitOnError: true,
-		typeRoots: [
-			`${currentPath}/node_modules/@types`,
-			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,
-		],
+		typeRoots,
 		// temporary fix
 		types: ['node'],
-		outDir: `${currentPath}${tscES5OutDir}`,
+		outDir: pkgTscES5OutDir,
 	};
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
-	const include = [`${currentPath}/src`];
+	const include = [pkgSrcDir];
 	console.log(`Using the typescript compiler options:`);
 	console.log(compilerOptions);
 
@@ -140,17 +145,14 @@ function buildES6() {
 		moduleResolution: 'node',
 		declaration: true,
 		noEmitOnError: true,
-		typeRoots: [
-			`${currentPath}/node_modules/@types`,
-			`${__dirname.slice(0, __dirname.lastIndexOf('/'))}/node_modules/@types`,
-		],
+		typeRoots,
 		// temporary fix
 		types: ['node'],
-		outDir: `${currentPath}${tscES6OutDir}`,
+		outDir: pkgTscES6OutDir,
 	};
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
-	const include = [`${currentPath}/src`];
+	const include = [pkgSrcDir];
 	console.log(`Using the typescript compiler options:`);
 	console.log(compilerOptions);
 
