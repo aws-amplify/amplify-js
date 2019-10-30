@@ -29,7 +29,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 <details>
-  <summary><strong>Environment></strong></summary>
+  <summary><strong>Environment</strong></summary>
 
 <!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
 ```
