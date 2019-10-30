@@ -1,18 +1,10 @@
-/* @jsx createElement */
-
 import { GoogleButton } from 'aws-amplify-react';
-import { createElement, StrictMode } from 'react';
-import { render } from 'react-dom';
+
+import { h, withReact } from '../../common/withReact';
 
 export default {
   title: 'amplify-google-button/compatability',
-  decorators: [
-    story => {
-      const node = document.createElement('main');
-      render(<StrictMode>{story()}</StrictMode>, node);
-      return node;
-    },
-  ],
+  decorators: [withReact],
 };
 
 export const defaults = () => <GoogleButton />;
