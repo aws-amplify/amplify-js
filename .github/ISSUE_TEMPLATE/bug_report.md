@@ -28,16 +28,11 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-<details>
-  <summary><strong>Environment></strong></summary>
+**Desktop (please complete the following information):**
 
-<!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
-```
-npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
-```
-
-</details>
-
+- OS: [e.g. iOS]
+- Browser [e.g. chrome, safari]
+- Version [e.g. 22]
 
 **Smartphone (please complete the following information):**
 
@@ -45,6 +40,10 @@ npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
 - OS: [e.g. iOS8.1]
 - Browser [e.g. stock browser, safari]
 - Version [e.g. 22]
+
+**Amplify context**
+- Framework (e.g. React, Angular, Vue, React Native)
+- Versions of Amplify you are using
 
 **Additional context**
 Add any other context about the problem here.
