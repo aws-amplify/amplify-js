@@ -9,6 +9,8 @@ declare module 'amazon-cognito-identity-js' {
 		Destination: string;
 	}
 
+	export type ClientMetadata = { [key: string]: string } | undefined;
+
 	export interface IAuthenticationCallback {
 		onSuccess: (
 			session: CognitoUserSession,
@@ -34,6 +36,7 @@ declare module 'amazon-cognito-identity-js' {
 		Username: string;
 		Password?: string;
 		ValidationData?: { [key: string]: any };
+		ClientMetadata?: ClientMetadata;
 	}
 
 	export class AuthenticationDetails {
@@ -87,32 +90,38 @@ declare module 'amazon-cognito-identity-js' {
 		public confirmRegistration(
 			code: string,
 			forceAliasCreation: boolean,
-			callback: NodeCallback<any, any>
+			callback: NodeCallback<any, any>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
 			callback: IAuthenticationCallback
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>
+			callback: NodeCallback<Error, 'SUCCESS'>,
+			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
 			callback: NodeCallback<Error, 'SUCCESS'>
 		): void;
-		public forgotPassword(callbacks: {
-			onSuccess: (data: any) => void;
-			onFailure: (err: Error) => void;
-			inputVerificationCode?: (data: any) => void;
-		}): void;
+		public forgotPassword(
+			callbacks: {
+				onSuccess: (data: any) => void;
+				onFailure: (err: Error) => void;
+				inputVerificationCode?: (data: any) => void;
+			},
+			clientMetaData?: ClientMetadata
+		): void;
 		public confirmPassword(
 			verificationCode: string,
 			newPassword: string,
 			callbacks: {
 				onSuccess: () => void;
 				onFailure: (err: Error) => void;
-			}
+			},
+			clientMetaData?: ClientMetadata
 		): void;
 		public setDeviceStatusRemembered(callbacks: {
 			onSuccess: (success: string) => void;
@@ -168,7 +177,8 @@ declare module 'amazon-cognito-identity-js' {
 					challengeName: any,
 					challengeParameters: any
 				) => void;
-			}
+			},
+			clientMetadata?: ClientMetadata
 		): void;
 		public signOut(): void;
 		public globalSignOut(callbacks: {
