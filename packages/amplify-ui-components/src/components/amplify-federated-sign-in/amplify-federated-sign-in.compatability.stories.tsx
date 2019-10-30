@@ -11,7 +11,7 @@ Auth.configure = () => ({});
 const noop = () => {};
 
 export default {
-  title: 'amplify-federated-sign-in/FederatedSignIn',
+  title: 'amplify-federated-sign-in/compatability',
   decorators: [
     story => {
       const node = document.createElement('main');

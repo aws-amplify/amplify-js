@@ -11,7 +11,7 @@ Auth.configure = () => ({});
 const noop = () => {};
 
 export default {
-  title: 'amplify-federated-buttons/FederatedButtons',
+  title: 'amplify-federated-buttons/compatability',
   decorators: [
     story => {
       const node = document.createElement('main');
