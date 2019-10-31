@@ -2,12 +2,18 @@ import { Auth } from '@aws-amplify/auth';
 import { isEmpty, I18n } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
+import { AuthState } from '../../common/types/auth-types';
+
 @Component({ tag: 'amplify-federated-buttons' })
 export class AmplifyFederatedButtons {
   /** The current authentication state. */
   @Prop() authState: 'signIn' | 'signedOut' | 'signedUp' = 'signIn';
   /** Federated credentials & configuration. */
   @Prop() federated: any = {};
+  /** Passed from the Authenticatior component in order to change Authentication state
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
@@ -43,7 +49,10 @@ export class AmplifyFederatedButtons {
       <div>
         {google_client_id && (
           <div>
-            <amplify-google-button google_client_id={google_client_id} />
+            <amplify-google-button
+              handleAuthStateChange={this.handleAuthStateChange}
+              google_client_id={google_client_id}
+            />
           </div>
         )}
 

@@ -169,7 +169,7 @@ export class AmplifySignIn {
           </span>
         }
       >
-        <amplify-federated-buttons federated={this.federated} />
+        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>
     );

@@ -1,14 +1,86 @@
+import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
-import { Component, h, Prop } from '@stencil/core';
+import { Component, h, Prop, Listen } from '@stencil/core';
+
+import { AuthState } from '../../common/types/auth-types';
 
 @Component({ tag: 'amplify-google-button' })
 export class AmplifyGoogleButton {
+  /** Passed from the Authenticatior component in order to change Authentication state
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** App-specific client ID from Google */
   @Prop() google_client_id: string;
 
+  constructor() {
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  getAuthInstance() {
+    if (window['gapi'] && window['gapi'].auth2) {
+      return (
+        window['gapi'].auth2.getAuthInstance() ||
+        window['gapi'].auth2.init({
+          client_id: this.google_client_id,
+          cookiepolicy: 'single_host_origin',
+          scope: 'profile email openid',
+        })
+      );
+    }
+
+    return null;
+  }
+
+  @Listen('click')
+  handleClick(event) {
+    event.preventDefault();
+
+    this.getAuthInstance()
+      .signIn()
+      .then(this.handleUser)
+      .catch(this.handleError);
+  }
+
+  handleError(error) {
+    console.error(error);
+  }
+
+  /**
+   * @see https://developers.google.com/identity/sign-in/web/build-button#building_a_button_with_a_custom_graphic
+   */
+  handleLoad = () => {
+    window['gapi'].load('auth2');
+  };
+
+  async handleUser(user) {
+    if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+
+    const { id_token, expires_at } = user.getAuthResponse();
+    const profile = user.getBasicProfile();
+
+    await Auth.federatedSignIn(
+      'google',
+      { token: id_token, expires_at },
+      {
+        email: profile.getEmail(),
+        name: profile.getName(),
+        picture: profile.getImageUrl(),
+      },
+    );
+
+    const authenticatedUser = await Auth.currentAuthenticatedUser();
+
+    this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
+  }
+
   render() {
     return (
-      <amplify-sign-in-button provider="google">
+      <amplify-sign-in-button onClick={this.handleClick} provider="google">
+        <script onLoad={this.handleLoad} src="https://apis.google.com/js/api:client.js"></script>
+
         <svg slot="icon" viewBox="0 0 256 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
           <path
             d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"

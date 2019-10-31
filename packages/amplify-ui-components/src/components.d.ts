@@ -232,6 +232,10 @@ export namespace Components {
     * Federated credentials & configuration.
     */
     'federated': any;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -348,6 +352,10 @@ export namespace Components {
     * App-specific client ID from Google
     */
     'google_client_id': string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyHint {
     /**
@@ -1107,6 +1115,10 @@ declare namespace LocalJSX {
     * Federated credentials & configuration.
     */
     'federated'?: any;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -1223,6 +1235,10 @@ declare namespace LocalJSX {
     * App-specific client ID from Google
     */
     'google_client_id'?: string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyHint {
     /**
