@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-confirm-sign-up spec: Render logic -> should render a \`confirm sign up\` form by default 1`] = `
+<amplify-confirm-sign-up>
+  <amplify-form-section headertext="Confirm Sign up" submitbuttontext="Confirm">
+    <amplify-auth-fields></amplify-auth-fields>
+  </amplify-form-section>
+</amplify-confirm-sign-up>
+`;
