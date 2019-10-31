@@ -41,7 +41,7 @@
 		"typescript": "^3.2.2"
 	},
 	"dependencies": {
-		"@aws-crypto/sha256-browser": "^0.1.0-preview.1",
+		"@aws-crypto/sha256-js": "^0.1.0-preview.2",
 		"@aws-sdk/client-cognito-identity-browser": "^0.1.0-preview.2",
 		"@aws-sdk/credential-provider-cognito-identity": "^0.1.0-preview.2",
 		"@aws-sdk/util-hex-encoding": "^0.1.0-preview.1",

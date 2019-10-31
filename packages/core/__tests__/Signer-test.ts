@@ -9,7 +9,7 @@ jest.mock('@aws-sdk/util-hex-encoding', () => ({
 
 describe('Signer test', () => {
 	describe('sign test', () => {
-		test('happy case', async () => {
+		test('happy case', () => {
 			const url = 'https://host/some/path';
 
 			const request = {
@@ -35,7 +35,7 @@ describe('Signer test', () => {
 				url: url,
 			};
 			expect(
-				await Signer.sign(request, access_info, {
+				Signer.sign(request, access_info, {
 					service: 'aservice',
 					region: 'aregion',
 				})
@@ -44,7 +44,7 @@ describe('Signer test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case signUrl', async () => {
+		test('happy case signUrl', () => {
 			const url = 'https://example.com:1234/some/path';
 
 			const access_info = {
@@ -58,7 +58,7 @@ describe('Signer test', () => {
 			const expectedUrl =
 				'https://example.com:1234/some/path?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=%2F0%2Faregion%2Faservice%2Faws4_request&X-Amz-Date=0&X-Amz-Security-Token=session_token&X-Amz-SignedHeaders=host&X-Amz-Signature=encrypt';
 
-			const signedUrl = await Signer.signUrl(url, access_info, {
+			const signedUrl = Signer.signUrl(url, access_info, {
 				service: 'aservice',
 				region: 'aregion',
 			});
