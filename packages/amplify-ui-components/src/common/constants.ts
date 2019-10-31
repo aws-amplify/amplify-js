@@ -56,7 +56,7 @@ export const SIGN_IN_TEXT = 'Sign in';
 export const SIGN_UP_USERNAME_PLACEHOLDER = 'Create a username';
 export const SIGN_UP_PASSWORD_PLACEHOLDER = 'Create a password';
 export const SIGN_UP_PHONE_NUMBER_LABEL = 'Phone Number *';
-export const SIGN_UP_PHONE_NUMBER_PLACEHOLDER = '+15555555555';
+export const SIGN_UP_PHONE_NUMBER_PLACEHOLDER = '5555555555';
 
 // Confirm Sign Up common constants
 export const CONFIRM_SIGN_UP_HEADER_TEXT = 'Confirm Sign up';
