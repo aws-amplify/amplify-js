@@ -4,7 +4,7 @@ import { CountryCodeDialOptions } from './amplify-country-dial-code-interface';
 
 @Component({
   tag: 'amplify-country-dial-code',
-  shadow: false
+  shadow: false,
 })
 export class AmplifyCountryDialCode {
   /** (Optional) Overrides default styling */
@@ -13,8 +13,6 @@ export class AmplifyCountryDialCode {
   @Prop() options: CountryCodeDialOptions = countryDialCodes;
 
   render() {
-    return (
-      <amplify-select options={this.options} override-style={this.overrideStyle} />
-    );
+    return <amplify-select options={this.options} override-style={this.overrideStyle} />;
   }
 }

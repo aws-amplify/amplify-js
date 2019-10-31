@@ -15,6 +15,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-phone-field](../amplify-phone-field)
+
 ### Depends on
 
 - [amplify-select](../amplify-select)
@@ -23,6 +27,7 @@
 ```mermaid
 graph TD;
   amplify-country-dial-code --> amplify-select
+  amplify-phone-field --> amplify-country-dial-code
   style amplify-country-dial-code fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
