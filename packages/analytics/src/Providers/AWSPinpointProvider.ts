@@ -109,7 +109,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 				return;
 			}
 
-			// TODO: figure out if this is still relevant
 			if (that._endpointGenerating && endpointBatchSize) {
 				// If this is the first request sent by Analytics module, we should stop sending remaining requests
 				// to prevent race condition of updating one endpoint when it's being created in the backend
