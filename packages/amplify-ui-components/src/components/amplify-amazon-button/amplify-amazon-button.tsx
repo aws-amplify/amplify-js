@@ -1,14 +1,86 @@
-import { I18n } from '@aws-amplify/core';
-import { Component, h, Prop } from '@stencil/core';
+import { Auth } from '@aws-amplify/auth';
+import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
+import { Component, h, Listen, Prop } from '@stencil/core';
+
+import { AUTH_SOURCE_KEY } from '../../common/constants';
+import { AuthState } from '../../common/types/auth-types';
+
+const logger = new Logger('amplify-amazon-button');
 
 @Component({ tag: 'amplify-amazon-button' })
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */
   @Prop() amazon_client_id: string;
+  /** Passed from the Authenticatior component in order to change Authentication state
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+
+  constructor() {
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  federatedSignIn = response => {
+    const { access_token, expires_in } = response;
+
+    if (!access_token) {
+      return;
+    }
+
+    if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+
+    const date = new Date();
+    const expires_at = expires_in * 1000 + date.getTime();
+
+    window['amazon'].Login.retrieveProfile(async userInfo => {
+      if (!userInfo.success) {
+        return logger.debug('Get user Info failed');
+      }
+
+      const user = {
+        name: userInfo.profile.Name,
+        email: userInfo.profile.PrimaryEmail,
+      };
+
+      await Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user);
+
+      const authenticatedUser = await Auth.currentAuthenticatedUser();
+
+      this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
+    });
+  };
+
+  /**
+   * @see https://developer.amazon.com/docs/login-with-amazon/install-sdk-javascript.html
+   */
+  @Listen('click')
+  handleClick(event) {
+    event.preventDefault();
+
+    window['amazon'].Login.setClientId(this.amazon_client_id);
+
+    window['amazon'].Login.authorize({ scope: 'profile' }, response => {
+      if (response.error) {
+        return logger.debug('Failed to login with amazon: ' + response.error);
+      }
+
+      try {
+        window.localStorage.setItem(AUTH_SOURCE_KEY, JSON.stringify({ provider: 'amazon' }));
+      } catch (e) {
+        logger.debug('Failed to cache auth source into localStorage', e);
+      }
+
+      this.federatedSignIn(response);
+    });
+  }
 
   render() {
     return (
       <amplify-sign-in-button provider="amazon">
+        <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
+
         <svg slot="icon" viewBox="0 0 248 268" xmlns="http://www.w3.org/2000/svg">
           <g id="Artboard-Copy-2" fill="none" fillRule="evenodd">
             <path

@@ -8,12 +8,12 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  FormFieldTypes,
-} from './components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
   AuthState,
   CognitoUserInterface,
 } from './common/types/auth-types';
+import {
+  FormFieldTypes,
+} from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   ButtonTypes,
   TextFieldTypes,
@@ -41,6 +41,10 @@ export namespace Components {
     * App-specific client ID from Google
     */
     'amazon_client_id': string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyAuthFields {
     /**
@@ -928,6 +932,10 @@ declare namespace LocalJSX {
     * App-specific client ID from Google
     */
     'amazon_client_id'?: string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyAuthFields {
     /**
