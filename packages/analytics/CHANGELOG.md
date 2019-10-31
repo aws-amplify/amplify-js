@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@1.3.3...@aws-amplify/analytics@1.3.4) (2019-10-29)
+
+
+### Bug Fixes
+
+* **analytics:** Don't call sendBeacon when not supported ([#4246](https://github.com/aws-amplify/amplify-js/issues/4246)) ([4846968](https://github.com/aws-amplify/amplify-js/commit/4846968b55f4ad1c22667f767939ba224be86c79))
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@1.3.2...@aws-amplify/analytics@1.3.3) (2019-10-23)
 
 **Note:** Version bump only for package @aws-amplify/analytics
