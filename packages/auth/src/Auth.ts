@@ -1130,7 +1130,8 @@ export default class AuthClass {
 										// Make sure the user is still valid
 										if (
 											err.message === 'User is disabled' ||
-											err.message === 'User does not exist.'
+											err.message === 'User does not exist.' ||
+											err.message === 'Access Token has been revoked' // Session revoked by another app
 										) {
 											rej(err);
 										} else {
