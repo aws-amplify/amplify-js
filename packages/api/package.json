@@ -1,12 +1,12 @@
 {
   "name": "@aws-amplify/api",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "Api category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./index": "./lib/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -35,12 +35,12 @@
     "prettier": "^1.7.4"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^1.4.2",
-    "@aws-amplify/cache": "^1.1.2",
-    "@aws-amplify/core": "^1.2.2",
+    "@aws-amplify/auth": "^1.5.0",
+    "@aws-amplify/cache": "^1.1.4",
+    "@aws-amplify/core": "^1.2.4",
     "@types/zen-observable": "^0.5.3",
     "axios": "^0.19.0",
-    "graphql": "0.13.0",
+    "graphql": "14.0.0",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },

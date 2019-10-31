@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@1.1.3...@aws-amplify/predictions@1.1.4) (2019-10-29)
+
+
+### Bug Fixes
+
+* Use exact version of the [@aws-sdk](https://github.com/aws-sdk) V3 packages ([#4241](https://github.com/aws-amplify/amplify-js/issues/4241)) ([e12a9a4](https://github.com/aws-amplify/amplify-js/commit/e12a9a490c35a495101bad2352907c8a7e2255b5))
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@1.1.2...@aws-amplify/predictions@1.1.3) (2019-10-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
 ## [1.1.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/predictions@1.1.0...@aws-amplify/predictions@1.1.2) (2019-10-10)
 
 **Note:** Version bump only for package @aws-amplify/predictions
