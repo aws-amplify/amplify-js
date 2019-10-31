@@ -437,9 +437,6 @@ export namespace Components {
     'role': string;
   }
   interface AmplifyOauthButton {
-    /**
-    * App-specific client ID from Google
-    */
     'oauth_config': any;
   }
   interface AmplifyPasswordField {
@@ -1328,9 +1325,6 @@ declare namespace LocalJSX {
     'role'?: string;
   }
   interface AmplifyOauthButton {
-    /**
-    * App-specific client ID from Google
-    */
     'oauth_config'?: any;
   }
   interface AmplifyPasswordField {
