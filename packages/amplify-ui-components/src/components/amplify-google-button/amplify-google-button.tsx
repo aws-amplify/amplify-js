@@ -1,8 +1,11 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
+import { AUTH_SOURCE_KEY } from '../../common/constants';
 import { AuthState } from '../../common/types/auth-types';
+
+const logger = new Logger('amplify-google-button');
 
 @Component({ tag: 'amplify-google-button' })
 export class AmplifyGoogleButton {
@@ -56,6 +59,12 @@ export class AmplifyGoogleButton {
   handleUser = async user => {
     if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+
+    try {
+      window.localStorage.setItem(AUTH_SOURCE_KEY, JSON.stringify({ provider: 'google' }));
+    } catch (e) {
+      logger.debug('Failed to cache auth source into localStorage', e);
     }
 
     const { id_token, expires_at } = user.getAuthResponse();

@@ -8,7 +8,9 @@ export const AMPLIFY_UI_SCENE_LOADING = `${AMPLIFY_UI_PREFIX}-scene-loading`;
 
 // Dictionaries
 
-/* 
+export const AUTH_SOURCE_KEY = 'amplify-federated-auth-source';
+
+/*
   The below constants will be moved to an i18n solution.
   Storing here to have a common place to pull from once we pick up that work.
 */
