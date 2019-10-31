@@ -42,9 +42,9 @@ export class AmplifyGoogleButton {
       .catch(this.handleError);
   }
 
-  handleError(error) {
+  handleError = error => {
     console.error(error);
-  }
+  };
 
   /**
    * @see https://developers.google.com/identity/sign-in/web/build-button#building_a_button_with_a_custom_graphic
@@ -53,7 +53,7 @@ export class AmplifyGoogleButton {
     window['gapi'].load('auth2');
   };
 
-  async handleUser(user) {
+  handleUser = async user => {
     if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
@@ -74,7 +74,7 @@ export class AmplifyGoogleButton {
     const authenticatedUser = await Auth.currentAuthenticatedUser();
 
     this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
-  }
+  };
 
   render() {
     return (
