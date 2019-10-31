@@ -1,14 +1,106 @@
-import { I18n } from '@aws-amplify/core';
-import { Component, h, Prop } from '@stencil/core';
+import { Auth } from '@aws-amplify/auth';
+import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
+import { Component, h, Prop, Listen } from '@stencil/core';
+
+import { AUTH_SOURCE_KEY } from '../../common/constants';
+import { AuthState } from '../../common/types/auth-types';
+
+const logger = new Logger('amplify-facebook-button');
 
 @Component({ tag: 'amplify-facebook-button' })
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
   @Prop() facebook_app_id: string;
+  /** Passed from the Authenticatior component in order to change Authentication state
+   * e.g. SignIn -> 'Create Account' link -> SignUp
+   */
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+
+  constructor() {
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  federatedSignIn = authResponse => {
+    const { accessToken, expiresIn } = authResponse;
+
+    if (!accessToken) {
+      return;
+    }
+
+    if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+
+    const date = new Date();
+    const expires_at = expiresIn * 1000 + date.getTime();
+    const fields = 'name,email';
+
+    window['FB'].api('/me', { fields }, async response => {
+      const user = {
+        name: response.name,
+        email: response.email,
+      };
+
+      await Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user);
+
+      const authenticatedUser = await Auth.currentAuthenticatedUser();
+
+      this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
+    });
+  };
+
+  getLoginStatus = () => {
+    window['FB'].getLoginStatus(response => {
+      try {
+        window.localStorage.setItem(AUTH_SOURCE_KEY, JSON.stringify({ provider: 'facebook' }));
+      } catch (e) {
+        logger.debug('Failed to cache auth source into localStorage', e);
+      }
+
+      if (response.status === 'connected') {
+        return this.federatedSignIn(response.authResponse);
+      }
+
+      this.login();
+    });
+  };
+
+  /**
+   * @see https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0
+   */
+  @Listen('click')
+  handleClick(event) {
+    event.preventDefault();
+
+    // Initialize before usage for latest knob value
+    window['FB'].init({
+      appId: this.facebook_app_id,
+      cookie: true,
+      xfbml: false,
+      version: 'v5.0',
+    });
+
+    this.getLoginStatus();
+  }
+
+  login = () => {
+    const scope = 'public_profile,email';
+
+    window['FB'].login(
+      response => {
+        if (response && response.authResponse) {
+          this.federatedSignIn(response.authResponse);
+        }
+      },
+      { scope },
+    );
+  };
 
   render() {
     return (
       <amplify-sign-in-button provider="facebook">
+        <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+
         <svg slot="icon" viewBox="0 0 279 538" xmlns="http://www.w3.org/2000/svg">
           <g id="Page-1" fill="none" fillRule="evenodd">
             <g id="Artboard" fill="#FFF">

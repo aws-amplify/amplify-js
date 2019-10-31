@@ -222,6 +222,10 @@ export namespace Components {
     * App-specific client ID from Facebook
     */
     'facebook_app_id': string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -1105,6 +1109,10 @@ declare namespace LocalJSX {
     * App-specific client ID from Facebook
     */
     'facebook_app_id'?: string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
   interface AmplifyFederatedButtons {
     /**
