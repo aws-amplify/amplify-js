@@ -23,7 +23,7 @@
     "stencil": "stencil build --docs-readme",
     "stencil:watch": "stencil build --dev --watch",
     "start": "stencil build --dev --watch --serve",
-    "storybook": "concurrently 'start-storybook -s ./www' 'yarn:stencil:watch' --raw",
+    "storybook": "concurrently 'start-storybook -p 3000 -s ./www' 'yarn:stencil:watch' --raw",
     "build-with-test": "npm run clean && npm test && npm run stencil",
     "build": "npm run clean && npm run stencil",
     "build:watch": "npm run clean && npm run stencil:watch",
