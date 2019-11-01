@@ -1,4 +1,4 @@
-import { h } from '../../common/jsx2dom';
+import { h } from '@stencil/core';
 
 export default {
   title: 'amplify-google-button',
