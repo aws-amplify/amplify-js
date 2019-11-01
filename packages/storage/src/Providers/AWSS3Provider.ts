@@ -154,9 +154,7 @@ export default class AWSS3Provider implements StorageProvider {
 			});
 		}
 
-		if (expires) {
-			params.Expires = expires;
-		}
+		if (expires) params.ResponseExpires = expires;
 
 		return new Promise<string>((res, rej) => {
 			try {

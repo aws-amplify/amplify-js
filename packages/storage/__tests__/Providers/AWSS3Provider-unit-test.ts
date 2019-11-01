@@ -368,7 +368,7 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledWith('getObject', {
 				Bucket: 'bucket',
 				Key: 'public/key',
-				Expires: 1200,
+				ResponseExpires: 1200,
 			});
 
 			spyon.mockClear();
