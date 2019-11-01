@@ -114,7 +114,17 @@ export default class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, download, track, expires } = opt;
+		const {
+			bucket,
+			download,
+			cacheControl,
+			contentDisposition,
+			contentEncoding,
+			contentLanguage,
+			contentType,
+			expires,
+			track,
+		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const s3 = this._createS3(opt);
@@ -155,6 +165,12 @@ export default class AWSS3Provider implements StorageProvider {
 		}
 
 		if (expires) params.ResponseExpires = expires;
+		if (cacheControl) params.ResponseCacheControl = cacheControl;
+		if (contentDisposition)
+			params.ResponseContentDisposition = contentDisposition;
+		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
+		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
+		if (contentType) params.ResponseContentType = contentType;
 
 		return new Promise<string>((res, rej) => {
 			try {
