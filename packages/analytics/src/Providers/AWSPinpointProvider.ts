@@ -42,7 +42,9 @@ const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 const MOBILE_SERVICE_NAME = 'mobiletargeting';
 const BEACON_SUPPORTED =
-	navigator && typeof navigator.sendBeacon === 'function';
+	typeof navigator !== 'undefined' &&
+	navigator &&
+	typeof navigator.sendBeacon === 'function';
 
 // events buffer
 const BUFFER_SIZE = 1000;
