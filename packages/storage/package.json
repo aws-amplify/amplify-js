@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Storage category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -35,7 +35,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.2.3"
+    "@aws-amplify/core": "^1.2.4"
   },
   "jest": {
     "globals": {
