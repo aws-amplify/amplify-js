@@ -2,7 +2,6 @@ import { Config } from '@stencil/core';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
-  excludeSrc: ['**/**.stories.*', '**/withReact.*'],
   namespace: 'amplify-ui-components',
   plugins: [nodePolyfills()],
   commonjs: {
