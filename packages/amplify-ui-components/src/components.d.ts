@@ -12,17 +12,18 @@ import {
 } from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
+  CognitoUserInterface,
 } from './common/types/auth-types';
 import {
   ButtonTypes,
   TextFieldTypes,
 } from './common/types/ui-types';
 import {
-  CountryCodeDialOptions,
-} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
-import {
   FunctionalComponent,
 } from '@stencil/core';
+import {
+  CountryCodeDialOptions,
+} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
 import {
   IconNameType,
 } from './components/amplify-icon/icons';
@@ -93,6 +94,10 @@ export namespace Components {
   }
   interface AmplifyCodeField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
@@ -100,6 +105,10 @@ export namespace Components {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint': string | FunctionalComponent | null;
     /**
     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
     */
@@ -121,6 +130,40 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyConfirmSignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object | string) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit': (submitEvent: Event) => void;
+    /**
+    * Used for header text in confirm sign up component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in confirm sign up component
+    */
+    'submitButtonText': string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user': CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
+  }
   interface AmplifyCountryDialCode {
     /**
     * The options of the country dial code select input.
@@ -132,6 +175,10 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyEmailField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -197,6 +244,10 @@ export namespace Components {
     * The text of the description.  Goes between the label and the input.
     */
     'description': string | null;
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
@@ -293,6 +344,10 @@ export namespace Components {
     */
     'description': string | null;
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId': string;
@@ -334,6 +389,10 @@ export namespace Components {
     'role': string;
   }
   interface AmplifyPasswordField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -504,6 +563,10 @@ export namespace Components {
   }
   interface AmplifyUsernameField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId': string;
@@ -568,6 +631,12 @@ declare global {
   var HTMLAmplifyCodeFieldElement: {
     prototype: HTMLAmplifyCodeFieldElement;
     new (): HTMLAmplifyCodeFieldElement;
+  };
+
+  interface HTMLAmplifyConfirmSignUpElement extends Components.AmplifyConfirmSignUp, HTMLStencilElement {}
+  var HTMLAmplifyConfirmSignUpElement: {
+    prototype: HTMLAmplifyConfirmSignUpElement;
+    new (): HTMLAmplifyConfirmSignUpElement;
   };
 
   interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
@@ -713,6 +782,7 @@ declare global {
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-confirm-sign-up': HTMLAmplifyConfirmSignUpElement;
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
@@ -798,6 +868,10 @@ declare namespace LocalJSX {
   }
   interface AmplifyCodeField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
@@ -805,6 +879,10 @@ declare namespace LocalJSX {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint'?: string | FunctionalComponent | null;
     /**
     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
     */
@@ -826,6 +904,40 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyConfirmSignUp {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object | string) => void;
+    /**
+    * Fires when sign up form is submitted
+    */
+    'handleSubmit'?: (submitEvent: Event) => void;
+    /**
+    * Used for header text in confirm sign up component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in confirm sign up component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user'?: CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
+  }
   interface AmplifyCountryDialCode {
     /**
     * The options of the country dial code select input.
@@ -837,6 +949,10 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyEmailField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -902,6 +1018,10 @@ declare namespace LocalJSX {
     * The text of the description.  Goes between the label and the input.
     */
     'description'?: string | null;
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
@@ -998,6 +1118,10 @@ declare namespace LocalJSX {
     */
     'description'?: string | null;
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * The ID of the field.  Should match with its corresponding input's ID.
     */
     'fieldId'?: string;
@@ -1039,6 +1163,10 @@ declare namespace LocalJSX {
     'role'?: string;
   }
   interface AmplifyPasswordField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
     /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
@@ -1209,6 +1337,10 @@ declare namespace LocalJSX {
   }
   interface AmplifyUsernameField {
     /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
     */
     'fieldId'?: string;
@@ -1248,6 +1380,7 @@ declare namespace LocalJSX {
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-code-field': AmplifyCodeField;
+    'amplify-confirm-sign-up': AmplifyConfirmSignUp;
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
@@ -1285,6 +1418,7 @@ declare module "@stencil/core" {
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
       'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
+      'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
