@@ -29,6 +29,11 @@ export const CODE_PLACEHOLDER = 'Enter code';
 export const SEND_CODE = 'Send Code';
 export const CONFIRM = 'Confirm';
 
+// Phone common constants
+export const PHONE_SUFFIX = 'phone';
+export const PHONE_LABEL = 'Phone Number *';
+export const PHONE_PLACEHOLDER = '5555555555';
+
 // Password common constants
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
 export const RESET_PASSWORD_TEXT = 'Reset password';
@@ -55,8 +60,6 @@ export const HAVE_ACCOUNT_TEXT = 'Have an account?';
 export const SIGN_IN_TEXT = 'Sign in';
 export const SIGN_UP_USERNAME_PLACEHOLDER = 'Create a username';
 export const SIGN_UP_PASSWORD_PLACEHOLDER = 'Create a password';
-export const SIGN_UP_PHONE_NUMBER_LABEL = 'Phone Number *';
-export const SIGN_UP_PHONE_NUMBER_PLACEHOLDER = '5555555555';
 
 // Confirm Sign Up common constants
 export const CONFIRM_SIGN_UP_HEADER_TEXT = 'Confirm Sign up';

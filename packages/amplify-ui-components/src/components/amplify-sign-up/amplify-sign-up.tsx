@@ -7,8 +7,6 @@ import {
   SIGN_IN_TEXT,
   SIGN_UP_USERNAME_PLACEHOLDER,
   SIGN_UP_PASSWORD_PLACEHOLDER,
-  SIGN_UP_PHONE_NUMBER_LABEL,
-  SIGN_UP_PHONE_NUMBER_PLACEHOLDER,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
 import { AuthState } from '../../common/types/auth-types';
@@ -83,8 +81,6 @@ export class AmplifySignUp {
       },
       {
         type: 'phone',
-        label: SIGN_UP_PHONE_NUMBER_LABEL,
-        placeholder: SIGN_UP_PHONE_NUMBER_PLACEHOLDER,
         required: true,
         handleInputChange: event => this.handlePhoneNumberChange(event),
       },

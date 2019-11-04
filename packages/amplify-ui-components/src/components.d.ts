@@ -478,7 +478,7 @@ export namespace Components {
     */
     'hint': string | FunctionalComponent | null;
     /**
-    * Used for the code label
+    * Used for the Phone label
     */
     'label': string;
     /**
@@ -1337,7 +1337,7 @@ declare namespace LocalJSX {
     */
     'hint'?: string | FunctionalComponent | null;
     /**
-    * Used for the code label
+    * Used for the Phone label
     */
     'label'?: string;
     /**

@@ -1,5 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyPhoneField } from './amplify-phone-field';
+import { PHONE_SUFFIX, PHONE_LABEL, PHONE_PLACEHOLDER } from '../../common/constants';
 
 describe('amplify-phone-field spec:', () => {
   describe('Component logic ->', () => {
@@ -10,15 +11,15 @@ describe('amplify-phone-field spec:', () => {
     });
 
     it('should render `phone` for the field id', () => {
-      expect(phoneField.fieldId).toEqual('phone');
+      expect(phoneField.fieldId).toEqual(PHONE_SUFFIX);
     });
 
     it('should have `label` render to `Verification phone` by default', () => {
-      expect(phoneField.label).toEqual('Verification phone');
+      expect(phoneField.label).toEqual(PHONE_LABEL);
     });
 
     it('should have `placeholder` render to `Enter phone` by default', () => {
-      expect(phoneField.placeholder).toEqual('Enter phone');
+      expect(phoneField.placeholder).toEqual(PHONE_PLACEHOLDER);
     });
 
     it('should have `required` set to `false` by default', () => {
