@@ -1,10 +1,10 @@
 {
   "name": "aws-amplify-react-native",
-  "version": "2.1.19",
+  "version": "2.2.3",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --passWithNoTests --coverage --maxWorkers 2",
+    "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build": "npm run clean && babel src --out-dir dist --copy-files",
     "watch": "npm run clean && babel src --out-dir dist --copy-files --watch",
     "generate-docs": "rimraf docs && jsdoc -c ./jsDoc.config.json --readme ../../media/api_reference_home.md ./src -r  -d ./docs",
@@ -35,7 +35,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0"

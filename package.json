@@ -17,8 +17,8 @@
 		"lint": "lerna run lint",
 		"link-all": "yarn unlink-all && lerna exec --parallel yarn link",
 		"unlink-all": "lerna exec --parallel --bail=false yarn unlink",
-		"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable  --exact",
-		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta  --exact",
+		"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
+		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'"
 	},
 	"husky": {
@@ -40,30 +40,40 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@types/jest": "^20.0.7",
+		"@types/jest": "^24.0.18",
 		"@types/node": "^8.9.5",
+		"@babel/cli": "^7.0.0",
+		"@babel/core": "^7.0.0",
+		"@babel/preset-env": "^7.0.0",
+		"@babel/preset-react": "^7.0.0",
+		"babel-loader": "^8.0.0",
 		"codecov": "^1.0.1",
 		"compression-webpack-plugin": "^1.1.3",
 		"cypress": "^3.2.0",
 		"husky": "^3.0.5",
-		"jest": "^22.4.3",
+		"jest": "^24.x.x",
 		"json-loader": "^0.5.7",
 		"lerna": "^3.13.1",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
+		"rollup": "^0.67.4",
+		"rollup-plugin-commonjs": "^9.2.0",
+		"rollup-plugin-json": "^3.1.0",
+		"rollup-plugin-node-resolve": "^4.0.0",
+		"rollup-plugin-sourcemaps": "^0.4.2",
+		"rollup-plugin-typescript": "^1.0.0",
 		"source-map-loader": "^0.2.1",
-		"ts-jest": "^22.0.0",
+		"ts-jest": "^24.x.x",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.11.0",
-		"typescript": "^2.9.2",
+		"typescript": "^3.5.3",
 		"uglifyjs-webpack-plugin": "^0.4.6",
-		"webpack": "^3.5.5"
+		"webpack": "^4.32.0",
+		"webpack-bundle-analyzer": "^3.3.2",
+		"webpack-cli": "^3.1.0"
 	},
 	"jest": {
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-		},
 		"resetMocks": true,
 		"verbose": true
 	}

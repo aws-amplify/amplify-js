@@ -95,9 +95,9 @@ describe('RequireNewPasswordComponentCore: ', () => {
 			'ion-button'
 		);
 		const signInButton = Object.values(buttons).find(
-			el => el.innerHTML === 'Back to Sign In'
+			el => (el as HTMLElement).innerHTML === 'Back to Sign In'
 		);
-		signInButton.click();
+		(signInButton as HTMLElement).click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});
 
@@ -112,9 +112,9 @@ describe('RequireNewPasswordComponentCore: ', () => {
 			'ion-button'
 		);
 		const submitButton = Object.values(buttons).find(
-			el => el.innerHTML === 'Submit'
+			el => (el as any).innerHTML === 'Submit'
 		);
-		submitButton.click();
+		(submitButton as any).click();
 		expect(onSubmitSpy).toHaveBeenCalled();
 	});
 });

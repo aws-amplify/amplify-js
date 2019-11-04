@@ -1,5 +1,6 @@
 import OAuth from '../src/OAuth/OAuth';
 import * as oauthStorage from '../src/OAuth/oauthStorage';
+
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
 		clearAll: jest.fn(),
@@ -65,7 +66,20 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 	};
 
 	CognitoUserPool.prototype.getCurrentUser = () => {
-		return 'currentUser';
+		return {
+			username: 'username',
+			getSession: callback => {
+				// throw 3;
+				callback(null, {
+					getAccessToken: () => {
+						return {
+							decodePayload: () => 'payload',
+							getJwtToken: () => 'jwt',
+						};
+					},
+				});
+			},
+		};
 	};
 
 	CognitoUserPool.prototype.signUp = (
@@ -73,7 +87,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 		password,
 		signUpAttributeList,
 		validationData,
-		callback
+		callback,
+		clientMetadata
 	) => {
 		callback(null, 'signUpResult');
 	};
@@ -215,6 +230,17 @@ const authOptions: AuthOptions = {
 	mandatorySignIn: false,
 };
 
+const authOptionsWithClientMetadata: AuthOptions = {
+	userPoolId: 'awsUserPoolsId',
+	userPoolWebClientId: 'awsUserPoolsWebClientId',
+	region: 'region',
+	identityPoolId: 'awsCognitoIdentityPoolId',
+	mandatorySignIn: false,
+	clientMetadata: {
+		foo: 'bar',
+	},
+};
+
 const authOptionsWithNoUserPoolId: AuthOptions = {
 	userPoolWebClientId: 'awsUserPoolsWebClientId',
 	region: 'region',
@@ -235,6 +261,17 @@ const session = new CognitoUserSession({
 	AccessToken: accessToken,
 });
 
+const authCallbacks = {
+	customChallenge: jasmine.any(Function),
+	mfaRequired: jasmine.any(Function),
+	mfaSetup: jasmine.any(Function),
+	newPasswordRequired: jasmine.any(Function),
+	onFailure: jasmine.any(Function),
+	onSuccess: jasmine.any(Function),
+	selectMFAType: jasmine.any(Function),
+	totpRequired: jasmine.any(Function),
+};
+
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
 describe('auth unit test', () => {
@@ -252,9 +289,71 @@ describe('auth unit test', () => {
 					otherAttrs: 'otherAttrs',
 				},
 			};
-
 			expect(await auth.signUp(attrs)).toBe('signUpResult');
 
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			const attrs = {
+				username: 'username',
+				password: 'password',
+				attributes: {
+					email: 'email',
+					phone_number: 'phone_number',
+					otherAttrs: 'otherAttrs',
+				},
+			};
+			await auth.signUp(attrs);
+
+			expect(await CognitoUserPool.prototype.signUp).toBeCalledWith(
+				attrs.username,
+				attrs.password,
+				[
+					{ Name: 'email', Value: 'email' },
+					{ Name: 'phone_number', Value: 'phone_number' },
+					{ Name: 'otherAttrs', Value: 'otherAttrs' },
+				],
+				null,
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			const attrs = {
+				username: 'username',
+				password: 'password',
+				attributes: {
+					email: 'email',
+					phone_number: 'phone_number',
+					otherAttrs: 'otherAttrs',
+				},
+				clientMetadata: {
+					custom: 'value',
+				},
+			};
+			await auth.signUp(attrs);
+
+			expect(await CognitoUserPool.prototype.signUp).toBeCalledWith(
+				attrs.username,
+				attrs.password,
+				[
+					{ Name: 'email', Value: 'email' },
+					{ Name: 'phone_number', Value: 'phone_number' },
+					{ Name: 'otherAttrs', Value: 'otherAttrs' },
+				],
+				null,
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -394,6 +493,40 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const code = 'code';
+
+			await auth.confirmSignUp('username', code);
+
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const code = 'code';
+
+			await auth.confirmSignUp('username', code, {
+				clientMetadata: { custom: 'value' },
+			});
+
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
+			spyon.mockClear();
+		});
+
 		test('callback err', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'confirmRegistration')
@@ -468,6 +601,32 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'resendConfirmationCode');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.resendSignUp('username');
+
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'resendConfirmationCode');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.resendSignUp('username', { custom: 'value' });
+
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
+			spyon.mockClear();
+		});
+
 		test('callback err', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'resendConfirmationCode')
@@ -538,6 +697,44 @@ describe('auth unit test', () => {
 
 			spyon.mockClear();
 			spyon2.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.signIn('username', 'password');
+
+			expect(await CognitoUser.prototype.authenticateUser).toBeCalledWith(
+				{
+					username: 'username',
+					password: 'password',
+					validationData: {},
+					clientMetadata: { foo: 'bar' },
+					authParameters: {},
+				},
+				authCallbacks
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.signIn('username', 'password', { custom: 'value' });
+
+			expect(await CognitoUser.prototype.authenticateUser).toBeCalledWith(
+				{
+					username: 'username',
+					password: 'password',
+					validationData: {},
+					clientMetadata: { custom: 'value' },
+					authParameters: {},
+				},
+				authCallbacks
+			);
+			spyon.mockClear();
 		});
 
 		test('throw error if failed to call currentUserPoolUser after signing in', async () => {
@@ -819,6 +1016,52 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const code = 'code';
+
+			await auth.confirmSignIn(user, code);
+
+			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
+				code,
+				{
+					onSuccess: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+				},
+				undefined,
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const code = 'code';
+
+			await auth.confirmSignIn(user, code, 'SMS_MFA', { custom: 'value' });
+
+			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
+				code,
+				{
+					onSuccess: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+				},
+				'SMS_MFA',
+				{ custom: 'value' }
+			);
+			spyon.mockClear();
+		});
+
 		test('onFailure', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'sendMFACode')
@@ -879,6 +1122,64 @@ describe('auth unit test', () => {
 				user
 			);
 
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(
+				CognitoUser.prototype,
+				'completeNewPasswordChallenge'
+			);
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.completeNewPassword(user, 'password', {});
+
+			expect(
+				await CognitoUser.prototype.completeNewPasswordChallenge
+			).toBeCalledWith(
+				'password',
+				{},
+				{
+					onSuccess: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+					mfaRequired: jasmine.any(Function),
+					mfaSetup: jasmine.any(Function),
+				},
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(
+				CognitoUser.prototype,
+				'completeNewPasswordChallenge'
+			);
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.completeNewPassword(user, 'password', {}, { custom: 'value' });
+
+			expect(
+				await CognitoUser.prototype.completeNewPasswordChallenge
+			).toBeCalledWith(
+				'password',
+				{},
+				{
+					onSuccess: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+					mfaRequired: jasmine.any(Function),
+					mfaSetup: jasmine.any(Function),
+				},
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -1413,9 +1714,9 @@ describe('auth unit test', () => {
 			});
 
 			expect.assertions(1);
-			expect(await auth.verifyUserAttributeSubmit(user, {}, 'code')).toBe(
-				'success'
-			);
+			expect(
+				await auth.verifyUserAttributeSubmit(user, 'attribute', 'code')
+			).toBe('success');
 
 			spyon.mockClear();
 		});
@@ -1686,6 +1987,50 @@ describe('auth unit test', () => {
 
 			spyon.mockClear();
 		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'changePassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const oldPassword = 'oldPassword1';
+			const newPassword = 'newPassword1.';
+
+			await auth.changePassword(user, oldPassword, newPassword);
+
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'changePassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const oldPassword = 'oldPassword1';
+			const newPassword = 'newPassword1.';
+
+			await auth.changePassword(user, oldPassword, newPassword, {
+				custom: 'value',
+			});
+
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
+			spyon.mockClear();
+		});
 	});
 
 	describe('forgotPassword', () => {
@@ -1697,6 +2042,40 @@ describe('auth unit test', () => {
 			expect.assertions(1);
 			expect(await auth.forgotPassword('username')).toBeUndefined();
 
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.forgotPassword('username');
+
+			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
+				{
+					inputVerificationCode: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+					onSuccess: jasmine.any(Function),
+				},
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			await auth.forgotPassword('username', { custom: 'value' });
+
+			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
+				{
+					inputVerificationCode: jasmine.any(Function),
+					onFailure: jasmine.any(Function),
+					onSuccess: jasmine.any(Function),
+				},
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -1779,6 +2158,61 @@ describe('auth unit test', () => {
 				await auth.forgotPasswordSubmit('username', 'code', 'password')
 			).toBeUndefined();
 
+			spyon.mockClear();
+		});
+
+		test('happy case', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
+
+			const auth = new Auth(authOptions);
+
+			expect.assertions(1);
+			expect(await auth.forgotPassword('username')).toBeUndefined();
+
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const username = 'username';
+			const code = 'code';
+			const password = 'password';
+
+			await auth.forgotPasswordSubmit(username, code, password);
+
+			expect(await CognitoUser.prototype.confirmPassword).toBeCalledWith(
+				code,
+				password,
+				{
+					onFailure: jasmine.any(Function),
+					onSuccess: jasmine.any(Function),
+				},
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const username = 'username';
+			const code = 'code';
+			const password = 'password';
+
+			await auth.forgotPasswordSubmit(username, code, password, {
+				custom: 'value',
+			});
+
+			expect(await CognitoUser.prototype.confirmPassword).toBeCalledWith(
+				code,
+				password,
+				{
+					onFailure: jasmine.any(Function),
+					onSuccess: jasmine.any(Function),
+				},
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -2049,6 +2483,42 @@ describe('auth unit test', () => {
 			expect.assertions(1);
 			expect(await auth.updateUserAttributes(user, attributes)).toBe('SUCCESS');
 
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.updateUserAttributes(user, {});
+
+			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
+				[],
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.updateUserAttributes(user, {}, { custom: 'value' });
+
+			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
+				[],
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 	});
@@ -2798,6 +3268,56 @@ describe('auth unit test', () => {
 
 			spyon.mockClear();
 			spyon2.mockClear();
+		});
+
+		test('happy case clientMetadata default', async () => {
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			const spyon = jest.spyOn(
+				CognitoUser.prototype,
+				'sendCustomChallengeAnswer'
+			);
+			const spyon2 = jest
+				.spyOn(auth, 'currentUserPoolUser')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(user);
+				});
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.sendCustomChallengeAnswer(user, 'answer');
+
+			expect(
+				await CognitoUser.prototype.sendCustomChallengeAnswer
+			).toBeCalledWith('answer', authCallbacks, { foo: 'bar' });
+			spyon.mockClear();
+		});
+
+		test('happy case clientMetadata parameter', async () => {
+			const auth = new Auth(authOptionsWithClientMetadata);
+
+			const spyon = jest.spyOn(
+				CognitoUser.prototype,
+				'sendCustomChallengeAnswer'
+			);
+			const spyon2 = jest
+				.spyOn(auth, 'currentUserPoolUser')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(user);
+				});
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.sendCustomChallengeAnswer(user, 'answer', { custom: 'value' });
+
+			expect(
+				await CognitoUser.prototype.sendCustomChallengeAnswer
+			).toBeCalledWith('answer', authCallbacks, { custom: 'value' });
+			spyon.mockClear();
 		});
 
 		test('customChallenge', async () => {

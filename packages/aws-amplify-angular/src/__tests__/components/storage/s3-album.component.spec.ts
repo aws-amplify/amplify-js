@@ -26,13 +26,3 @@ describe('S3AlbumComponentCore: ', () => {
 		expect(component).toBeTruthy();
 	});
 });
-
-describe('S3AlbumComponentIonic: ', () => {
-	let component: S3AlbumComponentIonic;
-	let service: AmplifyService;
-
-	beforeEach(() => {
-		service = new AmplifyService();
-		component = new S3AlbumComponentCore(service);
-	});
-});
