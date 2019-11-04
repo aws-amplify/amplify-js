@@ -8,12 +8,18 @@ const proto =
 	JS.browserOrNode().isBrowser && window['Element']
 		? window['Element'].prototype
 		: null;
+
 const nativeMatches = proto
 	? proto.matches ||
+	  // @ts-ignore
 	  proto.matchesSelector ||
+	  // @ts-ignore
 	  proto.webkitMatchesSelector ||
+	  // @ts-ignore
 	  proto.mozMatchesSelector ||
+	  // @ts-ignore
 	  proto.msMatchesSelector ||
+	  // @ts-ignore
 	  proto.oMatchesSelector
 	: null;
 

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Component } from 'react';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -20,7 +19,7 @@ export interface IAuthStateWrapperState {
 	error?: any;
 }
 
-export default class AuthStateWrapper extends Component<
+export default class AuthStateWrapper extends React.Component<
 	IAuthStateWrapperProps,
 	IAuthStateWrapperState
 > {

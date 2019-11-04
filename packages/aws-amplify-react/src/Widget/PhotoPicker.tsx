@@ -72,6 +72,7 @@ export default class PhotoPicker extends Component<
 			const reader = new FileReader();
 			reader.onload = function(e) {
 				const url = e.target.result;
+				// @ts-ignore
 				that.setState({ previewSrc: url });
 				if (onLoad) {
 					onLoad(url);

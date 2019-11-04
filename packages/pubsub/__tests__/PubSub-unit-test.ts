@@ -8,7 +8,7 @@ import {
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
-import * as Paho from '../src/vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 
 const pahoClientMockCache = {};
 
