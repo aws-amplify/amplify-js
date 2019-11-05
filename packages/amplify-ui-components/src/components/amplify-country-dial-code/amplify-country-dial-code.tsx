@@ -18,7 +18,7 @@ export class AmplifyCountryDialCode {
     return (
       <amplify-select
         options={this.options}
-        override-style={this.overrideStyle}
+        overrideStyle={this.overrideStyle}
         handleInputChange={this.handleInputChange}
       />
     );
