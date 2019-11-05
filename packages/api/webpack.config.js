@@ -2,15 +2,6 @@ module.exports = {
 	entry: {
 		'aws-amplify-api.min': './lib-esm/index.js',
 	},
-	externals: [
-		'graphql',
-		'graphql/language/ast',
-		'graphql/language/parser',
-		'graphql/language/printer',
-		'@aws-amplify/cache',
-		'@aws-amplify/core',
-		'@aws-amplify/auth',
-	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
