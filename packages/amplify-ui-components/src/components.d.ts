@@ -147,7 +147,6 @@ export namespace Components {
     * Used for header text in confirm sign in component
     */
     'headerText': string;
-    'mfaType': string;
     /**
     * (Optional) Overrides default styling
     */
@@ -156,7 +155,10 @@ export namespace Components {
     * Used for the submit button text in confirm sign in component
     */
     'submitButtonText': string;
-    'user': object;
+    /**
+    * Cognito user signing in
+    */
+    'user': CognitoUserInterface;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -963,7 +965,6 @@ declare namespace LocalJSX {
     * Used for header text in confirm sign in component
     */
     'headerText'?: string;
-    'mfaType'?: string;
     /**
     * (Optional) Overrides default styling
     */
@@ -972,7 +973,10 @@ declare namespace LocalJSX {
     * Used for the submit button text in confirm sign in component
     */
     'submitButtonText'?: string;
-    'user'?: object;
+    /**
+    * Cognito user signing in
+    */
+    'user'?: CognitoUserInterface;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */

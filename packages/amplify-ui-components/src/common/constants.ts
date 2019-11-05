@@ -45,6 +45,8 @@ export const HEADER_TEXT = 'Sign into your account';
 export const SUBMIT_BUTTON_TEXT = 'Sign in';
 export const CREATE_ACCOUNT_TEXT = 'Create account';
 export const NO_ACCOUNT_TEXT = 'No account?';
+export const CONFIRM_SMS_CODE = 'Confirm SMS Code';
+export const CONFIRM_TOTP_CODE = 'Confirm TOTP Code';
 
 // Sign Up common constants
 export const SIGN_UP_HEADER_TEXT = 'Create a new account';

@@ -1,6 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState } from '../../common/types/auth-types';
+import { AuthState, ChallengeName } from '../../common/types/auth-types';
 
 import {
   HEADER_TEXT,
@@ -118,17 +118,17 @@ export class AmplifySignIn {
     try {
       const user = await Auth.signIn(this.username, this.password);
       logger.debug(user);
-      if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+      if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
         logger.debug('confirm user with ' + user.challengeName);
         this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
-      } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+      } else if (user.challengeName === ChallengeName.NewPasswordRequired) {
         logger.debug('require new password', user.challengeParam);
         this.handleAuthStateChange(AuthState.ResetPassword, user);
-      } else if (user.challengeName === 'MFA_SETUP') {
+      } else if (user.challengeName === ChallengeName.MFASetup) {
         logger.debug('TOTP setup', user.challengeParam);
         this.handleAuthStateChange(AuthState.TOTPSetup, user);
       } else if (
-        user.challengeName === 'CUSTOM_CHALLENGE' &&
+        user.challengeName === ChallengeName.CustomChallenge &&
         user.challengeParam &&
         user.challengeParam.trigger === 'true'
       ) {

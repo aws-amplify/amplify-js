@@ -1,9 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState } from '../../common/types/auth-types';
-
-import { BACK_TO_SIGN_IN, CONFIRM } from '../../common/constants';
-
+import { AuthState, MfaOption, CognitoUserInterface, ChallengeName } from '../../common/types/auth-types';
+import { BACK_TO_SIGN_IN, CONFIRM, CONFIRM_SMS_CODE, CONFIRM_TOTP_CODE } from '../../common/constants';
 import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
@@ -18,10 +16,8 @@ export class AmplifyConfirmSignIn {
   @Prop() handleSubmit: (Event) => void = event => this.confirm(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
-
-  @Prop() mfaType: string = 'SMS';
   /** Used for header text in confirm sign in component */
-  @Prop() headerText: string = `Confirm ${this.mfaType} Code`;
+  @Prop() headerText: string = CONFIRM_SMS_CODE;
   /** Used for the submit button text in confirm sign in component */
   @Prop() submitButtonText: string = CONFIRM;
   /** (Optional) Overrides default styling */
@@ -44,28 +40,34 @@ export class AmplifyConfirmSignIn {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[];
-
-  @Prop() user: object;
-
+  @Prop() formFields: FormFieldTypes | string[] = [
+    {
+      type: 'code',
+      required: true,
+      handleInputChange: event => this.handleCodeChange(event),
+    },
+  ];
+  /** Cognito user signing in */
+  @Prop() user: CognitoUserInterface;
+  /** The MFA option to confirm with */
+  @State() mfaOption: MfaOption = MfaOption.SMS;
   /* Whether or not the confirm-sign-in component is loading */
   @State() loading: boolean = false;
   /* The code value in the confirm-sign-in form */
   @State() code: string;
 
   componentWillLoad() {
-    this.formFields = [
-      {
-        type: 'code',
-        required: true,
-        handleInputChange: event => this.handleCodeChange(event),
-      },
-    ];
+    if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
+      this.mfaOption = MfaOption.TOTP;
+      // If header text is using default use TOTP string
+      if (this.headerText === CONFIRM_SMS_CODE) {
+        this.headerText = CONFIRM_TOTP_CODE;
+      }
+    }
   }
 
   handleCodeChange(event) {
     this.code = event.target.value;
-    console.log(this.code);
   }
 
   checkContact(user) {
@@ -86,7 +88,8 @@ export class AmplifyConfirmSignIn {
     if (event) {
       event.preventDefault();
     }
-    const mfaType = this.user['challengeName'] === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+    const mfaType =
+      this.user['challengeName'] === ChallengeName.SoftwareTokenMFA ? ChallengeName.SoftwareTokenMFA : null;
     if (!Auth || typeof Auth.confirmSignIn !== 'function') {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
