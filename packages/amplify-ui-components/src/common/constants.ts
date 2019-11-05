@@ -43,6 +43,9 @@ export const PASSWORD_LABEL = 'Password *';
 export const PASSWORD_PLACEHOLDER = 'Enter your password';
 export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
+// Select common constants
+export const SELECT_SUFFIX = 'select';
+
 // Sign In common constants
 // TODO: Change to SIGN_IN_HEADER_TEXT
 export const HEADER_TEXT = 'Sign into your account';

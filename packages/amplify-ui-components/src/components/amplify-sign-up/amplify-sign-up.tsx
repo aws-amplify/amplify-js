@@ -7,6 +7,8 @@ import {
   SIGN_IN_TEXT,
   SIGN_UP_USERNAME_PLACEHOLDER,
   SIGN_UP_PASSWORD_PLACEHOLDER,
+  SELECT_SUFFIX,
+  PHONE_SUFFIX,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
 import { AuthState } from '../../common/types/auth-types';
@@ -49,7 +51,30 @@ export class AmplifySignUp {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[];
+  @Prop() formFields: FormFieldTypes | string[] = [
+    {
+      type: 'username',
+      placeholder: SIGN_UP_USERNAME_PLACEHOLDER,
+      required: true,
+      handleInputChange: event => this.handleUsernameChange(event),
+    },
+    {
+      type: 'password',
+      placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
+      required: true,
+      handleInputChange: event => this.handlePasswordChange(event),
+    },
+    {
+      type: 'email',
+      required: true,
+      handleInputChange: event => this.handleEmailChange(event),
+    },
+    {
+      type: 'phone',
+      required: true,
+      handleInputChange: event => this.handlePhoneNumberChange(event),
+    },
+  ];
   /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -58,34 +83,9 @@ export class AmplifySignUp {
   @State() username: string;
   @State() password: string;
   @State() email: string;
+  @State() country_dial_code_value: string = '+1';
+  @State() phone_number_value: string;
   @State() phone_number: string;
-
-  componentWillLoad() {
-    this.formFields = [
-      {
-        type: 'username',
-        placeholder: SIGN_UP_USERNAME_PLACEHOLDER,
-        required: true,
-        handleInputChange: event => this.handleUsernameChange(event),
-      },
-      {
-        type: 'password',
-        placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
-        required: true,
-        handleInputChange: event => this.handlePasswordChange(event),
-      },
-      {
-        type: 'email',
-        required: true,
-        handleInputChange: event => this.handleEmailChange(event),
-      },
-      {
-        type: 'phone',
-        required: true,
-        handleInputChange: event => this.handlePhoneNumberChange(event),
-      },
-    ];
-  }
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -100,7 +100,25 @@ export class AmplifySignUp {
   }
 
   handlePhoneNumberChange(event) {
-    this.phone_number = event.target.value;
+    const name = event.target.name;
+    const value = event.target.value;
+
+    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
+     * input from the phone number input, we need to first capture both components values and combined
+     * them together.
+     */
+
+    if (name === SELECT_SUFFIX) {
+      this.country_dial_code_value = value;
+    }
+
+    if (name === PHONE_SUFFIX) {
+      this.phone_number_value = value;
+    }
+
+    /** By default, `+1` is set on the `country-dial-code` this will most likely need to be adjusted when a customer passes a different default on the `country-dial-code` */
+    /** We are always taking the latest value for the phone number input */
+    this.phone_number = this.country_dial_code_value.concat(this.phone_number_value);
   }
 
   // TODO: Add validation

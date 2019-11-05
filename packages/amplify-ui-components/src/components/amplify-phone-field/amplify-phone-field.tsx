@@ -29,7 +29,7 @@ export class AmplifyPhoneField {
       <div>
         <amplify-form-field label={this.label} type="tel" hint={this.hint} required={this.required}>
           <div class={phoneField} slot="input">
-            <amplify-country-dial-code />
+            <amplify-country-dial-code handleInputChange={this.handleInputChange} />
             <amplify-input
               fieldId={this.fieldId}
               handleInputChange={this.handleInputChange}

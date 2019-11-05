@@ -200,6 +200,10 @@ export namespace Components {
   }
   interface AmplifyCountryDialCode {
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * The options of the country dial code select input.
     */
     'options': CountryCodeDialOptions;
@@ -541,6 +545,10 @@ export namespace Components {
     * Used for id field
     */
     'fieldId': string;
+    /**
+    * The callback, called when the select is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
@@ -1059,6 +1067,10 @@ declare namespace LocalJSX {
   }
   interface AmplifyCountryDialCode {
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * The options of the country dial code select input.
     */
     'options'?: CountryCodeDialOptions;
@@ -1400,6 +1412,10 @@ declare namespace LocalJSX {
     * Used for id field
     */
     'fieldId'?: string;
+    /**
+    * The callback, called when the select is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */

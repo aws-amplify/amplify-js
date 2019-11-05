@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                        | Type                     | Default            |
-| --------------- | ---------------- | -------------------------------------------------- | ------------------------ | ------------------ |
-| `options`       | --               | The options of the country dial code select input. | `CountryCodeDialOptions` | `countryDialCodes` |
-| `overrideStyle` | `override-style` | (Optional) Overrides default styling               | `boolean`                | `false`            |
+| Property            | Attribute        | Description                                                  | Type                          | Default            |
+| ------------------- | ---------------- | ------------------------------------------------------------ | ----------------------------- | ------------------ |
+| `handleInputChange` | --               | The callback, called when the input is modified by the user. | `(inputEvent: Event) => void` | `undefined`        |
+| `options`           | --               | The options of the country dial code select input.           | `CountryCodeDialOptions`      | `countryDialCodes` |
+| `overrideStyle`     | `override-style` | (Optional) Overrides default styling                         | `boolean`                     | `false`            |
 
 
 ## Dependencies

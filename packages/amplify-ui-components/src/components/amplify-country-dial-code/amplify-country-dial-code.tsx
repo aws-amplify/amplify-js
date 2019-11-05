@@ -11,8 +11,16 @@ export class AmplifyCountryDialCode {
   @Prop() overrideStyle: boolean = false;
   /** The options of the country dial code select input. */
   @Prop() options: CountryCodeDialOptions = countryDialCodes;
+  /** The callback, called when the input is modified by the user. */
+  @Prop() handleInputChange?: (inputEvent: Event) => void;
 
   render() {
-    return <amplify-select options={this.options} override-style={this.overrideStyle} />;
+    return (
+      <amplify-select
+        options={this.options}
+        override-style={this.overrideStyle}
+        handleInputChange={this.handleInputChange}
+      />
+    );
   }
 }
