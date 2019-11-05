@@ -5,16 +5,16 @@ import * as stories from './amplify-google-button.stories';
 
 const {
   default: { title },
-  ...templates
+  ...specs
 } = stories;
 
 const components = [AmplifyGoogleButton];
 
 describe(title, () => {
   describe('stories', () => {
-    Object.entries(templates).forEach(([name, template]) => {
+    Object.entries(specs).forEach(([name, spec]) => {
       it(name, async () => {
-        const page = await newSpecPage({ components, template });
+        const page = await newSpecPage({ components, html: spec() });
 
         expect(page.root).toMatchSnapshot();
       });
