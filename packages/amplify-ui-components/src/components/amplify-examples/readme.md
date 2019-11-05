@@ -20,7 +20,9 @@ graph TD;
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
   amplify-authenticator --> amplify-sign-in
+  amplify-authenticator --> amplify-confirm-sign-in
   amplify-authenticator --> amplify-sign-up
+  amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
@@ -41,10 +43,16 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-confirm-sign-in --> amplify-form-section
+  amplify-confirm-sign-in --> amplify-link
+  amplify-confirm-sign-in --> amplify-auth-fields
   amplify-sign-up --> amplify-form-section
   amplify-sign-up --> amplify-auth-fields
   amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
+  amplify-confirm-sign-up --> amplify-link
+  amplify-confirm-sign-up --> amplify-form-section
+  amplify-confirm-sign-up --> amplify-auth-fields
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields

@@ -9,6 +9,7 @@
 
 | Property            | Attribute     | Description                                                                                                        | Type                          | Default                |
 | ------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------- | ---------------------- |
+| `disabled`          | `disabled`    | Will disable the input if set to true                                                                              | `boolean`                     | `undefined`            |
 | `fieldId`           | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.                                            | `string`                      | `USERNAME_SUFFIX`      |
 | `handleInputChange` | --            | The callback, called when the input is modified by the user.                                                       | `(inputEvent: Event) => void` | `undefined`            |
 | `inputProps`        | --            | Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes | `object`                      | `undefined`            |

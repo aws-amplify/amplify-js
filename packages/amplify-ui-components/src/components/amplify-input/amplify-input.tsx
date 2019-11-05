@@ -29,6 +29,8 @@ export class AmplifyInput {
   @Prop() value: string;
   /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
   @Prop() inputProps?: object;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -41,6 +43,7 @@ export class AmplifyInput {
         name={this.name}
         class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
         value={this.value}
+        disabled={this.disabled}
         {...this.inputProps}
       />
     );

@@ -10,6 +10,7 @@ const componentFieldMapping = {
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
   password: (ff: FormFieldType) => (
@@ -21,6 +22,7 @@ const componentFieldMapping = {
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
   email: (ff: FormFieldType) => (
@@ -31,16 +33,19 @@ const componentFieldMapping = {
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
   code: (ff: FormFieldType) => (
     <amplify-code-field
       label={ff.label}
       placeholder={ff.placeholder}
+      hint={ff.hint}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
   // TODO: Will create a phone field component once the dial country code component is in
@@ -53,6 +58,7 @@ const componentFieldMapping = {
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
   default: (ff: FormFieldType) => (
@@ -63,6 +69,7 @@ const componentFieldMapping = {
       handleInputChange={ff.handleInputChange}
       value={ff.value}
       inputProps={ff.inputProps}
+      disabled={ff.disabled}
     />
   ),
 };

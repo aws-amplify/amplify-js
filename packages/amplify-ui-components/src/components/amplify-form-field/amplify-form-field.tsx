@@ -37,6 +37,8 @@ export class AmplifyFormField {
   @Prop() value: string;
   /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
   @Prop() inputProps?: object;
+  /** Will disable the input if set to true */
+  @Prop() disabled?: boolean;
 
   render() {
     return (
@@ -69,6 +71,7 @@ export class AmplifyFormField {
               name={this.name}
               value={this.value}
               inputProps={this.inputProps}
+              disabled={this.disabled}
             />
           </slot>
         </div>
