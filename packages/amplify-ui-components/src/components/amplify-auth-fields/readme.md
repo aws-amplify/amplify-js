@@ -51,6 +51,7 @@ graph TD;
   amplify-phone-field --> amplify-country-dial-code
   amplify-phone-field --> amplify-input
   amplify-country-dial-code --> amplify-select
+  amplify-confirm-sign-in --> amplify-auth-fields
   amplify-confirm-sign-up --> amplify-auth-fields
   amplify-forgot-password --> amplify-auth-fields
   amplify-sign-in --> amplify-auth-fields

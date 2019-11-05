@@ -482,6 +482,10 @@ export namespace Components {
     */
     'hint': string | FunctionalComponent | null;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * Used for the Phone label
     */
     'label': string;
@@ -683,121 +687,121 @@ declare global {
 
 
   interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {}
-  var HTMLAmplifyAuthFieldsElement: {
+  const HTMLAmplifyAuthFieldsElement: {
     prototype: HTMLAmplifyAuthFieldsElement;
     new (): HTMLAmplifyAuthFieldsElement;
   };
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
-  var HTMLAmplifyAuthenticatorElement: {
+  const HTMLAmplifyAuthenticatorElement: {
     prototype: HTMLAmplifyAuthenticatorElement;
     new (): HTMLAmplifyAuthenticatorElement;
   };
 
   interface HTMLAmplifyButtonElement extends Components.AmplifyButton, HTMLStencilElement {}
-  var HTMLAmplifyButtonElement: {
+  const HTMLAmplifyButtonElement: {
     prototype: HTMLAmplifyButtonElement;
     new (): HTMLAmplifyButtonElement;
   };
 
   interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {}
-  var HTMLAmplifyCheckboxElement: {
+  const HTMLAmplifyCheckboxElement: {
     prototype: HTMLAmplifyCheckboxElement;
     new (): HTMLAmplifyCheckboxElement;
   };
 
   interface HTMLAmplifyCodeFieldElement extends Components.AmplifyCodeField, HTMLStencilElement {}
-  var HTMLAmplifyCodeFieldElement: {
+  const HTMLAmplifyCodeFieldElement: {
     prototype: HTMLAmplifyCodeFieldElement;
     new (): HTMLAmplifyCodeFieldElement;
   };
 
   interface HTMLAmplifyConfirmSignInElement extends Components.AmplifyConfirmSignIn, HTMLStencilElement {}
-  var HTMLAmplifyConfirmSignInElement: {
+  const HTMLAmplifyConfirmSignInElement: {
     prototype: HTMLAmplifyConfirmSignInElement;
     new (): HTMLAmplifyConfirmSignInElement;
   };
 
   interface HTMLAmplifyConfirmSignUpElement extends Components.AmplifyConfirmSignUp, HTMLStencilElement {}
-  var HTMLAmplifyConfirmSignUpElement: {
+  const HTMLAmplifyConfirmSignUpElement: {
     prototype: HTMLAmplifyConfirmSignUpElement;
     new (): HTMLAmplifyConfirmSignUpElement;
   };
 
   interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
-  var HTMLAmplifyCountryDialCodeElement: {
+  const HTMLAmplifyCountryDialCodeElement: {
     prototype: HTMLAmplifyCountryDialCodeElement;
     new (): HTMLAmplifyCountryDialCodeElement;
   };
 
   interface HTMLAmplifyEmailFieldElement extends Components.AmplifyEmailField, HTMLStencilElement {}
-  var HTMLAmplifyEmailFieldElement: {
+  const HTMLAmplifyEmailFieldElement: {
     prototype: HTMLAmplifyEmailFieldElement;
     new (): HTMLAmplifyEmailFieldElement;
   };
 
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
-  var HTMLAmplifyExamplesElement: {
+  const HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
     new (): HTMLAmplifyExamplesElement;
   };
 
   interface HTMLAmplifyForgotPasswordElement extends Components.AmplifyForgotPassword, HTMLStencilElement {}
-  var HTMLAmplifyForgotPasswordElement: {
+  const HTMLAmplifyForgotPasswordElement: {
     prototype: HTMLAmplifyForgotPasswordElement;
     new (): HTMLAmplifyForgotPasswordElement;
   };
 
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
-  var HTMLAmplifyFormFieldElement: {
+  const HTMLAmplifyFormFieldElement: {
     prototype: HTMLAmplifyFormFieldElement;
     new (): HTMLAmplifyFormFieldElement;
   };
 
   interface HTMLAmplifyFormSectionElement extends Components.AmplifyFormSection, HTMLStencilElement {}
-  var HTMLAmplifyFormSectionElement: {
+  const HTMLAmplifyFormSectionElement: {
     prototype: HTMLAmplifyFormSectionElement;
     new (): HTMLAmplifyFormSectionElement;
   };
 
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
-  var HTMLAmplifyHintElement: {
+  const HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
     new (): HTMLAmplifyHintElement;
   };
 
   interface HTMLAmplifyIconElement extends Components.AmplifyIcon, HTMLStencilElement {}
-  var HTMLAmplifyIconElement: {
+  const HTMLAmplifyIconElement: {
     prototype: HTMLAmplifyIconElement;
     new (): HTMLAmplifyIconElement;
   };
 
   interface HTMLAmplifyIconButtonElement extends Components.AmplifyIconButton, HTMLStencilElement {}
-  var HTMLAmplifyIconButtonElement: {
+  const HTMLAmplifyIconButtonElement: {
     prototype: HTMLAmplifyIconButtonElement;
     new (): HTMLAmplifyIconButtonElement;
   };
 
   interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
-  var HTMLAmplifyInputElement: {
+  const HTMLAmplifyInputElement: {
     prototype: HTMLAmplifyInputElement;
     new (): HTMLAmplifyInputElement;
   };
 
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
-  var HTMLAmplifyLabelElement: {
+  const HTMLAmplifyLabelElement: {
     prototype: HTMLAmplifyLabelElement;
     new (): HTMLAmplifyLabelElement;
   };
 
   interface HTMLAmplifyLinkElement extends Components.AmplifyLink, HTMLStencilElement {}
-  var HTMLAmplifyLinkElement: {
+  const HTMLAmplifyLinkElement: {
     prototype: HTMLAmplifyLinkElement;
     new (): HTMLAmplifyLinkElement;
   };
 
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
-  var HTMLAmplifyPasswordFieldElement: {
+  const HTMLAmplifyPasswordFieldElement: {
     prototype: HTMLAmplifyPasswordFieldElement;
     new (): HTMLAmplifyPasswordFieldElement;
   };
@@ -809,61 +813,61 @@ declare global {
   };
 
   interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
-  var HTMLAmplifyRadioButtonElement: {
+  const HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
     new (): HTMLAmplifyRadioButtonElement;
   };
 
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
-  var HTMLAmplifySceneElement: {
+  const HTMLAmplifySceneElement: {
     prototype: HTMLAmplifySceneElement;
     new (): HTMLAmplifySceneElement;
   };
 
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
-  var HTMLAmplifySceneLoadingElement: {
+  const HTMLAmplifySceneLoadingElement: {
     prototype: HTMLAmplifySceneLoadingElement;
     new (): HTMLAmplifySceneLoadingElement;
   };
 
   interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
-  var HTMLAmplifySectionElement: {
+  const HTMLAmplifySectionElement: {
     prototype: HTMLAmplifySectionElement;
     new (): HTMLAmplifySectionElement;
   };
 
   interface HTMLAmplifySelectElement extends Components.AmplifySelect, HTMLStencilElement {}
-  var HTMLAmplifySelectElement: {
+  const HTMLAmplifySelectElement: {
     prototype: HTMLAmplifySelectElement;
     new (): HTMLAmplifySelectElement;
   };
 
   interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
-  var HTMLAmplifySignInElement: {
+  const HTMLAmplifySignInElement: {
     prototype: HTMLAmplifySignInElement;
     new (): HTMLAmplifySignInElement;
   };
 
   interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
-  var HTMLAmplifySignUpElement: {
+  const HTMLAmplifySignUpElement: {
     prototype: HTMLAmplifySignUpElement;
     new (): HTMLAmplifySignUpElement;
   };
 
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
-  var HTMLAmplifyTooltipElement: {
+  const HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
     new (): HTMLAmplifyTooltipElement;
   };
 
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
-  var HTMLAmplifyUsernameFieldElement: {
+  const HTMLAmplifyUsernameFieldElement: {
     prototype: HTMLAmplifyUsernameFieldElement;
     new (): HTMLAmplifyUsernameFieldElement;
   };
 
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
-  var HTMLRockPaperScissorElement: {
+  const HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
     new (): HTMLRockPaperScissorElement;
   };
@@ -1348,6 +1352,10 @@ declare namespace LocalJSX {
     * Used as the hint in case you forgot your confirmation code, etc.
     */
     'hint'?: string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * Used for the Phone label
     */
