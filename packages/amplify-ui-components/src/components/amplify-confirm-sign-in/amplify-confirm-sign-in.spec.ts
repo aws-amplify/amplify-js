@@ -1,6 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyConfirmSignIn } from './amplify-confirm-sign-in';
-import { CONFIRM } from '../../common/constants';
+import { CONFIRM, CONFIRM_SMS_CODE } from '../../common/constants';
 
 describe('amplify-confirm-sign-in spec:', () => {
   describe('Component logic ->', () => {
@@ -19,7 +19,7 @@ describe('amplify-confirm-sign-in spec:', () => {
     });
 
     it('should render `headerText` to `Confirm SMS Code` by default', () => {
-      expect(confirmSignIn.headerText).toEqual('Confirm SMS Code');
+      expect(confirmSignIn.headerText).toEqual(CONFIRM_SMS_CODE);
     });
 
     it('should render `submitButtonText` to `Confirm` by default', () => {

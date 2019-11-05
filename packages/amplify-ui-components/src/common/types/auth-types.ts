@@ -1,4 +1,4 @@
-// TODO: Move or extract these values from the Cognito Provider in the Auth category
+// TODO: Move these values to or extract them from the Cognito Provider in the Auth category for Auth V2
 
 export enum AuthState {
   SignUp = 'signup',
