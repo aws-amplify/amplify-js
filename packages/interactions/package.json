@@ -1,80 +1,80 @@
 {
-	"name": "@aws-amplify/interactions",
-	"version": "1.0.37",
-	"description": "Interactions category of aws-amplify",
-	"main": "./index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./index": "./lib-esm/index.js"
-	},
-	"sideEffects": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest --coverage",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
-		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
-	},
-	"author": "Amazon Web Services",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/aws/aws-amplify/issues"
-	},
-	"homepage": "https://aws-amplify.github.io/",
-	"dependencies": {
-		"@aws-amplify/core": "^1.1.2",
-		"@aws-sdk/client-lex-runtime-service-browser": "^0.1.0-preview.2"
-	},
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/"
-		]
-	}
+  "name": "@aws-amplify/interactions",
+  "version": "1.0.37",
+  "description": "Interactions category of aws-amplify",
+  "main": "./index.js",
+  "module": "./lib-esm/index.js",
+  "typings": "./lib-esm/index.d.ts",
+  "react-native": {
+    "./index": "./lib-esm/index.js"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "build-with-test": "npm run clean && npm test && tsc && webpack",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "node ./build es6",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "clean": "rimraf lib-esm lib dist",
+    "format": "echo \"Not implemented\"",
+    "lint": "tslint 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws/aws-amplify/issues"
+  },
+  "homepage": "https://aws-amplify.github.io/",
+  "dependencies": {
+	"@aws-amplify/core": "^1.1.2",
+	"@aws-sdk/client-lex-runtime-service-browser": "^0.1.0-preview.2"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
 }

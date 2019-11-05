@@ -19,9 +19,12 @@ import {
 	Signer,
 	JS,
 	Hub,
+	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-
+import { PinpointClient } from '@aws-sdk/client-pinpoint-browser/PinpointClient';
+import { PutEventsCommand } from '@aws-sdk/client-pinpoint-browser/commands/PutEventsCommand';
+import { UpdateEndpointCommand } from '@aws-sdk/client-pinpoint-browser/commands/UpdateEndpointCommand';
+import { GetUserEndpointsCommand } from '@aws-sdk/client-pinpoint-browser/commands/GetUserEndpointsCommand';
 import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider, PromiseHandlers } from '../types';
@@ -222,7 +225,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private async _send(params, handlers) {
-		const { event, config } = params;
+		const { event } = params;
 
 		switch (event.name) {
 			case '_update_endpoint':
@@ -235,7 +238,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _generateBatchItemContext(params) {
-		const { event, timestamp, config, credentials } = params;
+		const { event, timestamp, config } = params;
 		const { name, attributes, metrics, eventId, session } = event;
 		const { appId, endpointId } = config;
 
@@ -270,54 +273,43 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		} = params;
 		const eventParams = this._generateBatchItemContext(params);
 
-		const request = this.pinpointClient.putEvents(eventParams);
-		// in order to keep backward compatiblity
-		// we are using a legacy api: /apps/{appid}/events/legacy
-		// so that users don't need to update their IAM Policy
-		// will use the formal one in the next break release
-		request.on('build', function() {
-			request.httpRequest.path = request.httpRequest.path + '/legacy';
-		});
+		const command: PutEventsCommand = new PutEventsCommand(eventParams);
 
-		request.send((err, data) => {
-			if (err) {
-				logger.error('record event failed. ', err);
-				logger.warn(
-					'If you have not updated your Pinpoint IAM Policy' +
-						' with the Action: "mobiletargeting:PutEvents" yet, please do it.' +
-						' This action is not necessary for now' +
-						' but in order to avoid breaking changes in the future,' +
-						' please update it as soon as possible.'
-				);
-				return handlers.reject(err);
-			} else {
-				const {
-					EventsResponse: {
-						Results: {
-							[endpointId]: {
-								EventsItemResponse: {
-									[eventId]: { StatusCode, Message },
-								},
+		try {
+			const data = await this.pinpointClient.send(command);
+			const {
+				EventsResponse: {
+					Results: {
+						[endpointId]: {
+							EventsItemResponse: {
+								[eventId]: { StatusCode, Message },
 							},
 						},
 					},
-				} = data;
-				if (ACCEPTED_CODES.includes(StatusCode)) {
-					this._endpointGenerating = false;
-					logger.debug('record event success. ', data);
-					return handlers.resolve(data);
+				},
+			} = data;
+			if (ACCEPTED_CODES.includes(StatusCode)) {
+				this._endpointGenerating = false;
+				logger.debug('record event success. ', data);
+				return handlers.resolve(data);
+			} else {
+				if (RETRYABLE_CODES.includes(StatusCode)) {
+					this._retry(params, handlers);
 				} else {
-					if (RETRYABLE_CODES.includes(StatusCode)) {
-						this._retry(params, handlers);
-					} else {
-						logger.error(
-							`Event ${eventId} is not accepted, the error is ${Message}`
-						);
-						return handlers.reject(data);
-					}
+					logger.error(
+						`Event ${eventId} is not accepted, the error is ${Message}`
+					);
+					return handlers.reject(data);
 				}
 			}
-		});
+		} catch (err) {
+			logger.error('record event failed. ', err);
+			logger.warn(
+				'If you have not updated your Pinpoint IAM Policy' +
+					' with the Action: "mobiletargeting:PutEvents" yet, please do it.'
+			);
+			return handlers.reject(err);
+		}
 	}
 
 	private _pinpointSendStopSession(params, handlers): Promise<string> {
@@ -378,15 +370,15 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _record(params, handlers) {
 		// credentials updated
-		const { event, timestamp, config, credentials } = params;
+		const { config, credentials } = params;
 		this._initClients(config, credentials);
 		return this._pinpointPutEvents(params, handlers);
 	}
 
 	private async _updateEndpoint(params, handlers) {
 		// credentials updated
-		const { timestamp, config, credentials, event } = params;
-		const { appId, region, endpointId } = config;
+		const { config, credentials, event } = params;
+		const { appId, endpointId } = config;
 
 		this._initClients(config, credentials);
 
@@ -407,93 +399,95 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		const that = this;
 		logger.debug('updateEndpoint with params: ', update_params);
 
-		that.pinpointClient.updateEndpoint(update_params, (err, data) => {
-			if (err) {
-				logger.debug('updateEndpoint failed', err);
-				if (
-					err.message.startsWith('Exceeded maximum endpoint per user count')
-				) {
-					this._removeUnusedEndpoints(appId, request.User.UserId)
-						.then(() => {
-							logger.debug('Remove the unused endpoints successfully');
-							this._retry(params, handlers);
-						})
-						.catch(e => {
-							logger.warn(`Failed to remove unused endpoints with error: ${e}`);
-							logger.warn(
-								`Please ensure you have updated your Pinpoint IAM Policy ` +
-									`with the Action: "mobiletargeting:GetUserEndpoints" ` +
-									`in order to get endpoints info of the user`
-							);
-							return handlers.reject(err);
-						});
-				} else return handlers.reject(err);
-			} else {
-				logger.debug('updateEndpoint success', data);
-				this._endpointGenerating = false;
-				return handlers.resolve(data);
-			}
-		});
+		try {
+			const command: UpdateEndpointCommand = new UpdateEndpointCommand(
+				update_params
+			);
+			const data = await that.pinpointClient.send(command);
+			logger.debug('updateEndpoint success', data);
+			this._endpointGenerating = false;
+			return handlers.resolve(data);
+		} catch (err) {
+			logger.debug('updateEndpoint failed', err);
+			if (err.message.startsWith('Exceeded maximum endpoint per user count')) {
+				this._removeUnusedEndpoints(appId, request.User.UserId)
+					.then(() => {
+						logger.debug('Remove the unused endpoints successfully');
+						this._retry(params, handlers);
+					})
+					.catch(e => {
+						logger.warn(`Failed to remove unused endpoints with error: ${e}`);
+						logger.warn(
+							`Please ensure you have updated your Pinpoint IAM Policy ` +
+								`with the Action: "mobiletargeting:GetUserEndpoints" ` +
+								`in order to get endpoints info of the user`
+						);
+						return handlers.reject(err);
+					});
+			} else return handlers.reject(err);
+		}
 	}
 
 	private async _removeUnusedEndpoints(appId, userId) {
-		return new Promise((res, rej) => {
-			this.pinpointClient.getUserEndpoints(
-				{
-					ApplicationId: appId,
-					UserId: userId,
-				},
-				(err, data) => {
-					if (err) {
-						logger.debug(
-							`Failed to get endpoints associated with the userId: ${userId} with error`,
-							err
-						);
-						return rej(err);
-					}
-					const endpoints = data.EndpointsResponse.Item;
-					logger.debug(
-						`get endpoints associated with the userId: ${userId} with data`,
-						endpoints
-					);
-					let endpointToBeDeleted = endpoints[0];
-					for (let i = 1; i < endpoints.length; i++) {
-						const timeStamp1 = Date.parse(endpointToBeDeleted['EffectiveDate']);
-						const timeStamp2 = Date.parse(endpoints[i]['EffectiveDate']);
-						// delete the one with invalid effective date
-						if (isNaN(timeStamp1)) break;
-						if (isNaN(timeStamp2)) {
-							endpointToBeDeleted = endpoints[i];
-							break;
-						}
-
-						if (timeStamp2 < timeStamp1) {
-							endpointToBeDeleted = endpoints[i];
-						}
-					}
-					// update the endpoint's user id with an empty string
-					const update_params = {
-						ApplicationId: appId,
-						EndpointId: endpointToBeDeleted['Id'],
-						EndpointRequest: {
-							User: {
-								UserId: '',
-							},
-						},
-					};
-					this.pinpointClient.updateEndpoint(update_params, (err, data) => {
-						if (err) {
-							logger.debug('Failed to update the endpoint', err);
-							return rej(err);
-						}
-						logger.debug(
-							'The old endpoint is updated with an empty string for user id'
-						);
-						return res(data);
-					});
-				}
+		try {
+			const command: GetUserEndpointsCommand = new GetUserEndpointsCommand({
+				ApplicationId: appId,
+				UserId: userId,
+			});
+			const data = await this.pinpointClient.send(command);
+			const endpoints = data.EndpointsResponse.Item;
+			logger.debug(
+				`get endpoints associated with the userId: ${userId} with data`,
+				endpoints
 			);
-		});
+			let endpointToBeDeleted = endpoints[0];
+			for (let i = 1; i < endpoints.length; i++) {
+				const timeStamp1 = Date.parse(endpointToBeDeleted['EffectiveDate']);
+				const timeStamp2 = Date.parse(endpoints[i]['EffectiveDate']);
+				// delete the one with invalid effective date
+				if (isNaN(timeStamp1)) break;
+				if (isNaN(timeStamp2)) {
+					endpointToBeDeleted = endpoints[i];
+					break;
+				}
+
+				if (timeStamp2 < timeStamp1) {
+					endpointToBeDeleted = endpoints[i];
+				}
+			}
+			// update the endpoint's user id with an empty string
+			const update_params = {
+				ApplicationId: appId,
+				EndpointId: endpointToBeDeleted['Id'],
+				EndpointRequest: {
+					User: {
+						UserId: '',
+					},
+				},
+			};
+
+			try {
+				const updateEndPointcommand: UpdateEndpointCommand = new UpdateEndpointCommand(
+					update_params
+				);
+				const updateEndPointData = await this.pinpointClient.send(
+					updateEndPointcommand
+				);
+				logger.debug(
+					'The old endpoint is updated with an empty string for user id'
+				);
+				return updateEndPointData;
+			} catch (err) {
+				logger.debug('Failed to update the endpoint', err);
+				throw err;
+			}
+		} catch (err) {
+			logger.debug(
+				`Failed to get endpoints associated with the userId: ${userId} with error`,
+				err
+			);
+			throw err;
+		}
 	}
 
 	/**
@@ -517,13 +511,26 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = config;
 		logger.debug('init clients with credentials', credentials);
-		this.pinpointClient = new Pinpoint({ region, credentials });
+		this.pinpointClient = new PinpointClient({ region, credentials });
 
 		if (Platform.isReactNative) {
-			this.pinpointClient.customizeRequests(function(request) {
-				request.on('build', function(req) {
-					req.httpRequest.headers['user-agent'] = Platform.userAgent;
+			const appendUserAgentMiddleware = next => args => {
+				const { request } = args;
+				if (!request.headers['User-Agent']) {
+					request.headers['User-Agent'] = Platform.userAgent;
+				} else {
+					request.headers['User-Agent'] += Platform.userAgent;
+				}
+				return next({
+					...args,
+					request,
 				});
+			};
+
+			this.pinpointClient.middlewareStack.add(appendUserAgentMiddleware, {
+				step: 'build',
+				priority: 0,
+				tags: { CUSTOM_USER_AGENT: true },
 			});
 		}
 	}
@@ -636,7 +643,6 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	 * check if current credentials exists
 	 */
 	private _getCredentials() {
-		const that = this;
 		return Credentials.get()
 			.then(credentials => {
 				if (!credentials) return null;

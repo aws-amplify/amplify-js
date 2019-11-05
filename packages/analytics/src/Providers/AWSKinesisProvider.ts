@@ -12,11 +12,11 @@
  */
 
 import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import * as Kinesis from 'aws-sdk/clients/kinesis';
-import Cache from '@aws-amplify/cache';
+import { KinesisClient } from '@aws-sdk/client-kinesis-browser/KinesisClient';
+import { PutRecordsCommand } from '@aws-sdk/client-kinesis-browser/commands/PutRecordsCommand';
 import { AnalyticsProvider } from '../types';
 
-const logger = new Logger('AWSKineisProvider');
+const logger = new Logger('AWSKinesisProvider');
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -37,9 +37,6 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
 		this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
-
-		// events batch
-		const that = this;
 
 		// flush event buffer
 		this._setupTimer();
@@ -103,7 +100,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		return this._putToBuffer(params);
 	}
 
-	public updateEndpoint(params) {
+	public updateEndpoint() {
 		logger.debug('updateEndpoint is not implemented in Kinesis provider');
 		return Promise.resolve(true);
 	}
@@ -184,21 +181,21 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			records[streamName].push(record);
 		});
 
-		Object.keys(records).map(streamName => {
+		Object.keys(records).map(async streamName => {
 			logger.debug(
 				'putting records to kinesis with records',
 				records[streamName]
 			);
-			this._kinesis.putRecords(
-				{
+			try {
+				const command: PutRecordsCommand = new PutRecordsCommand({
 					Records: records[streamName],
 					StreamName: streamName,
-				},
-				(err, data) => {
-					if (err) logger.debug('Failed to upload records to Kinesis', err);
-					else logger.debug('Upload records to stream', streamName);
-				}
-			);
+				});
+				await this._kinesis.send(command);
+				logger.debug('Upload records to stream', streamName);
+			} catch (err) {
+				logger.debug('Failed to upload records to Kinesis', err);
+			}
 		});
 	}
 
@@ -218,8 +215,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = config;
 		logger.debug('initialize kinesis with credentials', credentials);
-		this._kinesis = new Kinesis({
-			apiVersion: '2013-12-02',
+		this._kinesis = new KinesisClient({
 			region,
 			credentials,
 		});

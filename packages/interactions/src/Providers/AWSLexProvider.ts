@@ -21,139 +21,140 @@ import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 const logger = new Logger('AWSLexProvider');
 
 export class AWSLexProvider extends AbstractInteractionsProvider {
-    private lexRuntimeServiceClient: LexRuntimeServiceClient;
-    private _botsCompleteCallback: object;
+	private lexRuntimeServiceClient: LexRuntimeServiceClient;
+	private _botsCompleteCallback: object;
 
-    constructor(options: InteractionsOptions = {}) {
-        super(options);
-        this._botsCompleteCallback = {};
-    }
+	constructor(options: InteractionsOptions = {}) {
+		super(options);
+		this._botsCompleteCallback = {};
+	}
 
-    getProviderName() {
-        return 'AWSLexProvider';
-    }
+	getProviderName() {
+		return 'AWSLexProvider';
+	}
 
-    reportBotStatus(data, botname) {
-        // Check if state is fulfilled to resolve onFullfilment promise
-        logger.debug('postContent state', data.dialogState);
-        if (
-            data.dialogState === 'ReadyForFulfillment' ||
-            data.dialogState === 'Fulfilled'
-        ) {
-            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                setTimeout(
-                    () =>
-                        this._botsCompleteCallback[botname](null, { slots: data.slots }),
-                    0
-                );
-            }
+	reportBotStatus(data, botname) {
+		// Check if state is fulfilled to resolve onFullfilment promise
+		logger.debug('postContent state', data.dialogState);
+		if (
+			data.dialogState === 'ReadyForFulfillment' ||
+			data.dialogState === 'Fulfilled'
+		) {
+			if (typeof this._botsCompleteCallback[botname] === 'function') {
+				setTimeout(
+					() =>
+						this._botsCompleteCallback[botname](null, { slots: data.slots }),
+					0
+				);
+			}
 
-            if (
-                this._config &&
-                typeof this._config[botname].onComplete === 'function'
-            ) {
-                setTimeout(
-                    () => this._config[botname].onComplete(null, { slots: data.slots }),
-                    0
-                );
-            }
-        }
+			if (
+				this._config &&
+				typeof this._config[botname].onComplete === 'function'
+			) {
+				setTimeout(
+					() => this._config[botname].onComplete(null, { slots: data.slots }),
+					0
+				);
+			}
+		}
 
-        if (data.dialogState === 'Failed') {
-            if (typeof this._botsCompleteCallback[botname] === 'function') {
-                setTimeout(
-                    () =>
-                        this._botsCompleteCallback[botname]('Bot conversation failed'),
-                    0
-                );
-            }
+		if (data.dialogState === 'Failed') {
+			if (typeof this._botsCompleteCallback[botname] === 'function') {
+				setTimeout(
+					() => this._botsCompleteCallback[botname]('Bot conversation failed'),
+					0
+				);
+			}
 
-            if (
-                this._config &&
-                typeof this._config[botname].onComplete === 'function'
-            ) {
-                setTimeout(
-                    () => this._config[botname].onComplete('Bot conversation failed'),
-                    0
-                );
-            }
-        }
-    }
+			if (
+				this._config &&
+				typeof this._config[botname].onComplete === 'function'
+			) {
+				setTimeout(
+					() => this._config[botname].onComplete('Bot conversation failed'),
+					0
+				);
+			}
+		}
+	}
 
-    async sendMessage(
-        botname: string,
-        message: string | InteractionsMessage
-    ): Promise<object> {
-        if (!this._config[botname]) {
-            return Promise.reject('Bot ' + botname + ' does not exist');
-        }
-        const credentials = await Credentials.get();
-        if (!credentials) {
-            return Promise.reject('No credentials');
-        }
+	async sendMessage(
+		botname: string,
+		message: string | InteractionsMessage
+	): Promise<object> {
+		if (!this._config[botname]) {
+			return Promise.reject('Bot ' + botname + ' does not exist');
+		}
+		const credentials = await Credentials.get();
+		if (!credentials) {
+			return Promise.reject('No credentials');
+		}
 
-        this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
-            region: this._config[botname].region,
-            credentials,
-        });
+		this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
+			region: this._config[botname].region,
+			credentials,
+		});
 
-        let params;
-        if (typeof message === 'string') {
-            params = {
-                botAlias: this._config[botname].alias,
-                botName: botname,
-                inputText: message,
-                userId: credentials.identityId,
-            };
+		let params;
+		if (typeof message === 'string') {
+			params = {
+				botAlias: this._config[botname].alias,
+				botName: botname,
+				inputText: message,
+				userId: credentials.identityId,
+			};
 
-            logger.debug('postText to lex', message);
+			logger.debug('postText to lex', message);
 
-            try {
-                const postTextCommand = new PostTextCommand(params);
-                const data = await this.lexRuntimeServiceClient.send(postTextCommand);
-                this.reportBotStatus(data, botname);
-                return data;
-            } catch (err) {
-                return Promise.reject(err);
-            }
-        } else {
-            if (message.options['messageType'] === 'voice') {
-                params = {
-                    botAlias: this._config[botname].alias,
-                    botName: botname,
-                    contentType: 'audio/x-l16; sample-rate=16000',
-                    inputStream: message.content,
-                    userId: credentials.identityId,
-                    accept: 'audio/mpeg',
-                };
-            } else {
-                params = {
-                    botAlias: this._config[botname].alias,
-                    botName: botname,
-                    contentType: 'text/plain; charset=utf-8',
-                    inputStream: message.content,
-                    userId: credentials.identityId,
-                    accept: 'audio/mpeg',
-                };
-            }
+			try {
+				const postTextCommand = new PostTextCommand(params);
+				const data = await this.lexRuntimeServiceClient.send(postTextCommand);
+				this.reportBotStatus(data, botname);
+				return data;
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		} else {
+			if (message.options['messageType'] === 'voice') {
+				params = {
+					botAlias: this._config[botname].alias,
+					botName: botname,
+					contentType: 'audio/x-l16; sample-rate=16000',
+					inputStream: message.content,
+					userId: credentials.identityId,
+					accept: 'audio/mpeg',
+				};
+			} else {
+				params = {
+					botAlias: this._config[botname].alias,
+					botName: botname,
+					contentType: 'text/plain; charset=utf-8',
+					inputStream: message.content,
+					userId: credentials.identityId,
+					accept: 'audio/mpeg',
+				};
+			}
 
-            logger.debug('postContent to lex', message);
+			logger.debug('postContent to lex', message);
 
-            try {
-                const postContentCommand = new PostContentCommand(params);
-                const data = await this.lexRuntimeServiceClient.send(postContentCommand);
-                this.reportBotStatus(data, botname);
-                return data;
-            } catch (err) {
-                return Promise.reject(err);
-            }
-        }
-    }
+			try {
+				const postContentCommand = new PostContentCommand(params);
+				const data = await this.lexRuntimeServiceClient.send(
+					postContentCommand
+				);
+				this.reportBotStatus(data, botname);
+				return data;
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		}
+	}
 
-    onComplete(botname: string, callback) {
-        if (!this._config[botname]) {
-            throw new ErrorEvent('Bot ' + botname + ' does not exist');
-        }
-        this._botsCompleteCallback[botname] = callback;
-    }
+	onComplete(botname: string, callback) {
+		if (!this._config[botname]) {
+			throw new ErrorEvent('Bot ' + botname + ' does not exist');
+		}
+		this._botsCompleteCallback[botname] = callback;
+	}
 }
