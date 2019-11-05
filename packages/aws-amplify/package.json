@@ -16,21 +16,21 @@
     "build:esm": "node ./build es6",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
-    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
-  "homepage": "https://github.com/aws/aws-amplify#readme",
+  "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/analytics": "^1.2.25",
     "@aws-amplify/api": "^1.1.3",

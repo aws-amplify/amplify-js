@@ -35,7 +35,11 @@ const options = {
 	mandatorySignIn: false,
 };
 
-AWS.config.credentials = undefined;
+beforeAll(() => {
+	AWS.config.update({
+		credentials: null,
+	});
+});
 
 describe('Credentials test', () => {
 	describe('configure test', () => {
