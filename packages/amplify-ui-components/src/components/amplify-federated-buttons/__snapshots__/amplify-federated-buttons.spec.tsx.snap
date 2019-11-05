@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-federated-buttons stories renderNothingWithIncorrectAuthState 1`] = `null`;
+
+exports[`amplify-federated-buttons stories renderNothingWithNoFederatedProp 1`] = `null`;
+
+exports[`amplify-federated-buttons stories renderWithCorrectAuthState 1`] = `null`;
+
+exports[`amplify-federated-buttons stories renderWithCorrectAuthStateAndOnlyFacebookId 1`] = `null`;
+
+exports[`amplify-federated-buttons stories renderWithCorrectAuthStateAndOnlyGoogleId 1`] = `null`;
