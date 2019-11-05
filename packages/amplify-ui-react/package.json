@@ -1,0 +1,50 @@
+{
+	"name": "@aws-amplify/ui-react",
+	"sideEffects": false,
+	"version": "0.0.1",
+	"private": true,
+	"description": "React specific wrapper for @aws-amplify/ui-components",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js/"
+	},
+	"scripts": {
+		"build": "npm run clean && npm run compile",
+		"postinstall": "yarn relative-deps",
+		"clean": "rm -rf dist",
+		"compile": "npm run tsc",
+		"tsc": "tsc -p ."
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist/"
+	],
+	"devDependencies": {
+		"@testing-library/jest-dom": "^4.2.3",
+		"@types/jest": "24.0.21",
+		"@types/node": "^12.12.5",
+		"@types/react": "^16.7.6",
+		"@types/react-dom": "^16.0.9",
+		"jest": "24.9.0",
+		"react": "^16.7.0",
+		"react-dom": "^16.7.0",
+		"typescript": "^3.6.4"
+	},
+	"dependencies": {
+		"@aws-amplify/ui-components": "^0.0.1"
+	},
+	"peerDependencies": {
+		"react": "^16.7.0",
+		"react-dom": "^16.7.0"
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"setupTestFrameworkScriptFile": "<rootDir>/jest.setup.js",
+		"testPathIgnorePatterns": [
+			"node_modules",
+			"dist"
+		]
+	}
+}
