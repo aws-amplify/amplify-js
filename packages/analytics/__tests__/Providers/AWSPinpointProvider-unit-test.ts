@@ -160,10 +160,7 @@ let resolve = null;
 let reject = null;
 
 jest.mock('uuid', () => {
-	const mockfn = () => {
-		return 'uuid';
-	};
-	return { v1: mockfn };
+	return { v1: () => 'uuid' };
 });
 
 jest.mock('@aws-sdk/client-pinpoint-browser/PinpointClient');
@@ -418,7 +415,7 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_session.start', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
-				// expect(resolve).not.toBeCalled();
+				expect(resolve).not.toBeCalled();
 				expect(reject).toBeCalled();
 				spyon.mockClear();
 			});

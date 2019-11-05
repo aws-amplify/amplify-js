@@ -74,6 +74,7 @@ describe('Personalize provider test', () => {
 				});
 
 			expect(await analytics.record('params')).toBe(false);
+			expect(spyon).toHaveBeenCalledTimes(1);
 			spyon.mockClear();
 		});
 
