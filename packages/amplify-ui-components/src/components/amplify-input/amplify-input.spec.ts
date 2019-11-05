@@ -37,8 +37,9 @@ describe('amplify-input spec:', () => {
 
       let cmp = page.doc.createElement('amplify-input');
       (cmp as any).inputProps = {
-        required: true,
-        disabled: true,
+        autocomplete: "off",
+        min: "3",
+        max: "10",
       };
       page.root.appendChild(cmp);
       await page.waitForChanges();

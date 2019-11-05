@@ -14,7 +14,7 @@ exports[`amplify-input spec: Render logic -> renders with a name for the input 1
 
 exports[`amplify-input spec: Render logic -> renders with complex prop: inputProps spread on the input element 1`] = `
 <amplify-input>
-  <input class="amplify-ui--input css-g9dmxw" placeholder="" required="" type="text">
+  <input autocomplete="off" class="amplify-ui--input css-g9dmxw" max="10" min="3" placeholder="" type="text">
 </amplify-input>
 `;
 
