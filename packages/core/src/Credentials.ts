@@ -181,6 +181,13 @@ export class CredentialsClass {
 			);
 		}
 
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
+		}
+
 		let identityId = undefined;
 		try {
 			await this._storageSync;
@@ -245,6 +252,12 @@ export class CredentialsClass {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
+		}
 
 		// Removing the signature middleware and passing empty credentials and signer
 		// because https://github.com/aws/aws-sdk-js-v3/issues/354
@@ -271,6 +284,12 @@ export class CredentialsClass {
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
+		}
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
 		}
 		const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 		const logins = {};
