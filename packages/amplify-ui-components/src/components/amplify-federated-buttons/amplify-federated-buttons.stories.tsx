@@ -1,4 +1,4 @@
-import { h } from '../../common/jsx2dom';
+import { AmplifyFederatedButtons } from './amplify-federated-buttons';
 
 const handleStateChange = (...args) => {
   console.log('handleStateChange', ...args);
@@ -8,41 +8,62 @@ export default {
   title: 'amplify-federated-buttons',
 };
 
-export const renderWithCorrectAuthState = () => (
-  <amplify-federated-buttons
-    authState="signIn"
-    federated={{
-      google_client_id: 'google_client_id',
-      facebook_app_id: 'facebook_app_id',
-    }}
-    onStateChange={handleStateChange}
-  />
-);
+export const renderWithCorrectAuthState = () => {
+  const element = new AmplifyFederatedButtons();
 
-export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
-  <amplify-federated-buttons
-    authState="signIn"
-    federated={{
-      facebook_app_id: 'facebook_app_id',
-    }}
-    onStateChange={handleStateChange}
-  />
-);
+  element.authState = 'signIn';
+  element.federated = {
+    google_client_id: 'google_client_id',
+    facebook_app_id: 'facebook_app_id',
+  };
 
-export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
-  <amplify-federated-buttons
-    authState="signIn"
-    federated={{
-      google_client_id: 'google_client_id',
-    }}
-    onStateChange={handleStateChange}
-  />
-);
+  element.handleAuthStateChange = handleStateChange;
 
-export const renderNothingWithIncorrectAuthState = () => (
-  <amplify-federated-buttons authState="signedIn" federated={{}} onStateChange={handleStateChange} />
-);
+  return element;
+};
 
-export const renderNothingWithNoFederatedProp = () => (
-  <amplify-federated-buttons authState="signedIn" federated={undefined} onStateChange={handleStateChange} />
-);
+export const renderWithCorrectAuthStateAndOnlyFacebookId = () => {
+  const element = new AmplifyFederatedButtons();
+
+  element.authState = 'signIn';
+  element.federated = {
+    facebook_app_id: 'facebook_app_id',
+  };
+  element.handleAuthStateChange = handleStateChange;
+
+  return element;
+};
+
+export const renderWithCorrectAuthStateAndOnlyGoogleId = () => {
+  const element = new AmplifyFederatedButtons();
+
+  element.authState = 'signIn';
+  element.federated = {
+    google_client_id: 'google_client_id',
+  };
+  element.handleAuthStateChange = handleStateChange;
+
+  return element;
+};
+
+export const renderNothingWithIncorrectAuthState = () => {
+  const element = new AmplifyFederatedButtons();
+
+  // @ts-ignore intentionally setting invalid state
+  element.authState = 'someInvalidState';
+  element.federated = {};
+  element.handleAuthStateChange = handleStateChange;
+
+  return element;
+};
+
+export const renderNothingWithNoFederatedProp = () => {
+  const element = new AmplifyFederatedButtons();
+
+  // @ts-ignore intentionally setting invalid state
+  element.authState = 'someInvalidState';
+  element.federated = undefined;
+  element.handleAuthStateChange = handleStateChange;
+
+  return element;
+};
