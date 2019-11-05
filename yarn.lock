@@ -3002,7 +3002,7 @@
     memoizerific "^1.11.3"
     qs "^6.6.0"
 
-"@storybook/theming@5.2.5", "@storybook/theming@^5.2.5":
+"@storybook/theming@5.2.5":
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-5.2.5.tgz#9579e7944f61ded637d1d79be5fb859a617620f5"
   integrity sha512-PGZNYrRgAhXFJKnktFpyyKlaDXEhtTi5XPq5ASVJrsPW6l963Mk2EMKSm4TCTxIJhs0Kx4cv2MnNZFDqHf47eg==
