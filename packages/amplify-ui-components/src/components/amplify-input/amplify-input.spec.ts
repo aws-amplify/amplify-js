@@ -28,6 +28,23 @@ describe('amplify-input spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
+
+    it('renders with complex prop: inputProps spread on the input element', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyInput],
+        html: `<div></div>`,
+      });
+
+      let cmp = page.doc.createElement('amplify-input');
+      (cmp as any).inputProps = {
+        autocomplete: "off",
+        min: "3",
+        max: "10",
+      };
+      page.root.appendChild(cmp);
+      await page.waitForChanges();
+      expect(page.root).toMatchSnapshot();
+    });
   });
   describe('Component logic ->', () => {
     let input;

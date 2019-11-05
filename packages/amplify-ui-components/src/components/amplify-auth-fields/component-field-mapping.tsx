@@ -9,6 +9,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),
@@ -20,6 +21,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),
@@ -30,6 +32,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),
@@ -41,6 +44,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),
@@ -53,6 +57,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),
@@ -63,6 +68,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
+      inputProps={ff.inputProps}
       disabled={ff.disabled}
     />
   ),

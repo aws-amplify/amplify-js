@@ -35,6 +35,8 @@ export class AmplifyFormField {
   @Prop() name?: string;
   /** The value of the content inside of the input field */
   @Prop() value: string;
+  /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
+  @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
 
@@ -68,6 +70,7 @@ export class AmplifyFormField {
               overrideStyle={this.overrideStyle}
               name={this.name}
               value={this.value}
+              inputProps={this.inputProps}
               disabled={this.disabled}
             />
           </slot>
