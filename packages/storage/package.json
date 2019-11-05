@@ -31,9 +31,6 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "typescript": "^3.2.2"
-  },
   "dependencies": {
     "@aws-amplify/core": "^1.2.4"
   },
