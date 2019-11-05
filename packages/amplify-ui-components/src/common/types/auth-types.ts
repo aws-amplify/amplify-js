@@ -1,3 +1,5 @@
+// TODO: Move these values to or extract them from the Cognito Provider in the Auth category for Auth V2
+
 export enum AuthState {
   SignUp = 'signup',
   SignOut = 'signout',
@@ -43,4 +45,18 @@ export interface CognitoUserInterface {
     userSub?: string;
   };
   username?: string;
+}
+
+export enum MfaOption {
+  TOTP = 'TOTP',
+  SMS = 'SMS',
+  NOMFA = 'NOMFA',
+}
+
+export enum ChallengeName {
+  SoftwareTokenMFA = 'SOFTWARE_TOKEN_MFA',
+  SMSMFA = 'SMS_MFA',
+  NewPasswordRequired = 'NEW_PASSWORD_REQUIRED',
+  MFASetup = 'MFA_SETUP',
+  CustomChallenge = 'CUSTOM_CHALLENGE',
 }

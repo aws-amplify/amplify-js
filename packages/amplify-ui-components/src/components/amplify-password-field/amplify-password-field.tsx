@@ -20,6 +20,8 @@ export class AmplifyPasswordField {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** The value of the content inside of the input field */
   @Prop() value?: string;
+  /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
+  @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
 
@@ -34,6 +36,7 @@ export class AmplifyPasswordField {
         required={this.required}
         handleInputChange={this.handleInputChange}
         value={this.value}
+        inputProps={this.inputProps}
         disabled={this.disabled}
       />
     );

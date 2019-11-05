@@ -42,6 +42,8 @@ export class AmplifyAuthenticator {
         return <div>Loading...</div>;
       case AuthState.SignIn:
         return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
+      case AuthState.ConfirmSignIn:
+        return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.SignOut:
         // TODO: add sign out component
         return <div>Sign Out Component</div>;
