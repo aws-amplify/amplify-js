@@ -130,6 +130,40 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyConfirmSignIn {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when confirm sign in form is submitted
+    */
+    'handleSubmit': (Event) => void;
+    /**
+    * Used for header text in confirm sign in component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in confirm sign in component
+    */
+    'submitButtonText': string;
+    /**
+    * Cognito user signing in
+    */
+    'user': CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
+  }
   interface AmplifyConfirmSignUp {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -487,6 +521,9 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
@@ -631,6 +668,12 @@ declare global {
   var HTMLAmplifyCodeFieldElement: {
     prototype: HTMLAmplifyCodeFieldElement;
     new (): HTMLAmplifyCodeFieldElement;
+  };
+
+  interface HTMLAmplifyConfirmSignInElement extends Components.AmplifyConfirmSignIn, HTMLStencilElement {}
+  var HTMLAmplifyConfirmSignInElement: {
+    prototype: HTMLAmplifyConfirmSignInElement;
+    new (): HTMLAmplifyConfirmSignInElement;
   };
 
   interface HTMLAmplifyConfirmSignUpElement extends Components.AmplifyConfirmSignUp, HTMLStencilElement {}
@@ -782,6 +825,7 @@ declare global {
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-confirm-sign-in': HTMLAmplifyConfirmSignInElement;
     'amplify-confirm-sign-up': HTMLAmplifyConfirmSignUpElement;
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
@@ -903,6 +947,40 @@ declare namespace LocalJSX {
     * The value of the content inside of the input field
     */
     'value'?: string;
+  }
+  interface AmplifyConfirmSignIn {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when confirm sign in form is submitted
+    */
+    'handleSubmit'?: (Event) => void;
+    /**
+    * Used for header text in confirm sign in component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in confirm sign in component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Cognito user signing in
+    */
+    'user'?: CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
   }
   interface AmplifyConfirmSignUp {
     /**
@@ -1261,6 +1339,9 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
@@ -1380,6 +1461,7 @@ declare namespace LocalJSX {
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-code-field': AmplifyCodeField;
+    'amplify-confirm-sign-in': AmplifyConfirmSignIn;
     'amplify-confirm-sign-up': AmplifyConfirmSignUp;
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
@@ -1418,6 +1500,7 @@ declare module "@stencil/core" {
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
       'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
+      'amplify-confirm-sign-in': LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
       'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
