@@ -9,6 +9,7 @@
 
 | Property                | Attribute            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Type                                                | Default                       |
 | ----------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------------------------- |
+| `federated`             | `federated`          | Federated credentials & configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `any`                                               | `{}`                          |
 | `formFields`            | --                   | Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'\|'password'\|'email'\|'code'\|'default',     label: string,     placeholder: string,     hint: string \| Functional Component \| null,     required: boolean   } ] ``` | `FormFieldTypes \| string[]`                        | `undefined`                   |
 | `handleAuthStateChange` | --                   | Passed from the Authenticatior component in order to change Authentication state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `(nextAuthState: AuthState, data?: object) => void` | `undefined`                   |
 | `handleSubmit`          | --                   | Fires when sign in form is submitted                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `(Event: any) => void`                              | `event => this.signIn(event)` |
@@ -28,6 +29,7 @@
 
 - [amplify-link](../amplify-link)
 - [amplify-form-section](../amplify-form-section)
+- [amplify-federated-buttons](../amplify-federated-buttons)
 - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Graph
@@ -35,9 +37,21 @@
 graph TD;
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
+  amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-auth-fields
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-federated-buttons --> amplify-google-button
+  amplify-federated-buttons --> amplify-facebook-button
+  amplify-federated-buttons --> amplify-amazon-button
+  amplify-federated-buttons --> amplify-oauth-button
+  amplify-federated-buttons --> amplify-auth0-button
+  amplify-federated-buttons --> amplify-strike
+  amplify-google-button --> amplify-sign-in-button
+  amplify-facebook-button --> amplify-sign-in-button
+  amplify-amazon-button --> amplify-sign-in-button
+  amplify-oauth-button --> amplify-sign-in-button
+  amplify-auth0-button --> amplify-sign-in-button
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
