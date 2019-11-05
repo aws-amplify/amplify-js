@@ -8,7 +8,8 @@ export interface FormFieldType {
   required?: boolean;
   handleInputChange?: (inputEvent: Event) => void;
   value?: string;
+  inputProps?: object;
   disabled?: boolean;
 }
 
-export interface FormFieldTypes extends Array<FormFieldType> {}
+export interface FormFieldTypes extends Array<FormFieldType> { }

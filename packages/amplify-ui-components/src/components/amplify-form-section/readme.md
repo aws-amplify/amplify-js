@@ -21,6 +21,7 @@
 
 ### Used by
 
+ - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
  - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
@@ -36,6 +37,7 @@
 graph TD;
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-confirm-sign-in --> amplify-form-section
   amplify-confirm-sign-up --> amplify-form-section
   amplify-forgot-password --> amplify-form-section
   amplify-sign-in --> amplify-form-section

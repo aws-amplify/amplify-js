@@ -110,6 +110,10 @@ export namespace Components {
     */
     'hint': string | FunctionalComponent | null;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * Used for the code label
     */
     'label': string;
@@ -124,7 +128,41 @@ export namespace Components {
     /**
     * The value of the content inside of the input field
     */
-    'value': string;
+    'value'?: string;
+  }
+  interface AmplifyConfirmSignIn {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when confirm sign in form is submitted
+    */
+    'handleSubmit': (Event) => void;
+    /**
+    * Used for header text in confirm sign in component
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the submit button text in confirm sign in component
+    */
+    'submitButtonText': string;
+    /**
+    * Cognito user signing in
+    */
+    'user': CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors': string;
   }
   interface AmplifyConfirmSignUp {
     /**
@@ -183,6 +221,10 @@ export namespace Components {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * Used for the EMAIL label
     */
@@ -252,6 +294,10 @@ export namespace Components {
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
     'hint': string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * The text of the label.  Goes above the input. Ex: 'First name'
     */
@@ -344,6 +390,10 @@ export namespace Components {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
@@ -389,6 +439,10 @@ export namespace Components {
     * Used as the hint in case you forgot your password, etc.
     */
     'hint': string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * Used for the password label
     */
@@ -467,6 +521,9 @@ export namespace Components {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
@@ -555,6 +612,10 @@ export namespace Components {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * Used for the username label
     */
     'label': string;
@@ -580,175 +641,181 @@ declare global {
 
 
   interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {}
-  const HTMLAmplifyAuthFieldsElement: {
+  var HTMLAmplifyAuthFieldsElement: {
     prototype: HTMLAmplifyAuthFieldsElement;
     new (): HTMLAmplifyAuthFieldsElement;
   };
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
-  const HTMLAmplifyAuthenticatorElement: {
+  var HTMLAmplifyAuthenticatorElement: {
     prototype: HTMLAmplifyAuthenticatorElement;
     new (): HTMLAmplifyAuthenticatorElement;
   };
 
   interface HTMLAmplifyButtonElement extends Components.AmplifyButton, HTMLStencilElement {}
-  const HTMLAmplifyButtonElement: {
+  var HTMLAmplifyButtonElement: {
     prototype: HTMLAmplifyButtonElement;
     new (): HTMLAmplifyButtonElement;
   };
 
   interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {}
-  const HTMLAmplifyCheckboxElement: {
+  var HTMLAmplifyCheckboxElement: {
     prototype: HTMLAmplifyCheckboxElement;
     new (): HTMLAmplifyCheckboxElement;
   };
 
   interface HTMLAmplifyCodeFieldElement extends Components.AmplifyCodeField, HTMLStencilElement {}
-  const HTMLAmplifyCodeFieldElement: {
+  var HTMLAmplifyCodeFieldElement: {
     prototype: HTMLAmplifyCodeFieldElement;
     new (): HTMLAmplifyCodeFieldElement;
   };
 
+  interface HTMLAmplifyConfirmSignInElement extends Components.AmplifyConfirmSignIn, HTMLStencilElement {}
+  var HTMLAmplifyConfirmSignInElement: {
+    prototype: HTMLAmplifyConfirmSignInElement;
+    new (): HTMLAmplifyConfirmSignInElement;
+  };
+
   interface HTMLAmplifyConfirmSignUpElement extends Components.AmplifyConfirmSignUp, HTMLStencilElement {}
-  const HTMLAmplifyConfirmSignUpElement: {
+  var HTMLAmplifyConfirmSignUpElement: {
     prototype: HTMLAmplifyConfirmSignUpElement;
     new (): HTMLAmplifyConfirmSignUpElement;
   };
 
   interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {}
-  const HTMLAmplifyCountryDialCodeElement: {
+  var HTMLAmplifyCountryDialCodeElement: {
     prototype: HTMLAmplifyCountryDialCodeElement;
     new (): HTMLAmplifyCountryDialCodeElement;
   };
 
   interface HTMLAmplifyEmailFieldElement extends Components.AmplifyEmailField, HTMLStencilElement {}
-  const HTMLAmplifyEmailFieldElement: {
+  var HTMLAmplifyEmailFieldElement: {
     prototype: HTMLAmplifyEmailFieldElement;
     new (): HTMLAmplifyEmailFieldElement;
   };
 
   interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {}
-  const HTMLAmplifyExamplesElement: {
+  var HTMLAmplifyExamplesElement: {
     prototype: HTMLAmplifyExamplesElement;
     new (): HTMLAmplifyExamplesElement;
   };
 
   interface HTMLAmplifyForgotPasswordElement extends Components.AmplifyForgotPassword, HTMLStencilElement {}
-  const HTMLAmplifyForgotPasswordElement: {
+  var HTMLAmplifyForgotPasswordElement: {
     prototype: HTMLAmplifyForgotPasswordElement;
     new (): HTMLAmplifyForgotPasswordElement;
   };
 
   interface HTMLAmplifyFormFieldElement extends Components.AmplifyFormField, HTMLStencilElement {}
-  const HTMLAmplifyFormFieldElement: {
+  var HTMLAmplifyFormFieldElement: {
     prototype: HTMLAmplifyFormFieldElement;
     new (): HTMLAmplifyFormFieldElement;
   };
 
   interface HTMLAmplifyFormSectionElement extends Components.AmplifyFormSection, HTMLStencilElement {}
-  const HTMLAmplifyFormSectionElement: {
+  var HTMLAmplifyFormSectionElement: {
     prototype: HTMLAmplifyFormSectionElement;
     new (): HTMLAmplifyFormSectionElement;
   };
 
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
-  const HTMLAmplifyHintElement: {
+  var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
     new (): HTMLAmplifyHintElement;
   };
 
   interface HTMLAmplifyIconElement extends Components.AmplifyIcon, HTMLStencilElement {}
-  const HTMLAmplifyIconElement: {
+  var HTMLAmplifyIconElement: {
     prototype: HTMLAmplifyIconElement;
     new (): HTMLAmplifyIconElement;
   };
 
   interface HTMLAmplifyIconButtonElement extends Components.AmplifyIconButton, HTMLStencilElement {}
-  const HTMLAmplifyIconButtonElement: {
+  var HTMLAmplifyIconButtonElement: {
     prototype: HTMLAmplifyIconButtonElement;
     new (): HTMLAmplifyIconButtonElement;
   };
 
   interface HTMLAmplifyInputElement extends Components.AmplifyInput, HTMLStencilElement {}
-  const HTMLAmplifyInputElement: {
+  var HTMLAmplifyInputElement: {
     prototype: HTMLAmplifyInputElement;
     new (): HTMLAmplifyInputElement;
   };
 
   interface HTMLAmplifyLabelElement extends Components.AmplifyLabel, HTMLStencilElement {}
-  const HTMLAmplifyLabelElement: {
+  var HTMLAmplifyLabelElement: {
     prototype: HTMLAmplifyLabelElement;
     new (): HTMLAmplifyLabelElement;
   };
 
   interface HTMLAmplifyLinkElement extends Components.AmplifyLink, HTMLStencilElement {}
-  const HTMLAmplifyLinkElement: {
+  var HTMLAmplifyLinkElement: {
     prototype: HTMLAmplifyLinkElement;
     new (): HTMLAmplifyLinkElement;
   };
 
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
-  const HTMLAmplifyPasswordFieldElement: {
+  var HTMLAmplifyPasswordFieldElement: {
     prototype: HTMLAmplifyPasswordFieldElement;
     new (): HTMLAmplifyPasswordFieldElement;
   };
 
   interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
-  const HTMLAmplifyRadioButtonElement: {
+  var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
     new (): HTMLAmplifyRadioButtonElement;
   };
 
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
-  const HTMLAmplifySceneElement: {
+  var HTMLAmplifySceneElement: {
     prototype: HTMLAmplifySceneElement;
     new (): HTMLAmplifySceneElement;
   };
 
   interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {}
-  const HTMLAmplifySceneLoadingElement: {
+  var HTMLAmplifySceneLoadingElement: {
     prototype: HTMLAmplifySceneLoadingElement;
     new (): HTMLAmplifySceneLoadingElement;
   };
 
   interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {}
-  const HTMLAmplifySectionElement: {
+  var HTMLAmplifySectionElement: {
     prototype: HTMLAmplifySectionElement;
     new (): HTMLAmplifySectionElement;
   };
 
   interface HTMLAmplifySelectElement extends Components.AmplifySelect, HTMLStencilElement {}
-  const HTMLAmplifySelectElement: {
+  var HTMLAmplifySelectElement: {
     prototype: HTMLAmplifySelectElement;
     new (): HTMLAmplifySelectElement;
   };
 
   interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
-  const HTMLAmplifySignInElement: {
+  var HTMLAmplifySignInElement: {
     prototype: HTMLAmplifySignInElement;
     new (): HTMLAmplifySignInElement;
   };
 
   interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
-  const HTMLAmplifySignUpElement: {
+  var HTMLAmplifySignUpElement: {
     prototype: HTMLAmplifySignUpElement;
     new (): HTMLAmplifySignUpElement;
   };
 
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
-  const HTMLAmplifyTooltipElement: {
+  var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
     new (): HTMLAmplifyTooltipElement;
   };
 
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
-  const HTMLAmplifyUsernameFieldElement: {
+  var HTMLAmplifyUsernameFieldElement: {
     prototype: HTMLAmplifyUsernameFieldElement;
     new (): HTMLAmplifyUsernameFieldElement;
   };
 
   interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {}
-  const HTMLRockPaperScissorElement: {
+  var HTMLRockPaperScissorElement: {
     prototype: HTMLRockPaperScissorElement;
     new (): HTMLRockPaperScissorElement;
   };
@@ -758,6 +825,7 @@ declare global {
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
     'amplify-code-field': HTMLAmplifyCodeFieldElement;
+    'amplify-confirm-sign-in': HTMLAmplifyConfirmSignInElement;
     'amplify-confirm-sign-up': HTMLAmplifyConfirmSignUpElement;
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
@@ -860,6 +928,10 @@ declare namespace LocalJSX {
     */
     'hint'?: string | FunctionalComponent | null;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * Used for the code label
     */
     'label'?: string;
@@ -875,6 +947,40 @@ declare namespace LocalJSX {
     * The value of the content inside of the input field
     */
     'value'?: string;
+  }
+  interface AmplifyConfirmSignIn {
+    /**
+    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+    */
+    'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Fires when confirm sign in form is submitted
+    */
+    'handleSubmit'?: (Event) => void;
+    /**
+    * Used for header text in confirm sign in component
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the submit button text in confirm sign in component
+    */
+    'submitButtonText'?: string;
+    /**
+    * Cognito user signing in
+    */
+    'user'?: CognitoUserInterface;
+    /**
+    * Engages when invalid actions occur, such as missing field, etc.
+    */
+    'validationErrors'?: string;
   }
   interface AmplifyConfirmSignUp {
     /**
@@ -933,6 +1039,10 @@ declare namespace LocalJSX {
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * Used for the EMAIL label
     */
@@ -1002,6 +1112,10 @@ declare namespace LocalJSX {
     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
     */
     'hint'?: string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * The text of the label.  Goes above the input. Ex: 'First name'
     */
@@ -1094,6 +1208,10 @@ declare namespace LocalJSX {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * (Optional) String value for the name of the input.
     */
     'name'?: string;
@@ -1139,6 +1257,10 @@ declare namespace LocalJSX {
     * Used as the hint in case you forgot your password, etc.
     */
     'hint'?: string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
     /**
     * Used for the password label
     */
@@ -1217,6 +1339,9 @@ declare namespace LocalJSX {
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
     * Fires when sign in form is submitted
@@ -1305,6 +1430,10 @@ declare namespace LocalJSX {
     */
     'handleInputChange'?: (inputEvent: Event) => void;
     /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
     * Used for the username label
     */
     'label'?: string;
@@ -1332,6 +1461,7 @@ declare namespace LocalJSX {
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
     'amplify-code-field': AmplifyCodeField;
+    'amplify-confirm-sign-in': AmplifyConfirmSignIn;
     'amplify-confirm-sign-up': AmplifyConfirmSignUp;
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
@@ -1370,6 +1500,7 @@ declare module "@stencil/core" {
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
       'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
+      'amplify-confirm-sign-in': LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
       'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
