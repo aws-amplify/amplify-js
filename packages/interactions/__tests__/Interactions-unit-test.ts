@@ -84,7 +84,7 @@ class AWSLexProviderWrong extends AbstractInteractionsProvider {
 	}
 
 	sendMessage(message: string | Object): Promise<Object> {
-		return new Promise(async (res, rej) => { });
+		return new Promise(async (res, rej) => {});
 	}
 
 	async onComplete() {
@@ -735,7 +735,7 @@ describe('Interactions', () => {
 				});
 
 				try {
-					await interactions.onComplete('BookTrip', () => { });
+					await interactions.onComplete('BookTrip', () => {});
 				} catch (err) {
 					expect(err.message).toEqual('Bot BookTrip does not exist');
 				}

@@ -224,8 +224,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
-	private async _send(params, handlers) {
-		const { event } = params;
+	private _send(params, handlers) {
+		const { event, config } = params;
 
 		switch (event.name) {
 			case '_update_endpoint':

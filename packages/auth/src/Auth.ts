@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
  *
- *     http://aws.amazon.com/apache2.0/
+ *	 http://aws.amazon.com/apache2.0/
  *
  * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
@@ -33,7 +33,6 @@ import {
 
 import {
 	Amplify,
-	AWS,
 	ConsoleLogger as Logger,
 	Constants,
 	Hub,
@@ -41,7 +40,7 @@ import {
 	StorageHelper,
 	ICredentials,
 	Parser,
-	isEmpty,
+	JS,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -105,12 +104,6 @@ export class AuthClass {
 		this.configure(config);
 
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
-
-		if (AWS.config) {
-			AWS.config.update({ customUserAgent: Constants.userAgent });
-		} else {
-			logger.warn('No AWS.config');
-		}
 
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
@@ -1677,7 +1670,7 @@ export class AuthClass {
 			try {
 				const loggedInUser = await this.currentAuthenticatedUser();
 				logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
-                You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
+				You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
 			} catch (e) {}
 
 			const { token, identity_id, expires_at } = response;
@@ -1749,14 +1742,16 @@ export class AuthClass {
 				}
 
 				/* 
-                Prior to the request we do sign the custom state along with the state we set. This check will verify
-                if there is a dash indicated when setting custom state from the request. If a dash is contained
-                then there is custom state present on the state string.
-                */
+				Prior to the request we do sign the custom state along with the state we set. This check will verify
+				if there is a dash indicated when setting custom state from the request. If a dash is contained
+				then there is custom state present on the state string.
+				*/
 				const isCustomStateIncluded = /-/.test(state);
 
-				/*The following is to create a user for the Cognito Identity SDK to store the tokens
-                  When we remove this SDK later that logic will have to be centralized in our new version*/
+				/*
+				The following is to create a user for the Cognito Identity SDK to store the tokens
+				When we remove this SDK later that logic will have to be centralized in our new version
+				*/
 				//#region
 				const currentUser = this.createCognitoUser(
 					session.getIdToken().decodePayload()['cognito:username']

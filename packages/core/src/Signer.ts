@@ -12,28 +12,26 @@
  */
 
 import { ConsoleLogger as Logger } from './Logger';
-import { AWS } from './Facet';
+import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { toHex } from '@aws-sdk/util-hex-encoding';
 import { parse, format } from 'url';
 
 const logger = new Logger('Signer');
-const crypto = AWS['util'].crypto;
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 
-const encrypt = function(key, src, encoding?) {
-	return crypto.lib
-		.createHmac('sha256', key)
-		.update(src, 'utf8')
-		.digest(encoding);
+const encrypt = function(key, src) {
+	const hash = new jsSha256(key);
+	hash.update(src, 'utf8');
+	return hash.digestSync();
 };
 
 const hash = function(src) {
 	const arg = src || '';
-	return crypto
-		.createHash('sha256')
-		.update(arg, 'utf8')
-		.digest('hex');
+	const hash = new jsSha256();
+	hash.update(arg, 'utf8');
+	return toHex(hash.digestSync());
 };
 
 /**
@@ -228,7 +226,7 @@ const get_signing_key = function(secret_key, d_str, service_info) {
 };
 
 const get_signature = function(signing_key, str_to_sign) {
-	return encrypt(signing_key, str_to_sign, 'hex');
+	return toHex(encrypt(signing_key, str_to_sign));
 };
 
 /**
@@ -250,13 +248,6 @@ const get_authorization_header = function(
 		'Signature=' + signature,
 	].join(', ');
 };
-
-/**
- * AWS request signer.
- * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
- *
- * @class Signer
- */
 
 export class Signer {
 	/**

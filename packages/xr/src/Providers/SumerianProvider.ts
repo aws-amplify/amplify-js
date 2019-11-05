@@ -141,7 +141,7 @@ export class SumerianProvider extends AbstractXRProvider {
 				region: sceneRegion,
 				service: SUMERIAN_SERVICE_NAME,
 			};
-			const request = await Signer.sign(
+			const request = Signer.sign(
 				{ method: 'GET', url: sceneUrl },
 				accessInfo,
 				serviceInfo

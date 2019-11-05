@@ -11,12 +11,9 @@
  * and limitations under the License.
  */
 
-import { AWS } from './Facet';
-import { ConsoleLogger as Logger } from './Logger';
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
-export * from './Facet';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export * from './Errors';
@@ -31,7 +28,7 @@ export { Credentials } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
-export { Platform } from './Platform';
+export { Platform, appendAmplifyUserAgent } from './Platform';
 export * from './constants';
 
 export const Constants = {
@@ -43,15 +40,3 @@ export { Amplify };
  * @deprecated use named import
  */
 export default Amplify;
-
-const logger = new Logger('Core');
-
-if (AWS['util']) {
-	AWS['util'].userAgent = () => {
-		return Constants.userAgent;
-	};
-} else if (AWS.config) {
-	AWS.config.update({ customUserAgent: Constants.userAgent });
-} else {
-	logger.warn('No AWS.config');
-}

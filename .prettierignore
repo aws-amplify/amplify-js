@@ -1,5 +1,8 @@
 node_modules
 dist
+docs
+vscode
+.circleci
 package.json
 yarn.lock
 package-lock.json
