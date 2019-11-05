@@ -43,8 +43,8 @@ export class AmplifyInput {
         name={this.name}
         class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
         value={this.value}
-        {...this.inputProps}
         disabled={this.disabled}
+        {...this.inputProps}
       />
     );
   }
