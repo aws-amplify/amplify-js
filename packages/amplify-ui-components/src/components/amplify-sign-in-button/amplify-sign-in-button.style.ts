@@ -8,7 +8,7 @@ export const Host = css`
     margin-bottom: 10px;
     cursor: pointer;
     padding: 0;
-    color: var(--deepSquidInk);
+    color: var(--deep-squid-ink);
     font-size: 14px;
     box-sizing: content-box;
 
@@ -18,7 +18,7 @@ export const Host = css`
   }
 
   &.amazon button {
-    background-color: var(--amazonOrange);
+    background-color: var(--amazon-orange);
     border: none;
     color: var(--white);
     font-family: 'Amazon Ember';
@@ -47,7 +47,7 @@ export const Host = css`
 
   &.oauth button {
     background-color: var(--white);
-    color: var(--deepSquidInk);
+    color: var(--deep-squid-ink);
   }
 
   .icon {
