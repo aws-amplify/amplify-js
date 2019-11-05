@@ -1,7 +1,5 @@
 import * as knobs from '@storybook/addon-knobs';
 
-import { AmplifyAuthenticator } from './amplify-authenticator';
-
 export default {
   title: 'amplify-authenticator',
 };
@@ -9,7 +7,7 @@ export default {
 export const defaults = () => `<amplify-authenticator />`;
 
 export const withFederated = () => {
-  const element = new AmplifyAuthenticator();
+  const element = document.createElement('amplify-authenticator');
 
   element.federated = {
     amazon_client_id: knobs.text('Amazon client ID', 'amazon_client_id'),

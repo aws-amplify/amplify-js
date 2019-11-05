@@ -1,5 +1,3 @@
-import { AmplifyFederatedButtons } from './amplify-federated-buttons';
-
 const handleStateChange = (...args) => {
   console.log('handleStateChange', ...args);
 };
@@ -9,7 +7,7 @@ export default {
 };
 
 export const renderWithCorrectAuthState = () => {
-  const element = new AmplifyFederatedButtons();
+  const element = document.createElement('amplify-federated-buttons');
 
   element.authState = 'signIn';
   element.federated = {
@@ -23,7 +21,7 @@ export const renderWithCorrectAuthState = () => {
 };
 
 export const renderWithCorrectAuthStateAndOnlyFacebookId = () => {
-  const element = new AmplifyFederatedButtons();
+  const element = document.createElement('amplify-federated-buttons');
 
   element.authState = 'signIn';
   element.federated = {
@@ -35,7 +33,7 @@ export const renderWithCorrectAuthStateAndOnlyFacebookId = () => {
 };
 
 export const renderWithCorrectAuthStateAndOnlyGoogleId = () => {
-  const element = new AmplifyFederatedButtons();
+  const element = document.createElement('amplify-federated-buttons');
 
   element.authState = 'signIn';
   element.federated = {
@@ -47,7 +45,7 @@ export const renderWithCorrectAuthStateAndOnlyGoogleId = () => {
 };
 
 export const renderNothingWithIncorrectAuthState = () => {
-  const element = new AmplifyFederatedButtons();
+  const element = document.createElement('amplify-federated-buttons');
 
   // @ts-ignore intentionally setting invalid state
   element.authState = 'someInvalidState';
@@ -58,7 +56,7 @@ export const renderNothingWithIncorrectAuthState = () => {
 };
 
 export const renderNothingWithNoFederatedProp = () => {
-  const element = new AmplifyFederatedButtons();
+  const element = document.createElement('amplify-federated-buttons');
 
   // @ts-ignore intentionally setting invalid state
   element.authState = 'someInvalidState';

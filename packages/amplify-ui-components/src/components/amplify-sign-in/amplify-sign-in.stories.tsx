@@ -1,13 +1,11 @@
 import * as knobs from '@storybook/addon-knobs';
 
-import { AmplifySignIn } from './amplify-sign-in';
-
 export default {
   title: 'amplify-sign-in',
 };
 
 export const withOverrideStyle = () => {
-  const element = new AmplifySignIn();
+  const element = document.createElement('amplify-sign-in');
 
   element.overrideStyle = knobs.boolean('Override style', false);
 
@@ -15,7 +13,7 @@ export const withOverrideStyle = () => {
 };
 
 export const withFederated = () => {
-  const element = new AmplifySignIn();
+  const element = document.createElement('amplify-sign-in');
 
   element.federated = {
     amazon_client_id: knobs.text('Amazon client ID', 'amazon_client_id'),
