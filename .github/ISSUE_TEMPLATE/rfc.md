@@ -8,17 +8,30 @@ assignees: ''
 
 _This issue is a Request For Comments (RFC). It is intended to elicit community feedback regarding a proposed change to the library. Please feel free to post comments or questions here._
 
-## Purpose
+## Summary
 
 <!-- In one or two sentences, why should this change exist? -->
 
-## The Problem
+## Basic Example
 
-<!-- Using code, references, or issues, illustrate the problem that exists today. -->
+<!-- If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable) -->
 
-## Proposed Solution
+## Motivation
 
-<!-- Illustrate the changes you would like to see. Code samples & rationale for changes help! -->
+<!-- Why is this RFC needed? What will happen if accepted? And what would happen if it *isn't* accepted? -->
+
+## Detailed Design
+
+<!-- Provide enough detail on *how* this should be implemented such that someone other than yourself could build it. -->
+<!-- Include examples of how the implementation is used -->
+
+## Drawbacks
+
+- <!-- Is this a breaking change? Days/Weeks/Months to implement? Will it require extensive documentation & examples? -->
+
+## Adoption Strategy
+
+- <!-- What supporting efforts will be needed (e.g. documentation, tests, tutorials, public outreach, etc.)? -->
 
 ## Related Issues
 
