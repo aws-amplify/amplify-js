@@ -21,6 +21,9 @@ const packageInfo = require(packageJsonPath);
 const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
 const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 
+const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
+const es6TsBuildInfoFilePath = path.join(pkgTscES6OutDir, '.tsbuildinfo');
+
 async function buildRollUp() {
 	console.log(`Building Roll up bundle file under ${pkgRootPath}`);
 	const rollup = require('rollup');
@@ -63,7 +66,13 @@ async function buildRollUp() {
 	}
 }
 
-function tsc(fileNames, options) {
+const formatHost = {
+	getCanonicalFileName: path => path,
+	getCurrentDirectory: ts.sys.getCurrentDirectory,
+	getNewLine: () => ts.sys.newLine,
+};
+
+function runTypeScriptWithoutWatchMode(fileNames, options) {
 	let program = ts.createProgram(fileNames, options);
 	let emitResult = program.emit();
 
@@ -85,7 +94,10 @@ function tsc(fileNames, options) {
 			);
 		} else {
 			console.log(
-				`${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`
+				`${ts.flattenDiagnosticMessageText(
+					diagnostic.messageText,
+					formatHost.getNewLine()
+				)}`
 			);
 		}
 	});
@@ -95,7 +107,46 @@ function tsc(fileNames, options) {
 	process.exit(exitCode);
 }
 
-async function buildES5() {
+function runTypeScriptWithWatchMode(fileNames, options) {
+	// https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API#writing-an-incremental-program-watcher
+	const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
+
+	const host = ts.createWatchCompilerHost(
+		fileNames,
+		options,
+		ts.sys,
+		createProgram,
+		reportErrorDiagnostic,
+		reportWatchStatusChanged,
+		null
+	);
+
+	// `createWatchProgram` creates an initial program, watches files, and updates
+	// the program over time.
+	ts.createWatchProgram(host);
+}
+
+function reportErrorDiagnostic(diagnostic) {
+	console.error(
+		'Error',
+		diagnostic.code,
+		':',
+		ts.flattenDiagnosticMessageText(
+			diagnostic.messageText,
+			formatHost.getNewLine()
+		)
+	);
+}
+
+/**
+ * Prints a diagnostic every time the watch status changes.
+ * This is mainly for messages like "Starting compilation" or "Compilation completed".
+ */
+function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
+	console.info(ts.formatDiagnostic(diagnostic, formatHost));
+}
+
+async function buildES5(typeScriptCompiler) {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
@@ -108,6 +159,8 @@ async function buildES5() {
 		moduleResolution: 'node',
 		declaration: true,
 		noEmitOnError: true,
+		incremental: true,
+		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
 		types: ['node'],
@@ -116,8 +169,8 @@ async function buildES5() {
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
-	console.log(`Using the typescript compiler options:`);
-	console.log(compilerOptions);
+	console.debug(`Using the typescript compiler options:`);
+	console.debug(compilerOptions);
 
 	let fileList = [];
 	Promise.all(
@@ -126,13 +179,13 @@ async function buildES5() {
 			return (fileList = fileList.concat(list));
 		})
 	).then(() => {
-		console.log('Files to be transpiled by tsc:');
-		console.log(fileList);
-		tsc(fileList, compilerOptions.options);
+		console.debug('Files to be transpiled by tsc:');
+		console.debug(fileList);
+		typeScriptCompiler(fileList, compilerOptions.options);
 	});
 }
 
-function buildES6() {
+function buildES6(typeScriptCompiler) {
 	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
 	// tsconfig for ESM generating
 	let compilerOptions = {
@@ -145,6 +198,8 @@ function buildES6() {
 		moduleResolution: 'node',
 		declaration: true,
 		noEmitOnError: true,
+		incremental: true,
+		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
 		types: ['node'],
@@ -153,8 +208,8 @@ function buildES6() {
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
-	console.log(`Using the typescript compiler options:`);
-	console.log(compilerOptions);
+	console.debug(`Using the typescript compiler options:`);
+	console.debug(compilerOptions);
 
 	let fileList = [];
 	Promise.all(
@@ -163,16 +218,20 @@ function buildES6() {
 			return (fileList = fileList.concat(list));
 		})
 	).then(() => {
-		console.log('Files to be transpiled by tsc:');
-		console.log(fileList);
-		tsc(fileList, compilerOptions.options);
+		console.debug('Files to be transpiled by tsc:');
+		console.debug(fileList);
+		typeScriptCompiler(fileList, compilerOptions.options);
 	});
 }
 
-function build(type) {
+function build(type, watchMode) {
 	if (type === 'rollup') buildRollUp();
-	if (type === 'es5') buildES5();
-	if (type === 'es6') buildES6();
+
+	var typeScriptCompiler = watchMode
+		? runTypeScriptWithWatchMode
+		: runTypeScriptWithoutWatchMode;
+	if (type === 'es5') buildES5(typeScriptCompiler);
+	if (type === 'es6') buildES6(typeScriptCompiler);
 }
 
 module.exports = build;
