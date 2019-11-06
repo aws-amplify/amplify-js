@@ -2,7 +2,7 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Listen, Prop } from '@stencil/core';
 
-import { AUTH_SOURCE_KEY } from '../../common/constants';
+import { AUTH_SOURCE_KEY, SIGN_IN_WITH_AMAZON } from '../../common/constants';
 import { AuthState } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-amazon-button');
@@ -91,7 +91,7 @@ export class AmplifyAmazonButton {
           </g>
         </svg>
 
-        {I18n.get('Sign In with Amazon')}
+        {I18n.get(SIGN_IN_WITH_AMAZON)}
       </amplify-sign-in-button>
     );
   }

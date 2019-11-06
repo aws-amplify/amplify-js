@@ -2,7 +2,7 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
-import { AUTH_SOURCE_KEY } from '../../common/constants';
+import { AUTH_SOURCE_KEY, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
 import { AuthState } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-facebook-button');
@@ -112,7 +112,7 @@ export class AmplifyFacebookButton {
           </g>
         </svg>
 
-        {I18n.get('Sign In with Facebook')}
+        {I18n.get(SIGN_IN_WITH_FACEBOOK)}
       </amplify-sign-in-button>
     );
   }

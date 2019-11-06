@@ -49,6 +49,11 @@ export const CREATE_ACCOUNT_TEXT = 'Create account';
 export const NO_ACCOUNT_TEXT = 'No account?';
 export const CONFIRM_SMS_CODE = 'Confirm SMS Code';
 export const CONFIRM_TOTP_CODE = 'Confirm TOTP Code';
+export const SIGN_IN_WITH_AMAZON = 'Sign In with Amazon';
+export const SIGN_IN_WITH_AUTH0 = 'Sign In with Auth0';
+export const SIGN_IN_WITH_FACEBOOK = 'Sign In with Facebook';
+export const SIGN_IN_WITH_GOOGLE = 'Sign In with Google';
+export const SIGN_IN_WITH_OAUTH = 'Sign in with AWS';
 
 // Sign Up common constants
 export const SIGN_UP_HEADER_TEXT = 'Create a new account';

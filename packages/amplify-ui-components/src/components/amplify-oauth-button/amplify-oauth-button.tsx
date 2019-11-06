@@ -2,6 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
 import { Component, h, Listen, Prop } from '@stencil/core';
 
+import { SIGN_IN_WITH_OAUTH } from '../../common/constants';
+
 @Component({ tag: 'amplify-oauth-button' })
 export class AmplifyOAuthButton {
   @Prop() oauth_config: any = {};
@@ -15,7 +17,7 @@ export class AmplifyOAuthButton {
   render() {
     return (
       <amplify-sign-in-button provider="oauth">
-        {I18n.get(this.oauth_config.label || 'Sign in with AWS')}
+        {I18n.get(this.oauth_config.label || SIGN_IN_WITH_OAUTH)}
       </amplify-sign-in-button>
     );
   }
