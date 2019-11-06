@@ -1,3 +1,5 @@
+import { h } from '@stencil/core';
+
 const handleStateChange = (...args) => {
   console.log('handleStateChange', ...args);
 };
@@ -6,62 +8,51 @@ export default {
   title: 'amplify-federated-buttons',
 };
 
-export const renderWithCorrectAuthState = () => {
-  const element = document.createElement('amplify-federated-buttons');
+export const renderWithCorrectAuthState = () => (
+  <amplify-federated-buttons
+    authState="signIn"
+    federated={{
+      google_client_id: 'google_client_id',
+      facebook_app_id: 'facebook_app_id',
+    }}
+    handleAuthStateChange={handleStateChange}
+  />
+);
 
-  element.authState = 'signIn';
-  element.federated = {
-    google_client_id: 'google_client_id',
-    facebook_app_id: 'facebook_app_id',
-  };
+export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
+  <amplify-federated-buttons
+    authState="signIn"
+    federated={{
+      facebook_app_id: 'facebook_app_id',
+    }}
+    handleAuthStateChange={handleStateChange}
+  />
+);
 
-  element.handleAuthStateChange = handleStateChange;
+export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
+  <amplify-federated-buttons
+    authState="signIn"
+    federated={{
+      google_client_id: 'google_client_id',
+    }}
+    handleAuthStateChange={handleStateChange}
+  />
+);
 
-  return element;
-};
+export const renderNothingWithIncorrectAuthState = () => (
+  <amplify-federated-buttons
+    // @ts-ignore intentionally setting invalid state
+    authState="someInvalidState"
+    federated={{}}
+    handleAuthStateChange={handleStateChange}
+  />
+);
 
-export const renderWithCorrectAuthStateAndOnlyFacebookId = () => {
-  const element = document.createElement('amplify-federated-buttons');
-
-  element.authState = 'signIn';
-  element.federated = {
-    facebook_app_id: 'facebook_app_id',
-  };
-  element.handleAuthStateChange = handleStateChange;
-
-  return element;
-};
-
-export const renderWithCorrectAuthStateAndOnlyGoogleId = () => {
-  const element = document.createElement('amplify-federated-buttons');
-
-  element.authState = 'signIn';
-  element.federated = {
-    google_client_id: 'google_client_id',
-  };
-  element.handleAuthStateChange = handleStateChange;
-
-  return element;
-};
-
-export const renderNothingWithIncorrectAuthState = () => {
-  const element = document.createElement('amplify-federated-buttons');
-
-  // @ts-ignore intentionally setting invalid state
-  element.authState = 'someInvalidState';
-  element.federated = {};
-  element.handleAuthStateChange = handleStateChange;
-
-  return element;
-};
-
-export const renderNothingWithNoFederatedProp = () => {
-  const element = document.createElement('amplify-federated-buttons');
-
-  // @ts-ignore intentionally setting invalid state
-  element.authState = 'someInvalidState';
-  element.federated = undefined;
-  element.handleAuthStateChange = handleStateChange;
-
-  return element;
-};
+export const renderNothingWithNoFederatedProp = () => (
+  <amplify-federated-buttons
+    // @ts-ignore intentionally setting invalid state
+    authState="someInvalidState"
+    federated={undefined}
+    handleAuthStateChange={handleStateChange}
+  />
+);
