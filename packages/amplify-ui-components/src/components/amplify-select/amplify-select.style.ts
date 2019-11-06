@@ -4,7 +4,7 @@ export const select = css`
   padding: 14px;
   font-size: 14px;
   color: var(--deep-squid-ink);
-  background-color: #fff;
+  background-color: var(--white);
   background-image: none;
   border: 1px solid var(--input-border-color);
   border-radius: 3px 0 0 3px;
@@ -24,6 +24,6 @@ export const select = css`
 
   :focus {
     outline: none;
-    border-color: orange;
+    border-color: var(--amazon-orange);
   }
 `;

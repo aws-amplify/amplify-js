@@ -9,6 +9,7 @@ import {
   SIGN_UP_PASSWORD_PLACEHOLDER,
   SELECT_SUFFIX,
   PHONE_SUFFIX,
+  COUNTRY_DIAL_CODE_DEFAULT,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
 import { AuthState } from '../../common/types/auth-types';
@@ -83,9 +84,9 @@ export class AmplifySignUp {
   @State() username: string;
   @State() password: string;
   @State() email: string;
-  @State() country_dial_code_value: string = '+1';
-  @State() phone_number_value: string;
-  @State() phone_number: string;
+  @State() countryDialCodeValue: string = COUNTRY_DIAL_CODE_DEFAULT;
+  @State() phoneNumberValue: string;
+  @State() phoneNumber: string;
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -109,16 +110,16 @@ export class AmplifySignUp {
      */
 
     if (name === SELECT_SUFFIX) {
-      this.country_dial_code_value = value;
+      this.countryDialCodeValue = value;
     }
 
     if (name === PHONE_SUFFIX) {
-      this.phone_number_value = value;
+      this.phoneNumberValue = value;
     }
 
     /** By default, `+1` is set on the `country-dial-code` this will most likely need to be adjusted when a customer passes a different default on the `country-dial-code` */
     /** We are always taking the latest value for the phone number input */
-    this.phone_number = this.country_dial_code_value.concat(this.phone_number_value);
+    this.phoneNumber = this.countryDialCodeValue.concat(this.phoneNumberValue);
   }
 
   // TODO: Add validation
@@ -136,7 +137,7 @@ export class AmplifySignUp {
       password: this.password,
       attributes: {
         email: this.email,
-        phone_number: this.phone_number,
+        phone_number: this.phoneNumber,
       },
     };
 

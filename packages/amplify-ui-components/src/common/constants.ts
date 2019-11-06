@@ -45,6 +45,7 @@ export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
 // Select common constants
 export const SELECT_SUFFIX = 'select';
+export const COUNTRY_DIAL_CODE_DEFAULT = '+1';
 
 // Sign In common constants
 // TODO: Change to SIGN_IN_HEADER_TEXT
