@@ -37,6 +37,9 @@
   "dependencies": {
     "@aws-amplify/cache": "^1.1.4",
     "@aws-amplify/core": "^1.2.4",
+    "@aws-sdk/client-kinesis-browser": "^0.1.0-preview.2",
+    "@aws-sdk/client-personalize-events-browser": "^0.1.0-preview.2",
+    "@aws-sdk/client-pinpoint-browser": "^0.1.0-preview.2",
     "uuid": "^3.2.1"
   },
   "jest": {

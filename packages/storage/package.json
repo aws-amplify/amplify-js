@@ -33,7 +33,11 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^1.2.4"
+    "@aws-amplify/core": "^1.2.4",
+    "@aws-sdk/client-s3-browser": "^0.1.0-preview.2",
+    "@aws-sdk/s3-request-presigner": "^0.1.0-preview.2",
+    "@aws-sdk/util-create-request": "^0.1.0-preview.2",
+    "@aws-sdk/util-format-url": "^0.1.0-preview.1"
   },
   "jest": {
     "globals": {

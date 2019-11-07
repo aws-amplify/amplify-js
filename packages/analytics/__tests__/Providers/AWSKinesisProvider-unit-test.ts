@@ -1,18 +1,7 @@
-jest.mock('aws-sdk/clients/kinesis', () => {
-	const Kinesis = () => {
-		var kinesis = null;
-		return kinesis;
-	};
-
-	Kinesis.prototype.putRecords = (params, callback) => {
-		callback(null, 'data');
-	};
-
-	return Kinesis;
-});
-
-import { AWS, JS, Credentials } from '@aws-amplify/core';
+import { Credentials } from '@aws-amplify/core';
 import KinesisProvider from '../../src/Providers/AWSKinesisProvider';
+import { KinesisClient } from '@aws-sdk/client-kinesis-browser/KinesisClient';
+import { PutRecordsCommand } from '@aws-sdk/client-kinesis-browser/commands/PutRecordsCommand';
 
 jest.useFakeTimers();
 
@@ -24,7 +13,19 @@ const credentials = {
 	authenticated: true,
 };
 
-jest.useFakeTimers();
+jest.mock('@aws-sdk/client-kinesis-browser/KinesisClient');
+
+beforeEach(() => {
+	KinesisClient.prototype.send = jest.fn(async command => {
+		if (command instanceof PutRecordsCommand) {
+			return 'data';
+		}
+	});
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
 
 describe('kinesis provider test', () => {
 	describe('getCategory test', () => {
@@ -68,7 +69,6 @@ describe('kinesis provider test', () => {
 				});
 
 			expect(await analytics.record('params')).toBe(false);
-			spyon.mockClear();
 		});
 
 		test('record happy case', async () => {
@@ -91,8 +91,6 @@ describe('kinesis provider test', () => {
 			});
 
 			jest.advanceTimersByTime(6000);
-
-			spyon.mockClear();
 		});
 	});
 });

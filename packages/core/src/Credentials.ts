@@ -1,11 +1,16 @@
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
-import { AWS } from './Facet';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import { Amplify } from './Amplify';
-
+import {
+	fromCognitoIdentity,
+	FromCognitoIdentityParameters,
+	fromCognitoIdentityPool,
+	FromCognitoIdentityPoolParameters,
+} from '@aws-sdk/credential-provider-cognito-identity';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity-browser/CognitoIdentityClient';
 const logger = new Logger('Credentials');
 
 export class CredentialsClass {
@@ -60,21 +65,10 @@ export class CredentialsClass {
 		logger.debug('picking up credentials');
 		if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
 			logger.debug('getting new cred promise');
-			if (
-				AWS.config &&
-				AWS.config.credentials &&
-				AWS.config.credentials instanceof AWS.Credentials
-			) {
-				this._gettingCredPromise = makeQuerablePromise(
-					this._setCredentialsFromAWS()
-				);
-			} else {
-				this._gettingCredPromise = makeQuerablePromise(this._keepAlive());
-			}
+			this._gettingCredPromise = makeQuerablePromise(this._keepAlive());
 		} else {
 			logger.debug('getting old cred promise');
 		}
-
 		return this._gettingCredPromise;
 	}
 
@@ -102,7 +96,12 @@ export class CredentialsClass {
 		const { provider, user } = federatedInfo;
 		let token = federatedInfo.token;
 		let expires_at = federatedInfo.expires_at;
-		let identity_id = federatedInfo.identity_id;
+
+		// Make sure expires_at is in millis
+		expires_at =
+			new Date(expires_at).getFullYear() === 1970
+				? expires_at * 1000
+				: expires_at;
 
 		const that = this;
 		logger.debug('checking if federated jwt token expired');
@@ -113,7 +112,6 @@ export class CredentialsClass {
 				provider,
 				token,
 				user,
-				identity_id,
 				expires_at,
 			});
 		} else {
@@ -127,14 +125,12 @@ export class CredentialsClass {
 					.then(data => {
 						logger.debug('refresh federated token sucessfully', data);
 						token = data.token;
-						identity_id = data.identity_id;
 						expires_at = data.expires_at;
 
 						return that._setCredentialsFromFederation({
 							provider,
 							token,
 							user,
-							identity_id,
 							expires_at,
 						});
 					})
@@ -156,18 +152,18 @@ export class CredentialsClass {
 			logger.debug('no credentials for expiration check');
 			return true;
 		}
-		logger.debug('is this credentials expired?', credentials);
-		const ts = new Date().getTime();
-		const delta = 10 * 60 * 1000; // 10 minutes
-		const { expired, expireTime } = credentials;
-		if (!expired && expireTime > ts + delta) {
+		logger.debug('are these credentials expired?', credentials);
+		const ts = Math.floor(Date.now() / 1000);
+		const delta = 10 * 60; // 10 minutes in seconds
+		const { expiration } = credentials; // returns unix time stamp
+
+		if (expiration > ts + delta) {
 			return false;
 		}
 		return true;
 	}
 
 	private async _setCredentialsForGuest() {
-		let attempted = false;
 		logger.debug('setting credentials for guest');
 		const { identityPoolId, region, mandatorySignIn } = this._config;
 		if (mandatorySignIn) {
@@ -177,8 +173,19 @@ export class CredentialsClass {
 		}
 
 		if (!identityPoolId) {
-			logger.debug('No Cognito Federated Identity pool provided');
-			return Promise.reject('No Cognito Federated Identity pool provided');
+			logger.debug(
+				'No Cognito Identity pool provided for unauthenticated access'
+			);
+			return Promise.reject(
+				'No Cognito Identity pool provided for unauthenticated access'
+			);
+		}
+
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
 		}
 
 		let identityId = undefined;
@@ -189,65 +196,41 @@ export class CredentialsClass {
 			logger.debug('Failed to get the cached identityId', e);
 		}
 
-		const credentials = new AWS.CognitoIdentityCredentials(
-			{
-				IdentityPoolId: identityPoolId,
-				IdentityId: identityId ? identityId : undefined,
-			},
-			{
-				region,
-			}
-		);
+		// Removing the signature middleware and passing empty credentials and signer
+		// because https://github.com/aws/aws-sdk-js-v3/issues/354
+		const cognitoClient = new CognitoIdentityClient({
+			region,
+			credentials: () => Promise.resolve({} as any),
+			signer: {} as any,
+		});
+		cognitoClient.middlewareStack.remove('SIGNATURE');
+
+		let credentials = undefined;
+		if (identityId && identityId !== 'undefined') {
+			const cognitoIdentityParams: FromCognitoIdentityParameters = {
+				identityId,
+				client: cognitoClient,
+			};
+			credentials = fromCognitoIdentity(cognitoIdentityParams)();
+		} else {
+			const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
+				identityPoolId,
+				client: cognitoClient,
+			};
+			credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
+		}
 
 		return this._loadCredentials(credentials, 'guest', false, null)
 			.then(res => {
 				return res;
 			})
 			.catch(async e => {
-				// If identity id is deleted in the console, we make one attempt to recreate it
-				// and remove existing id from cache.
-				if (
-					e.code === 'ResourceNotFoundException' &&
-					e.message === `Identity '${identityId}' not found.` &&
-					!attempted
-				) {
-					attempted = true;
-					logger.debug('Failed to load guest credentials');
-					this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
-					credentials.clearCachedId();
-					const newCredentials = new AWS.CognitoIdentityCredentials(
-						{
-							IdentityPoolId: identityPoolId,
-							IdentityId: undefined,
-						},
-						{
-							region,
-						}
-					);
-					return this._loadCredentials(newCredentials, 'guest', false, null);
-				} else {
-					return e;
-				}
+				return e;
 			});
 	}
 
-	private _setCredentialsFromAWS() {
-		const credentials = AWS.config.credentials;
-		logger.debug('setting credentials from aws');
-		if (credentials instanceof AWS.Credentials) {
-			return Promise.resolve(credentials);
-		} else {
-			logger.debug(
-				'AWS.config.credentials is not an instance of AWS Credentials'
-			);
-			return Promise.reject(
-				'AWS.config.credentials is not an instance of AWS Credentials'
-			);
-		}
-	}
-
 	private _setCredentialsFromFederation(params) {
-		const { provider, token, identity_id } = params;
+		const { provider, token } = params;
 		const domains = {
 			google: 'accounts.google.com',
 			facebook: 'graph.facebook.com',
@@ -269,16 +252,27 @@ export class CredentialsClass {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		const credentials = new AWS.CognitoIdentityCredentials(
-			{
-				IdentityPoolId: identityPoolId,
-				IdentityId: identity_id,
-				Logins: logins,
-			},
-			{
-				region,
-			}
-		);
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
+		}
+
+		// Removing the signature middleware and passing empty credentials and signer
+		// because https://github.com/aws/aws-sdk-js-v3/issues/354
+		const cognitoClient = new CognitoIdentityClient({
+			region,
+			credentials: () => Promise.resolve({} as any),
+			signer: {} as any,
+		});
+		cognitoClient.middlewareStack.remove('SIGNATURE');
+		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
+			logins,
+			identityPoolId,
+			client: cognitoClient,
+		};
+		const credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
 
 		return this._loadCredentials(credentials, 'federated', true, params);
 	}
@@ -291,19 +285,30 @@ export class CredentialsClass {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			return Promise.reject(
+				'region is not configured for getting the credentials'
+			);
+		}
 		const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 		const logins = {};
 		logins[key] = idToken;
-		const credentials = new AWS.CognitoIdentityCredentials(
-			{
-				IdentityPoolId: identityPoolId,
-				Logins: logins,
-			},
-			{
-				region,
-			}
-		);
 
+		// Removing the signature middleware and passing empty credentials and signer
+		// because https://github.com/aws/aws-sdk-js-v3/issues/354
+		const cognitoClient = new CognitoIdentityClient({
+			region,
+			credentials: () => Promise.resolve({} as any),
+			signer: {} as any,
+		});
+		cognitoClient.middlewareStack.remove('SIGNATURE');
+		const params: FromCognitoIdentityPoolParameters = {
+			logins,
+			identityPoolId,
+			client: cognitoClient,
+		};
+		const credentials = fromCognitoIdentityPool(params)();
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
@@ -316,69 +321,50 @@ export class CredentialsClass {
 		const that = this;
 		const { identityPoolId } = this._config;
 		return new Promise((res, rej) => {
-			credentials.get(async err => {
-				if (err) {
-					logger.debug('Failed to load credentials', credentials);
-					rej(err);
+			credentials
+				.then(async credentials => {
+					logger.debug('Load credentials successfully', credentials);
+					that._credentials = credentials;
+					that._credentials.authenticated = authenticated;
+					that._credentials_source = source;
+					if (source === 'federated') {
+						const user = info.user;
+						const { provider, token, expires_at } = info;
+						try {
+							this._storage.setItem(
+								'aws-amplify-federatedInfo',
+								JSON.stringify({
+									provider,
+									token,
+									user,
+									expires_at,
+								})
+							);
+						} catch (e) {
+							logger.debug('Failed to put federated info into auth storage', e);
+						}
+					}
+					if (source === 'guest') {
+						try {
+							await this._storageSync;
+							this._storage.setItem(
+								'CognitoIdentityId-' + identityPoolId,
+								credentials.identityId // TODO: IdentityId is currently not returned by fromCognitoIdentityPool()
+							);
+						} catch (e) {
+							logger.debug('Failed to cache identityId', e);
+						}
+					}
+					res(that._credentials);
 					return;
-				}
-
-				logger.debug('Load credentials successfully', credentials);
-				that._credentials = credentials;
-				that._credentials.authenticated = authenticated;
-				that._credentials_source = source;
-				if (source === 'federated') {
-					const user = Object.assign(
-						{ id: this._credentials.identityId },
-						info.user
-					);
-					const { provider, token, expires_at, identity_id } = info;
-					try {
-						this._storage.setItem(
-							'aws-amplify-federatedInfo',
-							JSON.stringify({
-								provider,
-								token,
-								user,
-								expires_at,
-								identity_id,
-							})
-						);
-					} catch (e) {
-						logger.debug('Failed to put federated info into auth storage', e);
+				})
+				.catch(err => {
+					if (err) {
+						logger.debug('Failed to load credentials', credentials);
+						rej(err);
+						return;
 					}
-					// the Cache module no longer stores federated info
-					// this is just for backward compatibility
-					if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function') {
-						await Amplify.Cache.setItem(
-							'federatedInfo',
-							{
-								provider,
-								token,
-								user,
-								expires_at,
-								identity_id,
-							},
-							{ priority: 1 }
-						);
-					} else {
-						logger.debug('No Cache module registered in Amplify');
-					}
-				}
-				if (source === 'guest') {
-					try {
-						await this._storageSync;
-						this._storage.setItem(
-							'CognitoIdentityId-' + identityPoolId,
-							credentials.identityId
-						);
-					} catch (e) {
-						logger.debug('Failed to cache identityId', e);
-					}
-				}
-				res(that._credentials);
-				return;
-			});
+				});
 		});
 	}
 
@@ -396,30 +382,9 @@ export class CredentialsClass {
 	}
 
 	public async clear() {
-		const { identityPoolId, region } = this._config;
-		if (identityPoolId) {
-			// work around for cognito js sdk to ensure clearCacheId works
-			const credentials = new AWS.CognitoIdentityCredentials(
-				{
-					IdentityPoolId: identityPoolId,
-				},
-				{
-					region,
-				}
-			);
-			credentials.clearCachedId();
-		}
 		this._credentials = null;
 		this._credentials_source = null;
 		this._storage.removeItem('aws-amplify-federatedInfo');
-
-		// the Cache module no longer stores federated info
-		// this is just for backward compatibility
-		if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function') {
-			await Amplify.Cache.removeItem('federatedInfo');
-		} else {
-			logger.debug('No Cache module registered in Amplify');
-		}
 	}
 
 	/**

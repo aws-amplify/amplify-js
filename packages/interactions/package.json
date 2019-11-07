@@ -33,7 +33,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^1.2.4"
+	"@aws-amplify/core": "^1.2.4",
+	"@aws-sdk/client-lex-runtime-service-browser": "^0.1.0-preview.2"
   },
   "jest": {
     "globals": {

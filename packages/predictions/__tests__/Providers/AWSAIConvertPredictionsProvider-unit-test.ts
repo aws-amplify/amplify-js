@@ -1,10 +1,4 @@
-import {
-	AWS,
-	ClientDevice,
-	Parser,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
+import { Credentials } from '@aws-amplify/core';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -12,35 +6,28 @@ import {
 	SpeechToTextOutput,
 } from '../../src/types';
 import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
-import * as Translate from 'aws-sdk/clients/translate';
-import * as TextToSpeech from 'aws-sdk/clients/polly';
+import { TranslateClient } from '@aws-sdk/client-translate-browser/TranslateClient';
+import { TranslateTextCommand } from '@aws-sdk/client-translate-browser/commands/TranslateTextCommand';
+import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
+import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
 
-jest.mock('aws-sdk/clients/translate', () => {
-	const Translate = () => {
-		return;
-	};
-	const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-	Translate.prototype.translateText = (params, callback) => {
-		callback(null, result);
-	};
+const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
+TranslateClient.prototype.send = jest.fn(command => {
+	if (command instanceof TranslateTextCommand) {
+		return Promise.resolve(result);
+	}
+}) as any;
 
-	return Translate;
-});
-
-jest.mock('aws-sdk/clients/polly', () => {
-	const TextToSpeech = () => {
-		return;
-	};
-	const result = {
-		AudioStream: {
-			buffer: 'dummyStream',
-		},
-	};
-	TextToSpeech.prototype.synthesizeSpeech = (params, callback) => {
-		callback(null, result);
-	};
-	return TextToSpeech;
-});
+PollyClient.prototype.send = jest.fn(command => {
+	if (command instanceof SynthesizeSpeechCommand) {
+		const result = {
+			AudioStream: {
+				buffer: 'dummyStream',
+			},
+		};
+		return Promise.resolve(result);
+	}
+}) as any;
 
 (global as any).WebSocket = jest.fn(url => {
 	let onCloseCallback = null;
@@ -75,14 +62,6 @@ const credentials = {
 	secretAccessKey: 'secretAccessKey',
 	identityId: 'identityId',
 	authenticated: true,
-};
-
-const clientInfo = {
-	appVersion: '1.0',
-	make: 'make',
-	model: 'model',
-	version: '1.0.0',
-	platform: 'platform',
 };
 
 const options = {
@@ -155,11 +134,9 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			const translateSpy = jest
-				.spyOn(Translate.prototype, 'translateText')
-				.mockImplementation((input, callback) => {
-					callback('error', null);
-				});
+			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
+				return Promise.reject('error');
+			});
 			return expect(
 				predictionsProvider.convert(validTranslateTextInput)
 			).rejects.toMatch('error');
@@ -174,11 +151,9 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 			window.URL.createObjectURL = jest.fn();
-			const urlSpyOn = jest
-				.spyOn(URL, 'createObjectURL')
-				.mockImplementation(blob => {
-					return 'dummyURL';
-				});
+			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+				return 'dummyURL';
+			});
 			return expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).resolves.toMatchObject({
@@ -205,11 +180,9 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			const textToSpeechSpy = jest
-				.spyOn(TextToSpeech.prototype, 'synthesizeSpeech')
-				.mockImplementation((input, callback) => {
-					callback('error', null);
-				});
+			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
+				return Promise.reject('error');
+			});
 			return expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).rejects.toMatch('error');
