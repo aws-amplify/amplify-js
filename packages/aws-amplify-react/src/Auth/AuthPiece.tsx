@@ -42,12 +42,13 @@ export interface IAuthPieceProps {
 
 export interface IAuthPieceState {
 	username?: any;
+	requestPending?: boolean;
 }
 
 export class AuthPiece<
 	Props extends IAuthPieceProps,
 	State extends IAuthPieceState
-	> extends React.Component<Props, State> {
+> extends React.Component<Props, State> {
 	public _validAuthStates: string[];
 	public _isHidden: boolean;
 	public inputs: any;
@@ -109,6 +110,7 @@ export class AuthPiece<
 						theme={theme}
 						key="email"
 						name="email"
+						type="email"
 						onChange={this.handleInputChange}
 						data-test={auth.genericAttrs.emailInput}
 					/>
@@ -141,7 +143,9 @@ export class AuthPiece<
 
 	getUsernameLabel() {
 		const { usernameAttributes = UsernameAttributes.USERNAME } = this.props;
-		return labelMap[usernameAttributes] || usernameAttributes;
+		return (
+			labelMap[usernameAttributes as UsernameAttributes] || usernameAttributes
+		);
 	}
 
 	// extract username from authData
@@ -197,15 +201,12 @@ export class AuthPiece<
 	handleInputChange(evt) {
 		this.inputs = this.inputs || {};
 		const { name, value, type, checked } = evt.target;
-		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
 		this.inputs[name] = check_type ? checked : value;
 		this.inputs['checkedValue'] = check_type ? value : null;
 	}
 
-	// @ts-ignore
 	render() {
-		// @ts-ignore
 		if (!this._validAuthStates.includes(this.props.authState)) {
 			this._isHidden = true;
 			this.inputs = {};
@@ -222,7 +223,7 @@ export class AuthPiece<
 		return this.showComponent(this.props.theme || AmplifyTheme);
 	}
 
-	showComponent(theme) {
+	showComponent(_theme?: any): React.ReactNode {
 		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
 	}
 }

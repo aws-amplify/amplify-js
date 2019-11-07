@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 
-import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { I18n, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
@@ -33,8 +33,6 @@ import {
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-const logger = new Logger('ConfirmSignIn');
-
 export interface IConfirmSignInState extends IAuthPieceState {
 	mfaType: string;
 }
@@ -42,7 +40,7 @@ export interface IConfirmSignInState extends IAuthPieceState {
 export class ConfirmSignIn extends AuthPiece<
 	IAuthPieceProps,
 	IConfirmSignInState
-	> {
+> {
 	constructor(props: IAuthPieceProps) {
 		super(props);
 
@@ -101,7 +99,7 @@ export class ConfirmSignIn extends AuthPiece<
 	}
 
 	showComponent(theme) {
-		const { hide, authData } = this.props;
+		const { hide } = this.props;
 		if (hide && hide.includes(ConfirmSignIn)) {
 			return null;
 		}

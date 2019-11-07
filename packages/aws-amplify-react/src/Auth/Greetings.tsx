@@ -20,18 +20,11 @@ import {
 	Nav,
 	NavRight,
 	NavItem,
-	NavButton,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import { SignOut } from './SignOut';
-import {
-	withGoogle,
-	withAmazon,
-	withFacebook,
-	withOAuth,
-	withAuth0,
-} from './Provider';
+import { withGoogle, withAmazon, withFacebook, withAuth0 } from './Provider';
 import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Greetings');
@@ -48,10 +41,7 @@ export interface IGreetingsState extends IAuthPieceState {
 	stateFromStorage?: boolean;
 }
 
-export class Greetings extends AuthPiece<
-	IGreetingsProps,
-	IGreetingsState
-	> {
+export class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
 	private _isMounted: boolean;
 
 	constructor(props: IGreetingsProps) {
@@ -88,7 +78,7 @@ export class Greetings extends AuthPiece<
 
 	onHubCapsule(capsule) {
 		if (this._isMounted) {
-			const { channel, payload, source } = capsule;
+			const { channel, payload } = capsule;
 			if (channel === 'auth' && payload.event === 'signIn') {
 				this.setState({
 					authState: 'signedIn',
@@ -139,16 +129,15 @@ export class Greetings extends AuthPiece<
 			default:
 				const nameFromAttr = user.attributes
 					? user.attributes.name ||
-					(user.attributes.given_name
-						? user.attributes.given_name + ' ' + user.attributes.family_name
-						: undefined)
+					  (user.attributes.given_name
+							? user.attributes.given_name + ' ' + user.attributes.family_name
+							: undefined)
 					: undefined;
 				name = nameFromAttr || user.name || user.username;
 				break;
 		}
 
 		const message = typeof greeting === 'function' ? greeting(name) : greeting;
-		const { federated } = this.props;
 
 		return (
 			<span>

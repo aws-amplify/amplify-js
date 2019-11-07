@@ -25,7 +25,6 @@ import {
 	FormField,
 	Input,
 	InputLabel,
-	SelectInput,
 	Button,
 	Link,
 	SectionFooterPrimaryContent,
@@ -42,7 +41,6 @@ import {
 	ISignUpField,
 } from './common/default-sign-up-fields';
 import { UsernameAttributes } from './common/types';
-import { valid } from 'semver';
 import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
@@ -66,6 +64,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 	constructor(props: ISignUpProps) {
 		super(props);
+		this.state = { requestPending: false };
 
 		this._validAuthStates = ['signUp'];
 		this.signUp = this.signUp.bind(this);
@@ -118,7 +117,6 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
 			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
-				// @ts-ignore
 				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
 			});
 		}
@@ -129,7 +127,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				!this.props.signUpConfig.hideAllDefaults
 			) {
 				// see if fields passed to component should override defaults
-				this.defaultSignUpFields.forEach((f, i) => {
+				this.defaultSignUpFields.forEach(f => {
 					const matchKey = this.signUpFields.findIndex(d => {
 						return d.key === f.key;
 					});
@@ -190,10 +188,9 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	getDefaultDialCode() {
 		return this.props.signUpConfig &&
 			this.props.signUpConfig.defaultCountryCode &&
-			// @ts-ignore
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -207,6 +204,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	}
 
 	signUp() {
+		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
 		}
@@ -233,7 +231,6 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 		inputKeys.forEach((key, index) => {
 			if (
-				// @ts-ignore
 				!['username', 'password', 'checkedValue', 'dial_code'].includes(key)
 			) {
 				if (
@@ -269,13 +266,17 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		}
 		Auth.signUp(signup_info)
 			.then(data => {
+				this.setState({ requestPending: false });
 				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
-			.catch(err => this.error(err));
+			.catch(err => {
+				this.setState({ requestPending: false });
+				return this.error(err);
+			});
 	}
 
-	showComponent(theme) {
+	showComponent(theme): React.ReactNode {
 		const { hide } = this.props;
 		if (hide && hide.includes(SignUp)) {
 			return null;
@@ -298,8 +299,8 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 										{I18n.get(field.label)} *
 									</InputLabel>
 								) : (
-										<InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
-									)}
+									<InputLabel theme={theme}>{I18n.get(field.label)}</InputLabel>
+								)}
 								<Input
 									autoFocus={
 										this.signUpFields.findIndex(f => f.key === field.key) === 0
@@ -314,21 +315,22 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 								/>
 							</FormField>
 						) : (
-								<PhoneField
-									theme={theme}
-									required={field.required}
-									defaultDialCode={this.getDefaultDialCode()}
-									label={field.label}
-									placeholder={field.placeholder}
-									onChangeText={this.onPhoneNumberChanged}
-									key="phone_number"
-								/>
-							);
+							<PhoneField
+								theme={theme}
+								required={field.required}
+								defaultDialCode={this.getDefaultDialCode()}
+								label={field.label}
+								placeholder={field.placeholder}
+								onChangeText={this.onPhoneNumberChanged}
+								key="phone_number"
+							/>
+						);
 					})}
 				</SectionBody>
 				<SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
 					<SectionFooterPrimaryContent theme={theme}>
 						<Button
+							disabled={this.state.requestPending}
 							onClick={this.signUp}
 							theme={theme}
 							data-test={auth.signUp.createAccountButton}

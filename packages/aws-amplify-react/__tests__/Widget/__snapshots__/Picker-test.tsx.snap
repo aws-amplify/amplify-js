@@ -1,7 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Picker test render test render correcly 1`] = `
-<div>
+<div
+  style={
+    Object {
+      "position": "relative",
+    }
+  }
+>
   <Component
     theme={
       Object {

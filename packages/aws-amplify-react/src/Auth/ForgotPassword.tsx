@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
-import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 import {
@@ -84,7 +84,6 @@ export class ForgotPassword extends AuthPiece<
 		Auth.forgotPasswordSubmit(username, code, password)
 			.then(data => {
 				logger.debug(data);
-				// @ts-ignore
 				this.changeState('signIn');
 				this.setState({ delivery: null });
 			})

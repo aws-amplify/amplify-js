@@ -13,8 +13,6 @@
 
 import * as React from 'react';
 
-import { Authenticator } from './Authenticator';
-
 export { Authenticator } from './Authenticator';
 export { AuthPiece } from './AuthPiece';
 export { SignIn } from './SignIn';

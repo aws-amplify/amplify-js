@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { oAuthSignInButton } from '@aws-amplify/ui';

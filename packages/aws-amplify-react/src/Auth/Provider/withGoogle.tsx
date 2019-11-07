@@ -141,7 +141,7 @@ export function withGoogle(Comp) {
 			const that = this;
 			const { google_client_id } = this.props;
 			const g = window.gapi;
-			g.load('auth2', function () {
+			g.load('auth2', function() {
 				g.auth2.init({
 					client_id: google_client_id,
 					scope: 'profile email openid',
@@ -149,7 +149,7 @@ export function withGoogle(Comp) {
 			});
 		}
 
-		render() {
+		render(): React.ReactNode {
 			const ga =
 				window.gapi && window.gapi.auth2
 					? window.gapi.auth2.getAuthInstance()

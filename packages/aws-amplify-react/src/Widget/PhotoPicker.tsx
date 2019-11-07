@@ -47,7 +47,7 @@ export interface IPhotoPickerState {
 export class PhotoPicker extends React.Component<
 	IPhotoPickerProps,
 	IPhotoPickerState
-	> {
+> {
 	constructor(props) {
 		super(props);
 
@@ -69,8 +69,9 @@ export class PhotoPicker extends React.Component<
 
 		if (preview) {
 			const reader = new FileReader();
-			reader.onload = function (e) {
+			reader.onload = function(e) {
 				const url = e.target.result;
+				// @ts-ignore
 				that.setState({ previewSrc: url });
 				if (onLoad) {
 					onLoad(url);
@@ -104,11 +105,11 @@ export class PhotoPicker extends React.Component<
 						previewHidden ? (
 							'The image has been selected'
 						) : (
-								<img src={previewSrc} style={previewStyle} />
-							)
+							<img src={previewSrc} style={previewStyle} />
+						)
 					) : (
-							<PhotoPlaceholder theme={theme} />
-						)}
+						<PhotoPlaceholder theme={theme} />
+					)}
 				</SectionBody>
 				<Picker
 					title={title}

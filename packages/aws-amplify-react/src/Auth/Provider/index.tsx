@@ -26,7 +26,6 @@ export { withOAuth, OAuthButton } from './withOAuth';
 export { withAuth0, Auth0Button } from './withAuth0';
 
 export function withFederated(Comp) {
-	// @ts-ignore
 	const Federated = withAuth0(
 		withOAuth(withAmazon(withGoogle(withFacebook(Comp))))
 	);

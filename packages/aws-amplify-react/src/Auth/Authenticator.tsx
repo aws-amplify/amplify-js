@@ -63,7 +63,7 @@ export interface IAuthenticatorState {
 export class Authenticator extends React.Component<
 	IAuthenticatorProps,
 	IAuthenticatorState
-	> {
+> {
 	public _initialAuthState: string;
 	public _isMounted: boolean;
 
@@ -242,27 +242,17 @@ export class Authenticator extends React.Component<
 
 		const default_children = [
 			<Greetings federated={federated} />,
-			// @ts-ignore
 			<SignIn federated={federated} />,
-			// @ts-ignore
 			<ConfirmSignIn />,
-			// @ts-ignore
 			<RequireNewPassword />,
-			// @ts-ignore
 			<SignUp signUpConfig={signUpConfig} />,
-			// @ts-ignore
 			<ConfirmSignUp />,
-			// @ts-ignore
 			<VerifyContact />,
-			// @ts-ignore
 			<ForgotPassword />,
-			// @ts-ignore
 			<TOTPSetup />,
-			// @ts-ignore
 			<Loading />,
 		];
 
-		// @ts-ignore
 		const props_children_override = React.Children.map(
 			props_children,
 			child => child.props.override
@@ -274,7 +264,6 @@ export class Authenticator extends React.Component<
 		const render_props_children = React.Children.map(
 			props_children,
 			(child, index) => {
-				// @ts-ignore
 				return React.cloneElement(child, {
 					key: 'aws-amplify-authenticator-props-children-' + index,
 					theme,
@@ -293,20 +282,19 @@ export class Authenticator extends React.Component<
 		const render_default_children = hideDefault
 			? []
 			: React.Children.map(default_children, (child, index) => {
-				// @ts-ignore
-				return React.cloneElement(child, {
-					key: 'aws-amplify-authenticator-default-children-' + index,
-					theme,
-					messageMap,
-					authState,
-					authData,
-					onStateChange: this.handleStateChange,
-					onAuthEvent: this.handleAuthEvent,
-					hide,
-					override: props_children_override,
-					usernameAttributes,
-				});
-			});
+					return React.cloneElement(child, {
+						key: 'aws-amplify-authenticator-default-children-' + index,
+						theme,
+						messageMap,
+						authState,
+						authData,
+						onStateChange: this.handleStateChange,
+						onAuthEvent: this.handleAuthEvent,
+						hide,
+						override: props_children_override,
+						usernameAttributes,
+					});
+			  });
 
 		const render_children = render_default_children.concat(
 			render_props_children

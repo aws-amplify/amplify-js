@@ -95,9 +95,9 @@ describe('RequireNewPasswordComponentCore: ', () => {
 			'ion-button'
 		);
 		const signInButton = Object.values(buttons).find(
-			el => (el as any).innerHTML === 'Back to Sign In'
+			el => (el as HTMLElement).innerHTML === 'Back to Sign In'
 		);
-		(signInButton as any).click();
+		(signInButton as HTMLElement).click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});
 

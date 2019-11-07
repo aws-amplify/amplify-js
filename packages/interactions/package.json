@@ -1,19 +1,19 @@
 {
   "name": "@aws-amplify/interactions",
-  "version": "1.0.37",
+  "version": "1.1.4",
   "description": "Interactions category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./index": "./lib/index.js"
   },
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^1.1.2"
+    "@aws-amplify/core": "^1.2.4"
   },
   "jest": {
     "globals": {

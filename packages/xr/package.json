@@ -1,19 +1,19 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "0.1.24",
+  "version": "0.2.4",
   "description": "XR category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./index": "./lib/index.js"
   },
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^1.1.2"
+    "@aws-amplify/core": "^1.2.4"
   },
   "jest": {
     "globals": {

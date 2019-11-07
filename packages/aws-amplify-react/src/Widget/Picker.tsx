@@ -65,10 +65,15 @@ export class Picker extends React.Component<IPickerProps, {}> {
 		const accept = this.props.accept || '*/*';
 
 		const theme = this.props.theme || AmplifyTheme;
+		const pickerStyle = Object.assign(
+			{},
+			{ position: 'relative' },
+			theme.pickerPicker
+		);
 		const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
 		return (
-			<div style={theme.pickerPicker}>
+			<div style={pickerStyle}>
 				<PhotoPickerButton theme={theme}>{I18n.get(title)}</PhotoPickerButton>
 				<input
 					title={I18n.get(title)}

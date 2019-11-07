@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "1.0.34",
+  "version": "1.1.4",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest --coverage --passWithNoTests",
+    "test": "jest -w 1 --coverage --passWithNoTests",
     "build-with-test": "npm run clean && npm test && tsc",
     "build": "npm run clean && tsc",
     "clean": "rimraf lib lib-esm dist",
@@ -48,7 +48,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.1.2"
+    "@aws-amplify/core": "^1.2.4"
   },
   "peerdependencies": {
     "react-native": "^0.55.0"
