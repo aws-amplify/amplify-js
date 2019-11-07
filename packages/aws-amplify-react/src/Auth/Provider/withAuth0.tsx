@@ -27,7 +27,7 @@ import { Constants } from '../common/constants';
 
 const logger = new Logger('withAuth0');
 
-export function withAuth0(Comp, options) {
+export function withAuth0(Comp, options?) {
 	return class extends React.Component<any, any> {
 		public _auth0;
 

@@ -32,6 +32,7 @@ export function withFederated(Comp) {
 
 	return class extends React.Component {
 		render() {
+			// @ts-ignore
 			const federated = this.props.federated || {};
 			return <Federated {...this.props} {...federated} />;
 		}

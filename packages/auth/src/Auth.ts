@@ -43,6 +43,7 @@ import {
 	ICredentials,
 	Parser,
 	isEmpty,
+	JS,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { GraphQLAPI as API } from '@aws-amplify/api';
+import { API } from '@aws-amplify/api';
 
 export interface IConnectProps {
 	mutation?: any;
@@ -15,7 +15,7 @@ export interface IConnectState {
 	mutation: any;
 }
 
-export default class Connect extends React.Component<IConnectProps, IConnectState> {
+export class Connect extends React.Component<IConnectProps, IConnectState> {
 	public subSubscription;
 	private mounted: boolean;
 
@@ -177,7 +177,7 @@ export default class Connect extends React.Component<IConnectProps, IConnectStat
 		const mutationChanged =
 			prevMutation !== newMutation ||
 			JSON.stringify(prevMutationVariables) !==
-			JSON.stringify(newMutationVariables);
+				JSON.stringify(newMutationVariables);
 
 		if (!loading && (queryChanged || mutationChanged)) {
 			this._fetchData();
@@ -190,3 +190,8 @@ export default class Connect extends React.Component<IConnectProps, IConnectStat
 		return this.props.children({ data, errors, loading, mutation }) || null;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Connect;

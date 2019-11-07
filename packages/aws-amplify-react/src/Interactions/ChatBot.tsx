@@ -507,7 +507,7 @@ function ChatBotInputs(props) {
 	const textEnabled = props.textEnabled;
 	const styles = props.styles;
 	const onChange = props.onChange;
-	const inputDisabled = props.inputDisabled;
+	let inputDisabled = props.inputDisabled;
 	const micButtonDisabled = props.micButtonDisabled;
 	const inputText = props.inputText;
 	const onSubmit = props.onSubmit;
