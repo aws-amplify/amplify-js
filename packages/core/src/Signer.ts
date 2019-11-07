@@ -23,14 +23,14 @@ const IOT_SERVICE_NAME = 'iotdevicegateway';
 
 const encrypt = function(key, src) {
 	const hash = new jsSha256(key);
-	hash.update(src, 'utf8');
+	hash.update(src);
 	return hash.digestSync();
 };
 
 const hash = function(src) {
 	const arg = src || '';
 	const hash = new jsSha256();
-	hash.update(arg, 'utf8');
+	hash.update(arg);
 	return toHex(hash.digestSync());
 };
 

@@ -185,8 +185,8 @@ export function constructTable(
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
-	for (let tableRelation of table.Relationships) {
-		for (let cellId of tableRelation.Ids) {
+	for (const tableRelation of table.Relationships) {
+		for (const cellId of tableRelation.Ids) {
 			const cellBlock: Block = blockMap[cellId];
 			const row = cellBlock.RowIndex - 1; // textract starts indexing at 1, so subtract it by 1.
 			const col = cellBlock.ColumnIndex - 1; // textract starts indexing at 1, so subtract it by 1.
@@ -227,14 +227,14 @@ export function constructKeyValue(
 	let keyText: string = '';
 	let valueText: string = '';
 	let valueSelected: boolean;
-	for (let keyValueRelation of keyBlock.Relationships) {
+	for (const keyValueRelation of keyBlock.Relationships) {
 		if (keyValueRelation.Type === 'CHILD') {
 			// relation refers to key
 			const contents = extractContentsFromBlock(keyBlock, blockMap);
 			keyText = contents.text;
 		} else if (keyValueRelation.Type === 'VALUE') {
 			// relation refers to value
-			for (let valueId of keyValueRelation.Ids) {
+			for (const valueId of keyValueRelation.Ids) {
 				const valueBlock = blockMap[valueId];
 				const contents = extractContentsFromBlock(valueBlock, blockMap);
 				valueText = contents.text;
@@ -266,8 +266,8 @@ export function extractContentsFromBlock(
 		// some block might have no content
 		return { text: '', selected: undefined };
 	}
-	for (let relation of block.Relationships) {
-		for (let contentId of relation.Ids) {
+	for (const relation of block.Relationships) {
+		for (const contentId of relation.Ids) {
 			const contentBlock = blockMap[contentId];
 			if (contentBlock.BlockType === 'WORD') {
 				words += contentBlock.Text + ' ';

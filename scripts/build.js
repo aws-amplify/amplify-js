@@ -101,6 +101,7 @@ async function buildES5() {
 	let compilerOptions = {
 		noImplicitAny: false,
 		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		downlevelIteration: true,
 		jsx: jsx,
 		sourceMap: true,
 		target: 'es5',
@@ -138,6 +139,7 @@ function buildES6() {
 	let compilerOptions = {
 		noImplicitAny: false,
 		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		downlevelIteration: true,
 		jsx: jsx,
 		sourceMap: true,
 		target: 'es5',

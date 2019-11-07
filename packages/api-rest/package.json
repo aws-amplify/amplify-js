@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "axios": "^0.19.0",
-    "@aws-amplify/core": "^1.1.2"
+    "@aws-amplify/core": "^1.2.4"
   },
   "jest": {
     "globals": {
