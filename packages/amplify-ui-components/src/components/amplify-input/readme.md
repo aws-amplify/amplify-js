@@ -26,11 +26,13 @@
 ### Used by
 
  - [amplify-form-field](../amplify-form-field)
+ - [amplify-phone-field](../amplify-phone-field)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-form-field --> amplify-input
+  amplify-phone-field --> amplify-input
   style amplify-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
