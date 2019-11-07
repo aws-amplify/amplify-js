@@ -11,7 +11,7 @@ import {
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
 
-import { Logger } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 const logger = new Logger('SignIn');
@@ -83,7 +83,6 @@ export class AmplifySignIn {
 
   handleUsernameChange(event) {
     this.username = event.target.value;
-    console.log(this.username);
   }
 
   handlePasswordChange(event) {
@@ -95,7 +94,7 @@ export class AmplifySignIn {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
     Auth.verifiedContact(user).then(data => {
-      if (Object.keys(data.verified).length === 0) {
+      if (!isEmpty(data.verified)) {
         this.handleAuthStateChange(AuthState.SignedIn, user);
       } else {
         user = Object.assign(user, data);

@@ -65,3 +65,9 @@ export const CONFIRM_SIGN_UP_CODE_LABEL = 'Confirmation Code';
 export const CONFIRM_SIGN_UP_CODE_PLACEHOLDER = 'Enter your code';
 export const CONFIRM_SIGN_UP_LOST_CODE = 'Lost your code?';
 export const CONFIRM_SIGN_UP_RESEND_CODE = 'Resend Code';
+
+// Sign Out
+export const SIGN_OUT = 'Sign Out';
+
+// Auth Keys
+export const AUTH_SOURCE_KEY = 'amplify-auth-source';

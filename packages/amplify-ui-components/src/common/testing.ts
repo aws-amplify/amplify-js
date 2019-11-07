@@ -8,55 +8,55 @@ export const selectors = {
 }
 
 export const knobs = {
-    labelKnob (labelPlaceholder: string) {
+    labelKnob(labelPlaceholder: string) {
         return textKnob('Label', labelPlaceholder);
     },
 
-    descriptionKnob (descriptionPlaceholder: string) {
+    descriptionKnob(descriptionPlaceholder: string) {
         return textKnob('Description', descriptionPlaceholder);
     },
 
-    hintKnob (hintPlaceholder: string) {
+    hintKnob(hintPlaceholder: string) {
         return textKnob('Hint', hintPlaceholder);
     },
 
-    inputTypeKnob (inputTypePlaceholder: string) {
+    inputTypeKnob(inputTypePlaceholder: string) {
         return selectKnob('Type', ['date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'time'], inputTypePlaceholder);
     },
 
-    placeholderKnob (placeholderPlaceholder: string) {
+    placeholderKnob(placeholderPlaceholder: string) {
         return textKnob('Placeholder', placeholderPlaceholder);
     },
 
-    buttonTypeKnob (buttonTypePlaceholder: string) {
+    buttonTypeKnob(buttonTypePlaceholder: string) {
         return selectKnob('Button type', ['button', 'submit', 'reset'], buttonTypePlaceholder);
     },
 
-    buttonTextKnob (buttonTextPlaceholder: string) {
+    buttonTextKnob(buttonTextPlaceholder: string) {
         return textKnob('Button text', buttonTextPlaceholder);
     },
 
-    overrideStyleKnob () {
+    overrideStyleKnob() {
         return booleanKnob('Override style', false);
     },
 
-    toggleKnob (toggleDefault: boolean) {
+    toggleKnob(toggleDefault: boolean) {
         return booleanKnob('Toggle', toggleDefault);
     },
 
-    disabledKnob (disabledDefault: boolean) {
+    disabledKnob(disabledDefault: boolean) {
         return booleanKnob('Disabled', disabledDefault);
     },
 
-    formSectionHeaderKnob (headerPlaceholder: string) {
+    formSectionHeaderKnob(headerPlaceholder: string) {
         return textKnob('Header text', headerPlaceholder);
     },
 
-    formSectionSubmitKnob (submitPlaceholder: string) {
+    formSectionSubmitKnob(submitPlaceholder: string) {
         return textKnob('Submit button text', submitPlaceholder);
     },
 
-    tooltipAutoShowKnob (autoShowDefault: boolean) {
+    tooltipAutoShowKnob(autoShowDefault: boolean) {
         return booleanKnob('Tooltip autoshow', autoShowDefault);
     }
 }
