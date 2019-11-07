@@ -200,6 +200,14 @@ export namespace Components {
   }
   interface AmplifyCountryDialCode {
     /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * The options of the country dial code select input.
     */
     'options': CountryCodeDialOptions;
@@ -460,6 +468,44 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyPhoneField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId': string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint': string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
+    * Used for the Phone label
+    */
+    'label': string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder': string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required': boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value': string;
+  }
   interface AmplifyRadioButton {
     /**
     * If `true`, the radio button is selected.
@@ -507,6 +553,10 @@ export namespace Components {
     * Used for id field
     */
     'fieldId': string;
+    /**
+    * The callback, called when the select is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
@@ -774,6 +824,12 @@ declare global {
     new (): HTMLAmplifyPasswordFieldElement;
   };
 
+  interface HTMLAmplifyPhoneFieldElement extends Components.AmplifyPhoneField, HTMLStencilElement {}
+  var HTMLAmplifyPhoneFieldElement: {
+    prototype: HTMLAmplifyPhoneFieldElement;
+    new (): HTMLAmplifyPhoneFieldElement;
+  };
+
   interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {}
   var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
@@ -860,6 +916,7 @@ declare global {
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
+    'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
@@ -1038,6 +1095,14 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifyCountryDialCode {
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * The options of the country dial code select input.
     */
@@ -1299,6 +1364,44 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyPhoneField {
+    /**
+    * Will disable the input if set to true
+    */
+    'disabled'?: boolean;
+    /**
+    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+    */
+    'fieldId'?: string;
+    /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
+    * Used as the hint in case you forgot your confirmation code, etc.
+    */
+    'hint'?: string | FunctionalComponent | null;
+    /**
+    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+    */
+    'inputProps'?: object;
+    /**
+    * Used for the Phone label
+    */
+    'label'?: string;
+    /**
+    * Used for the placeholder label
+    */
+    'placeholder'?: string;
+    /**
+    * The required flag in order to make an input required prior to submitting a form
+    */
+    'required'?: boolean;
+    /**
+    * The value of the content inside of the input field
+    */
+    'value'?: string;
+  }
   interface AmplifyRadioButton {
     /**
     * If `true`, the radio button is selected.
@@ -1346,6 +1449,10 @@ declare namespace LocalJSX {
     * Used for id field
     */
     'fieldId'?: string;
+    /**
+    * The callback, called when the select is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
     /**
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
@@ -1511,6 +1618,7 @@ declare namespace LocalJSX {
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
     'amplify-password-field': AmplifyPasswordField;
+    'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
@@ -1551,6 +1659,7 @@ declare module "@stencil/core" {
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
+      'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;

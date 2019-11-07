@@ -9,7 +9,7 @@
 
 | Property           | Attribute            | Description                                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
 | ------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow \| AuthState.signedOut` | `AuthState.SignIn` |
+| `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
 
 
 ## Dependencies
@@ -25,6 +25,7 @@
 - [amplify-sign-up](../amplify-sign-up)
 - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
 - [amplify-forgot-password](../amplify-forgot-password)
+- [amplify-sign-out](../amplify-sign-out)
 - context-consumer
 
 ### Graph
@@ -35,6 +36,7 @@ graph TD;
   amplify-authenticator --> amplify-sign-up
   amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
+  amplify-authenticator --> amplify-sign-out
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
@@ -45,7 +47,7 @@ graph TD;
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
   amplify-auth-fields --> amplify-code-field
-  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-phone-field
   amplify-auth-fields --> amplify-form-field
   amplify-username-field --> amplify-form-field
   amplify-form-field --> amplify-label
@@ -54,6 +56,10 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-phone-field --> amplify-form-field
+  amplify-phone-field --> amplify-country-dial-code
+  amplify-phone-field --> amplify-input
+  amplify-country-dial-code --> amplify-select
   amplify-confirm-sign-in --> amplify-form-section
   amplify-confirm-sign-in --> amplify-link
   amplify-confirm-sign-in --> amplify-auth-fields
@@ -67,6 +73,7 @@ graph TD;
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields
+  amplify-sign-out --> amplify-button
   amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```
