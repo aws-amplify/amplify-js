@@ -10,6 +10,8 @@ import {
   PHONE_SUFFIX,
   COUNTRY_DIAL_CODE_DEFAULT,
   COUNTRY_DIAL_CODE_SUFFIX,
+  PHONE_EMPTY_ERROR_MESSAGE,
+  NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
 import { AuthState } from '../../common/types/auth-types';
@@ -85,7 +87,10 @@ export class AmplifySignUp {
   @State() password: string;
   @State() email: string;
 
-  @State() phoneNumber: PhoneNumberInterface = {};
+  @State() phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -115,15 +120,14 @@ export class AmplifySignUp {
     if (name === PHONE_SUFFIX) {
       this.phoneNumber.phoneNumberValue = value;
     }
-
-    return this.phoneNumber;
   }
 
   composePhoneNumberInput(phoneNumber: PhoneNumberInterface) {
-    return `${phoneNumber.countryDialCodeValue || COUNTRY_DIAL_CODE_DEFAULT}${phoneNumber.phoneNumberValue.replace(
-      /[-()]/g,
-      '',
-    )}`;
+    if (!phoneNumber.phoneNumberValue) throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
+
+    const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()]/g, '');
+
+    return `${phoneNumber.countryDialCodeValue}${sanitizedPhoneNumberValue}`;
   }
 
   // TODO: Add validation
@@ -133,7 +137,7 @@ export class AmplifySignUp {
       event.preventDefault();
     }
     if (!Auth || typeof Auth.signUp !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     const signUpAttrs: AmplifySignUpAttributes = {

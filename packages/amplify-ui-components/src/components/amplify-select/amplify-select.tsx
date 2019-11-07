@@ -1,7 +1,7 @@
 import { Component, Prop, h } from '@stencil/core';
 import { select } from './amplify-select.style';
 import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX, SELECT_SUFFIX } from '../../common/constants';
+import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 import {
   SelectOptionsString,
   SelectOptionsNumber,
@@ -22,7 +22,7 @@ export class AmplifySelect {
   /** The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
   @Prop() options: SelectOptionsString | SelectOptionsNumber = DEFAULT_SELECT_OPTION;
   /** Used for id field */
-  @Prop() fieldId: string = SELECT_SUFFIX;
+  @Prop() fieldId: string;
   /** The callback, called when the select is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
 

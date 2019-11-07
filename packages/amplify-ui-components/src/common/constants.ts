@@ -43,9 +43,6 @@ export const PASSWORD_LABEL = 'Password *';
 export const PASSWORD_PLACEHOLDER = 'Enter your password';
 export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
-// Select common constants
-export const SELECT_SUFFIX = 'select';
-
 // Country Dial Code common constants
 export const COUNTRY_DIAL_CODE_SUFFIX = 'country-dial-code-select';
 export const COUNTRY_DIAL_CODE_DEFAULT = '+1';
@@ -75,3 +72,7 @@ export const CONFIRM_SIGN_UP_CODE_LABEL = 'Confirmation Code';
 export const CONFIRM_SIGN_UP_CODE_PLACEHOLDER = 'Enter your code';
 export const CONFIRM_SIGN_UP_LOST_CODE = 'Lost your code?';
 export const CONFIRM_SIGN_UP_RESEND_CODE = 'Resend Code';
+
+// Error message Common Constants
+export const PHONE_EMPTY_ERROR_MESSAGE = 'Phone number can not be empty';
+export const NO_AUTH_MODULE_FOUND = 'No Auth module found, please ensure @aws-amplify/auth is imported';
