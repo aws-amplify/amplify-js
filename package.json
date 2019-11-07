@@ -73,7 +73,8 @@
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
-		"webpack-cli": "^3.1.0"
+		"webpack-cli": "^3.1.0",
+		"winston": "^3.2.1"
 	},
 	"jest": {
 		"resetMocks": true,
