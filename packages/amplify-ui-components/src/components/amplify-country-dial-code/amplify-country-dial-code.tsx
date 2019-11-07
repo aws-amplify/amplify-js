@@ -1,12 +1,15 @@
 import { Component, Prop, h } from '@stencil/core';
 import countryDialCodes from '../../common/country-dial-codes';
 import { CountryCodeDialOptions } from './amplify-country-dial-code-interface';
+import { COUNTRY_DIAL_CODE_SUFFIX } from '../../common/constants';
 
 @Component({
   tag: 'amplify-country-dial-code',
   shadow: false,
 })
 export class AmplifyCountryDialCode {
+  /** The ID of the field.  Should match with its corresponding input's ID. */
+  @Prop() fieldId: string = COUNTRY_DIAL_CODE_SUFFIX;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** The options of the country dial code select input. */
@@ -17,6 +20,7 @@ export class AmplifyCountryDialCode {
   render() {
     return (
       <amplify-select
+        fieldId={this.fieldId}
         options={this.options}
         overrideStyle={this.overrideStyle}
         handleInputChange={this.handleInputChange}

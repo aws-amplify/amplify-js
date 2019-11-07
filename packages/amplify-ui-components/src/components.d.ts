@@ -200,6 +200,10 @@ export namespace Components {
   }
   interface AmplifyCountryDialCode {
     /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId': string;
+    /**
     * The callback, called when the input is modified by the user.
     */
     'handleInputChange'?: (inputEvent: Event) => void;
@@ -1070,6 +1074,10 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifyCountryDialCode {
+    /**
+    * The ID of the field.  Should match with its corresponding input's ID.
+    */
+    'fieldId'?: string;
     /**
     * The callback, called when the input is modified by the user.
     */

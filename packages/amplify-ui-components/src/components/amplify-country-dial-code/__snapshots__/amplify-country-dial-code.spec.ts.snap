@@ -2,6 +2,6 @@
 
 exports[`amplify-country-dial-code spec: Render logic -> shoulder render a \`amplif-select\` component with country dial codes as default 1`] = `
 <amplify-country-dial-code>
-  <amplify-select></amplify-select>
+  <amplify-select fieldid="country-dial-code-select"></amplify-select>
 </amplify-country-dial-code>
 `;

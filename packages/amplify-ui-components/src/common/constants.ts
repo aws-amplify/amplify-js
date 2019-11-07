@@ -45,6 +45,9 @@ export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
 // Select common constants
 export const SELECT_SUFFIX = 'select';
+
+// Country Dial Code common constants
+export const COUNTRY_DIAL_CODE_SUFFIX = 'country-dial-code-select';
 export const COUNTRY_DIAL_CODE_DEFAULT = '+1';
 
 // Sign In common constants
