@@ -125,7 +125,7 @@ export class AmplifySignUp {
   composePhoneNumberInput(phoneNumber: PhoneNumberInterface) {
     if (!phoneNumber.phoneNumberValue) throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
 
-    const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()]/g, '');
+    const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()\s]/g, '');
 
     return `${phoneNumber.countryDialCodeValue}${sanitizedPhoneNumberValue}`;
   }

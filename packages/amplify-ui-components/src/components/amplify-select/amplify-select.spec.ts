@@ -1,6 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySelect } from './amplify-select';
-import { SELECT_SUFFIX } from '../../common/constants';
 
 describe('amplify-select spec:', () => {
   describe('Component logic ->', () => {
@@ -8,10 +7,6 @@ describe('amplify-select spec:', () => {
 
     beforeEach(() => {
       select = new AmplifySelect();
-    });
-
-    it('should have `fieldId` set to `select` by default', () => {
-      expect(select.fieldId).toEqual(SELECT_SUFFIX);
     });
 
     it('should have style override set to false by default', () => {

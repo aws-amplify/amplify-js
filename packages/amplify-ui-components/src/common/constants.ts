@@ -32,7 +32,7 @@ export const CONFIRM = 'Confirm';
 // Phone common constants
 export const PHONE_SUFFIX = 'phone';
 export const PHONE_LABEL = 'Phone Number *';
-export const PHONE_PLACEHOLDER = '5555555555';
+export const PHONE_PLACEHOLDER = '(555) 555-1212';
 
 // Password common constants
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
