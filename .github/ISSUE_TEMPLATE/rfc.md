@@ -12,13 +12,13 @@ _This issue is a Request For Comments (RFC). It is intended to elicit community 
 
 <!-- In one or two sentences, why should this change exist? -->
 
-## Basic Example
-
-<!-- If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable) -->
-
 ## Motivation
 
 <!-- Why is this RFC needed? What will happen if accepted? And what would happen if it *isn't* accepted? -->
+
+## Basic Example
+
+<!-- If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable) -->
 
 ## Detailed Design
 
