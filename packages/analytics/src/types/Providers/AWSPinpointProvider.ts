@@ -5,32 +5,38 @@ export type Event = {
 	name: string;
 	attributes: string;
 	metrics: string;
-	session: {};
+	session: object;
+	immediate: boolean;
 };
 
 export type EventConfig = {
 	appId: string;
 	endpointId: string;
 	region: string;
+	resendLimit: number;
 };
 
 export type EventParams = {
 	event: Event;
 	timestamp: string;
 	config: EventConfig;
-	credentials: {};
+	credentials: object;
+	resendLimit: number;
+};
+
+export type EventObject = {
+	params: EventParams;
+	handlers: PromiseHandlers;
 };
 
 export type EventMap = {
-	[key: string]: {
-		params: EventParams;
-		handlers: PromiseHandlers;
-	};
+	[key: string]: EventObject;
 };
 
 export type EventBuffer = Array<EventMap>;
+export type EndpointBuffer = Array<EventObject>;
 
-export interface PutEventsResponse {
+export type PutEventsResponse = {
 	EventsResponse: {
 		Results: {
 			[endpointId: string]: {
@@ -43,4 +49,10 @@ export interface PutEventsResponse {
 			};
 		};
 	};
-}
+};
+
+export type EndpointFailureData = {
+	err: any;
+	update_params: any;
+	endpointObject: EventObject;
+};
