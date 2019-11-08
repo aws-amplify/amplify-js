@@ -448,9 +448,7 @@ export namespace Components {
     'overrideStyle': boolean;
     'role': string;
   }
-  interface AmplifyNavBar {
-    'navItems': Array<object>;
-  }
+  interface AmplifyNav {}
   interface AmplifyPasswordField {
     /**
     * Will disable the input if set to true
@@ -845,10 +843,10 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
-  interface HTMLAmplifyNavBarElement extends Components.AmplifyNavBar, HTMLStencilElement {}
-  var HTMLAmplifyNavBarElement: {
-    prototype: HTMLAmplifyNavBarElement;
-    new (): HTMLAmplifyNavBarElement;
+  interface HTMLAmplifyNavElement extends Components.AmplifyNav, HTMLStencilElement {}
+  var HTMLAmplifyNavElement: {
+    prototype: HTMLAmplifyNavElement;
+    new (): HTMLAmplifyNavElement;
   };
 
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
@@ -949,7 +947,7 @@ declare global {
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
-    'amplify-nav-bar': HTMLAmplifyNavBarElement;
+    'amplify-nav': HTMLAmplifyNavElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
@@ -1379,9 +1377,7 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
-  interface AmplifyNavBar {
-    'navItems'?: Array<object>;
-  }
+  interface AmplifyNav {}
   interface AmplifyPasswordField {
     /**
     * Will disable the input if set to true
@@ -1674,7 +1670,7 @@ declare namespace LocalJSX {
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
-    'amplify-nav-bar': AmplifyNavBar;
+    'amplify-nav': AmplifyNav;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
@@ -1717,7 +1713,7 @@ declare module "@stencil/core" {
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
-      'amplify-nav-bar': LocalJSX.AmplifyNavBar & JSXBase.HTMLAttributes<HTMLAmplifyNavBarElement>;
+      'amplify-nav': LocalJSX.AmplifyNav & JSXBase.HTMLAttributes<HTMLAmplifyNavElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;

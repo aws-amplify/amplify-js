@@ -23,10 +23,10 @@ export class AmplifyGreetings {
     return (
       <header class={greetings}>
         {this.logo && <span>Logo</span>}
-        <amplify-nav-bar>
+        <amplify-nav>
           {this.showGreetingMessage && <span>Hello, {this.user.username}</span>}
-          <amplify-sign-out />
-        </amplify-nav-bar>
+          <amplify-sign-out handleAuthStateChange={this.handleAuthStateChange} />
+        </amplify-nav>
       </header>
     );
   }

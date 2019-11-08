@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const navBar = css`
+export const nav = css`
   display: flex;
   flex: 1 1 0%;
   justify-content: flex-end;
