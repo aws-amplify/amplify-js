@@ -1,5 +1,5 @@
 import { Component, Prop, h } from '@stencil/core';
-import { SIGN_OUT } from '../../common/constants';
+import { SIGN_OUT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState } from '../../common/types/auth-types';
 import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
@@ -24,7 +24,7 @@ export class AmplifySignOut {
     // TODO: Federated Sign Out
 
     if (!Auth || typeof Auth.signOut !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     try {
