@@ -10,38 +10,38 @@ _This issue is a Request For Comments (RFC). It is intended to elicit community 
 
 ## Summary
 
-<!-- In one or two sentences, why should this change exist? -->
+In one or two sentences, why should this change exist?
 
 ## Motivation
 
-<!-- Why is this RFC needed? What will happen if accepted? And what would happen if it *isn't* accepted? -->
+Why is this RFC needed? What will happen if accepted? And what would happen if it *isn't* accepted?
 
 ## Basic Example
 
-<!-- If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable) -->
+If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable)
 
 ## Detailed Design
 
-<!-- Provide enough detail on *how* this should be implemented such that someone other than yourself could build it. -->
-<!-- Include examples of how the implementation is used -->
+Provide enough detail on *how* this should be implemented such that someone other than yourself could build it.
+Include examples of how the implementation is used
 
 ## Drawbacks
 
-- <!-- Is this a breaking change? Days/Weeks/Months to implement? Will it require extensive documentation & examples? -->
+- Is this a breaking change? Days/Weeks/Months to implement? Will it require extensive documentation & examples?
 
 ## Adoption Strategy
 
-- <!-- What supporting efforts will be needed (e.g. documentation, tests, tutorials, public outreach, etc.)? -->
+- What supporting efforts will be needed (e.g. documentation, tests, tutorials, public outreach, etc.)?
 
 ## Related Issues
 
-<!-- Add GitHub issue numbers/URLs that informed or would be impacted by this proposal. -->
+Add GitHub issue numbers/URLs that informed or would be impacted by this proposal.
 
-- <!-- #1234 -->
-- <!-- https://github.com/aws-amplify/amplify-js/issues/1234 -->
+- #1234
+- https://github.com/aws-amplify/amplify-js/issues/1234
 
 ## References
 
-<!-- List articles, resources, prior art, and inspiration for this proposal. -->
+List articles, resources, prior art, and inspiration for this proposal.
 
-- <!-- http://stackoverflow.com/  -->
+- http://stackoverflow.com/
