@@ -25,11 +25,13 @@
                >{{_country.label}}</option> 
         </select>
         <input
+            type="tel"
             v-model="local_phone_number"
             v-bind:class="[amplifyUI.input, isInvalid ? 'invalid': '']"
             :placeholder="$Amplify.I18n.get(getPlaceholder)"
             autofocus 
             v-on:keyup="emitPhoneNumberChanged" 
+            v-on:input="local_phone_number = $event.target.value"
             v-bind:data-test="auth.genericAttrs.phoneNumberInput"
         />
     </div>

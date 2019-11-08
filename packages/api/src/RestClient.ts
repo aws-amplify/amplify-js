@@ -11,13 +11,18 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Signer, Platform, Credentials } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	Signer,
+	Platform,
+	Credentials,
+} from '@aws-amplify/core';
 
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
 
 const logger = new Logger('RestClient'),
-    urlLib = require('url');
+	urlLib = require('url');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -33,20 +38,20 @@ restClient.get('...')
 </pre>
 */
 export class RestClient {
-    private _options;
-    private _region: string = 'us-east-1'; // this will be updated by endpoint function
-    private _service: string = 'execute-api'; // this can be updated by endpoint function
-    private _custom_header = undefined; // this can be updated by endpoint function
-    /**
-    * @param {RestClientOptions} [options] - Instance options
-    */
-    constructor(options: apiOptions) {
-        const { endpoints } = options;
-        this._options = options;
-        logger.debug('API Options', this._options);
-    }
+	private _options;
+	private _region: string = 'us-east-1'; // this will be updated by endpoint function
+	private _service: string = 'execute-api'; // this can be updated by endpoint function
+	private _custom_header = undefined; // this can be updated by endpoint function
+	/**
+	 * @param {RestClientOptions} [options] - Instance options
+	 */
+	constructor(options: apiOptions) {
+		const { endpoints } = options;
+		this._options = options;
+		logger.debug('API Options', this._options);
+	}
 
-    /**
+	/**
     * Update AWS credentials
     * @param {AWSCredentials} credentials - AWS credentials
     *

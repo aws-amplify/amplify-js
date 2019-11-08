@@ -13,7 +13,13 @@
  */
 // tslint:enable
 
-import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
+import {
+	Component,
+	Input,
+	ViewEncapsulation,
+	Injector,
+	ElementRef,
+} from '@angular/core';
 
 import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
@@ -71,12 +77,11 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-authenticator-ionic',
-  template
+	selector: 'amplify-authenticator-ionic',
+	template,
 })
 export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
-
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }

@@ -19,8 +19,8 @@ const logger = new Logger('XR');
 let _instance: XRClass = null;
 
 if (!_instance) {
-    logger.debug('Create XR Instance');
-    _instance = new XRClass(null);
+	logger.debug('Create XR Instance');
+	_instance = new XRClass(null);
 }
 
 const XR = _instance;
@@ -30,6 +30,6 @@ export default XR;
 
 export * from './Providers/SumerianProvider';
 
-export {XRClass};
+export { XRClass };
 
 export * from './Errors';

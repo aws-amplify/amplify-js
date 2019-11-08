@@ -15,12 +15,17 @@ import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
 import { RestClient as RestClass } from './RestClient';
-import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import Amplify, {
+	ConsoleLogger as Logger,
+	Credentials,
+	Constants,
+} from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('API');
 
@@ -270,7 +275,7 @@ export default class APIClass {
             aws_appsync_authenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
-        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || "AWS_IAM";
+        const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
         let headers = {};
 
         switch (authenticationType) {
@@ -280,7 +285,7 @@ export default class APIClass {
                 }
                 headers = {
                     Authorization: null,
-                    'X-Api-Key': apiKey
+                    'X-Api-Key': apiKey,
                 };
                 break;
             case 'AWS_IAM':
@@ -329,11 +334,18 @@ export default class APIClass {
      * @returns {Promise<GraphQLResult> | Observable<object>}
      */
     graphql({ query: paramQuery, variables = {}, authMode, init }: GraphQLOptions) {
+		const query =
+		typeof paramQuery === 'string'
+			? parse(paramQuery)
+			: parse(print(paramQuery));
 
-        const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
+		const [operationDef = {}] = query.definitions.filter(
+			def => def.kind === 'OperationDefinition'
+		);
 
-        const [operationDef = {},] = query.definitions.filter(def => def.kind === 'OperationDefinition');
-        const { operation: operationType } = operationDef as OperationDefinitionNode;
+		const {
+			operation: operationType,
+		} = operationDef as OperationDefinitionNode;
 
         switch (operationType) {
             case 'query':
@@ -360,14 +372,19 @@ export default class APIClass {
             graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
-        const headers = {
-            ...(!customGraphqlEndpoint && await this._headerBasedAuth(authMode)),
-            ...(customGraphqlEndpoint &&
-                (customEndpointRegion ? await this._headerBasedAuth(authMode) : { Authorization: null })
-            ),
-            ...additionalHeaders,
-            ... await graphql_headers({ query, variables }),
-        };
+		const headers = {
+			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode))),
+			...(customGraphqlEndpoint &&
+				(customEndpointRegion
+					? await this._headerBasedAuth(authMode)
+					: { Authorization: null })),
+			...(await graphql_headers({ query, variables })),
+			...additionalHeaders,
+			...(!customGraphqlEndpoint && {
+				[USER_AGENT_HEADER]: Constants.userAgent,
+			}),
+		};
+
 
         const body = {
             query: print(query),
