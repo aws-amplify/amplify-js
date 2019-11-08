@@ -355,6 +355,24 @@ export namespace Components {
     */
     'submitButtonText'?: string;
   }
+  interface AmplifyGreetings {
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Logo displayed inside of the header
+    */
+    'logo': object;
+    /**
+    * Items shown in navigation
+    */
+    'navItems': Array<object>;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user': CognitoUserInterface;
+  }
   interface AmplifyHint {
     /**
     * (Optional) Override default styling
@@ -429,6 +447,9 @@ export namespace Components {
   interface AmplifyLink {
     'overrideStyle': boolean;
     'role': string;
+  }
+  interface AmplifyNavBar {
+    'navItems': Array<object>;
   }
   interface AmplifyPasswordField {
     /**
@@ -782,6 +803,12 @@ declare global {
     new (): HTMLAmplifyFormSectionElement;
   };
 
+  interface HTMLAmplifyGreetingsElement extends Components.AmplifyGreetings, HTMLStencilElement {}
+  var HTMLAmplifyGreetingsElement: {
+    prototype: HTMLAmplifyGreetingsElement;
+    new (): HTMLAmplifyGreetingsElement;
+  };
+
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
@@ -816,6 +843,12 @@ declare global {
   var HTMLAmplifyLinkElement: {
     prototype: HTMLAmplifyLinkElement;
     new (): HTMLAmplifyLinkElement;
+  };
+
+  interface HTMLAmplifyNavBarElement extends Components.AmplifyNavBar, HTMLStencilElement {}
+  var HTMLAmplifyNavBarElement: {
+    prototype: HTMLAmplifyNavBarElement;
+    new (): HTMLAmplifyNavBarElement;
   };
 
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
@@ -909,12 +942,14 @@ declare global {
     'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
+    'amplify-greetings': HTMLAmplifyGreetingsElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-icon-button': HTMLAmplifyIconButtonElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-nav-bar': HTMLAmplifyNavBarElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
@@ -1251,6 +1286,24 @@ declare namespace LocalJSX {
     */
     'submitButtonText'?: string;
   }
+  interface AmplifyGreetings {
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Logo displayed inside of the header
+    */
+    'logo'?: object;
+    /**
+    * Items shown in navigation
+    */
+    'navItems'?: Array<object>;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user'?: CognitoUserInterface;
+  }
   interface AmplifyHint {
     /**
     * (Optional) Override default styling
@@ -1325,6 +1378,9 @@ declare namespace LocalJSX {
   interface AmplifyLink {
     'overrideStyle'?: boolean;
     'role'?: string;
+  }
+  interface AmplifyNavBar {
+    'navItems'?: Array<object>;
   }
   interface AmplifyPasswordField {
     /**
@@ -1611,12 +1667,14 @@ declare namespace LocalJSX {
     'amplify-forgot-password': AmplifyForgotPassword;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
+    'amplify-greetings': AmplifyGreetings;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-icon-button': AmplifyIconButton;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-nav-bar': AmplifyNavBar;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
@@ -1652,12 +1710,14 @@ declare module "@stencil/core" {
       'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
+      'amplify-greetings': LocalJSX.AmplifyGreetings & JSXBase.HTMLAttributes<HTMLAmplifyGreetingsElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
       'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
       'amplify-icon-button': LocalJSX.AmplifyIconButton & JSXBase.HTMLAttributes<HTMLAmplifyIconButtonElement>;
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
+      'amplify-nav-bar': LocalJSX.AmplifyNavBar & JSXBase.HTMLAttributes<HTMLAmplifyNavBarElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
