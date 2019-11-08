@@ -374,14 +374,10 @@ export default class APIClass {
             variables,
         };
 
-        Object.assign(init, {
-            headers,
-            body,
-            signerServiceInfo: {
-                service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
-                region: !customGraphqlEndpoint ? region : customEndpointRegion
-            }
-        });
+        const signerServiceInfo = {
+            service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+            region: !customGraphqlEndpoint ? region : customEndpointRegion
+        };
 
         const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
@@ -396,7 +392,7 @@ export default class APIClass {
 
         let response;
         try {
-            response = await this._api.post(endpoint, init);
+            response = await this._api.post(endpoint, Object.assign({}, { headers, body, signerServiceInfo }));
         } catch (err) {
             response = {
                 data: {},
