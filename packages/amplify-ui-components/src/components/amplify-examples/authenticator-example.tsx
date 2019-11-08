@@ -1,5 +1,4 @@
 import { h } from '@stencil/core';
-// import Auth from '@aws-amplify/auth';
 
 const Authenticator = () => (
   <amplify-authenticator>
