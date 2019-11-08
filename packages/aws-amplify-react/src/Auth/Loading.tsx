@@ -12,18 +12,15 @@
  */
 
 import * as React from 'react';
-import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n } from '@aws-amplify/core';
 
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
 import {
 	FormSection,
 	SectionBody,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
-
-const logger = new Logger('Loading');
 
 export default class Loading extends AuthPiece<
 	IAuthPieceProps,

@@ -1,12 +1,12 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "Storage category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./index": "./lib/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -31,11 +31,8 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "typescript": "^3.2.2"
-  },
   "dependencies": {
-    "@aws-amplify/core": "^1.2.2"
+    "@aws-amplify/core": "^1.2.4"
   },
   "jest": {
     "globals": {
