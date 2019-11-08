@@ -1,56 +1,46 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const CompressionPlugin = require('compression-webpack-plugin');
-
 module.exports = {
 	entry: {
-		'aws-amplify-analytics': './src/index.ts',
-		'aws-amplify-analytics.min': './src/index.ts',
+		'aws-amplify-analytics.min': './lib-esm/index.js',
 	},
+	externals: [
+		'react-native',
+		'@aws-amplify/cache',
+		'@aws-amplify/core',
+		'aws-sdk/clients/pinpoint',
+		'aws-sdk/clients/kinesis',
+	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
 		library: 'aws_amplify_analytics',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
+		globalObject: 'this',
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},
 	// Enable sourcemaps for debugging webpack's output.
 	devtool: 'source-map',
 	resolve: {
-		// Add '.ts' and '.tsx' as resolvable extensions.
-		extensions: ['.ts', '.tsx', '.js', '.json'],
+		extensions: ['.js', '.json'],
 	},
-	plugins: [
-		new UglifyJsPlugin({
-			minimize: true,
-			sourceMap: true,
-			include: /\.min\.js$/,
-		}),
-		new CompressionPlugin({
-			include: /\.min\.js$/,
-		}),
-	],
+	mode: 'production',
 	module: {
 		rules: [
-			// All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-			{
-				test: /\.tsx?$/,
-				loader: 'awesome-typescript-loader',
-				exclude: /node_modules/,
-				query: {
-					declaration: false,
-				},
-			},
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
 			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
-				test: /\.jsx?$/,
+				test: /\.js?$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader',
-				query: {
-					presets: ['react', 'es2015', 'stage-2'],
-				},
+				use: [
+					'babel-loader',
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: ['@babel/preset-env'],
+						},
+					},
+				],
 			},
 		],
 	},

@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import withGoogle from './withGoogle';
 import withFacebook from './withFacebook';
@@ -27,12 +26,11 @@ export { default as withOAuth, OAuthButton } from './withOAuth';
 export { default as withAuth0, Auth0Button } from './withAuth0';
 
 export function withFederated(Comp) {
-	// @ts-ignore
 	const Federated = withAuth0(
 		withOAuth(withAmazon(withGoogle(withFacebook(Comp))))
 	);
 
-	return class extends Component {
+	return class extends React.Component {
 		render() {
 			// @ts-ignore
 			const federated = this.props.federated || {};
