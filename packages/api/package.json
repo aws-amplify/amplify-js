@@ -31,9 +31,6 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "prettier": "^1.7.4"
-  },
   "dependencies": {
     "@aws-amplify/auth": "^1.5.0",
     "@aws-amplify/cache": "^1.1.4",

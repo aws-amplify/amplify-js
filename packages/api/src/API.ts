@@ -418,7 +418,7 @@ export default class APIClass {
 			},
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		const endpoint = customGraphqlEndpoint ?? appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
