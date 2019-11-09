@@ -6,7 +6,7 @@ const ts = require('typescript');
 const externals = require('./rollup-externals');
 const winston = require('winston');
 const logger = winston.createLogger({
-	level: 'info',
+	level: process.env.LOG_LEVEL ? process.env.LOG_LEVEL.toLowerCase() : 'info',
 	transports: [
 		new winston.transports.Console({
 			format: winston.format.combine(
