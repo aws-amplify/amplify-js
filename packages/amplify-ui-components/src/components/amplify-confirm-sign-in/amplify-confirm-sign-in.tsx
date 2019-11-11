@@ -2,7 +2,7 @@ import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, MfaOption, CognitoUserInterface, ChallengeName } from '../../common/types/auth-types';
 import { BACK_TO_SIGN_IN, CONFIRM, CONFIRM_SMS_CODE, CONFIRM_TOTP_CODE } from '../../common/constants';
-import { Logger } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 const logger = new Logger('ConfirmSignIn');
@@ -75,7 +75,7 @@ export class AmplifyConfirmSignIn {
       throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
     }
     Auth.verifiedContact(user).then(data => {
-      if (Object.keys(data.verified).length === 0) {
+      if (!isEmpty(data.verified)) {
         this.handleAuthStateChange(AuthState.SignedIn, user);
       } else {
         user = Object.assign(user, data);
