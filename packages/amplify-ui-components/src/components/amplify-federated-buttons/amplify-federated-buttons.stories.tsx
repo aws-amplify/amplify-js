@@ -1,4 +1,5 @@
 import { h } from '@stencil/core';
+import { AuthState } from '../../common/types/auth-types';
 
 const handleStateChange = (...args) => {
   console.log('handleStateChange', ...args);
@@ -10,10 +11,10 @@ export default {
 
 export const renderWithCorrectAuthState = () => (
   <amplify-federated-buttons
-    authState="signIn"
+    authState={AuthState.SignIn}
     federated={{
-      google_client_id: 'google_client_id',
-      facebook_app_id: 'facebook_app_id',
+      googleClientId: 'google_client_id',
+      facebookAppId: 'facebook_app_id',
     }}
     handleAuthStateChange={handleStateChange}
   />
@@ -21,9 +22,9 @@ export const renderWithCorrectAuthState = () => (
 
 export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
   <amplify-federated-buttons
-    authState="signIn"
+    authState={AuthState.SignIn}
     federated={{
-      facebook_app_id: 'facebook_app_id',
+      facebookAppId: 'facebook_app_id',
     }}
     handleAuthStateChange={handleStateChange}
   />
@@ -31,9 +32,9 @@ export const renderWithCorrectAuthStateAndOnlyFacebookId = () => (
 
 export const renderWithCorrectAuthStateAndOnlyGoogleId = () => (
   <amplify-federated-buttons
-    authState="signIn"
+    authState={AuthState.SignIn}
     federated={{
-      google_client_id: 'google_client_id',
+      googleClientId: 'google_client_id',
     }}
     handleAuthStateChange={handleStateChange}
   />

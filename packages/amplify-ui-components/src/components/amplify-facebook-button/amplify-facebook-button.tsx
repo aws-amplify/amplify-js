@@ -2,8 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
-import { AuthState } from '../../common/types/auth-types';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
+import { AuthState, FederatedConfig } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-facebook-button');
 
@@ -13,7 +13,7 @@ const logger = new Logger('amplify-facebook-button');
 })
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
-  @Prop() facebook_app_id: string;
+  @Prop() appId: FederatedConfig['facebookAppId'];
   /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -77,7 +77,7 @@ export class AmplifyFacebookButton {
 
     // Initialize before usage for latest knob value
     window['FB'].init({
-      appId: this.facebook_app_id,
+      appId: this.appId,
       cookie: true,
       xfbml: false,
       version: 'v5.0',

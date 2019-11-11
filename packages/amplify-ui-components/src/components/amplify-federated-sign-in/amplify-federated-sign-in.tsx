@@ -3,6 +3,8 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthState } from '../../common/types/auth-types';
+
 const logger = new Logger('amplify-federated-sign-in');
 
 @Component({
@@ -11,7 +13,7 @@ const logger = new Logger('amplify-federated-sign-in');
 })
 export class AmplifyFederatedSignIn {
   /** The current authentication state. */
-  @Prop() authState: 'signIn' | 'signedOut' | 'signedUp' = 'signIn';
+  @Prop() authState: AuthState = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: any = {};
 
@@ -42,7 +44,7 @@ export class AmplifyFederatedSignIn {
       return null;
     }
 
-    if (!['signIn', 'signedOut', 'signedUp'].includes(this.authState)) {
+    if (!Object.values(AuthState).includes(this.authState)) {
       return null;
     }
 

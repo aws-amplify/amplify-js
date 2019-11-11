@@ -1,6 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName } from '../../common/types/auth-types';
+import { AuthState, ChallengeName, FederatedConfig } from '../../common/types/auth-types';
 
 import {
   HEADER_TEXT,
@@ -33,7 +33,7 @@ export class AmplifySignIn {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
-  @Prop() federated: any = {};
+  @Prop() federated: FederatedConfig = {};
   /** Passed from the Authenticatior component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**

@@ -2,8 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { isEmpty, I18n } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
-import { AuthState } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthState, FederatedConfig } from '../../common/types/auth-types';
 
 @Component({
   tag: 'amplify-federated-buttons',
@@ -11,9 +11,9 @@ import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 })
 export class AmplifyFederatedButtons {
   /** The current authentication state. */
-  @Prop() authState: 'signIn' | 'signedOut' | 'signedUp' = 'signIn';
+  @Prop() authState: AuthState = AuthState.SignIn;
   /** Federated credentials & configuration. */
-  @Prop() federated: any = {};
+  @Prop() federated: FederatedConfig = {};
   /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -28,18 +28,18 @@ export class AmplifyFederatedButtons {
 
     // backward compatibility
     if (oauth['domain']) {
-      this.federated.oauth_config = { ...this.federated.oauth_config, ...oauth };
+      this.federated.oauthConfig = { ...this.federated.oauthConfig, ...oauth };
     } else if (oauth['awsCognito']) {
-      this.federated.oauth_config = { ...this.federated.oauth_config, ...oauth['awsCognito'] };
+      this.federated.oauthConfig = { ...this.federated.oauthConfig, ...oauth['awsCognito'] };
     }
 
     if (oauth['auth0']) {
-      this.federated.auth0 = { ...this.federated.auth0, ...oauth['auth0'] };
+      this.federated.auth0Config = { ...this.federated.auth0Config, ...oauth['auth0'] };
     }
   }
 
   render() {
-    if (!['signIn', 'signedOut', 'signedUp'].includes(this.authState)) {
+    if (!Object.values(AuthState).includes(this.authState)) {
       return null;
     }
 
@@ -47,40 +47,37 @@ export class AmplifyFederatedButtons {
       return null;
     }
 
-    const { amazon_client_id, auth0, facebook_app_id, google_client_id, oauth_config } = this.federated;
+    const { amazonClientId, auth0Config, facebookAppId, googleClientId, oauthConfig } = this.federated;
 
     return (
       <div>
-        {google_client_id && (
+        {googleClientId && (
           <div>
-            <amplify-google-button
-              handleAuthStateChange={this.handleAuthStateChange}
-              google_client_id={google_client_id}
-            />
+            <amplify-google-button clientId={googleClientId} handleAuthStateChange={this.handleAuthStateChange} />
           </div>
         )}
 
-        {facebook_app_id && (
+        {facebookAppId && (
           <div>
-            <amplify-facebook-button facebook_app_id={facebook_app_id} />
+            <amplify-facebook-button appId={facebookAppId} />
           </div>
         )}
 
-        {amazon_client_id && (
+        {amazonClientId && (
           <div>
-            <amplify-amazon-button amazon_client_id={amazon_client_id} />
+            <amplify-amazon-button clientId={amazonClientId} />
           </div>
         )}
 
-        {oauth_config && (
+        {oauthConfig && (
           <div>
-            <amplify-oauth-button oauth_config={oauth_config} />
+            <amplify-oauth-button config={oauthConfig} />
           </div>
         )}
 
-        {auth0 && (
+        {auth0Config && (
           <div>
-            <amplify-auth0-button auth0={auth0} />
+            <amplify-auth0-button config={auth0Config} />
           </div>
         )}
 

@@ -2,9 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
-import { AUTH_SOURCE_KEY, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
-import { AuthState } from '../../common/types/auth-types';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
+import { AuthState, FederatedConfig } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-google-button');
 
@@ -18,7 +17,7 @@ export class AmplifyGoogleButton {
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** App-specific client ID from Google */
-  @Prop() google_client_id: string;
+  @Prop() clientId: FederatedConfig['googleClientId'];
 
   constructor() {
     this.handleClick = this.handleClick.bind(this);
@@ -29,7 +28,7 @@ export class AmplifyGoogleButton {
       return (
         window['gapi'].auth2.getAuthInstance() ||
         window['gapi'].auth2.init({
-          client_id: this.google_client_id,
+          client_id: this.clientId,
           cookiepolicy: 'single_host_origin',
           scope: 'profile email openid',
         })

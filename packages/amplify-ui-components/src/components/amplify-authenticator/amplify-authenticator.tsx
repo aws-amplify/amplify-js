@@ -1,5 +1,5 @@
 import { Component, State, Prop, h } from '@stencil/core';
-import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
 
 import { Logger } from '@aws-amplify/core';
@@ -18,7 +18,7 @@ export class AmplifyAuthenticator {
 
   @State() authData: CognitoUserInterface;
   /** Federated credentials & configuration. */
-  @Prop() federated: any = {};
+  @Prop() federated: FederatedConfig = {};
 
   componentWillLoad() {
     this.authState = this.initialAuthState;

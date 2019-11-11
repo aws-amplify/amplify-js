@@ -10,6 +10,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AuthState,
   CognitoUserInterface,
+  FederatedConfig,
 } from './common/types/auth-types';
 import {
   FormFieldTypes,
@@ -40,7 +41,7 @@ export namespace Components {
     /**
     * App-specific client ID from Google
     */
-    'amazon_client_id': string;
+    'clientId': FederatedConfig['amazonClientId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -56,13 +57,13 @@ export namespace Components {
     /**
     * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
     */
-    'auth0': any;
+    'config': FederatedConfig['auth0Config'];
   }
   interface AmplifyAuthenticator {
     /**
     * Federated credentials & configuration.
     */
-    'federated': any;
+    'federated': FederatedConfig;
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
@@ -275,7 +276,7 @@ export namespace Components {
     /**
     * App-specific client ID from Facebook
     */
-    'facebook_app_id': string;
+    'appId': FederatedConfig['facebookAppId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -285,11 +286,11 @@ export namespace Components {
     /**
     * The current authentication state.
     */
-    'authState': 'signIn' | 'signedOut' | 'signedUp';
+    'authState': AuthState;
     /**
     * Federated credentials & configuration.
     */
-    'federated': any;
+    'federated': FederatedConfig;
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -299,7 +300,7 @@ export namespace Components {
     /**
     * The current authentication state.
     */
-    'authState': 'signIn' | 'signedOut' | 'signedUp';
+    'authState': AuthState;
     /**
     * Federated credentials & configuration.
     */
@@ -413,7 +414,7 @@ export namespace Components {
     /**
     * App-specific client ID from Google
     */
-    'google_client_id': string;
+    'clientId': FederatedConfig['googleClientId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -495,7 +496,7 @@ export namespace Components {
     'role': string;
   }
   interface AmplifyOauthButton {
-    'oauth_config': any;
+    'config': FederatedConfig['oauthConfig'];
   }
   interface AmplifyPasswordField {
     /**
@@ -637,7 +638,7 @@ export namespace Components {
     /**
     * Federated credentials & configuration.
     */
-    'federated': any;
+    'federated': FederatedConfig;
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
@@ -1053,7 +1054,7 @@ declare namespace LocalJSX {
     /**
     * App-specific client ID from Google
     */
-    'amazon_client_id'?: string;
+    'clientId'?: FederatedConfig['amazonClientId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -1069,13 +1070,13 @@ declare namespace LocalJSX {
     /**
     * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
     */
-    'auth0'?: any;
+    'config'?: FederatedConfig['auth0Config'];
   }
   interface AmplifyAuthenticator {
     /**
     * Federated credentials & configuration.
     */
-    'federated'?: any;
+    'federated'?: FederatedConfig;
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
@@ -1288,7 +1289,7 @@ declare namespace LocalJSX {
     /**
     * App-specific client ID from Facebook
     */
-    'facebook_app_id'?: string;
+    'appId'?: FederatedConfig['facebookAppId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -1298,11 +1299,11 @@ declare namespace LocalJSX {
     /**
     * The current authentication state.
     */
-    'authState'?: 'signIn' | 'signedOut' | 'signedUp';
+    'authState'?: AuthState;
     /**
     * Federated credentials & configuration.
     */
-    'federated'?: any;
+    'federated'?: FederatedConfig;
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -1312,7 +1313,7 @@ declare namespace LocalJSX {
     /**
     * The current authentication state.
     */
-    'authState'?: 'signIn' | 'signedOut' | 'signedUp';
+    'authState'?: AuthState;
     /**
     * Federated credentials & configuration.
     */
@@ -1426,7 +1427,7 @@ declare namespace LocalJSX {
     /**
     * App-specific client ID from Google
     */
-    'google_client_id'?: string;
+    'clientId'?: FederatedConfig['googleClientId'];
     /**
     * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
@@ -1508,7 +1509,7 @@ declare namespace LocalJSX {
     'role'?: string;
   }
   interface AmplifyOauthButton {
-    'oauth_config'?: any;
+    'config'?: FederatedConfig['oauthConfig'];
   }
   interface AmplifyPasswordField {
     /**
@@ -1650,7 +1651,7 @@ declare namespace LocalJSX {
     /**
     * Federated credentials & configuration.
     */
-    'federated'?: any;
+    'federated'?: FederatedConfig;
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */

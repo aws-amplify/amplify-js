@@ -2,8 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Listen, Prop } from '@stencil/core';
 
-import { AuthState } from '../../common/types/auth-types';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
+import { AuthState, FederatedConfig } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-amazon-button');
 
@@ -13,7 +13,7 @@ const logger = new Logger('amplify-amazon-button');
 })
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */
-  @Prop() amazon_client_id: string;
+  @Prop() clientId: FederatedConfig['amazonClientId'];
   /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -62,7 +62,7 @@ export class AmplifyAmazonButton {
   handleClick(event) {
     event.preventDefault();
 
-    window['amazon'].Login.setClientId(this.amazon_client_id);
+    window['amazon'].Login.setClientId(this.clientId);
 
     window['amazon'].Login.authorize({ scope: 'profile' }, response => {
       if (response.error) {
