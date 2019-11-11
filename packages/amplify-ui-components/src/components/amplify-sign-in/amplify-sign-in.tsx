@@ -108,7 +108,6 @@ export class AmplifySignIn {
   }
 
   async signIn(event) {
-    console.log(event);
     // avoid submitting the form
     if (event) {
       event.preventDefault();

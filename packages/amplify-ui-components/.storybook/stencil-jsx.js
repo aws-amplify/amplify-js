@@ -18,7 +18,6 @@ export const h = (tag, props, ...children) => {
         const eventName = key.charAt(2).toLowerCase() + key.slice(3);
 
         if (typeof value === 'function') {
-          console.log({ eventName, value });
           node.addEventListener(eventName, value);
         }
       }
