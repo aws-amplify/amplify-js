@@ -18,7 +18,7 @@ Why is this RFC needed? What will happen if accepted? And what would happen if i
 
 ## Basic Example
 
-If the RFC involves a new or changed API, include a basic code example. (Omit of not applicable)
+If the RFC involves a new or changed API, include a basic code example. (Omit if not applicable)
 
 ## Detailed Design
 
