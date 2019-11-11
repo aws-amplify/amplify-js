@@ -8,10 +8,8 @@ import {
 } from '../types';
 
 const logger = new Logger('EventsBuffer');
-const EXPIRED_TOKEN_CODE = 'ExpiredTokenException';
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
-const FORBIDDEN_CODE = 403;
 
 type EventsBufferConfig = {
 	bufferSize: number;
