@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState } from '../../common/types/auth-types';
-import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN } from '../../common/constants';
+import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
@@ -62,7 +62,7 @@ export class AmplifyForgotPassword {
       event.preventDefault();
     }
     if (!Auth || typeof Auth.forgotPassword !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
       const data = await Auth.forgotPassword(this.username);
@@ -95,7 +95,7 @@ export class AmplifyForgotPassword {
       event.preventDefault();
     }
     if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
       const data = await Auth.forgotPasswordSubmit(this.username, this.code, this.password);

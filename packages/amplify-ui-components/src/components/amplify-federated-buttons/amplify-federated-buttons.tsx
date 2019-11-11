@@ -3,6 +3,7 @@ import { isEmpty, I18n } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { AuthState } from '../../common/types/auth-types';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 
 @Component({
   tag: 'amplify-federated-buttons',
@@ -20,7 +21,7 @@ export class AmplifyFederatedButtons {
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     const { oauth = {} } = Auth.configure({});

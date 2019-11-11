@@ -2,8 +2,8 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
-import { AUTH_SOURCE_KEY, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
 import { AuthState } from '../../common/types/auth-types';
+import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
 
 const logger = new Logger('amplify-facebook-button');
 
@@ -31,7 +31,7 @@ export class AmplifyFacebookButton {
     }
 
     if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     const date = new Date();

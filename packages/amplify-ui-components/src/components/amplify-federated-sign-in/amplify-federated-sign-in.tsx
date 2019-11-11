@@ -2,6 +2,7 @@ import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 const logger = new Logger('amplify-federated-sign-in');
 
 @Component({
@@ -16,7 +17,7 @@ export class AmplifyFederatedSignIn {
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     const { oauth = {} } = Auth.configure({});

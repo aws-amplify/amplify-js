@@ -7,6 +7,7 @@ import {
   SUBMIT_BUTTON_TEXT,
   CREATE_ACCOUNT_TEXT,
   NO_ACCOUNT_TEXT,
+  NO_AUTH_MODULE_FOUND,
   FORGOT_PASSWORD_TEXT,
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
@@ -94,7 +95,7 @@ export class AmplifySignIn {
 
   checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     Auth.verifiedContact(user).then(data => {
       if (Object.keys(data.verified).length === 0) {
@@ -114,7 +115,7 @@ export class AmplifySignIn {
     }
 
     if (!Auth || typeof Auth.signIn !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     this.loading = true;
     try {

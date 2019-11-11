@@ -1,7 +1,13 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, MfaOption, CognitoUserInterface, ChallengeName } from '../../common/types/auth-types';
-import { BACK_TO_SIGN_IN, CONFIRM, CONFIRM_SMS_CODE, CONFIRM_TOTP_CODE } from '../../common/constants';
+import {
+  BACK_TO_SIGN_IN,
+  CONFIRM,
+  CONFIRM_SMS_CODE,
+  CONFIRM_TOTP_CODE,
+  NO_AUTH_MODULE_FOUND,
+} from '../../common/constants';
 import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
@@ -72,7 +78,7 @@ export class AmplifyConfirmSignIn {
 
   checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     Auth.verifiedContact(user).then(data => {
       if (Object.keys(data.verified).length === 0) {
@@ -91,7 +97,7 @@ export class AmplifyConfirmSignIn {
     const mfaType =
       this.user['challengeName'] === ChallengeName.SoftwareTokenMFA ? ChallengeName.SoftwareTokenMFA : null;
     if (!Auth || typeof Auth.confirmSignIn !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     try {
