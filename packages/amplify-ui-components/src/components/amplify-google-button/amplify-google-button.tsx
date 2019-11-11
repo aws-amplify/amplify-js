@@ -1,5 +1,5 @@
 import { Auth } from '@aws-amplify/auth';
-import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop, Listen } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
@@ -112,7 +112,7 @@ export class AmplifyGoogleButton {
           />
         </svg>
 
-        {I18n.get(SIGN_IN_WITH_GOOGLE)}
+        {SIGN_IN_WITH_GOOGLE}
       </amplify-sign-in-button>
     );
   }

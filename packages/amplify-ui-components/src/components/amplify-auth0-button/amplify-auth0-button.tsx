@@ -1,4 +1,3 @@
-import { I18n } from '@aws-amplify/core';
 import { Component, h, Listen, Prop } from '@stencil/core';
 
 import { SIGN_IN_WITH_AUTH0 } from '../../common/constants';
@@ -33,7 +32,7 @@ export class AmplifyAuth0Button {
           />
         </svg>
 
-        {I18n.get(SIGN_IN_WITH_AUTH0)}
+        {SIGN_IN_WITH_AUTH0}
       </amplify-sign-in-button>
     );
   }

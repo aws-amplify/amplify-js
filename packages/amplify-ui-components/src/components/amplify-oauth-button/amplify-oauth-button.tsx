@@ -1,5 +1,4 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n } from '@aws-amplify/core';
 import { Component, h, Listen, Prop } from '@stencil/core';
 
 import { SIGN_IN_WITH_AWS } from '../../common/constants';

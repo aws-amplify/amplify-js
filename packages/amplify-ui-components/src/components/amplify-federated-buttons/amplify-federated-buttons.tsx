@@ -1,5 +1,5 @@
 import { Auth } from '@aws-amplify/auth';
-import { isEmpty, I18n } from '@aws-amplify/core';
+import { isEmpty } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
@@ -81,7 +81,7 @@ export class AmplifyFederatedButtons {
           </div>
         )}
 
-        <amplify-strike>{I18n.get('or')}</amplify-strike>
+        <amplify-strike>{'or'}</amplify-strike>
       </div>
     );
   }
