@@ -3,7 +3,10 @@ import { cx } from 'emotion';
 
 import * as classNames from './amplify-sign-in-button.style';
 
-@Component({ tag: 'amplify-sign-in-button' })
+@Component({
+  tag: 'amplify-sign-in-button',
+  shadow: false,
+})
 export class AmplifySignInButton {
   @Prop() provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
 

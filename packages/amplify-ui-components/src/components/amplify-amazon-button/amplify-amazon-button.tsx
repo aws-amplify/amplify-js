@@ -7,7 +7,10 @@ import { AuthState } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-amazon-button');
 
-@Component({ tag: 'amplify-amazon-button' })
+@Component({
+  tag: 'amplify-amazon-button',
+  shadow: false,
+})
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */
   @Prop() amazon_client_id: string;

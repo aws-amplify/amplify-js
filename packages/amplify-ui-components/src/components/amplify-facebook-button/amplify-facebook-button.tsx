@@ -7,7 +7,10 @@ import { AuthState } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-facebook-button');
 
-@Component({ tag: 'amplify-facebook-button' })
+@Component({
+  tag: 'amplify-facebook-button',
+  shadow: false,
+})
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
   @Prop() facebook_app_id: string;

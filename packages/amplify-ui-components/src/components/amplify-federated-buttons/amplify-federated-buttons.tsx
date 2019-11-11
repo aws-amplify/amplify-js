@@ -4,7 +4,10 @@ import { Component, h, Prop } from '@stencil/core';
 
 import { AuthState } from '../../common/types/auth-types';
 
-@Component({ tag: 'amplify-federated-buttons' })
+@Component({
+  tag: 'amplify-federated-buttons',
+  shadow: false,
+})
 export class AmplifyFederatedButtons {
   /** The current authentication state. */
   @Prop() authState: 'signIn' | 'signedOut' | 'signedUp' = 'signIn';

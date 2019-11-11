@@ -3,7 +3,10 @@ import { Component, h, Listen, Prop } from '@stencil/core';
 
 import { SIGN_IN_WITH_AUTH0 } from '../../common/constants';
 
-@Component({ tag: 'amplify-auth0-button' })
+@Component({
+  tag: 'amplify-auth0-button',
+  shadow: false,
+})
 export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */
   @Prop() auth0: any;

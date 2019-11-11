@@ -4,7 +4,10 @@ import { Component, h, Listen, Prop } from '@stencil/core';
 
 import { SIGN_IN_WITH_AWS } from '../../common/constants';
 
-@Component({ tag: 'amplify-oauth-button' })
+@Component({
+  tag: 'amplify-oauth-button',
+  shadow: false,
+})
 export class AmplifyOAuthButton {
   @Prop() oauth_config: any = {};
 

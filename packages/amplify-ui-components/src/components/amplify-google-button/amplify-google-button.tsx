@@ -7,7 +7,10 @@ import { AuthState } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-google-button');
 
-@Component({ tag: 'amplify-google-button' })
+@Component({
+  tag: 'amplify-google-button',
+  shadow: false,
+})
 export class AmplifyGoogleButton {
   /** Passed from the Authenticatior component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
