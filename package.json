@@ -6,13 +6,15 @@
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
 		"bootstrap": "lerna bootstrap",
-		"test": "lerna run test",
+		"test": "lerna run test --stream",
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
 		"coverage": "codecov || exit 0",
 		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/",
-		"build": "lerna run build",
-		"clean": "lerna run clean",
+		"build": "lerna run build --stream",
+		"build:esm:watch": "lerna run build:esm:watch --parallel",
+		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
+		"clean": "lerna run clean --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
 		"link-all": "yarn unlink-all && lerna exec --parallel yarn link",
@@ -54,6 +56,7 @@
 		"jest": "^24.x.x",
 		"json-loader": "^0.5.7",
 		"lerna": "^3.13.1",
+		"prettier": "^1.19.0",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
@@ -71,7 +74,8 @@
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
-		"webpack-cli": "^3.1.0"
+		"webpack-cli": "^3.1.0",
+		"winston": "^3.2.1"
 	},
 	"jest": {
 		"resetMocks": true,
