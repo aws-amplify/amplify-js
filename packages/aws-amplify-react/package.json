@@ -10,6 +10,8 @@
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "clean": "rimraf lib-esm lib dist",
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
