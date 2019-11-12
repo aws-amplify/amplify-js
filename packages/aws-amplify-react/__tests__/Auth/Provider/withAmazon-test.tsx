@@ -17,6 +17,7 @@ describe('withAmazon test', () => {
 			const Comp = withAmazon(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 
@@ -352,6 +353,7 @@ describe('AmazonButton test', () => {
 			const wrapper = shallow(<AmazonButton />);
 
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });

@@ -17,6 +17,7 @@ describe('withFacebook test', () => {
 			const Comp = withFacebook(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 
@@ -387,6 +388,7 @@ describe('FacebookButton test', () => {
 			const wrapper = shallow(<FacebookButton />);
 
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });

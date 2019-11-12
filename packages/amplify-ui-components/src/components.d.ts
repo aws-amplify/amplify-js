@@ -8,12 +8,13 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  FormFieldTypes,
-} from './components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
   AuthState,
   CognitoUserInterface,
+  FederatedConfig,
 } from './common/types/auth-types';
+import {
+  FormFieldTypes,
+} from './components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   ButtonTypes,
   TextFieldTypes,
@@ -36,13 +37,33 @@ import {
 } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
+  interface AmplifyAmazonButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'clientId': FederatedConfig['amazonClientId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+  }
   interface AmplifyAuthFields {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
   }
+  interface AmplifyAuth0Button {
+    /**
+    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+    */
+    'config': FederatedConfig['auth0Config'];
+  }
   interface AmplifyAuthenticator {
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated': FederatedConfig;
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
@@ -251,6 +272,40 @@ export namespace Components {
     'value'?: string;
   }
   interface AmplifyExamples {}
+  interface AmplifyFacebookButton {
+    /**
+    * App-specific client ID from Facebook
+    */
+    'appId': FederatedConfig['facebookAppId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyFederatedButtons {
+    /**
+    * The current authentication state.
+    */
+    'authState': AuthState;
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated': FederatedConfig;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyFederatedSignIn {
+    /**
+    * The current authentication state.
+    */
+    'authState': AuthState;
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated': any;
+  }
   interface AmplifyForgotPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -355,6 +410,16 @@ export namespace Components {
     */
     'submitButtonText'?: string;
   }
+  interface AmplifyGoogleButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'clientId': FederatedConfig['googleClientId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+  }
   interface AmplifyHint {
     /**
     * (Optional) Override default styling
@@ -429,6 +494,9 @@ export namespace Components {
   interface AmplifyLink {
     'overrideStyle': boolean;
     'role': string;
+  }
+  interface AmplifyOauthButton {
+    'config': FederatedConfig['oauthConfig'];
   }
   interface AmplifyPasswordField {
     /**
@@ -568,6 +636,10 @@ export namespace Components {
   }
   interface AmplifySignIn {
     /**
+    * Federated credentials & configuration.
+    */
+    'federated': FederatedConfig;
+    /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields': FormFieldTypes | string[];
@@ -595,6 +667,9 @@ export namespace Components {
     * Engages when invalid actions occur, such as missing field, etc.
     */
     'validationErrors': string;
+  }
+  interface AmplifySignInButton {
+    'provider': 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
     /**
@@ -648,6 +723,7 @@ export namespace Components {
     */
     'validationErrors': string;
   }
+  interface AmplifyStrike {}
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -704,10 +780,22 @@ export namespace Components {
 declare global {
 
 
+  interface HTMLAmplifyAmazonButtonElement extends Components.AmplifyAmazonButton, HTMLStencilElement {}
+  var HTMLAmplifyAmazonButtonElement: {
+    prototype: HTMLAmplifyAmazonButtonElement;
+    new (): HTMLAmplifyAmazonButtonElement;
+  };
+
   interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {}
   var HTMLAmplifyAuthFieldsElement: {
     prototype: HTMLAmplifyAuthFieldsElement;
     new (): HTMLAmplifyAuthFieldsElement;
+  };
+
+  interface HTMLAmplifyAuth0ButtonElement extends Components.AmplifyAuth0Button, HTMLStencilElement {}
+  var HTMLAmplifyAuth0ButtonElement: {
+    prototype: HTMLAmplifyAuth0ButtonElement;
+    new (): HTMLAmplifyAuth0ButtonElement;
   };
 
   interface HTMLAmplifyAuthenticatorElement extends Components.AmplifyAuthenticator, HTMLStencilElement {}
@@ -764,6 +852,24 @@ declare global {
     new (): HTMLAmplifyExamplesElement;
   };
 
+  interface HTMLAmplifyFacebookButtonElement extends Components.AmplifyFacebookButton, HTMLStencilElement {}
+  var HTMLAmplifyFacebookButtonElement: {
+    prototype: HTMLAmplifyFacebookButtonElement;
+    new (): HTMLAmplifyFacebookButtonElement;
+  };
+
+  interface HTMLAmplifyFederatedButtonsElement extends Components.AmplifyFederatedButtons, HTMLStencilElement {}
+  var HTMLAmplifyFederatedButtonsElement: {
+    prototype: HTMLAmplifyFederatedButtonsElement;
+    new (): HTMLAmplifyFederatedButtonsElement;
+  };
+
+  interface HTMLAmplifyFederatedSignInElement extends Components.AmplifyFederatedSignIn, HTMLStencilElement {}
+  var HTMLAmplifyFederatedSignInElement: {
+    prototype: HTMLAmplifyFederatedSignInElement;
+    new (): HTMLAmplifyFederatedSignInElement;
+  };
+
   interface HTMLAmplifyForgotPasswordElement extends Components.AmplifyForgotPassword, HTMLStencilElement {}
   var HTMLAmplifyForgotPasswordElement: {
     prototype: HTMLAmplifyForgotPasswordElement;
@@ -780,6 +886,12 @@ declare global {
   var HTMLAmplifyFormSectionElement: {
     prototype: HTMLAmplifyFormSectionElement;
     new (): HTMLAmplifyFormSectionElement;
+  };
+
+  interface HTMLAmplifyGoogleButtonElement extends Components.AmplifyGoogleButton, HTMLStencilElement {}
+  var HTMLAmplifyGoogleButtonElement: {
+    prototype: HTMLAmplifyGoogleButtonElement;
+    new (): HTMLAmplifyGoogleButtonElement;
   };
 
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
@@ -816,6 +928,12 @@ declare global {
   var HTMLAmplifyLinkElement: {
     prototype: HTMLAmplifyLinkElement;
     new (): HTMLAmplifyLinkElement;
+  };
+
+  interface HTMLAmplifyOauthButtonElement extends Components.AmplifyOauthButton, HTMLStencilElement {}
+  var HTMLAmplifyOauthButtonElement: {
+    prototype: HTMLAmplifyOauthButtonElement;
+    new (): HTMLAmplifyOauthButtonElement;
   };
 
   interface HTMLAmplifyPasswordFieldElement extends Components.AmplifyPasswordField, HTMLStencilElement {}
@@ -866,6 +984,12 @@ declare global {
     new (): HTMLAmplifySignInElement;
   };
 
+  interface HTMLAmplifySignInButtonElement extends Components.AmplifySignInButton, HTMLStencilElement {}
+  var HTMLAmplifySignInButtonElement: {
+    prototype: HTMLAmplifySignInButtonElement;
+    new (): HTMLAmplifySignInButtonElement;
+  };
+
   interface HTMLAmplifySignOutElement extends Components.AmplifySignOut, HTMLStencilElement {}
   var HTMLAmplifySignOutElement: {
     prototype: HTMLAmplifySignOutElement;
@@ -876,6 +1000,12 @@ declare global {
   var HTMLAmplifySignUpElement: {
     prototype: HTMLAmplifySignUpElement;
     new (): HTMLAmplifySignUpElement;
+  };
+
+  interface HTMLAmplifyStrikeElement extends Components.AmplifyStrike, HTMLStencilElement {}
+  var HTMLAmplifyStrikeElement: {
+    prototype: HTMLAmplifyStrikeElement;
+    new (): HTMLAmplifyStrikeElement;
   };
 
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
@@ -896,7 +1026,9 @@ declare global {
     new (): HTMLRockPaperScissorElement;
   };
   interface HTMLElementTagNameMap {
+    'amplify-amazon-button': HTMLAmplifyAmazonButtonElement;
     'amplify-auth-fields': HTMLAmplifyAuthFieldsElement;
+    'amplify-auth0-button': HTMLAmplifyAuth0ButtonElement;
     'amplify-authenticator': HTMLAmplifyAuthenticatorElement;
     'amplify-button': HTMLAmplifyButtonElement;
     'amplify-checkbox': HTMLAmplifyCheckboxElement;
@@ -906,15 +1038,20 @@ declare global {
     'amplify-country-dial-code': HTMLAmplifyCountryDialCodeElement;
     'amplify-email-field': HTMLAmplifyEmailFieldElement;
     'amplify-examples': HTMLAmplifyExamplesElement;
+    'amplify-facebook-button': HTMLAmplifyFacebookButtonElement;
+    'amplify-federated-buttons': HTMLAmplifyFederatedButtonsElement;
+    'amplify-federated-sign-in': HTMLAmplifyFederatedSignInElement;
     'amplify-forgot-password': HTMLAmplifyForgotPasswordElement;
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
+    'amplify-google-button': HTMLAmplifyGoogleButtonElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-icon-button': HTMLAmplifyIconButtonElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-oauth-button': HTMLAmplifyOauthButtonElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
@@ -923,8 +1060,10 @@ declare global {
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
+    'amplify-sign-in-button': HTMLAmplifySignInButtonElement;
     'amplify-sign-out': HTMLAmplifySignOutElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
+    'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
@@ -932,13 +1071,33 @@ declare global {
 }
 
 declare namespace LocalJSX {
+  interface AmplifyAmazonButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'clientId'?: FederatedConfig['amazonClientId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+  }
   interface AmplifyAuthFields {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
   }
+  interface AmplifyAuth0Button {
+    /**
+    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+    */
+    'config'?: FederatedConfig['auth0Config'];
+  }
   interface AmplifyAuthenticator {
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: FederatedConfig;
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
@@ -1147,6 +1306,40 @@ declare namespace LocalJSX {
     'value'?: string;
   }
   interface AmplifyExamples {}
+  interface AmplifyFacebookButton {
+    /**
+    * App-specific client ID from Facebook
+    */
+    'appId'?: FederatedConfig['facebookAppId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyFederatedButtons {
+    /**
+    * The current authentication state.
+    */
+    'authState'?: AuthState;
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: FederatedConfig;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyFederatedSignIn {
+    /**
+    * The current authentication state.
+    */
+    'authState'?: AuthState;
+    /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: any;
+  }
   interface AmplifyForgotPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -1251,6 +1444,16 @@ declare namespace LocalJSX {
     */
     'submitButtonText'?: string;
   }
+  interface AmplifyGoogleButton {
+    /**
+    * App-specific client ID from Google
+    */
+    'clientId'?: FederatedConfig['googleClientId'];
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+  }
   interface AmplifyHint {
     /**
     * (Optional) Override default styling
@@ -1325,6 +1528,9 @@ declare namespace LocalJSX {
   interface AmplifyLink {
     'overrideStyle'?: boolean;
     'role'?: string;
+  }
+  interface AmplifyOauthButton {
+    'config'?: FederatedConfig['oauthConfig'];
   }
   interface AmplifyPasswordField {
     /**
@@ -1464,6 +1670,10 @@ declare namespace LocalJSX {
   }
   interface AmplifySignIn {
     /**
+    * Federated credentials & configuration.
+    */
+    'federated'?: FederatedConfig;
+    /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
     */
     'formFields'?: FormFieldTypes | string[];
@@ -1491,6 +1701,9 @@ declare namespace LocalJSX {
     * Engages when invalid actions occur, such as missing field, etc.
     */
     'validationErrors'?: string;
+  }
+  interface AmplifySignInButton {
+    'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
     /**
@@ -1544,6 +1757,7 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
+  interface AmplifyStrike {}
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -1598,7 +1812,9 @@ declare namespace LocalJSX {
   }
 
   interface IntrinsicElements {
+    'amplify-amazon-button': AmplifyAmazonButton;
     'amplify-auth-fields': AmplifyAuthFields;
+    'amplify-auth0-button': AmplifyAuth0Button;
     'amplify-authenticator': AmplifyAuthenticator;
     'amplify-button': AmplifyButton;
     'amplify-checkbox': AmplifyCheckbox;
@@ -1608,15 +1824,20 @@ declare namespace LocalJSX {
     'amplify-country-dial-code': AmplifyCountryDialCode;
     'amplify-email-field': AmplifyEmailField;
     'amplify-examples': AmplifyExamples;
+    'amplify-facebook-button': AmplifyFacebookButton;
+    'amplify-federated-buttons': AmplifyFederatedButtons;
+    'amplify-federated-sign-in': AmplifyFederatedSignIn;
     'amplify-forgot-password': AmplifyForgotPassword;
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
+    'amplify-google-button': AmplifyGoogleButton;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-icon-button': AmplifyIconButton;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-oauth-button': AmplifyOauthButton;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
@@ -1625,8 +1846,10 @@ declare namespace LocalJSX {
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
+    'amplify-sign-in-button': AmplifySignInButton;
     'amplify-sign-out': AmplifySignOut;
     'amplify-sign-up': AmplifySignUp;
+    'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
@@ -1639,7 +1862,9 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'amplify-amazon-button': LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
       'amplify-auth-fields': LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
+      'amplify-auth0-button': LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
       'amplify-authenticator': LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
@@ -1649,15 +1874,20 @@ declare module "@stencil/core" {
       'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
+      'amplify-facebook-button': LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;
+      'amplify-federated-buttons': LocalJSX.AmplifyFederatedButtons & JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
+      'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
       'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
+      'amplify-google-button': LocalJSX.AmplifyGoogleButton & JSXBase.HTMLAttributes<HTMLAmplifyGoogleButtonElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
       'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
       'amplify-icon-button': LocalJSX.AmplifyIconButton & JSXBase.HTMLAttributes<HTMLAmplifyIconButtonElement>;
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
+      'amplify-oauth-button': LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
@@ -1666,8 +1896,10 @@ declare module "@stencil/core" {
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
+      'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
       'amplify-sign-out': LocalJSX.AmplifySignOut & JSXBase.HTMLAttributes<HTMLAmplifySignOutElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
+      'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;

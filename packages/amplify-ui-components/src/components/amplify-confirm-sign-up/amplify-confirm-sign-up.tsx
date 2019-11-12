@@ -9,6 +9,7 @@ import {
   CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
   CONFIRM_SIGN_UP_LOST_CODE,
   CONFIRM_SIGN_UP_RESEND_CODE,
+  NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
 
@@ -96,7 +97,7 @@ export class AmplifyConfirmSignUp {
       event.preventDefault();
     }
     if (!Auth || typeof Auth.resendSignUp !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
       if (!this.username) throw new Error('Username can not be empty');
@@ -114,7 +115,7 @@ export class AmplifyConfirmSignUp {
       event.preventDefault();
     }
     if (!Auth || typeof Auth.confirmSignUp !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     try {

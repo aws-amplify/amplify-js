@@ -1,9 +1,29 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySignIn } from './amplify-sign-in';
+import * as stories from './amplify-sign-in.stories';
 // import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
 // import Tunnel from '../../data/auth-state';
 
+const {
+  default: { title },
+  ...templates
+} = stories;
+
 describe('amplify-sign-in spec:', () => {
+  describe(`${title} stories`, () => {
+    const components = [AmplifySignIn];
+
+    describe('stories', () => {
+      Object.entries(templates).forEach(([name, template]) => {
+        it(name, async () => {
+          const page = await newSpecPage({ components, template });
+
+          expect(page.root).toMatchSnapshot();
+        });
+      });
+    });
+  });
+
   describe('Component logic ->', () => {
     let signIn;
 

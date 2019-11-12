@@ -1,12 +1,13 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName } from '../../common/types/auth-types';
+import { AuthState, ChallengeName, FederatedConfig } from '../../common/types/auth-types';
 
 import {
   HEADER_TEXT,
   SUBMIT_BUTTON_TEXT,
   CREATE_ACCOUNT_TEXT,
   NO_ACCOUNT_TEXT,
+  NO_AUTH_MODULE_FOUND,
   FORGOT_PASSWORD_TEXT,
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
@@ -31,6 +32,8 @@ export class AmplifySignIn {
   @Prop() submitButtonText: string = SUBMIT_BUTTON_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
+  /** Federated credentials & configuration. */
+  @Prop() federated: FederatedConfig = {};
   /** Passed from the Authenticatior component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**
@@ -91,7 +94,7 @@ export class AmplifySignIn {
 
   checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     Auth.verifiedContact(user).then(data => {
       if (!isEmpty(data.verified)) {
@@ -104,14 +107,13 @@ export class AmplifySignIn {
   }
 
   async signIn(event) {
-    console.log(event);
     // avoid submitting the form
     if (event) {
       event.preventDefault();
     }
 
     if (!Auth || typeof Auth.signIn !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
     this.loading = true;
     try {
@@ -166,6 +168,10 @@ export class AmplifySignIn {
           </span>
         }
       >
+        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+
+        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
+
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>
     );

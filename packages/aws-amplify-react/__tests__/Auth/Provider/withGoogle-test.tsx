@@ -17,6 +17,7 @@ describe('withGoogle test', () => {
 			const Comp = withGoogle(MockComp);
 			const wrapper = shallow(<Comp />);
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 
@@ -489,6 +490,7 @@ describe('GoogleButton test', () => {
 			const wrapper = shallow(<GoogleButton />);
 
 			expect(wrapper).toMatchSnapshot();
+			expect(render(wrapper)).toMatchSnapshot();
 		});
 	});
 });

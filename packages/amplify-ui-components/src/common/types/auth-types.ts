@@ -21,6 +21,20 @@ export enum AuthState {
   VerifyContact = 'verifycontact',
 }
 
+export interface FederatedConfig {
+  auth0Config?: {
+    clientID: string;
+    domain: string;
+    [key: string]: any;
+  };
+  amazonClientId?: string;
+  facebookAppId?: string;
+  googleClientId?: string;
+  oauthConfig?: {
+    [key: string]: any;
+  };
+}
+
 export interface CognitoUserInterface {
   codeDeliveryDetails?: {
     AttributeName?: string;

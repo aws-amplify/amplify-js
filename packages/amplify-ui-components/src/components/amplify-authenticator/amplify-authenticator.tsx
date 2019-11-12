@@ -1,5 +1,5 @@
 import { Component, State, Prop, h } from '@stencil/core';
-import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
 
 import { Logger } from '@aws-amplify/core';
@@ -17,6 +17,8 @@ export class AmplifyAuthenticator {
   @State() authState: AuthState = AuthState.Loading;
 
   @State() authData: CognitoUserInterface;
+  /** Federated credentials & configuration. */
+  @Prop() federated: FederatedConfig = {};
 
   componentWillLoad() {
     this.authState = this.initialAuthState;
@@ -44,7 +46,7 @@ export class AmplifyAuthenticator {
       case AuthState.Loading:
         return <div>Loading...</div>;
       case AuthState.SignIn:
-        return <amplify-sign-in handleAuthStateChange={this.onAuthStateChange} />;
+        return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignIn:
         return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.SignOut:

@@ -9,6 +9,7 @@
 
 | Property           | Attribute            | Description                                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
 | ------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `federated`        | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `{}`               |
 | `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
 
 
@@ -40,9 +41,21 @@ graph TD;
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
+  amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-auth-fields
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-federated-buttons --> amplify-google-button
+  amplify-federated-buttons --> amplify-facebook-button
+  amplify-federated-buttons --> amplify-amazon-button
+  amplify-federated-buttons --> amplify-oauth-button
+  amplify-federated-buttons --> amplify-auth0-button
+  amplify-federated-buttons --> amplify-strike
+  amplify-google-button --> amplify-sign-in-button
+  amplify-facebook-button --> amplify-sign-in-button
+  amplify-amazon-button --> amplify-sign-in-button
+  amplify-oauth-button --> amplify-sign-in-button
+  amplify-auth0-button --> amplify-sign-in-button
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
