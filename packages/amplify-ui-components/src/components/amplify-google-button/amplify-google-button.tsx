@@ -84,7 +84,11 @@ export class AmplifyGoogleButton {
 
     const authenticatedUser = await Auth.currentAuthenticatedUser();
 
-    this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
+    try {
+      this.handleAuthStateChange(AuthState.SignedIn, authenticatedUser);
+    } catch (error) {
+      this.handleError(error);
+    }
   };
 
   render() {
