@@ -80,8 +80,6 @@ export class AmplifyFederatedButtons {
             <amplify-auth0-button config={auth0Config} />
           </div>
         )}
-
-        <amplify-strike>{'or'}</amplify-strike>
       </div>
     );
   }
