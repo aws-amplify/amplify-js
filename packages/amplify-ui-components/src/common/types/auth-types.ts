@@ -5,7 +5,7 @@ export enum AuthState {
   SignOut = 'signout',
   SignIn = 'signin',
   Loading = 'loading',
-  signedOut = 'signedout',
+  SignedOut = 'signedout',
   SignedIn = 'signedin',
   SigningUp = 'signingup',
   ConfirmSignUp = 'confirmSignUp',

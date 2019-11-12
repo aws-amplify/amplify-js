@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                           | Type  | Default     |
-| -------- | --------- | --------------------------------------------------------------------- | ----- | ----------- |
-| `auth0`  | `auth-0`  | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `any` | `undefined` |
+| Property | Attribute | Description                                                           | Type                                                        | Default     |
+| -------- | --------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
+| `config` | --        | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ [key: string]: any; clientID: string; domain: string; }` | `undefined` |
 
 
 ## Dependencies

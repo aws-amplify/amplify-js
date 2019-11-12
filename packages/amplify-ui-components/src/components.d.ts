@@ -671,6 +671,20 @@ export namespace Components {
   interface AmplifySignInButton {
     'provider': 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
+  interface AmplifySignOut {
+    /**
+    * Text inside of the Sign Out button
+    */
+    'buttonText': string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+  }
   interface AmplifySignUp {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -976,6 +990,12 @@ declare global {
     new (): HTMLAmplifySignInButtonElement;
   };
 
+  interface HTMLAmplifySignOutElement extends Components.AmplifySignOut, HTMLStencilElement {}
+  var HTMLAmplifySignOutElement: {
+    prototype: HTMLAmplifySignOutElement;
+    new (): HTMLAmplifySignOutElement;
+  };
+
   interface HTMLAmplifySignUpElement extends Components.AmplifySignUp, HTMLStencilElement {}
   var HTMLAmplifySignUpElement: {
     prototype: HTMLAmplifySignUpElement;
@@ -1041,6 +1061,7 @@ declare global {
     'amplify-select': HTMLAmplifySelectElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-button': HTMLAmplifySignInButtonElement;
+    'amplify-sign-out': HTMLAmplifySignOutElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
@@ -1684,6 +1705,20 @@ declare namespace LocalJSX {
   interface AmplifySignInButton {
     'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
+  interface AmplifySignOut {
+    /**
+    * Text inside of the Sign Out button
+    */
+    'buttonText'?: string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+  }
   interface AmplifySignUp {
     /**
     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -1812,6 +1847,7 @@ declare namespace LocalJSX {
     'amplify-select': AmplifySelect;
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-button': AmplifySignInButton;
+    'amplify-sign-out': AmplifySignOut;
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
@@ -1861,6 +1897,7 @@ declare module "@stencil/core" {
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
       'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
+      'amplify-sign-out': LocalJSX.AmplifySignOut & JSXBase.HTMLAttributes<HTMLAmplifySignOutElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;

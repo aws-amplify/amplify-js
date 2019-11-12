@@ -8,8 +8,6 @@ export const AMPLIFY_UI_SCENE_LOADING = `${AMPLIFY_UI_PREFIX}-scene-loading`;
 
 // Dictionaries
 
-export const AUTH_SOURCE_KEY = 'amplify-federated-auth-source';
-
 /*
   The below constants will be moved to an i18n solution.
   Storing here to have a common place to pull from once we pick up that work.
@@ -79,6 +77,12 @@ export const CONFIRM_SIGN_UP_CODE_LABEL = 'Confirmation Code';
 export const CONFIRM_SIGN_UP_CODE_PLACEHOLDER = 'Enter your code';
 export const CONFIRM_SIGN_UP_LOST_CODE = 'Lost your code?';
 export const CONFIRM_SIGN_UP_RESEND_CODE = 'Resend Code';
+
+// Sign Out
+export const SIGN_OUT = 'Sign Out';
+
+// Auth Keys
+export const AUTH_SOURCE_KEY = 'amplify-auth-source';
 
 // Error message Common Constants
 export const PHONE_EMPTY_ERROR_MESSAGE = 'Phone number can not be empty';

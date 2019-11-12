@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property    | Attribute    | Description                            | Type                                    | Default    |
-| ----------- | ------------ | -------------------------------------- | --------------------------------------- | ---------- |
-| `authState` | `auth-state` | The current authentication state.      | `"signIn" \| "signedOut" \| "signedUp"` | `'signIn'` |
-| `federated` | `federated`  | Federated credentials & configuration. | `any`                                   | `{}`       |
+| Property    | Attribute    | Description                            | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
+| ----------- | ------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `authState` | `auth-state` | The current authentication state.      | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
+| `federated` | `federated`  | Federated credentials & configuration. | `any`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `{}`               |
 
 
 ## Dependencies

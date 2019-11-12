@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property       | Attribute      | Description | Type  | Default |
-| -------------- | -------------- | ----------- | ----- | ------- |
-| `oauth_config` | `oauth_config` |             | `any` | `{}`    |
+| Property | Attribute | Description | Type                      | Default |
+| -------- | --------- | ----------- | ------------------------- | ------- |
+| `config` | --        |             | `{ [key: string]: any; }` | `{}`    |
 
 
 ## Dependencies

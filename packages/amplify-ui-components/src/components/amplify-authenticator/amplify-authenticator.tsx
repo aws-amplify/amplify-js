@@ -28,7 +28,12 @@ export class AmplifyAuthenticator {
     if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
-    this.authState = nextAuthState;
+    if (nextAuthState === AuthState.SignedOut) {
+      this.authState = this.initialAuthState;
+    } else {
+      this.authState = nextAuthState;
+    }
+
     if (data !== undefined) {
       this.authData = data;
       logger.log('Auth Data was set:', this.authData);
@@ -64,9 +69,14 @@ export class AmplifyAuthenticator {
       authState: this.authState,
       onAuthStateChange: this.onAuthStateChange,
     };
+
     return (
       <AuthStateTunnel.Provider state={tunnelState}>
         {this.renderAuthComponent(this.authState)}
+        <div hidden={this.authState !== AuthState.SignedIn}>
+          <amplify-sign-out handleAuthStateChange={this.onAuthStateChange} />
+          <slot />
+        </div>
       </AuthStateTunnel.Provider>
     );
   }

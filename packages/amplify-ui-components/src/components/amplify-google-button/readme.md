@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property                | Attribute          | Description                                                                                                                     | Type                                                | Default     |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `google_client_id`      | `google_client_id` | App-specific client ID from Google                                                                                              | `string`                                            | `undefined` |
-| `handleAuthStateChange` | --                 | Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
+| Property                | Attribute   | Description                                                                                                                     | Type                                                | Default     |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
+| `clientId`              | `client-id` | App-specific client ID from Google                                                                                              | `string`                                            | `undefined` |
+| `handleAuthStateChange` | --          | Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
 
 
 ## Dependencies

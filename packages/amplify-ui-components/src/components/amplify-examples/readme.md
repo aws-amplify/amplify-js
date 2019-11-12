@@ -24,6 +24,7 @@ graph TD;
   amplify-authenticator --> amplify-sign-up
   amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
+  amplify-authenticator --> amplify-sign-out
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
@@ -72,6 +73,7 @@ graph TD;
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields
+  amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
