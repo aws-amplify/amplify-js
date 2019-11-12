@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Component, h, Prop, Listen } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
 import { AuthState, FederatedConfig } from '../../common/types/auth-types';
@@ -38,15 +38,14 @@ export class AmplifyGoogleButton {
     return null;
   }
 
-  @Listen('click')
-  handleClick(event) {
+  handleClick = event => {
     event.preventDefault();
 
     this.getAuthInstance()
       .signIn()
       .then(this.handleUser)
       .catch(this.handleError);
-  }
+  };
 
   handleError = error => {
     console.error(error);

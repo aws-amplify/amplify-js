@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Component, h, Listen, Prop } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
 import { AuthState, FederatedConfig } from '../../common/types/auth-types';
@@ -58,8 +58,7 @@ export class AmplifyAmazonButton {
   /**
    * @see https://developer.amazon.com/docs/login-with-amazon/install-sdk-javascript.html
    */
-  @Listen('click')
-  handleClick(event) {
+  handleClick = event => {
     event.preventDefault();
 
     window['amazon'].Login.setClientId(this.clientId);
@@ -77,11 +76,11 @@ export class AmplifyAmazonButton {
 
       this.federatedSignIn(response);
     });
-  }
+  };
 
   render() {
     return (
-      <amplify-sign-in-button provider="amazon">
+      <amplify-sign-in-button onClick={this.handleClick} provider="amazon">
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
 
         <svg slot="icon" viewBox="0 0 248 268" xmlns="http://www.w3.org/2000/svg">

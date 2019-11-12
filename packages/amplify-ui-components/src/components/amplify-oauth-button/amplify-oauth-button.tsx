@@ -1,5 +1,5 @@
 import { Auth } from '@aws-amplify/auth';
-import { Component, h, Listen, Prop } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 import { SIGN_IN_WITH_AWS } from '../../common/constants';
 import { FederatedConfig } from '../../common/types/auth-types';
@@ -11,13 +11,16 @@ import { FederatedConfig } from '../../common/types/auth-types';
 export class AmplifyOAuthButton {
   @Prop() config: FederatedConfig['oauthConfig'] = {};
 
-  @Listen('click')
   handleClick(event) {
     event.preventDefault();
     Auth.federatedSignIn();
   }
 
   render() {
-    return <amplify-sign-in-button provider="oauth">{this.config.label || SIGN_IN_WITH_AWS}</amplify-sign-in-button>;
+    return (
+      <amplify-sign-in-button onClick={this.handleClick} provider="oauth">
+        {this.config.label || SIGN_IN_WITH_AWS}
+      </amplify-sign-in-button>
+    );
   }
 }

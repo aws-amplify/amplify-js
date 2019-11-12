@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Component, h, Prop, Listen } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
 import { AuthState, FederatedConfig } from '../../common/types/auth-types';
@@ -71,8 +71,7 @@ export class AmplifyFacebookButton {
   /**
    * @see https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0
    */
-  @Listen('click')
-  handleClick(event) {
+  handleClick = event => {
     event.preventDefault();
 
     // Initialize before usage for latest knob value
@@ -84,7 +83,7 @@ export class AmplifyFacebookButton {
     });
 
     this.getLoginStatus();
-  }
+  };
 
   login = () => {
     const scope = 'public_profile,email';
@@ -101,7 +100,7 @@ export class AmplifyFacebookButton {
 
   render() {
     return (
-      <amplify-sign-in-button provider="facebook">
+      <amplify-sign-in-button onClick={this.handleClick} provider="facebook">
         <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
         <svg slot="icon" viewBox="0 0 279 538" xmlns="http://www.w3.org/2000/svg">
