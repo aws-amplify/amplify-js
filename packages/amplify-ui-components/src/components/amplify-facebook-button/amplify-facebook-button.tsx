@@ -74,7 +74,6 @@ export class AmplifyFacebookButton {
   handleClick = event => {
     event.preventDefault();
 
-    // Initialize before usage for latest knob value
     window['FB'].init({
       appId: this.appId,
       cookie: true,
