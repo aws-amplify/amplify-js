@@ -153,7 +153,6 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials } from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
 
 const authOptions: AuthOptions = {
@@ -184,12 +183,6 @@ const session = new CognitoUserSession({
 	IdToken: idToken,
 	AccessToken: accessToken,
 });
-
-const cognitoCredentialSpyon = jest
-	.spyOn(CognitoIdentityCredentials.prototype, 'get')
-	.mockImplementation(callback => {
-		callback(null);
-	});
 
 describe('for react native', () => {
 	describe('currentUserCredentials test', () => {
