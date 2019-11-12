@@ -1,312 +1,465 @@
 import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
-import * as Rekognition from 'aws-sdk/clients/rekognition';
+import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
+import { SearchFacesByImageCommand } from '@aws-sdk/client-rekognition-browser/commands/SearchFacesByImageCommand';
 import {
-    IdentifyLabelsInput, IdentifyLabelsOutput, IdentifySource, IdentifyEntitiesInput, IdentifyEntitiesOutput,
-    isStorageSource, isFileSource, isBytesSource, IdentifyTextInput, IdentifyTextOutput, isIdentifyCelebrities,
-    isIdentifyFromCollection, IdentifyFromCollection
+	DetectTextCommand,
+	DetectTextInput,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectTextCommand';
+import {
+	DetectLabelsCommand,
+	DetectLabelsInput,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectLabelsCommand';
+import { DetectFacesCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectFacesCommand';
+import {
+	DetectModerationLabelsCommand,
+	DetectModerationLabelsInput,
+} from '@aws-sdk/client-rekognition-browser/commands/DetectModerationLabelsCommand';
+import { RecognizeCelebritiesCommand } from '@aws-sdk/client-rekognition-browser/commands/RecognizeCelebritiesCommand';
+import {
+	IdentifyLabelsInput,
+	IdentifyLabelsOutput,
+	IdentifySource,
+	IdentifyEntitiesInput,
+	IdentifyEntitiesOutput,
+	isStorageSource,
+	isFileSource,
+	isBytesSource,
+	IdentifyTextInput,
+	IdentifyTextOutput,
+	isIdentifyCelebrities,
+	isIdentifyFromCollection,
+	IdentifyFromCollection,
+	FeatureTypes,
 } from '../types';
-import * as Textract from 'aws-sdk/clients/textract';
+import {
+	Image,
+	Document,
+	TextDetectionList,
+	BlockList,
+} from '../types/AWSTypes';
+import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
+import {
+	DetectDocumentTextCommand,
+	DetectDocumentTextInput,
+} from '@aws-sdk/client-textract-browser/commands/DetectDocumentTextCommand';
+import {
+	AnalyzeDocumentCommand,
+	AnalyzeDocumentInput,
+} from '@aws-sdk/client-textract-browser/commands/AnalyzeDocumentCommand';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
-import { categorizeRekognitionBlocks, categorizeTextractBlocks } from './IdentifyTextUtils';
+import {
+	categorizeRekognitionBlocks,
+	categorizeTextractBlocks,
+} from './IdentifyTextUtils';
 
-export default class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
-    private rekognition: Rekognition;
-    private textract: Textract;
+export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
+	private rekognitionClient: RekognitionClient;
+	private textractClient: TextractClient;
 
-    constructor() {
-        super();
-    }
+	constructor() {
+		super();
+	}
 
-    getProviderName() {
-        return 'AmazonAIIdentifyPredictionsProvider';
-    }
+	getProviderName() {
+		return 'AmazonAIIdentifyPredictionsProvider';
+	}
 
-    /**
-     * Verify user input source and converts it into source object readable by Rekognition and Textract.
-     * Note that Rekognition and Textract use the same source interface, so we need not worry about types.
-     * @param {IdentifySource} source - User input source that directs to the object user wants
-     * to identify (storage, file, or bytes).
-     * @return {Promise<Rekognition.Image>} - Promise resolving to the converted source object.
-     */
-    private configureSource(source: IdentifySource): Promise<Rekognition.Image> {
-        return new Promise((res, rej) => {
-            if (isStorageSource(source)) {
-                const storageConfig = { level: source.level, identityId: source.identityId };
-                Storage.get(source.key, storageConfig)
-                    .then((url: string) => {
-                        const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
-                        const parsedURL = url.match(parser);
-                        if (parsedURL.length < 3) rej('Invalid S3 key was given.');
-                        res({ S3Object: { Bucket: parsedURL[1], Name: parsedURL[2] } });
-                    })
-                    .catch(err => rej(err));
-            } else if (isFileSource(source)) {
-                blobToArrayBuffer(source.file)
-                    .then(buffer => { res({ Bytes: buffer }); })
-                    .catch(err => rej(err));
-            } else if (isBytesSource(source)) {
-                const bytes = source.bytes;
-                if (bytes instanceof Blob) {
-                    blobToArrayBuffer(bytes)
-                        .then(buffer => { res({ Bytes: buffer }); })
-                        .catch(err => rej(err));
-                }
-                // everything else can be directly passed to Rekognition / Textract.
-                res({ Bytes: bytes });
-            } else {
-                rej('Input source is not configured correctly.');
-            }
-        });
-    }
+	/**
+	 * Verify user input source and converts it into source object readable by Rekognition and Textract.
+	 * Note that Rekognition and Textract use the same source interface, so we need not worry about types.
+	 * @param {IdentifySource} source - User input source that directs to the object user wants
+	 * to identify (storage, file, or bytes).
+	 * @return {Promise<Image>} - Promise resolving to the converted source object.
+	 */
+	private configureSource(source: IdentifySource): Promise<Image> {
+		return new Promise((res, rej) => {
+			if (isStorageSource(source)) {
+				const storageConfig = {
+					level: source.level,
+					identityId: source.identityId,
+				};
+				Storage.get(source.key, storageConfig)
+					.then((url: string) => {
+						const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
+						const parsedURL = url.match(parser);
+						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
+						res({ S3Object: { Bucket: parsedURL[1], Name: parsedURL[2] } });
+					})
+					.catch(err => rej(err));
+			} else if (isFileSource(source)) {
+				blobToArrayBuffer(source.file)
+					.then(buffer => {
+						res({ Bytes: buffer });
+					})
+					.catch(err => rej(err));
+			} else if (isBytesSource(source)) {
+				const bytes = source.bytes;
+				if (bytes instanceof Blob) {
+					blobToArrayBuffer(bytes)
+						.then(buffer => {
+							res({ Bytes: buffer });
+						})
+						.catch(err => rej(err));
+				}
+				// everything else can be directly passed to Rekognition / Textract.
+				res({ Bytes: bytes } as Image);
+			} else {
+				rej('Input source is not configured correctly.');
+			}
+		});
+	}
 
-    /**
-     * Recognize text from real-world images and documents (plain text, forms and tables). Detects text in the input 
-     * image and converts it into machine-readable text. 
-     * @param {IdentifySource} source - Object containing the source image and feature types to analyze.
-     * @return {Promise<IdentifyTextOutput>} - Promise resolving to object containing identified texts.
-     */
-    protected identifyText(input: IdentifyTextInput): Promise<IdentifyTextOutput> {
-        return new Promise(async (res, rej) => {
-            const credentials = await Credentials.get();
-            if (!credentials) return rej('No credentials');
-            const { identifyText: { region = "", defaults: { format: configFormat = "PLAIN" } = {} } = {} }
-                = this._config;
-            this.rekognition = new Rekognition({ region, credentials });
-            this.textract = new Textract({ region, credentials });
-            let inputDocument: Textract.Document;
-            await this.configureSource(input.text.source)
-                .then(data => inputDocument = data)
-                .catch(err => { rej(err); });
+	/**
+	 * Recognize text from real-world images and documents (plain text, forms and tables). Detects text in the input
+	 * image and converts it into machine-readable text.
+	 * @param {IdentifySource} source - Object containing the source image and feature types to analyze.
+	 * @return {Promise<IdentifyTextOutput>} - Promise resolving to object containing identified texts.
+	 */
+	protected async identifyText(
+		input: IdentifyTextInput
+	): Promise<IdentifyTextOutput> {
+		const credentials = await Credentials.get();
+		if (!credentials) return Promise.reject('No credentials');
+		const {
+			identifyText: {
+				region = '',
+				defaults: { format: configFormat = 'PLAIN' } = {},
+			} = {},
+		} = this._config;
+		this.rekognitionClient = new RekognitionClient({ region, credentials });
+		this.textractClient = new TextractClient({ region, credentials });
+		let inputDocument: Document;
 
-            // get default value if format isn't specified in the input.
-            const format = input.text.format || configFormat;
-            const featureTypes: Textract.FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
-            if (format === 'FORM' || format === 'ALL')
-                featureTypes.push('FORMS');
-            if (format === 'TABLE' || format === 'ALL')
-                featureTypes.push('TABLES');
-            if (featureTypes.length === 0) {
-                /**
-                 * Empty featureTypes indicates that we will identify plain text. We will use rekognition (suitable
-                 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
-                 * we call textract and use the data that identify more words.
-                 */
-                const textractParam: Textract.DetectDocumentTextRequest = { Document: inputDocument, };
-                const rekognitionParam: Rekognition.DetectTextRequest = { Image: inputDocument };
-                this.rekognition.detectText(rekognitionParam, (rekognitionErr, rekognitionData) => {
-                    if (rekognitionErr) return rej(rekognitionErr);
-                    const rekognitionResponse = categorizeRekognitionBlocks(rekognitionData.TextDetections);
-                    if (rekognitionResponse.text.words.length < 50) {
-                        // did not hit the word limit, return the data
-                        return res(rekognitionResponse);
-                    }
-                    this.textract.detectDocumentText(textractParam, (textractErr, textractData) => {
-                        if (textractErr) return rej(textractErr);
-                        // use the service that identified more texts.
-                        if (rekognitionData.TextDetections.length > textractData.Blocks.length) {
-                            return res(rekognitionResponse);
-                        } else {
-                            return res(categorizeTextractBlocks(textractData.Blocks));
-                        }
-                    });
-                });
+		try {
+			inputDocument = await this.configureSource(input.text.source);
+		} catch (err) {
+			return Promise.reject(err);
+		}
 
-            } else {
-                const param: Textract.AnalyzeDocumentRequest = {
-                    Document: inputDocument,
-                    FeatureTypes: featureTypes
-                };
-                this.textract.analyzeDocument(param, (err, data) => {
-                    if (err) return rej(err);
-                    const blocks = data.Blocks;
-                    res(categorizeTextractBlocks(blocks));
-                });
-            }
-        });
-    }
+		// get default value if format isn't specified in the input.
+		const format = input.text.format || configFormat;
+		const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
+		if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
+		if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
 
-    /**
-     * Identify instances of real world entities from an image and if it contains unsafe content.
-     * @param {IdentifyLabelsInput} input - Object containing the source image and entity type to identify.
-     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to an array of identified entities. 
-     */
-    protected identifyLabels(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput> {
-        return new Promise(async (res, rej) => {
-            const credentials = await Credentials.get();
-            if (!credentials) return rej('No credentials');
-            const { identifyLabels: { region = "", defaults: { type = "LABELS" } = {} } = {} } = this._config;
-            this.rekognition = new Rekognition({ region, credentials });
-            let inputImage: Rekognition.Image;
-            await this.configureSource(input.labels.source)
-                .then(data => { inputImage = data; })
-                .catch(err => { return rej(err); });
-            const param = { Image: inputImage };
-            const servicePromises = [];
+		if (featureTypes.length === 0) {
+			/**
+			 * Empty featureTypes indicates that we will identify plain text. We will use rekognition (suitable
+			 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
+			 * we call textract and use the data that identify more words.
+			 */
+			const textractParam: DetectDocumentTextInput = {
+				Document: inputDocument,
+			};
+			const rekognitionParam: DetectTextInput = {
+				Image: inputDocument,
+			};
 
-            // get default argument
-            const entityType = input.labels.type || type;
-            if (entityType === 'LABELS' || entityType === 'ALL') {
-                servicePromises.push(this.detectLabels(param));
-            }
-            if (entityType === 'UNSAFE' || entityType === 'ALL') {
-                servicePromises.push(this.detectModerationLabels(param));
-            }
-            // if (servicePromises.length === 0) {
-            //     rej('You must specify entity type: LABELS | UNSAFE | ALL');
-            // }
-            Promise.all(servicePromises).then(data => {
-                let identifyResult: IdentifyLabelsOutput = {};
-                // concatenate resolved promises to a single object
-                data.forEach(val => { identifyResult = { ...identifyResult, ...val }; });
-                res(identifyResult);
-            }).catch(err => rej(err));
-        });
-    }
+			try {
+				const detectTextCommand = new DetectTextCommand(rekognitionParam);
+				const rekognitionData = await this.rekognitionClient.send(
+					detectTextCommand
+				);
 
-    /**
-     * Calls Rekognition.detectLabels and organizes the returned data.
-     * @param {Rekognition.DetectLabelsRequest} param - parameter to be passed onto Rekognition
-     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
-     */
-    private detectLabels(param: Rekognition.DetectLabelsRequest): Promise<IdentifyLabelsOutput> {
-        return new Promise((res, rej) => {
-            this.rekognition.detectLabels(param, (err, data) => {
-                if (err) return rej(err);
-                if (!data.Labels) return res({ labels: null }); // no image was detected
-                const detectLabelData = data.Labels.map(val => {
-                    const boxes = val.Instances ?
-                        val.Instances.map(val => makeCamelCase(val.BoundingBox)) : undefined;
-                    return {
-                        name: val.Name,
-                        boundingBoxes: boxes,
-                        metadata: {
-                            confidence: val.Confidence,
-                            parents: makeCamelCaseArray(val.Parents)
-                        }
-                    };
-                });
-                return res({ labels: detectLabelData });
-            });
-        });
-    }
+				const rekognitionResponse = categorizeRekognitionBlocks(
+					rekognitionData.TextDetections as TextDetectionList
+				);
+				if (rekognitionResponse.text.words.length < 50) {
+					// did not hit the word limit, return the data
+					return rekognitionResponse;
+				}
 
-    /**
-     * Calls Rekognition.detectModerationLabels and organizes the returned data.
-     * @param {Rekognition.DetectLabelsRequest} param - Parameter to be passed onto Rekognition
-     * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
-     */
-    private detectModerationLabels(param: Rekognition.DetectFacesRequest): Promise<IdentifyLabelsOutput> {
-        return new Promise((res, rej) => {
-            this.rekognition.detectModerationLabels(param, (err, data) => {
-                if (err) return rej(err);
-                if (data.ModerationLabels.length !== 0) {
-                    return res({ unsafe: 'YES' });
-                } else {
-                    return res({ unsafe: 'NO' });
-                }
-            });
-        });
-    }
+				const detectDocumentTextCommand = new DetectDocumentTextCommand(
+					textractParam
+				);
 
-    /**
-     * Identify faces within an image that is provided as input, and match faces from a collection 
-     * or identify celebrities.
-     * @param {IdentifyEntityInput} input - object containing the source image and face match options.
-     * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
-     */
-    protected identifyEntities(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput> {
-        return new Promise(async (res, rej) => {
-            const credentials = await Credentials.get();
-            if (!credentials) return rej('No credentials');
-            const { identifyEntities: {
-                region = "",
-                celebrityDetectionEnabled = false,
-                defaults: {
-                    collectionId: collectionIdConfig = "",
-                    maxEntities: maxFacesConfig = 50,
-                } = {},
-            } = {} } = this._config;
-            // default arguments
+				const { Blocks } = await this.textractClient.send(
+					detectDocumentTextCommand
+				);
 
-            this.rekognition = new Rekognition({ region, credentials });
-            let inputImage: Rekognition.Image;
-            await this.configureSource(input.entities.source)
-                .then(data => inputImage = data)
-                .catch(err => { return rej(err); });
+				if (rekognitionData.TextDetections.length > Blocks.length) {
+					return rekognitionResponse;
+				}
 
-            const param = { Image: inputImage };
+				return categorizeTextractBlocks(Blocks as BlockList);
+			} catch (err) {
+				Promise.reject(err);
+			}
+		} else {
+			const param: AnalyzeDocumentInput = {
+				Document: inputDocument,
+				FeatureTypes: featureTypes,
+			};
 
-            if (isIdentifyCelebrities(input.entities) && input.entities.celebrityDetection) {
-                if (!celebrityDetectionEnabled) {
-                    return rej("Error: You have to enable celebrity detection first");
-                }
-                this.rekognition.recognizeCelebrities(param, (err, data) => {
-                    if (err) return rej(err);
-                    const faces = data.CelebrityFaces.map(celebrity => {
-                        return {
-                            boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
-                            landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
-                            metadata: {
-                                ...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
-                                pose: makeCamelCase(celebrity.Face.Pose)
-                            }
-                        };
-                    });
-                    res({ entities: faces });
-                });
-            } else if (isIdentifyFromCollection(input.entities) && input.entities.collection) {
+			try {
+				const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
+				const { Blocks } = await this.textractClient.send(
+					analyzeDocumentCommand
+				);
+				return categorizeTextractBlocks(Blocks as BlockList);
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		}
+	}
 
-                const { collectionId = collectionIdConfig, maxEntities: maxFaces = maxFacesConfig } =
-                    input.entities as IdentifyFromCollection;
+	/**
+	 * Identify instances of real world entities from an image and if it contains unsafe content.
+	 * @param {IdentifyLabelsInput} input - Object containing the source image and entity type to identify.
+	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to an array of identified entities.
+	 */
+	protected async identifyLabels(
+		input: IdentifyLabelsInput
+	): Promise<IdentifyLabelsOutput> {
+		try {
+			const credentials = await Credentials.get();
+			if (!credentials) return Promise.reject('No credentials');
+			const {
+				identifyLabels: {
+					region = '',
+					defaults: { type = 'LABELS' } = {},
+				} = {},
+			} = this._config;
+			this.rekognitionClient = new RekognitionClient({ region, credentials });
+			let inputImage: Image;
+			await this.configureSource(input.labels.source)
+				.then(data => {
+					inputImage = data;
+				})
+				.catch(err => {
+					return Promise.reject(err);
+				});
+			const param = { Image: inputImage };
+			const servicePromises = [];
 
-                // Concatenate additional parameters
-                const updatedParam = { ...param, CollectionId: collectionId, MaxFaces: maxFaces };
-                this.rekognition.searchFacesByImage(updatedParam, (err, data) => {
-                    if (err) return rej(err);
-                    const faces = data.FaceMatches.map(val => {
-                        return {
-                            boundingBox: makeCamelCase(val.Face.BoundingBox),
-                            metadata: {
-                                externalImageId: this.decodeExternalImageId(val.Face.ExternalImageId),
-                                similarity: val.Similarity,
-                            }
-                        };
-                    });
-                    res({ entities: faces });
-                });
-            } else {
-                this.rekognition.detectFaces(param, (err, data) => {
-                    if (err) return rej(err);
-                    const faces = data.FaceDetails.map(detail => {
-                        // face attributes keys we want to extract from Rekognition's response
-                        const attributeKeys = [
-                            'Smile', 'Eyeglasses', 'Sunglasses', 'Gender', 'Beard',
-                            'Mustache', 'EyesOpen', 'MouthOpen',
-                        ];
-                        const faceAttributes = makeCamelCase(detail, attributeKeys);
-                        if (detail.Emotions) {
-                            faceAttributes['emotions'] = detail.Emotions.map(emotion => emotion.Type);
-                        }
-                        return {
-                            boundingBox: makeCamelCase(detail.BoundingBox),
-                            landmarks: makeCamelCaseArray(detail.Landmarks),
-                            ageRange: makeCamelCase(detail.AgeRange),
-                            attributes: makeCamelCase(detail, attributeKeys),
-                            metadata: {
-                                confidence: detail.Confidence,
-                                pose: makeCamelCase(detail.Pose)
-                            }
-                        };
-                    });
-                    res({ entities: faces });
-                });
-            }
-        });
-    }
+			// get default argument
+			const entityType = input.labels.type || type;
+			if (entityType === 'LABELS' || entityType === 'ALL') {
+				servicePromises.push(this.detectLabels(param));
+			}
+			if (entityType === 'UNSAFE' || entityType === 'ALL') {
+				servicePromises.push(this.detectModerationLabels(param));
+			}
 
-    private decodeExternalImageId(externalImageId: string): string {
-        return ("" + externalImageId).replace(/::/g, '/');
-    }
+			return Promise.all(servicePromises)
+				.then(data => {
+					let identifyResult: IdentifyLabelsOutput = {};
+					// concatenate resolved promises to a single object
+					data.forEach(val => {
+						identifyResult = { ...identifyResult, ...val };
+					});
+					return identifyResult;
+				})
+				.catch(err => Promise.reject(err));
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * Calls Rekognition.detectLabels and organizes the returned data.
+	 * @param {DetectLabelsInput} param - parameter to be passed onto Rekognition
+	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
+	 */
+	private async detectLabels(
+		param: DetectLabelsInput
+	): Promise<IdentifyLabelsOutput> {
+		try {
+			const detectLabelsCommand = new DetectLabelsCommand(param);
+			const data = await this.rekognitionClient.send(detectLabelsCommand);
+			if (!data.Labels) return { labels: null }; // no image was detected
+			const detectLabelData = data.Labels.map(val => {
+				const boxes = val.Instances
+					? val.Instances.map(val => makeCamelCase(val.BoundingBox))
+					: undefined;
+				return {
+					name: val.Name,
+					boundingBoxes: boxes,
+					metadata: {
+						confidence: val.Confidence,
+						parents: makeCamelCaseArray(val.Parents),
+					},
+				};
+			});
+			return { labels: detectLabelData };
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * Calls Rekognition.detectModerationLabels and organizes the returned data.
+	 * @param {Rekognition.DetectLabelsRequest} param - Parameter to be passed onto Rekognition
+	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
+	 */
+	private async detectModerationLabels(
+		param: DetectModerationLabelsInput
+	): Promise<IdentifyLabelsOutput> {
+		try {
+			const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
+				param
+			);
+			const data = await this.rekognitionClient.send(
+				detectModerationLabelsCommand
+			);
+			if (data.ModerationLabels.length !== 0) {
+				return { unsafe: 'YES' };
+			} else {
+				return { unsafe: 'NO' };
+			}
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * Identify faces within an image that is provided as input, and match faces from a collection
+	 * or identify celebrities.
+	 * @param {IdentifyEntityInput} input - object containing the source image and face match options.
+	 * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
+	 */
+	protected async identifyEntities(
+		input: IdentifyEntitiesInput
+	): Promise<IdentifyEntitiesOutput> {
+		const credentials = await Credentials.get();
+		if (!credentials) return Promise.reject('No credentials');
+		const {
+			identifyEntities: {
+				region = '',
+				celebrityDetectionEnabled = false,
+				defaults: {
+					collectionId: collectionIdConfig = '',
+					maxEntities: maxFacesConfig = 50,
+				} = {},
+			} = {},
+		} = this._config;
+		// default arguments
+
+		this.rekognitionClient = new RekognitionClient({ region, credentials });
+		let inputImage: Image;
+		await this.configureSource(input.entities.source)
+			.then(data => (inputImage = data))
+			.catch(err => {
+				return Promise.reject(err);
+			});
+
+		const param = { Image: inputImage };
+
+		if (
+			isIdentifyCelebrities(input.entities) &&
+			input.entities.celebrityDetection
+		) {
+			if (!celebrityDetectionEnabled) {
+				return Promise.reject(
+					'Error: You have to enable celebrity detection first'
+				);
+			}
+			try {
+				const recognizeCelebritiesCommand = new RecognizeCelebritiesCommand(
+					param
+				);
+				const data = await this.rekognitionClient.send(
+					recognizeCelebritiesCommand
+				);
+				const faces = data.CelebrityFaces.map(celebrity => {
+					return {
+						boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
+						landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
+						metadata: {
+							...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
+							pose: makeCamelCase(celebrity.Face.Pose),
+						},
+					};
+				});
+				return { entities: faces };
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		} else if (
+			isIdentifyFromCollection(input.entities) &&
+			input.entities.collection
+		) {
+			const {
+				collectionId = collectionIdConfig,
+				maxEntities: maxFaces = maxFacesConfig,
+			} = input.entities as IdentifyFromCollection;
+
+			// Concatenate additional parameters
+			const updatedParam = {
+				...param,
+				CollectionId: collectionId,
+				MaxFaces: maxFaces,
+			};
+			try {
+				const searchFacesByImageCommand = new SearchFacesByImageCommand(
+					updatedParam
+				);
+				const data = await this.rekognitionClient.send(
+					searchFacesByImageCommand
+				);
+				const faces = data.FaceMatches.map(val => {
+					return {
+						boundingBox: makeCamelCase(val.Face.BoundingBox),
+						metadata: {
+							externalImageId: this.decodeExternalImageId(
+								val.Face.ExternalImageId
+							),
+							similarity: val.Similarity,
+						},
+					};
+				});
+				return { entities: faces };
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		} else {
+			try {
+				const detectFacesCommand = new DetectFacesCommand(param);
+				const data = await this.rekognitionClient.send(detectFacesCommand);
+				const faces = data.FaceDetails.map(detail => {
+					// face attributes keys we want to extract from Rekognition's response
+					const attributeKeys = [
+						'Smile',
+						'Eyeglasses',
+						'Sunglasses',
+						'Gender',
+						'Beard',
+						'Mustache',
+						'EyesOpen',
+						'MouthOpen',
+					];
+					const faceAttributes = makeCamelCase(detail, attributeKeys);
+					if (detail.Emotions) {
+						faceAttributes['emotions'] = detail.Emotions.map(
+							emotion => emotion.Type
+						);
+					}
+					return {
+						boundingBox: makeCamelCase(detail.BoundingBox),
+						landmarks: makeCamelCaseArray(detail.Landmarks),
+						ageRange: makeCamelCase(detail.AgeRange),
+						attributes: makeCamelCase(detail, attributeKeys),
+						metadata: {
+							confidence: detail.Confidence,
+							pose: makeCamelCase(detail.Pose),
+						},
+					};
+				});
+				return { entities: faces };
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		}
+	}
+
+	private decodeExternalImageId(externalImageId: string): string {
+		return ('' + externalImageId).replace(/::/g, '/');
+	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIIdentifyPredictionsProvider;

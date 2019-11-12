@@ -10,50 +10,50 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWS } from '@aws-amplify/core';
+import { ICredentials } from '@aws-amplify/core';
 
 interface BasePayload {
-    userId: string;
-    trackingId: string;
-    sessionId: string;
+	userId: string;
+	trackingId: string;
+	sessionId: string;
 }
 
 type Config = {
-    [key: string]: string | number;
+	[key: string]: string | number;
 };
 
 type Properties = {
-    [key: string]: any;
+	[key: string]: any;
 };
 
 export interface RequestParams {
-    eventData: EventData;
-    sessionInfo: SessionInfo;
-    config: Config;
-    sentAt: number;
-    credentials: AWS.Credentials & AWS.CognitoIdentityCredentials;
+	eventData: EventData;
+	sessionInfo: SessionInfo;
+	config: Config;
+	sentAt: number;
+	credentials: ICredentials;
 }
 
 export interface EventData {
-    eventType: string;
-    properties: Properties;
+	eventType: string;
+	properties: Properties;
 }
 
 export interface SessionInfo {
-    userId: string;
-    trackingId: string;
-    sessionId: string;
+	userId: string;
+	trackingId: string;
+	sessionId: string;
 }
 
 export interface RecordEventPayload {
-    eventId: string;
-    eventType: string;
-    sentAt: number;
-    properties?: Properties;
+	eventId: string;
+	eventType: string;
+	sentAt: number;
+	properties?: Properties;
 }
 
 export interface RecordEventListPayload extends BasePayload {
-    eventList: RecordEventPayload[];
-    config?: Config;
-    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
+	eventList: RecordEventPayload[];
+	config?: Config;
+	credentials?: ICredentials;
 }

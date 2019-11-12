@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Picker test render test render correcly 1`] = `
+<div
+  style={
+    Object {
+      "position": "relative",
+    }
+  }
+>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Pick a File
+  </Component>
+  <input
+    accept="*/*"
+    onChange={[Function]}
+    style={
+      Object {
+        "cursor": "pointer",
+        "display": "inline-block",
+        "height": "100%",
+        "left": 0,
+        "opacity": 0,
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      }
+    }
+    title="Pick a File"
+    type="file"
+  />
+</div>
+`;

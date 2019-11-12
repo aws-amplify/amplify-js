@@ -31,56 +31,63 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-s3-album-core',
-  template
+	selector: 'amplify-s3-album-core',
+	template,
 })
 export class S3AlbumComponentCore implements OnInit {
-  list: Array<Object>;
-  _path: string;
-  _options: any = {};
-  protected logger: any;
+	list: Array<Object>;
+	_path: string;
+	_options: any = {};
+	protected logger: any;
 
-  @Output()
-  selected: EventEmitter<string> = new EventEmitter<string>();
+	@Output()
+	selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('S3AlbumComponent');
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		this.logger = this.amplifyService.logger('S3AlbumComponent');
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.storage()){
-      throw new Error('Storage module not registered on AmplifyService provider');
-    }
-    this.getList(this._path, this._options);
-  }
+	ngOnInit() {
+		if (!this.amplifyService.storage()) {
+			throw new Error(
+				'Storage module not registered on AmplifyService provider'
+			);
+		}
+		this.getList(this._path, this._options);
+	}
 
-  onImageSelected(event) {
-    this.selected.emit(event);
-  }
+	onImageSelected(event) {
+		this.selected.emit(event);
+	}
 
-  @Input() set data(data: any){
-    if (!data.path) { return; }
-    this._path = data.path;
-    this._options = data.options;
-  }
+	@Input() set data(data: any) {
+		if (!data.path) {
+			return;
+		}
+		this._path = data.path;
+		this._options = data.options;
+	}
 
-  @Input() set path(path: string) {
-    this._path = path;
-  }
+	@Input() set path(path: string) {
+		this._path = path;
+	}
 
-  @Input() set options(options: any) {
-    this._options = options;
-  }
+	@Input() set options(options: any) {
+		this._options = options;
+	}
 
-  getList(path, options) {
-    if (!path) {return; }
-    this.amplifyService.storage()
-      .list(path, options)
-      .then(data => {
-        this.list = data.map(item => {
-          return { path: item.key };
-        });
-      })
-      .catch(e => console.error(e));
-  }
+	getList(path, options) {
+		if (!path) {
+			return;
+		}
+		this.amplifyService
+			.storage()
+			.list(path, options)
+			.then(data => {
+				this.list = data.map(item => {
+					return { path: item.key };
+				});
+			})
+			.catch(e => console.error(e));
+	}
 }

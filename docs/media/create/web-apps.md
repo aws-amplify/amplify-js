@@ -1,6 +1,7 @@
 ---
 layout: examples
 ---
+
 # Web Apps with AWS Amplify
 
 #### AWS Amplify helps developers to create high-quality web apps quickly
@@ -19,7 +20,7 @@ For Web developers, AWS Amplify provides following main benefits:
 - **UI components** for common operations such as Authorization and Storage
 - **Monitoring** app usage and **engaging** users with campaign analytics
 
-###  Building and Deploying Web Apps with AWS Amplify
+### Building and Deploying Web Apps with AWS Amplify
 
 When building serverless web apps with AWS Amplify, your frontend resources are deployed for hosting, and your app's backend will be handled by cloud services that you integrate.
 
@@ -34,10 +35,10 @@ With AWS Amplify, you can focus more on your app's business logic, and let the s
 As an example, here is how you upload an image to a logged-in user's private storage:
 
 ```js
-    Storage.put('example.png', file, {
-        level: 'private',
-        contentType: 'image/png'
-    })
+Storage.put('example.png', file, {
+	level: 'private',
+	contentType: 'image/png',
+});
 ```
 
 In the example, AWS Amplify Storage category already knows about the authenticated user context, your Amazon S3 buckets and request signing requirements for added security. All the underlying process is managed automatically under the hood, and you get what you want; uploading a user file to a protected location.
@@ -52,7 +53,7 @@ amplify add api
 
 Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
 
-![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
+![Performance Results](../images/backend_cloud_api.png?raw=true 'Performance Results')
 
 After working with your backend code, deploying your app backend is very simple with CLI:
 
@@ -66,7 +67,7 @@ If you have existing AWS resources such as Amazon API Gateway endpoints or Amazo
 
 Otherwise, Amplify CLI is a great tool for creating AWS resources, related user roles, and security policies.
 
-Mix and match building blocks for your app, and start implementing cloud operations like Authorization, Storage and Cloud API.  
+Mix and match building blocks for your app, and start implementing cloud operations like Authorization, Storage and Cloud API.
 
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
@@ -85,9 +86,10 @@ With Amplify CLI, you can deploy your app with single line command:
 ```bash
 amplify publish
 ```
+
 Amazon CloudFront will handle the delivery of your static assets to the browser.
 
-![CDN](../images/mobile_hub_cdn.png?raw=true "CDN")
+![CDN](../images/mobile_hub_cdn.png?raw=true 'CDN')
 
 If your web app resources include media files like video or audio, those assets will be automatically streamed to the browser, providing the best user experience.
 
@@ -95,7 +97,7 @@ If your web app resources include media files like video or audio, those assets 
 
 Every time you deploy your app to hosting, a performance test will be automatically executed using real devices. The test results will show the initial load times for your app.
 
-![Performance Results](../images/performance_results.png?raw=true "Performance Results")
+![Performance Results](../images/performance_results.png?raw=true 'Performance Results')
 
 #### Use your Favorite Frontend Library
 
@@ -125,9 +127,9 @@ Also, collecting more data with Analytics category is as simple as;
 Analytics.record('albumVisit', { genre: 'jazz', artist: 'Miles Davis' });
 ```
 
-Analytics events are displayed in Amazon Pinpoint console. In the console, you can create targeted campaigns and push notifications to engage your customers.   
+Analytics events are displayed in Amazon Pinpoint console. In the console, you can create targeted campaigns and push notifications to engage your customers.
 
-![Pinpoint](../images/pinpoint_analytics.png?raw=true "Pinpoint")
+![Pinpoint](../images/pinpoint_analytics.png?raw=true 'Pinpoint')
 
 #### Utilities
 
