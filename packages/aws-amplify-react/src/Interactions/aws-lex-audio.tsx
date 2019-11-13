@@ -653,6 +653,7 @@
 						stringify(skey) +
 						'])';
 
+					// @ts-ignore
 					var URL =
 						// @ts-ignore
 						window.URL || window.webkitURL || window.mozURL || window.msURL;

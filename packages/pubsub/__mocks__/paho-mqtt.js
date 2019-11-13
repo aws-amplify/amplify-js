@@ -1,4 +1,4 @@
-import * as Paho from '../src/vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 
 Paho.Client = jest.fn().mockImplementation((host, port, path, clientId) => {
 	var client = {};
@@ -7,10 +7,7 @@ Paho.Client = jest.fn().mockImplementation((host, port, path, clientId) => {
 		options.onSuccess();
 	});
 	client.send = jest.fn((topic, message) => {
-		client.onMessageArrived({
-			destinationName: topic,
-			payloadString: message,
-		});
+		client.onMessageArrived({ destinationName: topic, payloadString: message });
 	});
 	client.subscribe = jest.fn((topics, options) => {});
 	client.unsubscribe = jest.fn(() => {});

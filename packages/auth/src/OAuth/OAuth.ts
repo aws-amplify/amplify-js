@@ -105,9 +105,7 @@ export default class OAuth {
 		const { code } = (parse(currentUrl).query || '')
 			.split('&')
 			.map(pairings => pairings.split('='))
-			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-				code: undefined,
-			});
+			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
 		if (!code) {
 			return;
@@ -222,10 +220,7 @@ export default class OAuth {
 			if (this._config.responseType === 'code') {
 				return { ...(await this._handleCodeFlow(currentUrl)), state };
 			} else {
-				return {
-					...(await this._handleImplicitFlow(currentUrl)),
-					state,
-				};
+				return { ...(await this._handleImplicitFlow(currentUrl)), state };
 			}
 		} catch (e) {
 			logger.error(`Error handling auth response.`, e);

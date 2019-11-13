@@ -434,9 +434,7 @@ describe('Interactions', () => {
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 				const onCompleteCallback = jest.fn((err, confirmation) => {
-					expect(confirmation).toEqual({
-						slots: { m1: 'hi', m2: 'done' },
-					});
+					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
 					done();
 				});
 
@@ -516,9 +514,7 @@ describe('Interactions', () => {
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 				const onCompleteCallback = jest.fn((err, confirmation) => {
-					expect(confirmation).toEqual({
-						slots: { m1: 'hi', m2: 'done' },
-					});
+					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
 					done();
 				});
 

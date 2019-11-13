@@ -19,9 +19,14 @@
     "inlineSources": true,
     "target": "es5",
     "skipLibCheck": true,
-    "lib": ["es2015", "dom"]
+    "lib": [
+      "es2015", 
+      "dom"
+    ]
   },
-  "files": ["../index.ts"],
+  "files": [
+    "../index.ts"
+  ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true
   }

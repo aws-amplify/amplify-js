@@ -65,10 +65,7 @@ export default class EventTracker {
 					evt,
 					selector,
 					this._trackFunc,
-					{
-						composed: true,
-						useCapture: true,
-					}
+					{ composed: true, useCapture: true }
 				);
 			});
 		}

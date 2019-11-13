@@ -78,21 +78,13 @@ export default Comp => {
 					case 'cognitoHostedUI': {
 						Auth.currentAuthenticatedUser().then(user => {
 							logger.debug('signed in');
-							this.setState({
-								user,
-								error: null,
-								loading: false,
-							});
+							this.setState({ user, error: null, loading: false });
 						});
 						break;
 					}
 					case 'signOut': {
 						logger.debug('signed out');
-						this.setState({
-							user: null,
-							error: null,
-							loading: false,
-						});
+						this.setState({ user: null, error: null, loading: false });
 						break;
 					}
 					case 'signIn_failure':

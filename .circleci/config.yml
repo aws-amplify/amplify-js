@@ -25,7 +25,6 @@ jobs:
       - run: yarn
       - run: yarn run bootstrap
       - run: yarn run build
-      - run: yarn run coverage
 
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
@@ -56,6 +55,7 @@ jobs:
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
+            yarn run coverage
   integ_setup:
     <<: *defaults
     working_directory: ~/

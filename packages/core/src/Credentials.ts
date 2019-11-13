@@ -2,7 +2,6 @@ import { ConsoleLogger as Logger } from './Logger';
 import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
-import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
@@ -36,10 +35,7 @@ export class Credentials {
 		// If the developer has provided an object of refresh handlers,
 		// then we can merge the provided handlers with the current handlers.
 		if (refreshHandlers) {
-			this._refreshHandlers = {
-				...this._refreshHandlers,
-				...refreshHandlers,
-			};
+			this._refreshHandlers = { ...this._refreshHandlers, ...refreshHandlers };
 		}
 
 		this._storage = this._config.storage;
@@ -310,7 +306,6 @@ export class Credentials {
 			}
 		);
 
-		const that = this;
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 

@@ -18,12 +18,14 @@ import { RestClient as RestClass } from './RestClient';
 import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,
+	Constants,
 } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('API');
 
@@ -395,8 +397,11 @@ export default class APIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
 					: { Authorization: null })),
-			...additionalHeaders,
 			...(await graphql_headers({ query, variables })),
+			...additionalHeaders,
+			...(!customGraphqlEndpoint && {
+				[USER_AGENT_HEADER]: Constants.userAgent,
+			}),
 		};
 
 		const body = {
@@ -413,7 +418,7 @@ export default class APIClass {
 			},
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		const endpoint = customGraphqlEndpoint ?? appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');

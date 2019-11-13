@@ -20,13 +20,13 @@ With AWS Amplify's cloud connectivity support, you can create your apps quickly 
 - **React Native UI components** for common operations such as authorization and storage
 - **Monitoring** app usage and **engaging** users with campaign analytics
 
-###  Building React Native Apps with AWS Amplify
+### Building React Native Apps with AWS Amplify
 
-React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view,  React Native apps run on a faster runtime environment which has better integration with native capabilities of the device. 
+React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view, React Native apps run on a faster runtime environment which has better integration with native capabilities of the device.
 
 When building React Native apps, your app bundle is deployed to the app stores, and your mobile app's backend logic will be handled by cloud operations that you integrate with AWS Amplify.
 
-Cloud services for mobile apps are often categorized as MBaaS (mobile back-end as a service).  AWS Amplify offers MBaaS functionality for various categories of cloud operations so that you can create your mobile app backend easily.
+Cloud services for mobile apps are often categorized as MBaaS (mobile back-end as a service). AWS Amplify offers MBaaS functionality for various categories of cloud operations so that you can create your mobile app backend easily.
 
 #### Declarative and easy-to-use API
 
@@ -37,10 +37,10 @@ With AWS Amplify, you can concentrate more on your app's business logic, while y
 As an example, here is how you upload an image to a logged-in user's private storage:
 
 ```js
-    Storage.put('example.png', file, {
-        level: 'private',
-        contentType: 'image/png'
-    })
+Storage.put('example.png', file, {
+	level: 'private',
+	contentType: 'image/png',
+});
 ```
 
 In this example, AWS Amplify Storage category already knows about the authenticated user context, your Amazon S3 buckets and request signing requirements for security. All the underlying operations are executed automatically under the hood, and you get what you want; uploading a user file to a secure location.
@@ -53,9 +53,9 @@ Amplify CLI helps you to configure your app's backend easily. For example, the f
 amplify add api
 ```
 
-Amplify CLI generates JavaScript files for your app's backend logic, and places them to the appropriate folder structure in your project. 
+Amplify CLI generates JavaScript files for your app's backend logic, and places them to the appropriate folder structure in your project.
 
-![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
+![Performance Results](../images/backend_cloud_api.png?raw=true 'Performance Results')
 
 After working with your backend code, deploying your app backend is very simple with the CLI:
 
@@ -77,7 +77,7 @@ amplify push
 
 #### React Native components
 
-To speed-up your React Native development, AWS Amplify provides UI components.  You can import the UI components and use out-of-the box functionality for Authentication and Storage categories. 
+To speed-up your React Native development, AWS Amplify provides UI components. You can import the UI components and use out-of-the box functionality for Authentication and Storage categories.
 
 As an example, in you React Native app, you can use a Higher-Order Components to provide a sign-in/sign-out experience for your app simply by wrapping your app's main component:
 
@@ -96,9 +96,10 @@ Also, collecting more data with Analytics category is simple:
 ```js
 Analytics.record('albumVisit', { genre: 'jazz', artist: 'Miles Davis' });
 ```
+
 Analytics events are displayed in Amazon Pinpoint console. In the console, you can create targeted campaigns and send push notifications to engage your customers.
 
-![Performance Results](../images/pinpoint_analytics.png?raw=true "Performance Results")
+![Performance Results](../images/pinpoint_analytics.png?raw=true 'Performance Results')
 
 #### Utilities
 

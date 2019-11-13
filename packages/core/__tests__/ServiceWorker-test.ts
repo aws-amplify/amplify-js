@@ -17,14 +17,18 @@ describe('ServiceWorker test', () => {
 
 			return expect(enablePush).toThrow('Service Worker not registered');
 		});
-		test('fails when registering', () => {
+		test('fails when registering', async () => {
 			global.navigator.serviceWorker = {
 				register: () => Promise.reject('an error'),
 			};
 
 			const serviceWorker = new ServiceWorker();
 
-			return expect(serviceWorker.register()).rejects.toThrow('an error');
+			try {
+				await serviceWorker.register();
+			} catch (e) {
+				expect(e).toEqual('an error');
+			}
 		});
 	});
 	describe('Register with status', () => {
@@ -62,10 +66,7 @@ describe('ServiceWorker test', () => {
 	describe('Send messages', () => {
 		test('no message is sent if not registered', () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {
@@ -80,10 +81,7 @@ describe('ServiceWorker test', () => {
 		});
 		test('can send string message after registration', async () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {
@@ -99,10 +97,7 @@ describe('ServiceWorker test', () => {
 		});
 		test('can send object message after registration', async () => {
 			const bla = {
-				installing: {
-					postMessage: jest.fn(),
-					addEventListener: jest.fn(),
-				},
+				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
 			global.navigator.serviceWorker = {

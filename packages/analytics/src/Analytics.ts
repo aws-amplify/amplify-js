@@ -142,10 +142,7 @@ export default class AnalyticsClass {
 				!this._config['AWSPinpoint']
 					? this._config
 					: this._config[pluggable.getProviderName()];
-			const config = {
-				disabled: this._config['disabled'],
-				...providerConfig,
-			};
+			const config = { disabled: this._config['disabled'], ...providerConfig };
 			pluggable.configure(config);
 			return config;
 		}

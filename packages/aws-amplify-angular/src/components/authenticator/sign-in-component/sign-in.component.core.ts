@@ -168,10 +168,7 @@ export class SignInComponentCore implements OnInit {
 					user['challengeName'] === 'SMS_MFA' ||
 					user['challengeName'] === 'SOFTWARE_TOKEN_MFA'
 				) {
-					this.amplifyService.setAuthState({
-						state: 'confirmSignIn',
-						user,
-					});
+					this.amplifyService.setAuthState({ state: 'confirmSignIn', user });
 				} else if (user['challengeName'] === 'NEW_PASSWORD_REQUIRED') {
 					this.amplifyService.setAuthState({
 						state: 'requireNewPassword',

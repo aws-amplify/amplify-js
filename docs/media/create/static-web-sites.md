@@ -1,6 +1,7 @@
 ---
 layout: examples
 ---
+
 # Static Websites with AWS Amplify
 
 #### Deploy your Static Website with AWS Amplify
@@ -16,13 +17,13 @@ For static websites, AWS Amplify provides following main benefits:
 - **Streaming** support for your audio and video files
 - **Testing** your website's loading times on real devices
 - **Monitoring** and **engaging** users with campaign analytics
-- **Adding cloud services** to your website quickly with the **CLI** 
+- **Adding cloud services** to your website quickly with the **CLI**
 
-###  Building Static Websites with AWS Amplify
+### Building Static Websites with AWS Amplify
 
-When building static websites with AWS Amplify, your static assets are deployed to highly available globally CDN service for hosting and media streaming. 
+When building static websites with AWS Amplify, your static assets are deployed to highly available globally CDN service for hosting and media streaming.
 
-If you wish to add new features such as user-signup, API access or analytics,  AWS Amplify enables you to integrate those features quickly. 
+If you wish to add new features such as user-signup, API access or analytics, AWS Amplify enables you to integrate those features quickly.
 
 Our CLI will handle deployments and backend service orchestration, so you can focus on your content and user experience without worrying about managing server resources.
 
@@ -33,9 +34,10 @@ Amplify CLI provides a one-line deploy command that pushes your app's static ass
 ```bash
 amplify publish
 ```
+
 CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets.
 
-![CDN](../images/mobile_hub_cdn.png?raw=true "CDN"){: style="max-height:450px;"}
+![CDN](../images/mobile_hub_cdn.png?raw=true 'CDN'){: style="max-height:450px;"}
 
 If your website includes video or audio files, those assets will be automatically streamed to the browser.
 
@@ -43,7 +45,7 @@ If your website includes video or audio files, those assets will be automaticall
 
 Every time you deploy your website, a performance test is executed using real devices. The test results will show the initial loading time for your website.
 
-![Performance Results](../images/performance_results.png?raw=true "Performance Results")
+![Performance Results](../images/performance_results.png?raw=true 'Performance Results')
 
 #### Easily Add Cloud Features to your Website
 
@@ -67,9 +69,9 @@ Once you deploy your website, the next challenge is understanding how your users
 
 AWS Amplify provides analytics capabilities, push notifications and targeted messaging campaigns out-of-the-box. You will start getting key engagement metrics such as the number of user sessions and the number of app launches automatically after you deploy your website.
 
-Analytics events are displayed in Amazon Pinpoint console. In the console, you can create targeted campaigns and push notifications to engage your customers.   
+Analytics events are displayed in Amazon Pinpoint console. In the console, you can create targeted campaigns and push notifications to engage your customers.
 
-![Pinpoint](../images/pinpoint_analytics.png?raw=true "Pinpoint"){: style="max-height:450px;"}
+![Pinpoint](../images/pinpoint_analytics.png?raw=true 'Pinpoint'){: style="max-height:450px;"}
 
 ### Start Building now!
 
