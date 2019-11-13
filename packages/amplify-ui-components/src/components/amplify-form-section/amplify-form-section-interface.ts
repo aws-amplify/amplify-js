@@ -1,3 +1,5 @@
+import { FunctionalComponent } from '@stencil/core';
+
 interface BaseFormSectionProps {
   overrideStyle?: boolean;
 }
@@ -7,5 +9,6 @@ export interface AmplifyFormSectionHeaderProps extends BaseFormSectionProps {
 }
 
 export interface AmplifyFormSectionFooterProps extends BaseFormSectionProps {
-  submitButtonText: string;
+  primaryContent: string | FunctionalComponent;
+  secondaryContent: string | FunctionalComponent;
 }

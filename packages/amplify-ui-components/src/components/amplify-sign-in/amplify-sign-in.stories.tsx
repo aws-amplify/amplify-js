@@ -1,9 +1,23 @@
-import { storiesOf } from '@storybook/html';
-import { knobs } from '../../common/testing';
+import { h } from '@stencil/core';
+import * as knobs from '@storybook/addon-knobs';
 
-const selectStories = storiesOf('amplify-sign-in', module);
+export default {
+  title: 'amplify-sign-in',
+};
 
-selectStories.add('default', () => {
-  const override = knobs.overrideStyleKnob();
-  return `<amplify-sign-in override-style=${override}></amplify-sign-in>`;
-});
+export const withOverrideStyle = () => <amplify-sign-in overrideStyle={knobs.boolean('Override style', false)} />;
+
+export const withFederated = () => (
+  <amplify-sign-in
+    federated={{
+      amazonClientId: knobs.text('Amazon client ID', 'amazon_client_id'),
+      auth0Config: {
+        clientID: knobs.text('Auth0 client ID', 'auth0_client_id'),
+        domain: knobs.text('Auth0 account domain', 'example.auth0.com'),
+      },
+      facebookAppId: knobs.text('Facebook app ID', 'facebook_app_id'),
+      googleClientId: knobs.text('Google client ID', 'google_client_id'),
+      oauthConfig: {},
+    }}
+  />
+);

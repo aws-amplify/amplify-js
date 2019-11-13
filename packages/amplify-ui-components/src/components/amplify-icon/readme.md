@@ -1,9 +1,6 @@
 # amplify-icon
 
-
-
 <!-- Auto Generated Below -->
-
 
 ## Properties
 
@@ -12,7 +9,20 @@
 | `name`          | `name`           | (Required) Name of icon used to determine the icon rendered | `"enter-vr" \| "exit-vr" \| "maximize" \| "minimize" \| "sound" \| "sound-mute"` | `undefined` |
 | `overrideStyle` | `override-style` | (Optional) Override default styling                         | `boolean`                                                                        | `false`     |
 
+## Dependencies
 
-----------------------------------------------
+### Used by
 
-*Built with [StencilJS](https://stenciljs.com/)*
+- [amplify-icon-button](../amplify-icon-button)
+
+### Graph
+
+```mermaid
+graph TD;
+  amplify-icon-button --> amplify-icon
+  style amplify-icon fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+---
+
+_Built with [StencilJS](https://stenciljs.com/)_

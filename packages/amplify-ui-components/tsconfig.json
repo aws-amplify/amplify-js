@@ -4,10 +4,7 @@
     "allowUnreachableCode": false,
     "declaration": false,
     "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2017"
-    ],
+    "lib": ["dom", "es2017"],
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es2017",
@@ -15,17 +12,8 @@
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h",
-    "types": [
-      "jest",
-      "node"
-    ]
+    "typeRoots": ["node_modules/@types", "./types"]
   },
-  "include": [
-    "src",
-    "types/jsx.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "../../node_modules"
-  ]
+  "include": ["src", "types/jsx.d.ts"],
+  "exclude": ["node_modules", "../../node_modules"]
 }

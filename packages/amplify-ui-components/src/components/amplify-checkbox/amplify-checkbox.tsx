@@ -27,7 +27,7 @@ export class AmplifyCheckbox {
 
   private onClick = () => {
     this.checked = !this.checked;
-  }
+  };
 
   render() {
     return (

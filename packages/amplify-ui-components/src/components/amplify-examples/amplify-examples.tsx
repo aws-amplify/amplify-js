@@ -1,11 +1,17 @@
 import { Component, State, h } from '@stencil/core';
-import example1 from './example1';
-import example2 from './example2';
-import example3 from './example3';
+import { AuthenticatorExample } from './authenticator-example';
 import example4 from './example4';
-import example5 from './example5';
+import sceneExample from './scene-example';
+import Auth from '@aws-amplify/auth';
+import XR from '@aws-amplify/xr';
+import awsexports from './src/aws-exports';
 
-const examples = [example1, example2, example3, example4, example5];
+Auth.configure(awsexports);
+XR.configure(awsexports);
+
+const examples = [AuthenticatorExample, example4, sceneExample];
+
+(window as any).LOG_LEVEL = 'DEBUG';
 
 const Tabs = ({ active, set }) => (
   <ul>

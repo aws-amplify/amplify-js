@@ -2,12 +2,24 @@
 
 exports[`amplify-input spec: Render logic -> renders correct HTML 1`] = `
 <amplify-input>
-  <input class="amplify-ui--input css-g9dmxw" type="text">
+  <input class="amplify-ui--input css-g9dmxw" placeholder="" type="text">
+</amplify-input>
+`;
+
+exports[`amplify-input spec: Render logic -> renders with a name for the input 1`] = `
+<amplify-input name="seattle">
+  <input class="amplify-ui--input css-g9dmxw" name="seattle" placeholder="" type="text">
+</amplify-input>
+`;
+
+exports[`amplify-input spec: Render logic -> renders with complex prop: inputProps spread on the input element 1`] = `
+<amplify-input>
+  <input autocomplete="off" class="amplify-ui--input css-g9dmxw" max="10" min="3" placeholder="" type="text">
 </amplify-input>
 `;
 
 exports[`amplify-input spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
 <amplify-input override-style="true">
-  <input class="amplify-ui--input" type="text">
+  <input class="amplify-ui--input" placeholder="" type="text">
 </amplify-input>
 `;

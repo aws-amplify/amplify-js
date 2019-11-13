@@ -3,20 +3,26 @@
 exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form by default 1`] = `
 <amplify-sign-in>
   <amplify-form-section headertext="Sign into your account">
+    <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
-    <div slot="amplify-form-section-footer">
-      <div class="css-1pvt25k">
-        <span>
-          No account?
-          <amplify-link>
-            Create account
-          </amplify-link>
-        </span>
-        <amplify-button type="submit">
-          Sign in
-        </amplify-button>
-      </div>
-    </div>
+  </amplify-form-section>
+</amplify-sign-in>
+`;
+
+exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`] = `
+<amplify-sign-in>
+  <amplify-form-section headertext="Sign into your account">
+    <amplify-federated-buttons></amplify-federated-buttons>
+    <amplify-auth-fields></amplify-auth-fields>
+  </amplify-form-section>
+</amplify-sign-in>
+`;
+
+exports[`amplify-sign-in spec: amplify-sign-in stories stories withOverrideStyle 1`] = `
+<amplify-sign-in>
+  <amplify-form-section headertext="Sign into your account">
+    <amplify-federated-buttons></amplify-federated-buttons>
+    <amplify-auth-fields></amplify-auth-fields>
   </amplify-form-section>
 </amplify-sign-in>
 `;
