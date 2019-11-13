@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "3.0.11",
+  "version": "3.1.4",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -8,7 +8,7 @@
   "scripts": {
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
-    "test": "jest --maxWorkers 2",
+    "test": "jest -w 1 --maxWorkers 2",
     "transpile": "ngc",
     "package": "rollup -c rollup.config.js",
     "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
@@ -31,21 +31,19 @@
     "@angular/forms": "^6.0.3",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
-    "@types/jest": "^23.1.5",
     "@types/lodash": "^4.14.106",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^1.1.36",
+    "aws-amplify": "^1.2.4",
     "babel-core": "^6.26.3",
     "babel-plugin-lodash": "^3.3.4",
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.24.1",
     "css-loader": "^0.28.1",
-    "jest": "^23.4.0",
-    "jest-preset-angular": "^5.2.3",
+    "jest-preset-angular": "^7.1.1",
     "json-loader": "^0.5.4",
     "ng-mocks": "7.x.x",
     "raw-loader": "^0.5.1",
@@ -69,7 +67,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@aws-amplify/ui": "^1.0.23",
+    "@aws-amplify/ui": "^1.1.3",
     "rxjs-compat": "^6.2.1"
   }
 }

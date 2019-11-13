@@ -11,14 +11,19 @@
  * and limitations under the License.
  */
 
-import * as Browser from './browser';
+import { clientInfo, dimension } from './browser';
 
-export default class ClientDevice {
-    static clientInfo() {
-        return Browser.clientInfo();
-    }
+export class ClientDevice {
+	static clientInfo() {
+		return clientInfo();
+	}
 
-    static dimension() {
-        return Browser.dimension();
-    }
+	static dimension() {
+		return dimension();
+	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default ClientDevice;

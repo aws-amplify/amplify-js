@@ -11,3 +11,4 @@ test_Setup/**
 prepend-license.js
 cypress/**
 cypress.json
+tsc-out/**

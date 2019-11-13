@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "3.0.15",
+  "version": "3.2.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "licenses": [
@@ -50,7 +50,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest --passWithNoTests",
+    "test": "jest -w 1 --passWithNoTests",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -77,6 +77,7 @@
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "^5.0.2",
+    "eslint-config-prettier": "^6.3.0",
     "eslint-import-resolver-webpack": "^0.5.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.2.0",
