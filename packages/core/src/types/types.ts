@@ -18,6 +18,7 @@ export interface ICredentials {
  * @private
  * Internal use of Amplify only
  */
+
 export type DelayFunction = (
 	attempt: number,
 	args?: any[],
