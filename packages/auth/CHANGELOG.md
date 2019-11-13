@@ -3,43 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.4.3...@aws-amplify/auth@1.5.0) (2019-10-29)
+# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.5.0...@aws-amplify/auth@1.6.0) (2019-11-13)
 
+### Bug Fixes
+
+- **@aws-amplify/auth:** NotAuthorizedException ([#4281](https://github.com/aws-amplify/amplify-js/issues/4281)) ([023f496](https://github.com/aws-amplify/amplify-js/commit/023f4960d80c9774d85cbc7593175d7380fcbed2))
 
 ### Features
 
-* **@aws-amplify/auth:** clientMetadata ([#4149](https://github.com/aws-amplify/amplify-js/issues/4149)) ([ac34816](https://github.com/aws-amplify/amplify-js/commit/ac34816df326331cfe04474fdf35790c52f4a1d3))
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.4.3...@aws-amplify/auth@1.5.0) (2019-10-29)
 
+### Features
 
-
+- **@aws-amplify/auth:** clientMetadata ([#4149](https://github.com/aws-amplify/amplify-js/issues/4149)) ([ac34816](https://github.com/aws-amplify/amplify-js/commit/ac34816df326331cfe04474fdf35790c52f4a1d3))
 
 ## [1.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.4.2...@aws-amplify/auth@1.4.3) (2019-10-23)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [1.4.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.4.0...@aws-amplify/auth@1.4.2) (2019-10-10)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 # [1.4.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.3.3...@aws-amplify/auth@1.4.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [1.3.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.3.1...@aws-amplify/auth@1.3.3) (2019-09-13)
 
