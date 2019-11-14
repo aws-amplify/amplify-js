@@ -25,6 +25,7 @@ export interface SignUpParams {
 	password: string;
 	attributes?: object;
 	validationData?: CognitoUserAttribute[];
+	clientMetadata?: { [key: string]: string };
 }
 
 export interface AuthCache {
@@ -48,6 +49,7 @@ export interface AuthOptions {
 	storage?: ICognitoStorage;
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
+	clientMetadata?: any;
 }
 
 export enum CognitoHostedUIIdentityProvider {
@@ -156,6 +158,7 @@ export type OAuthOpts = AwsCognitoOAuthOpts | Auth0OAuthOpts;
 
 export interface ConfirmSignUpOptions {
 	forceAliasCreation?: boolean;
+	clientMetadata?: ClientMetaData;
 }
 
 export interface SignOutOpts {
@@ -200,6 +203,12 @@ export interface AuthErrorMessage {
 
 // We can extend this in the future if needed
 export type SignInOpts = UsernamePasswordOpts;
+
+export type ClientMetaData =
+	| {
+			[key: string]: string;
+	  }
+	| undefined;
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;
