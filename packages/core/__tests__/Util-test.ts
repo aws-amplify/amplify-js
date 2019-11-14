@@ -4,10 +4,7 @@ import { jitteredExponentialRetry, NonRetryableError } from '../src/Util';
 import { ConsoleLogger as Logger } from '../src/Logger';
 Logger.LOG_LEVEL = 'DEBUG';
 describe('Util', () => {
-	beforeEach(() => {
-		// jest.useFakeTimers();
-		// jest.clearAllMocks();
-	});
+	beforeEach(() => {});
 
 	test('jitteredExponential retry happy case', done => {
 		const resolveAt = 3;

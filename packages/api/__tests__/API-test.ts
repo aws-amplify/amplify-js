@@ -564,7 +564,7 @@ describe('API test', () => {
 				})
 			).rejects.toThrowError('No federated jwt');
 		});
-		test.skip('multi-auth using CUP as auth mode, but no userpool', async () => {
+		test('multi-auth using CUP as auth mode, but no userpool', async () => {
 			expect.assertions(1);
 
 			const api = new API(config);
@@ -595,15 +595,13 @@ describe('API test', () => {
                   }
                 }`;
 
-			try {
-				await api.graphql({
+			expect(
+				api.graphql({
 					query: GetEvent,
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				});
-			} catch (err) {
-				expect(err).toBe('No userPool');
-			}
+				})
+			).rejects.toThrow();
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
