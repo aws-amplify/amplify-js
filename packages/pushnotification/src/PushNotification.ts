@@ -14,11 +14,11 @@
 import {
 	NativeModules,
 	DeviceEventEmitter,
-	AsyncStorage,
 	Platform,
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import AsyncStorage from '@react-native-community/async-storage';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');

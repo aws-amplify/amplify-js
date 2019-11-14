@@ -13,7 +13,7 @@
 
 import StorageCache from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils/CacheUtils';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
