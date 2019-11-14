@@ -1,11 +1,6 @@
 import axios from 'axios';
-import { CognitoIdentityCredentials } from 'aws-sdk';
-
-import Auth from '@aws-amplify/auth';
 import { RestAPIClass as API } from '../src/';
 import { RestClient } from '../src/RestClient';
-import { print } from 'graphql/language/printer';
-import { parse } from 'graphql/language/parser';
 import { Signer, Credentials } from '@aws-amplify/core';
 
 jest.mock('axios');

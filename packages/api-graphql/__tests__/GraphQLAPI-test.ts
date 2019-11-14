@@ -1,5 +1,3 @@
-import { CognitoIdentityCredentials } from 'aws-sdk';
-
 import Auth from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
 import { graphqlOperation } from '../src/GraphQLAPI';
@@ -9,7 +7,7 @@ import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import {
 	Credentials,
-	// @ts-ignore
+	Constants,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
@@ -82,6 +80,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -154,6 +153,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -182,12 +182,6 @@ describe('API test', () => {
 					return new Promise((res, rej) => {
 						res('cred');
 					});
-				});
-
-			const cognitoCredentialSpyon = jest
-				.spyOn(CognitoIdentityCredentials.prototype, 'get')
-				.mockImplementation(callback => {
-					callback(null);
 				});
 
 			const cache_config = {
@@ -248,6 +242,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -323,6 +318,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -350,12 +346,6 @@ describe('API test', () => {
 		test('multi-auth default case api-key, using AWS_IAM as auth mode', async () => {
 			expect.assertions(1);
 			jest.spyOn(Credentials, 'get').mockReturnValue(Promise.resolve('cred'));
-
-			jest
-				.spyOn(CognitoIdentityCredentials.prototype, 'get')
-				.mockImplementation(callback => {
-					callback(null);
-				});
 
 			const spyon = jest
 				.spyOn(RestClient.prototype, 'post')
@@ -392,7 +382,7 @@ describe('API test', () => {
 			const doc = parse(GetEvent);
 			const query = print(doc);
 
-			const headers = {};
+			const headers = { 'x-amz-user-agent': Constants.userAgent };
 
 			const body = {
 				query,
@@ -468,6 +458,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -719,6 +710,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {
@@ -910,6 +902,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
 			};
 
 			const body = {

@@ -187,7 +187,6 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authOptions = {
 	Auth: {
