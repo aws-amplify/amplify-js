@@ -4,6 +4,7 @@ about: Gather community feedback regarding a proposed change to the library
 title: 'RFC: PROPOSAL HEADLINE'
 labels: feature-request
 assignees: ''
+
 ---
 
 _This issue is a Request For Comments (RFC). It is intended to elicit community feedback regarding a proposed change to the library. Please feel free to post comments or questions here._
