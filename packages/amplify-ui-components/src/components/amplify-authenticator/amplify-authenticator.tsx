@@ -74,7 +74,7 @@ export class AmplifyAuthenticator {
       <AuthStateTunnel.Provider state={tunnelState}>
         {this.renderAuthComponent(this.authState)}
         <div hidden={this.authState !== AuthState.SignedIn}>
-          <amplify-sign-out handleAuthStateChange={this.onAuthStateChange} />
+          <amplify-greetings handleAuthStateChange={this.onAuthStateChange} user={this.authData} />
           <slot />
         </div>
       </AuthStateTunnel.Provider>
