@@ -8,14 +8,11 @@ exports[`amplify-federated-buttons stories renderWithCorrectAuthState 1`] = `
 <amplify-federated-buttons>
   <div>
     <div>
-      <amplify-google-button google_client_id="google_client_id"></amplify-google-button>
+      <amplify-google-button clientid="google_client_id"></amplify-google-button>
     </div>
     <div>
-      <amplify-facebook-button facebook_app_id="facebook_app_id"></amplify-facebook-button>
+      <amplify-facebook-button appid="facebook_app_id"></amplify-facebook-button>
     </div>
-    <amplify-strike>
-      or
-    </amplify-strike>
   </div>
 </amplify-federated-buttons>
 `;
@@ -24,11 +21,8 @@ exports[`amplify-federated-buttons stories renderWithCorrectAuthStateAndOnlyFace
 <amplify-federated-buttons>
   <div>
     <div>
-      <amplify-facebook-button facebook_app_id="facebook_app_id"></amplify-facebook-button>
+      <amplify-facebook-button appid="facebook_app_id"></amplify-facebook-button>
     </div>
-    <amplify-strike>
-      or
-    </amplify-strike>
   </div>
 </amplify-federated-buttons>
 `;
@@ -37,11 +31,8 @@ exports[`amplify-federated-buttons stories renderWithCorrectAuthStateAndOnlyGoog
 <amplify-federated-buttons>
   <div>
     <div>
-      <amplify-google-button google_client_id="google_client_id"></amplify-google-button>
+      <amplify-google-button clientid="google_client_id"></amplify-google-button>
     </div>
-    <amplify-strike>
-      or
-    </amplify-strike>
   </div>
 </amplify-federated-buttons>
 `;
