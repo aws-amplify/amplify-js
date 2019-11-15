@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-// const packageInfo = require('../../package.json');
 import { version } from './version';
 import { appendToUserAgent } from '@aws-sdk/util-user-agent-browser';
 export const Platform = {
