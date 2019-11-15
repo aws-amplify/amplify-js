@@ -217,8 +217,12 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials } from 'aws-sdk';
-import { Credentials, GoogleOAuth, StorageHelper } from '@aws-amplify/core';
+import {
+	Credentials,
+	GoogleOAuth,
+	StorageHelper,
+	ICredentials,
+} from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 
@@ -500,12 +504,11 @@ describe('auth unit test', () => {
 
 			await auth.confirmSignUp('username', code);
 
-			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
-				code,
-				jasmine.any(Boolean),
-				jasmine.any(Function),
-				{ foo: 'bar' }
-			);
+			expect(
+				await CognitoUser.prototype.confirmRegistration
+			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
+				foo: 'bar',
+			});
 			spyon.mockClear();
 		});
 
@@ -518,12 +521,11 @@ describe('auth unit test', () => {
 				clientMetadata: { custom: 'value' },
 			});
 
-			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
-				code,
-				jasmine.any(Boolean),
-				jasmine.any(Function),
-				{ custom: 'value' }
-			);
+			expect(
+				await CognitoUser.prototype.confirmRegistration
+			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
+				custom: 'value',
+			});
 			spyon.mockClear();
 		});
 
@@ -607,10 +609,9 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username');
 
-			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
-				jasmine.any(Function),
-				{ foo: 'bar' }
-			);
+			expect(
+				await CognitoUser.prototype.resendConfirmationCode
+			).toBeCalledWith(jasmine.any(Function), { foo: 'bar' });
 			spyon.mockClear();
 		});
 
@@ -620,10 +621,9 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username', { custom: 'value' });
 
-			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
-				jasmine.any(Function),
-				{ custom: 'value' }
-			);
+			expect(
+				await CognitoUser.prototype.resendConfirmationCode
+			).toBeCalledWith(jasmine.any(Function), { custom: 'value' });
 			spyon.mockClear();
 		});
 
@@ -1891,9 +1891,9 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			auth['credentials_source'] = 'aws';
-			auth['credentials'] = new CognitoIdentityCredentials({
+			auth['credentials'] = {
 				IdentityPoolId: 'identityPoolId',
-			});
+			};
 
 			const spyonAuth = jest
 				.spyOn(Auth.prototype, 'currentUserCredentials')
@@ -1972,15 +1972,7 @@ describe('auth unit test', () => {
 		test('get guest credentials failed', async () => {
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 
-			const cognitoCredentialSpyon = jest
-				.spyOn(CognitoIdentityCredentials.prototype, 'get')
-				.mockImplementation(callback => {
-					callback(null);
-				});
-
 			expect(await auth.signOut()).toBeUndefined();
-
-			cognitoCredentialSpyon.mockClear();
 		});
 	});
 
@@ -2022,12 +2014,11 @@ describe('auth unit test', () => {
 
 			await auth.changePassword(user, oldPassword, newPassword);
 
-			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
-				oldPassword,
-				newPassword,
-				jasmine.any(Function),
-				{ foo: 'bar' }
-			);
+			expect(
+				await CognitoUser.prototype.changePassword
+			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
+				foo: 'bar',
+			});
 			spyon.mockClear();
 		});
 
@@ -2045,12 +2036,11 @@ describe('auth unit test', () => {
 				custom: 'value',
 			});
 
-			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
-				oldPassword,
-				newPassword,
-				jasmine.any(Function),
-				{ custom: 'value' }
-			);
+			expect(
+				await CognitoUser.prototype.changePassword
+			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
+				custom: 'value',
+			});
 			spyon.mockClear();
 		});
 	});
@@ -2331,10 +2321,10 @@ describe('auth unit test', () => {
 			const spyon2 = jest
 				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
-					auth['credentials'] = new CognitoIdentityCredentials({
+					auth['credentials'] = {
 						IdentityPoolId: 'identityPoolId',
 						IdentityId: 'identityId',
-					});
+					};
 					auth['credentials']['identityId'] = 'identityId';
 					return new Promise((res, rej) => {
 						res([

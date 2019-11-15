@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import SHA256 from 'crypto-js/sha256';

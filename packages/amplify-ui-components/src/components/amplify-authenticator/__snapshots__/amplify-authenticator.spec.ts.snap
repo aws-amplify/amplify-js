@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-authenticator spec: Render logic -> should render a \`forgot password\` if initialAuthState is \`forgotpassword\` 1`] = `
+<amplify-authenticator initial-auth-state="forgotpassword">
+  <!---->
+  <amplify-forgot-password></amplify-forgot-password>
+  <div hidden="">
+    <amplify-sign-out></amplify-sign-out>
+  </div>
+</amplify-authenticator>
+`;
+
+exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\` by default 1`] = `
+<amplify-authenticator>
+  <!---->
+  <amplify-sign-in></amplify-sign-in>
+  <div hidden="">
+    <amplify-sign-out></amplify-sign-out>
+  </div>
+</amplify-authenticator>
+`;
+
+exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\` if initialAuthState is \`signup\` 1`] = `
+<amplify-authenticator initial-auth-state="signup">
+  <!---->
+  <amplify-sign-up></amplify-sign-up>
+  <div hidden="">
+    <amplify-sign-out></amplify-sign-out>
+  </div>
+</amplify-authenticator>
+`;

@@ -1,14 +1,15 @@
 {
-	"auth": {
-		"cognitoe1972729": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation"
-		}
-	},
-	"xr": {
-		"classroom": {
-			"service": "Sumerian",
-			"providerPlugin": "awscloudformation"
-		}
-	}
+  "auth": {
+    "amplifyexamples54d66013": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
+  },
+  "xr": {
+    "classroom": {
+      "service": "Sumerian",
+      "providerPlugin": "awscloudformation"
+    }
+  }
 }

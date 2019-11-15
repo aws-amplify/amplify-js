@@ -8,10 +8,12 @@ export const formSectionHeader = css`
 `;
 
 export const formSectionFooter = css`
+  font-family: var(--font-family);
+  font-weight: 300;
   font-size: var(--secondary-font-size);
-  font-weight: 700;
   color: var(--grey);
   display: flex;
   flex-direction: row-reverse;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: baseline;
 `;

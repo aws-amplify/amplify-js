@@ -1,7 +1,5 @@
 # amplify-link
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -17,14 +15,20 @@
 
 ### Used by
 
- - [amplify-examples](../amplify-examples)
+ - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
+ - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
+ - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-sign-up](../amplify-sign-up)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-examples --> amplify-link
+  amplify-confirm-sign-in --> amplify-link
+  amplify-confirm-sign-up --> amplify-link
+  amplify-forgot-password --> amplify-link
   amplify-sign-in --> amplify-link
+  amplify-sign-up --> amplify-link
   style amplify-link fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

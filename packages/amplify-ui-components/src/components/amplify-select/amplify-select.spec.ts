@@ -3,7 +3,7 @@ import { AmplifySelect } from './amplify-select';
 
 describe('amplify-select spec:', () => {
   describe('Component logic ->', () => {
-    let select; 
+    let select;
 
     beforeEach(() => {
       select = new AmplifySelect();
@@ -13,7 +13,7 @@ describe('amplify-select spec:', () => {
       expect(select.overrideStyle).toBe(false);
     });
 
-    it('should have options be defined by default', () => {    
+    it('should have options be defined by default', () => {
       expect(select.options).toBeDefined();
     });
 
@@ -24,9 +24,9 @@ describe('amplify-select spec:', () => {
 
     it('should throw an error when there is a mixture of `string` and `number` values', () => {
       const options = [
-        {label: 'us-east-1', value: '1'},
-        {label: 'us-west-2', value: '2'},
-        {label: 'us-west-1', value: 3}
+        { label: 'us-east-1', value: '1' },
+        { label: 'us-west-2', value: '2' },
+        { label: 'us-west-1', value: 3 },
       ];
 
       select.options = options;
@@ -37,9 +37,9 @@ describe('amplify-select spec:', () => {
 
     it('should use custom options when passed from parent', () => {
       const options = [
-        {label: 'Gogi', value: '1'},
-        {label: 'Gucci', value: '2'},
-        {label: 'Foooci', value: '3'}
+        { label: 'Gogi', value: '1' },
+        { label: 'Gucci', value: '2' },
+        { label: 'Foooci', value: '3' },
       ];
 
       select.options = options;
@@ -60,10 +60,9 @@ describe('amplify-select spec:', () => {
 
   describe('Render logic ->', () => {
     it('should render an empty `placeholder` label and value of `1` by default', async () => {
-
       const page = await newSpecPage({
         components: [AmplifySelect],
-        html: `<amplify-select></amplify-select>`
+        html: `<amplify-select></amplify-select>`,
       });
 
       expect(page.root).toMatchSnapshot();

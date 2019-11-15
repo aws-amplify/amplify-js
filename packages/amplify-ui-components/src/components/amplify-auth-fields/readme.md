@@ -1,7 +1,5 @@
 # amplify-auth-fields
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -16,7 +14,11 @@
 
 ### Used by
 
+ - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
+ - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
+ - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-sign-in](../amplify-sign-in)
+ - [amplify-sign-up](../amplify-sign-up)
 
 ### Depends on
 
@@ -24,7 +26,7 @@
 - [amplify-password-field](../amplify-password-field)
 - [amplify-email-field](../amplify-email-field)
 - [amplify-code-field](../amplify-code-field)
-- [amplify-form-field](../amplify-form-field)
+- [amplify-phone-field](../amplify-phone-field)
 - [amplify-form-field](../amplify-form-field)
 
 ### Graph
@@ -34,7 +36,7 @@ graph TD;
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field
   amplify-auth-fields --> amplify-code-field
-  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-phone-field
   amplify-auth-fields --> amplify-form-field
   amplify-username-field --> amplify-form-field
   amplify-form-field --> amplify-label
@@ -43,7 +45,15 @@ graph TD;
   amplify-password-field --> amplify-form-field
   amplify-email-field --> amplify-form-field
   amplify-code-field --> amplify-form-field
+  amplify-phone-field --> amplify-form-field
+  amplify-phone-field --> amplify-country-dial-code
+  amplify-phone-field --> amplify-input
+  amplify-country-dial-code --> amplify-select
+  amplify-confirm-sign-in --> amplify-auth-fields
+  amplify-confirm-sign-up --> amplify-auth-fields
+  amplify-forgot-password --> amplify-auth-fields
   amplify-sign-in --> amplify-auth-fields
+  amplify-sign-up --> amplify-auth-fields
   style amplify-auth-fields fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

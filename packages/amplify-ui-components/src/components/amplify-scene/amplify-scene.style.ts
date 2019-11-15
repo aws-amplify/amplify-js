@@ -21,7 +21,5 @@ export const sceneBar = css`
 `;
 
 export const sceneActions = css`
-  margin-left: auto;
-  margin-right: 16px;
-  margin-bottom: 16px;
+  margin: 1em 1em 1em auto;
 `;

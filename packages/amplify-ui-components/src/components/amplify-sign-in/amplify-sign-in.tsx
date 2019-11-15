@@ -1,27 +1,21 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
-import { AmplifySignInFormFooter } from './amplify-sign-in-form-footer';
+import { AuthState, ChallengeName, FederatedConfig } from '../../common/types/auth-types';
+
 import {
   HEADER_TEXT,
   SUBMIT_BUTTON_TEXT,
   CREATE_ACCOUNT_TEXT,
   NO_ACCOUNT_TEXT,
+  NO_AUTH_MODULE_FOUND,
   FORGOT_PASSWORD_TEXT,
-  RESET_PASSWORD_TEXT
+  RESET_PASSWORD_TEXT,
 } from '../../common/constants';
 
-const SIGN_IN_COMPONENTS = [
-  {
-    type: 'username',
-    required: true,
-  },
-  {
-    type: 'password',
-    hint: <AmplifyForgotPasswordHint forgotPasswordText={FORGOT_PASSWORD_TEXT} resetPasswordText={RESET_PASSWORD_TEXT} />,
-    required: true,
-  },
-];
+import { Logger, isEmpty } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+
+const logger = new Logger('SignIn');
 
 @Component({
   tag: 'amplify-sign-in',
@@ -29,7 +23,7 @@ const SIGN_IN_COMPONENTS = [
 })
 export class AmplifySignIn {
   /** Fires when sign in form is submitted */
-  @Prop() handleSubmit: (Event) => void;
+  @Prop() handleSubmit: (Event) => void = event => this.signIn(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign in component */
@@ -38,7 +32,11 @@ export class AmplifySignIn {
   @Prop() submitButtonText: string = SUBMIT_BUTTON_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
-  /** 
+  /** Federated credentials & configuration. */
+  @Prop() federated: FederatedConfig = {};
+  /** Passed from the Authenticatior component in order to change Authentication state */
+  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
    * text for a label or adjust a placeholder, you can follow the structure below in order to do just that.
@@ -53,16 +51,128 @@ export class AmplifySignIn {
    *  }
    * ]
    * ```
-  */
-  @Prop() formFields: FormFieldTypes | string[] = SIGN_IN_COMPONENTS; 
+   */
+  @Prop() formFields: FormFieldTypes | string[];
+
+  /* Whether or not the sign-in component is loading */
+  @State() loading: boolean = false;
+  /* The username value in the sign-in form */
+  @State() username: string;
+  /* The password value in the sign-in form */
+  @State() password: string;
+
+  componentWillLoad() {
+    this.formFields = [
+      {
+        type: 'username',
+        required: true,
+        handleInputChange: event => this.handleUsernameChange(event),
+      },
+      {
+        type: 'password',
+        hint: (
+          <div>
+            {FORGOT_PASSWORD_TEXT}{' '}
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}>
+              {RESET_PASSWORD_TEXT}
+            </amplify-link>
+          </div>
+        ),
+        required: true,
+        handleInputChange: event => this.handlePasswordChange(event),
+      },
+    ];
+  }
+
+  handleUsernameChange(event) {
+    this.username = event.target.value;
+  }
+
+  handlePasswordChange(event) {
+    this.password = event.target.value;
+  }
+
+  checkContact(user) {
+    if (!Auth || typeof Auth.verifiedContact !== 'function') {
+      throw new Error(NO_AUTH_MODULE_FOUND);
+    }
+    Auth.verifiedContact(user).then(data => {
+      if (!isEmpty(data.verified)) {
+        this.handleAuthStateChange(AuthState.SignedIn, user);
+      } else {
+        user = Object.assign(user, data);
+        this.handleAuthStateChange(AuthState.VerifyContact, user);
+      }
+    });
+  }
+
+  async signIn(event) {
+    // avoid submitting the form
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (!Auth || typeof Auth.signIn !== 'function') {
+      throw new Error(NO_AUTH_MODULE_FOUND);
+    }
+    this.loading = true;
+    try {
+      const user = await Auth.signIn(this.username, this.password);
+      logger.debug(user);
+      if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
+        logger.debug('confirm user with ' + user.challengeName);
+        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
+      } else if (user.challengeName === ChallengeName.NewPasswordRequired) {
+        logger.debug('require new password', user.challengeParam);
+        this.handleAuthStateChange(AuthState.ResetPassword, user);
+      } else if (user.challengeName === ChallengeName.MFASetup) {
+        logger.debug('TOTP setup', user.challengeParam);
+        this.handleAuthStateChange(AuthState.TOTPSetup, user);
+      } else if (
+        user.challengeName === ChallengeName.CustomChallenge &&
+        user.challengeParam &&
+        user.challengeParam.trigger === 'true'
+      ) {
+        logger.debug('custom challenge', user.challengeParam);
+        this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
+      } else {
+        this.checkContact(user);
+      }
+    } catch (error) {
+      if (error.code === 'UserNotConfirmedException') {
+        logger.debug('the user is not confirmed');
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });
+      } else if (error.code === 'PasswordResetRequiredException') {
+        logger.debug('the user requires a new password');
+        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
+      } else {
+        throw new Error(error);
+      }
+    } finally {
+      this.loading = false;
+    }
+  }
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} overrideStyle={this.overrideStyle} handleSubmit={this.handleSubmit}>
+      <amplify-form-section
+        headerText={this.headerText}
+        overrideStyle={this.overrideStyle}
+        handleSubmit={this.handleSubmit}
+        secondaryFooterContent={
+          <span>
+            {NO_ACCOUNT_TEXT}{' '}
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignUp)}>
+              {CREATE_ACCOUNT_TEXT}
+            </amplify-link>
+          </span>
+        }
+      >
+        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+
+        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
+
         <amplify-auth-fields formFields={this.formFields} />
-        <div slot="amplify-form-section-footer">
-          <AmplifySignInFormFooter submitButtonText={this.submitButtonText} createAccountText={CREATE_ACCOUNT_TEXT} noAccountText={NO_ACCOUNT_TEXT} />
-        </div>
       </amplify-form-section>
     );
   }

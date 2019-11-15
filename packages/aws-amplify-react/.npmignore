@@ -8,6 +8,8 @@ test_Setup/**
 .vscode/**
 .DS_Store
 *.log
+lib/.tsbuildinfo
+lib-esm/.tsbuildinfo
 prepend-license.js
 cypress/**
 cypress.json

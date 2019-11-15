@@ -5,13 +5,6 @@
 	"main": "./index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./index": "./lib/index.js",
-		"./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-		"./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-		"./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
-	},
-	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
@@ -20,10 +13,19 @@
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
+		"generate-version": "genversion src/Platform/version.ts --es6",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts'"
+	},
+	"react-native": {
+		"./index": "./lib/index.js",
+		"./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
+		"./lib/RNComponents": "./lib/RNComponents/reactnative.js",
+		"./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
 	},
 	"repository": {
 		"type": "git",
@@ -38,7 +40,7 @@
 	"devDependencies": {
 		"find": "^0.2.7",
 		"prepend-file": "^1.3.1",
-		"prettier": "^1.7.4"
+		"genversion": "^2.2.0"
 	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "^0.1.0-preview.2",
@@ -46,7 +48,6 @@
 		"@aws-sdk/credential-provider-cognito-identity": "^0.1.0-preview.2",
 		"@aws-sdk/util-hex-encoding": "^0.1.0-preview.1",
 		"@aws-sdk/util-user-agent-browser": "^0.1.0-preview.2",
-		"aws-sdk": "2.518.0",
 		"url": "^0.11.0"
 	},
 	"jest": {

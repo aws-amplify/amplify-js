@@ -19,7 +19,7 @@ import * as Observable from 'zen-observable';
 import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,
-	// @ts-ignore
+	Constants,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
@@ -28,6 +28,7 @@ import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { v4 as uuid } from 'uuid';
 import { RestClient } from '@aws-amplify/api-rest';
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('GraphQLAPI');
 
@@ -221,8 +222,11 @@ export class GraphQLAPIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
 					: { Authorization: null })),
-			...additionalHeaders,
 			...(await graphql_headers({ query, variables })),
+			...additionalHeaders,
+			...(!customGraphqlEndpoint && {
+				[USER_AGENT_HEADER]: Constants.userAgent,
+			}),
 		};
 
 		const body = {
@@ -239,7 +243,7 @@ export class GraphQLAPIClass {
 			},
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		const endpoint = customGraphqlEndpoint ?? appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
