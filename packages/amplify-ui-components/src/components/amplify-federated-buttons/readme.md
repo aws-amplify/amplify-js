@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property                | Attribute    | Description                                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
@@ -10,12 +11,13 @@
 | `federated`             | --           | Federated credentials & configuration.                                                                                          | `FederatedConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `{}`               |
 | `handleAuthStateChange` | --           | Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void`                                                                                                                                                                                                                                                                                                                                                                                                                                           | `undefined`        |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-federated-sign-in](../amplify-federated-sign-in)
-- [amplify-sign-in](../amplify-sign-in)
+ - [amplify-federated-sign-in](../amplify-federated-sign-in)
+ - [amplify-sign-in](../amplify-sign-in)
 
 ### Depends on
 
@@ -26,7 +28,6 @@
 - [amplify-auth0-button](../amplify-auth0-button)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-federated-buttons --> amplify-google-button
@@ -44,6 +45,6 @@ graph TD;
   style amplify-federated-buttons fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

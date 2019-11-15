@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property                | Attribute            | Description                                                                      | Type                                                | Default                       |
@@ -14,11 +15,12 @@
 | `overrideStyle`         | `override-style`     | (Optional) Overrides default styling                                             | `boolean`                                           | `false`                       |
 | `submitButtonText`      | `submit-button-text` | The text displayed inside of the submit button for the form                      | `string`                                            | `SEND_CODE`                   |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-authenticator](../amplify-authenticator)
+ - [amplify-authenticator](../amplify-authenticator)
 
 ### Depends on
 
@@ -27,7 +29,6 @@
 - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-forgot-password --> amplify-form-section
@@ -56,6 +57,6 @@ graph TD;
   style amplify-forgot-password fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property            | Attribute     | Description                                                                                                        | Type                          | Default             |
@@ -15,18 +16,18 @@
 | `required`          | `required`    | The required flag in order to make an input required prior to submitting a form                                    | `boolean`                     | `false`             |
 | `value`             | `value`       | The value of the content inside of the input field                                                                 | `string`                      | `undefined`         |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-auth-fields](../amplify-auth-fields)
+ - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Depends on
 
 - [amplify-form-field](../amplify-form-field)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-email-field --> amplify-form-field
@@ -37,6 +38,6 @@ graph TD;
   style amplify-email-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

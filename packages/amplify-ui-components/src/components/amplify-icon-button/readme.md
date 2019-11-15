@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property          | Attribute           | Description                         | Type                                                                             | Default     |
@@ -11,11 +12,12 @@
 | `overrideStyle`   | `override-style`    | (Optional) Override default styling | `boolean`                                                                        | `false`     |
 | `tooltip`         | `tooltip`           |                                     | `string`                                                                         | `null`      |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-scene](../amplify-scene)
+ - [amplify-scene](../amplify-scene)
 
 ### Depends on
 
@@ -23,7 +25,6 @@
 - [amplify-icon](../amplify-icon)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-icon-button --> amplify-tooltip
@@ -32,6 +33,6 @@ graph TD;
   style amplify-icon-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
