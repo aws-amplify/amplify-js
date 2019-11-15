@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.3.4",
+  "version": "2.1.0",
   "description": "Analytics category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -14,6 +14,8 @@
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
@@ -34,8 +36,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^1.1.4",
-    "@aws-amplify/core": "^1.2.4",
+    "@aws-amplify/cache": "^2.1.0",
+    "@aws-amplify/core": "^2.1.0",
     "uuid": "^3.2.1"
   },
   "jest": {
