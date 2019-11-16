@@ -3,6 +3,6 @@
 exports[`amplify-nav spec: Render logic -> should render 1`] = `
 <amplify-nav>
   <!---->
-  <nav class="css-1qc8kij" role="navigation"></nav>
+  <nav class="css-1qc8kij"></nav>
 </amplify-nav>
 `;

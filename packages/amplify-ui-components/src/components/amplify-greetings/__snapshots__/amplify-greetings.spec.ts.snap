@@ -2,7 +2,7 @@
 
 exports[`amplify-greetings spec: Render logic -> should render 1`] = `
 <amplify-greetings>
-  <header class="css-z03xfq">
+  <header class="amplify-ui--greetings css-107bgt">
     <amplify-nav>
       <amplify-sign-out></amplify-sign-out>
     </amplify-nav>

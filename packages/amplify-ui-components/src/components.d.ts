@@ -430,6 +430,10 @@ export namespace Components {
     */
     'logo': FunctionalComponent | null;
     /**
+    * Override default styling
+    */
+    'overrideStyle': boolean;
+    /**
     * Used for the username to be passed to resend code
     */
     'user': CognitoUserInterface;
@@ -1492,6 +1496,10 @@ declare namespace LocalJSX {
     * Logo displayed inside of the header
     */
     'logo'?: FunctionalComponent | null;
+    /**
+    * Override default styling
+    */
+    'overrideStyle'?: boolean;
     /**
     * Used for the username to be passed to resend code
     */

@@ -8,7 +8,7 @@ import { nav } from './amplify-nav.style';
 export class AmplifyNav {
   render() {
     return (
-      <nav class={nav} role="navigation">
+      <nav class={nav}>
         <slot />
       </nav>
     );

@@ -9,12 +9,16 @@ describe('amplify-greetings spec:', () => {
 			greetings = new AmplifyGreetings();
 		});
 
-		it('should render `Submit` for the button text', () => {
+		it('should have user prop set to null by default', () => {
 			expect(greetings.user).toBe(null);
 		});
 
-		it('should have style override prop set to false by default', () => {
+		it('should have logo prop set to null by default', () => {
 			expect(greetings.logo).toBe(null);
+		});
+
+		it('should have overrideStyle prop set to false by default', () => {
+			expect(greetings.overrideStyle).toBe(false);
 		});
 	});
 	describe('Render logic ->', () => {
