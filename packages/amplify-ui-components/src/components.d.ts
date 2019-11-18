@@ -822,6 +822,20 @@ export namespace Components {
     */
     'text': string;
   }
+  interface AmplifyTotp {
+    /**
+    * Text inside of the Sign Out button
+    */
+    'buttonText': string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+  }
   interface AmplifyUsernameField {
     /**
     * Will disable the input if set to true
@@ -1116,6 +1130,12 @@ declare global {
     new (): HTMLAmplifyTooltipElement;
   };
 
+  interface HTMLAmplifyTotpElement extends Components.AmplifyTotp, HTMLStencilElement {}
+  var HTMLAmplifyTotpElement: {
+    prototype: HTMLAmplifyTotpElement;
+    new (): HTMLAmplifyTotpElement;
+  };
+
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
   var HTMLAmplifyUsernameFieldElement: {
     prototype: HTMLAmplifyUsernameFieldElement;
@@ -1170,6 +1190,7 @@ declare global {
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
+    'amplify-totp': HTMLAmplifyTotpElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
@@ -1960,6 +1981,20 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
+  interface AmplifyTotp {
+    /**
+    * Text inside of the Sign Out button
+    */
+    'buttonText'?: string;
+    /**
+    * Passed from the Authenticatior component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+  }
   interface AmplifyUsernameField {
     /**
     * Will disable the input if set to true
@@ -2042,6 +2077,7 @@ declare namespace LocalJSX {
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
+    'amplify-totp': AmplifyTotp;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
@@ -2095,6 +2131,7 @@ declare module "@stencil/core" {
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
+      'amplify-totp': LocalJSX.AmplifyTotp & JSXBase.HTMLAttributes<HTMLAmplifyTotpElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
     }

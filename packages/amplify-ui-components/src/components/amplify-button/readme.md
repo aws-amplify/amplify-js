@@ -19,6 +19,7 @@
  - [amplify-form-section](../amplify-form-section)
  - [amplify-sign-out](../amplify-sign-out)
  - [amplify-sign-up](../amplify-sign-up)
+ - [amplify-totp](../amplify-totp)
  - [rock-paper-scissor](../amplify-examples/rock-paper-scissor)
 
 ### Graph
@@ -27,6 +28,7 @@ graph TD;
   amplify-form-section --> amplify-button
   amplify-sign-out --> amplify-button
   amplify-sign-up --> amplify-button
+  amplify-totp --> amplify-button
   rock-paper-scissor --> amplify-button
   style amplify-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
