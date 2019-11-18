@@ -16,7 +16,7 @@
 
 ### Used by
 
- - [amplify-authenticator](../amplify-authenticator)
+ - [amplify-greetings](../amplify-greetings)
 
 ### Depends on
 
@@ -26,7 +26,7 @@
 ```mermaid
 graph TD;
   amplify-sign-out --> amplify-button
-  amplify-authenticator --> amplify-sign-out
+  amplify-greetings --> amplify-sign-out
   style amplify-sign-out fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

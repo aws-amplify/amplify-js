@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-greetings spec: Render logic -> should render 1`] = `
+<amplify-greetings>
+  <header class="amplify-ui--greetings css-107bgt">
+    <amplify-nav>
+      <amplify-sign-out></amplify-sign-out>
+    </amplify-nav>
+  </header>
+</amplify-greetings>
+`;

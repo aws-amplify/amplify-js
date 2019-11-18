@@ -10,23 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
- :root {
-
+:root {
   /* Colors */
-  --amazon-orange: #FF9900;
-  --light-amazon-orange: #FFAC31;
-  --dark-amazon-orange: #E88B01;
-  --squid-ink: #232F3E;
-  --light-squid-ink: #31465F;
+  --amazon-orange: #ff9900;
+  --light-amazon-orange: #ffac31;
+  --dark-amazon-orange: #e88b01;
+  --squid-ink: #232f3e;
+  --light-squid-ink: #31465f;
   --deep-squid-ink: #152939;
   --grey: #828282;
-  --light-grey: #C4C4C4;
-  --silver: #E1E4EA;
-  --dark-blue: #31465F;
-  --red: #DD3F5B;
-  --white: #FFFFFF;
+  --light-grey: #dfe8ff;
+  --silver: #e1e4ea;
+  --dark-blue: #31465f;
+  --red: #dd3f5b;
+  --white: #ffffff;
   --light-blue: #00a1c9;
-  
 
   /* Theme */
   /* All of the variables below can be used within any application that does an @import inside of their application */
@@ -47,39 +45,39 @@
   --secondary-font-size: 0.875em;
   --third-font-size: 0.813em;
 
-  --font-family: "Amazon Ember","Helvetica Neue Light","Helvetica Neue","Helvetica" ,"Arial","sans-serif";
-  --body-background: #F8F4F4;
+  --font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+  --body-background: #f8f4f4;
 
   /** Angular Theme **/
   --component-width-desktop: 460px;
   --component-width-mobile: 100%;
 
-  --color-primary: #FF9900;
-  --color-primary-accent: #232F3E;
-  --color-primary-highlight: #FFC46D;
-  
-  --color-background:#232F3E;
+  --color-primary: #ff9900;
+  --color-primary-accent: #232f3e;
+  --color-primary-highlight: #ffc46d;
+
+  --color-background: #232f3e;
 
   --color-secondary: #152939;
-  --color-secondary-accent: #31465F;
+  --color-secondary-accent: #31465f;
 
-  --color-danger: #DD3F5B;
-  --color-error: #D0021B;
+  --color-danger: #dd3f5b;
+  --color-error: #d0021b;
 
   --color-accent-brown: #828282;
-  --color-accent-blue: #E1E4EA;
+  --color-accent-blue: #e1e4ea;
 
-  --gradient-blaze: linear-gradient(270deg, #FFC300 0%, #FF9000 100%);
+  --gradient-blaze: linear-gradient(270deg, #ffc300 0%, #ff9000 100%);
 
-  --color-blue: #007EB9;
-  --color-purple: #527FFF;
+  --color-blue: #007eb9;
+  --color-purple: #527fff;
   --color-gray: #828282;
-  --color-white: #FFFFFF;
+  --color-white: #ffffff;
 
-  --input-border: 1px solid #C4C4C4;
+  --input-border: 1px solid #c4c4c4;
   --input-padding: 0.5em 0.5em 0.3em 1em;
 
-  --box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+  --box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
   --button-height: 42px;
 
   --interactions-conversation-height: 250px;
