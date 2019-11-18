@@ -35,6 +35,8 @@ export const PHONE_LABEL = 'Phone Number *';
 export const PHONE_PLACEHOLDER = '(555) 555-1212';
 
 // Password common constants
+export const CHANGE_PASSWORD = 'Change Password';
+export const CHANGE = 'Change';
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
 export const RESET_PASSWORD_TEXT = 'Reset password';
 export const RESET_YOUR_PASSWORD = 'Reset your password';
