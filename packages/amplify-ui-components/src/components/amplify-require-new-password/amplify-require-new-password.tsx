@@ -2,7 +2,6 @@ import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, ChallengeName, CognitoUserInterface } from '../../common/types/auth-types';
 import { CHANGE_PASSWORD, CHANGE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND } from '../../common/constants';
-// import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
 import { Logger, isEmpty } from '@aws-amplify/core';
@@ -18,51 +17,47 @@ export class AmplifyRequireNewPassword {
   @Prop() headerText: string = CHANGE_PASSWORD;
   /** The text displayed inside of the submit button for the form */
   @Prop() submitButtonText: string = CHANGE;
-  /** The form fields displayed inside of the forgot password form */
-  @Prop() formFields: FormFieldTypes;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.change(event);
   /** Passed from the Authenticatior component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
-
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
+  /** The form fields displayed inside of the forgot password form */
+  @Prop() formFields: FormFieldTypes = [
+    {
+      type: 'password',
+      required: true,
+      handleInputChange: event => this.handlePasswordChange(event),
+      label: 'New password',
+      placeholder: 'Enter your new password',
+    },
+  ];
 
-  @State() username: string;
   @State() password: string;
-  @State() code: string;
-
-  componentWillLoad() {
-    this.formFields = [
-      {
-        type: 'password',
-        required: true,
-        handleInputChange: event => this.handlePasswordChange(event),
-        label: 'New password',
-        placeholder: 'Enter your new password',
-        value: this.password,
-      },
-    ];
-  }
 
   handlePasswordChange(event) {
     this.password = event.target.value;
   }
 
-  checkContact(user) {
+  async checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
-    Auth.verifiedContact(user).then(data => {
+    try {
+      const data = await Auth.verifiedContact(user);
       if (!isEmpty(data.verified)) {
         this.handleAuthStateChange(AuthState.SignedIn, user);
       } else {
         user = Object.assign(user, data);
         this.handleAuthStateChange(AuthState.VerifyContact, user);
       }
-    });
+    } catch (error) {
+      logger.error(error);
+      throw new Error(error);
+    }
   }
 
   async change(event) {
