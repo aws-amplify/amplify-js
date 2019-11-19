@@ -10,7 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode, GraphQLError } from 'graphql';
+import { OperationDefinitionNode } from 'graphql';
+import { GraphQLError } from 'graphql/error';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
