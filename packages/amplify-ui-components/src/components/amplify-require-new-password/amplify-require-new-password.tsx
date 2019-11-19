@@ -1,10 +1,17 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName, CognitoUserInterface } from '../../common/types/auth-types';
-import { CHANGE_PASSWORD, CHANGE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthState, ChallengeName, CognitoUserInterface, AuthFormField } from '../../common/types/auth-types';
+import {
+  CHANGE_PASSWORD,
+  CHANGE_PASSWORD_ACTION,
+  NEW_PASSWORD_LABEL,
+  NEW_PASSWORD_PLACEHOLDER,
+  BACK_TO_SIGN_IN,
+  NO_AUTH_MODULE_FOUND,
+} from '../../common/constants';
 
 import { Auth } from '@aws-amplify/auth';
-import { Logger, isEmpty } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 
 const logger = new Logger('amplify-require-new-password');
 
@@ -16,23 +23,23 @@ export class AmplifyRequireNewPassword {
   /** The header text of the forgot password section */
   @Prop() headerText: string = CHANGE_PASSWORD;
   /** The text displayed inside of the submit button for the form */
-  @Prop() submitButtonText: string = CHANGE;
+  @Prop() submitButtonText: string = CHANGE_PASSWORD_ACTION;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.change(event);
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes = [
     {
-      type: 'password',
+      type: AuthFormField.Password,
       required: true,
       handleInputChange: event => this.handlePasswordChange(event),
-      label: 'New password',
-      placeholder: 'Enter your new password',
+      label: NEW_PASSWORD_LABEL,
+      placeholder: NEW_PASSWORD_PLACEHOLDER,
     },
   ];
 

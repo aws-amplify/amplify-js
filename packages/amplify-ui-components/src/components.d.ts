@@ -629,7 +629,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1733,7 +1733,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**

@@ -1,7 +1,7 @@
 import { storiesOf } from '@storybook/html';
 
-const confirmSignUpStories = storiesOf('amplify-require-new-password', module);
+const requireNewPasswordStories = storiesOf('amplify-require-new-password', module);
 
-confirmSignUpStories.add('default', () => {
+requireNewPasswordStories.add('default', () => {
   return `<amplify-require-new-password></amplify-require-new-password>`;
 });

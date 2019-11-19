@@ -74,3 +74,7 @@ export enum ChallengeName {
   MFASetup = 'MFA_SETUP',
   CustomChallenge = 'CUSTOM_CHALLENGE',
 }
+
+export enum AuthFormField {
+  Password = 'password'
+}

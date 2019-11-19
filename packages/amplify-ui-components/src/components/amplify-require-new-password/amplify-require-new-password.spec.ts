@@ -1,6 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyRequireNewPassword } from './amplify-require-new-password';
-import { CHANGE_PASSWORD, CHANGE } from '../../common/constants';
+import { CHANGE_PASSWORD, CHANGE_PASSWORD_ACTION } from '../../common/constants';
 
 describe('amplify-require-new-password spec:', () => {
 	describe('Component logic ->', () => {
@@ -22,16 +22,12 @@ describe('amplify-require-new-password spec:', () => {
 			expect(requireNewPassword.user).toBeUndefined();
 		});
 
-		it('should evaluate `validationErrors` as undefined by default', () => {
-			expect(requireNewPassword.validationErrors).toBeUndefined();
-		});
-
 		it('should evaluate `headerText` to `Change Password` by default', () => {
 			expect(requireNewPassword.headerText).toEqual(CHANGE_PASSWORD);
 		});
 
 		it('should evaluate `submitButtonText` to `Change` by default', () => {
-			expect(requireNewPassword.submitButtonText).toEqual(CHANGE);
+			expect(requireNewPassword.submitButtonText).toEqual(CHANGE_PASSWORD_ACTION);
 		});
 
 		it('should evaluate `overrideStyle` to false by default', () => {
