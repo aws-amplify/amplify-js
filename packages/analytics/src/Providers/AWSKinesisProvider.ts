@@ -13,7 +13,6 @@
 
 import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import * as Kinesis from 'aws-sdk/clients/kinesis';
-import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AWSKineisProvider');
@@ -25,7 +24,7 @@ const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
 export default class AWSKinesisProvider implements AnalyticsProvider {
-	private _config;
+	protected _config;
 	private _kinesis;
 	private _buffer;
 	private _timer;
@@ -38,10 +37,6 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
 		this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
 
-		// events batch
-		const that = this;
-
-		// flush event buffer
 		this._setupTimer();
 	}
 
@@ -50,7 +45,6 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 			clearInterval(this._timer);
 		}
 		const { flushSize, flushInterval } = this._config;
-		const that = this;
 		this._timer = setInterval(() => {
 			const size =
 				this._buffer.length < flushSize ? this._buffer.length : flushSize;
@@ -59,7 +53,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 				const params = this._buffer.shift();
 				events.push(params);
 			}
-			that._sendFromBuffer(events);
+			this._sendFromBuffer(events);
 		}, flushInterval);
 	}
 
@@ -158,7 +152,6 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
 	protected _sendEvents(group) {
 		if (group.length === 0) {
-			// logger.debug('events array is empty, directly return');
 			return;
 		}
 
