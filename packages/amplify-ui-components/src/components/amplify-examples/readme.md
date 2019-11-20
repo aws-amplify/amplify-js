@@ -8,6 +8,7 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-s3-image](../amplify-s3-image)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
 - [amplify-scene](../amplify-scene)
@@ -16,6 +17,7 @@
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-s3-image
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
@@ -73,8 +75,8 @@ graph TD;
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields
-  amplify-greetings --> amplify-sign-out
   amplify-greetings --> amplify-nav
+  amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button

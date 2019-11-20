@@ -87,3 +87,4 @@ export const AUTH_SOURCE_KEY = 'amplify-auth-source';
 // Error message Common Constants
 export const PHONE_EMPTY_ERROR_MESSAGE = 'Phone number can not be empty';
 export const NO_AUTH_MODULE_FOUND = 'No Auth module found, please ensure @aws-amplify/auth is imported';
+export const NO_STORAGE_MODULE_FOUND = 'No Storage module found, please ensure @aws-amplify/storage is imported';

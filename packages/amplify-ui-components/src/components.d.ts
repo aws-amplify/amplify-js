@@ -623,6 +623,12 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyS3Image {
+    'handleOnError': () => {};
+    'handleOnLoad': () => {};
+    'overrideStyle': boolean;
+    'pickerEnabled': boolean;
+  }
   interface AmplifyScene {
     'sceneName': string;
   }
@@ -985,6 +991,12 @@ declare global {
     new (): HTMLAmplifyRadioButtonElement;
   };
 
+  interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {}
+  var HTMLAmplifyS3ImageElement: {
+    prototype: HTMLAmplifyS3ImageElement;
+    new (): HTMLAmplifyS3ImageElement;
+  };
+
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
   var HTMLAmplifySceneElement: {
     prototype: HTMLAmplifySceneElement;
@@ -1088,6 +1100,7 @@ declare global {
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
+    'amplify-s3-image': HTMLAmplifyS3ImageElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
@@ -1690,6 +1703,12 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyS3Image {
+    'handleOnError'?: () => {};
+    'handleOnLoad'?: () => {};
+    'overrideStyle'?: boolean;
+    'pickerEnabled'?: boolean;
+  }
   interface AmplifyScene {
     'sceneName'?: string;
   }
@@ -1895,6 +1914,7 @@ declare namespace LocalJSX {
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
+    'amplify-s3-image': AmplifyS3Image;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
@@ -1947,6 +1967,7 @@ declare module "@stencil/core" {
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
+      'amplify-s3-image': LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
