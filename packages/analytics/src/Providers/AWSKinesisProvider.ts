@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -214,7 +214,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		return this._initKinesis(region, credentials);
 	}
 
-	protected _initKinesis(region, credentials) {
+	private _initKinesis(region, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
 		this._kinesis = new Kinesis({
 			apiVersion: '2013-12-02',
