@@ -32,7 +32,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
 	constructor(config?) {
 		this._buffer = [];
-		this._config = config ? config : {};
+		this._config = config || {};
 		this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
 		this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
@@ -83,7 +83,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 	 */
 	public configure(config): object {
 		logger.debug('configure Analytics', config);
-		const conf = config ? config : {};
+		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
 
 		this._setupTimer();
@@ -156,7 +156,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _sendEvents(group) {
+	protected _sendEvents(group) {
 		if (group.length === 0) {
 			// logger.debug('events array is empty, directly return');
 			return;
@@ -202,7 +202,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _init(config, credentials) {
+	protected _init(config, credentials) {
 		logger.debug('init clients');
 
 		if (
@@ -217,13 +217,17 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
 		this._config.credentials = credentials;
 		const { region } = config;
+
+		return this._initKinesis(region, credentials);
+	}
+
+	protected _initKinesis(region, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
 		this._kinesis = new Kinesis({
 			apiVersion: '2013-12-02',
 			region,
 			credentials,
 		});
-
 		return true;
 	}
 
@@ -232,11 +236,10 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 	 * check if current credentials exists
 	 */
 	private _getCredentials() {
-		const that = this;
 		return Credentials.get()
 			.then(credentials => {
 				if (!credentials) return null;
-				logger.debug('set credentials for analytics', that._config.credentials);
+				logger.debug('set credentials for analytics', this._config.credentials);
 				return Credentials.shear(credentials);
 			})
 			.catch(err => {
