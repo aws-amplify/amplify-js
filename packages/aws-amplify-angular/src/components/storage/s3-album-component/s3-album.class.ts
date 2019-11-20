@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class S3AlbumClass {
-  data: any;
+	data: any;
 }

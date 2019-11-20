@@ -14,61 +14,64 @@
 // tslint:enable
 
 import {
-  Component,
-  Input,
-  OnInit,
-  ViewChild,
-  ComponentFactoryResolver,
-  OnDestroy
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
 } from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
+import { ComponentMount } from '../../component.mount';
 import { RequireNewPasswordClass } from './require-new-password.class';
 import { RequireNewPasswordComponentIonic } from './require-new-password.component.ionic';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 import { AuthState } from '../../../providers';
 
 @Component({
-  selector: 'amplify-auth-require-new-password',
-  template: `
-              <div>
-                <ng-template component-host></ng-template>
-              </div>
-            `
+	selector: 'amplify-auth-require-new-password',
+	template: `
+		<div>
+			<ng-template component-host></ng-template>
+		</div>
+	`,
 })
 export class RequireNewPasswordComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() authState: AuthState;
-  @Input() hide: string[] = [];
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() authState: AuthState;
+	@Input() hide: string[] = [];
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		const requireNewPasswordComponent =
+			this.framework && this.framework.toLowerCase() === 'ionic'
+				? new ComponentMount(RequireNewPasswordComponentIonic, {
+						authState: this.authState,
+						hide: this.hide,
+				  })
+				: new ComponentMount(RequireNewPasswordComponentCore, {
+						authState: this.authState,
+						hide: this.hide,
+				  });
 
-    const requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(RequireNewPasswordComponentIonic,{
-      authState: this.authState,
-      hide: this.hide
-    }) :
-    new ComponentMount(RequireNewPasswordComponentCore, {
-      authState: this.authState,
-      hide: this.hide
-    });
+		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			requireNewPasswordComponent.component
+		);
 
-    const componentFactory = this.componentFactoryResolver
-    .resolveComponentFactory(requireNewPasswordComponent.component);
+		const viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    const viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<RequireNewPasswordClass>componentRef.instance).data = requireNewPasswordComponent.data;
-  }
+		const componentRef = viewContainerRef.createComponent(componentFactory);
+		(<RequireNewPasswordClass>componentRef.instance).data =
+			requireNewPasswordComponent.data;
+	}
 }

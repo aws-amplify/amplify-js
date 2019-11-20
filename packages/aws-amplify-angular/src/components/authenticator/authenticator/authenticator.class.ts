@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class AuthClass {
-  data: any;
+	data: any;
 }
