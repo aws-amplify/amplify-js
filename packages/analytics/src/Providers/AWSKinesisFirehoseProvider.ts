@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -96,10 +96,10 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		this._config.credentials = credentials;
 		const { region } = config;
 
-		return this._initKinesis(region, credentials);
+		return this._initFirehose(region, credentials);
 	}
 
-	protected _initKinesis(region, credentials) {
+	private _initFirehose(region, credentials) {
 		logger.debug('initialize kinesis firehose with credentials', credentials);
 		this._kinesisFirehose = new Firehose({
 			apiVersion: '2015-08-04',
