@@ -623,6 +623,36 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyRequireNewPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields': FormFieldTypes;
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit': (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText': string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user': CognitoUserInterface;
+  }
   interface AmplifyScene {
     'sceneName': string;
   }
@@ -985,6 +1015,12 @@ declare global {
     new (): HTMLAmplifyRadioButtonElement;
   };
 
+  interface HTMLAmplifyRequireNewPasswordElement extends Components.AmplifyRequireNewPassword, HTMLStencilElement {}
+  var HTMLAmplifyRequireNewPasswordElement: {
+    prototype: HTMLAmplifyRequireNewPasswordElement;
+    new (): HTMLAmplifyRequireNewPasswordElement;
+  };
+
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
   var HTMLAmplifySceneElement: {
     prototype: HTMLAmplifySceneElement;
@@ -1088,6 +1124,7 @@ declare global {
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
+    'amplify-require-new-password': HTMLAmplifyRequireNewPasswordElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
@@ -1690,6 +1727,36 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyRequireNewPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields'?: FormFieldTypes;
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit'?: (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText'?: string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user'?: CognitoUserInterface;
+  }
   interface AmplifyScene {
     'sceneName'?: string;
   }
@@ -1895,6 +1962,7 @@ declare namespace LocalJSX {
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
+    'amplify-require-new-password': AmplifyRequireNewPassword;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
@@ -1947,6 +2015,7 @@ declare module "@stencil/core" {
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
+      'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
