@@ -5,6 +5,7 @@ jest.mock('aws-sdk/clients/firehose', () => {
 	};
 
 	Firehose.prototype.putRecordBatch = (params, callback) => {
+		console.log('putRecordsBatch called');
 		callback(null, 'data');
 	};
 
@@ -14,8 +15,6 @@ jest.mock('aws-sdk/clients/firehose', () => {
 import * as Firehose from 'aws-sdk/clients/firehose';
 import { Credentials } from '@aws-amplify/core';
 import KinesisFirehoseProvider from '../../src/Providers/AWSKinesisFirehoseProvider';
-
-jest.useFakeTimers();
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -69,13 +68,18 @@ describe('kinesis firehose provider test', () => {
 				});
 
 			expect(await analytics.record('params')).toBe(false);
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		test('record happy case', async () => {
 			const analytics = new KinesisFirehoseProvider();
+			analytics.configure({ region: 'region1' });
 
 			const spyon = jest.spyOn(Firehose.prototype, 'putRecordBatch');
+
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record({
 				event: {
@@ -91,7 +95,7 @@ describe('kinesis firehose provider test', () => {
 
 			expect(spyon).toBeCalled();
 
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 	});
 });
