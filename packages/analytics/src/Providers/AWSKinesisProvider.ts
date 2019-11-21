@@ -146,6 +146,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		eventsGroups.push(group);
 
 		eventsGroups.map(evts => {
+			console.log('_sendEvents');
 			this._sendEvents(evts);
 		});
 	}

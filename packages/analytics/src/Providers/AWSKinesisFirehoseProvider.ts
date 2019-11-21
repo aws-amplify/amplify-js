@@ -32,6 +32,7 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 	}
 
 	protected _sendEvents(group) {
+		console.log('Firehose _sendEvents');
 		if (group.length === 0) {
 			return;
 		}
