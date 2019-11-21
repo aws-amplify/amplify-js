@@ -20,9 +20,14 @@
  - [amplify-google-button](../amplify-google-button)
  - [amplify-oauth-button](../amplify-oauth-button)
 
+### Depends on
+
+- [amplify-icon](../amplify-icon)
+
 ### Graph
 ```mermaid
 graph TD;
+  amplify-sign-in-button --> amplify-icon
   amplify-amazon-button --> amplify-sign-in-button
   amplify-auth0-button --> amplify-sign-in-button
   amplify-facebook-button --> amplify-sign-in-button

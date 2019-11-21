@@ -25,6 +25,7 @@
 ```mermaid
 graph TD;
   amplify-google-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-federated-buttons --> amplify-google-button
   style amplify-google-button fill:#f9f,stroke:#333,stroke-width:4px
 ```

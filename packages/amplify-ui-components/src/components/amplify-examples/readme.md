@@ -39,6 +39,7 @@ graph TD;
   amplify-federated-buttons --> amplify-oauth-button
   amplify-federated-buttons --> amplify-auth0-button
   amplify-google-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-facebook-button --> amplify-sign-in-button
   amplify-amazon-button --> amplify-sign-in-button
   amplify-oauth-button --> amplify-sign-in-button
@@ -73,8 +74,8 @@ graph TD;
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields
-  amplify-greetings --> amplify-sign-out
   amplify-greetings --> amplify-nav
+  amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button

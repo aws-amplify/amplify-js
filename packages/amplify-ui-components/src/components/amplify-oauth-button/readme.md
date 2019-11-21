@@ -24,6 +24,7 @@
 ```mermaid
 graph TD;
   amplify-oauth-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-federated-buttons --> amplify-oauth-button
   style amplify-oauth-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
