@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property                | Attribute        | Description                                                                      | Type                                                | Default     |
-| ----------------------- | ---------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `handleAuthStateChange` | --               | Passed from the Authenticatior component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
-| `logo`                  | --               | Logo displayed inside of the header                                              | `FunctionalComponent<{}>`                           | `null`      |
-| `overrideStyle`         | `override-style` | Override default styling                                                         | `boolean`                                           | `false`     |
-| `user`                  | --               | Used for the username to be passed to resend code                                | `CognitoUserInterface`                              | `null`      |
+| Property                | Attribute        | Description                                                                     | Type                                                | Default     |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
+| `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
+| `logo`                  | --               | Logo displayed inside of the header                                             | `FunctionalComponent<{}>`                           | `null`      |
+| `overrideStyle`         | `override-style` | Override default styling                                                        | `boolean`                                           | `false`     |
+| `user`                  | --               | Used for the username to be passed to resend code                               | `CognitoUserInterface`                              | `null`      |
 
 
 ## Dependencies

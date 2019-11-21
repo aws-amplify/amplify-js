@@ -14,7 +14,7 @@ const logger = new Logger('amplify-facebook-button');
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
   @Prop() appId: FederatedConfig['facebookAppId'];
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;

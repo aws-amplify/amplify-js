@@ -11,7 +11,7 @@ const logger = new Logger('SignOut');
   shadow: false,
 })
 export class AmplifySignOut {
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
