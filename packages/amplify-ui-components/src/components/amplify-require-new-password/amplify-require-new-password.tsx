@@ -27,7 +27,7 @@ export class AmplifyRequireNewPassword {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** The function called when submitting a new password */
-  @Prop() handleSubmit: (event: Event) => void = event => this.change(event);
+  @Prop() handleSubmit: (event: Event) => void = event => this.completeNewPassword(event);
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** Used for the username to be passed to resend code */
@@ -67,7 +67,7 @@ export class AmplifyRequireNewPassword {
     }
   }
 
-  async change(event) {
+  async completeNewPassword(event) {
     if (event) {
       event.preventDefault();
     }
@@ -77,16 +77,21 @@ export class AmplifyRequireNewPassword {
     }
 
     try {
-      const attrs = null;
-      const user = await Auth.completeNewPassword(this.user, this.password, attrs);
+      const { requiredAttributes } = this.user.challengeParam;
+      const user = await Auth.completeNewPassword(this.user, this.password, requiredAttributes);
+      user.challengeParameter;
+
       logger.debug('complete new password', user);
-      if (user.challengeName === ChallengeName.SMSMFA) {
-        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
-      } else if (user.challengeName === ChallengeName.MFASetup) {
-        logger.debug('TOTP setup', user.challengeParam);
-        this.handleAuthStateChange(AuthState.TOTPSetup, user);
-      } else {
-        this.checkContact(user);
+      switch (user.challengeName) {
+        case ChallengeName.SMSMFA:
+          this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
+          break;
+        case ChallengeName.MFASetup:
+          logger.debug('TOTP setup', user.challengeParam);
+          this.handleAuthStateChange(AuthState.TOTPSetup, user);
+          break;
+        default:
+          this.checkContact(user);
       }
     } catch (error) {
       logger.error(error);
