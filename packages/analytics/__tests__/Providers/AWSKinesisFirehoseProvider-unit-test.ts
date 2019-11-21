@@ -1,6 +1,6 @@
 jest.mock('aws-sdk/clients/firehose', () => {
 	const Firehose = () => {
-		var firehose = null;
+		const firehose = null;
 		return firehose;
 	};
 
@@ -11,13 +11,8 @@ jest.mock('aws-sdk/clients/firehose', () => {
 	return Firehose;
 });
 
-import {
-	Pinpoint,
-	AWS,
-	MobileAnalytics,
-	JS,
-	Credentials,
-} from '@aws-amplify/core';
+import * as Firehose from 'aws-sdk/clients/firehose';
+import { Credentials } from '@aws-amplify/core';
 import KinesisFirehoseProvider from '../../src/Providers/AWSKinesisFirehoseProvider';
 
 jest.useFakeTimers();
@@ -80,11 +75,7 @@ describe('kinesis firehose provider test', () => {
 		test('record happy case', async () => {
 			const analytics = new KinesisFirehoseProvider();
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Firehose.prototype, 'putRecordBatch');
 
 			await analytics.record({
 				event: {
@@ -97,6 +88,8 @@ describe('kinesis firehose provider test', () => {
 			});
 
 			jest.advanceTimersByTime(6000);
+
+			expect(spyon).toBeCalled();
 
 			spyon.mockClear();
 		});

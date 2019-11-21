@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -17,15 +17,8 @@ import * as Firehose from 'aws-sdk/clients/firehose';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
-// events buffer
-const BUFFER_SIZE = 1000;
-const FLUSH_SIZE = 100;
-const FLUSH_INTERVAL = 5 * 1000; // 5s
-const RESEND_LIMIT = 5;
-
 export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 	private _kinesisFirehose;
-	private _credentials;
 
 	constructor(config?) {
 		super(config);
@@ -40,7 +33,6 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 
 	protected _sendEvents(group) {
 		if (group.length === 0) {
-			// logger.debug('events array is empty, directly return');
 			return;
 		}
 
@@ -60,7 +52,8 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 			}
 
 			const PartitionKey =
-				evt.partitionKey || 'partition-' + credentials.identityId;
+				evt.partitionKey || `partition-${credentials.identityId}`;
+
 			Object.assign(evt.data, { PartitionKey });
 			const Data = JSON.stringify(evt.data);
 			const record = { Data };
@@ -79,7 +72,7 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 					Records: records[streamName],
 					DeliveryStreamName: streamName,
 				},
-				(err, data) => {
+				err => {
 					if (err) logger.debug('Failed to upload records to Kinesis', err);
 					else logger.debug('Upload records to stream', streamName);
 				}
@@ -87,7 +80,26 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		});
 	}
 
-	protected _initKinesis(region, credentials) {
+	protected _init(config, credentials) {
+		logger.debug('init clients');
+
+		if (
+			this._kinesisFirehose &&
+			this._config.credentials &&
+			this._config.credentials.sessionToken === credentials.sessionToken &&
+			this._config.credentials.identityId === credentials.identityId
+		) {
+			logger.debug('no change for analytics config, directly return from init');
+			return true;
+		}
+
+		this._config.credentials = credentials;
+		const { region } = config;
+
+		return this._initFirehose(region, credentials);
+	}
+
+	private _initFirehose(region, credentials) {
 		logger.debug('initialize kinesis firehose with credentials', credentials);
 		this._kinesisFirehose = new Firehose({
 			apiVersion: '2015-08-04',
