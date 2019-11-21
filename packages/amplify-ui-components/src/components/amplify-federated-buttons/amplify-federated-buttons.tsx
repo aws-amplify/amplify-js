@@ -14,7 +14,7 @@ export class AmplifyFederatedButtons {
   @Prop() authState: AuthState = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig = {};
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;

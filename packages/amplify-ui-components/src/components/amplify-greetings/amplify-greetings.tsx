@@ -15,7 +15,7 @@ export class AmplifyGreetings {
   @Prop() user: CognitoUserInterface = null;
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;

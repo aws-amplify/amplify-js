@@ -78,7 +78,7 @@ export class AmplifySignUp {
       handleInputChange: event => this.handlePhoneNumberChange(event),
     },
   ];
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
