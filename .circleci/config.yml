@@ -190,6 +190,7 @@ jobs:
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-angular
+            yarn link @aws-amplify/analytics
       - run:
           name: 'Start Angular Authenticator Sample server in background'
           command: |
