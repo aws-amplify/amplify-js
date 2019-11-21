@@ -5,7 +5,6 @@ jest.mock('aws-sdk/clients/firehose', () => {
 	};
 
 	Firehose.prototype.putRecordBatch = (params, callback) => {
-		console.log('putRecordsBatch called');
 		callback(null, 'data');
 	};
 
