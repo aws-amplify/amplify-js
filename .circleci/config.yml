@@ -139,11 +139,6 @@ jobs:
             cd amplify-js/packages/aws-amplify-react
             yarn link
       - run:
-          name: 'Link @aws-amplify/analytics'
-          command: |
-            cd amplify-js/packages/analytics
-            yarn link
-      - run:
           name: 'Install React Authenticator sample'
           command: |
             cd amplify-js-samples-staging/samples/react/auth/with-authenticator
@@ -187,6 +182,11 @@ jobs:
           name: 'Link aws-amplify-angular'
           command: |
             cd amplify-js/packages/aws-amplify-angular
+            yarn link
+      - run:
+          name: 'Link @aws-amplify/analytics'
+          command: |
+            cd amplify-js/packages/analytics
             yarn link
       - run:
           name: 'Install Angular Authenticator sample'
