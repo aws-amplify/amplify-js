@@ -1,6 +1,12 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName, CognitoUserInterface, AuthFormField } from '../../common/types/auth-types';
+import {
+  AuthState,
+  ChallengeName,
+  CognitoUserInterface,
+  AuthFormField,
+  AuthStateHandler,
+} from '../../common/types/auth-types';
 import {
   CHANGE_PASSWORD,
   CHANGE_PASSWORD_ACTION,
@@ -29,7 +35,7 @@ export class AmplifyRequireNewPassword {
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.completeNewPassword(event);
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** The form fields displayed inside of the forgot password form */
