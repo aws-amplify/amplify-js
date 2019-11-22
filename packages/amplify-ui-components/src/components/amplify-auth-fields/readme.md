@@ -17,6 +17,7 @@
  - [amplify-confirm-sign-in](../amplify-confirm-sign-in)
  - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
  - [amplify-forgot-password](../amplify-forgot-password)
+ - [amplify-require-new-password](../amplify-require-new-password)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-up](../amplify-sign-up)
 
@@ -52,6 +53,7 @@ graph TD;
   amplify-confirm-sign-in --> amplify-auth-fields
   amplify-confirm-sign-up --> amplify-auth-fields
   amplify-forgot-password --> amplify-auth-fields
+  amplify-require-new-password --> amplify-auth-fields
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-up --> amplify-auth-fields
   style amplify-auth-fields fill:#f9f,stroke:#333,stroke-width:4px

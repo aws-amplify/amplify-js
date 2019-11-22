@@ -26,7 +26,7 @@ export class AmplifyForgotPassword {
   @Prop() handleSend: (event: Event) => void = event => this.send(event);
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
 
   @State() username: string;
