@@ -28,7 +28,7 @@ export class AmplifyConfirmSignIn {
   @Prop() submitButtonText: string = CONFIRM;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.

@@ -34,7 +34,7 @@ export class AmplifySignIn {
   @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig = {};
-  /** Passed from the Authenticatior component in order to change Authentication state */
+  /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.

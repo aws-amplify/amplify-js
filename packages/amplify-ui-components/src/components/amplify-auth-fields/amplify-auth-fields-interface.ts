@@ -12,4 +12,4 @@ export interface FormFieldType {
   disabled?: boolean;
 }
 
-export interface FormFieldTypes extends Array<FormFieldType> {}
+export interface FormFieldTypes extends Array<FormFieldType> { }

@@ -43,7 +43,7 @@ export namespace Components {
     */
     'clientId': FederatedConfig['amazonClientId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
@@ -157,7 +157,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -191,7 +191,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object | string) => void;
     /**
@@ -278,7 +278,7 @@ export namespace Components {
     */
     'appId': FederatedConfig['facebookAppId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
@@ -292,7 +292,7 @@ export namespace Components {
     */
     'federated': FederatedConfig;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
   }
@@ -312,7 +312,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -416,9 +416,27 @@ export namespace Components {
     */
     'clientId': FederatedConfig['googleClientId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyGreetings {
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Logo displayed inside of the header
+    */
+    'logo': FunctionalComponent | null;
+    /**
+    * Override default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user': CognitoUserInterface;
   }
   interface AmplifyHint {
     /**
@@ -495,6 +513,7 @@ export namespace Components {
     'overrideStyle': boolean;
     'role': string;
   }
+  interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config': FederatedConfig['oauthConfig'];
   }
@@ -604,6 +623,36 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyRequireNewPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields': FormFieldTypes;
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit': (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText': string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle': boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText': string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user': CognitoUserInterface;
+  }
   interface AmplifyScene {
     'sceneName': string;
   }
@@ -644,7 +693,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -677,7 +726,7 @@ export namespace Components {
     */
     'buttonText': string;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -691,7 +740,7 @@ export namespace Components {
     */
     'formFields': FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -894,6 +943,12 @@ declare global {
     new (): HTMLAmplifyGoogleButtonElement;
   };
 
+  interface HTMLAmplifyGreetingsElement extends Components.AmplifyGreetings, HTMLStencilElement {}
+  var HTMLAmplifyGreetingsElement: {
+    prototype: HTMLAmplifyGreetingsElement;
+    new (): HTMLAmplifyGreetingsElement;
+  };
+
   interface HTMLAmplifyHintElement extends Components.AmplifyHint, HTMLStencilElement {}
   var HTMLAmplifyHintElement: {
     prototype: HTMLAmplifyHintElement;
@@ -930,6 +985,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyNavElement extends Components.AmplifyNav, HTMLStencilElement {}
+  var HTMLAmplifyNavElement: {
+    prototype: HTMLAmplifyNavElement;
+    new (): HTMLAmplifyNavElement;
+  };
+
   interface HTMLAmplifyOauthButtonElement extends Components.AmplifyOauthButton, HTMLStencilElement {}
   var HTMLAmplifyOauthButtonElement: {
     prototype: HTMLAmplifyOauthButtonElement;
@@ -952,6 +1013,12 @@ declare global {
   var HTMLAmplifyRadioButtonElement: {
     prototype: HTMLAmplifyRadioButtonElement;
     new (): HTMLAmplifyRadioButtonElement;
+  };
+
+  interface HTMLAmplifyRequireNewPasswordElement extends Components.AmplifyRequireNewPassword, HTMLStencilElement {}
+  var HTMLAmplifyRequireNewPasswordElement: {
+    prototype: HTMLAmplifyRequireNewPasswordElement;
+    new (): HTMLAmplifyRequireNewPasswordElement;
   };
 
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
@@ -1045,16 +1112,19 @@ declare global {
     'amplify-form-field': HTMLAmplifyFormFieldElement;
     'amplify-form-section': HTMLAmplifyFormSectionElement;
     'amplify-google-button': HTMLAmplifyGoogleButtonElement;
+    'amplify-greetings': HTMLAmplifyGreetingsElement;
     'amplify-hint': HTMLAmplifyHintElement;
     'amplify-icon': HTMLAmplifyIconElement;
     'amplify-icon-button': HTMLAmplifyIconButtonElement;
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-nav': HTMLAmplifyNavElement;
     'amplify-oauth-button': HTMLAmplifyOauthButtonElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
+    'amplify-require-new-password': HTMLAmplifyRequireNewPasswordElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
@@ -1077,7 +1147,7 @@ declare namespace LocalJSX {
     */
     'clientId'?: FederatedConfig['amazonClientId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
@@ -1191,7 +1261,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1225,7 +1295,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object | string) => void;
     /**
@@ -1312,7 +1382,7 @@ declare namespace LocalJSX {
     */
     'appId'?: FederatedConfig['facebookAppId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
@@ -1326,7 +1396,7 @@ declare namespace LocalJSX {
     */
     'federated'?: FederatedConfig;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
   }
@@ -1346,7 +1416,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1450,9 +1520,27 @@ declare namespace LocalJSX {
     */
     'clientId'?: FederatedConfig['googleClientId'];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+  }
+  interface AmplifyGreetings {
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * Logo displayed inside of the header
+    */
+    'logo'?: FunctionalComponent | null;
+    /**
+    * Override default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user'?: CognitoUserInterface;
   }
   interface AmplifyHint {
     /**
@@ -1529,6 +1617,7 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
+  interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config'?: FederatedConfig['oauthConfig'];
   }
@@ -1638,6 +1727,36 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyRequireNewPassword {
+    /**
+    * The form fields displayed inside of the forgot password form
+    */
+    'formFields'?: FormFieldTypes;
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    /**
+    * The function called when submitting a new password
+    */
+    'handleSubmit'?: (event: Event) => void;
+    /**
+    * The header text of the forgot password section
+    */
+    'headerText'?: string;
+    /**
+    * (Optional) Overrides default styling
+    */
+    'overrideStyle'?: boolean;
+    /**
+    * The text displayed inside of the submit button for the form
+    */
+    'submitButtonText'?: string;
+    /**
+    * Used for the username to be passed to resend code
+    */
+    'user'?: CognitoUserInterface;
+  }
   interface AmplifyScene {
     'sceneName'?: string;
   }
@@ -1678,7 +1797,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1711,7 +1830,7 @@ declare namespace LocalJSX {
     */
     'buttonText'?: string;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1725,7 +1844,7 @@ declare namespace LocalJSX {
     */
     'formFields'?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticatior component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
     /**
@@ -1831,16 +1950,19 @@ declare namespace LocalJSX {
     'amplify-form-field': AmplifyFormField;
     'amplify-form-section': AmplifyFormSection;
     'amplify-google-button': AmplifyGoogleButton;
+    'amplify-greetings': AmplifyGreetings;
     'amplify-hint': AmplifyHint;
     'amplify-icon': AmplifyIcon;
     'amplify-icon-button': AmplifyIconButton;
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-nav': AmplifyNav;
     'amplify-oauth-button': AmplifyOauthButton;
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
+    'amplify-require-new-password': AmplifyRequireNewPassword;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
@@ -1881,16 +2003,19 @@ declare module "@stencil/core" {
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-google-button': LocalJSX.AmplifyGoogleButton & JSXBase.HTMLAttributes<HTMLAmplifyGoogleButtonElement>;
+      'amplify-greetings': LocalJSX.AmplifyGreetings & JSXBase.HTMLAttributes<HTMLAmplifyGreetingsElement>;
       'amplify-hint': LocalJSX.AmplifyHint & JSXBase.HTMLAttributes<HTMLAmplifyHintElement>;
       'amplify-icon': LocalJSX.AmplifyIcon & JSXBase.HTMLAttributes<HTMLAmplifyIconElement>;
       'amplify-icon-button': LocalJSX.AmplifyIconButton & JSXBase.HTMLAttributes<HTMLAmplifyIconButtonElement>;
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
+      'amplify-nav': LocalJSX.AmplifyNav & JSXBase.HTMLAttributes<HTMLAmplifyNavElement>;
       'amplify-oauth-button': LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
+      'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;

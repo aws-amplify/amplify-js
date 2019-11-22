@@ -5,18 +5,18 @@
 
 ## Properties
 
-| Property                | Attribute        | Description                                                                      | Type                                                | Default     |
-| ----------------------- | ---------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `buttonText`            | `button-text`    | Text inside of the Sign Out button                                               | `string`                                            | `SIGN_OUT`  |
-| `handleAuthStateChange` | --               | Passed from the Authenticatior component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
-| `overrideStyle`         | `override-style` | (Optional) Overrides default styling                                             | `boolean`                                           | `false`     |
+| Property                | Attribute        | Description                                                                     | Type                                                | Default     |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
+| `buttonText`            | `button-text`    | Text inside of the Sign Out button                                              | `string`                                            | `SIGN_OUT`  |
+| `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
+| `overrideStyle`         | `override-style` | (Optional) Overrides default styling                                            | `boolean`                                           | `false`     |
 
 
 ## Dependencies
 
 ### Used by
 
- - [amplify-authenticator](../amplify-authenticator)
+ - [amplify-greetings](../amplify-greetings)
 
 ### Depends on
 
@@ -26,7 +26,7 @@
 ```mermaid
 graph TD;
   amplify-sign-out --> amplify-button
-  amplify-authenticator --> amplify-sign-out
+  amplify-greetings --> amplify-sign-out
   style amplify-sign-out fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
