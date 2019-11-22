@@ -19,10 +19,6 @@ export class AmplifyAmazonButton {
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
 
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
-
   federatedSignIn = response => {
     const { access_token, expires_in } = response;
 
@@ -58,7 +54,7 @@ export class AmplifyAmazonButton {
   /**
    * @see https://developer.amazon.com/docs/login-with-amazon/install-sdk-javascript.html
    */
-  handleClick = event => {
+  signInWithAmazon(event) {
     event.preventDefault();
 
     window['amazon'].Login.setClientId(this.clientId);
@@ -76,11 +72,11 @@ export class AmplifyAmazonButton {
 
       this.federatedSignIn(response);
     });
-  };
+  }
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="amazon">
+      <amplify-sign-in-button onClick={event => this.signInWithAmazon(event)} provider="amazon">
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
 
         <svg slot="icon" viewBox="0 0 248 268" xmlns="http://www.w3.org/2000/svg">
