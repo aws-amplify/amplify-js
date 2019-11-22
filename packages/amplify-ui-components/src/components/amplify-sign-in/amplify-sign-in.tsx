@@ -33,7 +33,7 @@ export class AmplifySignIn {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
-  @Prop() federated: FederatedConfig = {};
+  @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
   /**
