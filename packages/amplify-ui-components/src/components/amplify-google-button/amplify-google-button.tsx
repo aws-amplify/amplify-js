@@ -19,10 +19,6 @@ export class AmplifyGoogleButton {
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['googleClientId'];
 
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
-
   getAuthInstance() {
     if (window['gapi'] && window['gapi'].auth2) {
       return (
@@ -38,14 +34,14 @@ export class AmplifyGoogleButton {
     return null;
   }
 
-  handleClick = event => {
+  signInWithGoogle(event) {
     event.preventDefault();
 
     this.getAuthInstance()
       .signIn()
       .then(this.handleUser)
       .catch(this.handleError);
-  };
+  }
 
   handleError = error => {
     console.error(error);
@@ -93,7 +89,7 @@ export class AmplifyGoogleButton {
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="google">
+      <amplify-sign-in-button onClick={event => this.signInWithGoogle(event)} provider="google">
         <script onLoad={this.handleLoad} src="https://apis.google.com/js/api:client.js"></script>
 
         <svg slot="icon" viewBox="0 0 256 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
