@@ -5,9 +5,10 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type                                                       | Default     |
-| ---------- | ---------- | ----------- | ---------------------------------------------------------- | ----------- |
-| `provider` | `provider` |             | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
+| Property        | Attribute        | Description                         | Type                                                       | Default     |
+| --------------- | ---------------- | ----------------------------------- | ---------------------------------------------------------- | ----------- |
+| `overrideStyle` | `override-style` | (Optional) Override default styling | `boolean`                                                  | `false`     |
+| `provider`      | `provider`       |                                     | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
 
 
 ## Dependencies

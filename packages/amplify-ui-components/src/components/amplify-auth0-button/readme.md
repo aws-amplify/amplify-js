@@ -5,9 +5,10 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                           | Type                                                        | Default     |
-| -------- | --------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
-| `config` | --        | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ [key: string]: any; clientID: string; domain: string; }` | `undefined` |
+| Property        | Attribute        | Description                                                           | Type                                                        | Default     |
+| --------------- | ---------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
+| `config`        | --               | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ [key: string]: any; clientID: string; domain: string; }` | `undefined` |
+| `overrideStyle` | `override-style` | (Optional) Override default styling                                   | `boolean`                                                   | `false`     |
 
 
 ## Dependencies

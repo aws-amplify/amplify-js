@@ -5,9 +5,10 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                      | Default |
-| -------- | --------- | ----------- | ------------------------- | ------- |
-| `config` | --        |             | `{ [key: string]: any; }` | `{}`    |
+| Property        | Attribute        | Description                         | Type                      | Default |
+| --------------- | ---------------- | ----------------------------------- | ------------------------- | ------- |
+| `config`        | --               |                                     | `{ [key: string]: any; }` | `{}`    |
+| `overrideStyle` | `override-style` | (Optional) Override default styling | `boolean`                 | `false` |
 
 
 ## Dependencies

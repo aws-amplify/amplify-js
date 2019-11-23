@@ -18,6 +18,8 @@ export class AmplifyAmazonButton {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle: boolean = false;
 
   constructor() {
     this.handleClick = this.handleClick.bind(this);
@@ -80,7 +82,7 @@ export class AmplifyAmazonButton {
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="amazon">
+      <amplify-sign-in-button onClick={this.handleClick} overrideStyle={this.overrideStyle} provider="amazon">
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
         {SIGN_IN_WITH_AMAZON}
       </amplify-sign-in-button>

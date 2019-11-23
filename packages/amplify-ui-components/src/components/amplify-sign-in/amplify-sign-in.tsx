@@ -168,9 +168,13 @@ export class AmplifySignIn {
           </span>
         }
       >
-        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+        <amplify-federated-buttons
+          handleAuthStateChange={this.handleAuthStateChange}
+          federated={this.federated}
+          overrideStyle={this.overrideStyle}
+        />
 
-        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
+        {!isEmpty(this.federated) && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
 
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>

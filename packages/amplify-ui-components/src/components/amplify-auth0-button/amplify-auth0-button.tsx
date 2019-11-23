@@ -10,6 +10,8 @@ import { FederatedConfig } from '../../common/types/auth-types';
 export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */
   @Prop() config: FederatedConfig['auth0Config'];
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle: boolean = false;
 
   constructor() {
     this.handleClick = this.handleClick.bind(this);
@@ -21,7 +23,7 @@ export class AmplifyAuth0Button {
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="auth0">
+      <amplify-sign-in-button onClick={this.handleClick} overrideStyle={this.overrideStyle} provider="auth0">
         <script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
         {SIGN_IN_WITH_AUTH0}
       </amplify-sign-in-button>
