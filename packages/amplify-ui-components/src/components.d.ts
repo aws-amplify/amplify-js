@@ -772,7 +772,12 @@ export namespace Components {
     */
     'validationErrors': string;
   }
-  interface AmplifyStrike {}
+  interface AmplifyStrike {
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle': boolean;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -1876,7 +1881,12 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
-  interface AmplifyStrike {}
+  interface AmplifyStrike {
+    /**
+    * (Optional) Override default styling
+    */
+    'overrideStyle'?: boolean;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
