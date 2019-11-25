@@ -11,7 +11,7 @@ import {
   CONFIRM_SIGN_UP_RESEND_CODE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, AuthStateHandler } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
 
@@ -50,7 +50,7 @@ export class AmplifyConfirmSignUp {
   /** Passed from the Authenticator component in order to change Authentication states
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object | string) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
 

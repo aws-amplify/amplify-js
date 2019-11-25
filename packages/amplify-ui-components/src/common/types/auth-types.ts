@@ -65,6 +65,8 @@ export interface CognitoUserInterface {
   challengeParam: { [key: string]: any };
 };
 
+export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
+
 export enum MfaOption {
   TOTP = 'TOTP',
   SMS = 'SMS',
