@@ -1,6 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 import {
   HEADER_TEXT,
@@ -35,7 +35,7 @@ export class AmplifySignIn {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig = {};
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing

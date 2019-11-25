@@ -1,6 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
@@ -27,7 +27,7 @@ export class AmplifyForgotPassword {
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
 
   @State() username: string;
   @State() password: string;
