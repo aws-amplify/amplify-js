@@ -16,6 +16,7 @@ import Analytics, {
 	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
+	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
@@ -87,6 +88,7 @@ export {
 	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
+	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
 };
 export { graphqlOperation };
