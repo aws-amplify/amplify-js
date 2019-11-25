@@ -43,3 +43,21 @@ export function blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
 		}
 	});
 }
+
+/**
+ * Converts React Native file to array buffer
+ */
+export async function fileToRNArrayBuffer(uri) {
+	return new Promise((res, reject) => {
+		var request = new XMLHttpRequest();
+		request.open('GET', uri, true);
+		request.responseType = 'arraybuffer';
+		request.onload = _event => {
+			res(request.response);
+		};
+		request.onerror = err => {
+			reject(err);
+		};
+		request.send(null);
+	});
+}

@@ -121,12 +121,22 @@ export interface StorageSource {
 	identityId?: string;
 }
 
+export interface RNFile {
+	uri: string;
+	width: number;
+	height: number;
+}
+
 export interface FileSource {
 	file: File;
 }
 
 export interface BytesSource {
 	bytes: Buffer | ArrayBuffer | Blob | string;
+}
+
+export interface RNFileSource {
+	file: RNFile;
 }
 
 export interface SpeechToTextInput {
@@ -142,7 +152,11 @@ export interface SpeechToTextOutput {
 	};
 }
 
-export type IdentifySource = StorageSource | FileSource | BytesSource;
+export type IdentifySource =
+	| StorageSource
+	| FileSource
+	| BytesSource
+	| RNFileSource;
 
 export interface IdentifyTextInput {
 	text: {
@@ -329,6 +343,12 @@ export function isFileSource(obj: any): obj is FileSource {
 export function isBytesSource(obj: any): obj is BytesSource {
 	const key: keyof BytesSource = 'bytes';
 	return obj && obj.hasOwnProperty(key);
+}
+
+export function isRNFileSource(obj: any): obj is RNFileSource {
+	const key: keyof RNFileSource = 'file';
+	const uri: keyof RNFile = 'uri';
+	return obj && obj.hasOwnProperty(key) && obj[key].hasOwnProperty(uri);
 }
 
 export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
