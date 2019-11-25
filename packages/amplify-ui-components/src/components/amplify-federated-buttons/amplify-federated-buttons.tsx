@@ -3,7 +3,7 @@ import { isEmpty } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthState, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 @Component({
   tag: 'amplify-federated-buttons',
@@ -14,10 +14,10 @@ export class AmplifyFederatedButtons {
   @Prop() authState: AuthState = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig = {};
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {

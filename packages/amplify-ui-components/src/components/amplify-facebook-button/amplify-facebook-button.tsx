@@ -3,7 +3,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
-import { AuthState, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-facebook-button');
 
@@ -14,14 +14,10 @@ const logger = new Logger('amplify-facebook-button');
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */
   @Prop() appId: FederatedConfig['facebookAppId'];
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
-
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
+  @Prop() handleAuthStateChange: AuthStateHandler;
 
   federatedSignIn = authResponse => {
     const { accessToken, expiresIn } = authResponse;
@@ -71,7 +67,7 @@ export class AmplifyFacebookButton {
   /**
    * @see https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0
    */
-  handleClick = event => {
+  signInWithFacebook(event) {
     event.preventDefault();
 
     window['FB'].init({
@@ -82,7 +78,7 @@ export class AmplifyFacebookButton {
     });
 
     this.getLoginStatus();
-  };
+  }
 
   login = () => {
     const scope = 'public_profile,email';
@@ -99,7 +95,7 @@ export class AmplifyFacebookButton {
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="facebook">
+      <amplify-sign-in-button onClick={event => this.signInWithFacebook(event)} provider="facebook">
         <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
         <svg slot="icon" viewBox="0 0 279 538" xmlns="http://www.w3.org/2000/svg">

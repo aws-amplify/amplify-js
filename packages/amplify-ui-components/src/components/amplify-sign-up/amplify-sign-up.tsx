@@ -14,7 +14,7 @@ import {
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
-import { AuthState } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
@@ -78,10 +78,10 @@ export class AmplifySignUp {
       handleInputChange: event => this.handlePhoneNumberChange(event),
     },
   ];
-  /** Passed from the Authenticatior component in order to change Authentication state
+  /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
 
   @State() username: string;
   @State() password: string;
@@ -152,7 +152,7 @@ export class AmplifySignUp {
     try {
       const data = await Auth.signUp(signUpAttrs);
 
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, data);
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
     } catch (error) {
       throw new Error(error);
     }

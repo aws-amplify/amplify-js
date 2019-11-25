@@ -35,31 +35,37 @@ export interface FederatedConfig {
   };
 }
 
-export interface CognitoUserInterface {
+export interface SignUpResponseInterface {
   codeDeliveryDetails?: {
     AttributeName?: string;
     DeliveryMedium?: string;
     Destination?: string;
   };
-  user?: {
-    Session?: string | null;
-    authenticationFlowType?: string;
-    client?: {
-      endpoint?: string;
-      userAgent?: string;
-    };
-    keyPrefix?: string;
-    pool?: {
-      advancedSecurityDataCollectionFlag?: boolean;
-      clientId?: string;
-      userPoolId?: string;
-    };
-    username?: string;
-    userConfirmed?: boolean;
-    userSub?: string;
-  };
+  user?: CognitoUserInterface;
   username?: string;
 }
+
+export interface CognitoUserInterface {
+  Session?: string | null;
+  authenticationFlowType?: string;
+  client?: {
+    endpoint?: string;
+    userAgent?: string;
+  };
+  keyPrefix?: string;
+  pool?: {
+    advancedSecurityDataCollectionFlag?: boolean;
+    clientId?: string;
+    userPoolId?: string;
+  };
+  username?: string;
+  userConfirmed?: boolean;
+  userSub?: string;
+  challengeName: string;
+  challengeParam: { [key: string]: any };
+};
+
+export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
 
 export enum MfaOption {
   TOTP = 'TOTP',
@@ -73,4 +79,8 @@ export enum ChallengeName {
   NewPasswordRequired = 'NEW_PASSWORD_REQUIRED',
   MFASetup = 'MFA_SETUP',
   CustomChallenge = 'CUSTOM_CHALLENGE',
+}
+
+export enum AuthFormField {
+  Password = 'password'
 }

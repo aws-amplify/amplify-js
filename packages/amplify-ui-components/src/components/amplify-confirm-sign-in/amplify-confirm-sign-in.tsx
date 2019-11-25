@@ -1,6 +1,12 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, MfaOption, CognitoUserInterface, ChallengeName } from '../../common/types/auth-types';
+import {
+  AuthState,
+  MfaOption,
+  CognitoUserInterface,
+  ChallengeName,
+  AuthStateHandler,
+} from '../../common/types/auth-types';
 import {
   BACK_TO_SIGN_IN,
   CONFIRM,
@@ -28,8 +34,8 @@ export class AmplifyConfirmSignIn {
   @Prop() submitButtonText: string = CONFIRM;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
-  /** Passed from the Authenticatior component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  /** Passed from the Authenticator component in order to change Authentication state */
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing

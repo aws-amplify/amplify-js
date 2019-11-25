@@ -35,12 +35,17 @@ export const PHONE_LABEL = 'Phone Number *';
 export const PHONE_PLACEHOLDER = '(555) 555-1212';
 
 // Password common constants
+export const CHANGE_PASSWORD = 'Change Password';
+export const CHANGE_PASSWORD_ACTION = 'Change';
 export const FORGOT_PASSWORD_TEXT = 'Forgot your password?';
 export const RESET_PASSWORD_TEXT = 'Reset password';
 export const RESET_YOUR_PASSWORD = 'Reset your password';
 export const PASSWORD_SUFFIX = 'password';
 export const PASSWORD_LABEL = 'Password *';
 export const PASSWORD_PLACEHOLDER = 'Enter your password';
+export const NEW_PASSWORD_LABEL = 'New password';
+export const NEW_PASSWORD_PLACEHOLDER = 'Enter your new password';
+
 export const BACK_TO_SIGN_IN = 'Back to Sign In';
 
 // Country Dial Code common constants

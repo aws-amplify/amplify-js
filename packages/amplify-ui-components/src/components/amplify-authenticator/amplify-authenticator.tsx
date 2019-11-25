@@ -24,7 +24,7 @@ export class AmplifyAuthenticator {
     this.authState = this.initialAuthState;
   }
 
-  onAuthStateChange = (nextAuthState: AuthState, data?: object) => {
+  onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
     if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
@@ -43,24 +43,20 @@ export class AmplifyAuthenticator {
 
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
-      case AuthState.Loading:
-        return <div>Loading...</div>;
       case AuthState.SignIn:
         return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignIn:
         return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
-      case AuthState.SignOut:
-        // TODO: add sign out component
-        return <div>Sign Out Component</div>;
       case AuthState.SignUp:
         return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ConfirmSignUp:
-        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData.user} />;
+        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.ForgotPassword:
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:
-        // TODO: add forgot password component
-        return <div>Reset Password Component</div>;
+        return <amplify-require-new-password handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+      case AuthState.Loading:
+        return <div>Loading...</div>;
     }
   }
 

@@ -24,6 +24,7 @@
 - [amplify-sign-up](../amplify-sign-up)
 - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
 - [amplify-forgot-password](../amplify-forgot-password)
+- [amplify-require-new-password](../amplify-require-new-password)
 - [amplify-greetings](../amplify-greetings)
 - context-consumer
 
@@ -35,6 +36,7 @@ graph TD;
   amplify-authenticator --> amplify-sign-up
   amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
+  amplify-authenticator --> amplify-require-new-password
   amplify-authenticator --> amplify-greetings
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
@@ -84,6 +86,9 @@ graph TD;
   amplify-forgot-password --> amplify-form-section
   amplify-forgot-password --> amplify-link
   amplify-forgot-password --> amplify-auth-fields
+  amplify-require-new-password --> amplify-form-section
+  amplify-require-new-password --> amplify-link
+  amplify-require-new-password --> amplify-auth-fields
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button

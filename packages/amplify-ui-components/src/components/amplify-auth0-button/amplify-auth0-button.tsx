@@ -11,17 +11,15 @@ export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */
   @Prop() config: FederatedConfig['auth0Config'];
 
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
+  signInWithAuth0(event) {
     event.preventDefault();
+
+    throw new Error('Not implemented');
   }
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} provider="auth0">
+      <amplify-sign-in-button onClick={event => this.signInWithAuth0(event)} provider="auth0">
         <script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
 
         <svg slot="icon" id="artwork" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 193.7 216.6">
