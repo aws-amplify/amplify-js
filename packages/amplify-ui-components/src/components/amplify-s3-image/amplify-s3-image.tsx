@@ -21,7 +21,7 @@ export class AmplifyS3Image {
   @Prop() handleOnLoad: () => {};
   @Prop() handleOnError: () => {};
 
-  @State() src: string = 'https://www.systutorials.com/wp/files/2015/11/AmazonS3-e1448589113191.png';
+  @State() src: string = null;
 
   async getImageSource(key, level, track, identityId) {
     if (!Storage || typeof Storage.get !== 'function') {
@@ -47,7 +47,7 @@ export class AmplifyS3Image {
         class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}
         onClick={event => this.handleClick(event)}
       >
-        <img src={this.src} onLoad={this.handleOnLoad} onError={this.handleOnError} />
+        {this.src && <img src={this.src} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
         {this.pickerEnabled && <button>{/* Add Picker component here */}Picker</button>}
       </Host>
     );
