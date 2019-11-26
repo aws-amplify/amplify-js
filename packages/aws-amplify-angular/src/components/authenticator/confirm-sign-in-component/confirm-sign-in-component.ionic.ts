@@ -51,16 +51,18 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-in-ionic',
-  template
+	selector: 'amplify-auth-confirm-sign-in-ionic',
+	template,
 })
 export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
-  _authState: AuthState;
-  _show: boolean;
-  code: string;
-  errorMessage: string;
+	_authState: AuthState;
+	_show: boolean;
+	code: string;
+	errorMessage: string;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

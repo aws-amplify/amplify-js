@@ -21,6 +21,7 @@
                 :placeholder="$Amplify.I18n.get(`Enter your ${getUsernameLabel()}`)" 
                 autofocus 
                 v-on:keyup="usernameChanged" 
+                v-on:input="username = $event.target.value"
                 v-bind:data-test="auth.genericAttrs.usernameInput"
             />
         </div>
@@ -32,6 +33,7 @@
                 :placeholder="$Amplify.I18n.get('Enter your email')" 
                 autofocus 
                 v-on:keyup="emailChanged" 
+                v-on:input="email = $event.target.value"
                 v-bind:data-test="auth.genericAttrs.emailInput"
             />
         </div>

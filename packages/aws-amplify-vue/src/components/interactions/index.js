@@ -20,5 +20,5 @@ import Chatbot from './Chatbot.vue';
 Vue.component('amplify-chatbot', Chatbot);
 
 export {
-  Chatbot, // eslint-disable-line
+	Chatbot, // eslint-disable-line
 };

@@ -1,4 +1,3 @@
-
 // tslint:disable
 /*
  * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -17,7 +16,6 @@ import { Component, Inject } from '@angular/core';
 
 import { AmplifyService } from '../../../providers/amplify.service';
 import { PhotoPickerComponentCore } from './photo-picker.component.core';
-
 
 const template = `
 <div class="amplify-photo-picker">
@@ -55,13 +53,13 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-photo-picker-ionic',
-  template
+	selector: 'amplify-photo-picker-ionic',
+	template,
 })
 export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
-
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    super(amplifyService);
-    
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		super(amplifyService);
+	}
 }

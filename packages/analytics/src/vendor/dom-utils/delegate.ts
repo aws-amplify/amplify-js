@@ -18,35 +18,40 @@ import matches from './matches';
  * @return {Object} The delegate object. It contains a destroy method.
  */
 export default function delegate(
-    ancestor, eventType, selector, callback, opts = {}) {
-  // Defines the event listener.
-  const listener = function(event) {
-    let delegateTarget;
+	ancestor,
+	eventType,
+	selector,
+	callback,
+	opts = {}
+) {
+	// Defines the event listener.
+	const listener = function(event) {
+		let delegateTarget;
 
-    // If opts.composed is true and the event originated from inside a Shadow
-    // tree, check the composed path nodes.
-    if (opts['composed'] && typeof event['composedPath'] === 'function') {
-      const composedPath = event.composedPath();
-      for (let i = 0, node; node = composedPath[i]; i++) {
-        if (node.nodeType === 1 && matches(node, selector)) {
-          delegateTarget = node;
-        }
-      }
-    } else {
-      // Otherwise check the parents.
-      delegateTarget = closest(event.target, selector, true);
-    }
+		// If opts.composed is true and the event originated from inside a Shadow
+		// tree, check the composed path nodes.
+		if (opts['composed'] && typeof event['composedPath'] === 'function') {
+			const composedPath = event.composedPath();
+			for (let i = 0, node; (node = composedPath[i]); i++) {
+				if (node.nodeType === 1 && matches(node, selector)) {
+					delegateTarget = node;
+				}
+			}
+		} else {
+			// Otherwise check the parents.
+			delegateTarget = closest(event.target, selector, true);
+		}
 
-    if (delegateTarget) {
-      callback.call(delegateTarget, event, delegateTarget);
-    }
-  };
+		if (delegateTarget) {
+			callback.call(delegateTarget, event, delegateTarget);
+		}
+	};
 
-  ancestor.addEventListener(eventType, listener, opts['useCapture']);
+	ancestor.addEventListener(eventType, listener, opts['useCapture']);
 
-  return {
-    destroy: () => {
-      ancestor.removeEventListener(eventType, listener, opts['useCapture']);
-    },
-  };
+	return {
+		destroy: () => {
+			ancestor.removeEventListener(eventType, listener, opts['useCapture']);
+		},
+	};
 }
