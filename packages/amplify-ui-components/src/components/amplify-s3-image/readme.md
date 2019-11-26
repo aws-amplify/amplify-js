@@ -12,7 +12,7 @@
 | `handleOnError` | --               |             | `() => {}` | `undefined` |
 | `handleOnLoad`  | --               |             | `() => {}` | `undefined` |
 | `overrideStyle` | `override-style` |             | `boolean`  | `false`     |
-| `pickerEnabled` | `picker-enabled` |             | `boolean`  | `false`     |
+| `pickerEnabled` | `picker-enabled` |             | `boolean`  | `true`      |
 
 
 ## Dependencies

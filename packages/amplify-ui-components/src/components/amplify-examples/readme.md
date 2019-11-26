@@ -8,6 +8,7 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-authenticator](../amplify-authenticator)
 - [amplify-s3-image](../amplify-s3-image)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
@@ -16,6 +17,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-s3-image
   amplify-examples --> rock-paper-scissor

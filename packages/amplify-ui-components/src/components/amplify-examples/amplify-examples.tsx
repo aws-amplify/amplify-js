@@ -5,10 +5,12 @@ import example4 from './example4';
 import sceneExample from './scene-example';
 import Auth from '@aws-amplify/auth';
 import XR from '@aws-amplify/xr';
+import Storage from '@aws-amplify/storage';
 import awsexports from './src/aws-exports';
 
 Auth.configure(awsexports);
 XR.configure(awsexports);
+Storage.configure(awsexports);
 
 const examples = [StorageExample, AuthenticatorExample, example4, sceneExample];
 

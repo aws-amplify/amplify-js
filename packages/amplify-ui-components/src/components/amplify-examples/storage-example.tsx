@@ -1,6 +1,10 @@
 import { h } from '@stencil/core';
 
-const StorageSamples = () => <amplify-s3-image />;
+const StorageSamples = () => (
+  <amplify-authenticator>
+    <amplify-s3-image />
+  </amplify-authenticator>
+);
 
 export const StorageExample = {
   title: 'Storage Samples',
