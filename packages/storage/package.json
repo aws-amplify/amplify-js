@@ -39,7 +39,8 @@
     "@aws-sdk/client-s3-browser": "^0.1.0-preview.2",
     "@aws-sdk/s3-request-presigner": "^0.1.0-preview.2",
     "@aws-sdk/util-create-request": "^0.1.0-preview.2",
-    "@aws-sdk/util-format-url": "^0.1.0-preview.1"
+    "@aws-sdk/util-format-url": "^0.1.0-preview.1",
+    "aws-sdk": "2.577.0"
   },
   "jest": {
     "globals": {
