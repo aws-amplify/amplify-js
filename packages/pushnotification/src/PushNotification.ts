@@ -18,7 +18,7 @@ import {
 	Platform,
 	AppState,
 } from 'react-native';
-import * as PushNotificationIOS from '@react-native-community/push-notification-ios';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
