@@ -50,7 +50,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest --coverage",
+    "test": "jest -w 1 --passWithNoTests",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -62,7 +62,6 @@
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@babel/preset-es2015": "^7.0.0-beta.53",
     "buffer": "4.9.1",
     "crypto-js": "^3.1.9-1",
     "js-cookie": "^2.1.4"
