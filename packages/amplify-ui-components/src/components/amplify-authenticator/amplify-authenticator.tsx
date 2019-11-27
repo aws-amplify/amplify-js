@@ -18,7 +18,7 @@ export class AmplifyAuthenticator {
 
   @State() authData: CognitoUserInterface;
   /** Federated credentials & configuration. */
-  @Prop() federated: FederatedConfig = {};
+  @Prop() federated: FederatedConfig;
 
   componentWillLoad() {
     this.authState = this.initialAuthState;
