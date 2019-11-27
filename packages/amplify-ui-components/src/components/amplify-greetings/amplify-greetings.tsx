@@ -1,6 +1,6 @@
 import { Component, h, Prop, State, Watch, FunctionalComponent } from '@stencil/core';
 import { greetings } from './amplify-greetings.style';
-import { AuthState, CognitoUserInterface } from '../../common/types/auth-types';
+import { AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
@@ -16,7 +16,7 @@ export class AmplifyGreetings {
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;
 
