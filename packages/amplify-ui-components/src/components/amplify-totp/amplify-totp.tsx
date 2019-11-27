@@ -1,46 +1,67 @@
 import { Component, Prop, h } from '@stencil/core';
-import { SIGN_OUT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthState } from '../../common/types/auth-types';
 import { Logger } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
+// import { Auth } from '@aws-amplify/auth';
+import { CognitoUserInterface, MFATOTPOptions } from '../../common/types/auth-types';
 
-const logger = new Logger('SignOut');
+const logger = new Logger('TOTP');
 
 @Component({
   tag: 'amplify-totp',
   shadow: false,
 })
 export class AmplifyTOTP {
-  /** Passed from the Authenticatior component in order to change Authentication state */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
-  /** Text inside of the Sign Out button */
-  @Prop() buttonText: string = SIGN_OUT;
+  /** Types of MFA options */
+  @Prop() MFATypes: MFATOTPOptions;
+  /** Current authenticated user in order to sign requests properly for TOTP */
+  @Prop() authData: CognitoUserInterface = null;
 
-  async signOut(event) {
-    if (event) event.preventDefault();
-
-    // TODO: Federated Sign Out
-
-    if (!Auth || typeof Auth.signOut !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
+  contentBuilder() {
+    if (!this.MFATypes || Object.keys(this.MFATypes).length < 2) {
+      logger.debug('less than 2 mfa types available');
+      return (
+        <div>
+          <a>less than 2 mfa types available</a>
+        </div>
+      );
     }
 
-    try {
-      await Auth.signOut();
-      this.handleAuthStateChange(AuthState.SignedOut);
-    } catch (error) {
-      logger.error(error);
-      throw new Error(error);
-    }
+    const { SMS, TOTP, Optional } = this.MFATypes;
+
+    return (
+      // TODO: Add Toast messages
+      <amplify-form-section submitButtonText="Verify" headerText="Select MFA Type">
+        {SMS ? (
+          <amplify-radio-button
+            key="sms"
+            name="MFAType"
+            value="SMS"
+            label="SMS"
+            // Add handleInputChange
+          />
+        ) : null}
+        {TOTP ? (
+          <amplify-radio-button
+            key="totp"
+            name="MFAType"
+            value="TOTP"
+            label="TOTP"
+            // Add handleInputChange
+          />
+        ) : null}
+        {Optional ? (
+          <amplify-radio-button
+            key="noMFA"
+            name="MFAType"
+            value="NOMFA"
+            label="No MFA"
+            // Add handleInputChange
+          />
+        ) : null}
+      </amplify-form-section>
+    );
   }
 
   render() {
-    return (
-      <amplify-button overrideStyle={this.overrideStyle} onClick={event => this.signOut(event)}>
-        {this.buttonText}
-      </amplify-button>
-    );
+    return <div>{this.contentBuilder()}</div>;
   }
 }

@@ -10,6 +10,7 @@
 - [amplify-authenticator](../amplify-authenticator)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
+- [amplify-totp](../amplify-totp)
 - [amplify-scene](../amplify-scene)
 
 ### Graph
@@ -18,6 +19,7 @@ graph TD;
   amplify-examples --> amplify-authenticator
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
+  amplify-examples --> amplify-totp
   amplify-examples --> amplify-scene
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> amplify-confirm-sign-in
@@ -82,6 +84,9 @@ graph TD;
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
+  amplify-totp --> amplify-form-section
+  amplify-totp --> amplify-radio-button
+  amplify-radio-button --> amplify-label
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
   amplify-icon-button --> amplify-tooltip

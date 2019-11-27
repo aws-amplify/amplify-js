@@ -12,6 +12,7 @@ import {
   AuthStateHandler,
   CognitoUserInterface,
   FederatedConfig,
+  MFATOTPOptions,
 } from './common/types/auth-types';
 import {
   FormFieldTypes,
@@ -824,17 +825,13 @@ export namespace Components {
   }
   interface AmplifyTotp {
     /**
-    * Text inside of the Sign Out button
+    * Types of MFA options
     */
-    'buttonText': string;
+    'MFATypes': MFATOTPOptions;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Current authenticated user in order to sign requests properly for TOTP
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+    'authData': CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
@@ -1983,17 +1980,13 @@ declare namespace LocalJSX {
   }
   interface AmplifyTotp {
     /**
-    * Text inside of the Sign Out button
+    * Types of MFA options
     */
-    'buttonText'?: string;
+    'MFATypes'?: MFATOTPOptions;
     /**
-    * Passed from the Authenticatior component in order to change Authentication state
+    * Current authenticated user in order to sign requests properly for TOTP
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+    'authData'?: CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
