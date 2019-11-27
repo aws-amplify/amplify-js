@@ -3,7 +3,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
-import { AuthState, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-google-button');
 
@@ -15,15 +15,11 @@ export class AmplifyGoogleButton {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['googleClientId'];
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
-
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
 
   getAuthInstance() {
     if (window['gapi'] && window['gapi'].auth2) {
@@ -40,14 +36,14 @@ export class AmplifyGoogleButton {
     return null;
   }
 
-  handleClick = event => {
+  signInWithGoogle(event) {
     event.preventDefault();
 
     this.getAuthInstance()
       .signIn()
       .then(this.handleUser)
       .catch(this.handleError);
-  };
+  }
 
   handleError = error => {
     console.error(error);
@@ -95,7 +91,11 @@ export class AmplifyGoogleButton {
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} overrideStyle={this.overrideStyle} provider="google">
+      <amplify-sign-in-button
+        onClick={event => this.signInWithGoogle(event)}
+        overrideStyle={this.overrideStyle}
+        provider="google"
+      >
         <script onLoad={this.handleLoad} src="https://apis.google.com/js/api:client.js"></script>
         {SIGN_IN_WITH_GOOGLE}
       </amplify-sign-in-button>

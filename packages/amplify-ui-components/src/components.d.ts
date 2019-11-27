@@ -9,6 +9,7 @@
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AuthState,
+  AuthStateHandler,
   CognitoUserInterface,
   FederatedConfig,
 } from './common/types/auth-types';
@@ -45,7 +46,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -167,7 +168,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Fires when confirm sign in form is submitted
     */
@@ -201,7 +202,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object | string) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Fires when sign up form is submitted
     */
@@ -288,7 +289,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -306,7 +307,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -330,7 +331,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * The function called when making a request to reset password
     */
@@ -434,7 +435,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -444,7 +445,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Logo displayed inside of the header
     */
@@ -655,7 +656,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * The function called when submitting a new password
     */
@@ -719,7 +720,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Fires when sign in form is submitted
     */
@@ -756,7 +757,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * (Optional) Overrides default styling
     */
@@ -770,7 +771,7 @@ export namespace Components {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange': (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Fires when sign up form is submitted
     */
@@ -1182,7 +1183,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -1304,7 +1305,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Fires when confirm sign in form is submitted
     */
@@ -1338,7 +1339,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object | string) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Fires when sign up form is submitted
     */
@@ -1425,7 +1426,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -1443,7 +1444,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -1467,7 +1468,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * The function called when making a request to reset password
     */
@@ -1571,7 +1572,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * (Optional) Override default styling
     */
@@ -1581,7 +1582,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Logo displayed inside of the header
     */
@@ -1792,7 +1793,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * The function called when submitting a new password
     */
@@ -1856,7 +1857,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Fires when sign in form is submitted
     */
@@ -1893,7 +1894,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * (Optional) Overrides default styling
     */
@@ -1907,7 +1908,7 @@ declare namespace LocalJSX {
     /**
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
-    'handleAuthStateChange'?: (nextAuthState: AuthState, data?: object) => void;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Fires when sign up form is submitted
     */

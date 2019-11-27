@@ -3,7 +3,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
-import { AuthState, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-amazon-button');
 
@@ -17,13 +17,9 @@ export class AmplifyAmazonButton {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
-
-  constructor() {
-    this.handleClick = this.handleClick.bind(this);
-  }
 
   federatedSignIn = response => {
     const { access_token, expires_in } = response;
@@ -60,7 +56,7 @@ export class AmplifyAmazonButton {
   /**
    * @see https://developer.amazon.com/docs/login-with-amazon/install-sdk-javascript.html
    */
-  handleClick = event => {
+  signInWithAmazon(event) {
     event.preventDefault();
 
     window['amazon'].Login.setClientId(this.clientId);
@@ -78,11 +74,15 @@ export class AmplifyAmazonButton {
 
       this.federatedSignIn(response);
     });
-  };
+  }
 
   render() {
     return (
-      <amplify-sign-in-button onClick={this.handleClick} overrideStyle={this.overrideStyle} provider="amazon">
+      <amplify-sign-in-button
+        onClick={event => this.signInWithAmazon(event)}
+        overrideStyle={this.overrideStyle}
+        provider="amazon"
+      >
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
         {SIGN_IN_WITH_AMAZON}
       </amplify-sign-in-button>
