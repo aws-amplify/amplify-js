@@ -20,6 +20,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-totp](../amplify-totp)
+
 ### Depends on
 
 - [amplify-label](../amplify-label)
@@ -28,6 +32,7 @@
 ```mermaid
 graph TD;
   amplify-radio-button --> amplify-label
+  amplify-totp --> amplify-radio-button
   style amplify-radio-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

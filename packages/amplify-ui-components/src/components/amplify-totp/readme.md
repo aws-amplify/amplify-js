@@ -2,28 +2,38 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
-| Property                | Attribute        | Description                                                                      | Type                                                | Default     |
-| ----------------------- | ---------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `buttonText`            | `button-text`    | Text inside of the Sign Out button                                               | `string`                                            | `SIGN_OUT`  |
-| `handleAuthStateChange` | --               | Passed from the Authenticatior component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
-| `overrideStyle`         | `override-style` | (Optional) Overrides default styling                                             | `boolean`                                           | `false`     |
+| Property   | Attribute | Description                                                            | Type                   | Default     |
+| ---------- | --------- | ---------------------------------------------------------------------- | ---------------------- | ----------- |
+| `MFATypes` | --        | Types of MFA options                                                   | `MFATOTPOptions`       | `undefined` |
+| `authData` | --        | Current authenticated user in order to sign requests properly for TOTP | `CognitoUserInterface` | `null`      |
+
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-examples](../amplify-examples)
+
 ### Depends on
 
-- [amplify-button](../amplify-button)
+- [amplify-form-section](../amplify-form-section)
+- [amplify-radio-button](../amplify-radio-button)
 
 ### Graph
-
 ```mermaid
 graph TD;
-  amplify-totp --> amplify-button
+  amplify-totp --> amplify-form-section
+  amplify-totp --> amplify-radio-button
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-section
+  amplify-radio-button --> amplify-label
+  amplify-examples --> amplify-totp
   style amplify-totp fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
