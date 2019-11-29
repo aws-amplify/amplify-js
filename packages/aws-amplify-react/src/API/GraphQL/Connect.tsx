@@ -4,7 +4,7 @@ import API from '@aws-amplify/api';
 
 export interface IConnectProps {
 	mutation?: any;
-	onSubscriptionMsg?: (prevData: any) => any;
+	onSubscriptionMsg?: (prevData: any, msg: any) => any;
 	query?: any;
 	subscription?: any;
 }
