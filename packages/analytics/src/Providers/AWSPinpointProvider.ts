@@ -447,7 +447,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		failureData: EndpointFailureData
 	) {
 		const { err, update_params, endpointObject } = failureData;
-		const { message } = err;
+		const { message = '' } = err;
 		const { ApplicationId, EndpointRequest } = update_params;
 
 		if (!message.startsWith('Exceeded maximum endpoint per user count')) {
