@@ -118,7 +118,11 @@ export default class APIClass {
 	createInstance() {
 		logger.debug('create API instance');
 		if (this._options) {
-			this._api = new RestClass(this._options);
+			// this._api = new RestClass(this._options);
+			this._api = {};
+			this._options.aws_cloud_logic_custom.forEach(i => {
+				this._api[i.name] = new RestClass(this._options);
+			});
 			return true;
 		} else {
 			return Promise.reject('API not configured');
@@ -141,11 +145,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.get(endpoint + path, init);
+		return this._api[apiName].get(endpoint + path, init);
 	}
 
 	/**
@@ -164,11 +168,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.post(endpoint + path, init);
+		return this._api[apiName].post(endpoint + path, init);
 	}
 
 	/**
@@ -187,11 +191,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.put(endpoint + path, init);
+		return this._api[apiName].put(endpoint + path, init);
 	}
 
 	/**
@@ -210,11 +214,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.patch(endpoint + path, init);
+		return this._api[apiName].patch(endpoint + path, init);
 	}
 
 	/**
@@ -233,11 +237,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.del(endpoint + path, init);
+		return this._api[apiName].del(endpoint + path, init);
 	}
 
 	/**
@@ -256,11 +260,11 @@ export default class APIClass {
 			}
 		}
 
-		const endpoint = this._api.endpoint(apiName);
+		const endpoint = this._api[apiName].endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.head(endpoint + path, init);
+		return this._api[apiName].head(endpoint + path, init);
 	}
 
 	/**
@@ -276,7 +280,7 @@ export default class APIClass {
 				return Promise.reject(error);
 			}
 		}
-		return this._api.endpoint(apiName);
+		return this._api[apiName].endpoint(apiName);
 	}
 
 	private async _headerBasedAuth(defaultAuthenticationType?) {
