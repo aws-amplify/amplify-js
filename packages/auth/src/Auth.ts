@@ -1857,7 +1857,10 @@ export default class AuthClass {
 				);
 
 				if (isCustomStateIncluded) {
-					const [, customState] = state.split('-');
+					const customState = state
+						.split('-')
+						.splice(1)
+						.join('-');
 
 					dispatchAuthEvent(
 						'customOAuthState',
