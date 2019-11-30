@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+import CryptoJS from 'crypto-js/core';
+import HmacSHA256 from 'crypto-js/hmac-sha256';
+
 import Client from './Client';
 import CognitoUser from './CognitoUser';
 import StorageHelper from './StorageHelper';
@@ -27,6 +30,7 @@ export default class CognitoUserPool {
 	 * @param {string} data.UserPoolId Cognito user pool id.
 	 * @param {string} data.ClientId User pool application client id.
 	 * @param {object} data.Storage Optional storage object.
+	 * @param {string=} data.ClientSecret Optional client secret.
 	 * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
 	 *        boolean flag indicating if the data collection is enabled
 	 *        to support cognito advanced security features. By default, this
@@ -38,6 +42,7 @@ export default class CognitoUserPool {
 			ClientId,
 			endpoint,
 			AdvancedSecurityDataCollectionFlag,
+			ClientSecret,
 		} = data || {};
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
@@ -49,6 +54,7 @@ export default class CognitoUserPool {
 
 		this.userPoolId = UserPoolId;
 		this.clientId = ClientId;
+		this.clientSecret = ClientSecret;
 
 		this.client = new Client(region, endpoint);
 
@@ -74,6 +80,13 @@ export default class CognitoUserPool {
 	 */
 	getClientId() {
 		return this.clientId;
+	}
+
+	/**
+	 * @return {string} the client secret
+	 */
+	getClientSecret() {
+		return this.clientSecret;
 	}
 
 	/**
@@ -109,6 +122,9 @@ export default class CognitoUserPool {
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);
+		}
+		if (this.shouldSetClientSecretHash(username)) {
+			jsonReq.SecretHash = this.getClientSecretHash(username);
 		}
 		this.client.request('SignUp', jsonReq, (err, data) => {
 			if (err) {
@@ -184,5 +200,31 @@ export default class CognitoUserPool {
 			}
 		}
 		return {};
+	}
+
+	/**
+	 * Checks if client secret hash is needed
+	 * @returns {boolean} is secret hash needed
+	 */
+	shouldSetClientSecretHash() {
+		return typeof this.clientSecret !== 'undefined';
+	}
+
+	/**
+	 * Generates secret hash for request. based
+	 * @param {string} username cognito username
+	 * @returns {string} Base64 encoded secret hash
+	 */
+	getClientSecretHash(username) {
+		if (!this.shouldSetClientSecretHash()) {
+			return undefined;
+		}
+
+		const message = username + this.clientId;
+		const hash = HmacSHA256(message, this.clientSecret).toString(
+			CryptoJS.enc.Base64
+		);
+
+		return hash;
 	}
 }

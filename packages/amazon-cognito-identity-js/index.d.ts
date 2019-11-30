@@ -292,6 +292,7 @@ declare module 'amazon-cognito-identity-js' {
 		ClientId: string;
 		endpoint?: string;
 		Storage?: ICognitoStorage;
+		ClientSecret?: string;
 	}
 
 	export class CognitoUserPool {
@@ -299,6 +300,7 @@ declare module 'amazon-cognito-identity-js' {
 
 		public getUserPoolId(): string;
 		public getClientId(): string;
+		public getClientSecret(): string;
 
 		public signUp(
 			username: string,

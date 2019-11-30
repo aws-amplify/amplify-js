@@ -260,6 +260,9 @@ export default class CognitoUser {
 			if (this.authenticationFlowType === 'CUSTOM_AUTH') {
 				authParameters.CHALLENGE_NAME = 'SRP_A';
 			}
+			if (this.shouldSetClientSecretHash()) {
+				authParameters.SECRET_HASH = this.getClientSecretHash();
+			}
 
 			const clientMetaData =
 				Object.keys(authDetails.getValidationData()).length !== 0
@@ -322,6 +325,9 @@ export default class CognitoUser {
 
 						if (this.deviceKey != null) {
 							challengeResponses.DEVICE_KEY = this.deviceKey;
+						}
+						if (this.shouldSetClientSecretHash()) {
+							challengeResponses.SECRET_HASH = this.getClientSecretHash();
 						}
 
 						const respondToAuthChallenge = (challenge, challengeCallback) =>
@@ -404,6 +410,9 @@ export default class CognitoUser {
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
 			authParameters.DEVICE_KEY = this.deviceKey;
+		}
+		if (this.shouldSetClientSecretHash()) {
+			authParameters.SECRET_HASH = this.getClientSecretHash();
 		}
 
 		const clientMetaData =
@@ -606,6 +615,10 @@ export default class CognitoUser {
 			});
 		}
 
+		if (this.shouldSetClientSecretHash()) {
+			finalUserAttributes.SECRET_HASH = this.getClientSecretHash();
+		}
+
 		finalUserAttributes.NEW_PASSWORD = newPassword;
 		finalUserAttributes.USERNAME = this.username;
 		const jsonReq = {
@@ -663,6 +676,10 @@ export default class CognitoUser {
 
 			authParameters.SRP_A = aValue.toString(16);
 
+			if (this.shouldSetClientSecretHash()) {
+				authParameters.SECRET_HASH = this.getClientSecretHash();
+			}
+
 			const jsonReq = {
 				ChallengeName: 'DEVICE_SRP_AUTH',
 				ClientId: this.pool.getClientId(),
@@ -714,6 +731,10 @@ export default class CognitoUser {
 						challengeResponses.TIMESTAMP = dateNow;
 						challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
 						challengeResponses.DEVICE_KEY = this.deviceKey;
+
+						if (this.shouldSetClientSecretHash()) {
+							challengeResponses.SECRET_HASH = this.getClientSecretHash();
+						}
 
 						const jsonReqResp = {
 							ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
@@ -775,6 +796,9 @@ export default class CognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
+		if (this.shouldSetClientSecretHash()) {
+			jsonReq.SecretHash = this.getClientSecretHash();
+		}
 		this.client.request('ConfirmSignUp', jsonReq, err => {
 			if (err) {
 				return callback(err, null);
@@ -805,6 +829,9 @@ export default class CognitoUser {
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
 			challengeResponses.DEVICE_KEY = this.deviceKey;
+		}
+		if (this.shouldSetClientSecretHash()) {
+			challengeResponses.SECRET_HASH = this.getClientSecretHash();
 		}
 
 		const jsonReq = {
@@ -851,6 +878,9 @@ export default class CognitoUser {
 
 		if (this.deviceKey != null) {
 			challengeResponses.DEVICE_KEY = this.deviceKey;
+		}
+		if (this.shouldSetClientSecretHash()) {
+			challengeResponses.SECRET_HASH = this.getClientSecretHash();
 		}
 
 		const jsonReq = {
@@ -1289,6 +1319,9 @@ export default class CognitoUser {
 			Username: this.username,
 			ClientMetadata: clientMetadata,
 		};
+		if (this.shouldSetClientSecretHash()) {
+			jsonReq.SecretHash = this.getClientSecretHash();
+		}
 
 		this.client.request('ResendConfirmationCode', jsonReq, (err, result) => {
 			if (err) {
@@ -1584,6 +1617,9 @@ export default class CognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
+		if (this.shouldSetClientSecretHash()) {
+			jsonReq.SecretHash = this.getClientSecretHash();
+		}
 		this.client.request('ForgotPassword', jsonReq, (err, data) => {
 			if (err) {
 				return callback.onFailure(err);
@@ -1615,6 +1651,9 @@ export default class CognitoUser {
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
+		}
+		if (this.shouldSetClientSecretHash()) {
+			jsonReq.SecretHash = this.getClientSecretHash();
 		}
 		this.client.request('ConfirmForgotPassword', jsonReq, err => {
 			if (err) {
@@ -1904,6 +1943,10 @@ export default class CognitoUser {
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.ANSWER = answerChallenge;
 
+		if (this.shouldSetClientSecretHash()) {
+			challengeResponses.SECRET_HASH = this.getClientSecretHash();
+		}
+
 		const jsonReq = {
 			ChallengeName: 'SELECT_MFA_TYPE',
 			ChallengeResponses: challengeResponses,
@@ -1941,6 +1984,24 @@ export default class CognitoUser {
 	getUserContextData() {
 		const pool = this.pool;
 		return pool.getUserContextData(this.username);
+	}
+
+	/**
+	 * Checks if client secret hash is needed
+	 * @returns {boolean} is secret hash needed
+	 */
+	getClientSecretHash() {
+		const pool = this.pool;
+		return pool.getClientSecretHash(this.username);
+	}
+
+	/**
+	 * Generates secret hash for request. based
+	 * @returns {string} Base64 encoded secret hash
+	 */
+	shouldSetClientSecretHash() {
+		const pool = this.pool;
+		return pool.shouldSetClientSecretHash();
 	}
 
 	/**
@@ -2002,6 +2063,9 @@ export default class CognitoUser {
 					this.Session = data.Session;
 					const challengeResponses = {};
 					challengeResponses.USERNAME = this.username;
+					if (this.shouldSetClientSecretHash()) {
+						challengeResponses.SECRET_HASH = this.getClientSecretHash();
+					}
 					const jsonReq = {
 						ChallengeName: 'MFA_SETUP',
 						ClientId: this.pool.getClientId(),
