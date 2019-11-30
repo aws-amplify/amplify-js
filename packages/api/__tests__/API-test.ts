@@ -1011,8 +1011,18 @@ describe('API test', () => {
 	});
 
 	describe('get test', () => {
+		const newApi = Object.assign(aws_cloud_logic_custom[0], {
+			name: 'apiName',
+		});
+
+		const options = {
+			aws_project_region: 'region',
+			aws_cloud_logic_custom: [newApi],
+		};
+
 		test('happy case', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1385,6 +1395,8 @@ describe('API test', () => {
 
 		test('cred not ready', async () => {
 			const api = new API(config);
+			api.configure(options);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1432,10 +1444,16 @@ describe('API test', () => {
 			const api = new API({
 				region: 'region-2',
 			});
+			const newApi = Object.assign(aws_cloud_logic_custom[0], {
+				name: 'apiName',
+			});
+
 			const options = {
 				aws_project_region: 'region',
-				aws_cloud_logic_custom,
+				aws_cloud_logic_custom: [newApi],
 			};
+
+			api.configure(options);
 
 			const spyon = jest
 				.spyOn(Credentials, 'get')
@@ -1505,6 +1523,17 @@ describe('API test', () => {
 				});
 
 			const api = new API(config);
+			const newApi = Object.assign(aws_cloud_logic_custom[0], {
+				name: 'apiName',
+			});
+
+			const options = {
+				aws_project_region: 'region',
+				aws_cloud_logic_custom: [newApi],
+			};
+
+			api.configure(options);
+
 			const spyon4 = jest
 				.spyOn(RestClient.prototype, '_request')
 				.mockImplementationOnce(() => {
@@ -1534,8 +1563,24 @@ describe('API test', () => {
 	});
 
 	describe('put test', () => {
+		const aws_cloud_logic_custom = [
+			{
+				id: 'lh3s27sl16',
+				name: 'apiName',
+				description: '',
+				endpoint:
+					'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+				region: 'us-east-1',
+				paths: ['/todos', '/todos/123'],
+			},
+		];
+
+		const options = {
+			aws_cloud_logic_custom,
+		};
 		test('happy case', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1589,6 +1634,8 @@ describe('API test', () => {
 
 		test('cred not ready', async () => {
 			const api = new API(config);
+			api.configure(options);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1632,8 +1679,24 @@ describe('API test', () => {
 	});
 
 	describe('patch test', () => {
+		const aws_cloud_logic_custom = [
+			{
+				id: 'lh3s27sl16',
+				name: 'apiName',
+				description: '',
+				endpoint:
+					'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+				region: 'us-east-1',
+				paths: ['/todos', '/todos/123'],
+			},
+		];
+
+		const options = {
+			aws_cloud_logic_custom,
+		};
 		test('happy case', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1687,6 +1750,7 @@ describe('API test', () => {
 
 		test('cred not ready', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1730,8 +1794,25 @@ describe('API test', () => {
 	});
 
 	describe('del test', () => {
+		const aws_cloud_logic_custom = [
+			{
+				id: 'lh3s27sl16',
+				name: 'apiName',
+				description: '',
+				endpoint:
+					'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+				region: 'us-east-1',
+				paths: ['/todos', '/todos/123'],
+			},
+		];
+
+		const options = {
+			aws_cloud_logic_custom,
+		};
+
 		test('happy case', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1785,6 +1866,7 @@ describe('API test', () => {
 
 		test('cred not ready', async () => {
 			const api = new API(config);
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1828,8 +1910,26 @@ describe('API test', () => {
 	});
 
 	describe('head test', () => {
+		const aws_cloud_logic_custom = [
+			{
+				id: 'lh3s27sl16',
+				name: 'apiName',
+				description: '',
+				endpoint:
+					'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+				region: 'us-east-1',
+				paths: ['/todos', '/todos/123'],
+			},
+		];
+
+		const options = {
+			aws_cloud_logic_custom,
+		};
+
 		test('happy case', async () => {
 			const api = new API(config);
+
+			api.configure(options);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1883,6 +1983,8 @@ describe('API test', () => {
 
 		test('cred not ready', async () => {
 			const api = new API(config);
+			api.configure(options);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1933,6 +2035,24 @@ describe('API test', () => {
 				.mockImplementationOnce(() => {
 					return 'endpoint';
 				});
+
+			const aws_cloud_logic_custom = [
+				{
+					id: 'lh3s27sl16',
+					name: 'apiName',
+					description: '',
+					endpoint:
+						'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+					region: 'us-east-1',
+					paths: ['/todos', '/todos/123'],
+				},
+			];
+
+			const options = {
+				aws_cloud_logic_custom,
+			};
+
+			api.configure(options);
 
 			await api.endpoint('apiName');
 

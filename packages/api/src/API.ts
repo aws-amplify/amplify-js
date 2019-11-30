@@ -120,9 +120,11 @@ export default class APIClass {
 		if (this._options) {
 			// this._api = new RestClass(this._options);
 			this._api = {};
-			this._options.aws_cloud_logic_custom.forEach(i => {
-				this._api[i.name] = new RestClass(this._options);
-			});
+			if (this._options.aws_cloud_logic_custom) {
+				this._options.aws_cloud_logic_custom.forEach(i => {
+					this._api[i.name] = new RestClass(this._options);
+				});
+			}
 			return true;
 		} else {
 			return Promise.reject('API not configured');
