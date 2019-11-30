@@ -209,7 +209,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		}
 		const validation = this.validate();
 		if (validation && validation.length > 0) {
-			this.setState({ requestPending: false });
 			return this.error(
 				`The following fields need to be filled out: ${validation.join(', ')}`
 			);
