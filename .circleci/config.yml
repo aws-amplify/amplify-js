@@ -184,12 +184,18 @@ jobs:
             cd amplify-js/packages/aws-amplify-angular
             yarn link
       - run:
+          name: 'Link @aws-amplify/analytics'
+          command: |
+            cd amplify-js/packages/analytics
+            yarn link
+      - run:
           name: 'Install Angular Authenticator sample'
           command: |
             cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-angular
+            yarn link @aws-amplify/analytics
       - run:
           name: 'Start Angular Authenticator Sample server in background'
           command: |
