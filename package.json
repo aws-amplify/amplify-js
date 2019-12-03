@@ -73,6 +73,7 @@
 		"typedoc": "^0.11.0",
 		"typescript": "~3.6.4",
 		"uglifyjs-webpack-plugin": "^0.4.6",
+		"uuid-validate": "^0.0.3",
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
