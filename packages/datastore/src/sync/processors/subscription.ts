@@ -3,6 +3,7 @@ import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalSchema, PersistentModel, SchemaModel } from '../../types';
 import { buildGraphQLOperation, TransformerMutationType } from '../utils';
+import '@aws-amplify/pubsub';
 
 const logger = new Logger('DataStore');
 
