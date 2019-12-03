@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Analytics category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -36,8 +36,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^2.1.0",
-    "@aws-amplify/core": "^2.1.0",
+    "@aws-amplify/cache": "^2.1.1",
+    "@aws-amplify/core": "^2.2.0",
     "uuid": "^3.2.1"
   },
   "jest": {
