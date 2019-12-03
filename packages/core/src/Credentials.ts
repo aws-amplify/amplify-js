@@ -2,7 +2,6 @@ import { ConsoleLogger as Logger } from './Logger';
 import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
-import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
@@ -101,9 +100,7 @@ export class Credentials {
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
 		const { provider, user } = federatedInfo;
-		let token = federatedInfo.token;
-		let expires_at = federatedInfo.expires_at;
-		let identity_id = federatedInfo.identity_id;
+		let { token, expires_at, identity_id } = federatedInfo;
 
 		const that = this;
 		logger.debug('checking if federated jwt token expired');
@@ -307,7 +304,6 @@ export class Credentials {
 			}
 		);
 
-		const that = this;
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
