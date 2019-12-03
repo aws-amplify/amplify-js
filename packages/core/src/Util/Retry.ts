@@ -1,5 +1,5 @@
-import { DelayFunction } from './types';
-import { ConsoleLogger as Logger } from './Logger/ConsoleLogger';
+import { DelayFunction } from '../types';
+import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
 const logger = new Logger('Util');
 
 export class NonRetryableError extends Error {
@@ -34,7 +34,7 @@ export async function retry(
 	);
 
 	try {
-		await functionToRetry.apply(undefined, args);
+		return await functionToRetry(...args);
 	} catch (err) {
 		logger.debug(`error on ${functionToRetry.name}: ${err} `);
 
