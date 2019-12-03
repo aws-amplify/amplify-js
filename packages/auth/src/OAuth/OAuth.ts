@@ -23,7 +23,7 @@ import {
 
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 
-import * as sha256 from 'crypto-js/sha256';
+import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
