@@ -94,7 +94,5 @@ export {
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
-	initSchema,
-	Predicates,
 };
 export { graphqlOperation };
