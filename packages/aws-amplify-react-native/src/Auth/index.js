@@ -63,7 +63,8 @@ export function withAuthenticator(
 			this.authConfig = {};
 
 			if (typeof includeGreetings === 'object' && includeGreetings !== null) {
-				this.authConfig = Object.assign(this.authConfig, includeGreetings);
+				this.authConfig = Object.assign(this.authConfig, includeGreetings);				
+				theme = includeGreetings.theme;
 			} else {
 				this.authConfig = {
 					includeGreetings,
