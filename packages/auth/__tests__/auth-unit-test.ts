@@ -2675,7 +2675,7 @@ describe('auth unit test', () => {
 
 			expect(spyon3).toBeCalled();
 			spyon3.mockClear();
-			// expect(urlOpener).toBeCalled();
+			expect(urlOpener).toBeCalled();
 		});
 
 		test('User Pools and Identity Pools', async () => {
