@@ -372,9 +372,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending event ${params.eventName} with ${
-					params.resendLimit
-				} retry times left`
+				`resending event ${params.eventName} with ${params.resendLimit} retry times left`
 			);
 			this._pinpointPutEvents(params, handlers);
 		} else {
@@ -494,9 +492,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending endpoint update ${params.event.eventId} with ${
-					params.resendLimit
-				} retry attempts remaining`
+				`resending endpoint update ${params.event.eventId} with ${params.resendLimit} retry attempts remaining`
 			);
 			// insert at the front of endpointBuffer
 			this._endpointBuffer.unshift(endpointObject);
@@ -504,9 +500,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		}
 
 		logger.warn(
-			`resending endpoint update ${params.event.eventId} failed after ${
-				params.config.resendLimit
-			} attempts`
+			`resending endpoint update ${params.event.eventId} failed after ${params.config.resendLimit} attempts`
 		);
 
 		if (this._endpointGenerating) {
