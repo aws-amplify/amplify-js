@@ -31,6 +31,8 @@ import Predictions, {
 	AmazonAIPredictionsProvider,
 } from '@aws-amplify/predictions';
 
+import { DataStore, initSchema, Predicates } from '@aws-amplify/datastore';
+
 import Amplify, {
 	ConsoleLogger as Logger,
 	Hub,
@@ -46,6 +48,7 @@ export default Amplify;
 Amplify.Auth = Auth;
 Amplify.Analytics = Analytics;
 Amplify.API = API;
+Amplify.DataStore = DataStore;
 Amplify.Storage = Storage;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;
@@ -75,6 +78,7 @@ export {
 	UI,
 	XR,
 	Predictions,
+	DataStore,
 };
 
 export {
@@ -90,5 +94,7 @@ export {
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
+	initSchema,
+	Predicates,
 };
 export { graphqlOperation };

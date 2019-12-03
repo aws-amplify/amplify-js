@@ -48,12 +48,22 @@ const pubsub_externals = [
 	'paho-mqtt',
 ];
 
+const datastore_externals = [
+	'@aws-amplify/pubsub',
+	'uuid',
+	'idb',
+	'immer',
+	'zen-observable-ts',
+	'zen-push',
+];
+
 const amplify_externals = [
 	'@aws-amplify/analytics',
 	'@aws-amplify/api',
 	'@aws-amplify/auth',
 	'@aws-amplify/cache',
 	'@aws-amplify/core',
+	'@aws-amplify/datastore',
 	'@aws-amplify/interactions',
 	'@aws-amplify/pubsub',
 	'@aws-amplify/storage',
@@ -84,6 +94,7 @@ const rollup_externals = {
 	'aws-amplify-react': aws_amplify_react,
 	'@aws-amplify/cache': cache_externals,
 	'@aws-amplify/core': core_externals,
+	'@aws-amplify/datastore': datastore_externals,
 	'@aws-amplify/interactions': interactions_externals,
 	'@aws-amplify/pubsub': pubsub_externals,
 	'@aws-amplify/storage': storage_externals,

@@ -8,6 +8,7 @@ module.exports = {
 		'@aws-amplify/auth',
 		'@aws-amplify/cache',
 		'@aws-amplify/core',
+		'@aws-amplify/datastore',
 		'@aws-amplify/interactions',
 		'@aws-amplify/pubsub',
 		'@aws-amplify/storage',
