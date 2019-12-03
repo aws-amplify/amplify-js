@@ -10,7 +10,10 @@ import {
 	fromCognitoIdentityPool,
 	FromCognitoIdentityPoolParameters,
 } from '@aws-sdk/credential-provider-cognito-identity';
-import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity-browser/CognitoIdentityClient';
+import {
+	CognitoIdentityClient,
+	GetIdCommand,
+} from '@aws-sdk/client-cognito-identity-browser';
 const logger = new Logger('Credentials');
 
 export class CredentialsClass {
@@ -21,6 +24,7 @@ export class CredentialsClass {
 	private _refreshHandlers = {};
 	private _storage;
 	private _storageSync;
+	private _identityId;
 
 	constructor(config) {
 		this.configure(config);
@@ -277,7 +281,7 @@ export class CredentialsClass {
 		return this._loadCredentials(credentials, 'federated', true, params);
 	}
 
-	private _setCredentialsFromSession(session): Promise<ICredentials> {
+	private async _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
 		const { region, userPoolId, identityPoolId } = this._config;
@@ -303,11 +307,28 @@ export class CredentialsClass {
 			signer: {} as any,
 		});
 		cognitoClient.middlewareStack.remove('SIGNATURE');
+		const { IdentityId } = await cognitoClient.send(
+			new GetIdCommand({
+				IdentityPoolId: identityPoolId,
+				Logins: logins,
+			})
+		);
+		logger.info('identityId', IdentityId);
+
+		this._identityId = IdentityId;
+		// let credentials = undefined;
+		// const cognitoIdentityParams: FromCognitoIdentityParameters = {
+		// 	logins,
+		// 	identityId,
+		// 	client: cognitoClient,
+		// };
+		// credentials = fromCognitoIdentity(cognitoIdentityParams)();
 		const params: FromCognitoIdentityPoolParameters = {
 			logins,
 			identityPoolId,
 			client: cognitoClient,
 		};
+
 		const credentials = fromCognitoIdentityPool(params)();
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
@@ -324,6 +345,10 @@ export class CredentialsClass {
 			credentials
 				.then(async credentials => {
 					logger.debug('Load credentials successfully', credentials);
+					if (this._identityId && !credentials.identityId) {
+						credentials['identityId'] = this._identityId;
+					}
+
 					that._credentials = credentials;
 					that._credentials.authenticated = authenticated;
 					that._credentials_source = source;
