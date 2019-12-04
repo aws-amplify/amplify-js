@@ -248,7 +248,7 @@ const createModelClass = <T extends PersistentModel>(
 						const fieldDefinition = modelDefinition.fields[k];
 
 						if (fieldDefinition !== undefined) {
-							const { type, isRequired, name } = fieldDefinition;
+							const { type, isRequired, name, isArray } = fieldDefinition;
 
 							if (isRequired && (v === null || v === undefined)) {
 								throw new Error(`Field ${name} is required`);
@@ -257,7 +257,21 @@ const createModelClass = <T extends PersistentModel>(
 							if (isGraphQLScalarType(type)) {
 								const jsType = GraphQLScalarType.getJSType(type);
 
-								if (typeof v !== jsType && v !== null) {
+								if (isArray) {
+									if (!Array.isArray(v)) {
+										throw new Error(
+											`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
+										);
+									}
+
+									if ((<[]>v).some(e => typeof e !== jsType)) {
+										const elemTypes = (<[]>v).map(e => typeof e).join(',');
+
+										throw new Error(
+											`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
+										);
+									}
+								} else if (typeof v !== jsType && v !== null) {
 									throw new Error(
 										`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
 									);
