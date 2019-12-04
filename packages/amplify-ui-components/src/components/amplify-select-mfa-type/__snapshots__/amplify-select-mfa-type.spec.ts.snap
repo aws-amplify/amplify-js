@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-totp spec: Render logic -> should render a \`less than 2 mfa types available\` message by default 1`] = `
+<amplify-select-mfa-type>
+  <div>
+    <div>
+      <a>
+        less than 2 mfa types available
+      </a>
+    </div>
+  </div>
+</amplify-select-mfa-type>
+`;

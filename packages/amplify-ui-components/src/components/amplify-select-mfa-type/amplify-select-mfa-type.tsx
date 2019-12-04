@@ -3,59 +3,66 @@ import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { CognitoUserInterface, MFATOTPOptions } from '../../common/types/auth-types';
 
-const logger = new Logger('TOTP');
-
-export interface radioInputValueTypes {
-  SMS: boolean | string;
-  TOTP: boolean | string;
-  NOMFA: boolean | string;
-}
+const logger = new Logger('SelectMFAType');
 
 @Component({
-  tag: 'amplify-totp',
+  tag: 'amplify-select-mfa-type',
   shadow: false,
 })
-export class AmplifyTOTP {
+export class AmplifySelectMFAType {
   /** Types of MFA options */
   @Prop() MFATypes: MFATOTPOptions;
   /** Current authenticated user in order to sign requests properly for TOTP */
   @Prop() authData: CognitoUserInterface = null;
   /** Fires when Verify is clicked */
-  @Prop() handleSubmit: (Event) => void = event => this.verify(event);
+  @Prop() handleSubmit: (submitEvent: Event) => void = () => this.verify();
 
-  @State() radioInputValues: radioInputValueTypes;
   @State() TOTPSetup: boolean = false;
   @State() selectMessage: string = null;
   @State() mfaMethod: any = null;
+
+  @State() isTotp: boolean = false;
+  @State() isNoMfa: boolean = false;
+  @State() isSMS: boolean = false;
 
   handleRadioChange(event) {
     this.TOTPSetup = false;
     this.selectMessage = null;
 
-    const { value } = event.target;
+    // Reseting state values to default
+    this.isNoMfa = false;
+    this.isTotp = false;
+    this.isSMS = false;
 
-    this.radioInputValues[value] = value;
+    const { value, type, checked } = event.target;
+    const checkType = ['radio', 'checkbox'].includes(type);
+
+    if (value === 'SMS' && checkType) {
+      this.isSMS = checked;
+    }
+
+    if (value === 'TOTP' && checkType) {
+      this.isTotp = checked;
+    }
+
+    if (value === 'NOMFA' && checkType) {
+      this.isNoMfa = checked;
+    }
   }
 
-  verify(event) {
+  verify() {
+    // avoid submitting the form
     if (event) {
       event.preventDefault();
     }
 
-    logger.debug('mfatypes inputs', this.radioInputValues);
+    logger.debug('MFA Types values', { TOTP: this.isTotp, SMS: this.isSMS, 'No MFA': this.isNoMfa });
 
-    if (!this.radioInputValues) {
-      logger.debug('No mfa type selected');
-      return;
-    }
-
-    const { TOTP, SMS, NOMFA } = this.radioInputValues;
-
-    if (TOTP) {
+    if (this.isTotp) {
       this.mfaMethod = 'TOTP';
-    } else if (SMS) {
+    } else if (this.isSMS) {
       this.mfaMethod = 'SMS';
-    } else if (NOMFA) {
+    } else if (this.isNoMfa) {
       this.mfaMethod = 'NOMFA';
     }
 
@@ -102,14 +109,14 @@ export class AmplifyTOTP {
 
     return (
       // TODO: Add Toast messages
-      <amplify-form-section submitButtonText="Verify" headerText="Select MFA Type">
+      <amplify-form-section submitButtonText="Verify" headerText="Select MFA Type" handleSubmit={this.handleSubmit}>
         {SMS ? (
           <amplify-radio-button
             key="sms"
             name="MFAType"
             value="SMS"
             label="SMS"
-            handleInputChange={this.handleRadioChange}
+            handleInputChange={event => this.handleRadioChange(event)}
           />
         ) : null}
         {TOTP ? (
@@ -118,7 +125,7 @@ export class AmplifyTOTP {
             name="MFAType"
             value="TOTP"
             label="TOTP"
-            handleInputChange={this.handleRadioChange}
+            handleInputChange={event => this.handleRadioChange(event)}
           />
         ) : null}
         {Optional ? (
@@ -127,7 +134,7 @@ export class AmplifyTOTP {
             name="MFAType"
             value="NOMFA"
             label="No MFA"
-            handleInputChange={this.handleRadioChange}
+            handleInputChange={event => this.handleRadioChange(event)}
           />
         ) : null}
       </amplify-form-section>
