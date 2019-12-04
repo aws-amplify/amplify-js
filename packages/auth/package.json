@@ -80,8 +80,5 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
-  },
-  "devDependencies": {
-    "rimraf": "^3.0.0"
   }
 }
