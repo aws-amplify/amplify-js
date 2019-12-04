@@ -313,16 +313,8 @@ export class CredentialsClass {
 				Logins: logins,
 			})
 		);
-		logger.info('identityId', IdentityId);
 
 		this._identityId = IdentityId;
-		// let credentials = undefined;
-		// const cognitoIdentityParams: FromCognitoIdentityParameters = {
-		// 	logins,
-		// 	identityId,
-		// 	client: cognitoClient,
-		// };
-		// credentials = fromCognitoIdentity(cognitoIdentityParams)();
 		const params: FromCognitoIdentityPoolParameters = {
 			logins,
 			identityPoolId,
