@@ -17,12 +17,53 @@ const STATIC_LINK_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--s3-image`;
 export class AmplifyS3Image {
   @Element() el: HTMLElement;
 
+  @Prop() imgKey: string;
+  @Prop() path: string;
+  @Prop() body: object;
+  @Prop() contentType: string;
+  @Prop() level: string;
+  @Prop() track: boolean;
+  @Prop() identityId: string;
   @Prop() pickerEnabled: boolean = true;
   @Prop() overrideStyle: boolean = false;
   @Prop() handleOnLoad: () => {};
   @Prop() handleOnError: () => {};
 
   @State() src: string | Object = null;
+
+  // componentDidMount() {}
+
+  load() {
+    const { imgKey, path, body, contentType, level, track, identityId } = this;
+    if (!imgKey && !path) {
+      logger.debug('empty imgKey and path');
+      return;
+    }
+
+    const key = imgKey || path;
+    logger.debug('loading ' + key + '...');
+    if (body) {
+      const type = contentType || 'binary/octet-stream';
+      if (!Storage || typeof Storage.put !== 'function') {
+        throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+      }
+
+      try {
+        const data = Storage.put(key, body, {
+          contentType: type,
+          level: level ? level : 'public',
+          track,
+        });
+        logger.debug(data);
+        this.getImageSource(key, level, track, identityId);
+      } catch (error) {
+        logger.error(error);
+        throw new Error(error);
+      }
+    } else {
+      this.getImageSource(key, level, track, identityId);
+    }
+  }
 
   async getSrc(key) {
     try {
@@ -72,3 +113,7 @@ export class AmplifyS3Image {
     );
   }
 }
+
+/* 
+
+*/
