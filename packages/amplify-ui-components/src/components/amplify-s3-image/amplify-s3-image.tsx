@@ -31,9 +31,11 @@ export class AmplifyS3Image {
 
   @State() src: string | Object = null;
 
-  // componentDidMount() {}
+  async componentWillLoad() {
+    await this.load();
+  }
 
-  load() {
+  async load() {
     const { imgKey, path, body, contentType, level, track, identityId } = this;
     if (!imgKey && !path) {
       logger.debug('empty imgKey and path');
@@ -55,32 +57,13 @@ export class AmplifyS3Image {
           track,
         });
         logger.debug(data);
-        this.getImageSource(key, level, track, identityId);
+        await this.getImageSource(key, level, track, identityId);
       } catch (error) {
         logger.error(error);
         throw new Error(error);
       }
     } else {
-      this.getImageSource(key, level, track, identityId);
-    }
-  }
-
-  async getSrc(key) {
-    try {
-      this.src = await Storage.get(key);
-    } catch (error) {
-      console.log(error);
-    }
-    // let user = await Auth.currentAuthenticatedUser();
-    // console.log(user);
-  }
-
-  async putContent() {
-    try {
-      const key = await Storage.put('testprivate.txt', 'Hello', { level: 'private' });
-      console.log(key);
-    } catch (error) {
-      console.log(error);
+      await this.getImageSource(key, level, track, identityId);
     }
   }
 
@@ -92,6 +75,7 @@ export class AmplifyS3Image {
     try {
       const src = await Storage.get(key, { level: level ? level : 'public', track, identityId });
       console.log(src);
+      this.src = src;
     } catch (error) {
       logger.error(error);
       throw new Error(error);
@@ -107,8 +91,6 @@ export class AmplifyS3Image {
     return (
       <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
         {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
-        {this.pickerEnabled && <button onClick={() => this.putContent()}>{/* Add Picker component here */}Put</button>}
-        <button onClick={() => this.getSrc('amplify-logo.png')}>{/* Add Picker component here */}Get</button>
       </Host>
     );
   }

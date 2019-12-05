@@ -1,7 +1,7 @@
 import { Component, State, Prop, h } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
-
+import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
@@ -21,7 +21,61 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig = {};
 
   componentWillLoad() {
+    // try {
+    //   const data = await Auth.verifiedContact(user);
+    // } catch (error) {
+
+    // }
+    // async checkContact(user) {
+    //   try {
+    //     const data = await Auth.verifiedContact(user);
+    //     logger.debug('verified user attributes', data);
+    //     if (!JS.isEmpty(data.verified)) {
+    //       this.handleStateChange('signedIn', user);
+    //     } else {
+    //       user = Object.assign(user, data);
+    //       this.handleStateChange('verifyContact', user);
+    //     }
+    //   } catch (e) {
+    //     logger.warn('Failed to verify contact', e);
+    //     this.handleStateChange('signedIn', user);
+    //   }
+    // }
     this.authState = this.initialAuthState;
+
+    const byHostedUI = localStorage.getItem('amplify-signin-with-hostedUI');
+    localStorage.removeItem('amplify-signin-with-hostedUI');
+    if (byHostedUI !== 'true') this.checkUser();
+  }
+
+  checkUser() {
+    if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+    }
+    return Auth.currentAuthenticatedUser()
+      .then(user => {
+        // if (!this._isMounted) {
+        //   return;
+        // }
+        this.onAuthStateChange(AuthState.SignedIn, user);
+      })
+      .catch(err => {
+        // if (!this._isMounted) {
+        //   return;
+        // }
+        let cachedAuthState = null;
+        try {
+          cachedAuthState = localStorage.getItem('amplify-authenticator-authState');
+        } catch (e) {
+          logger.debug('Failed to get the auth state from local storage', e);
+        }
+        const promise = cachedAuthState === AuthState.SignedIn ? Auth.signOut() : Promise.resolve();
+        promise
+          .then(() => this.onAuthStateChange(this.initialAuthState))
+          .catch(e => {
+            logger.debug('Failed to sign out', e);
+          });
+      });
   }
 
   onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
