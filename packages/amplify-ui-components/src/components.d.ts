@@ -634,6 +634,10 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Label for the radio button
     */
     'label': string;
@@ -645,6 +649,10 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle': boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * (Optional) Value of radio button
     */
@@ -837,19 +845,10 @@ export namespace Components {
     */
     'text': string;
   }
-<<<<<<< HEAD
   interface AmplifyTotp {
-    /**
-    * Types of MFA options
-    */
     'MFATypes': MFATOTPOptions;
-    /**
-    * Current authenticated user in order to sign requests properly for TOTP
-    */
-    'authData': CognitoUserInterface;
+    'user': CognitoUserInterface;
   }
-=======
->>>>>>> rename component to select mfa type
   interface AmplifyUsernameField {
     /**
     * Will disable the input if set to true
@@ -1150,6 +1149,12 @@ declare global {
     new (): HTMLAmplifyTooltipElement;
   };
 
+  interface HTMLAmplifyTotpElement extends Components.AmplifyTotp, HTMLStencilElement {}
+  var HTMLAmplifyTotpElement: {
+    prototype: HTMLAmplifyTotpElement;
+    new (): HTMLAmplifyTotpElement;
+  };
+
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
   var HTMLAmplifyUsernameFieldElement: {
     prototype: HTMLAmplifyUsernameFieldElement;
@@ -1205,6 +1210,7 @@ declare global {
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
+    'amplify-totp': HTMLAmplifyTotpElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
@@ -1806,6 +1812,10 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Label for the radio button
     */
     'label'?: string;
@@ -1817,6 +1827,10 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * (Optional) Value of radio button
     */
@@ -2009,19 +2023,10 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
-<<<<<<< HEAD
   interface AmplifyTotp {
-    /**
-    * Types of MFA options
-    */
     'MFATypes'?: MFATOTPOptions;
-    /**
-    * Current authenticated user in order to sign requests properly for TOTP
-    */
-    'authData'?: CognitoUserInterface;
+    'user'?: CognitoUserInterface;
   }
-=======
->>>>>>> rename component to select mfa type
   interface AmplifyUsernameField {
     /**
     * Will disable the input if set to true
@@ -2105,6 +2110,7 @@ declare namespace LocalJSX {
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
+    'amplify-totp': AmplifyTotp;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
@@ -2159,6 +2165,7 @@ declare module "@stencil/core" {
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
+      'amplify-totp': LocalJSX.AmplifyTotp & JSXBase.HTMLAttributes<HTMLAmplifyTotpElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
     }

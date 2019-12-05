@@ -24,7 +24,7 @@
 
 ### Used by
 
- - [amplify-totp](../amplify-totp)
+ - [amplify-select-mfa-type](../amplify-select-mfa-type)
 
 ### Depends on
 
@@ -34,7 +34,7 @@
 ```mermaid
 graph TD;
   amplify-radio-button --> amplify-label
-  amplify-totp --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-radio-button
   style amplify-radio-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

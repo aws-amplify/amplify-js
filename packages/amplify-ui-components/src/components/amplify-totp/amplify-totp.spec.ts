@@ -1,0 +1,30 @@
+import { newSpecPage } from '@stencil/core/testing';
+import { AmplifySelectMFAType } from './amplify-totp';
+
+describe('amplify-totp spec:', () => {
+  describe('Component logic ->', () => {
+    let selectMFAType;
+
+    beforeEach(() => {
+      selectMFAType = new AmplifySelectMFAType();
+    });
+
+    it('should render authData to null by default', () => {
+      expect(selectMFAType.authData).toEqual(null);
+    });
+
+    it('should render `MFATypes` to undefined by default', () => {
+      expect(selectMFAType.MFATypes).toBeUndefined();
+    });
+  });
+  describe('Render logic ->', () => {
+    it('should render a `less than 2 mfa types available` message by default', async () => {
+      const page = await newSpecPage({
+        components: [AmplifySelectMFAType],
+        html: `<amplify-select-mfa-type></amplify-select-mfa-type>`,
+      });
+
+      expect(page.root).toMatchSnapshot();
+    });
+  });
+});
