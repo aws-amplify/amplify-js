@@ -1,7 +1,7 @@
 import { Component, State, Prop, h } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
-import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY } from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
 import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 
@@ -38,7 +38,7 @@ export class AmplifyAuthenticator {
     } catch (error) {
       let cachedAuthState = null;
       try {
-        cachedAuthState = localStorage.getItem('amplify-authenticator-authState');
+        cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
       } catch (error) {
         logger.debug('Failed to get the auth state from local storage', error);
       }
