@@ -47,7 +47,7 @@ export class AmplifyS3Image {
     if (body) {
       const type = contentType || 'binary/octet-stream';
       if (!Storage || typeof Storage.put !== 'function') {
-        throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        throw new Error(NO_STORAGE_MODULE_FOUND);
       }
 
       try {
@@ -74,17 +74,11 @@ export class AmplifyS3Image {
 
     try {
       const src = await Storage.get(key, { level: level ? level : 'public', track, identityId });
-      console.log(src);
       this.src = src;
     } catch (error) {
       logger.error(error);
       throw new Error(error);
     }
-  }
-
-  handleClick(event) {
-    console.log(event);
-    console.log(Storage);
   }
 
   render() {
@@ -95,7 +89,3 @@ export class AmplifyS3Image {
     );
   }
 }
-
-/* 
-
-*/
