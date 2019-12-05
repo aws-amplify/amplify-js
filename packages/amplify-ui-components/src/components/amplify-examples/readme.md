@@ -84,9 +84,6 @@ graph TD;
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
-  amplify-totp --> amplify-form-section
-  amplify-totp --> amplify-radio-button
-  amplify-radio-button --> amplify-label
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
   amplify-icon-button --> amplify-tooltip
