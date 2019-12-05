@@ -76,6 +76,7 @@ export class AWSS3Provider implements StorageProvider {
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
 		logger.debug('Storage Options', this._config);
+		console.log('Storage Options', this._config);
 	}
 
 	/**

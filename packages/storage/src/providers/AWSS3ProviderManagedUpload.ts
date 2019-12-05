@@ -26,6 +26,7 @@ import {
 } from '@aws-sdk/client-s3-browser/commands/CompleteMultipartUploadCommand';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
+import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
 
 import * as S3 from 'aws-sdk/clients/s3';
@@ -45,6 +46,7 @@ export class AWSS3ProviderManagedUpload {
 	private queueSize = 10;
 
 	// Data for current upload
+	private body = null;
 	private params = null;
 	private opts = null;
 	private multiPartMap = [];
@@ -61,7 +63,9 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	public async upload() {
-		this.totalBytesToUpload = new TextEncoder().encode(this.params.Body).length;
+		this.body = this.validateAndSanitizeBody(this.params.Body);
+		this.totalBytesToUpload = this.byteLength(this.body); // TODO: Cannot pass an object. Has to be a string?
+		console.log('Uploading file of size ', this.totalBytesToUpload);
 		if (this.totalBytesToUpload <= this.minPartSize) {
 			const putObjectCommand = new PutObjectCommand(this.params);
 			const s3 = this._createNewS3Client(this.opts, this.emitter);
@@ -102,7 +106,7 @@ export class AWSS3ProviderManagedUpload {
 				this.totalBytesToUpload
 			);
 			parts.push({
-				bodyPart: this.params.Body.slice(bodyStart, bodyEnd),
+				bodyPart: this.body.slice(bodyStart, bodyEnd),
 				partNumber: ++partNumber,
 				emitter: new events.EventEmitter(),
 				_lastUploadedBytes: 0,
@@ -208,6 +212,31 @@ export class AWSS3ProviderManagedUpload {
 			part: partNumber,
 			key: this.params.Key,
 		});
+	}
+
+	private byteLength(inputString: any) {
+		if (inputString === null || inputString === undefined) return 0;
+		if (typeof inputString.byteLength === 'number') {
+			return inputString.byteLength;
+		} else if (typeof inputString.length === 'number') {
+			return inputString.length;
+		} else if (typeof inputString.size === 'number') {
+			return inputString.size;
+			// } else if (typeof string.path === 'string') {
+			// 	return require('fs').lstatSync(string.path).size;
+		} else {
+			throw new Error('Cannot determine length of ' + inputString);
+		}
+	}
+
+	private validateAndSanitizeBody(body: any): any {
+		if (body instanceof File) {
+			return body;
+		} else if (typeof body === 'string') {
+			return fromString(body);
+		} else {
+			return fromString(JSON.stringify(body));
+		}
 	}
 
 	/**
