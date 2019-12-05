@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.1.0...aws-amplify@2.2.0) (2019-12-03)
+
+
+### Features
+
+* **analytics:** Add analytics provider for AWS Firehose ([#2823](https://github.com/aws-amplify/amplify-js/issues/2823)) ([29103ae](https://github.com/aws-amplify/amplify-js/commit/29103ae0b2d76dba66e3dc856d77c4c2ffb0e687))
+
+
+
+
+
 # [2.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.4...aws-amplify@2.1.0) (2019-11-15)
 
 
