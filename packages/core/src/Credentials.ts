@@ -314,7 +314,7 @@ export class CredentialsClass {
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
 			https://git.io/JeDxU
 
-			TODO: Retreive identityId from Crednetials object returned for fromCognitoIdentityPool
+			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
 		*/
 		let credentials: CredentialProvider = async () => {
 			const { IdentityId } = await cognitoClient.send(
