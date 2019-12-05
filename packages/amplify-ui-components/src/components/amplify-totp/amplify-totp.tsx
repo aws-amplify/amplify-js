@@ -10,7 +10,7 @@ const logger = new Logger('TOTP');
   shadow: false,
 })
 export class AmplifyTOTP {
-  @Prop() user: CognitoUserInterface;
+  @Prop() authData: CognitoUserInterface = null;
   @Prop() MFATypes: MFATOTPOptions;
 
   @State() mfaType: boolean;

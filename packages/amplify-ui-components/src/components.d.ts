@@ -847,7 +847,7 @@ export namespace Components {
   }
   interface AmplifyTotp {
     'MFATypes': MFATOTPOptions;
-    'user': CognitoUserInterface;
+    'authData': CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
@@ -2025,7 +2025,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyTotp {
     'MFATypes'?: MFATOTPOptions;
-    'user'?: CognitoUserInterface;
+    'authData'?: CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
