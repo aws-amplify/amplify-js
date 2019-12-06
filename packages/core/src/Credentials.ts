@@ -10,7 +10,12 @@ import {
 	fromCognitoIdentityPool,
 	FromCognitoIdentityPoolParameters,
 } from '@aws-sdk/credential-provider-cognito-identity';
-import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity-browser/CognitoIdentityClient';
+import {
+	CognitoIdentityClient,
+	GetIdCommand,
+} from '@aws-sdk/client-cognito-identity-browser';
+import { CredentialProvider } from '@aws-sdk/types';
+
 const logger = new Logger('Credentials');
 
 export class CredentialsClass {
@@ -21,6 +26,7 @@ export class CredentialsClass {
 	private _refreshHandlers = {};
 	private _storage;
 	private _storageSync;
+	private _identityId;
 
 	constructor(config) {
 		this.configure(config);
@@ -303,12 +309,33 @@ export class CredentialsClass {
 			signer: {} as any,
 		});
 		cognitoClient.middlewareStack.remove('SIGNATURE');
-		const params: FromCognitoIdentityPoolParameters = {
-			logins,
-			identityPoolId,
-			client: cognitoClient,
+
+		/* 
+			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
+			https://git.io/JeDxU
+
+			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
+		*/
+		let credentials: CredentialProvider = async () => {
+			const { IdentityId } = await cognitoClient.send(
+				new GetIdCommand({
+					IdentityPoolId: identityPoolId,
+					Logins: logins,
+				})
+			);
+			this._identityId = IdentityId;
+
+			const cognitoIdentityParams: FromCognitoIdentityParameters = {
+				client: cognitoClient,
+				logins,
+				identityId: IdentityId,
+			};
+
+			credentials = fromCognitoIdentity(cognitoIdentityParams);
+
+			return credentials();
 		};
-		const credentials = fromCognitoIdentityPool(params)();
+
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
@@ -324,6 +351,10 @@ export class CredentialsClass {
 			credentials
 				.then(async credentials => {
 					logger.debug('Load credentials successfully', credentials);
+					if (this._identityId && !credentials.identityId) {
+						credentials['identityId'] = this._identityId;
+					}
+
 					that._credentials = credentials;
 					that._credentials.authenticated = authenticated;
 					that._credentials_source = source;
