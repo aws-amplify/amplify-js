@@ -1,7 +1,8 @@
 import { Component, State, Prop, h } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { AuthStateTunnel } from '../../data/auth-state';
-
+import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
+import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
@@ -20,8 +21,36 @@ export class AmplifyAuthenticator {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig = {};
 
-  componentWillLoad() {
-    this.authState = this.initialAuthState;
+  async componentWillLoad() {
+    const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
+    localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
+    if (byHostedUI !== 'true') await this.checkUser();
+  }
+
+  async checkUser() {
+    if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+      throw new Error(NO_AUTH_MODULE_FOUND);
+    }
+
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      this.onAuthStateChange(AuthState.SignedIn, user);
+    } catch (error) {
+      let cachedAuthState = null;
+      try {
+        cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+      } catch (error) {
+        logger.debug('Failed to get the auth state from local storage', error);
+      }
+      try {
+        if (cachedAuthState === AuthState.SignedIn) {
+          await Auth.signOut();
+        }
+        this.onAuthStateChange(this.initialAuthState);
+      } catch (error) {
+        logger.debug('Failed to sign out', error);
+      }
+    }
   }
 
   onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
