@@ -21,3 +21,19 @@ export const withFederated = () => (
     }}
   />
 );
+
+export const withFederatedAndOverrideStyle = () => (
+  <amplify-sign-in
+    federated={{
+      amazonClientId: knobs.text('Amazon client ID', 'amazon_client_id'),
+      auth0Config: {
+        clientID: knobs.text('Auth0 client ID', 'auth0_client_id'),
+        domain: knobs.text('Auth0 account domain', 'example.auth0.com'),
+      },
+      facebookAppId: knobs.text('Facebook app ID', 'facebook_app_id'),
+      googleClientId: knobs.text('Google client ID', 'google_client_id'),
+      oauthConfig: {},
+    }}
+    overrideStyle
+  />
+);

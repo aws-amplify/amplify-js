@@ -18,6 +18,8 @@ export class AmplifyFederatedButtons {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler;
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle: boolean = false;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
@@ -53,31 +55,35 @@ export class AmplifyFederatedButtons {
       <div>
         {googleClientId && (
           <div>
-            <amplify-google-button clientId={googleClientId} handleAuthStateChange={this.handleAuthStateChange} />
+            <amplify-google-button
+              clientId={googleClientId}
+              handleAuthStateChange={this.handleAuthStateChange}
+              overrideStyle={this.overrideStyle}
+            />
           </div>
         )}
 
         {facebookAppId && (
           <div>
-            <amplify-facebook-button appId={facebookAppId} />
+            <amplify-facebook-button appId={facebookAppId} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {amazonClientId && (
           <div>
-            <amplify-amazon-button clientId={amazonClientId} />
+            <amplify-amazon-button clientId={amazonClientId} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {oauthConfig && (
           <div>
-            <amplify-oauth-button config={oauthConfig} />
+            <amplify-oauth-button config={oauthConfig} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {auth0Config && (
           <div>
-            <amplify-auth0-button config={auth0Config} />
+            <amplify-auth0-button config={auth0Config} overrideStyle={this.overrideStyle} />
           </div>
         )}
       </div>
