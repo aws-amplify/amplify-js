@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property   | Attribute | Description | Type                   | Default     |
-| ---------- | --------- | ----------- | ---------------------- | ----------- |
-| `MFATypes` | --        |             | `MFATOTPOptions`       | `undefined` |
-| `authData` | --        |             | `CognitoUserInterface` | `null`      |
+| Property      | Attribute | Description | Type                                                                   | Default                      |
+| ------------- | --------- | ----------- | ---------------------------------------------------------------------- | ---------------------------- |
+| `authData`    | --        |             | `CognitoUserInterface`                                                 | `null`                       |
+| `inputProps`  | --        |             | `object`                                                               | `{     autoFocus: true,   }` |
+| `onTOTPEvent` | --        |             | `(event: "SETUP_TOTP", data: any, user: CognitoUserInterface) => void` | `undefined`                  |
 
 
 ## Dependencies
@@ -21,14 +22,17 @@
 
 ### Depends on
 
-- [amplify-input](../amplify-input)
+- [amplify-form-field](../amplify-form-field)
 - [amplify-form-section](../amplify-form-section)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-totp --> amplify-input
+  amplify-totp --> amplify-form-field
   amplify-totp --> amplify-form-section
+  amplify-form-field --> amplify-label
+  amplify-form-field --> amplify-input
+  amplify-form-field --> amplify-hint
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-examples --> amplify-totp

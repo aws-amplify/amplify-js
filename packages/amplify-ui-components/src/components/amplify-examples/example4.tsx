@@ -5,12 +5,6 @@ const colStyle = {
   marginRight: '30px',
 };
 
-const mfaOptions = {
-  SMS: true,
-  TOTP: true,
-  Optional: true,
-};
-
 const Example4 = () => (
   <div>
     <div style={colStyle}>
@@ -22,7 +16,7 @@ const Example4 = () => (
       <rock-paper-scissor icon={({ label }) => label} />
     </div>
     <div>
-      <amplify-totp MFATypes={mfaOptions}></amplify-totp>
+      <amplify-totp></amplify-totp>
     </div>
   </div>
 );

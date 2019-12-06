@@ -37,6 +37,9 @@ import {
   SelectOptionsNumber,
   SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
+import {
+  TOTPSetupEventType,
+} from './components/amplify-totp/amplify-totp-interface';
 
 export namespace Components {
   interface AmplifyAmazonButton {
@@ -846,8 +849,9 @@ export namespace Components {
     'text': string;
   }
   interface AmplifyTotp {
-    'MFATypes': MFATOTPOptions;
     'authData': CognitoUserInterface;
+    'inputProps': object;
+    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
   interface AmplifyUsernameField {
     /**
@@ -2024,8 +2028,9 @@ declare namespace LocalJSX {
     'text'?: string;
   }
   interface AmplifyTotp {
-    'MFATypes'?: MFATOTPOptions;
     'authData'?: CognitoUserInterface;
+    'inputProps'?: object;
+    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
   interface AmplifyUsernameField {
     /**

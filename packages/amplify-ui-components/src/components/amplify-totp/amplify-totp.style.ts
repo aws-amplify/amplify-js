@@ -5,6 +5,7 @@ export const totp = css`
   margin-bottom: 30px;
 
   img {
-    height: 200px;
+    height: 128px;
+    width: 128px;
   }
 `;

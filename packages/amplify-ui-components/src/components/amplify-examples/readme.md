@@ -84,7 +84,7 @@ graph TD;
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
   rock-paper-scissor --> amplify-button
-  amplify-totp --> amplify-input
+  amplify-totp --> amplify-form-field
   amplify-totp --> amplify-form-section
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
