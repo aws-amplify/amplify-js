@@ -33,8 +33,8 @@ describe('amplify-totp spec:', () => {
       expect(totp.qrCodeImageSource).toBeUndefined();
     });
 
-    it('should have `qrCodeInput` be undefined by default', () => {
-      expect(totp.qrCodeInput).toBeUndefined();
+    it('should have `qrCodeInput` be null by default', () => {
+      expect(totp.qrCodeInput).toBeNull();
     });
   });
   describe('Render logic ->', () => {

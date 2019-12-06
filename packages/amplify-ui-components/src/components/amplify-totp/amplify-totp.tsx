@@ -38,7 +38,7 @@ export class AmplifyTOTP {
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
   @State() qrCodeImageSource: string;
-  @State() qrCodeInput: string;
+  @State() qrCodeInput: string | null = null;
 
   componentDidLoad() {
     this.setup();
@@ -111,6 +111,9 @@ export class AmplifyTOTP {
       .catch(error => {
         this.setupMessage = TOTP_SETUP_FAILURE;
         logger.error(error);
+      })
+      .finally(() => {
+        this.qrCodeInput = null;
       });
   }
 
