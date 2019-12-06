@@ -4,6 +4,7 @@ import QRCode from 'qrcode';
 import { Logger } from '@aws-amplify/core';
 import { CognitoUserInterface, MFATOTPOptions } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
+import { totp } from './amplify-totp.style';
 
 const logger = new Logger('TOTP');
 
@@ -104,9 +105,9 @@ export class AmplifyTOTP {
     generateQRCode('test');
 
     return (
-      <div>
+      <div class={totp}>
         {/* Need to place className in below div */}
-        <img src={this.qrCodeImageSource} alt="QR Code" />
+        <img src={this.qrCodeImageSource} alt="qr-code" />
         <amplify-input
           // autoFocus={true}
           key="totpCode"
