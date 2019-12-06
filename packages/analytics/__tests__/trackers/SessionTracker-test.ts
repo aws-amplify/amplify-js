@@ -114,7 +114,7 @@ describe('SessionTracker test', () => {
 
 			expect(tracker).toBeCalledWith(
 				{
-					name: '_session.stop',
+					name: '_session.pause',
 					attributes: {},
 				},
 				'AWSPinpoint'
@@ -141,7 +141,7 @@ describe('SessionTracker test', () => {
 
 			expect(tracker).toBeCalledWith(
 				{
-					name: '_session.start',
+					name: '_session.resume',
 					attributes: {},
 				},
 				'AWSPinpoint'
