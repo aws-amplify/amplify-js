@@ -13,13 +13,32 @@ import {
   FederatedConfig,
   MFATOTPOptions,
 } from './common/types/auth-types';
-import { FormFieldTypes } from './components/amplify-auth-fields/amplify-auth-fields-interface';
-import { ButtonTypes, TextFieldTypes } from './common/types/ui-types';
-import { FunctionalComponent } from '@stencil/core';
-import { CountryCodeDialOptions } from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
-import { IconNameType } from './components/amplify-icon/icons';
-import { AmplifySceneError } from './components/amplify-scene/amplify-scene-interface';
-import { SelectOptionsNumber, SelectOptionsString } from './components/amplify-select/amplify-select-interface';
+import {
+  FormFieldTypes,
+} from './components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+  ButtonTypes,
+  TextFieldTypes,
+} from './common/types/ui-types';
+import {
+  FunctionalComponent,
+} from '@stencil/core';
+import {
+  CountryCodeDialOptions,
+} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
+import {
+  IconNameType,
+} from './components/amplify-icon/icons';
+import {
+  AmplifySceneError,
+} from './components/amplify-scene/amplify-scene-interface';
+import {
+  SelectOptionsNumber,
+  SelectOptionsString,
+} from './components/amplify-select/amplify-select-interface';
+import {
+  TOTPSetupEventType,
+} from './components/amplify-totp/amplify-totp-interface';
 
 export namespace Components {
   interface AmplifyAmazonButton {
@@ -835,8 +854,9 @@ export namespace Components {
 >>>>>>> rename component to select mfa type
 =======
   interface AmplifyTotp {
-    'MFATypes': MFATOTPOptions;
     'authData': CognitoUserInterface;
+    'inputProps': object;
+    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
 >>>>>>> Add TOTP component, inital start
   interface AmplifyUsernameField {
@@ -2018,8 +2038,9 @@ declare namespace LocalJSX {
 >>>>>>> rename component to select mfa type
 =======
   interface AmplifyTotp {
-    'MFATypes'?: MFATOTPOptions;
     'authData'?: CognitoUserInterface;
+    'inputProps'?: object;
+    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
 >>>>>>> Add TOTP component, inital start
   interface AmplifyUsernameField {

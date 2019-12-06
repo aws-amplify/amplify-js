@@ -7,10 +7,12 @@
 
 ## Properties
 
-| Property   | Attribute | Description | Type                   | Default     |
-| ---------- | --------- | ----------- | ---------------------- | ----------- |
-| `MFATypes` | --        |             | `MFATOTPOptions`       | `undefined` |
-| `authData` | --        |             | `CognitoUserInterface` | `null`      |
+| Property      | Attribute | Description | Type                                                                   | Default                      |
+| ------------- | --------- | ----------- | ---------------------------------------------------------------------- | ---------------------------- |
+| `MFATypes`    | --        |             | `MFATOTPOptions`                                                       | `undefined`                  |
+| `authData`    | --        |             | `CognitoUserInterface`                                                 | `null`                       |
+| `inputProps`  | --        |             | `object`                                                               | `{     autoFocus: true,   }` |
+| `onTOTPEvent` | --        |             | `(event: "SETUP_TOTP", data: any, user: CognitoUserInterface) => void` | `undefined`                  |
 
 
 ## Dependencies

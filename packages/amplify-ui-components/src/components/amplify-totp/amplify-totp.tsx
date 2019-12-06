@@ -2,51 +2,59 @@ import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { Logger } from '@aws-amplify/core';
-import { CognitoUserInterface, MFATOTPOptions } from '../../common/types/auth-types';
+import { CognitoUserInterface } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { totp } from './amplify-totp.style';
+import { MfaMethod, TOTPSetupEventType } from './amplify-totp-interface';
+import {
+  NO_AUTH_MODULE_FOUND,
+  TOTP_SETUP_FAILURE,
+  NO_TOTP_CODE_PROVIDED,
+  TOTP_SUCCESS_MESSAGE,
+  TOTP_HEADER_TEXT,
+  TOTP_SUBMIT_BUTTON_TEXT,
+  SETUP_TOTP,
+  SUCCESS,
+  ALT_QR_CODE,
+  TOTP_LABEL,
+} from '../../common/constants';
 
 const logger = new Logger('TOTP');
-
-// Add QR Code component / styling
 
 @Component({
   tag: 'amplify-totp',
   shadow: false,
 })
 export class AmplifyTOTP {
-  public inputs: any;
-
   @Prop() authData: CognitoUserInterface = null;
-  @Prop() MFATypes: MFATOTPOptions;
-  // @Prop() onTOTPEvent?: (event: any, data: any, user: CognitoUserInterface) => void;
+  @Prop() onTOTPEvent?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
 
-  @State() code: string | boolean | null = true;
+  @Prop() inputProps: object = {
+    autoFocus: true,
+  };
+
+  @State() code: string | null = 'test';
   @State() setupMessage: string | null = null;
 
   @State() qrCodeImageSource: string;
+  @State() qrCodeInput: string;
 
   componentDidLoad() {
     // this.setup(); needs to be called
-    logger.log('Totp Rendered');
   }
 
-  // triggerTOTPEvent(event, data, user) {
-  //   if (this.onTOTPEvent) {
-  //     this.onTOTPEvent(event, data, user);
-  //   }
-  // }
+  triggerTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
+    if (this.onTOTPEvent) {
+      this.onTOTPEvent(event, data, user);
+    }
+  }
 
-  handleInputChange(event) {
+  handleTotpInputChange(event) {
     if (event) {
       event.preventDefault();
     }
     this.setupMessage = null;
-    this.inputs = {};
-    const { name, value, type, checked } = event.target;
-    // @ts-ignore
-    const check_type = ['radio', 'checkbox'].includes(type);
-    this.inputs[name] = check_type ? checked : value;
+    this.qrCodeInput = event.target.value;
   }
 
   setup() {
@@ -55,7 +63,7 @@ export class AmplifyTOTP {
     const issuer = encodeURI('AWSCognito');
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     Auth.setupTOTP(user)
@@ -64,63 +72,72 @@ export class AmplifyTOTP {
         const code = `otpauth://totp/${issuer}:${user.username}?secret=${data}&issuer=${issuer}`;
         this.code = code;
       })
-      .catch(error => logger.debug('TOTP setup failed', error));
+      .catch(error => logger.debug(TOTP_SETUP_FAILURE, error));
   }
 
   verifyTotpToken() {
-    if (!this.inputs) {
-      logger.debug('no input');
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (!this.qrCodeInput) {
+      logger.debug(NO_TOTP_CODE_PROVIDED);
       return;
     }
+
     const user = this.authData;
-    const { totpCode } = this.inputs;
+
     if (!Auth || typeof Auth.verifyTotpToken !== 'function' || typeof Auth.setPreferredMFA !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
-    Auth.verifyTotpToken(user, totpCode)
+
+    Auth.verifyTotpToken(user, this.qrCodeInput)
       .then(() => {
-        Auth.setPreferredMFA(user, 'TOTP');
-        this.setupMessage = 'Setup TOTP successfully!';
-        logger.debug('set up totp success!');
-        // this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+        Auth.setPreferredMFA(user, MfaMethod.TOTP);
+        this.setupMessage = TOTP_SUCCESS_MESSAGE;
+        logger.debug(TOTP_SUCCESS_MESSAGE);
+        this.triggerTOTPEvent(SETUP_TOTP, SUCCESS, user);
       })
-      .catch(err => {
-        this.setupMessage = 'Setup TOTP failed!';
-        logger.error(err);
+      .catch(error => {
+        this.setupMessage = TOTP_SETUP_FAILURE;
+        logger.error(error);
       });
+  }
+
+  async generateQRCode(codeFromTotp: string) {
+    try {
+      this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   showSecretCode(code) {
     if (!code) return null;
 
-    const generateQRCode = async text => {
-      try {
-        this.qrCodeImageSource = await QRCode.toDataURL(text);
-        console.log(this.qrCodeImageSource);
-      } catch (error) {
-        throw new Error(error);
-      }
-    };
-
-    generateQRCode('test');
+    this.generateQRCode(code);
 
     return (
       <div class={totp}>
-        {/* Need to place className in below div */}
-        <img src={this.qrCodeImageSource} alt="qr-code" />
-        <amplify-input
-          // autoFocus={true}
-          key="totpCode"
+        <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
+        <amplify-form-field
+          label={TOTP_LABEL}
+          inputProps={this.inputProps}
+          fieldId="totpCode"
           name="totpCode"
-          handleInputChange={event => this.handleInputChange(event)}
-        ></amplify-input>
+          handleInputChange={event => this.handleTotpInputChange(event)}
+        />
       </div>
     );
   }
   // TODO add Toast component to the Top of the form section
   render() {
     return (
-      <amplify-form-section headerText="Scan then enter verification code" submitButtonText="Verify Security Token">
+      <amplify-form-section
+        headerText={TOTP_HEADER_TEXT}
+        submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
+        handleSubmit={this.verifyTotpToken}
+      >
         {this.showSecretCode(this.code)}
       </amplify-form-section>
     );
