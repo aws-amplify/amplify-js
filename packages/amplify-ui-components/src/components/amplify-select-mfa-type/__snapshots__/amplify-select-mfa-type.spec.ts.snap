@@ -5,7 +5,7 @@ exports[`amplify-totp spec: Render logic -> should render a \`less than 2 mfa ty
   <div>
     <div>
       <a>
-        less than 2 mfa types available
+        Less than two mfa types available
       </a>
     </div>
   </div>
