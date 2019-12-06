@@ -854,8 +854,17 @@ export namespace Components {
 >>>>>>> rename component to select mfa type
 =======
   interface AmplifyTotp {
+    /**
+    * Used in order to configure TOTP for a user
+    */
     'authData': CognitoUserInterface;
+    /**
+    * Used to set autoFocus to true when TOTP Component has loaded
+    */
     'inputProps': object;
+    /**
+    * Triggers an TOTP Event after handleSubmit method has been called
+    */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
 >>>>>>> Add TOTP component, inital start
@@ -2038,8 +2047,17 @@ declare namespace LocalJSX {
 >>>>>>> rename component to select mfa type
 =======
   interface AmplifyTotp {
+    /**
+    * Used in order to configure TOTP for a user
+    */
     'authData'?: CognitoUserInterface;
+    /**
+    * Used to set autoFocus to true when TOTP Component has loaded
+    */
     'inputProps'?: object;
+    /**
+    * Triggers an TOTP Event after handleSubmit method has been called
+    */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
 >>>>>>> Add TOTP component, inital start

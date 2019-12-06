@@ -8,18 +8,20 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
-- [rock-paper-scissor](rock-paper-scissor)
-- [rock-paper-scissor](rock-paper-scissor)
+- [amplify-authenticator](../amplify-authenticator)
 - [amplify-totp](../amplify-totp)
+- [rock-paper-scissor](rock-paper-scissor)
+- [rock-paper-scissor](rock-paper-scissor)
 - [amplify-scene](../amplify-scene)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
-  amplify-examples --> rock-paper-scissor
-  amplify-examples --> rock-paper-scissor
+  amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-totp
+  amplify-examples --> rock-paper-scissor
+  amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> amplify-confirm-sign-in
@@ -83,9 +85,9 @@ graph TD;
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
-  rock-paper-scissor --> amplify-button
-  amplify-totp --> amplify-input
   amplify-totp --> amplify-form-section
+  amplify-totp --> amplify-form-field
+  rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
   amplify-icon-button --> amplify-tooltip

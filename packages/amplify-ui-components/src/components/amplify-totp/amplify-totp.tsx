@@ -26,21 +26,22 @@ const logger = new Logger('TOTP');
   shadow: false,
 })
 export class AmplifyTOTP {
+  /** Used in order to configure TOTP for a user */
   @Prop() authData: CognitoUserInterface = null;
+  /** Triggers an TOTP Event after handleSubmit method has been called */
   @Prop() onTOTPEvent?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
-
+  /** Used to set autoFocus to true when TOTP Component has loaded */
   @Prop() inputProps: object = {
     autoFocus: true,
   };
 
-  @State() code: string | null = 'test';
+  @State() code: string | null = null;
   @State() setupMessage: string | null = null;
-
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string;
 
   componentDidLoad() {
-    // this.setup(); needs to be called
+    this.setup();
   }
 
   triggerTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
@@ -50,11 +51,16 @@ export class AmplifyTOTP {
   }
 
   handleTotpInputChange(event) {
-    if (event) {
-      event.preventDefault();
-    }
     this.setupMessage = null;
     this.qrCodeInput = event.target.value;
+  }
+
+  async generateQRCode(codeFromTotp: string) {
+    try {
+      this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   setup() {
@@ -67,12 +73,16 @@ export class AmplifyTOTP {
     }
 
     Auth.setupTOTP(user)
-      .then(data => {
-        logger.debug('secret key', data);
-        const code = `otpauth://totp/${issuer}:${user.username}?secret=${data}&issuer=${issuer}`;
+      .then(secretKey => {
+        logger.debug('secret key', secretKey);
+        const code = `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
         this.code = code;
+
+        this.generateQRCode(this.code);
       })
-      .catch(error => logger.debug(TOTP_SETUP_FAILURE, error));
+      .catch(error => {
+        logger.debug(TOTP_SETUP_FAILURE, error);
+      });
   }
 
   verifyTotpToken() {
@@ -104,41 +114,24 @@ export class AmplifyTOTP {
       });
   }
 
-  async generateQRCode(codeFromTotp: string) {
-    try {
-      this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  showSecretCode(code) {
-    if (!code) return null;
-
-    this.generateQRCode(code);
-
-    return (
-      <div class={totp}>
-        <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
-        <amplify-form-field
-          label={TOTP_LABEL}
-          inputProps={this.inputProps}
-          fieldId="totpCode"
-          name="totpCode"
-          handleInputChange={event => this.handleTotpInputChange(event)}
-        />
-      </div>
-    );
-  }
   // TODO add Toast component to the Top of the form section
   render() {
     return (
       <amplify-form-section
         headerText={TOTP_HEADER_TEXT}
         submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
-        handleSubmit={this.verifyTotpToken}
+        handleSubmit={() => this.verifyTotpToken()}
       >
-        {this.showSecretCode(this.code)}
+        <div class={totp}>
+          <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
+          <amplify-form-field
+            label={TOTP_LABEL}
+            inputProps={this.inputProps}
+            fieldId="totpCode"
+            name="totpCode"
+            handleInputChange={event => this.handleTotpInputChange(event)}
+          />
+        </div>
       </amplify-form-section>
     );
   }
