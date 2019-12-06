@@ -81,22 +81,22 @@ export default class SessionTracker {
 		if (document.visibilityState === this._hidden) {
 			this._tracker(
 				{
-					name: '_session.stop',
+					name: '_session.pause',
 					attributes,
 				},
 				this._config.provider
 			).catch(e => {
-				logger.debug('record session stop event failed.', e);
+				logger.debug('record session pause event failed.', e);
 			});
 		} else {
 			this._tracker(
 				{
-					name: '_session.start',
+					name: '_session.resume',
 					attributes,
 				},
 				this._config.provider
 			).catch(e => {
-				logger.debug('record session start event failed.', e);
+				logger.debug('record session resume event failed.', e);
 			});
 		}
 	}
