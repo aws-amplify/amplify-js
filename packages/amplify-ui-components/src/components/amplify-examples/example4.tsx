@@ -15,9 +15,6 @@ const Example4 = () => (
       Player 2
       <rock-paper-scissor icon={({ label }) => label} />
     </div>
-    <div>
-      <amplify-totp></amplify-totp>
-    </div>
   </div>
 );
 

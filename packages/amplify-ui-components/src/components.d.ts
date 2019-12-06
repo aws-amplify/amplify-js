@@ -849,8 +849,17 @@ export namespace Components {
     'text': string;
   }
   interface AmplifyTotp {
+    /**
+    * Used in order to configure TOTP for a user
+    */
     'authData': CognitoUserInterface;
+    /**
+    * Used to set autoFocus to true when TOTP Component has loaded
+    */
     'inputProps': object;
+    /**
+    * Triggers an TOTP Event after handleSubmit method has been called
+    */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
   interface AmplifyUsernameField {
@@ -2028,8 +2037,17 @@ declare namespace LocalJSX {
     'text'?: string;
   }
   interface AmplifyTotp {
+    /**
+    * Used in order to configure TOTP for a user
+    */
     'authData'?: CognitoUserInterface;
+    /**
+    * Used to set autoFocus to true when TOTP Component has loaded
+    */
     'inputProps'?: object;
+    /**
+    * Triggers an TOTP Event after handleSubmit method has been called
+    */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   }
   interface AmplifyUsernameField {
