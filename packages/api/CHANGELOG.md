@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.1.0...@aws-amplify/api@2.1.1) (2019-12-03)
+
+
+### Bug Fixes
+
+* Downgrade TS to ~3.6 ([86597db](https://github.com/aws-amplify/amplify-js/commit/86597db2b0704d7aff5b612557536142b82e1731))
+
+
+
+
+
 # [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@1.2.4...@aws-amplify/api@2.1.0) (2019-11-15)
 
 
