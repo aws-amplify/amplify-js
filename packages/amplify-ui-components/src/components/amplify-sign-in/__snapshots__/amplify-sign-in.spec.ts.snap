@@ -21,6 +21,18 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
 </amplify-sign-in>
 `;
 
+exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederatedAndOverrideStyle 1`] = `
+<amplify-sign-in>
+  <amplify-form-section headertext="Sign into your account" overridestyle="">
+    <amplify-federated-buttons overridestyle=""></amplify-federated-buttons>
+    <amplify-strike overridestyle="">
+      or
+    </amplify-strike>
+    <amplify-auth-fields></amplify-auth-fields>
+  </amplify-form-section>
+</amplify-sign-in>
+`;
+
 exports[`amplify-sign-in spec: amplify-sign-in stories stories withOverrideStyle 1`] = `
 <amplify-sign-in>
   <amplify-form-section headertext="Sign into your account">

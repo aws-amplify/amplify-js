@@ -3,6 +3,13 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property        | Attribute        | Description                         | Type      | Default |
+| --------------- | ---------------- | ----------------------------------- | --------- | ------- |
+| `overrideStyle` | `override-style` | (Optional) Override default styling | `boolean` | `false` |
+
+
 ## Dependencies
 
 ### Used by
