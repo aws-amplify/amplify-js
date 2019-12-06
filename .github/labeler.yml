@@ -17,14 +17,6 @@ Analytics:
 
 API:
   - packages/api/**/*
-  - packages/api-graphql/**/*
-  - packages/api-rest/**/*
-
-GraphQL:
-  - packages/api-graphql/**/*
-
-REST:
-  - packages/api-rest/**/*
 
 Auth:
   - packages/auth/**/*
