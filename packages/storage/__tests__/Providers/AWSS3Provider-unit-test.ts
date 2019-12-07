@@ -439,7 +439,7 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3.prototype, 'upload');
 
 			expect.assertions(2);
-			expect(await storage.put('key', 'obejct', {})).toEqual({
+			expect(await storage.put('key', 'obejct', { acl: 'public' })).toEqual({
 				key: 'path/itemsKey',
 			});
 			expect(spyon).toBeCalledWith({
