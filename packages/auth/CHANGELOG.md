@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.0...@aws-amplify/auth@2.1.1) (2019-12-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.5.0...@aws-amplify/auth@2.1.0) (2019-11-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** NotAuthorizedException ([#4281](https://github.com/aws-amplify/amplify-js/issues/4281)) ([023f496](https://github.com/aws-amplify/amplify-js/commit/023f4960d80c9774d85cbc7593175d7380fcbed2))
+
+
+### Features
+
+* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.4.3...@aws-amplify/auth@1.5.0) (2019-10-29)
 
 
