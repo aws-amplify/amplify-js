@@ -127,7 +127,7 @@ describe('StorageProvider test', () => {
 		});
 	});
 
-	describe('get test', async () => {
+	describe('get test', () => {
 		test('get object without download', async () => {
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
