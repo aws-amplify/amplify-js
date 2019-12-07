@@ -443,6 +443,7 @@ describe('StorageProvider test', () => {
 				key: 'path/itemsKey',
 			});
 			expect(spyon).toBeCalledWith({
+				ACL: 'public',
 				Body: 'obejct',
 				Bucket: 'bucket',
 				ContentType: 'binary/octet-stream',
