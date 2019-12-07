@@ -70,10 +70,10 @@ export default class OAuth {
 	) {
 		const generatedState = this._generateState(32);
 		const state = customState
-			? `${generatedState}-${customState}`
+			? `${generatedState}-${this._encodeCustomState(customState)}`
 			: generatedState;
 
-		oAuthStorage.setState(encodeURIComponent(state));
+		oAuthStorage.setState(state);
 
 		const pkce_key = this._generateRandom(128);
 		oAuthStorage.setPKCE(pkce_key);
@@ -315,5 +315,14 @@ export default class OAuth {
 			state.push(CHARSET[index]);
 		}
 		return state.join('');
+	}
+
+	private _encodeCustomState(str: string) {
+		// 1) URI-encode to avoid the btoa() Unicode problem.
+		// 2) Base64URL-encode to avoid URL-parsing problems.
+		return btoa(encodeURIComponent(str))
+			.replace(/=/g, '')
+			.replace(/\+/g, '-')
+			.replace(/\\/g, '_');
 	}
 }

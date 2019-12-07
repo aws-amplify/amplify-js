@@ -1857,7 +1857,7 @@ export default class AuthClass {
 				);
 
 				if (isCustomStateIncluded) {
-					const [, customState] = state.split('-');
+					const customState = this._decodeCustomState(state);
 
 					dispatchAuthEvent(
 						'customOAuthState',
@@ -1975,5 +1975,18 @@ export default class AuthClass {
 	private rejectNoUserPool(): Promise<never> {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
+	}
+
+	private _decodeCustomState(str: string) {
+		// 1) Strip internal state prefix.
+		// 2) Reverse ./OAuth/OAuth.ts:_encodeCustomState().
+		return decodeURIComponent(
+			atob(
+				str
+					.replace(/^[^-]*-/, '')
+					.replace(/-/g, '+')
+					.replace(/_/g, '/')
+			)
+		);
 	}
 }
