@@ -206,7 +206,7 @@ export default class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
-			acl
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
