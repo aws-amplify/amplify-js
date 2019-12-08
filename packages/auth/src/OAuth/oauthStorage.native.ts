@@ -13,7 +13,7 @@
 
 const obj: {
 	oauth_state?: string;
-	ouath_pkce_key?: string;
+	oauth_pkce_key?: string;
 } = {};
 
 export const setState = (state: string) => {
@@ -27,16 +27,16 @@ export const getState = () => {
 };
 
 export const setPKCE = (private_key: string) => {
-	obj.ouath_pkce_key = private_key;
+	obj.oauth_pkce_key = private_key;
 };
 
 export const getPKCE = () => {
-	const ouath_pkce_key = obj.ouath_pkce_key;
-	obj.ouath_pkce_key = undefined;
-	return ouath_pkce_key;
+	const oauth_pkce_key = obj.oauth_pkce_key;
+	obj.oauth_pkce_key = undefined;
+	return oauth_pkce_key;
 };
 
 export const clearAll = () => {
-	obj.ouath_pkce_key = undefined;
+	obj.oauth_pkce_key = undefined;
 	obj.oauth_state = undefined;
 };
