@@ -2,27 +2,32 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Properties
 
-| Property   | Attribute  | Description | Type                                                       | Default     |
-| ---------- | ---------- | ----------- | ---------------------------------------------------------- | ----------- |
-| `provider` | `provider` |             | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
-
+| Property        | Attribute        | Description                         | Type                                                       | Default     |
+| --------------- | ---------------- | ----------------------------------- | ---------------------------------------------------------- | ----------- |
+| `overrideStyle` | `override-style` | (Optional) Override default styling | `boolean`                                                  | `false`     |
+| `provider`      | `provider`       |                                     | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
 
 ## Dependencies
 
 ### Used by
 
- - [amplify-amazon-button](../amplify-amazon-button)
- - [amplify-auth0-button](../amplify-auth0-button)
- - [amplify-facebook-button](../amplify-facebook-button)
- - [amplify-google-button](../amplify-google-button)
- - [amplify-oauth-button](../amplify-oauth-button)
+- [amplify-amazon-button](../amplify-amazon-button)
+- [amplify-auth0-button](../amplify-auth0-button)
+- [amplify-facebook-button](../amplify-facebook-button)
+- [amplify-google-button](../amplify-google-button)
+- [amplify-oauth-button](../amplify-oauth-button)
+
+### Depends on
+
+- [amplify-icon](../amplify-icon)
 
 ### Graph
+
 ```mermaid
 graph TD;
+  amplify-sign-in-button --> amplify-icon
   amplify-amazon-button --> amplify-sign-in-button
   amplify-auth0-button --> amplify-sign-in-button
   amplify-facebook-button --> amplify-sign-in-button
@@ -31,6 +36,6 @@ graph TD;
   style amplify-sign-in-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

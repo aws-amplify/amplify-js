@@ -19,7 +19,7 @@ export class AmplifyAuthenticator {
 
   @State() authData: CognitoUserInterface;
   /** Federated credentials & configuration. */
-  @Prop() federated: FederatedConfig = {};
+  @Prop() federated: FederatedConfig;
 
   async componentWillLoad() {
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);

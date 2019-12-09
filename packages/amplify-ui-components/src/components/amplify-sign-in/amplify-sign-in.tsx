@@ -33,7 +33,7 @@ export class AmplifySignIn {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
-  @Prop() federated: FederatedConfig = {};
+  @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler;
   /**
@@ -168,9 +168,13 @@ export class AmplifySignIn {
           </span>
         }
       >
-        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+        <amplify-federated-buttons
+          handleAuthStateChange={this.handleAuthStateChange}
+          federated={this.federated}
+          overrideStyle={this.overrideStyle}
+        />
 
-        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
+        {this.federated && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
 
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>

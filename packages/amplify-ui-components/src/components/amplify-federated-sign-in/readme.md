@@ -2,14 +2,12 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Properties
 
 | Property    | Attribute    | Description                            | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
 | ----------- | ------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
 | `authState` | `auth-state` | The current authentication state.      | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
 | `federated` | `federated`  | Federated credentials & configuration. | `any`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `{}`               |
-
 
 ## Dependencies
 
@@ -20,6 +18,7 @@
 - [amplify-federated-buttons](../amplify-federated-buttons)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-federated-sign-in --> amplify-form-section
@@ -33,6 +32,7 @@ graph TD;
   amplify-federated-buttons --> amplify-oauth-button
   amplify-federated-buttons --> amplify-auth0-button
   amplify-google-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-facebook-button --> amplify-sign-in-button
   amplify-amazon-button --> amplify-sign-in-button
   amplify-oauth-button --> amplify-sign-in-button
@@ -40,6 +40,6 @@ graph TD;
   style amplify-federated-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

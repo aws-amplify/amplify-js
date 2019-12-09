@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`amplify-icon-button spec: Render logic -> renders amazon icon button correctly 1`] = `
+<amplify-icon-button name="amazon">
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="amazon"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders auth0 icon button correctly 1`] = `
+<amplify-icon-button name="auth0">
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="auth0"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
+</amplify-icon-button>
+`;
+
 exports[`amplify-icon-button spec: Render logic -> renders enter-vr icon button correctly 1`] = `
 <amplify-icon-button name="enter-vr">
   <span class="amplify-ui--button css-16r56v9">
@@ -18,6 +42,30 @@ exports[`amplify-icon-button spec: Render logic -> renders exit-vr icon button c
     <amplify-tooltip>
       <button>
         <amplify-icon name="exit-vr"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders facebook icon button correctly 1`] = `
+<amplify-icon-button name="facebook">
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="facebook"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders google icon button correctly 1`] = `
+<amplify-icon-button name="google">
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="google"></amplify-icon>
       </button>
     </amplify-tooltip>
   </span>

@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const Host = css`
+export const strike = css`
   display: block;
   width: 100%;
   text-align: center;
@@ -8,11 +8,11 @@ export const Host = css`
   line-height: 0.1em;
   margin: 32px 0;
   color: var(--grey);
+`;
 
-  span {
-    background: var(--form-color);
-    padding: 0 25px;
-    font-size: 14px;
-    font-weight: 500;
-  }
+export const strikeContent = css`
+  background: var(--form-color);
+  padding: 0 25px;
+  font-size: 14px;
+  font-weight: 500;
 `;

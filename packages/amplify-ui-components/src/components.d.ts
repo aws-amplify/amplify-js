@@ -25,6 +25,10 @@ export namespace Components {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyAuthFields {
     /**
@@ -37,6 +41,10 @@ export namespace Components {
      * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
      */
     config: FederatedConfig['auth0Config'];
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyAuthenticator {
     /**
@@ -260,6 +268,10 @@ export namespace Components {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -274,6 +286,10 @@ export namespace Components {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -398,6 +414,10 @@ export namespace Components {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyGreetings {
     /**
@@ -495,6 +515,10 @@ export namespace Components {
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     config: FederatedConfig['oauthConfig'];
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyPasswordField {
     /**
@@ -710,6 +734,10 @@ export namespace Components {
     validationErrors: string;
   }
   interface AmplifySignInButton {
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
     provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
@@ -764,7 +792,12 @@ export namespace Components {
      */
     validationErrors: string;
   }
-  interface AmplifyStrike {}
+  interface AmplifyStrike {
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
+  }
   interface AmplifyTooltip {
     /**
      * (Optional) Override default styling
@@ -1147,6 +1180,10 @@ declare namespace LocalJSX {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange?: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyAuthFields {
     /**
@@ -1159,6 +1196,10 @@ declare namespace LocalJSX {
      * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
      */
     config?: FederatedConfig['auth0Config'];
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyAuthenticator {
     /**
@@ -1382,6 +1423,10 @@ declare namespace LocalJSX {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange?: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -1396,6 +1441,10 @@ declare namespace LocalJSX {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange?: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -1520,6 +1569,10 @@ declare namespace LocalJSX {
      * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
      */
     handleAuthStateChange?: AuthStateHandler;
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyGreetings {
     /**
@@ -1617,6 +1670,10 @@ declare namespace LocalJSX {
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     config?: FederatedConfig['oauthConfig'];
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyPasswordField {
     /**
@@ -1832,6 +1889,10 @@ declare namespace LocalJSX {
     validationErrors?: string;
   }
   interface AmplifySignInButton {
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     provider?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
@@ -1886,7 +1947,12 @@ declare namespace LocalJSX {
      */
     validationErrors?: string;
   }
-  interface AmplifyStrike {}
+  interface AmplifyStrike {
+    /**
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
+  }
   interface AmplifyTooltip {
     /**
      * (Optional) Override default styling
