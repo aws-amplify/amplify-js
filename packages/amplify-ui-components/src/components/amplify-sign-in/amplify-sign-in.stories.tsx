@@ -7,6 +7,8 @@ export default {
 
 export const withOverrideStyle = () => <amplify-sign-in overrideStyle={knobs.boolean('Override style', false)} />;
 
+export const withEmptyFederatedObject = () => <amplify-sign-in federated={{}} />;
+
 export const withFederated = () => (
   <amplify-sign-in
     federated={{
