@@ -33,6 +33,7 @@ graph TD;
   amplify-federated-buttons --> amplify-oauth-button
   amplify-federated-buttons --> amplify-auth0-button
   amplify-google-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-facebook-button --> amplify-sign-in-button
   amplify-amazon-button --> amplify-sign-in-button
   amplify-oauth-button --> amplify-sign-in-button

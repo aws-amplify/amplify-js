@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const Host = css`
+export const signInButton = css`
   button {
     position: relative;
     width: 100%;

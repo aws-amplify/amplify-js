@@ -5,9 +5,10 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                           | Type                                                        | Default     |
-| -------- | --------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
-| `config` | --        | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ [key: string]: any; clientID: string; domain: string; }` | `undefined` |
+| Property        | Attribute        | Description                                                           | Type                                                        | Default     |
+| --------------- | ---------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
+| `config`        | --               | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ [key: string]: any; clientID: string; domain: string; }` | `undefined` |
+| `overrideStyle` | `override-style` | (Optional) Override default styling                                   | `boolean`                                                   | `false`     |
 
 
 ## Dependencies
@@ -24,6 +25,7 @@
 ```mermaid
 graph TD;
   amplify-auth0-button --> amplify-sign-in-button
+  amplify-sign-in-button --> amplify-icon
   amplify-federated-buttons --> amplify-auth0-button
   style amplify-auth0-button fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -16,7 +16,7 @@
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "node ./build es6 --watch",
 		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
-		"generate-version": "genversion src/Platform/version.ts --es6",
+		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts'"
