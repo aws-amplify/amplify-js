@@ -20,14 +20,12 @@ export class AmplifyIcon {
   @Watch('name')
   validateName(newValue: string) {
     const isBlank = typeof newValue == null;
-    if (isBlank) { throw new Error('name: required') };
+    if (isBlank) {
+      throw new Error('name: required');
+    }
   }
 
   render() {
-    return (
-      <span class={styleNuker(this.overrideStyle, STATIC_ICON_CLASS_NAME, icon)}>
-        {icons[this.name]}
-      </span>
-    );
+    return <span class={styleNuker(this.overrideStyle, STATIC_ICON_CLASS_NAME, icon)}>{icons[this.name]}</span>;
   }
 }

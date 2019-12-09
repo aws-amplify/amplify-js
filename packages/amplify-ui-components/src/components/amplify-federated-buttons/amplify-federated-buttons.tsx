@@ -3,7 +3,7 @@ import { isEmpty } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthState, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 @Component({
   tag: 'amplify-federated-buttons',
@@ -17,7 +17,9 @@ export class AmplifyFederatedButtons {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: (nextAuthState: AuthState, data?: object) => void;
+  @Prop() handleAuthStateChange: AuthStateHandler;
+  /** (Optional) Override default styling */
+  @Prop() overrideStyle: boolean = false;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
@@ -53,31 +55,35 @@ export class AmplifyFederatedButtons {
       <div>
         {googleClientId && (
           <div>
-            <amplify-google-button clientId={googleClientId} handleAuthStateChange={this.handleAuthStateChange} />
+            <amplify-google-button
+              clientId={googleClientId}
+              handleAuthStateChange={this.handleAuthStateChange}
+              overrideStyle={this.overrideStyle}
+            />
           </div>
         )}
 
         {facebookAppId && (
           <div>
-            <amplify-facebook-button appId={facebookAppId} />
+            <amplify-facebook-button appId={facebookAppId} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {amazonClientId && (
           <div>
-            <amplify-amazon-button clientId={amazonClientId} />
+            <amplify-amazon-button clientId={amazonClientId} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {oauthConfig && (
           <div>
-            <amplify-oauth-button config={oauthConfig} />
+            <amplify-oauth-button config={oauthConfig} overrideStyle={this.overrideStyle} />
           </div>
         )}
 
         {auth0Config && (
           <div>
-            <amplify-auth0-button config={auth0Config} />
+            <amplify-auth0-button config={auth0Config} overrideStyle={this.overrideStyle} />
           </div>
         )}
       </div>
