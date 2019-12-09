@@ -2,7 +2,6 @@ import { Component, Element, Prop, h, State, Host } from '@stencil/core';
 import { image } from './amplify-s3-image.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX, NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-// import { Auth } from '@aws-amplify/auth';
 import { Storage } from '@aws-amplify/storage';
 import { Logger } from '@aws-amplify/core';
 
@@ -57,13 +56,13 @@ export class AmplifyS3Image {
           track,
         });
         logger.debug(data);
-        await this.getImageSource(key, level, track, identityId);
+        this.src = await this.getImageSource(key, level, track, identityId);
       } catch (error) {
         logger.error(error);
         throw new Error(error);
       }
     } else {
-      await this.getImageSource(key, level, track, identityId);
+      this.src = await this.getImageSource(key, level, track, identityId);
     }
   }
 
@@ -74,7 +73,7 @@ export class AmplifyS3Image {
 
     try {
       const src = await Storage.get(key, { level: level ? level : 'public', track, identityId });
-      this.src = src;
+      return src;
     } catch (error) {
       logger.error(error);
       throw new Error(error);
@@ -85,6 +84,7 @@ export class AmplifyS3Image {
     return (
       <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
         {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
+        {/* TODO: add PhotoPicker */}
       </Host>
     );
   }
