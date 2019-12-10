@@ -4,19 +4,19 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type       | Default     |
-| --------------- | ---------------- | ----------- | ---------- | ----------- |
-| `body`          | --               |             | `object`   | `undefined` |
-| `contentType`   | `content-type`   |             | `string`   | `undefined` |
-| `handleOnError` | --               |             | `() => {}` | `undefined` |
-| `handleOnLoad`  | --               |             | `() => {}` | `undefined` |
-| `identityId`    | `identity-id`    |             | `string`   | `undefined` |
-| `imgKey`        | `img-key`        |             | `string`   | `undefined` |
-| `level`         | `level`          |             | `string`   | `undefined` |
-| `overrideStyle` | `override-style` |             | `boolean`  | `false`     |
-| `path`          | `path`           |             | `string`   | `undefined` |
-| `pickerEnabled` | `picker-enabled` |             | `boolean`  | `true`      |
-| `track`         | `track`          |             | `boolean`  | `undefined` |
+| Property        | Attribute        | Description              | Type       | Default                 |
+| --------------- | ---------------- | ------------------------ | ---------- | ----------------------- |
+| `body`          | --               |                          | `object`   | `undefined`             |
+| `contentType`   | `content-type`   |                          | `string`   | `'binary/octet-stream'` |
+| `handleOnError` | --               |                          | `() => {}` | `undefined`             |
+| `handleOnLoad`  | --               |                          | `() => {}` | `undefined`             |
+| `identityId`    | `identity-id`    |                          | `string`   | `undefined`             |
+| `imgKey`        | `img-key`        |                          | `string`   | `undefined`             |
+| `level`         | `level`          |                          | `string`   | `undefined`             |
+| `overrideStyle` | `override-style` | Override default styling | `boolean`  | `false`                 |
+| `path`          | `path`           |                          | `string`   | `undefined`             |
+| `pickerEnabled` | `picker-enabled` |                          | `boolean`  | `true`                  |
+| `track`         | `track`          |                          | `boolean`  | `undefined`             |
 
 ## Dependencies
 

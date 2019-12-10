@@ -16,16 +16,27 @@ const STATIC_LINK_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--s3-image`;
 export class AmplifyS3Image {
   @Element() el: HTMLElement;
 
+  /* The key of the image object in S3 */
   @Prop() imgKey: string;
+  /* String representing directory location to image file */
   @Prop() path: string;
+  /* Image body content to be uploaded */
   @Prop() body: object;
-  @Prop() contentType: string;
+  /* The content type header used when uploading to S3 */
+  @Prop() contentType: string = 'binary/octet-stream';
+  /* The accessbility level of the image */
   @Prop() level: string;
+  /* Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
+  /* Cognito ideneity id of the another user's image */
   @Prop() identityId: string;
+  /* Whether or not the photo picker is enabled */
   @Prop() pickerEnabled: boolean = true;
+  /** Override default styling */
   @Prop() overrideStyle: boolean = false;
+  /* Function executed when image loads */
   @Prop() handleOnLoad: () => {};
+  /* Function executed when error occurs for the image */
   @Prop() handleOnError: () => {};
 
   @State() src: string | Object = null;
@@ -44,14 +55,13 @@ export class AmplifyS3Image {
     const key = imgKey || path;
     logger.debug('loading ' + key + '...');
     if (body) {
-      const type = contentType || 'binary/octet-stream';
       if (!Storage || typeof Storage.put !== 'function') {
         throw new Error(NO_STORAGE_MODULE_FOUND);
       }
 
       try {
         const data = Storage.put(key, body, {
-          contentType: type,
+          contentType,
           level: level ? level : 'public',
           track,
         });

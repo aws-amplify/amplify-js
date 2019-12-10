@@ -664,6 +664,9 @@ export namespace Components {
     identityId: string;
     imgKey: string;
     level: string;
+    /**
+     * Override default styling
+     */
     overrideStyle: boolean;
     path: string;
     pickerEnabled: boolean;
@@ -1819,6 +1822,9 @@ declare namespace LocalJSX {
     identityId?: string;
     imgKey?: string;
     level?: string;
+    /**
+     * Override default styling
+     */
     overrideStyle?: boolean;
     path?: string;
     pickerEnabled?: boolean;
