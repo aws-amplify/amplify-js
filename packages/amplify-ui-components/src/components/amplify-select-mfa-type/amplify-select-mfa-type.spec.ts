@@ -1,7 +1,7 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySelectMFAType } from './amplify-select-mfa-type';
 
-describe('amplify-totp spec:', () => {
+describe('amplify-select-mfa-type spec:', () => {
   describe('Component logic ->', () => {
     let selectMFAType;
 
