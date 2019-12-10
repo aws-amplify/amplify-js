@@ -6,6 +6,7 @@ export const config: Config = {
   plugins: [nodePolyfills()],
   commonjs: {
     namedExports: {
+      '@aws-sdk/client-cognito-identity-browser': ['CognitoIdentityClient', 'GetIdCommand'],
       '@aws-sdk/credential-provider-cognito-identity': ['fromCognitoIdentity', 'fromCognitoIdentityPool'],
       '@aws-crypto/sha256-js': ['Sha256'],
       uuid: ['v1', 'v4'],
