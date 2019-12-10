@@ -85,11 +85,6 @@ graph TD;
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
-<<<<<<< HEAD
-  rock-paper-scissor --> amplify-button
-  amplify-totp --> amplify-form-field
-=======
->>>>>>> Add unit tests, add totp example to amplify-examples
   amplify-totp --> amplify-form-section
   amplify-totp --> amplify-form-field
   rock-paper-scissor --> amplify-button
