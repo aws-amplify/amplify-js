@@ -28,7 +28,7 @@ export class AmplifyS3Image {
   @Prop() level: string;
   /* Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
-  /* Cognito ideneity id of the another user's image */
+  /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Whether or not the photo picker is enabled */
   @Prop() pickerEnabled: boolean = true;
