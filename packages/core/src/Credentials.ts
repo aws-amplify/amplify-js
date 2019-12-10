@@ -283,7 +283,7 @@ export class CredentialsClass {
 		return this._loadCredentials(credentials, 'federated', true, params);
 	}
 
-	private async _setCredentialsFromSession(session): Promise<ICredentials> {
+	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
 		const { region, userPoolId, identityPoolId } = this._config;
