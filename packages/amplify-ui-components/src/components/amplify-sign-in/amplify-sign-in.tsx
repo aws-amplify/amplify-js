@@ -174,7 +174,7 @@ export class AmplifySignIn {
           overrideStyle={this.overrideStyle}
         />
 
-        {this.federated && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
+        {!isEmpty(this.federated) && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
 
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>

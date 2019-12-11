@@ -49,7 +49,7 @@ const MIME_MAP = [
 	{ type: 'message/rfc822', ext: 'eml' },
 ];
 
-export const isEmpty = obj => Object.keys(obj).length === 0;
+export const isEmpty = (obj = {}) => Object.keys(obj).length === 0;
 
 export const sortByField = (list, field, dir) => {
 	if (!list || !list.sort) {
