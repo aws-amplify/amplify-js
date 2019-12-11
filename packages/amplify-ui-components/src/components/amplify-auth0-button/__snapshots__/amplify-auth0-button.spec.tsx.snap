@@ -1,10 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-auth0-button stories defaults 1`] = `
-<amplify-auth0-button>
-  <amplify-sign-in-button provider="auth0">
-    <script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
-    Sign In with Auth0
-  </amplify-sign-in-button>
-</amplify-auth0-button>
-`;
+exports[`amplify-auth0-button stories defaults 1`] = `null`;
