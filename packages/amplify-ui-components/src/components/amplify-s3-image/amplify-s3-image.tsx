@@ -40,7 +40,7 @@ export class AmplifyS3Image {
   /* Function executed when error occurs for the image */
   @Prop() handleOnError: (event: Event) => void;
 
-  @State() src: string | object = null;
+  @State() src: string | object;
 
   async componentWillLoad() {
     await this.load();
