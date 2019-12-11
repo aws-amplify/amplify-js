@@ -267,7 +267,6 @@ export class AWSS3Provider implements StorageProvider {
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 		try {
 			emitter.on('sendProgress', progress => {
-				const percentageDone = (progress.loaded / progress.total) * 100;
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
 						progressCallback(progress);

@@ -11,12 +11,7 @@
  * and limitations under the License.
  */
 
-import {
-	ConsoleLogger as Logger,
-	Hub,
-	Credentials,
-	Parser,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -36,6 +31,8 @@ import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
 
 import * as S3 from 'aws-sdk/clients/s3';
+
+const logger = new Logger('AWSS3ProviderManagedUpload');
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
 
@@ -93,7 +90,7 @@ export class AWSS3ProviderManagedUpload {
 				/** This first block will try to cancel the upload if the cancel
 				 *	request came before any parts uploads have started.
 				 **/
-				await this.checkIfUploadCanceled(uploadId);
+				await this.checkIfUploadCancelled(uploadId);
 
 				// Upload as many as `queueSize` parts simultaneously
 				const parts: BodyPart[] = this.createParts(start);
@@ -102,7 +99,7 @@ export class AWSS3ProviderManagedUpload {
 				/** Call cleanup a second time in case there were part upload requests
 				 *  in flight. This is to ensure that all parts are cleaned up.
 				 */
-				await this.checkIfUploadCanceled(uploadId);
+				await this.checkIfUploadCancelled(uploadId);
 			}
 
 			// Step 3: Finalize the upload such that S3 can recreate the file
@@ -142,7 +139,7 @@ export class AWSS3ProviderManagedUpload {
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
 		const response = await s3.send(createMultiPartUploadCommand);
-		console.log(response.UploadId);
+		logger.debug(response.UploadId);
 		return response.UploadId;
 	}
 	*/
@@ -188,7 +185,7 @@ export class AWSS3ProviderManagedUpload {
 				});
 			}
 		} catch (error) {
-			console.log(
+			logger.error(
 				'error happened while uploading a part. Cancelling the multipart upload',
 				error
 			);
@@ -209,7 +206,7 @@ export class AWSS3ProviderManagedUpload {
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
 		const data = await s3.send(completeUploadCommand);
-		console.log(data);
+		logger.debug(data);
 		return data.Key;
 	}
 	*/
@@ -226,7 +223,7 @@ export class AWSS3ProviderManagedUpload {
 		return data.Key;
 	}
 
-	private async checkIfUploadCanceled(uploadId: string) {
+	private async checkIfUploadCancelled(uploadId: string) {
 		if (this.cancel) {
 			let errorMessage = 'Upload was cancelled.';
 			try {
@@ -238,7 +235,7 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	public async cancelUpload() {
+	public cancelUpload() {
 		this.cancel = true;
 	}
 

@@ -7,6 +7,9 @@ import {
 } from '@aws-sdk/types';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method } from 'axios';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+
+const logger = new Logger('axios-http-handler');
 
 export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 	constructor(
@@ -45,11 +48,10 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 		axiosRequest.headers = request.headers;
 		axiosRequest.data = request.body;
 		// axiosRequest.mode = 'cors';
-		console.log(emitter);
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
 				emitter.emit('sendProgress', event);
-				console.log(event);
+				logger.debug(event);
 			};
 		}
 		const raceOfPromises = [
