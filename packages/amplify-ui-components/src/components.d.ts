@@ -12,6 +12,7 @@ import { ButtonTypes, TextFieldTypes } from './common/types/ui-types';
 import { FunctionalComponent } from '@stencil/core';
 import { CountryCodeDialOptions } from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
 import { IconNameType } from './components/amplify-icon/icons';
+import { AccessLevel } from './common/types/storage-types';
 import { AmplifySceneError } from './components/amplify-scene/amplify-scene-interface';
 import { SelectOptionsNumber, SelectOptionsString } from './components/amplify-select/amplify-select-interface';
 
@@ -659,11 +660,11 @@ export namespace Components {
   interface AmplifyS3Image {
     body: object;
     contentType: string;
-    handleOnError: () => {};
-    handleOnLoad: () => {};
+    handleOnError: (event: Event) => void;
+    handleOnLoad: (event: Event) => void;
     identityId: string;
     imgKey: string;
-    level: string;
+    level: AccessLevel;
     /**
      * Override default styling
      */
@@ -1817,11 +1818,11 @@ declare namespace LocalJSX {
   interface AmplifyS3Image {
     body?: object;
     contentType?: string;
-    handleOnError?: () => {};
-    handleOnLoad?: () => {};
+    handleOnError?: (event: Event) => void;
+    handleOnLoad?: (event: Event) => void;
     identityId?: string;
     imgKey?: string;
-    level?: string;
+    level?: AccessLevel;
     /**
      * Override default styling
      */

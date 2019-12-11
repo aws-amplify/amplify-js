@@ -2,6 +2,7 @@ import { Component, Element, Prop, h, State, Host } from '@stencil/core';
 import { image } from './amplify-s3-image.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX, NO_STORAGE_MODULE_FOUND } from '../../common/constants';
+import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger } from '@aws-amplify/core';
 
@@ -24,22 +25,22 @@ export class AmplifyS3Image {
   @Prop() body: object;
   /* The content type header used when uploading to S3 */
   @Prop() contentType: string = 'binary/octet-stream';
-  /* The accessbility level of the image */
-  @Prop() level: string;
+  /* The access level of the image */
+  @Prop() level: AccessLevel = AccessLevel.Public;
   /* Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
   /* Cognito ideneity id of the another user's image */
   @Prop() identityId: string;
   /* Whether or not the photo picker is enabled */
-  @Prop() pickerEnabled: boolean = true;
+  @Prop() pickerEnabled: boolean = false;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;
   /* Function executed when image loads */
-  @Prop() handleOnLoad: () => {};
+  @Prop() handleOnLoad: (event: Event) => void;
   /* Function executed when error occurs for the image */
-  @Prop() handleOnError: () => {};
+  @Prop() handleOnError: (event: Event) => void;
 
-  @State() src: string | Object = null;
+  @State() src: string | object = null;
 
   async componentWillLoad() {
     await this.load();
@@ -62,7 +63,7 @@ export class AmplifyS3Image {
       try {
         const data = Storage.put(key, body, {
           contentType,
-          level: level ? level : 'public',
+          level,
           track,
         });
         logger.debug(data);
@@ -82,7 +83,7 @@ export class AmplifyS3Image {
     }
 
     try {
-      const src = await Storage.get(key, { level: level ? level : 'public', track, identityId });
+      const src = await Storage.get(key, { level, track, identityId });
       return src;
     } catch (error) {
       logger.error(error);
