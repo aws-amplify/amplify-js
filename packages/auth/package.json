@@ -2,7 +2,7 @@
   "name": "@aws-amplify/auth",
   "version": "1.5.0",
   "description": "Auth category of aws-amplify",
-  "main": "./lib/index.js",
+  "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
