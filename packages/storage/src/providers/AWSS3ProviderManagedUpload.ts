@@ -24,7 +24,6 @@ import {
 	CompleteMultipartUploadCommand,
 	CompleteMultipartUploadInput,
 } from '@aws-sdk/client-s3-browser/commands/CompleteMultipartUploadCommand';
-import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
@@ -33,7 +32,7 @@ import * as S3 from 'aws-sdk/clients/s3';
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
 
-declare interface BodyPart {
+export declare interface BodyPart {
 	bodyPart: string;
 	partNumber: number;
 	emitter: any;
@@ -42,14 +41,16 @@ declare interface BodyPart {
 }
 
 export class AWSS3ProviderManagedUpload {
-	private minPartSize = 5 * 1024 * 1024; // in MB
-	private queueSize = 10;
+	// Defaults
+	protected minPartSize = 5 * 1024 * 1024; // in MB
+	private queueSize = 4;
 
 	// Data for current upload
 	private body = null;
 	private params = null;
 	private opts = null;
 	private multiPartMap = [];
+	private cancel: boolean = false;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -64,8 +65,7 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		this.body = this.validateAndSanitizeBody(this.params.Body);
-		this.totalBytesToUpload = this.byteLength(this.body); // TODO: Cannot pass an object. Has to be a string?
-		console.log('Uploading file of size ', this.totalBytesToUpload);
+		this.totalBytesToUpload = this.byteLength(this.body);
 		if (this.totalBytesToUpload <= this.minPartSize) {
 			const putObjectCommand = new PutObjectCommand(this.params);
 			const s3 = this._createNewS3Client(this.opts, this.emitter);
@@ -83,13 +83,23 @@ export class AWSS3ProviderManagedUpload {
 				start < numberOfPartsToUpload;
 				start += this.queueSize
 			) {
+				/** This first block will try to cancel the upload if the cancel
+				 *	request came before any parts uploads have started.
+				 **/
+				await this.checkIfUploadCanceled(uploadId);
+
 				// Upload as many as `queueSize` parts simultaneously
 				const parts: BodyPart[] = this.createParts(start);
 				await this.uploadParts(uploadId, parts);
+
+				/** Call cleanup a second time in case there were part upload requests
+				 *  in flight. This is to ensure that all parts are cleaned up.
+				 */
+				await this.checkIfUploadCanceled(uploadId);
 			}
 
 			// Step 3: Finalize the upload such that S3 can recreate the file
-			await this.finishMultiPartUpload_old(uploadId);
+			return await this.finishMultiPartUpload_old(uploadId);
 		}
 	}
 
@@ -116,6 +126,7 @@ export class AWSS3ProviderManagedUpload {
 		return parts;
 	}
 
+	/* Enable after V3 sdk fixes it
 	private async createMultiPartUpload() {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand({
 			Bucket: this.params.Bucket,
@@ -127,6 +138,7 @@ export class AWSS3ProviderManagedUpload {
 		console.log(response.UploadId);
 		return response.UploadId;
 	}
+	*/
 
 	private async createMultiPartUpload_old() {
 		const s3 = new S3(this.opts);
@@ -140,7 +152,11 @@ export class AWSS3ProviderManagedUpload {
 		return data.UploadId;
 	}
 
-	private async uploadParts(uploadId: string, parts: BodyPart[]) {
+	/**
+	 * @private Not to be extended outside of tests
+	 * @VisibleFotTesting
+	 */
+	protected async uploadParts(uploadId: string, parts: BodyPart[]) {
 		const promises: Array<Promise<UploadPartOutput>> = [];
 		for (const part of parts) {
 			this.setupEventListener(part);
@@ -155,17 +171,26 @@ export class AWSS3ProviderManagedUpload {
 			const s3 = this._createNewS3Client(this.opts, part.emitter);
 			promises.push(s3.send(uploadPartCommand));
 		}
-		const allResults: Array<UploadPartOutput> = await Promise.all(promises);
-
-		// The order of resolved promises is the same as input promise order.
-		for (let i = 0; i < allResults.length; i++) {
-			this.multiPartMap.push({
-				PartNumber: parts[i].partNumber,
-				ETag: allResults[i].ETag,
-			});
+		try {
+			const allResults: Array<UploadPartOutput> = await Promise.all(promises);
+			// The order of resolved promises is the same as input promise order.
+			for (let i = 0; i < allResults.length; i++) {
+				this.multiPartMap.push({
+					PartNumber: parts[i].partNumber,
+					ETag: allResults[i].ETag,
+				});
+			}
+		} catch (error) {
+			console.log(
+				'error happened while uploading a part. Cancelling the multipart upload',
+				error
+			);
+			this.cancelUpload();
+			return;
 		}
 	}
 
+	/* Enable after V3 sdk fixes it
 	private async finishMultiPartUpload(uploadId: string) {
 		const input: CompleteMultipartUploadInput = {
 			Bucket: this.params.Bucket,
@@ -180,6 +205,7 @@ export class AWSS3ProviderManagedUpload {
 		console.log(data);
 		return data.Key;
 	}
+	*/
 
 	private async finishMultiPartUpload_old(uploadId: string) {
 		const input = {
@@ -190,8 +216,47 @@ export class AWSS3ProviderManagedUpload {
 		};
 		const s3 = new S3(this.opts);
 		const data = await s3.completeMultipartUpload(input).promise();
-		console.log(data);
 		return data.Key;
+	}
+
+	private async checkIfUploadCanceled(uploadId: string) {
+		if (this.cancel) {
+			let errorMessage = 'Upload was cancelled.';
+			try {
+				await this.cleanup(uploadId);
+			} catch (error) {
+				errorMessage += error.errorMessage;
+			}
+			throw new Error(errorMessage);
+		}
+	}
+
+	public async cancelUpload() {
+		this.cancel = true;
+	}
+
+	private async cleanup(uploadId: string) {
+		// Reset this's state
+		this.body = null;
+		this.multiPartMap = [];
+		this.bytesUploaded = 0;
+		this.totalBytesToUpload = 0;
+
+		const input = {
+			Bucket: this.params.Bucket,
+			Key: this.params.Key,
+			UploadId: uploadId,
+		};
+
+		const s3 = new S3(this.opts);
+		await s3.abortMultipartUpload(input).promise();
+
+		// verify that all parts are removed.
+		const data = await s3.listParts(input).promise();
+
+		if (data && data.Parts && data.Parts.length > 0) {
+			throw new Error('Multi Part upload clean up failed');
+		}
 	}
 
 	private setupEventListener(part: BodyPart) {
@@ -222,25 +287,39 @@ export class AWSS3ProviderManagedUpload {
 			return inputString.length;
 		} else if (typeof inputString.size === 'number') {
 			return inputString.size;
-			// } else if (typeof string.path === 'string') {
-			// 	return require('fs').lstatSync(string.path).size;
+		} else if (typeof inputString.path === 'string') {
+			/* NodeJs Support
+			return require('fs').lstatSync(inputString.path).size;
+			*/
 		} else {
 			throw new Error('Cannot determine length of ' + inputString);
 		}
 	}
 
 	private validateAndSanitizeBody(body: any): any {
-		if (body instanceof File) {
+		if (typeof File !== 'undefined' && body instanceof File) {
+			// Browser file
 			return body;
-		} else if (typeof body === 'string') {
+		} /* NodeJS Support else if (
+			typeof body.path === 'string' &&
+			require('fs').lstatSync(body.path).size > 0
+		) {
+			return body;
+		} */ else if (
+			typeof body === 'string'
+		) {
+			// String blob
 			return fromString(body);
 		} else {
+			// Any javascript object
 			return fromString(JSON.stringify(body));
 		}
+		// TODO: streams for nodejs
 	}
 
 	/**
-	 * @private creates an S3 client with new V3 aws sdk
+	 * @private
+	 * creates an S3 client with new V3 aws sdk
 	 */
 	protected _createNewS3Client(config, emitter?) {
 		const {

@@ -1,17 +1,12 @@
 import {
 	BrowserHttpOptions,
-	HeaderBag,
 	HttpHandler,
 	HttpHandlerOptions,
 	HttpRequest,
 	HttpResponse,
 } from '@aws-sdk/types';
-
-import axios, { AxiosRequestConfig, Method } from 'axios';
-
 import { buildQueryString } from '@aws-sdk/querystring-builder';
-
-declare var AbortController: any;
+import axios, { AxiosRequestConfig, Method } from 'axios';
 
 export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 	constructor(
@@ -28,15 +23,8 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 		request: HttpRequest<Blob>,
 		options: HttpHandlerOptions
 	): Promise<HttpResponse<Blob>> {
-		const abortSignal = options && options.abortSignal;
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
 		const emitter = this.emitter;
-		// if the request was already aborted, prevent doing extra work
-		if (abortSignal && abortSignal.aborted) {
-			const abortError = new Error('Request aborted');
-			abortError.name = 'AbortError';
-			return Promise.reject(abortError);
-		}
 
 		let path = request.path;
 		if (request.query) {
@@ -51,24 +39,13 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 			port ? `:${port}` : ''
 		}${path}`;
 
-		const requestOptions: RequestInit = {
-			body: request.body,
-			headers: new Headers(request.headers),
-			method: request.method,
-			mode: 'cors',
-		};
-
-		// some browsers support abort signal
-		if (typeof AbortController !== 'undefined') {
-			(requestOptions as any)['signal'] = abortSignal;
-		}
-
 		const axiosRequest: AxiosRequestConfig = {};
 		axiosRequest.url = url;
 		axiosRequest.method = request.method as Method;
 		axiosRequest.headers = request.headers;
 		axiosRequest.data = request.body;
 		// axiosRequest.mode = 'cors';
+		console.log(emitter);
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
 				emitter.emit('sendProgress', event);
@@ -85,17 +62,6 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 			}),
 			requestTimeout(requestTimeoutInMs),
 		];
-		if (abortSignal) {
-			raceOfPromises.push(
-				new Promise<never>((resolve, reject) => {
-					abortSignal.onabort = () => {
-						const abortError = new Error('Request aborted');
-						abortError.name = 'AbortError';
-						reject(abortError);
-					};
-				})
-			);
-		}
 		return Promise.race(raceOfPromises);
 	}
 }
