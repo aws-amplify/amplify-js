@@ -336,7 +336,7 @@ export class CredentialsClass {
 			return credentialsProvider();
 		};
 
-		const credentials = credentialsProvider.catch(async err => {
+		const credentials = credentialsProvider().catch(async err => {
 			throw err;
 		});
 
