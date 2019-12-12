@@ -336,7 +336,7 @@ export class CredentialsClass {
 			return credentials();
 		};
 
-		return this._loadCredentials(credentials, 'userPool', true, null);
+		return this._loadCredentials(credentials(), 'userPool', true, null);
 	}
 
 	private _loadCredentials(
