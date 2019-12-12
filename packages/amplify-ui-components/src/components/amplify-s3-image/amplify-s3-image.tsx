@@ -105,12 +105,11 @@ export class AmplifyS3Image {
       throw new Error(NO_STORAGE_MODULE_FOUND);
     }
     try {
-      // const data = await Storage.put(key, file, {
-      //   contentType: 'image/png',
-      //   level,
-      //   track,
-      // });
-      const data = await Storage.put('test.txt', 'Hello!');
+      const data = await Storage.put(key, file, {
+        contentType: 'image/png',
+        level,
+        track,
+      });
       logger.debug(data);
       this.src = await this.getImageSource(key, level, track, identityId);
     } catch (error) {
