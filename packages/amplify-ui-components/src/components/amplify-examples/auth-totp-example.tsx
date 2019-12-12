@@ -8,9 +8,15 @@ Auth.currentAuthenticatedUser().then(data => {
   console.log('Auth data set', authData);
 });
 
+const MfaTypes = {
+  Optional: true,
+  TOTP: true,
+  SMS: false,
+};
+
 const TOTPAuthenticator = () => (
   <amplify-authenticator>
-    <amplify-select-mfa-type authData={authData}></amplify-select-mfa-type>
+    <amplify-select-mfa-type MFATypes={MfaTypes} authData={authData}></amplify-select-mfa-type>
   </amplify-authenticator>
 );
 

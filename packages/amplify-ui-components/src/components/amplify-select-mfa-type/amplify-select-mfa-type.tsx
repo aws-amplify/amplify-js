@@ -157,6 +157,11 @@ export class AmplifySelectMFAType {
   }
   // Add the amplify-totp with a true flag.
   render() {
-    return <div>{this.contentBuilder()}</div>;
+    return (
+      <div>
+        {this.contentBuilder()}
+        {this.TOTPSetup ? <amplify-totp-setup user={this.authData} /> : null}
+      </div>
+    );
   }
 }
