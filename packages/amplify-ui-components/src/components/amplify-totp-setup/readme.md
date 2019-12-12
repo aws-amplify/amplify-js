@@ -17,6 +17,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-select-mfa-type](../amplify-select-mfa-type)
+
 ### Depends on
 
 - [amplify-form-section](../amplify-form-section)
@@ -32,6 +36,7 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
+  amplify-select-mfa-type --> amplify-totp-setup
   style amplify-totp-setup fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

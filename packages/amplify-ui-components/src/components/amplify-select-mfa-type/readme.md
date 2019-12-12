@@ -22,15 +22,22 @@
 
 - [amplify-form-section](../amplify-form-section)
 - [amplify-radio-button](../amplify-radio-button)
+- [amplify-totp-setup](../amplify-totp-setup)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-totp-setup
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-radio-button --> amplify-label
+  amplify-totp-setup --> amplify-form-section
+  amplify-totp-setup --> amplify-form-field
+  amplify-form-field --> amplify-label
+  amplify-form-field --> amplify-input
+  amplify-form-field --> amplify-hint
   amplify-examples --> amplify-select-mfa-type
   style amplify-select-mfa-type fill:#f9f,stroke:#333,stroke-width:4px
 ```
