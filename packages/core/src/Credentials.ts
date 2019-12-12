@@ -316,7 +316,7 @@ export class CredentialsClass {
 
 			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
 		*/
-		let credentials: CredentialProvider = async () => {
+		let credentialsProvider: CredentialProvider = async () => {
 			const { IdentityId } = await cognitoClient.send(
 				new GetIdCommand({
 					IdentityPoolId: identityPoolId,
@@ -331,10 +331,14 @@ export class CredentialsClass {
 				identityId: IdentityId,
 			};
 
-			credentials = fromCognitoIdentity(cognitoIdentityParams);
+			credentialsProvider = fromCognitoIdentity(cognitoIdentityParams);
 
-			return credentials();
+			return credentialsProvider();
 		};
+
+		const credentials = credentialsProvider().catch(async err => {
+			throw err;
+		});
 
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
