@@ -87,7 +87,10 @@ graph TD;
   amplify-sign-out --> amplify-button
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-totp-setup
   amplify-radio-button --> amplify-label
+  amplify-totp-setup --> amplify-form-section
+  amplify-totp-setup --> amplify-form-field
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
