@@ -47,7 +47,7 @@ export class AmplifyS3Image {
   @State() src: string | object;
 
   async componentWillLoad() {
-    // await this.load();
+    await this.load();
   }
 
   async load() {
@@ -95,12 +95,14 @@ export class AmplifyS3Image {
     }
   }
 
-  async onChange(e) {
+  async handlePick(event) {
     const { imgKey, path, level, track, identityId } = this;
     const key = imgKey || path;
 
-    const file = e.target.files[0];
-    console.log(file);
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
     if (!Storage || typeof Storage.put !== 'function') {
       throw new Error(NO_STORAGE_MODULE_FOUND);
     }
@@ -122,8 +124,8 @@ export class AmplifyS3Image {
     return (
       <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
         {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
-        {/* TODO: add PhotoPicker */}
-        <input type="file" accept="image/png" onChange={e => this.onChange(e)} />
+        {/* TODO: add PhotoPicker component */}
+        {this.pickerEnabled && <input type="file" accept="image/png" onChange={event => this.handlePick(event)} />}
       </Host>
     );
   }
