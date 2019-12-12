@@ -14,6 +14,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [amplify-examples](../amplify-examples)
+
 ### Depends on
 
 - [amplify-form-section](../amplify-form-section)
@@ -27,6 +31,7 @@ graph TD;
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-radio-button --> amplify-label
+  amplify-examples --> amplify-select-mfa-type
   style amplify-select-mfa-type fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

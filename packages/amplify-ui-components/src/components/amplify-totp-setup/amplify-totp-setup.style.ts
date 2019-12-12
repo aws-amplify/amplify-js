@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-export const totp = css`
+export const totpSetup = css`
   text-align: center;
   margin-bottom: 30px;
 

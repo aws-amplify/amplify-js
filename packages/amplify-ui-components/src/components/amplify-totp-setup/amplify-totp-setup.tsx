@@ -4,8 +4,8 @@ import QRCode from 'qrcode';
 import { Logger } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
-import { totp } from './amplify-totp.style';
-import { MfaMethod, TOTPSetupEventType } from './amplify-totp-interface';
+import { totpSetup } from './amplify-totp-setup.style';
+import { MfaMethod, TOTPSetupEventType } from './amplify-totp-setup-interface';
 import {
   NO_AUTH_MODULE_FOUND,
   TOTP_SETUP_FAILURE,
@@ -22,10 +22,10 @@ import {
 const logger = new Logger('TOTP');
 
 @Component({
-  tag: 'amplify-totp',
+  tag: 'amplify-totp-setup',
   shadow: false,
 })
-export class AmplifyTOTP {
+export class AmplifyTOTPSetup {
   /** Used in order to configure TOTP for a user */
   @Prop() user: CognitoUserInterface = null;
   /** Triggers an TOTP Event after handleSubmit method has been called */
@@ -116,7 +116,7 @@ export class AmplifyTOTP {
       })
       .finally(() => {
         this.qrCodeInput = null;
-        this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
+        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
       });
   }
 
@@ -128,7 +128,7 @@ export class AmplifyTOTP {
         submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
         handleSubmit={() => this.verifyTotpToken()}
       >
-        <div class={totp}>
+        <div class={totpSetup}>
           <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
           <amplify-form-field
             label={TOTP_LABEL}
