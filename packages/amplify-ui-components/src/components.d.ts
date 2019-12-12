@@ -850,9 +850,9 @@ export namespace Components {
   }
   interface AmplifyTotp {
     /**
-    * Used in order to configure TOTP for a user
+    * Passed from the Authenticator component in order to change Authentication state
     */
-    'authData': CognitoUserInterface;
+    'handleAuthStateChange': AuthStateHandler;
     /**
     * Used to set autoFocus to true when TOTP Component has loaded
     */
@@ -861,6 +861,10 @@ export namespace Components {
     * Triggers an TOTP Event after handleSubmit method has been called
     */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
+    /**
+    * Used in order to configure TOTP for a user
+    */
+    'user': CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
@@ -2038,9 +2042,9 @@ declare namespace LocalJSX {
   }
   interface AmplifyTotp {
     /**
-    * Used in order to configure TOTP for a user
+    * Passed from the Authenticator component in order to change Authentication state
     */
-    'authData'?: CognitoUserInterface;
+    'handleAuthStateChange'?: AuthStateHandler;
     /**
     * Used to set autoFocus to true when TOTP Component has loaded
     */
@@ -2049,6 +2053,10 @@ declare namespace LocalJSX {
     * Triggers an TOTP Event after handleSubmit method has been called
     */
     'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
+    /**
+    * Used in order to configure TOTP for a user
+    */
+    'user'?: CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
