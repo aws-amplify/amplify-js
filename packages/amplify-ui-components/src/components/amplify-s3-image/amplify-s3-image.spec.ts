@@ -37,8 +37,8 @@ describe('amplify-s3-image spec:', () => {
       expect(amplifyS3Image.identityId).toBeUndefined();
     });
 
-    it('`pickerEnabled` should be set to `false` by default', () => {
-      expect(amplifyS3Image.pickerEnabled).toBe(false);
+    it('`picker` should be set to `false` by default', () => {
+      expect(amplifyS3Image.picker).toBe(false);
     });
 
     it('`overrideStyle` should be `false` by default', () => {

@@ -32,7 +32,7 @@ export class AmplifyS3Image {
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Whether or not the photo picker is enabled */
-  @Prop() pickerEnabled: boolean = false;
+  @Prop() picker: boolean = false;
   /* Whether or not to hide the image */
   @Prop() hidden: boolean = false;
   /** Override default styling */
@@ -125,7 +125,7 @@ export class AmplifyS3Image {
       <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
         {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
         {/* TODO: add PhotoPicker component */}
-        {this.pickerEnabled && <input type="file" accept="image/png" onChange={event => this.handlePick(event)} />}
+        {this.picker && <input type="file" accept="image/png" onChange={event => this.handlePick(event)} />}
       </Host>
     );
   }

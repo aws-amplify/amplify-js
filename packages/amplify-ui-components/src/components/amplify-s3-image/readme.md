@@ -17,7 +17,7 @@
 | `level`         | `level`          |                          | `AccessLevel.Private \| AccessLevel.Protected \| AccessLevel.Public` | `AccessLevel.Public`    |
 | `overrideStyle` | `override-style` | Override default styling | `boolean`                                                            | `false`                 |
 | `path`          | `path`           |                          | `string`                                                             | `undefined`             |
-| `pickerEnabled` | `picker-enabled` |                          | `boolean`                                                            | `false`                 |
+| `picker`        | `picker`         |                          | `boolean`                                                            | `false`                 |
 | `track`         | `track`          |                          | `boolean`                                                            | `undefined`             |
 
 ## Dependencies

@@ -672,7 +672,7 @@ export namespace Components {
      */
     overrideStyle: boolean;
     path: string;
-    pickerEnabled: boolean;
+    picker: boolean;
     track: boolean;
   }
   interface AmplifyScene {
@@ -1832,7 +1832,7 @@ declare namespace LocalJSX {
      */
     overrideStyle?: boolean;
     path?: string;
-    pickerEnabled?: boolean;
+    picker?: boolean;
     track?: boolean;
   }
   interface AmplifyScene {
