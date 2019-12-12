@@ -33,8 +33,12 @@ export class AmplifyS3Image {
   @Prop() identityId: string;
   /* Whether or not the photo picker is enabled */
   @Prop() pickerEnabled: boolean = false;
+  /* Whether or not to hide the image */
+  @Prop() hidden: boolean = false;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;
+  /* Callback used to generate custom key value */
+  @Prop() fileToKey: (data: object) => string;
   /* Function executed when image loads */
   @Prop() handleOnLoad: (event: Event) => void;
   /* Function executed when error occurs for the image */
@@ -43,7 +47,7 @@ export class AmplifyS3Image {
   @State() src: string | object;
 
   async componentWillLoad() {
-    await this.load();
+    // await this.load();
   }
 
   async load() {
@@ -91,11 +95,36 @@ export class AmplifyS3Image {
     }
   }
 
+  async onChange(e) {
+    const { imgKey, path, level, track, identityId } = this;
+    const key = imgKey || path;
+
+    const file = e.target.files[0];
+    console.log(file);
+    if (!Storage || typeof Storage.put !== 'function') {
+      throw new Error(NO_STORAGE_MODULE_FOUND);
+    }
+    try {
+      // const data = await Storage.put(key, file, {
+      //   contentType: 'image/png',
+      //   level,
+      //   track,
+      // });
+      const data = await Storage.put('test.txt', 'Hello!');
+      logger.debug(data);
+      this.src = await this.getImageSource(key, level, track, identityId);
+    } catch (error) {
+      logger.error(error);
+      throw new Error(error);
+    }
+  }
+
   render() {
     return (
       <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
         {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
         {/* TODO: add PhotoPicker */}
+        <input type="file" accept="image/png" onChange={e => this.onChange(e)} />
       </Host>
     );
   }

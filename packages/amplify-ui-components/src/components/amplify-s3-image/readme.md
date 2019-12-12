@@ -8,8 +8,10 @@
 | --------------- | ---------------- | ------------------------ | -------------------------------------------------------------------- | ----------------------- |
 | `body`          | --               |                          | `object`                                                             | `undefined`             |
 | `contentType`   | `content-type`   |                          | `string`                                                             | `'binary/octet-stream'` |
+| `fileToKey`     | --               |                          | `(data: object) => string`                                           | `undefined`             |
 | `handleOnError` | --               |                          | `(event: Event) => void`                                             | `undefined`             |
 | `handleOnLoad`  | --               |                          | `(event: Event) => void`                                             | `undefined`             |
+| `hidden`        | `hidden`         |                          | `boolean`                                                            | `false`                 |
 | `identityId`    | `identity-id`    |                          | `string`                                                             | `undefined`             |
 | `imgKey`        | `img-key`        |                          | `string`                                                             | `undefined`             |
 | `level`         | `level`          |                          | `AccessLevel.Private \| AccessLevel.Protected \| AccessLevel.Public` | `AccessLevel.Public`    |

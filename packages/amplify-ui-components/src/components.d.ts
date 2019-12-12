@@ -660,8 +660,10 @@ export namespace Components {
   interface AmplifyS3Image {
     body: object;
     contentType: string;
+    fileToKey: (data: object) => string;
     handleOnError: (event: Event) => void;
     handleOnLoad: (event: Event) => void;
+    hidden: boolean;
     identityId: string;
     imgKey: string;
     level: AccessLevel;
@@ -1818,8 +1820,10 @@ declare namespace LocalJSX {
   interface AmplifyS3Image {
     body?: object;
     contentType?: string;
+    fileToKey?: (data: object) => string;
     handleOnError?: (event: Event) => void;
     handleOnLoad?: (event: Event) => void;
+    hidden?: boolean;
     identityId?: string;
     imgKey?: string;
     level?: AccessLevel;
