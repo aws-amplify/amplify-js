@@ -2,7 +2,7 @@ import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { Logger } from '@aws-amplify/core';
-import { CognitoUserInterface } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, AuthState } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { totp } from './amplify-totp.style';
 import { MfaMethod, TOTPSetupEventType } from './amplify-totp-interface';
@@ -27,13 +27,15 @@ const logger = new Logger('TOTP');
 })
 export class AmplifyTOTP {
   /** Used in order to configure TOTP for a user */
-  @Prop() authData: CognitoUserInterface = null;
+  @Prop() user: CognitoUserInterface = null;
   /** Triggers an TOTP Event after handleSubmit method has been called */
   @Prop() onTOTPEvent?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   /** Used to set autoFocus to true when TOTP Component has loaded */
   @Prop() inputProps: object = {
     autoFocus: true,
   };
+  /** Passed from the Authenticator component in order to change Authentication state */
+  @Prop() handleAuthStateChange: AuthStateHandler;
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
@@ -65,7 +67,7 @@ export class AmplifyTOTP {
 
   setup() {
     this.setupMessage = null;
-    const user = this.authData;
+    const user = this.user;
     const issuer = encodeURI('AWSCognito');
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
@@ -95,7 +97,7 @@ export class AmplifyTOTP {
       return;
     }
 
-    const user = this.authData;
+    const user = this.user;
 
     if (!Auth || typeof Auth.verifyTotpToken !== 'function' || typeof Auth.setPreferredMFA !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
@@ -114,6 +116,7 @@ export class AmplifyTOTP {
       })
       .finally(() => {
         this.qrCodeInput = null;
+        this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
       });
   }
 
