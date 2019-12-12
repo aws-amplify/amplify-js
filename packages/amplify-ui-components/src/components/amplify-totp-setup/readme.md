@@ -17,10 +17,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [amplify-authenticator](../amplify-authenticator)
-
 ### Depends on
 
 - [amplify-form-section](../amplify-form-section)
@@ -29,15 +25,14 @@
 ### Graph
 ```mermaid
 graph TD;
-  amplify-totp --> amplify-form-section
-  amplify-totp --> amplify-form-field
+  amplify-totp-setup --> amplify-form-section
+  amplify-totp-setup --> amplify-form-field
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
-  amplify-authenticator --> amplify-totp
-  style amplify-totp fill:#f9f,stroke:#333,stroke-width:4px
+  style amplify-totp-setup fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

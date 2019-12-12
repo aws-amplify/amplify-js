@@ -1,47 +1,47 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifyTOTP } from './amplify-totp';
+import { AmplifyTOTPSetup } from './amplify-totp-setup';
 
 describe('amplify-totp spec:', () => {
   describe('Component logic ->', () => {
-    let totp;
+    let totpSetup;
 
     beforeEach(() => {
-      totp = new AmplifyTOTP();
+      totpSetup = new AmplifyTOTPSetup();
     });
 
-    it('should render authData to null by default', () => {
-      expect(totp.authData).toEqual(null);
+    it('should render `user` to null by default', () => {
+      expect(totpSetup.user).toEqual(null);
     });
 
     it('should have `onTOTPEvent` be undefined', () => {
-      expect(totp.onTOTPEvent).toBeUndefined();
+      expect(totpSetup.onTOTPEvent).toBeUndefined();
     });
 
     it('should have `inputProps` have `autoFocus` set to true by default', () => {
-      expect(totp.inputProps.autoFocus).toBe(true);
+      expect(totpSetup.inputProps.autoFocus).toBe(true);
     });
 
     it('should have `code` be null by default', () => {
-      expect(totp.code).toBeNull();
+      expect(totpSetup.code).toBeNull();
     });
 
     it('should have `setUpMessage` be null by default', () => {
-      expect(totp.setupMessage).toBeNull();
+      expect(totpSetup.setupMessage).toBeNull();
     });
 
     it('should have `qrCodeImageSource` be undefined by default', () => {
-      expect(totp.qrCodeImageSource).toBeUndefined();
+      expect(totpSetup.qrCodeImageSource).toBeUndefined();
     });
 
     it('should have `qrCodeInput` be null by default', () => {
-      expect(totp.qrCodeInput).toBeNull();
+      expect(totpSetup.qrCodeInput).toBeNull();
     });
   });
   describe('Render logic ->', () => {
     it('should render a `less than 2 mfa types available` message by default', async () => {
       const page = await newSpecPage({
-        components: [AmplifyTOTP],
-        html: `<amplify-totp></amplify-totp>`,
+        components: [AmplifyTOTPSetup],
+        html: `<amplify-totp-setup></amplify-totp-setup>`,
       });
 
       expect(page.root).toMatchSnapshot();

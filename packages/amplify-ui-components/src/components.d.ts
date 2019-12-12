@@ -39,7 +39,7 @@ import {
 } from './components/amplify-select/amplify-select-interface';
 import {
   TOTPSetupEventType,
-} from './components/amplify-totp/amplify-totp-interface';
+} from './components/amplify-totp-setup/amplify-totp-setup-interface';
 
 export namespace Components {
   interface AmplifyAmazonButton {
@@ -848,7 +848,7 @@ export namespace Components {
     */
     'text': string;
   }
-  interface AmplifyTotp {
+  interface AmplifyTotpSetup {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
@@ -1166,10 +1166,10 @@ declare global {
     new (): HTMLAmplifyTooltipElement;
   };
 
-  interface HTMLAmplifyTotpElement extends Components.AmplifyTotp, HTMLStencilElement {}
-  var HTMLAmplifyTotpElement: {
-    prototype: HTMLAmplifyTotpElement;
-    new (): HTMLAmplifyTotpElement;
+  interface HTMLAmplifyTotpSetupElement extends Components.AmplifyTotpSetup, HTMLStencilElement {}
+  var HTMLAmplifyTotpSetupElement: {
+    prototype: HTMLAmplifyTotpSetupElement;
+    new (): HTMLAmplifyTotpSetupElement;
   };
 
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
@@ -1227,7 +1227,7 @@ declare global {
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
-    'amplify-totp': HTMLAmplifyTotpElement;
+    'amplify-totp-setup': HTMLAmplifyTotpSetupElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
@@ -2040,7 +2040,7 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
-  interface AmplifyTotp {
+  interface AmplifyTotpSetup {
     /**
     * Passed from the Authenticator component in order to change Authentication state
     */
@@ -2141,7 +2141,7 @@ declare namespace LocalJSX {
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
-    'amplify-totp': AmplifyTotp;
+    'amplify-totp-setup': AmplifyTotpSetup;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
@@ -2196,7 +2196,7 @@ declare module "@stencil/core" {
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
-      'amplify-totp': LocalJSX.AmplifyTotp & JSXBase.HTMLAttributes<HTMLAmplifyTotpElement>;
+      'amplify-totp-setup': LocalJSX.AmplifyTotpSetup & JSXBase.HTMLAttributes<HTMLAmplifyTotpSetupElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
     }

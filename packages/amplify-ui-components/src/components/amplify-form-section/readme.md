@@ -27,7 +27,7 @@
  - [amplify-select-mfa-type](../amplify-select-mfa-type)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-up](../amplify-sign-up)
- - [amplify-totp](../amplify-totp)
+ - [amplify-totp-setup](../amplify-totp-setup)
 
 ### Depends on
 
@@ -47,7 +47,7 @@ graph TD;
   amplify-select-mfa-type --> amplify-form-section
   amplify-sign-in --> amplify-form-section
   amplify-sign-up --> amplify-form-section
-  amplify-totp --> amplify-form-section
+  amplify-totp-setup --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
