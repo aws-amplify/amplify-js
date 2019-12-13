@@ -13,8 +13,8 @@ describe('amplify-totp spec:', () => {
       expect(totpSetup.user).toEqual(null);
     });
 
-    it('should have `onTOTPEvent` be undefined', () => {
-      expect(totpSetup.onTOTPEvent).toBeUndefined();
+    it('should have `onTOTPEvent` be Defined', () => {
+      expect(totpSetup.onTOTPEvent).toBeDefined();
     });
 
     it('should have `inputProps` have `autoFocus` set to true by default', () => {
