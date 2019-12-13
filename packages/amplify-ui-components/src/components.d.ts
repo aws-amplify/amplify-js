@@ -37,9 +37,6 @@ import {
   SelectOptionsNumber,
   SelectOptionsString,
 } from './components/amplify-select/amplify-select-interface';
-import {
-  TOTPSetupEventType,
-} from './components/amplify-totp-setup/amplify-totp-setup-interface';
 
 export namespace Components {
   interface AmplifyAmazonButton {
@@ -857,10 +854,6 @@ export namespace Components {
     * Used to set autoFocus to true when TOTP Component has loaded
     */
     'inputProps': object;
-    /**
-    * Triggers an TOTP Event after handleSubmit method has been called
-    */
-    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
     /**
     * Used in order to configure TOTP for a user
     */
@@ -2049,10 +2042,6 @@ declare namespace LocalJSX {
     * Used to set autoFocus to true when TOTP Component has loaded
     */
     'inputProps'?: object;
-    /**
-    * Triggers an TOTP Event after handleSubmit method has been called
-    */
-    'onTOTPEvent'?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
     /**
     * Used in order to configure TOTP for a user
     */
