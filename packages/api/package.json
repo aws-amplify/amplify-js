@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Api category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -33,11 +33,13 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "devDependencies": {
+    "@types/zen-observable": "^0.8.0"
+  },
   "dependencies": {
-    "@aws-amplify/auth": "^2.1.0",
-    "@aws-amplify/cache": "^2.1.0",
-    "@aws-amplify/core": "^2.1.0",
-    "@types/zen-observable": "^0.5.3",
+    "@aws-amplify/auth": "^2.1.1",
+    "@aws-amplify/cache": "^2.1.1",
+    "@aws-amplify/core": "^2.2.0",
     "axios": "^0.19.0",
     "graphql": "14.0.0",
     "uuid": "^3.2.1",

@@ -1,0 +1,348 @@
+import { Mutex } from '@aws-amplify/core';
+import Observable from 'zen-observable-ts';
+import * as PushStream from 'zen-push';
+import { ModelInstanceCreator } from '../datastore/datastore';
+import { ModelPredicateCreator } from '../predicates';
+import {
+	InternalSchema,
+	ModelPredicate,
+	NamespaceResolver,
+	OpType,
+	PaginationInput,
+	PersistentModel,
+	PersistentModelConstructor,
+	PredicateGroups,
+	PredicateObject,
+	PredicatesGroup,
+	QueryOne,
+	SchemaNamespace,
+	SubscriptionMessage,
+} from '../types';
+import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import { Adapter } from './adapter';
+
+const getDefaultAdapter: () => Adapter = () => {
+	if (window.indexedDB) {
+		return require('./adapter/indexeddb').default;
+	}
+	if (process && process.env) {
+		throw new Error('Node is not supported');
+	}
+};
+
+export type StorageSubscriptionMessage = SubscriptionMessage<any> & {
+	mutator?: Symbol;
+};
+
+export type StorageFacade = Omit<Adapter, 'setUp'>;
+
+class Storage implements StorageFacade {
+	private initialized: Promise<void>;
+	private readonly pushStream: {
+		observable: Observable<StorageSubscriptionMessage>;
+	} & Required<ZenObservable.Observer<StorageSubscriptionMessage>>;
+
+	constructor(
+		private readonly schema: InternalSchema,
+		private readonly namespaceResolver: NamespaceResolver,
+		private readonly getModelConstructorByModelName: (
+			namsespaceName: string,
+			modelName: string
+		) => PersistentModelConstructor<any>,
+		private readonly modelInstanceCreator: ModelInstanceCreator,
+		private readonly adapter?: Adapter
+	) {
+		this.adapter = adapter || getDefaultAdapter();
+		this.pushStream = new PushStream();
+	}
+
+	static getNamespace() {
+		const namespace: SchemaNamespace = {
+			name: STORAGE,
+			relationships: {},
+			enums: {},
+			models: {},
+		};
+
+		return namespace;
+	}
+
+	private async init() {
+		if (this.initialized !== undefined) {
+			return;
+		}
+		let resolve: (value?: void | PromiseLike<void>) => void;
+		let reject: (value?: void | PromiseLike<void>) => void;
+
+		this.initialized = new Promise<void>((res, rej) => {
+			resolve = res;
+			reject = rej;
+		});
+
+		this.adapter
+			.setUp(
+				this.schema,
+				this.namespaceResolver,
+				this.modelInstanceCreator,
+				this.getModelConstructorByModelName
+			)
+			.then(resolve, reject);
+
+		await this.initialized;
+	}
+
+	async save<T extends PersistentModel>(
+		model: T,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		await this.init();
+
+		const result = await this.adapter.save(model, condition);
+
+		result.forEach(r => {
+			const [element, opType] = r;
+
+			const modelConstructor = (Object.getPrototypeOf(element) as Object)
+				.constructor as PersistentModelConstructor<T>;
+
+			this.pushStream.next({
+				model: modelConstructor,
+				opType,
+				element,
+				mutator,
+				condition: ModelPredicateCreator.getPredicates(condition, false),
+			});
+		});
+
+		return result;
+	}
+
+	delete<T extends PersistentModel>(
+		model: T,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]>;
+	delete<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]>;
+	async delete<T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]> {
+		await this.init();
+
+		let deleted: T[];
+		let models: T[];
+
+		[models, deleted] = await this.adapter.delete(
+			modelOrModelConstructor,
+			condition
+		);
+
+		const modelIds = new Set(models.map(({ id }) => id));
+
+		if (
+			!isModelConstructor(modelOrModelConstructor) &&
+			!Array.isArray(deleted)
+		) {
+			deleted = [deleted];
+		}
+
+		deleted.forEach(model => {
+			const modelConstructor = (Object.getPrototypeOf(model) as Object)
+				.constructor as PersistentModelConstructor<T>;
+
+			let theCondition: PredicatesGroup<any>;
+
+			if (!isModelConstructor(modelOrModelConstructor)) {
+				theCondition = modelIds.has(model.id)
+					? ModelPredicateCreator.getPredicates(condition, false)
+					: undefined;
+			}
+
+			this.pushStream.next({
+				model: modelConstructor,
+				opType: OpType.DELETE,
+				element: model,
+				mutator,
+				condition: theCondition,
+			});
+		});
+
+		return [models, deleted];
+	}
+
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate?: ModelPredicate<T>,
+		pagination?: PaginationInput
+	): Promise<T[]> {
+		await this.init();
+
+		return await this.adapter.query(modelConstructor, predicate, pagination);
+	}
+
+	async queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		firstOrLast: QueryOne = QueryOne.FIRST
+	): Promise<T> {
+		await this.init();
+
+		const record = await this.adapter.queryOne(modelConstructor, firstOrLast);
+		return record;
+	}
+
+	observe<T extends PersistentModel>(
+		modelConstructor?: PersistentModelConstructor<T>,
+		predicate?: ModelPredicate<T>,
+		skipOwn?: Symbol
+	): Observable<SubscriptionMessage<T>> {
+		const listenToAll = !modelConstructor;
+		const hasPredicate = !!predicate;
+
+		let result = this.pushStream.observable
+			.filter(({ mutator }) => {
+				return !skipOwn || mutator !== skipOwn;
+			})
+			.map(({ mutator: _mutator, ...message }) => message);
+
+		if (!listenToAll) {
+			let predicates: (PredicateObject<T> | PredicatesGroup<T>)[],
+				type: keyof PredicateGroups<T>;
+
+			if (hasPredicate) {
+				({ predicates, type } = ModelPredicateCreator.getPredicates(predicate));
+			}
+
+			result = result.filter(({ model, element }) => {
+				if (modelConstructor !== model) {
+					return false;
+				}
+
+				if (hasPredicate) {
+					return validatePredicate(element, type, predicates);
+				}
+
+				return true;
+			});
+		}
+
+		return result;
+	}
+
+	async clear(completeObservable = true) {
+		this.initialized = undefined;
+
+		await this.adapter.clear();
+
+		if (completeObservable) {
+			this.pushStream.complete();
+		}
+	}
+}
+
+class ExclusiveStorage implements StorageFacade {
+	private storage: Storage;
+	private readonly mutex = new Mutex();
+	constructor(
+		schema: InternalSchema,
+		namespaceResolver: NamespaceResolver,
+		getModelConstructorByModelName: (
+			namsespaceName: string,
+			modelName: string
+		) => PersistentModelConstructor<any>,
+		modelInstanceCreator: ModelInstanceCreator,
+		adapter?: Adapter
+	) {
+		this.storage = new Storage(
+			schema,
+			namespaceResolver,
+			getModelConstructorByModelName,
+			modelInstanceCreator,
+			adapter
+		);
+	}
+
+	runExclusive<T>(fn: (storage: Storage) => Promise<T>) {
+		return <Promise<T>>this.mutex.runExclusive(fn.bind(this, this.storage));
+	}
+
+	async save<T extends PersistentModel>(
+		model: T,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
+			storage.save<T>(model, condition, mutator)
+		);
+	}
+
+	async delete<T extends PersistentModel>(
+		model: T,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]>;
+	async delete<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]>;
+	async delete<T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
+		condition?: ModelPredicate<T>,
+		mutator?: Symbol
+	): Promise<[T[], T[]]> {
+		return this.runExclusive<[T[], T[]]>(storage => {
+			if (isModelConstructor(modelOrModelConstructor)) {
+				const modelConstructor = modelOrModelConstructor;
+
+				return storage.delete(modelConstructor, condition, mutator);
+			} else {
+				const model = modelOrModelConstructor;
+
+				return storage.delete(model, condition, mutator);
+			}
+		});
+	}
+
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate?: ModelPredicate<T>,
+		pagination?: PaginationInput
+	): Promise<T[]> {
+		return this.runExclusive<T[]>(storage =>
+			storage.query<T>(modelConstructor, predicate, pagination)
+		);
+	}
+
+	async queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		firstOrLast: QueryOne = QueryOne.FIRST
+	): Promise<T> {
+		return this.runExclusive<T>(storage =>
+			storage.queryOne<T>(modelConstructor, firstOrLast)
+		);
+	}
+
+	static getNamespace() {
+		return Storage.getNamespace();
+	}
+
+	observe<T extends PersistentModel>(
+		modelConstructor?: PersistentModelConstructor<T>,
+		predicate?: ModelPredicate<T>,
+		skipOwn?: Symbol
+	): Observable<SubscriptionMessage<T>> {
+		return this.storage.observe(modelConstructor, predicate, skipOwn);
+	}
+
+	async clear() {
+		await this.storage.clear();
+	}
+}
+
+export default ExclusiveStorage;
