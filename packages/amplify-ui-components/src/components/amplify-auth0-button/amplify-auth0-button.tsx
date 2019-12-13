@@ -35,13 +35,6 @@ export class AmplifyAuth0Button {
 
     if (!this._auth0) {
       this._auth0 = new window['auth0'].WebAuth(config);
-      // TODO Do we need this?
-      window['auth0_client'] = this._auth0;
-    }
-
-    if (!this._auth0) {
-      logger.error('Auth0 instance was not initialized');
-      return;
     }
 
     this._auth0.parseHash((err, authResult) => {
