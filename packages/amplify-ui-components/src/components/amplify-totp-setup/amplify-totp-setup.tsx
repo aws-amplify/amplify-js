@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { Logger } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { totpSetup } from './amplify-totp-setup.style';
@@ -28,8 +28,6 @@ const logger = new Logger('TOTP');
 export class AmplifyTOTPSetup {
   /** Used in order to configure TOTP for a user */
   @Prop() user: CognitoUserInterface = null;
-  /** Triggers an TOTP Event after handleSubmit method has been called */
-  @Prop() onTOTPEvent?: (event: TOTPSetupEventType, data: any, user: CognitoUserInterface) => void;
   /** Used to set autoFocus to true when TOTP Component has loaded */
   @Prop() inputProps: object = {
     autoFocus: true,
@@ -44,6 +42,28 @@ export class AmplifyTOTPSetup {
 
   componentDidLoad() {
     this.setup();
+  }
+
+  checkContact(user) {
+    if (!Auth || typeof Auth.verifiedContact !== 'function') {
+      throw new Error(NO_AUTH_MODULE_FOUND);
+    }
+    Auth.verifiedContact(user).then(data => {
+      if (!isEmpty(data.verified)) {
+        this.handleAuthStateChange(AuthState.SignedIn, user);
+      } else {
+        const newUser = Object.assign(user, data);
+        this.handleAuthStateChange(AuthState.VerifyContact, newUser);
+      }
+    });
+  }
+
+  onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
+    logger.debug('on totp event', event, data);
+
+    if (event === SETUP_TOTP && data === SUCCESS) {
+      this.checkContact(user);
+    }
   }
 
   triggerTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
@@ -113,10 +133,6 @@ export class AmplifyTOTPSetup {
       .catch(error => {
         this.setupMessage = TOTP_SETUP_FAILURE;
         logger.error(error);
-      })
-      .finally(() => {
-        this.qrCodeInput = null;
-        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
       });
   }
 
