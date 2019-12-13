@@ -6,12 +6,16 @@
 # https://github.com/actions/labeler/blob/master/README.md
 
 name: Labeler
-on: [pull_request]
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Every 1st and 30th minute
 
 jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v2
+    - uses: paulfantom/periodic-labeler@v0.0.1
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        LABEL_MAPPINGS_FILE: .github/labeler.yml
