@@ -11,7 +11,12 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials, JS } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	JS,
+	appendAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient';
 import { PutEventsCommand } from '@aws-sdk/client-personalize-events-browser/commands/PutEventsCommand';
 import { PutEventsInput } from '@aws-sdk/client-personalize-events-browser/types/PutEventsInput';
@@ -374,7 +379,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			region,
 			credentials,
 		});
-
+		appendAmplifyUserAgent(this._personalize);
 		return true;
 	}
 

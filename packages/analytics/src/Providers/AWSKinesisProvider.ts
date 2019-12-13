@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	appendAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { KinesisClient } from '@aws-sdk/client-kinesis-browser/KinesisClient';
 import { PutRecordsCommand } from '@aws-sdk/client-kinesis-browser/commands/PutRecordsCommand';
 import { AnalyticsProvider } from '../types';
@@ -219,7 +223,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			region,
 			credentials,
 		});
-
+		appendAmplifyUserAgent(this._kinesis);
 		return true;
 	}
 

@@ -3,6 +3,7 @@ import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
+import { appendAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -210,7 +211,7 @@ export class CredentialsClass {
 			signer: {} as any,
 		});
 		cognitoClient.middlewareStack.remove('SIGNATURE');
-
+		appendAmplifyUserAgent(cognitoClient);
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
@@ -273,6 +274,7 @@ export class CredentialsClass {
 			signer: {} as any,
 		});
 		cognitoClient.middlewareStack.remove('SIGNATURE');
+		appendAmplifyUserAgent(cognitoClient);
 		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
 			logins,
 			identityPoolId,
@@ -309,6 +311,7 @@ export class CredentialsClass {
 			signer: {} as any,
 		});
 		cognitoClient.middlewareStack.remove('SIGNATURE');
+		appendAmplifyUserAgent(cognitoClient);
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:

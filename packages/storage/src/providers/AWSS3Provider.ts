@@ -15,6 +15,7 @@ import {
 	Hub,
 	Credentials,
 	Parser,
+	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
 import { formatUrl } from '@aws-sdk/util-format-url';
@@ -165,10 +166,9 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
-			const url = formatUrl((await signer.presignRequest(
-				request,
-				params.Expires
-			)) as any);
+			const url = formatUrl(
+				(await signer.presignRequest(request, params.Expires)) as any
+			);
 			dispatchStorageEvent(
 				track,
 				'getSignedUrl',
@@ -479,11 +479,13 @@ export class AWSS3Provider implements StorageProvider {
 			};
 		}
 
-		return new S3Client({
+		const s3client = new S3Client({
 			region,
 			credentials,
 			...localTestingConfig,
 		});
+		appendAmplifyUserAgent(s3client);
+		return s3client;
 	}
 }
 

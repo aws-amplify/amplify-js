@@ -16,6 +16,7 @@ import {
 	Credentials,
 	ConsoleLogger as Logger,
 	Signer,
+	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
 	EventStreamMarshaller,
@@ -65,6 +66,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 
 		this.translateClient = new TranslateClient({ region, credentials });
+		appendAmplifyUserAgent(this.translateClient);
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
 			TargetLanguageCode: targetLanguageCode,
@@ -108,6 +110,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 
 		this.pollyClient = new PollyClient({ region, credentials });
+		appendAmplifyUserAgent(this.pollyClient);
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',
 			Text: input.textToSpeech.source.text,
