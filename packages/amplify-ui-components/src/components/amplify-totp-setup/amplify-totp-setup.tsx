@@ -48,14 +48,18 @@ export class AmplifyTOTPSetup {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        const newUser = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, newUser);
-      }
-    });
+    Auth.verifiedContact(user)
+      .then(data => {
+        if (!isEmpty(data.verified)) {
+          this.handleAuthStateChange(AuthState.SignedIn, user);
+        } else {
+          const newUser = Object.assign(user, data);
+          this.handleAuthStateChange(AuthState.VerifyContact, newUser);
+        }
+      })
+      .catch(error => {
+        throw new Error(error);
+      });
   }
 
   onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
