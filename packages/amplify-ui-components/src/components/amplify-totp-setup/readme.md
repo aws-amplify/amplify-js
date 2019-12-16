@@ -18,6 +18,7 @@
 
 ### Used by
 
+ - [amplify-authenticator](../amplify-authenticator)
  - [amplify-select-mfa-type](../amplify-select-mfa-type)
 
 ### Depends on
@@ -35,6 +36,7 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
+  amplify-authenticator --> amplify-totp-setup
   amplify-select-mfa-type --> amplify-totp-setup
   style amplify-totp-setup fill:#f9f,stroke:#333,stroke-width:4px
 ```

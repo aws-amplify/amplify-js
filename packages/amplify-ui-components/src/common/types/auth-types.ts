@@ -77,7 +77,7 @@ export enum MfaOption {
   NOMFA = 'NOMFA',
 }
 
-export interface MFATOTPOptions {
+export interface MFATypesInterface {
   TOTP?: boolean;
   SMS?: boolean;
   Optional?: boolean;
