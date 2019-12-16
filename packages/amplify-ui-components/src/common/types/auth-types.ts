@@ -63,7 +63,7 @@ export interface CognitoUserInterface {
   userSub?: string;
   challengeName: string;
   challengeParam: { [key: string]: any };
-};
+}
 
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
 
@@ -73,7 +73,7 @@ export enum MfaOption {
   NOMFA = 'NOMFA',
 }
 
-export interface MFATOTPOptions {
+export interface MFATypesInterface {
   TOTP?: boolean;
   SMS?: boolean;
   Optional?: boolean;
@@ -88,5 +88,5 @@ export enum ChallengeName {
 }
 
 export enum AuthFormField {
-  Password = 'password'
+  Password = 'password',
 }

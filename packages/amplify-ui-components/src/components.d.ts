@@ -12,7 +12,7 @@ import {
   AuthStateHandler,
   CognitoUserInterface,
   FederatedConfig,
-  MFATOTPOptions,
+  MFATypesInterface,
 } from './common/types/auth-types';
 import {
   FormFieldTypes,
@@ -721,7 +721,7 @@ export namespace Components {
     /**
     * Types of MFA options
     */
-    'MFATypes': MFATOTPOptions;
+    'MFATypes': MFATypesInterface;
     /**
     * Current authenticated user in order to sign requests properly for TOTP
     */
@@ -1908,7 +1908,7 @@ declare namespace LocalJSX {
     /**
     * Types of MFA options
     */
-    'MFATypes'?: MFATOTPOptions;
+    'MFATypes'?: MFATypesInterface;
     /**
     * Current authenticated user in order to sign requests properly for TOTP
     */

@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { CognitoUserInterface, MFATOTPOptions, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, MFATypesInterface, MfaOption } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   SET_PREFERRED_MFA_FAILURE,
@@ -25,7 +25,7 @@ const logger = new Logger('SelectMFAType');
 })
 export class AmplifySelectMFAType {
   /** Types of MFA options */
-  @Prop() MFATypes: MFATOTPOptions;
+  @Prop() MFATypes: MFATypesInterface;
   /** Current authenticated user in order to sign requests properly for TOTP */
   @Prop() authData: CognitoUserInterface = null;
   /** Fires when Verify is clicked */
