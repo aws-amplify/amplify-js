@@ -13,7 +13,7 @@ export class AmplifyFederatedButtons {
   /** The current authentication state. */
   @Prop() authState: AuthState = AuthState.SignIn;
   /** Federated credentials & configuration. */
-  @Prop() federated: FederatedConfig = {};
+  @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -65,13 +65,21 @@ export class AmplifyFederatedButtons {
 
         {facebookAppId && (
           <div>
-            <amplify-facebook-button appId={facebookAppId} overrideStyle={this.overrideStyle} />
+            <amplify-facebook-button
+              appId={facebookAppId}
+              handleAuthStateChange={this.handleAuthStateChange}
+              overrideStyle={this.overrideStyle}
+            />
           </div>
         )}
 
         {amazonClientId && (
           <div>
-            <amplify-amazon-button clientId={amazonClientId} overrideStyle={this.overrideStyle} />
+            <amplify-amazon-button
+              clientId={amazonClientId}
+              handleAuthStateChange={this.handleAuthStateChange}
+              overrideStyle={this.overrideStyle}
+            />
           </div>
         )}
 
@@ -83,7 +91,11 @@ export class AmplifyFederatedButtons {
 
         {auth0Config && (
           <div>
-            <amplify-auth0-button config={auth0Config} overrideStyle={this.overrideStyle} />
+            <amplify-auth0-button
+              config={auth0Config}
+              handleAuthStateChange={this.handleAuthStateChange}
+              overrideStyle={this.overrideStyle}
+            />
           </div>
         )}
       </div>

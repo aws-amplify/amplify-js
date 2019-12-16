@@ -42,6 +42,7 @@ export namespace Components {
      * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
      */
     config: FederatedConfig['auth0Config'];
+    handleAuthStateChange: AuthStateHandler;
     /**
      * (Optional) Override default styling
      */
@@ -1202,6 +1203,7 @@ declare namespace LocalJSX {
      * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
      */
     config?: FederatedConfig['auth0Config'];
+    handleAuthStateChange?: AuthStateHandler;
     /**
      * (Optional) Override default styling
      */
