@@ -1,5 +1,5 @@
 import { Component, Element, Prop, h, State, Host } from '@stencil/core';
-import { image } from './amplify-s3-image.style';
+import { container } from './amplify-s3-image.style';
 import { styleNuker } from '../../common/helpers';
 import { AMPLIFY_UI_PREFIX, NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { AccessLevel } from '../../common/types/storage-types';
@@ -35,7 +35,11 @@ export class AmplifyS3Image {
   @Prop() picker: boolean = false;
   /* Whether or not to hide the image */
   @Prop() hidden: boolean = false;
-  /** Override default styling */
+  /* Height of the image element */
+  @Prop() height: string;
+  /* Width of the image element */
+  @Prop() width: string;
+  /* Override default styling */
   @Prop() overrideStyle: boolean = false;
   /* Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string;
@@ -122,8 +126,16 @@ export class AmplifyS3Image {
 
   render() {
     return (
-      <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, image)}>
-        {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
+      <Host class={styleNuker(this.overrideStyle, STATIC_LINK_CLASS_NAME, container)}>
+        {this.src && (
+          <img
+            src={this.src as string}
+            onLoad={this.handleOnLoad}
+            onError={this.handleOnError}
+            height={this.height}
+            width={this.width}
+          />
+        )}
         {/* TODO: add PhotoPicker component */}
         {this.picker && <input type="file" accept="image/png" onChange={event => this.handlePick(event)} />}
       </Host>

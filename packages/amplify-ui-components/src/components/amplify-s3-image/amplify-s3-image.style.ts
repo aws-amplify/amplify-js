@@ -1,8 +1,5 @@
 import { css } from 'emotion';
 
-export const image = css`
-	> img {
-		width: 200px;
-		height: 200px;
-	}
+export const container = css`
+  position: 'relative';
 `;

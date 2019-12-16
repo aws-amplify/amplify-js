@@ -664,17 +664,16 @@ export namespace Components {
     fileToKey: (data: object) => string;
     handleOnError: (event: Event) => void;
     handleOnLoad: (event: Event) => void;
+    height: string;
     hidden: boolean;
     identityId: string;
     imgKey: string;
     level: AccessLevel;
-    /**
-     * Override default styling
-     */
     overrideStyle: boolean;
     path: string;
     picker: boolean;
     track: boolean;
+    width: string;
   }
   interface AmplifyScene {
     sceneName: string;
@@ -1825,17 +1824,16 @@ declare namespace LocalJSX {
     fileToKey?: (data: object) => string;
     handleOnError?: (event: Event) => void;
     handleOnLoad?: (event: Event) => void;
+    height?: string;
     hidden?: boolean;
     identityId?: string;
     imgKey?: string;
     level?: AccessLevel;
-    /**
-     * Override default styling
-     */
     overrideStyle?: boolean;
     path?: string;
     picker?: boolean;
     track?: boolean;
+    width?: string;
   }
   interface AmplifyScene {
     sceneName?: string;

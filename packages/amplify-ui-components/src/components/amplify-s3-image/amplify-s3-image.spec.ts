@@ -41,6 +41,14 @@ describe('amplify-s3-image spec:', () => {
       expect(amplifyS3Image.picker).toBe(false);
     });
 
+    it('`height` should be undefined by default', () => {
+      expect(amplifyS3Image.height).toBeUndefined();
+    });
+
+    it('`width` should be undefined by default', () => {
+      expect(amplifyS3Image.width).toBeUndefined();
+    });
+
     it('`overrideStyle` should be `false` by default', () => {
       expect(amplifyS3Image.overrideStyle).toBe(false);
     });
@@ -54,7 +62,7 @@ describe('amplify-s3-image spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it(`should render nothing without 'imgKey' or 'path'`, async () => {
+    it(`should render no img element without 'imgKey' or 'path'`, async () => {
       const page = await newSpecPage({
         components: [AmplifyS3Image],
         html: `<amplify-s3-image />`,
