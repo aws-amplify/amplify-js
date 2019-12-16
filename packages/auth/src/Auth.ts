@@ -1129,7 +1129,7 @@ export default class AuthClass {
 										logger.debug('getting user data failed', err);
 										// Make sure the user is still valid
 										if (
-											err.message === 'User is disabled' ||
+											err.message === 'User is disabled.' ||
 											err.message === 'User does not exist.' ||
 											err.message === 'Access Token has been revoked' // Session revoked by another app
 										) {
@@ -1857,7 +1857,10 @@ export default class AuthClass {
 				);
 
 				if (isCustomStateIncluded) {
-					const [, customState] = state.split('-');
+					const customState = state
+						.split('-')
+						.splice(1)
+						.join('-');
 
 					dispatchAuthEvent(
 						'customOAuthState',
