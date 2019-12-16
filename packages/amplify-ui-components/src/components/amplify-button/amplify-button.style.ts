@@ -25,7 +25,7 @@ export const button = css`
   color: var(--button-color);
   border-color: #ccc;
   text-transform: uppercase;
-  padding: 14px 0;
+  padding: 14px;
   letter-spacing: 1.1px;
   border: none;
   :active {
