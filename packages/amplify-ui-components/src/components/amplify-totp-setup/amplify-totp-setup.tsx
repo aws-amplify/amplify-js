@@ -44,6 +44,10 @@ export class AmplifyTOTPSetup {
     this.setup();
   }
 
+  buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
+    return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
+  }
+
   async checkContact(user: CognitoUserInterface) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
@@ -84,7 +88,6 @@ export class AmplifyTOTPSetup {
 
   async setup() {
     this.setupMessage = null;
-    const user = this.user;
     const issuer = encodeURI('AWSCognito');
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
@@ -92,11 +95,10 @@ export class AmplifyTOTPSetup {
     }
 
     try {
-      const secretKey = await Auth.setupTOTP(user);
+      const secretKey = await Auth.setupTOTP(this.user);
 
       logger.debug('secret key', secretKey);
-      const code = `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
-      this.code = code;
+      this.code = this.buildOtpAuthPath(this.user, issuer, secretKey);
 
       this.generateQRCode(this.code);
     } catch (error) {
