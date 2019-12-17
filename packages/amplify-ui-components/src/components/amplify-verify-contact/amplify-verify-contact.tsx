@@ -3,6 +3,14 @@ import { Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
 
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
+import {
+  VERIFY_CONTACT_VERIFY_LABEL,
+  VERIFY_CONTACT_SUBMIT_LABEL,
+  VERIFY_CONTACT_HEADER_TEXT,
+  CODE_PLACEHOLDER,
+  VERIFY_CONTACT_EMAIL_LABEL,
+  VERIFY_CONTACT_PHONE_LABEL,
+} from '../../common/constants';
 
 const logger = new Logger('amplify-verify-contact');
 
@@ -74,14 +82,14 @@ export class AmplifyVerifyContact {
     return (
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
-        headerText="Account recovery requires verified contact information"
+        headerText={VERIFY_CONTACT_HEADER_TEXT}
         overrideStyle={this.overrideStyle}
         secondaryFooterContent={
           <span>
             <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
           </span>
         }
-        submitButtonText={this.verifyAttr ? 'Submit' : 'Verify'}
+        submitButtonText={this.verifyAttr ? VERIFY_CONTACT_SUBMIT_LABEL : VERIFY_CONTACT_VERIFY_LABEL}
       >
         {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
       </amplify-form-section>
@@ -97,7 +105,7 @@ export class AmplifyVerifyContact {
           }}
           name="code"
           overrideStyle={this.overrideStyle}
-          placeholder="Code"
+          placeholder={CODE_PLACEHOLDER}
         />
       </div>
     );
@@ -123,7 +131,7 @@ export class AmplifyVerifyContact {
       <div>
         {email && (
           <amplify-radio-button
-            label="Email"
+            label={VERIFY_CONTACT_EMAIL_LABEL}
             key="email"
             name="contact"
             overrideStyle={this.overrideStyle}
@@ -133,7 +141,7 @@ export class AmplifyVerifyContact {
 
         {phone_number && (
           <amplify-radio-button
-            label="Phone Number"
+            label={VERIFY_CONTACT_PHONE_LABEL}
             key="phone_number"
             name="contact"
             overrideStyle={this.overrideStyle}
