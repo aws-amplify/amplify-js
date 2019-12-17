@@ -64,7 +64,7 @@ export class AmplifySelectMFAType {
     }
   }
 
-  verify(event: Event) {
+  async verify(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
@@ -86,24 +86,25 @@ export class AmplifySelectMFAType {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.setPreferredMFA(user, this.MFAMethod)
-      .then(data => {
-        logger.debug(SET_PREFERRED_MFA_SUCCESS, data);
-        this.selectMessage = `${SUCCESS_MFA_TYPE} ${this.MFAMethod}`;
+    try {
+      const preferredMFAData = await Auth.setPreferredMFA(user, this.MFAMethod);
+
+      logger.debug(SET_PREFERRED_MFA_SUCCESS, preferredMFAData);
+      this.selectMessage = `${SUCCESS_MFA_TYPE} ${this.MFAMethod}`;
+      // 	TODO Add Toast = showToast: true,
+    } catch (error) {
+      const { message } = error;
+
+      if (message === USER_NOT_SETUP_SOFTWARE_TOKEN_MFA || message === USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA) {
+        this.TOTPSetup = true;
+        this.selectMessage = SETUP_TOTP_REQUIRED;
         // 	TODO Add Toast = showToast: true,
-      })
-      .catch(error => {
-        const { message } = error;
-        if (message === USER_NOT_SETUP_SOFTWARE_TOKEN_MFA || message === USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA) {
-          this.TOTPSetup = true;
-          this.selectMessage = SETUP_TOTP_REQUIRED;
-          // 	TODO Add Toast = showToast: true,
-        } else {
-          logger.debug(SET_PREFERRED_MFA_FAILURE, error);
-          this.selectMessage = UNABLE_TO_SETUP_MFA_AT_THIS_TIME;
-          // 	TODO Add Toast = showToast: true,
-        }
-      });
+      } else {
+        logger.debug(SET_PREFERRED_MFA_FAILURE, error);
+        this.selectMessage = UNABLE_TO_SETUP_MFA_AT_THIS_TIME;
+        // 	TODO Add Toast = showToast: true,
+      }
+    }
   }
 
   contentBuilder() {
@@ -123,7 +124,7 @@ export class AmplifySelectMFAType {
       <amplify-form-section
         submitButtonText={SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT}
         headerText={SELECT_MFA_TYPE_HEADER_TEXT}
-        handleSubmit={this.handleSubmit}
+        handleSubmit={event => this.handleSubmit(event)}
       >
         {SMS ? (
           <amplify-radio-button
@@ -155,7 +156,6 @@ export class AmplifySelectMFAType {
       </amplify-form-section>
     );
   }
-  // Add the amplify-totp with a true flag.
   render() {
     return (
       <div>

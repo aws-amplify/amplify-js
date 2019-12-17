@@ -44,22 +44,21 @@ export class AmplifyTOTPSetup {
     this.setup();
   }
 
-  checkContact(user) {
+  async checkContact(user: CognitoUserInterface) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
-    Auth.verifiedContact(user)
-      .then(data => {
-        if (!isEmpty(data.verified)) {
-          this.handleAuthStateChange(AuthState.SignedIn, user);
-        } else {
-          const newUser = Object.assign(user, data);
-          this.handleAuthStateChange(AuthState.VerifyContact, newUser);
-        }
-      })
-      .catch(error => {
-        throw new Error(error);
-      });
+    try {
+      const dataVerifed = await Auth.verifiedContact(user);
+      if (!isEmpty(dataVerifed)) {
+        this.handleAuthStateChange(AuthState.SignedIn, user);
+      } else {
+        const newUser = Object.assign(user, dataVerifed);
+        this.handleAuthStateChange(AuthState.VerifyContact, newUser);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
@@ -83,7 +82,7 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  setup() {
+  async setup() {
     this.setupMessage = null;
     const user = this.user;
     const issuer = encodeURI('AWSCognito');
@@ -92,20 +91,20 @@ export class AmplifyTOTPSetup {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.setupTOTP(user)
-      .then(secretKey => {
-        logger.debug('secret key', secretKey);
-        const code = `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
-        this.code = code;
+    try {
+      const secretKey = await Auth.setupTOTP(user);
 
-        this.generateQRCode(this.code);
-      })
-      .catch(error => {
-        logger.debug(TOTP_SETUP_FAILURE, error);
-      });
+      logger.debug('secret key', secretKey);
+      const code = `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
+      this.code = code;
+
+      this.generateQRCode(this.code);
+    } catch (error) {
+      logger.debug(TOTP_SETUP_FAILURE, error);
+    }
   }
 
-  verifyTotpToken() {
+  async verifyTotpToken(event: Event) {
     if (event) {
       event.preventDefault();
     }
@@ -121,17 +120,18 @@ export class AmplifyTOTPSetup {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.verifyTotpToken(user, this.qrCodeInput)
-      .then(() => {
-        Auth.setPreferredMFA(user, MfaOption.TOTP);
-        this.setupMessage = TOTP_SUCCESS_MESSAGE;
-        logger.debug(TOTP_SUCCESS_MESSAGE);
-        this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
-      })
-      .catch(error => {
-        this.setupMessage = TOTP_SETUP_FAILURE;
-        logger.error(error);
-      });
+    try {
+      await Auth.verifyTotpToken(user, this.qrCodeInput);
+      await Auth.setPreferredMFA(user, MfaOption.TOTP);
+
+      this.setupMessage = TOTP_SUCCESS_MESSAGE;
+      logger.debug(TOTP_SUCCESS_MESSAGE);
+
+      this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
+    } catch (error) {
+      this.setupMessage = TOTP_SETUP_FAILURE;
+      logger.error(error);
+    }
   }
 
   // TODO add Toast component to the Top of the form section
@@ -140,7 +140,7 @@ export class AmplifyTOTPSetup {
       <amplify-form-section
         headerText={TOTP_HEADER_TEXT}
         submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
-        handleSubmit={() => this.verifyTotpToken()}
+        handleSubmit={event => this.verifyTotpToken(event)}
       >
         <div class={totpSetup}>
           <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
