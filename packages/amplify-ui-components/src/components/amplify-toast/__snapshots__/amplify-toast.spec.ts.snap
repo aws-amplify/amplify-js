@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-toast spec: Render logic -> should render \`Toast!\` 1`] = `
+<amplify-toast>
+  <div>
+    Toast!
+  </div>
+</amplify-toast>
+`;
