@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property       | Attribute | Description                                                            | Type                           | Default               |
-| -------------- | --------- | ---------------------------------------------------------------------- | ------------------------------ | --------------------- |
-| `MFATypes`     | --        | Types of MFA options                                                   | `MFATypesInterface`            | `undefined`           |
-| `authData`     | --        | Current authenticated user in order to sign requests properly for TOTP | `CognitoUserInterface`         | `null`                |
-| `handleSubmit` | --        | Fires when Verify is clicked                                           | `(submitEvent: Event) => void` | `() => this.verify()` |
+| Property       | Attribute | Description                                                            | Type                           | Default                                   |
+| -------------- | --------- | ---------------------------------------------------------------------- | ------------------------------ | ----------------------------------------- |
+| `MFATypes`     | --        | Types of MFA options                                                   | `MFATypesInterface`            | `undefined`                               |
+| `authData`     | --        | Current authenticated user in order to sign requests properly for TOTP | `CognitoUserInterface`         | `undefined`                               |
+| `handleSubmit` | --        | Fires when Verify is clicked                                           | `(submitEvent: Event) => void` | `submitEvent => this.verify(submitEvent)` |
 
 
 ## Dependencies

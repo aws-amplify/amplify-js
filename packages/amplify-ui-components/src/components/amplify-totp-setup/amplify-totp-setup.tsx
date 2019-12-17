@@ -2,10 +2,10 @@ import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { Logger, isEmpty } from '@aws-amplify/core';
-import { CognitoUserInterface, AuthStateHandler, AuthState } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { totpSetup } from './amplify-totp-setup.style';
-import { MfaMethod, TOTPSetupEventType } from './amplify-totp-setup-interface';
+import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import {
   NO_AUTH_MODULE_FOUND,
   TOTP_SETUP_FAILURE,
@@ -27,9 +27,9 @@ const logger = new Logger('TOTP');
 })
 export class AmplifyTOTPSetup {
   /** Used in order to configure TOTP for a user */
-  @Prop() user: CognitoUserInterface = null;
-  /** Used to set autoFocus to true when TOTP Component has loaded */
-  @Prop() inputProps: object = {
+  @Prop() user: CognitoUserInterface;
+
+  inputProps: object = {
     autoFocus: true,
   };
   /** Passed from the Authenticator component in order to change Authentication state */
@@ -40,7 +40,7 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
 
-  componentDidLoad() {
+  componentWillLoad() {
     this.setup();
   }
 
@@ -67,12 +67,6 @@ export class AmplifyTOTPSetup {
 
     if (event === SETUP_TOTP && data === SUCCESS) {
       this.checkContact(user);
-    }
-  }
-
-  triggerTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
-    if (this.onTOTPEvent) {
-      this.onTOTPEvent(event, data, user);
     }
   }
 
@@ -129,10 +123,10 @@ export class AmplifyTOTPSetup {
 
     Auth.verifyTotpToken(user, this.qrCodeInput)
       .then(() => {
-        Auth.setPreferredMFA(user, MfaMethod.TOTP);
+        Auth.setPreferredMFA(user, MfaOption.TOTP);
         this.setupMessage = TOTP_SUCCESS_MESSAGE;
         logger.debug(TOTP_SUCCESS_MESSAGE);
-        this.triggerTOTPEvent(SETUP_TOTP, SUCCESS, user);
+        this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
       })
       .catch(error => {
         this.setupMessage = TOTP_SETUP_FAILURE;

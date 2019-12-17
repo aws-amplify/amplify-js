@@ -27,16 +27,16 @@ export class AmplifySelectMFAType {
   /** Types of MFA options */
   @Prop() MFATypes: MFATypesInterface;
   /** Current authenticated user in order to sign requests properly for TOTP */
-  @Prop() authData: CognitoUserInterface = null;
+  @Prop() authData: CognitoUserInterface;
   /** Fires when Verify is clicked */
-  @Prop() handleSubmit: (submitEvent: Event) => void = () => this.verify();
+  @Prop() handleSubmit: (submitEvent: Event) => void = submitEvent => this.verify(submitEvent);
 
   @State() TOTPSetup: boolean = false;
   @State() selectMessage: string = null;
-  @State() mfaMethod: any = null;
+  @State() MFAMethod: any = null;
 
-  @State() isTotp: boolean = false;
-  @State() isNoMfa: boolean = false;
+  @State() isTOTP: boolean = false;
+  @State() isNoMFA: boolean = false;
   @State() isSMS: boolean = false;
 
   handleRadioButtonChange(event) {
@@ -44,8 +44,8 @@ export class AmplifySelectMFAType {
     this.selectMessage = null;
 
     // Reseting state values to default
-    this.isNoMfa = false;
-    this.isTotp = false;
+    this.isNoMFA = false;
+    this.isTOTP = false;
     this.isSMS = false;
 
     const { value, type, checked } = event.target;
@@ -56,28 +56,28 @@ export class AmplifySelectMFAType {
     }
 
     if (value === MfaOption.TOTP && checkType) {
-      this.isTotp = checked;
+      this.isTOTP = checked;
     }
 
     if (value === MfaOption.NOMFA && checkType) {
-      this.isNoMfa = checked;
+      this.isNoMFA = checked;
     }
   }
 
-  verify() {
+  verify(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
     }
 
-    logger.debug(MFA_TYPE_VALUES, { TOTP: this.isTotp, SMS: this.isSMS, 'No MFA': this.isNoMfa });
+    logger.debug(MFA_TYPE_VALUES, { TOTP: this.isTOTP, SMS: this.isSMS, 'No MFA': this.isNoMFA });
 
-    if (this.isTotp) {
-      this.mfaMethod = MfaOption.TOTP;
+    if (this.isTOTP) {
+      this.MFAMethod = MfaOption.TOTP;
     } else if (this.isSMS) {
-      this.mfaMethod = MfaOption.SMS;
-    } else if (this.isNoMfa) {
-      this.mfaMethod = MfaOption.NOMFA;
+      this.MFAMethod = MfaOption.SMS;
+    } else if (this.isNoMFA) {
+      this.MFAMethod = MfaOption.NOMFA;
     }
 
     const user = this.authData;
@@ -86,10 +86,10 @@ export class AmplifySelectMFAType {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.setPreferredMFA(user, this.mfaMethod)
+    Auth.setPreferredMFA(user, this.MFAMethod)
       .then(data => {
         logger.debug(SET_PREFERRED_MFA_SUCCESS, data);
-        this.selectMessage = `${SUCCESS_MFA_TYPE} ${this.mfaMethod}`;
+        this.selectMessage = `${SUCCESS_MFA_TYPE} ${this.MFAMethod}`;
         // 	TODO Add Toast = showToast: true,
       })
       .catch(error => {

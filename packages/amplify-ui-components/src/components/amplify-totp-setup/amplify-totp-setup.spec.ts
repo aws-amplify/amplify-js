@@ -9,8 +9,8 @@ describe('amplify-totp spec:', () => {
       totpSetup = new AmplifyTOTPSetup();
     });
 
-    it('should render `user` to null by default', () => {
-      expect(totpSetup.user).toEqual(null);
+    it('should render `user` to be undefined by default', () => {
+      expect(totpSetup.user).toBeUndefined();
     });
 
     it('should have `onTOTPEvent` be Defined', () => {

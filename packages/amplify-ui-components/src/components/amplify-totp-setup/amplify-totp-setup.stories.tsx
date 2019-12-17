@@ -1,7 +1,7 @@
 import { storiesOf } from '@storybook/html';
 
-const totpStories = storiesOf('amplify-totp', module);
+const totpSetupStories = storiesOf('amplify-totp-setup', module);
 
-totpStories.add('default', () => {
-  return `<amplify-totp></amplify-totp>`;
+totpSetupStories.add('default', () => {
+  return `<amplify-totp-setup></amplify-totp-setup>`;
 });

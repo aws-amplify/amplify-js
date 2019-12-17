@@ -9,8 +9,8 @@ describe('amplify-select-mfa-type spec:', () => {
       selectMFAType = new AmplifySelectMFAType();
     });
 
-    it('should render authData to null by default', () => {
-      expect(selectMFAType.authData).toEqual(null);
+    it('should render authData to undefined by default', () => {
+      expect(selectMFAType.authData).toBeUndefined();
     });
 
     it('should render `MFATypes` to undefined by default', () => {

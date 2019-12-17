@@ -851,10 +851,6 @@ export namespace Components {
     */
     'handleAuthStateChange': AuthStateHandler;
     /**
-    * Used to set autoFocus to true when TOTP Component has loaded
-    */
-    'inputProps': object;
-    /**
     * Used in order to configure TOTP for a user
     */
     'user': CognitoUserInterface;
@@ -2038,10 +2034,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * Used to set autoFocus to true when TOTP Component has loaded
-    */
-    'inputProps'?: object;
     /**
     * Used in order to configure TOTP for a user
     */
