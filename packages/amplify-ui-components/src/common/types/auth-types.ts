@@ -23,9 +23,13 @@ export enum AuthState {
 
 export interface FederatedConfig {
   auth0Config?: {
+    audience?: string;
     clientID: string;
     domain: string;
-    [key: string]: any;
+    responseType: string;
+    redirectUri: string;
+    returnTo?: string;
+    scope?: string;
   };
   amazonClientId?: string;
   facebookAppId?: string;
@@ -75,6 +79,12 @@ export enum MfaOption {
   TOTP = 'TOTP',
   SMS = 'SMS',
   NOMFA = 'NOMFA',
+}
+
+export interface MFATypesInterface {
+  TOTP?: boolean;
+  SMS?: boolean;
+  Optional?: boolean;
 }
 
 export enum ChallengeName {

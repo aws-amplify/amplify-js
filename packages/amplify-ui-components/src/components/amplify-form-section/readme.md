@@ -24,8 +24,10 @@
  - [amplify-federated-sign-in](../amplify-federated-sign-in)
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-require-new-password](../amplify-require-new-password)
+ - [amplify-select-mfa-type](../amplify-select-mfa-type)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-up](../amplify-sign-up)
+ - [amplify-totp-setup](../amplify-totp-setup)
 
 ### Depends on
 
@@ -42,8 +44,10 @@ graph TD;
   amplify-federated-sign-in --> amplify-form-section
   amplify-forgot-password --> amplify-form-section
   amplify-require-new-password --> amplify-form-section
+  amplify-select-mfa-type --> amplify-form-section
   amplify-sign-in --> amplify-form-section
   amplify-sign-up --> amplify-form-section
+  amplify-totp-setup --> amplify-form-section
   style amplify-form-section fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -86,6 +86,8 @@ export class AmplifyAuthenticator {
         return <amplify-require-new-password handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.VerifyContact:
         return <amplify-verify-contact handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+      case AuthState.TOTPSetup:
+        return <amplify-totp-setup handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.Loading:
         return <div>Loading...</div>;
       case AuthState.SignedIn:

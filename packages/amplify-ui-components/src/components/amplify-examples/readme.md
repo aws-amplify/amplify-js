@@ -8,6 +8,8 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-authenticator](../amplify-authenticator)
+- [amplify-select-mfa-type](../amplify-select-mfa-type)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
 - [amplify-scene](../amplify-scene)
@@ -16,6 +18,8 @@
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-select-mfa-type
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
@@ -25,6 +29,7 @@ graph TD;
   amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> amplify-require-new-password
+  amplify-authenticator --> amplify-totp-setup
   amplify-authenticator --> amplify-greetings
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
@@ -78,9 +83,15 @@ graph TD;
   amplify-require-new-password --> amplify-form-section
   amplify-require-new-password --> amplify-link
   amplify-require-new-password --> amplify-auth-fields
+  amplify-totp-setup --> amplify-form-section
+  amplify-totp-setup --> amplify-form-field
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
+  amplify-select-mfa-type --> amplify-form-section
+  amplify-select-mfa-type --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-totp-setup
+  amplify-radio-button --> amplify-label
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
