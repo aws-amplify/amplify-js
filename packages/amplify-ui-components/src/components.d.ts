@@ -12,6 +12,7 @@ import {
   AuthStateHandler,
   CognitoUserInterface,
   FederatedConfig,
+  MFATypesInterface,
 } from './common/types/auth-types';
 import {
   FormFieldTypes,
@@ -633,6 +634,10 @@ export namespace Components {
     */
     'fieldId': string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Label for the radio button
     */
     'label': string;
@@ -644,6 +649,10 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle': boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * (Optional) Value of radio button
     */
@@ -708,6 +717,20 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle': boolean;
+  }
+  interface AmplifySelectMfaType {
+    /**
+    * Types of MFA options
+    */
+    'MFATypes': MFATypesInterface;
+    /**
+    * Current authenticated user in order to sign requests properly for TOTP
+    */
+    'authData': CognitoUserInterface;
+    /**
+    * Fires when Verify is clicked
+    */
+    'handleSubmit': (submitEvent: Event) => void;
   }
   interface AmplifySignIn {
     /**
@@ -821,6 +844,16 @@ export namespace Components {
     * (Required) The text in the tooltip
     */
     'text': string;
+  }
+  interface AmplifyTotpSetup {
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange': AuthStateHandler;
+    /**
+    * Used in order to configure TOTP for a user
+    */
+    'user': CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
@@ -1080,6 +1113,12 @@ declare global {
     new (): HTMLAmplifySelectElement;
   };
 
+  interface HTMLAmplifySelectMfaTypeElement extends Components.AmplifySelectMfaType, HTMLStencilElement {}
+  var HTMLAmplifySelectMfaTypeElement: {
+    prototype: HTMLAmplifySelectMfaTypeElement;
+    new (): HTMLAmplifySelectMfaTypeElement;
+  };
+
   interface HTMLAmplifySignInElement extends Components.AmplifySignIn, HTMLStencilElement {}
   var HTMLAmplifySignInElement: {
     prototype: HTMLAmplifySignInElement;
@@ -1114,6 +1153,12 @@ declare global {
   var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
     new (): HTMLAmplifyTooltipElement;
+  };
+
+  interface HTMLAmplifyTotpSetupElement extends Components.AmplifyTotpSetup, HTMLStencilElement {}
+  var HTMLAmplifyTotpSetupElement: {
+    prototype: HTMLAmplifyTotpSetupElement;
+    new (): HTMLAmplifyTotpSetupElement;
   };
 
   interface HTMLAmplifyUsernameFieldElement extends Components.AmplifyUsernameField, HTMLStencilElement {}
@@ -1164,12 +1209,14 @@ declare global {
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
     'amplify-select': HTMLAmplifySelectElement;
+    'amplify-select-mfa-type': HTMLAmplifySelectMfaTypeElement;
     'amplify-sign-in': HTMLAmplifySignInElement;
     'amplify-sign-in-button': HTMLAmplifySignInButtonElement;
     'amplify-sign-out': HTMLAmplifySignOutElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
+    'amplify-totp-setup': HTMLAmplifyTotpSetupElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
     'rock-paper-scissor': HTMLRockPaperScissorElement;
   }
@@ -1771,6 +1818,10 @@ declare namespace LocalJSX {
     */
     'fieldId'?: string;
     /**
+    * The callback, called when the input is modified by the user.
+    */
+    'handleInputChange'?: (inputEvent: Event) => void;
+    /**
     * Label for the radio button
     */
     'label'?: string;
@@ -1782,6 +1833,10 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+    /**
+    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+    */
+    'placeholder'?: string;
     /**
     * (Optional) Value of radio button
     */
@@ -1846,6 +1901,20 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
+  }
+  interface AmplifySelectMfaType {
+    /**
+    * Types of MFA options
+    */
+    'MFATypes'?: MFATypesInterface;
+    /**
+    * Current authenticated user in order to sign requests properly for TOTP
+    */
+    'authData'?: CognitoUserInterface;
+    /**
+    * Fires when Verify is clicked
+    */
+    'handleSubmit'?: (submitEvent: Event) => void;
   }
   interface AmplifySignIn {
     /**
@@ -1960,6 +2029,16 @@ declare namespace LocalJSX {
     */
     'text'?: string;
   }
+  interface AmplifyTotpSetup {
+    /**
+    * Passed from the Authenticator component in order to change Authentication state
+    */
+    'handleAuthStateChange'?: AuthStateHandler;
+    /**
+    * Used in order to configure TOTP for a user
+    */
+    'user'?: CognitoUserInterface;
+  }
   interface AmplifyUsernameField {
     /**
     * Will disable the input if set to true
@@ -2036,12 +2115,14 @@ declare namespace LocalJSX {
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
     'amplify-select': AmplifySelect;
+    'amplify-select-mfa-type': AmplifySelectMfaType;
     'amplify-sign-in': AmplifySignIn;
     'amplify-sign-in-button': AmplifySignInButton;
     'amplify-sign-out': AmplifySignOut;
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
     'amplify-tooltip': AmplifyTooltip;
+    'amplify-totp-setup': AmplifyTotpSetup;
     'amplify-username-field': AmplifyUsernameField;
     'rock-paper-scissor': RockPaperScissor;
   }
@@ -2089,12 +2170,14 @@ declare module "@stencil/core" {
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
+      'amplify-select-mfa-type': LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
       'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
       'amplify-sign-out': LocalJSX.AmplifySignOut & JSXBase.HTMLAttributes<HTMLAmplifySignOutElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
+      'amplify-totp-setup': LocalJSX.AmplifyTotpSetup & JSXBase.HTMLAttributes<HTMLAmplifyTotpSetupElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
       'rock-paper-scissor': LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
     }

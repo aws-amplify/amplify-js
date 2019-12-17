@@ -77,6 +77,12 @@ export enum MfaOption {
   NOMFA = 'NOMFA',
 }
 
+export interface MFATypesInterface {
+  TOTP?: boolean;
+  SMS?: boolean;
+  Optional?: boolean;
+}
+
 export enum ChallengeName {
   SoftwareTokenMFA = 'SOFTWARE_TOKEN_MFA',
   SMSMFA = 'SMS_MFA',

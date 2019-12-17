@@ -31,6 +31,7 @@
  - [amplify-email-field](../amplify-email-field)
  - [amplify-password-field](../amplify-password-field)
  - [amplify-phone-field](../amplify-phone-field)
+ - [amplify-totp-setup](../amplify-totp-setup)
  - [amplify-username-field](../amplify-username-field)
 
 ### Depends on
@@ -50,6 +51,7 @@ graph TD;
   amplify-email-field --> amplify-form-field
   amplify-password-field --> amplify-form-field
   amplify-phone-field --> amplify-form-field
+  amplify-totp-setup --> amplify-form-field
   amplify-username-field --> amplify-form-field
   style amplify-form-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
