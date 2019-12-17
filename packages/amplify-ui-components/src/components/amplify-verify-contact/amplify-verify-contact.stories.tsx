@@ -6,22 +6,18 @@ export default {
   title: 'amplify-verify-contact',
 };
 
-const unverified = {
-  unverified: {
-    email: 'email@amazon.com',
-    phone_number: '+12345678901',
-  },
-};
-
 export const withNoProps = () => <amplify-verify-contact />;
 
-export const withAuthState = () => (
+export const withUnverifiedUser = () => (
   <amplify-verify-contact
-    authData={unverified}
-    // @ts-ignore
-    authState="verifyContact"
-    onAuthEvent={(...args) => console.info('onAuthEvent', ...args)}
-    onStateChange={(...args) => console.info('onStateChange', ...args)}
+    handleAuthStateChange={(...args) => console.info('onStateChange', ...args)}
     overrideStyle={knobs.overrideStyleKnob()}
+    // @ts-ignore Type '{ unverified: { email: string; phone_number: string; }; }' is missing the following properties from type 'CognitoUserInterface': challengeName, challengeParam
+    user={{
+      unverified: {
+        email: 'email@amazon.com',
+        phone_number: '+12345678901',
+      },
+    }}
   />
 );

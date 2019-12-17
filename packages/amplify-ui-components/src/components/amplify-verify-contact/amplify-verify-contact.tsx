@@ -2,7 +2,7 @@ import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
 
-import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-verify-contact');
 
@@ -11,20 +11,13 @@ const logger = new Logger('amplify-verify-contact');
   shadow: false,
 })
 export class AmplifyVerifyContact {
-  @Prop() authData: any;
-  @Prop() authState: AuthState;
-  @Prop() onAuthEvent: any;
-  @Prop() onStateChange: AuthStateHandler;
+  /** Passed from the Authenticator component in order to change Authentication state */
+  @Prop() handleAuthStateChange: AuthStateHandler;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
+  /** Used for the username to be passed to resend code */
+  @Prop() user: CognitoUserInterface;
   @State() verifyAttr: any;
-
-  error(err) {
-    this.triggerAuthEvent({
-      type: 'error',
-      data: this.errorMessage(err),
-    });
-  }
 
   errorMessage(err) {
     if (typeof err === 'string') {
@@ -42,13 +35,6 @@ export class AmplifyVerifyContact {
     this.verifyAttr ? this.submit(form.code.value) : this.verify(form.contact.value);
   }
 
-  triggerAuthEvent(event) {
-    const state = this.authState;
-    if (this.onAuthEvent) {
-      this.onAuthEvent(state, event);
-    }
-  }
-
   submit(code) {
     const attr = this.verifyAttr;
 
@@ -60,15 +46,15 @@ export class AmplifyVerifyContact {
       .then(data => {
         logger.debug(data);
 
-        this.onStateChange(AuthState.SignedIn, this.authData);
+        this.handleAuthStateChange(AuthState.SignedIn, this.user);
         this.verifyAttr = null;
       })
-      .catch(err => this.error(err));
+      .catch(logger.error);
   }
 
   verify(contact: 'email' | 'phone') {
     if (!contact) {
-      this.error('Neither Email nor Phone Number selected');
+      logger.error('Neither Email nor Phone Number selected');
       return;
     }
 
@@ -81,14 +67,10 @@ export class AmplifyVerifyContact {
         logger.debug(data);
         this.verifyAttr = contact;
       })
-      .catch(err => this.error(err));
+      .catch(logger.error);
   }
 
   render() {
-    if (this.authState !== AuthState.VerifyContact) {
-      return null;
-    }
-
     return (
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
@@ -96,7 +78,7 @@ export class AmplifyVerifyContact {
         overrideStyle={this.overrideStyle}
         secondaryFooterContent={
           <span>
-            <amplify-link onClick={() => this.onStateChange(AuthState.SignedIn, this.authData)}>Skip</amplify-link>
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
           </span>
         }
         submitButtonText={this.verifyAttr ? 'Submit' : 'Verify'}
@@ -122,12 +104,13 @@ export class AmplifyVerifyContact {
   }
 
   renderVerify() {
-    const user = this.authData;
+    const user = this.user;
 
     if (!user) {
       logger.debug('no user for verify');
       return null;
     }
+
     const { unverified } = user;
 
     if (!unverified) {
