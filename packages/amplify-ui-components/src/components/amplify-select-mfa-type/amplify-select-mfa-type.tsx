@@ -33,7 +33,7 @@ export class AmplifySelectMFAType {
 
   @State() TOTPSetup: boolean = false;
   @State() selectMessage: string = null;
-  @State() MFAMethod: any = null;
+  @State() MFAMethod: MfaOption = null;
 
   @State() isTOTP: boolean = false;
   @State() isNoMFA: boolean = false;

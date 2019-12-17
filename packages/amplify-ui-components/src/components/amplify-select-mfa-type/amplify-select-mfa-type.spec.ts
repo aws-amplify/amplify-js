@@ -26,5 +26,23 @@ describe('amplify-select-mfa-type spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
+
+    it('should render `TOTP, SMS, No MFA` values', async () => {
+      const page = await newSpecPage({
+        components: [AmplifySelectMFAType],
+        html: `<div></div>`,
+      });
+
+      let component = page.doc.createElement('amplify-select-mfa-type');
+      (component as any).MFATypes = {
+        SMS: true,
+        Optional: true,
+        TOTP: true,
+      };
+
+      page.root.appendChild(component);
+      await page.waitForChanges();
+      expect(page.root).toMatchSnapshot();
+    });
   });
 });
