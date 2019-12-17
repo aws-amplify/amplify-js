@@ -94,3 +94,34 @@ export const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 // Error message Common Constants
 export const PHONE_EMPTY_ERROR_MESSAGE = 'Phone number can not be empty';
 export const NO_AUTH_MODULE_FOUND = 'No Auth module found, please ensure @aws-amplify/auth is imported';
+
+// TOTP
+export const TOTP_HEADER_TEXT = 'Scan then enter verification code';
+export const TOTP_SUBMIT_BUTTON_TEXT = 'Verify Security Token';
+export const ALT_QR_CODE = 'qrcode';
+export const TOTP_LABEL = 'Enter Security Code:';
+
+// TOTP Messages
+export const TOTP_SETUP_FAILURE = 'TOTP Setup has failed';
+export const NO_TOTP_CODE_PROVIDED = 'No TOTP Code provided';
+export const TOTP_SUCCESS_MESSAGE = 'Setup TOTP successfully!';
+export const SETUP_TOTP = 'SETUP_TOTP';
+export const SETUP_TOTP_REQUIRED = 'TOTP needs to be configured';
+
+// Select MFA Types
+export const SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT = 'Verify';
+export const SELECT_MFA_TYPE_HEADER_TEXT = 'Select MFA Type';
+export const MFA_TYPE_VALUES = 'MFA Type Values';
+
+// Select MFA Types Messages
+export const SET_PREFERRED_MFA_FAILURE = 'Set Preferred MFA failed';
+export const SET_PREFERRED_MFA_SUCCESS = 'Set Preferred MFA Succeeded';
+export const USER_NOT_SETUP_SOFTWARE_TOKEN_MFA = 'User has not set up software token mfa';
+export const USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA = 'User has not verified software token mfa';
+export const UNABLE_TO_SETUP_MFA_AT_THIS_TIME = 'Failed! Unable to configure MFA at this time';
+export const SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:';
+export const LESS_THAN_TWO_MFA_VALUES_MESSAGE = 'Less than two mfa types available';
+
+// Common events
+export const SUCCESS = 'SUCCESS';
+export const FAILURE = 'FAILURE';

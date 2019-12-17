@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-totp spec: Render logic -> should render a \`less than 2 mfa types available\` message by default 1`] = `
+<amplify-totp-setup>
+  <amplify-form-section headertext="Scan then enter verification code" submitbuttontext="Verify Security Token">
+    <div class="css-1grkfdt">
+      <img alt="qrcode">
+      <amplify-form-field fieldid="totpCode" label="Enter Security Code:" name="totpCode"></amplify-form-field>
+    </div>
+  </amplify-form-section>
+</amplify-totp-setup>
+`;
