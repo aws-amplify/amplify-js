@@ -88,6 +88,8 @@ export class AmplifyAuthenticator {
         return <amplify-verify-contact handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.Loading:
         return <div>Loading...</div>;
+      default:
+        throw new Error(`Unhandled auth state: ${authState}`);
     }
   }
 
