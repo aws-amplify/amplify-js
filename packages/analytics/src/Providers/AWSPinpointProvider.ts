@@ -521,27 +521,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		const { region } = config;
 		logger.debug('init clients with credentials', credentials);
 		this.pinpointClient = new PinpointClient({ region, credentials });
-
-		if (Platform.isReactNative) {
-			const appendUserAgentMiddleware = next => args => {
-				const { request } = args;
-				if (!request.headers['User-Agent']) {
-					request.headers['User-Agent'] = Platform.userAgent;
-				} else {
-					request.headers['User-Agent'] += Platform.userAgent;
-				}
-				return next({
-					...args,
-					request,
-				});
-			};
-
-			this.pinpointClient.middlewareStack.add(appendUserAgentMiddleware, {
-				step: 'build',
-				priority: 0,
-				tags: { CUSTOM_USER_AGENT: true },
-			});
-		}
+		appendAmplifyUserAgent(this.pinpointClient);
 	}
 
 	private async _getEndpointId(cacheKey) {
