@@ -26,12 +26,12 @@ const logger = new Logger('TOTP');
   shadow: false,
 })
 export class AmplifyTOTPSetup {
-  /** Used in order to configure TOTP for a user */
-  @Prop() user: CognitoUserInterface;
-
   inputProps: object = {
     autoFocus: true,
   };
+
+  /** Used in order to configure TOTP for a user */
+  @Prop() user: CognitoUserInterface;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler;
 
@@ -103,6 +103,7 @@ export class AmplifyTOTPSetup {
       this.generateQRCode(this.code);
     } catch (error) {
       logger.debug(TOTP_SETUP_FAILURE, error);
+      throw new Error(error);
     }
   }
 
