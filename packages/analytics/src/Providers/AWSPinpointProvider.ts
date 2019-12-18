@@ -656,18 +656,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _customizePinpointClientReq() {
-		this.pinpointClient.customizeRequests(request => {
-			request.on('build', req => {
-				if (Platform.isReactNative) {
+		// TODO: Find a middleware to do this with AWS V3 SDK
+		if (Platform.isReactNative) {
+			this.pinpointClient.customizeRequests(request => {
+				request.on('build', req => {
 					req.httpRequest.headers['user-agent'] = Platform.userAgent;
-				}
-
-				// TODO: remove this after we switch to using the current API (non-legacy)
-				if (req.httpRequest.path.includes('/events')) {
-					req.httpRequest.path += '/legacy';
-				}
+				});
 			});
-		});
+		}
 	}
 
 	private async _getEndpointId(cacheKey) {
