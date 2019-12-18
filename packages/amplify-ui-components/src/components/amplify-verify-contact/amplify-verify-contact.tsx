@@ -54,7 +54,7 @@ export class AmplifyVerifyContact {
     }
   }
 
-  async verify(contact: 'email' | 'phone') {
+  async verify(contact: keyof CognitoUserInterface['unverified']) {
     if (!contact) {
       logger.error('Neither Email nor Phone Number selected');
       return;
