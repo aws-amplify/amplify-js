@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-toast spec: Render logic -> should render \`Toast!\` 1`] = `
+exports[`amplify-toast spec: Render logic -> should render an empty link tag by default 1`] = `
 <amplify-toast>
   <!---->
   <div class="css-1toxen">

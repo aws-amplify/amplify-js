@@ -14,7 +14,7 @@ describe('amplify-toast spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it('should render `Toast!`', async () => {
+    it('should render an empty link tag by default', async () => {
       const page = await newSpecPage({
         components: [AmplifyToast],
         html: `<amplify-toast></amplify-toast>`,
