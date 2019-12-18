@@ -27,14 +27,6 @@ export class AmplifyVerifyContact {
   @Prop() user: CognitoUserInterface;
   @State() verifyAttr: any;
 
-  errorMessage(err) {
-    if (typeof err === 'string') {
-      return err;
-    }
-
-    return err.message ? err.message : JSON.stringify(err);
-  }
-
   handleSubmit(event) {
     event.preventDefault();
 
