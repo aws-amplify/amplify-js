@@ -36,24 +36,25 @@ export class AmplifyVerifyContact {
     this.verifyAttr ? this.submit(form.code.value) : this.verify(form.contact.value);
   }
 
-  submit(code) {
+  async submit(code) {
     const attr = this.verifyAttr;
 
     if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.verifyCurrentUserAttributeSubmit(attr, code)
-      .then(data => {
-        logger.debug(data);
+    try {
+      const data = await Auth.verifyCurrentUserAttributeSubmit(attr, code);
 
-        this.handleAuthStateChange(AuthState.SignedIn, this.user);
-        this.verifyAttr = null;
-      })
-      .catch(logger.error);
+      logger.debug(data);
+      this.handleAuthStateChange(AuthState.SignedIn, this.user);
+      this.verifyAttr = null;
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
-  verify(contact: 'email' | 'phone') {
+  async verify(contact: 'email' | 'phone') {
     if (!contact) {
       logger.error('Neither Email nor Phone Number selected');
       return;
@@ -63,12 +64,14 @@ export class AmplifyVerifyContact {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    Auth.verifyCurrentUserAttribute(contact)
-      .then(data => {
-        logger.debug(data);
-        this.verifyAttr = contact;
-      })
-      .catch(logger.error);
+    try {
+      const data = await Auth.verifyCurrentUserAttribute(contact);
+
+      logger.debug(data);
+      this.verifyAttr = contact;
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   render() {
