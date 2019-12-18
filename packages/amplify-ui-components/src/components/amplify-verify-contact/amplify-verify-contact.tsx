@@ -10,6 +10,7 @@ import {
   CODE_PLACEHOLDER,
   VERIFY_CONTACT_EMAIL_LABEL,
   VERIFY_CONTACT_PHONE_LABEL,
+  NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 
 const logger = new Logger('amplify-verify-contact');
@@ -39,7 +40,7 @@ export class AmplifyVerifyContact {
     const attr = this.verifyAttr;
 
     if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     Auth.verifyCurrentUserAttributeSubmit(attr, code)
@@ -59,7 +60,7 @@ export class AmplifyVerifyContact {
     }
 
     if (!Auth || typeof Auth.verifyCurrentUserAttribute !== 'function') {
-      throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+      throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
     Auth.verifyCurrentUserAttribute(contact)
