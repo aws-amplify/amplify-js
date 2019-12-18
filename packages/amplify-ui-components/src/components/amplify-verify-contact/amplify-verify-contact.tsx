@@ -108,7 +108,7 @@ export class AmplifyVerifyContact {
     const user = this.user;
 
     if (!user) {
-      logger.debug('no user for verify');
+      logger.debug('No user to verify');
       return null;
     }
 
