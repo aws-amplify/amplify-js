@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.5.0",
+  "version": "2.1.1",
   "description": "Auth category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -16,6 +16,8 @@
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
@@ -32,8 +34,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^1.1.4",
-    "@aws-amplify/core": "^1.2.4",
+    "@aws-amplify/cache": "^2.1.1",
+    "@aws-amplify/core": "^2.2.0",
     "amazon-cognito-identity-js": "^3.2.0",
     "crypto-js": "^3.1.9-1"
   },
