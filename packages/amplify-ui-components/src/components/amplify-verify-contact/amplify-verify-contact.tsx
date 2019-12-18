@@ -111,14 +111,14 @@ export class AmplifyVerifyContact {
     const user = this.user;
 
     if (!user) {
-      logger.debug('no user for verify');
+      logger.debug('No user to verify');
       return null;
     }
 
     const { unverified } = user;
 
     if (!unverified) {
-      logger.debug('no unverified on user');
+      logger.debug('Unverified variable does not exist on user');
       return null;
     }
     const { email, phone_number } = unverified;
