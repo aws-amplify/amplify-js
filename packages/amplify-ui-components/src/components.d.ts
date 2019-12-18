@@ -31,6 +31,9 @@ import {
   IconNameType,
 } from './components/amplify-icon/icons';
 import {
+  AccessLevel,
+} from './common/types/storage-types';
+import {
   AmplifySceneError,
 } from './components/amplify-scene/amplify-scene-interface';
 import {
@@ -688,6 +691,23 @@ export namespace Components {
     */
     'user': CognitoUserInterface;
   }
+  interface AmplifyS3Image {
+    'body': object;
+    'contentType': string;
+    'fileToKey': (data: object) => string;
+    'handleOnError': (event: Event) => void;
+    'handleOnLoad': (event: Event) => void;
+    'height': string;
+    'hidden': boolean;
+    'identityId': string;
+    'imgKey': string;
+    'level': AccessLevel;
+    'overrideStyle': boolean;
+    'path': string;
+    'picker': boolean;
+    'track': boolean;
+    'width': string;
+  }
   interface AmplifyScene {
     'sceneName': string;
   }
@@ -1089,6 +1109,12 @@ declare global {
     new (): HTMLAmplifyRequireNewPasswordElement;
   };
 
+  interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {}
+  var HTMLAmplifyS3ImageElement: {
+    prototype: HTMLAmplifyS3ImageElement;
+    new (): HTMLAmplifyS3ImageElement;
+  };
+
   interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {}
   var HTMLAmplifySceneElement: {
     prototype: HTMLAmplifySceneElement;
@@ -1205,6 +1231,7 @@ declare global {
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
     'amplify-require-new-password': HTMLAmplifyRequireNewPasswordElement;
+    'amplify-s3-image': HTMLAmplifyS3ImageElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
     'amplify-section': HTMLAmplifySectionElement;
@@ -1872,6 +1899,23 @@ declare namespace LocalJSX {
     */
     'user'?: CognitoUserInterface;
   }
+  interface AmplifyS3Image {
+    'body'?: object;
+    'contentType'?: string;
+    'fileToKey'?: (data: object) => string;
+    'handleOnError'?: (event: Event) => void;
+    'handleOnLoad'?: (event: Event) => void;
+    'height'?: string;
+    'hidden'?: boolean;
+    'identityId'?: string;
+    'imgKey'?: string;
+    'level'?: AccessLevel;
+    'overrideStyle'?: boolean;
+    'path'?: string;
+    'picker'?: boolean;
+    'track'?: boolean;
+    'width'?: string;
+  }
   interface AmplifyScene {
     'sceneName'?: string;
   }
@@ -2111,6 +2155,7 @@ declare namespace LocalJSX {
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
     'amplify-require-new-password': AmplifyRequireNewPassword;
+    'amplify-s3-image': AmplifyS3Image;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
     'amplify-section': AmplifySection;
@@ -2166,6 +2211,7 @@ declare module "@stencil/core" {
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
       'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+      'amplify-s3-image': LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;

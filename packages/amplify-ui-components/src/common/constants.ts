@@ -94,6 +94,7 @@ export const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 // Error message Common Constants
 export const PHONE_EMPTY_ERROR_MESSAGE = 'Phone number can not be empty';
 export const NO_AUTH_MODULE_FOUND = 'No Auth module found, please ensure @aws-amplify/auth is imported';
+export const NO_STORAGE_MODULE_FOUND = 'No Storage module found, please ensure @aws-amplify/storage is imported';
 
 // TOTP
 export const TOTP_HEADER_TEXT = 'Scan then enter verification code';

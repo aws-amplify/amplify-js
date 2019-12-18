@@ -13,6 +13,8 @@
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
 - [amplify-scene](../amplify-scene)
+- [amplify-authenticator](../amplify-authenticator)
+- [amplify-s3-image](../amplify-s3-image)
 
 ### Graph
 ```mermaid
@@ -23,6 +25,8 @@ graph TD;
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
+  amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-s3-image
   amplify-authenticator --> amplify-sign-in
   amplify-authenticator --> amplify-confirm-sign-in
   amplify-authenticator --> amplify-sign-up
