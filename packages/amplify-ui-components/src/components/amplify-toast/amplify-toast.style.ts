@@ -10,9 +10,9 @@ export const toast = css`
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
   padding: 16px;
-  background-color: var(--lightSquidInk);
-  font-size: 14px;
-  color: #fff;
+  background-color: var(--light-squid-ink);
+  font-size: var(--secondary-font-size);
+  color: var(--white);
   box-sizing: border-box;
 
   > span {
@@ -38,7 +38,7 @@ export const toastClose = css`
     top: 50%;
     left: 0;
     margin-top: -1px;
-    background: var(--lightGrey);
+    background: var(--light-grey);
   }
 
   :hover::before,

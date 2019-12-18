@@ -2,8 +2,9 @@
 
 exports[`amplify-toast spec: Render logic -> should render \`Toast!\` 1`] = `
 <amplify-toast>
-  <div>
-    Toast!
+  <!---->
+  <div class="css-1toxen">
+    <a class="css-1s6iclz"></a>
   </div>
 </amplify-toast>
 `;

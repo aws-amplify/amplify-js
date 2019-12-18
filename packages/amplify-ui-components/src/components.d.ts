@@ -832,7 +832,10 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyToast {
-    'message': string;
+    /**
+    * Used in order to add a clickable `exit` button for the Toast component
+    */
+    'onClose': () => void;
   }
   interface AmplifyTooltip {
     /**
@@ -2026,7 +2029,10 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyToast {
-    'message'?: string;
+    /**
+    * Used in order to add a clickable `exit` button for the Toast component
+    */
+    'onClose'?: () => void;
   }
   interface AmplifyTooltip {
     /**

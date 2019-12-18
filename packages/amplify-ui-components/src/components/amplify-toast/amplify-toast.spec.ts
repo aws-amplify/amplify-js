@@ -9,8 +9,8 @@ describe('amplify-toast spec:', () => {
       toast = new AmplifyToast();
     });
 
-    it('should have message be undefined by default', () => {
-      expect(toast.message).toBeUndefined();
+    it('should have `onClose` be undefined by default', () => {
+      expect(toast.onClose).toBeUndefined();
     });
   });
   describe('Render logic ->', () => {

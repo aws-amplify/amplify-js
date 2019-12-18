@@ -1,20 +1,21 @@
 import { Component, Prop, h } from '@stencil/core';
 
-import { Logger } from '@aws-amplify/core';
-
-const logger = new Logger('Toast');
+import { toast, toastClose } from './amplify-toast.style';
 
 @Component({
   tag: 'amplify-toast',
   shadow: false,
 })
 export class AmplifyToast {
-  @Prop() message: string;
+  /** Used in order to add a clickable `exit` button for the Toast component */
+  @Prop() onClose: () => void;
 
-  componentDidLoad() {
-    logger.info('Toast has completed loading.');
-  }
   render() {
-    return <div>Toast!</div>;
+    return (
+      <div class={toast}>
+        <slot />
+        <a class={toastClose} onClick={this.onClose} />
+      </div>
+    );
   }
 }
