@@ -258,7 +258,7 @@ describe('AnalyticsProvider test', () => {
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		test('record without appId', async () => {
@@ -273,7 +273,7 @@ describe('AnalyticsProvider test', () => {
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		test('record without region', async () => {
@@ -288,18 +288,14 @@ describe('AnalyticsProvider test', () => {
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		describe('record test', () => {
 			test('custom events', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async () => {
-						return response;
-					});
+				const spyon = jest.spyOn(PinpointClient.prototype, 'send');
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -331,7 +327,7 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 				expect(resolve).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('custom event error', async () => {
@@ -341,7 +337,7 @@ describe('AnalyticsProvider test', () => {
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
 					.mockImplementationOnce(async () => {
-						throw 'err';
+						throw 'data';
 					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -352,7 +348,7 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 		});
 
@@ -360,11 +356,7 @@ describe('AnalyticsProvider test', () => {
 			test('happy case', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async () => {
-						return response;
-					});
+				const spyon = jest.spyOn(PinpointClient.prototype, 'send');
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -396,7 +388,7 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 				expect(resolve).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('session start error', async () => {
@@ -405,7 +397,7 @@ describe('AnalyticsProvider test', () => {
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						throw 'err';
+						throw 'data';
 					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -417,7 +409,7 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 				expect(resolve).not.toBeCalled();
 				expect(reject).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 		});
 
@@ -440,7 +432,8 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 
 				const expectedUrl =
-					'https://pinpoint.region.amazonaws.com/v1/apps/appId/events?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=accessKeyId%2FisoStrin%2Fregion%2Fmobiletargeting%2Faws4_request&X-Amz-Date=isoString&X-Amz-Security-Token=sessionToken&X-Amz-SignedHeaders=host&X-Amz-Signature=c43336d302010144ca492cc6f42d5545e0ef01c00bc71d99dc7597351f027810';
+					'https://pinpoint.region.amazonaws.com/v1/apps/appId/events/legacy?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=accessKeyId%2FisoStrin%2Fregion%2Fmobiletargeting%2Faws4_request&X-Amz-Date=isoString&X-Amz-Security-Token=sessionToken&X-Amz-SignedHeaders=host&X-Amz-Signature=9dfa2a29782d344c56a9ab99fe58db6d1748e097ae418c398b26ab372a23f22f';
+
 				const expectedData = JSON.stringify({
 					BatchItem: {
 						endpointId: {
@@ -463,7 +456,7 @@ describe('AnalyticsProvider test', () => {
 
 				expect(spyon).toBeCalledWith(expectedUrl, expectedData);
 				expect(resolve).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('session stop error', async () => {
@@ -472,7 +465,7 @@ describe('AnalyticsProvider test', () => {
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
 					.mockImplementationOnce(async () => {
-						throw 'err';
+						throw 'data';
 					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -483,7 +476,7 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 		});
 
@@ -527,7 +520,7 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 				expect(resolve).toBeCalled();
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('happy case with client context provided', async () => {
@@ -571,7 +564,7 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('happy case with default enpoint configure provided', async () => {
@@ -630,7 +623,7 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('happy case with specified enpoint configure provided', async () => {
@@ -695,11 +688,13 @@ describe('AnalyticsProvider test', () => {
 					},
 				});
 
-				spyon.mockClear();
+				spyon.mockRestore();
 			});
 
 			test('error case', async () => {
 				const analytics = new AnalyticsProvider();
+				const mockError = { message: 'error' };
+
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
@@ -714,8 +709,30 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
-				expect(reject).toBeCalled();
-				spyon.mockClear();
+				expect(reject).toBeCalledWith(mockError);
+				spyon.mockRestore();
+			});
+
+			test('BAD_REQUEST_CODE without message rejects error', async () => {
+				const analytics = new AnalyticsProvider();
+				const mockError = { debug: 'error', statusCode: 400 };
+
+				analytics.configure(options);
+				const spyon = jest
+					.spyOn(PinpointClient.prototype, 'send')
+					.mockImplementationOnce(async params => {
+						throw mockError;
+					});
+
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return Promise.resolve(credentials);
+				});
+
+				const params = { event: { name: '_update_endpoint', immediate: true } };
+
+				await analytics.record(params, { resolve, reject });
+				expect(reject).toBeCalledWith(mockError);
+				spyon.mockRestore();
 			});
 		});
 	});

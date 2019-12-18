@@ -31,16 +31,20 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "devDependencies": {
+    "@types/zen-observable": "^0.8.0"
+  },
   "dependencies": {
-    "@types/zen-observable": "^0.5.3",
-    "@aws-amplify/auth": "^1.5.0",
-    "@aws-amplify/cache": "^1.1.4",
-    "@aws-amplify/core": "^1.2.4",
-    "@aws-amplify/pubsub": "^1.2.4",
+    "@aws-amplify/auth": "^2.1.1",
+    "@aws-amplify/cache": "^2.1.1",
+    "@aws-amplify/core": "^2.2.0",
     "@aws-amplify/api-rest": "^1.0.0",
-    "graphql": "0.13.0",
+    "graphql": "14.0.0",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
+  },
+  "peerDependencies": {
+    "@aws-amplify/pubsub": "^2.1.1"
   },
   "jest": {
     "globals": {

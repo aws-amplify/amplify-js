@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -29,20 +29,19 @@ const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
 export class AWSKinesisProvider implements AnalyticsProvider {
-	private _config;
+	protected _config;
 	private _kinesis;
 	private _buffer;
 	private _timer;
 
 	constructor(config?) {
 		this._buffer = [];
-		this._config = config ? config : {};
+		this._config = config || {};
 		this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
 		this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
 		this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
 
-		// flush event buffer
 		this._setupTimer();
 	}
 
@@ -51,7 +50,6 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			clearInterval(this._timer);
 		}
 		const { flushSize, flushInterval } = this._config;
-		const that = this;
 		this._timer = setInterval(() => {
 			const size =
 				this._buffer.length < flushSize ? this._buffer.length : flushSize;
@@ -60,7 +58,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 				const params = this._buffer.shift();
 				events.push(params);
 			}
-			that._sendFromBuffer(events);
+			this._sendFromBuffer(events);
 		}, flushInterval);
 	}
 
@@ -84,7 +82,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 	 */
 	public configure(config): object {
 		logger.debug('configure Analytics', config);
-		const conf = config ? config : {};
+		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
 
 		this._setupTimer();
@@ -157,9 +155,8 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _sendEvents(group) {
+	protected _sendEvents(group) {
 		if (group.length === 0) {
-			// logger.debug('events array is empty, directly return');
 			return;
 		}
 
@@ -203,7 +200,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _init(config, credentials) {
+	protected _init(config, credentials) {
 		logger.debug('init clients');
 
 		if (
@@ -218,6 +215,11 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 
 		this._config.credentials = credentials;
 		const { region } = config;
+
+		return this._initKinesis(region, credentials);
+	}
+
+	private _initKinesis(region, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
 		this._kinesis = new KinesisClient({
 			region,
@@ -232,11 +234,10 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 	 * check if current credentials exists
 	 */
 	private _getCredentials() {
-		const that = this;
 		return Credentials.get()
 			.then(credentials => {
 				if (!credentials) return null;
-				logger.debug('set credentials for analytics', that._config.credentials);
+				logger.debug('set credentials for analytics', this._config.credentials);
 				return Credentials.shear(credentials);
 			})
 			.catch(err => {

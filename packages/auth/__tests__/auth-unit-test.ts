@@ -765,13 +765,13 @@ describe('auth unit test', () => {
 			const spyon2 = jest
 				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
-					return Promise.reject('User is disabled');
+					return Promise.reject('User is disabled.');
 				});
 			expect.assertions(2);
 			try {
 				await auth.signIn('username', 'password');
 			} catch (e) {
-				expect(e).toBe('User is disabled');
+				expect(e).toBe('User is disabled.');
 				expect(spyon2).toBeCalled();
 			}
 
@@ -3122,7 +3122,7 @@ describe('auth unit test', () => {
 				.mockImplementationOnce(callback => {
 					callback(
 						{
-							message: 'User is disabled',
+							message: 'User is disabled.',
 						},
 						null
 					);
@@ -3145,7 +3145,7 @@ describe('auth unit test', () => {
 				await auth.currentUserPoolUser();
 			} catch (e) {
 				expect(e).toEqual({
-					message: 'User is disabled',
+					message: 'User is disabled.',
 				});
 			}
 

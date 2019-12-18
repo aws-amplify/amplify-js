@@ -54,10 +54,8 @@ const trackers = {
  */
 export class AnalyticsClass {
 	private _config;
-	private _provider;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled;
-	private _autoSessionRecord;
 	private _trackers;
 
 	/**
@@ -254,7 +252,7 @@ export class AnalyticsClass {
 	}
 
 	public async updateEndpoint(attrs, provider?) {
-		const event = Object.assign({ name: '_update_endpoint' }, attrs);
+		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}

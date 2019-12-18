@@ -17,6 +17,8 @@ export {
 	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
+	AWSKinesisFirehoseProvider,
+	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 export { Auth, AuthClass } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';

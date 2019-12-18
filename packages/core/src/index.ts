@@ -35,6 +35,9 @@ export const Constants = {
 	userAgent: Platform.userAgent,
 };
 
+export * from './constants';
+export * from './Util';
+
 export { Amplify };
 /**
  * @deprecated use named import
