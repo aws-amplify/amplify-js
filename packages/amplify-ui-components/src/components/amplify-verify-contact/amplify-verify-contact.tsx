@@ -13,7 +13,7 @@ import {
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 
-const logger = new Logger('amplify-verify-contact');
+const logger = new Logger('AmplifyVerifyContact');
 
 @Component({
   tag: 'amplify-verify-contact',
