@@ -1,6 +1,6 @@
 import { Component, Prop, h } from '@stencil/core';
 
-import { toast, toastClose } from './amplify-toast.style';
+import { toast, toastClose, toastIcon } from './amplify-toast.style';
 
 @Component({
   tag: 'amplify-toast',
@@ -13,6 +13,7 @@ export class AmplifyToast {
   render() {
     return (
       <div class={toast}>
+        <amplify-icon class={toastIcon} name="warning" />
         <slot />
         <a class={toastClose} onClick={this.onClose} />
       </div>

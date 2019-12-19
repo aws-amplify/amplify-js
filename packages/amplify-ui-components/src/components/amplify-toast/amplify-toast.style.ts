@@ -1,5 +1,9 @@
 import { css } from 'emotion';
 
+export const toastIcon = css`
+  padding-right: 5px;
+`;
+
 export const toast = css`
   display: flex;
   justify-content: space-between;
@@ -10,10 +14,11 @@ export const toast = css`
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
   padding: 16px;
-  background-color: var(--light-squid-ink);
+  background-color: var(--amazon-yellow-warning);
   font-size: var(--secondary-font-size);
   color: var(--white);
   box-sizing: border-box;
+  border-radius: 5px;
 
   > span {
     margin-right: 10px;
