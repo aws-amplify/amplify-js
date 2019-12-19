@@ -25,6 +25,8 @@
   --red: #dd3f5b;
   --white: #ffffff;
   --light-blue: #00a1c9;
+  --amplify-yellow-warning: #f8d047;
+  --amplify-red-problem: #cc1454;
 
   /* Theme */
   /* All of the variables below can be used within any application that does an @import inside of their application */

@@ -831,6 +831,12 @@ export namespace Components {
     */
     'overrideStyle': boolean;
   }
+  interface AmplifyToast {
+    /**
+    * Used in order to add a dismissable `x` for the Toast component
+    */
+    'onClose': () => void;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -1149,6 +1155,12 @@ declare global {
     new (): HTMLAmplifyStrikeElement;
   };
 
+  interface HTMLAmplifyToastElement extends Components.AmplifyToast, HTMLStencilElement {}
+  var HTMLAmplifyToastElement: {
+    prototype: HTMLAmplifyToastElement;
+    new (): HTMLAmplifyToastElement;
+  };
+
   interface HTMLAmplifyTooltipElement extends Components.AmplifyTooltip, HTMLStencilElement {}
   var HTMLAmplifyTooltipElement: {
     prototype: HTMLAmplifyTooltipElement;
@@ -1215,6 +1227,7 @@ declare global {
     'amplify-sign-out': HTMLAmplifySignOutElement;
     'amplify-sign-up': HTMLAmplifySignUpElement;
     'amplify-strike': HTMLAmplifyStrikeElement;
+    'amplify-toast': HTMLAmplifyToastElement;
     'amplify-tooltip': HTMLAmplifyTooltipElement;
     'amplify-totp-setup': HTMLAmplifyTotpSetupElement;
     'amplify-username-field': HTMLAmplifyUsernameFieldElement;
@@ -2015,6 +2028,12 @@ declare namespace LocalJSX {
     */
     'overrideStyle'?: boolean;
   }
+  interface AmplifyToast {
+    /**
+    * Used in order to add a dismissable `x` for the Toast component
+    */
+    'onClose'?: () => void;
+  }
   interface AmplifyTooltip {
     /**
     * (Optional) Override default styling
@@ -2121,6 +2140,7 @@ declare namespace LocalJSX {
     'amplify-sign-out': AmplifySignOut;
     'amplify-sign-up': AmplifySignUp;
     'amplify-strike': AmplifyStrike;
+    'amplify-toast': AmplifyToast;
     'amplify-tooltip': AmplifyTooltip;
     'amplify-totp-setup': AmplifyTotpSetup;
     'amplify-username-field': AmplifyUsernameField;
@@ -2176,6 +2196,7 @@ declare module "@stencil/core" {
       'amplify-sign-out': LocalJSX.AmplifySignOut & JSXBase.HTMLAttributes<HTMLAmplifySignOutElement>;
       'amplify-sign-up': LocalJSX.AmplifySignUp & JSXBase.HTMLAttributes<HTMLAmplifySignUpElement>;
       'amplify-strike': LocalJSX.AmplifyStrike & JSXBase.HTMLAttributes<HTMLAmplifyStrikeElement>;
+      'amplify-toast': LocalJSX.AmplifyToast & JSXBase.HTMLAttributes<HTMLAmplifyToastElement>;
       'amplify-tooltip': LocalJSX.AmplifyTooltip & JSXBase.HTMLAttributes<HTMLAmplifyTooltipElement>;
       'amplify-totp-setup': LocalJSX.AmplifyTotpSetup & JSXBase.HTMLAttributes<HTMLAmplifyTotpSetupElement>;
       'amplify-username-field': LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
