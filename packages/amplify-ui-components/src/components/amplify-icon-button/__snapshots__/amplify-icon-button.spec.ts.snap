@@ -119,3 +119,15 @@ exports[`amplify-icon-button spec: Render logic -> renders sound-mute icon butto
   </span>
 </amplify-icon-button>
 `;
+
+exports[`amplify-icon-button spec: Render logic -> renders warning icon button correctly 1`] = `
+<amplify-icon-button name="warning">
+  <span class="amplify-ui--button css-16r56v9">
+    <amplify-tooltip>
+      <button>
+        <amplify-icon name="warning"></amplify-icon>
+      </button>
+    </amplify-tooltip>
+  </span>
+</amplify-icon-button>
+`;

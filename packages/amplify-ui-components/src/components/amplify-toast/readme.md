@@ -12,6 +12,19 @@
 | `onClose` | --        | Used in order to add a clickable `exit` button for the Toast component | `() => void` | `undefined` |
 
 
+## Dependencies
+
+### Depends on
+
+- [amplify-icon](../amplify-icon)
+
+### Graph
+```mermaid
+graph TD;
+  amplify-toast --> amplify-icon
+  style amplify-toast fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

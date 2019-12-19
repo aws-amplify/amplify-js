@@ -14,7 +14,7 @@ describe('amplify-toast spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it('should render an empty link tag by default', async () => {
+    it('should render an empty link tag by default with a warning icon', async () => {
       const page = await newSpecPage({
         components: [AmplifyToast],
         html: `<amplify-toast></amplify-toast>`,

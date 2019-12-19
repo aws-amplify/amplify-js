@@ -10,6 +10,11 @@ export class AmplifyToast {
   /** Used in order to add a clickable `exit` button for the Toast component */
   @Prop() onClose: () => void;
 
+  /* 
+  TODO #170365145: Work on a helper function that will populate and 
+  update class colors for success / warning / failure messages 
+  */
+
   render() {
     return (
       <div class={toast}>
