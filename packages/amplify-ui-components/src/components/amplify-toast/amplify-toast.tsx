@@ -7,7 +7,7 @@ import { toast, toastClose, toastIcon } from './amplify-toast.style';
   shadow: false,
 })
 export class AmplifyToast {
-  /** Used in order to add a clickable `exit` button for the Toast component */
+  /** Used in order to add a dismissable `x` for the Toast component */
   @Prop() onClose: () => void;
 
   /* 

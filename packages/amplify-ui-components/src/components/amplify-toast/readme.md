@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property  | Attribute | Description                                                            | Type         | Default     |
-| --------- | --------- | ---------------------------------------------------------------------- | ------------ | ----------- |
-| `onClose` | --        | Used in order to add a clickable `exit` button for the Toast component | `() => void` | `undefined` |
+| Property  | Attribute | Description                                                    | Type         | Default     |
+| --------- | --------- | -------------------------------------------------------------- | ------------ | ----------- |
+| `onClose` | --        | Used in order to add a dismissable `x` for the Toast component | `() => void` | `undefined` |
 
 
 ## Dependencies

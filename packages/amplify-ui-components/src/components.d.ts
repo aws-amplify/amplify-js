@@ -833,7 +833,7 @@ export namespace Components {
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a clickable `exit` button for the Toast component
+    * Used in order to add a dismissable `x` for the Toast component
     */
     'onClose': () => void;
   }
@@ -2030,7 +2030,7 @@ declare namespace LocalJSX {
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a clickable `exit` button for the Toast component
+    * Used in order to add a dismissable `x` for the Toast component
     */
     'onClose'?: () => void;
   }
