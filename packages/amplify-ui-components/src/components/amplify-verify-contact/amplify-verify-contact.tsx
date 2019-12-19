@@ -74,24 +74,6 @@ export class AmplifyVerifyContact {
     }
   }
 
-  render() {
-    return (
-      <amplify-form-section
-        handleSubmit={event => this.handleSubmit(event)}
-        headerText={VERIFY_CONTACT_HEADER_TEXT}
-        overrideStyle={this.overrideStyle}
-        secondaryFooterContent={
-          <span>
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
-          </span>
-        }
-        submitButtonText={this.verifyAttr ? VERIFY_CONTACT_SUBMIT_LABEL : VERIFY_CONTACT_VERIFY_LABEL}
-      >
-        {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
-      </amplify-form-section>
-    );
-  }
-
   renderSubmit() {
     return (
       <div>
@@ -145,6 +127,24 @@ export class AmplifyVerifyContact {
           />
         )}
       </div>
+    );
+  }
+
+  render() {
+    return (
+      <amplify-form-section
+        handleSubmit={event => this.handleSubmit(event)}
+        headerText={VERIFY_CONTACT_HEADER_TEXT}
+        overrideStyle={this.overrideStyle}
+        secondaryFooterContent={
+          <span>
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
+          </span>
+        }
+        submitButtonText={this.verifyAttr ? VERIFY_CONTACT_SUBMIT_LABEL : VERIFY_CONTACT_VERIFY_LABEL}
+      >
+        {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
+      </amplify-form-section>
     );
   }
 }
