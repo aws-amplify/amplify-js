@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.1...@aws-amplify/auth@2.1.2) (2019-12-18)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Adjust Cognito error message checking for dis… ([#4546](https://github.com/aws-amplify/amplify-js/issues/4546)) ([2d4d24b](https://github.com/aws-amplify/amplify-js/commit/2d4d24b004e8a52901b673265abbf4fb7241c4e4)), closes [#4544](https://github.com/aws-amplify/amplify-js/issues/4544)
+
+
+
+
+
 ## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.0...@aws-amplify/auth@2.1.1) (2019-12-03)
 
 **Note:** Version bump only for package @aws-amplify/auth
