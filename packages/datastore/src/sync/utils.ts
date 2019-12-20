@@ -107,6 +107,42 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 	return result;
 }
 
+export function isOwnerAuthorization(
+	modelDefinition: SchemaModel,
+	transformerOpType: TransformerMutationType
+): [boolean, string, string, string] {
+	// Searching for owner authorization on attributes
+	const authConfig = []
+		.concat(modelDefinition.attributes)
+		.find(attr => attr && attr.type === 'auth');
+
+	const { properties: { rules = [] } = {} } = authConfig || {};
+	const ownerRules = rules.filter(rule => rule.allow === 'owner');
+
+	let result: [boolean, string, string, string] = [false, '', '', ''];
+
+	// Multiple rules can be declared for allow: owner
+	ownerRules.forEach(ownerRule => {
+		// setting defaults for backwards compatibility with old cli
+		const {
+			identityClaim = 'cognito:username',
+			ownerField = 'owner',
+			operations = ['create', 'update', 'delete'],
+			provider = 'userPools',
+		} = ownerRule;
+
+		const isOperationOwnerAuthorized = operations.find(
+			operation => operation.toLowerCase() === transformerOpType.toLowerCase()
+		);
+
+		if (isOperationOwnerAuthorized) {
+			result = [true, identityClaim, ownerField, provider];
+		}
+	});
+
+	return result;
+}
+
 export function buildGraphQLOperation(
 	modelDefinition: SchemaModel,
 	graphQLOpType: keyof typeof GraphQLOperationType
@@ -118,7 +154,7 @@ export function buildGraphQLOperation(
 	let operation: string;
 	let documentArgs: string = ' ';
 	let operationArgs: string = ' ';
-	let subscriptions: [TransformerMutationType, string][] = [];
+	let subscriptions: [TransformerMutationType, string, string, string][] = [];
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -129,7 +165,19 @@ export function buildGraphQLOperation(
 				TransformerMutationType.DELETE,
 			].map(op => {
 				const opName = `on${op}${typeName}`;
-				return [op, opName];
+				let docArgs = '';
+				let opArgs = '';
+				const [
+					isOwner,
+					_identityClaim,
+					ownerField,
+					_provider,
+				] = isOwnerAuthorization(modelDefinition, op);
+				if (isOwner) {
+					docArgs = `($${ownerField}: String!)`;
+					opArgs = `(${ownerField}: $${ownerField})`;
+				}
+				return [op, opName, docArgs, opArgs];
 			});
 			break;
 		case 'LIST':
@@ -173,15 +221,17 @@ export function buildGraphQLOperation(
 	}
 
 	if (subscriptions.length > 0) {
-		return subscriptions.map(([opType, opName]) => [
-			opType,
-			opName,
-			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-			${opName}${operationArgs}{
+		return subscriptions.map(([opType, opName, docArgs, opArgs]) => {
+			return [
+				opType,
+				opName,
+				`${GraphQLOperationType[graphQLOpType]} operation${docArgs}{
+			${opName}${opArgs}{
 				${selectionSet}
 			}
 		}`,
-		]);
+			];
+		});
 	}
 
 	return [

@@ -1,8 +1,14 @@
 import API, { GraphQLResult } from '@aws-amplify/api';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import Cache from '@aws-amplify/cache';
+import Auth from '@aws-amplify/auth';
 import Observable from 'zen-observable-ts';
 import { InternalSchema, PersistentModel, SchemaModel } from '../../types';
-import { buildGraphQLOperation, TransformerMutationType } from '../utils';
+import {
+	buildGraphQLOperation,
+	TransformerMutationType,
+	isOwnerAuthorization,
+} from '../utils';
 import '@aws-amplify/pubsub';
 
 const logger = new Logger('DataStore');
@@ -60,6 +66,7 @@ class SubscriptionProcessor {
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
 			const subscriptions: ZenObservable.Subscription[] = [];
+			let tokenPayload;
 
 			Object.values(this.schema.namespaces).forEach(namespace => {
 				Object.values(namespace.models)
@@ -67,77 +74,120 @@ class SubscriptionProcessor {
 					.forEach(async modelDefinition => {
 						const queries = this.typeQuery.get(modelDefinition);
 
-						queries.forEach(([transformerMutationType, opName, query]) => {
-							const marker = {};
+						queries.forEach(
+							async ([transformerMutationType, opName, query]) => {
+								const [
+									isOwner,
+									identityClaim,
+									ownerField,
+									provider,
+								] = isOwnerAuthorization(
+									modelDefinition,
+									transformerMutationType
+								);
 
-							const queryObservable = <
-								Observable<{
-									value: GraphQLResult<Record<string, PersistentModel>>;
-								}>
-							>(<unknown>API.graphql({ query, variables: marker }));
+								const marker = {};
 
-							subscriptions.push(
-								queryObservable
-									.map(({ value }) => value)
-									.subscribe({
-										next: ({ data, errors }) => {
-											if (Array.isArray(errors) && errors.length > 0) {
-												const messages = (<
-													{
-														message: string;
-													}[]
-												>errors).map(({ message }) => message);
+								if (isOwner) {
+									// adding ownerField variables to marker
+									try {
+										if (provider === 'userPools') {
+											// token info from Cognito UserPools
+											const session = await Auth.currentSession();
+											tokenPayload = session.getIdToken().decodePayload();
+										} else {
+											// token info from OIDC
+											const federatedInfo = await Cache.getItem(
+												'federatedInfo'
+											);
+											const { token } = federatedInfo;
+											const payload = token.split('.')[1];
 
-												logger.warn(
-													`Skipping incoming subscription. Messages: ${messages.join(
-														'\n'
-													)}`
+											tokenPayload = JSON.parse(
+												Buffer.from(payload, 'base64').toString('utf8')
+											);
+										}
+									} catch (err) {
+										// Check if there is an owner field, check where this error should be located
+										observer.error(
+											'Owner field required, sign in is need in order to perform this operation'
+										);
+										return;
+									}
+
+									const ownerFieldValue =
+										tokenPayload && tokenPayload[identityClaim];
+									marker[ownerField] = ownerFieldValue;
+								}
+
+								const queryObservable = <
+									Observable<{
+										value: GraphQLResult<Record<string, PersistentModel>>;
+									}>
+								>(<unknown>API.graphql({ query, variables: marker }));
+
+								subscriptions.push(
+									queryObservable
+										.map(({ value }) => value)
+										.subscribe({
+											next: ({ data, errors }) => {
+												if (Array.isArray(errors) && errors.length > 0) {
+													const messages = (<
+														{
+															message: string;
+														}[]
+													>errors).map(({ message }) => message);
+
+													logger.warn(
+														`Skipping incoming subscription. Messages: ${messages.join(
+															'\n'
+														)}`
+													);
+
+													this.drainBuffer();
+													return;
+												}
+
+												const { [opName]: record } = data;
+
+												this.pushToBuffer(
+													transformerMutationType,
+													modelDefinition,
+													record
 												);
 
 												this.drainBuffer();
-												return;
-											}
+											},
+											error: subscriptionError => {
+												const {
+													error: { errors: [{ message = '' } = {}] } = {
+														errors: [],
+													},
+												} = subscriptionError;
+												observer.error(message);
+											},
+										})
+								);
 
-											const { [opName]: record } = data;
+								promises.push(
+									(async () => {
+										let boundFunction: any;
 
-											this.pushToBuffer(
-												transformerMutationType,
-												modelDefinition,
-												record
+										await new Promise(res => {
+											boundFunction = this.hubQueryCompletionListener.bind(
+												this,
+												res,
+												marker
 											);
-
-											this.drainBuffer();
-										},
-										error: subscriptionError => {
-											const {
-												error: { errors: [{ message = '' } = {}] } = {
-													errors: [],
-												},
-											} = subscriptionError;
-											observer.error(message);
-										},
-									})
-							);
-
-							promises.push(
-								(async () => {
-									let boundFunction: any;
-
-									await new Promise(res => {
-										boundFunction = this.hubQueryCompletionListener.bind(
-											this,
-											res,
-											marker
-										);
-										Hub.listen('api', boundFunction);
-									});
-									Hub.remove('api', boundFunction);
-								})()
-							);
-						});
+											Hub.listen('api', boundFunction);
+										});
+										Hub.remove('api', boundFunction);
+									})()
+								);
+							}
+						);
 					});
 			});
-
 			Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED));
 
 			return () => {
