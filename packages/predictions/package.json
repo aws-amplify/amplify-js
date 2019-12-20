@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/predictions",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Machine learning category of aws-amplify",
   "main": "./index.js",
   "module": "./lib-esm/index.js",
@@ -33,8 +33,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^2.2.0",
-    "@aws-amplify/storage": "^2.1.1",
+    "@aws-amplify/core": "^2.2.1",
+    "@aws-amplify/storage": "^2.1.2",
     "@aws-sdk/eventstream-marshaller": "0.1.0-preview.2",
     "@aws-sdk/util-utf8-node": "0.1.0-preview.1",
     "uuid": "^3.2.1"
