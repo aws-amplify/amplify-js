@@ -3,7 +3,8 @@
 		[
 			"@babel/preset-env",
 			{
-				"loose": true
+				"loose": true,
+				"modules": false
 			}
 		]
 	],
@@ -15,6 +16,17 @@
 					{
 						"loose": true,
 						"modules": "commonjs"
+					}
+				]
+			]
+		},
+		"test": {
+			"presets": [
+				[
+					"@babel/preset-env",
+					{
+						"loose": true,
+						"modules": "auto"
 					}
 				]
 			]
