@@ -84,10 +84,16 @@ export class AmplifyAuthenticator {
         return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
       case AuthState.ResetPassword:
         return <amplify-require-new-password handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+      case AuthState.VerifyContact:
+        return <amplify-verify-contact handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.TOTPSetup:
         return <amplify-totp-setup handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
       case AuthState.Loading:
         return <div>Loading...</div>;
+      case AuthState.SignedIn:
+        return <amplify-greetings handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+      default:
+        throw new Error(`Unhandled auth state: ${authState}`);
     }
   }
 
@@ -101,7 +107,6 @@ export class AmplifyAuthenticator {
       <AuthStateTunnel.Provider state={tunnelState}>
         {this.renderAuthComponent(this.authState)}
         <div hidden={this.authState !== AuthState.SignedIn}>
-          <amplify-greetings handleAuthStateChange={this.onAuthStateChange} user={this.authData} />
           <slot />
         </div>
       </AuthStateTunnel.Provider>

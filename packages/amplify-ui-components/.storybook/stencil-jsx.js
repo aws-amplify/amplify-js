@@ -22,11 +22,7 @@ export const h = (tag, props, ...children) => {
         }
       }
 
-      if (['number', 'string'].includes(typeof value)) {
-        node.setAttribute(key, value);
-      } else {
-        node[key] = value;
-      }
+      node[key] = value;
     });
   }
 
