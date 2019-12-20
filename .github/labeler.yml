@@ -1,0 +1,73 @@
+# See https://github.com/actions/labeler for usage
+
+needs-review:
+  - ./**/*
+
+Cognito:
+  - packages/amazon-cognito-identity-js/**/*
+
+amplify-ui:
+  - packages/amplify-ui/**/*
+
+UI:
+  - packages/amplify-ui-components/**/*
+
+Analytics:
+  - packages/analytics/**/*
+
+API:
+  - packages/api/**/*
+
+Auth:
+  - packages/auth/**/*
+
+Core:
+  - packages/aws-amplify/**/*
+  - packages/core/**/*
+
+Angular:
+  - packages/aws-amplify-angular/**/*
+
+React:
+  - packages/aws-amplify-react/**/*
+
+React Native:
+  - packages/aws-amplify-react-native/**/*
+
+Vue:
+  - packages/aws-amplify-vue/**/*
+
+Caching:
+  - packages/cache/**/*
+
+DataStore:
+  - packages/datastore/**/*
+
+Interactions:
+  - packages/interactions/**/*
+
+Predictions:
+  - packages/predictions/**/*
+
+PubSub:
+  - packages/pubsub/**/*
+
+Push Notification:
+  - packages/pushnotification/**/*
+
+Storage:
+  - packages/storage/**/*
+
+XR:
+  - packages/xr/**/*
+
+Tests:
+  - ./**/__tests__/**/*
+  - ./**/*.spec.*
+  - ./**/*.test.*
+
+Tooling:
+  - scripts/**/*
+
+TypeScript:
+  - ./**/types/**/*.ts
