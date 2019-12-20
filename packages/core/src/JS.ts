@@ -171,7 +171,7 @@ export default class JS {
 	 * help to avoid incorrect environment detection as new function will have
 	 * it's `this` binded to global scope. Credit: https://stackoverflow.com/a/31090240
 	 */
-	static browserOrNode = () => {
+	static browserOrNode() {
 		// function to check if the global scope is "window"
 		const isBrowser = new Function(
 			'try {return this===window;}catch(e){ return false;}'
@@ -186,7 +186,7 @@ export default class JS {
 			isBrowser: isBrowser(),
 			isNode: isNode(),
 		};
-	};
+	}
 
 	/**
 	 * transfer the first letter of the keys to lowercase
