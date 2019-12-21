@@ -177,7 +177,7 @@ export default class JS {
 			'try {return this===window;}catch(e){ return false;}'
 		);
 
-		// function to test if global sope is binded to "global"
+		// function to test if global scope is binded to "global"
 		const isNode = new Function(
 			'try {return this===global;}catch(e){return false;}'
 		);
