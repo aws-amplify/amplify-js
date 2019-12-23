@@ -79,7 +79,9 @@ export default class SignIn extends AuthPiece {
 							text={I18n.get('Sign In').toUpperCase()}
 							theme={theme}
 							onPress={this.signIn}
-							disabled={!this.getUsernameFromInput() && this.state.password}
+							disabled={!this.getUsernameFromInput() || 
+								  this.state.password == null || 
+								  this.state.password.length === 0}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
