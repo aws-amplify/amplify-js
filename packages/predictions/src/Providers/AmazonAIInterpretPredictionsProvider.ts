@@ -127,8 +127,8 @@ export default class AmazonAIInterpretPredictionsProvider extends AbstractInterp
 						keyPhrases: results[4] || [],
 						language: results[0] || '',
 						sentiment: results[2],
-						syntax: results[3] || [],
-						textEntities: results[1] || [],
+						syntax: <TextSyntax[]>results[3] || [],
+						textEntities: <TextEntities[]>results[1] || [],
 					},
 				});
 			} catch (err) {
