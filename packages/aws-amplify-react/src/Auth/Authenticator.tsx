@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
@@ -61,7 +60,7 @@ export interface IAuthenticatorState {
 	showToast?: boolean;
 }
 
-export default class Authenticator extends Component<
+export default class Authenticator extends React.Component<
 	IAuthenticatorProps,
 	IAuthenticatorState
 > {
@@ -243,27 +242,17 @@ export default class Authenticator extends Component<
 
 		const default_children = [
 			<Greetings federated={federated} />,
-			// @ts-ignore
 			<SignIn federated={federated} />,
-			// @ts-ignore
 			<ConfirmSignIn />,
-			// @ts-ignore
 			<RequireNewPassword />,
-			// @ts-ignore
 			<SignUp signUpConfig={signUpConfig} />,
-			// @ts-ignore
 			<ConfirmSignUp />,
-			// @ts-ignore
 			<VerifyContact />,
-			// @ts-ignore
 			<ForgotPassword />,
-			// @ts-ignore
 			<TOTPSetup />,
-			// @ts-ignore
 			<Loading />,
 		];
 
-		// @ts-ignore
 		const props_children_override = React.Children.map(
 			props_children,
 			child => child.props.override
@@ -275,7 +264,6 @@ export default class Authenticator extends Component<
 		const render_props_children = React.Children.map(
 			props_children,
 			(child, index) => {
-				// @ts-ignore
 				return React.cloneElement(child, {
 					key: 'aws-amplify-authenticator-props-children-' + index,
 					theme,
@@ -294,7 +282,6 @@ export default class Authenticator extends Component<
 		const render_default_children = hideDefault
 			? []
 			: React.Children.map(default_children, (child, index) => {
-					// @ts-ignore
 					return React.cloneElement(child, {
 						key: 'aws-amplify-authenticator-default-children-' + index,
 						theme,
