@@ -69,7 +69,7 @@ export interface apiOptions {
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
-	authMode?: GRAPHQL_AUTH_MODE;
+	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 }
 
 export enum GRAPHQL_AUTH_MODE {
