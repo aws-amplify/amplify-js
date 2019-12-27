@@ -95,6 +95,12 @@
     "regenerator-runtime": "^0.11.1"
   },
   "peerDependencies": {
-    "aws-amplify": "^1.x"
+    "@aws-amplify/analytics": "^2.0.0",
+    "@aws-amplify/api": "^2.0.0",
+    "@aws-amplify/auth": "^2.0.0",
+    "@aws-amplify/core": "^2.0.0",
+    "@aws-amplify/interactions": "^2.0.0",
+    "@aws-amplify/storage": "^2.0.0",
+    "@aws-amplify/ui": "^2.0.0"
   }
 }
