@@ -12,6 +12,7 @@
  */
 
 import APIClass, { graphqlOperation } from './API';
+import { GraphQLResult } from './types';
 
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -20,12 +21,12 @@ const logger = new Logger('API');
 let _instance: APIClass = null;
 
 if (!_instance) {
-    logger.debug('Create API Instance');
-    _instance = new APIClass(null);
+	logger.debug('Create API Instance');
+	_instance = new APIClass(null);
 }
 
 const API = _instance;
 Amplify.register(API);
 
 export default API;
-export { APIClass, graphqlOperation };
+export { APIClass, graphqlOperation, GraphQLResult };

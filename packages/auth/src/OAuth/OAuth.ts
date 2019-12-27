@@ -11,280 +11,309 @@
  * and limitations under the License.
  */
 
-
-import { parse } from 'url';  // Used for OAuth parsing of Cognito Hosted UI
+import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
 
 import {
-  OAuthOpts,
-  isCognitoHostedOpts,
-  CognitoHostedUIIdentityProvider
+	OAuthOpts,
+	isCognitoHostedOpts,
+	CognitoHostedUIIdentityProvider,
 } from '../types/Auth';
 
-import {
-  ConsoleLogger as Logger,
-  Hub
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 
-const SHA256 = require("crypto-js/sha256");
-const Base64 = require("crypto-js/enc-base64");
+const SHA256 = require('crypto-js/sha256');
+const Base64 = require('crypto-js/enc-base64');
 
-const AMPLIFY_SYMBOL = ((typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') ?
-    Symbol.for('amplify_default') : '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
+typeof Symbol.for === 'function'
+	? Symbol.for('amplify_default')
+	: '@@amplify_default') as Symbol;
 
-const dispatchAuthEvent = (event:string, data:any, message:string) => {
-  Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
+const dispatchAuthEvent = (event: string, data: any, message: string) => {
+	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
 const logger = new Logger('OAuth');
 
 export default class OAuth {
+	private _urlOpener;
+	private _config;
+	private _cognitoClientId;
+	private _scopes;
 
-  private _urlOpener;
-  private _config;
-  private _cognitoClientId;
-  private _scopes;
+	constructor({
+		config,
+		cognitoClientId,
+		scopes = [],
+	}: {
+		scopes: string[];
+		config: OAuthOpts;
+		cognitoClientId: string;
+	}) {
+		this._urlOpener = config.urlOpener || launchUri;
+		this._config = config;
+		this._cognitoClientId = cognitoClientId;
+		this._scopes = scopes;
+	}
 
-  constructor({
-    config,
-    cognitoClientId,
-    scopes = []
-  }: {
-    scopes: string[],
-    config: OAuthOpts,
-    cognitoClientId: string
-  }) {
-    this._urlOpener = config.urlOpener || launchUri;
-    this._config = config;
-    this._cognitoClientId = cognitoClientId;
-    this._scopes = scopes;
-  }
+	public oauthSignIn(
+		responseType = 'code',
+		domain: string,
+		redirectSignIn: string,
+		clientId: string,
+		provider:
+			| CognitoHostedUIIdentityProvider
+			| string = CognitoHostedUIIdentityProvider.Cognito,
+		customState?: string
+	) {
+		const generatedState = this._generateState(32);
+		const state = customState
+			? `${generatedState}-${customState}`
+			: generatedState;
 
-  public oauthSignIn(
-    responseType = 'code',
-    domain: string,
-    redirectSignIn: string,
-    clientId: string,
-    provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito,
-    customState?: string) {
+		oAuthStorage.setState(encodeURIComponent(state));
 
-    const generatedState = this._generateState(32);
-    const state = customState ? `${generatedState}-${customState}` : generatedState;
+		const pkce_key = this._generateRandom(128);
+		oAuthStorage.setPKCE(pkce_key);
 
-    oAuthStorage.setState(encodeURIComponent(state));
+		const code_challenge = this._generateChallenge(pkce_key);
+		const code_challenge_method = 'S256';
 
-    const pkce_key = this._generateRandom(128);
-    oAuthStorage.setPKCE(pkce_key);
-    
-    const code_challenge = this._generateChallenge(pkce_key);
-    const code_challenge_method = 'S256';
+		const queryString = Object.entries({
+			redirect_uri: redirectSignIn,
+			response_type: responseType,
+			client_id: clientId,
+			identity_provider: provider,
+			scopes: this._scopes,
+			state,
+			...(responseType === 'code' ? { code_challenge } : {}),
+			...(responseType === 'code' ? { code_challenge_method } : {}),
+		})
+			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+			.join('&');
 
-    const queryString = Object.entries({
-      redirect_uri: redirectSignIn,
-      response_type: responseType, 
-      client_id: clientId,
-      identity_provider: provider,
-      scopes: this._scopes,
-      state,
-      ...(responseType === 'code'?{code_challenge}:{}),
-      ...(responseType === 'code'?{code_challenge_method}:{})
-    }).map(([k,v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+		const URL = `https://${domain}/oauth2/authorize?${queryString}`;
+		logger.debug(`Redirecting to ${URL}`);
+		this._urlOpener(URL, redirectSignIn);
+	}
 
-    const URL = `https://${domain}/oauth2/authorize?${queryString}`;
-    logger.debug(`Redirecting to ${URL}`);
-    this._urlOpener(URL, redirectSignIn);
-  }
-
-  private async _handleCodeFlow(currentUrl: string) {
-    /* Convert URL into an object with parameters as keys
+	private async _handleCodeFlow(currentUrl: string) {
+		/* Convert URL into an object with parameters as keys
     { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
-    const { code } = (parse(currentUrl).query || '')
-      .split('&')
-      .map((pairings) => pairings.split('='))
-      .reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
+		const { code } = (parse(currentUrl).query || '')
+			.split('&')
+			.map(pairings => pairings.split('='))
+			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
-    if (!code) { return; }
+		if (!code) {
+			return;
+		}
 
-    
-    const oAuthTokenEndpoint = 'https://' + this._config.domain + '/oauth2/token';
-      
-    dispatchAuthEvent(
-      'codeFlow',
-      {},
-      `Retrieving tokens from ${oAuthTokenEndpoint}`
-    );
+		const oAuthTokenEndpoint =
+			'https://' + this._config.domain + '/oauth2/token';
 
-    const client_id = isCognitoHostedOpts(this._config)
-      ? this._cognitoClientId
-      : this._config.clientID;
+		dispatchAuthEvent(
+			'codeFlow',
+			{},
+			`Retrieving tokens from ${oAuthTokenEndpoint}`
+		);
 
-    const redirect_uri = isCognitoHostedOpts(this._config)
-      ? this._config.redirectSignIn
-      : this._config.redirectUri;
+		const client_id = isCognitoHostedOpts(this._config)
+			? this._cognitoClientId
+			: this._config.clientID;
 
-    const code_verifier = oAuthStorage.getPKCE();
+		const redirect_uri = isCognitoHostedOpts(this._config)
+			? this._config.redirectSignIn
+			: this._config.redirectUri;
 
-    const oAuthTokenBody = {
-      grant_type: 'authorization_code',
-      code,
-      client_id,
-      redirect_uri,
-      ...(code_verifier ? { code_verifier } : {})
-    };
+		const code_verifier = oAuthStorage.getPKCE();
 
-    logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
+		const oAuthTokenBody = {
+			grant_type: 'authorization_code',
+			code,
+			client_id,
+			redirect_uri,
+			...(code_verifier ? { code_verifier } : {}),
+		};
 
-    const body = Object.entries(oAuthTokenBody)
-      .map(([k, v]) =>`${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-      .join('&');
+		logger.debug(
+			`Calling token endpoint: ${oAuthTokenEndpoint} with`,
+			oAuthTokenBody
+		);
 
-    const { access_token, refresh_token, id_token, error } = await (await fetch(oAuthTokenEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body
-      }) as any).json();
+		const body = Object.entries(oAuthTokenBody)
+			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+			.join('&');
 
-      if (error) {
-        throw new Error(error);
-      }
+		const {
+			access_token,
+			refresh_token,
+			id_token,
+			error,
+		} = await ((await fetch(oAuthTokenEndpoint, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body,
+		})) as any).json();
 
-      return {
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        idToken: id_token
-      };
-  }
+		if (error) {
+			throw new Error(error);
+		}
 
-  private async _handleImplicitFlow(currentUrl: string) {
+		return {
+			accessToken: access_token,
+			refreshToken: refresh_token,
+			idToken: id_token,
+		};
+	}
 
-    const { id_token, access_token } = parse(currentUrl).hash
-      .substr(1) // Remove # from returned code
-      .split('&')
-      .map((pairings) => pairings.split('='))
-      .reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-        id_token: undefined, access_token: undefined
-      });
+	private async _handleImplicitFlow(currentUrl: string) {
+		const { id_token, access_token } = parse(currentUrl)
+			.hash.substr(1) // Remove # from returned code
+			.split('&')
+			.map(pairings => pairings.split('='))
+			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
+				id_token: undefined,
+				access_token: undefined,
+			});
 
-    dispatchAuthEvent(
-      'implicitFlow',
-      {},
-      `Got tokens from ${currentUrl}`
-    );
-    logger.debug(`Retrieving implicit tokens from ${currentUrl} with`);
+		dispatchAuthEvent('implicitFlow', {}, `Got tokens from ${currentUrl}`);
+		logger.debug(`Retrieving implicit tokens from ${currentUrl} with`);
 
-    return {
-      accessToken: access_token,
-      idToken: id_token,
-      refreshToken: null
-    };
-  }
+		return {
+			accessToken: access_token,
+			idToken: id_token,
+			refreshToken: null,
+		};
+	}
 
-  public async handleAuthResponse(currentUrl?: string) {
-    const urlParams = currentUrl ? {
-      ...(parse(currentUrl).hash || '#').substr(1)
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k, v]) => (acc[k] = v, acc), {}),
-      ...(parse(currentUrl).query || '')
-        .split('&')
-        .map(entry => entry.split('='))
-        .reduce((acc, [k, v]) => (acc[k] = v, acc), {})
-    } as any : {};
-    const { error, error_description } = urlParams;
+	public async handleAuthResponse(currentUrl?: string) {
+		try {
+			const urlParams = currentUrl
+				? ({
+						...(parse(currentUrl).hash || '#')
+							.substr(1)
+							.split('&')
+							.map(entry => entry.split('='))
+							.reduce((acc, [k, v]) => ((acc[k] = v), acc), {}),
+						...(parse(currentUrl).query || '')
+							.split('&')
+							.map(entry => entry.split('='))
+							.reduce((acc, [k, v]) => ((acc[k] = v), acc), {}),
+				  } as any)
+				: {};
+			const { error, error_description } = urlParams;
 
-    if (error) {
-      throw new Error(error_description);
-    }
+			if (error) {
+				throw new Error(error_description);
+			}
 
-    const state: string = this._validateState(urlParams);
+			const state: string = this._validateState(urlParams);
 
-    logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
-    if (this._config.responseType === 'code') {
-      return {...await this._handleCodeFlow(currentUrl), state};
-    } else {
-      return {...await this._handleImplicitFlow(currentUrl), state};
-    }
-  }
+			logger.debug(
+				`Starting ${this._config.responseType} flow with ${currentUrl}`
+			);
+			if (this._config.responseType === 'code') {
+				return { ...(await this._handleCodeFlow(currentUrl)), state };
+			} else {
+				return { ...(await this._handleImplicitFlow(currentUrl)), state };
+			}
+		} catch (e) {
+			logger.error(`Error handling auth response.`, e);
+		}
+	}
 
-  private _validateState(urlParams: any): string {
-    if (!urlParams) { return; }
+	private _validateState(urlParams: any): string {
+		if (!urlParams) {
+			return;
+		}
 
-    const savedState = oAuthStorage.getState();
-    const { state: returnedState } = urlParams;
+		const savedState = oAuthStorage.getState();
+		const { state: returnedState } = urlParams;
 
-    // This is because savedState only exists if the flow was initiated by Amplify
-    if (savedState && savedState !== returnedState) {
-      throw new Error('Invalid state in OAuth flow');
-    }
-    return returnedState;
-  }
+		// This is because savedState only exists if the flow was initiated by Amplify
+		if (savedState && savedState !== returnedState) {
+			throw new Error('Invalid state in OAuth flow');
+		}
+		return returnedState;
+	}
 
-  public async signOut() {
-    let oAuthLogoutEndpoint = 'https://' + this._config.domain + '/logout?';
+	public async signOut() {
+		let oAuthLogoutEndpoint = 'https://' + this._config.domain + '/logout?';
 
-    const client_id = isCognitoHostedOpts(this._config)
-      ? this._cognitoClientId
-      : this._config.oauth.clientID;
+		const client_id = isCognitoHostedOpts(this._config)
+			? this._cognitoClientId
+			: this._config.oauth.clientID;
 
-    const signout_uri = isCognitoHostedOpts(this._config)
-      ? this._config.redirectSignOut
-      : this._config.returnTo;
+		const signout_uri = isCognitoHostedOpts(this._config)
+			? this._config.redirectSignOut
+			: this._config.returnTo;
 
-    oAuthLogoutEndpoint += Object.entries({
-      client_id,
-      logout_uri: encodeURIComponent(signout_uri)
-    }).map(([k, v]) => `${k}=${v}`).join('&');
+		oAuthLogoutEndpoint += Object.entries({
+			client_id,
+			logout_uri: encodeURIComponent(signout_uri),
+		})
+			.map(([k, v]) => `${k}=${v}`)
+			.join('&');
 
-    dispatchAuthEvent(
-      'oAuthSignOut',
-      {oAuth: 'signOut'},
-      `Signing out from ${oAuthLogoutEndpoint}`
-    );
-    logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
-    
-    return this._urlOpener(oAuthLogoutEndpoint);
-  }
+		dispatchAuthEvent(
+			'oAuthSignOut',
+			{ oAuth: 'signOut' },
+			`Signing out from ${oAuthLogoutEndpoint}`
+		);
+		logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-  private _generateState(length: number) {
-    let result = '';
-    let i = length;
-    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    for (; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
-    return result;
-  }
+		return this._urlOpener(oAuthLogoutEndpoint);
+	}
 
-  private _generateChallenge(code:string) {
-    return this._base64URL(SHA256(code));
-  }
+	private _generateState(length: number) {
+		let result = '';
+		let i = length;
+		const chars =
+			'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		for (; i > 0; --i)
+			result += chars[Math.round(Math.random() * (chars.length - 1))];
+		return result;
+	}
 
-  private _base64URL(string) {
-    return string.toString(Base64).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-  }
+	private _generateChallenge(code: string) {
+		return this._base64URL(SHA256(code));
+	}
 
-  private _generateRandom(size: number) {
-    const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    const buffer = new Uint8Array(size);
-    if (typeof window !== 'undefined' && !!(window.crypto)) {
-      window.crypto.getRandomValues(buffer);
-    } else {
-      for (let i = 0; i < size; i += 1) {
-        buffer[i] = (Math.random() * CHARSET.length) | 0;
-      }
-    }
-    return this._bufferToString(buffer);
-  }
+	private _base64URL(string) {
+		return string
+			.toString(Base64)
+			.replace(/=/g, '')
+			.replace(/\+/g, '-')
+			.replace(/\//g, '_');
+	}
 
-  private _bufferToString(buffer: Uint8Array) {
-    const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const state = [];
-    for (let i = 0; i < buffer.byteLength; i += 1) {
-      const index = buffer[i] % CHARSET.length;
-      state.push(CHARSET[index]);
-    }
-    return state.join('');
-  }
+	private _generateRandom(size: number) {
+		const CHARSET =
+			'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+		const buffer = new Uint8Array(size);
+		if (typeof window !== 'undefined' && !!window.crypto) {
+			window.crypto.getRandomValues(buffer);
+		} else {
+			for (let i = 0; i < size; i += 1) {
+				buffer[i] = (Math.random() * CHARSET.length) | 0;
+			}
+		}
+		return this._bufferToString(buffer);
+	}
+
+	private _bufferToString(buffer: Uint8Array) {
+		const CHARSET =
+			'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		const state = [];
+		for (let i = 0; i < buffer.byteLength; i += 1) {
+			const index = buffer[i] % CHARSET.length;
+			state.push(CHARSET[index]);
+		}
+		return state.join('');
+	}
 }
-

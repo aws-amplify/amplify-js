@@ -13,7 +13,14 @@
  */
 // tslint:enable
 
-import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
+import {
+	Component,
+	Input,
+	Output,
+	EventEmitter,
+	OnInit,
+	Inject,
+} from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 
 const template = `
@@ -52,122 +59,131 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-photo-picker-core',
-  template
+	selector: 'amplify-photo-picker-core',
+	template,
 })
 export class PhotoPickerComponentCore implements OnInit {
-  photoUrl: string;
-  hasPhoto: boolean = false;
-  uploading: boolean = false;
-  s3ImageFile: any = null;
-  s3ImagePath: string = "";
-  _storageOptions: any = {};
-  errorMessage: string;
-  protected logger: any;
+	photoUrl: string;
+	hasPhoto: boolean = false;
+	uploading: boolean = false;
+	s3ImageFile: any = null;
+	s3ImagePath: string = '';
+	_storageOptions: any = {};
+	errorMessage: string;
+	protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('PhotoPickerComponent');
-  }
-  
-  @Input()
-  set url(url: string) {
-    this.photoUrl = url;
-    this.hasPhoto = true;
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		this.logger = this.amplifyService.logger('PhotoPickerComponent');
+	}
 
-  @Input()
-  set storageOptions(storageOptions: any){
-    this._storageOptions = Object.assign(this._storageOptions, storageOptions);
-  }
+	@Input()
+	set url(url: string) {
+		this.photoUrl = url;
+		this.hasPhoto = true;
+	}
 
-  @Input()
-  set path(path: string){
-    this.s3ImagePath = path;
-  }
+	@Input()
+	set storageOptions(storageOptions: any) {
+		this._storageOptions = Object.assign(this._storageOptions, storageOptions);
+	}
 
-  @Input()
-  set data(data: any) {
-    this.photoUrl = data.url;
-    this.s3ImagePath = data.path;
-    this._storageOptions = Object.assign(this._storageOptions, data.storageOptions);
-    this.hasPhoto = true;
-  }
+	@Input()
+	set path(path: string) {
+		this.s3ImagePath = path;
+	}
 
-  @Output()
-  picked: EventEmitter<string> = new EventEmitter<string>();
+	@Input()
+	set data(data: any) {
+		this.photoUrl = data.url;
+		this.s3ImagePath = data.path;
+		this._storageOptions = Object.assign(
+			this._storageOptions,
+			data.storageOptions
+		);
+		this.hasPhoto = true;
+	}
 
-  @Output()
-  loaded: EventEmitter<string> = new EventEmitter<string>();
-  
-  @Output()
-  uploaded: EventEmitter<Object> = new EventEmitter<Object>();
+	@Output()
+	picked: EventEmitter<string> = new EventEmitter<string>();
 
-  ngOnInit() {
-    if (!this.amplifyService.storage()){
-      throw new Error('Storage module not registered on AmplifyService provider');
-    }
-  }
+	@Output()
+	loaded: EventEmitter<string> = new EventEmitter<string>();
 
-  pick(evt) {
-    const file = evt.target.files[0];
-    if (!file) { return; }
-    if (!this._storageOptions.contentType) {
-      this._storageOptions.contentType = file.type;
-    }
-    const { name, size, type } = file;
-    this.picked.emit(file);
+	@Output()
+	uploaded: EventEmitter<Object> = new EventEmitter<Object>();
 
-    this.s3ImagePath = `${this.s3ImagePath}/${file.name}`;
-    this.s3ImageFile = file;
-    const that = this;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const target: any = e.target;
-      const url = target.result;
-      that.photoUrl = url;
-      that.hasPhoto = true;
-      that.loaded.emit(url);
-    };
-    reader.readAsDataURL(file);
-  }
+	ngOnInit() {
+		if (!this.amplifyService.storage()) {
+			throw new Error(
+				'Storage module not registered on AmplifyService provider'
+			);
+		}
+	}
 
-  uploadFile() {
-  	this.uploading = true;
-  	this.amplifyService.storage().put( 
-  			this.s3ImagePath, 
-  			this.s3ImageFile, this._storageOptions)
-		.then ( result => {
-      this.uploaded.emit(result);
-			this.completeFileUpload();
-		})
-		.catch( error => {
-			this.completeFileUpload(error);
-		});
-  }
+	pick(evt) {
+		const file = evt.target.files[0];
+		if (!file) {
+			return;
+		}
+		if (!this._storageOptions.contentType) {
+			this._storageOptions.contentType = file.type;
+		}
+		const { name, size, type } = file;
+		this.picked.emit(file);
 
-  completeFileUpload(error?:any) {
-  	if (error) {
-  		return this._setError(error);
-  	}
-    this.s3ImagePath = "";
-    this.photoUrl = null;
-  	this.s3ImageFile = null;
-	  this.uploading = false;
-  }
+		this.s3ImagePath = `${this.s3ImagePath}/${file.name}`;
+		this.s3ImageFile = file;
+		const that = this;
+		const reader = new FileReader();
+		reader.onload = function(e) {
+			const target: any = e.target;
+			const url = target.result;
+			that.photoUrl = url;
+			that.hasPhoto = true;
+			that.loaded.emit(url);
+		};
+		reader.readAsDataURL(file);
+	}
 
-  onPhotoError() {
-    this.hasPhoto = false;
-  }
+	uploadFile() {
+		this.uploading = true;
+		this.amplifyService
+			.storage()
+			.put(this.s3ImagePath, this.s3ImageFile, this._storageOptions)
+			.then(result => {
+				this.uploaded.emit(result);
+				this.completeFileUpload();
+			})
+			.catch(error => {
+				this.completeFileUpload(error);
+			});
+	}
 
-  onAlertClose() {
-    this._setError(null);
-  }
+	completeFileUpload(error?: any) {
+		if (error) {
+			return this._setError(error);
+		}
+		this.s3ImagePath = '';
+		this.photoUrl = null;
+		this.s3ImageFile = null;
+		this.uploading = false;
+	}
 
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
-    this.errorMessage = err.message || err;
-  }
+	onPhotoError() {
+		this.hasPhoto = false;
+	}
+
+	onAlertClose() {
+		this._setError(null);
+	}
+
+	_setError(err) {
+		if (!err) {
+			this.errorMessage = null;
+			return;
+		}
+		this.errorMessage = err.message || err;
+	}
 }
