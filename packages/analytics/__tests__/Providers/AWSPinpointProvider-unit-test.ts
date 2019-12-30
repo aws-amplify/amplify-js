@@ -730,12 +730,14 @@ describe('AnalyticsProvider test', () => {
 
 			test('error case', async () => {
 				const analytics = new AnalyticsProvider();
+				const mockError = { message: 'error' };
+
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(Pinpoint.prototype, 'updateEndpoint')
-					.mockImplementationOnce((params, callback) => {
-						callback({ message: 'error' }, null);
-					});
+					.mockImplementationOnce(params => ({
+						promise: jest.fn().mockRejectedValue(mockError),
+					}));
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -744,7 +746,29 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 
 				await analytics.record(params, { resolve, reject });
-				expect(reject).toBeCalled();
+				expect(reject).toBeCalledWith(mockError);
+				spyon.mockRestore();
+			});
+
+			test('BAD_REQUEST_CODE without message rejects error', async () => {
+				const analytics = new AnalyticsProvider();
+				const mockError = { debug: 'error', statusCode: 400 };
+
+				analytics.configure(options);
+				const spyon = jest
+					.spyOn(Pinpoint.prototype, 'updateEndpoint')
+					.mockImplementationOnce(params => ({
+						promise: jest.fn().mockRejectedValue(mockError),
+					}));
+
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return Promise.resolve(credentials);
+				});
+
+				const params = { event: { name: '_update_endpoint', immediate: true } };
+
+				await analytics.record(params, { resolve, reject });
+				expect(reject).toBeCalledWith(mockError);
 				spyon.mockRestore();
 			});
 		});

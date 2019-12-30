@@ -165,17 +165,26 @@ export default class JS {
 		return result;
 	}
 
+	/**
+	 * Webpack adds node shim to the bundle overriding the `process` variable
+	 * causing issues detecting nodejs environment. Creating a new function will
+	 * help to avoid incorrect environment detection as new function will have
+	 * it's `this` binded to global scope. Credit: https://stackoverflow.com/a/31090240
+	 */
 	static browserOrNode() {
-		const isBrowser =
-			typeof window !== 'undefined' && typeof window.document !== 'undefined';
-		const isNode =
-			typeof process !== 'undefined' &&
-			process.versions != null &&
-			process.versions.node != null;
+		// function to check if the global scope is "window"
+		const isBrowser = new Function(
+			'try {return this===window;}catch(e){ return false;}'
+		);
+
+		// function to test if global scope is binded to "global"
+		const isNode = new Function(
+			'try {return this===global;}catch(e){return false;}'
+		);
 
 		return {
-			isBrowser,
-			isNode,
+			isBrowser: isBrowser(),
+			isNode: isNode(),
 		};
 	}
 

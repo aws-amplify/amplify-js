@@ -52,6 +52,7 @@ jobs:
             yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
+            yarn run test --scope amazon-cognito-identity-js
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
