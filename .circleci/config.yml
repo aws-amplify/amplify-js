@@ -52,6 +52,7 @@ jobs:
             yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
+            yarn run test --scope amazon-cognito-identity-js
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
@@ -184,12 +185,18 @@ jobs:
             cd amplify-js/packages/aws-amplify-angular
             yarn link
       - run:
+          name: 'Link @aws-amplify/analytics'
+          command: |
+            cd amplify-js/packages/analytics
+            yarn link
+      - run:
           name: 'Install Angular Authenticator sample'
           command: |
             cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-angular
+            yarn link @aws-amplify/analytics
       - run:
           name: 'Start Angular Authenticator Sample server in background'
           command: |
