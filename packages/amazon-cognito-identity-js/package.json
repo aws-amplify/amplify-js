@@ -64,8 +64,7 @@
   "dependencies": {
     "buffer": "4.9.1",
     "crypto-js": "^3.1.9-1",
-    "js-cookie": "^2.1.4",
-    "cross-fetch": "^3.0.4"
+    "js-cookie": "^2.1.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",

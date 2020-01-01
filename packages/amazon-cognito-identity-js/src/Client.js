@@ -1,6 +1,4 @@
-import fetch from 'cross-fetch';
 import UserAgent from './UserAgent';
-
 /** @class */
 export default class Client {
 	/**
