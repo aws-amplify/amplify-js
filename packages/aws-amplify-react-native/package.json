@@ -30,7 +30,7 @@
   },
   "peerDependencies": {
     "aws-amplify": "^1.x",
-    "graphql": "0.13.0",
+    "graphql": "^14.0.0",
     "react-native-fs": "^2.12.1",
     "react-native-sound": "^0.10.9",
     "react-native-voice": "^0.2.6"
