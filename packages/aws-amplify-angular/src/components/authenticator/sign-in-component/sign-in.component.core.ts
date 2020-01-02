@@ -117,6 +117,11 @@ export class SignInComponentCore implements OnInit {
 	set data(data: any) {
 		this.hide = data.hide ? data.hide : this.hide;
 		this._usernameAttributes = data.usernameAttributes;
+		this._authState = data.authState;
+		this._show = includes(
+			['signIn', 'signedOut', 'signedUp'],
+			data.authState.state
+		);
 	}
 
 	@Input() hide: string[] = [];
@@ -198,11 +203,11 @@ export class SignInComponentCore implements OnInit {
 		const user =
 			this.username || this.email || this.local_phone_number
 				? {
-						username: this.username,
-						email: this.email,
-						local_phone_number: this.local_phone_number,
-						courtry_code: this.country_code,
-				  }
+					username: this.username,
+					email: this.email,
+					local_phone_number: this.local_phone_number,
+					courtry_code: this.country_code,
+				}
 				: null;
 
 		return user;

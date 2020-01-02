@@ -2701,6 +2701,16 @@ describe('auth unit test', () => {
 				.mockImplementation(() => {
 					throw new Error('no user logged in');
 				});
+
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => {
+					return {
+						setItem() {
+							return null;
+						},
+					};
+				});
 		});
 
 		test('User Pools Code Flow', async () => {
