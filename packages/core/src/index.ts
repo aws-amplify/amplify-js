@@ -37,7 +37,10 @@ export const Constants = {
 	userAgent: Platform.userAgent,
 };
 
+export * from './constants';
 export default Amplify;
+
+export * from './Util';
 
 const logger = new Logger('Core');
 
