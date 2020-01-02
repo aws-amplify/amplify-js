@@ -8,3 +8,4 @@ export const facebookSignInButton: string;
 export const amazonSignInButton: string;
 export const oAuthSignInButton: string;
 export const signInButtonContent: string;
+export const linkButton: string;

@@ -282,9 +282,9 @@ export const Link = props => {
 	const style = propStyle(props, theme.a);
 	const p = JS.objectLessAttributes(props, 'theme');
 	return beforeAfter(
-		<a {...p} className={AmplifyUI.a} style={style}>
+		<button {...p} className={AmplifyUI.linkButton} style={style}>
 			{props.children}
-		</a>
+		</button>
 	);
 };
 
@@ -386,7 +386,7 @@ export const Toast = props => {
 			style={theme.toast}
 		>
 			<span>{props.children}</span>
-			<a className={AmplifyUI.toastClose} onClick={onClose} />
+			<button className={AmplifyUI.toastClose} onClick={onClose} />
 		</div>
 	);
 };
