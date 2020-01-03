@@ -71,19 +71,19 @@ const template = `
       <div class="amplify-form-row">
         <div class="amplify-form-signup">
           {{ this.amplifyService.i18n().get('Have an account?') }}
-          <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInButton}">
+          <button class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInButton}">
             {{ this.amplifyService.i18n().get('Sign In') }}
-          </a>
+          </button>
         </div>
         <div class="amplify-form-signup" *ngIf="!shouldHide('SignUp')">
           {{ this.amplifyService.i18n().get('Have a code?') }}
-          <a
+          <button
             class="amplify-form-link"
             (click)="onConfirmSignUp()"
             data-test="${auth.signUp.confirmButton}"
             >
             {{ this.amplifyService.i18n().get('Confirm') }}
-          </a>
+          </button>
         </div>
       </div>
     </div>

@@ -65,9 +65,9 @@ const template = `
         <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('Have an account?') }}
-            <a class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInLink}">
+            <button class="amplify-form-link" (click)="onSignIn()" data-test="${auth.signUp.signInLink}">
               {{ this.amplifyService.i18n().get('Sign in') }}
-            </a>
+            </button>
           </div>
         </div>
         <div class="amplify-form-cell-right">
@@ -281,7 +281,7 @@ export class SignUpComponentCore implements OnInit {
 				this.onAlertClose();
 				this.amplifyService.setAuthState({
 					state: 'confirmSignUp',
-					user: { username: username },
+					user: { username },
 				});
 			})
 			.catch(err => this._setError(err));

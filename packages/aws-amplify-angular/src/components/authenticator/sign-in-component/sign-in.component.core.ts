@@ -46,10 +46,10 @@ const template = `
         />
         <span class="amplify-form-action" *ngIf="!shouldHide('ForgotPassword')">
           {{ this.amplifyService.i18n().get('Forgot Password?') }}
-          <a class="amplify-form-link"
+          <button class="amplify-form-link"
             (click)="onForgotPassword()"
             data-test="${auth.signIn.forgotPasswordLink}"
-          >{{ this.amplifyService.i18n().get('Reset password') }}</a>
+          >{{ this.amplifyService.i18n().get('Reset password') }}</button>
         </span>
       </div>
       <div class="amplify-form-actions">
@@ -62,13 +62,13 @@ const template = `
         <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignUp')">
           <div class="amplify-form-signup">
             {{ this.amplifyService.i18n().get('No account?') }}
-            <a
+            <button
               class="amplify-form-link"
               (click)="onSignUp()"
               data-test="${auth.signIn.createAccountLink}"
               >
               {{ this.amplifyService.i18n().get('Create account') }}
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -203,11 +203,11 @@ export class SignInComponentCore implements OnInit {
 		const user =
 			this.username || this.email || this.local_phone_number
 				? {
-					username: this.username,
-					email: this.email,
-					local_phone_number: this.local_phone_number,
-					courtry_code: this.country_code,
-				}
+						username: this.username,
+						email: this.email,
+						local_phone_number: this.local_phone_number,
+						courtry_code: this.country_code,
+				  }
 				: null;
 
 		return user;

@@ -56,21 +56,21 @@ const template = `
         data-test="${auth.confirmSignUp.confirmationCodeInput}"
       />
       <span class="amplify-form-action">{{ this.amplifyService.i18n().get('Lost your code?') }}
-        <a class="amplify-form-link"
+        <button class="amplify-form-link"
             (click)="onResend()"
             data-test="${auth.confirmSignUp.resendCodeLink}"
-          >{{ this.amplifyService.i18n().get('Resend Code') }}</a></span>
+          >{{ this.amplifyService.i18n().get('Resend Code') }}</button></span>
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
         <div class="amplify-form-actions-left">
-          <a
+          <button
             class="amplify-form-link"
             (click)="onSignIn()"
             data-test="${auth.confirmSignUp.backToSignInLink}"
             >
             {{ this.amplifyService.i18n().get('Back to Sign in') }}
-          </a>
+          </button>
         </div>
       </div>
       <div class="amplify-form-cell-right">

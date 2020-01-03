@@ -23,10 +23,10 @@ const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
     <div class="amplify-greeting-text">{{ greeting }}</div>
     <div class="amplify-greeting-flex-spacer"></div>
-    <a class="amplify-form-link amplify-greeting-sign-out"
+    <button class="amplify-form-link amplify-greeting-sign-out"
       (click)="onSignOut()"
       data-test="${auth.greeting.signOutButton}"
-    >{{ this.amplifyService.i18n().get('Sign Out') }}</a>
+    >{{ this.amplifyService.i18n().get('Sign Out') }}</button>
 </div>
 `;
 

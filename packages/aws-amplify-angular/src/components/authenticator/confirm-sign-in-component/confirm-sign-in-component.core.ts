@@ -40,13 +40,13 @@ const template = `
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a 
+            <button
               class="amplify-form-link"
               (click)="onSignIn()"
               data-test="${auth.confirmSignIn.backToSignInLink}"
               >
                 {{ this.amplifyService.i18n().get('Back to Sign in') }}
-            </a>
+            </button>
           </div>
         </div>
         <div class="amplify-form-cell-right">

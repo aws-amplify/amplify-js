@@ -84,19 +84,19 @@ const template = `
     <div class="amplify-form-row">
       <div class="amplify-form-signup">
         {{ this.amplifyService.i18n().get('Have an account?') }}
-        <a class="amplify-form-link" (click)="onSignIn()">
+        <button class="amplify-form-link" (click)="onSignIn()">
           {{ this.amplifyService.i18n().get('Sign In') }}
-        </a>
+        </button>
       </div>
       <div class="amplify-form-signup">
         {{ this.amplifyService.i18n().get('Lost your code?') }}
-        <a
+        <button
           class="amplify-form-link"
           (click)="onSend()"
           data-test="${auth.forgotPassword.resendCodeLink}"
           >
           {{ this.amplifyService.i18n().get('Resend') }}
-        </a>
+        </button>
       </div>
     </div>
   </div>

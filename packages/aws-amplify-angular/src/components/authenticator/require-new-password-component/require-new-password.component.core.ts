@@ -40,10 +40,10 @@ const template = `
     </div>
     <div class="amplify-form-actions">
       <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
+        <button class="amplify-form-link"
           (click)="onSignIn()"
           data-test="${auth.requireNewPassword.backToSignInLink}"
-        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</a>
+        >{{ this.amplifyService.i18n().get('Back to Sign In') }}</button>
       </div>
       <div class="amplify-form-cell-right">
         <button class="amplify-form-button"

@@ -73,23 +73,23 @@ const template = `
     <div class="amplify-form-row">
       <div class="amplify-form-signup">
         {{ this.amplifyService.i18n().get('Have an account?') }}
-        <a
+        <button
           class="amplify-form-link"
           (click)="onSignIn()"
           data-test="${auth.confirmSignUp.backToSignInLink}"
           >
           {{ this.amplifyService.i18n().get('Sign In') }}
-        </a>
+        </button>
       </div>
       <div class="amplify-form-signup">
         {{ this.amplifyService.i18n().get('Lost your code?') }}
-        <a
+        <button
           class="amplify-form-link"
           (click)="onResend()"
           data-test="${auth.confirmSignUp.resendCodeLink}"
           >
           {{ this.amplifyService.i18n().get('Resend') }}
-        </a>
+        </button>
       </div>
     </div>
   </div>

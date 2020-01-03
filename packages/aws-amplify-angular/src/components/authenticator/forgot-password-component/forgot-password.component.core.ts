@@ -81,22 +81,22 @@ const template = `
         </div>
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a
+            <button
               *ngIf="code_sent"
               class="amplify-form-link"
               (click)="onSend()"
               data-test="${auth.forgotPassword.resendCodeLink}"
               >
               {{ this.amplifyService.i18n().get('Resend Code') }}
-            </a>
-            <a
+            </button>
+            <button
               *ngIf="!code_sent"
               class="amplify-form-link"
               (click)="onSignIn()"
               data-test="${auth.forgotPassword.backToSignInLink}"
               >
               {{ this.amplifyService.i18n().get('Back to Sign in') }}
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -205,7 +205,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 	}
 
 	onSend() {
-		let forgotPwUsername = this.getforgotPwUsername();
+		const forgotPwUsername = this.getforgotPwUsername();
 		if (!forgotPwUsername) {
 			this.errorMessage = 'Username cannot be empty';
 			return;
