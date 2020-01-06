@@ -1,4 +1,5 @@
 import { Config } from '@stencil/core';
+import { reactOutputTarget } from '@stencil/react-output-target';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
@@ -15,6 +16,10 @@ export const config: Config = {
     },
   },
   outputTargets: [
+    reactOutputTarget({
+      componentCorePackage: '@aws-amplify/ui-components',
+      proxiesFile: '../amplify-ui-react/src/components.ts',
+    }),
     { type: 'dist' },
     { type: 'docs-readme' },
     {
