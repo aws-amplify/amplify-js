@@ -3152,12 +3152,22 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@stencil/core@^1.8.0":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.8.1.tgz#9b27487db4ef4acabf2267ef09fee24bb32e5912"
-  integrity sha512-VV8bJF6ZeOZyVUQEK4a24O+V4RXUxgAWSHonkNgbJVk7Z+hxfJMBTLGy6uZa9/5/IcKXqrTutIL9giV8WeNkHA==
+"@stencil/angular-output-target@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@stencil/angular-output-target/-/angular-output-target-0.0.2.tgz#e534c736d204f9cc7c95f72c9c4d56739beba836"
+  integrity sha512-GyQ/VTipzzweuNYbs+FrK1q3FSEG4LZkzg+keuMQNRDX77aCy5hsYivspMRMwOXIwUXh9wSIzqQR3JuLiFHzcw==
+
+"@stencil/core@^1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.8.3.tgz#c8ed5801212d709bf8427b94a59aab3ee032bda0"
+  integrity sha512-9+ugs+3OLokZPKKrm2QtmGD8t44U1w5SRCteL9HLU2bQNm8iN1SHRu9FBIAdvj1nIovwmsGZpb0+DyPVLfSv1g==
   dependencies:
     typescript "3.7.2"
+
+"@stencil/react-output-target@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@stencil/react-output-target/-/react-output-target-0.0.2.tgz#7619fd7ef6d5f511bdc09e5436321e8d5223daaf"
+  integrity sha512-sIja4vhkQgHZcNt0kChvL3blX74xP/STSAbchLyg2oMCBQU1KxfPYgiw/3zs7NVZsbEDMAVak8bM/oorNQJZYw==
 
 "@stencil/state-tunnel@^1.0.1":
   version "1.0.1"
