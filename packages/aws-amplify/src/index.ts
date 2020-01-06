@@ -27,9 +27,7 @@ import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import * as UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
-import Predictions, {
-	AmazonAIPredictionsProvider,
-} from '@aws-amplify/predictions';
+import Predictions from '@aws-amplify/predictions';
 
 import Amplify, {
 	ConsoleLogger as Logger,
