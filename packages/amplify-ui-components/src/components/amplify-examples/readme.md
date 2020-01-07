@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Dependencies
 
 ### Depends on
@@ -14,7 +15,6 @@
 - [amplify-scene](../amplify-scene)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
@@ -84,10 +84,10 @@ graph TD;
   amplify-require-new-password --> amplify-form-section
   amplify-require-new-password --> amplify-link
   amplify-require-new-password --> amplify-auth-fields
-  amplify-verify-contact --> amplify-form-section
-  amplify-verify-contact --> amplify-link
   amplify-verify-contact --> amplify-input
   amplify-verify-contact --> amplify-radio-button
+  amplify-verify-contact --> amplify-form-section
+  amplify-verify-contact --> amplify-link
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
@@ -105,6 +105,6 @@ graph TD;
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
