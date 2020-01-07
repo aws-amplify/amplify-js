@@ -2,7 +2,6 @@ import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySignIn } from './amplify-sign-in';
 import * as stories from './amplify-sign-in.stories';
 // import { AmplifyForgotPasswordHint } from './amplify-forgot-password-hint';
-// import Tunnel from '../../data/auth-state';
 
 const {
   default: { title },

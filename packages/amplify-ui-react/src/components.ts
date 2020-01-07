@@ -55,5 +55,4 @@ export const AmplifyTooltip = /*@__PURE__*/createReactComponent<JSX.AmplifyToolt
 export const AmplifyTotpSetup = /*@__PURE__*/createReactComponent<JSX.AmplifyTotpSetup, HTMLAmplifyTotpSetupElement>('amplify-totp-setup');
 export const AmplifyUsernameField = /*@__PURE__*/createReactComponent<JSX.AmplifyUsernameField, HTMLAmplifyUsernameFieldElement>('amplify-username-field');
 export const AmplifyVerifyContact = /*@__PURE__*/createReactComponent<JSX.AmplifyVerifyContact, HTMLAmplifyVerifyContactElement>('amplify-verify-contact');
-export const ContextConsumer = /*@__PURE__*/createReactComponent<JSX.ContextConsumer, HTMLContextConsumerElement>('context-consumer');
 export const RockPaperScissor = /*@__PURE__*/createReactComponent<JSX.RockPaperScissor, HTMLRockPaperScissorElement>('rock-paper-scissor');
