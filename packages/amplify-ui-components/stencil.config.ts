@@ -3,6 +3,7 @@ import { reactOutputTarget } from '@stencil/react-output-target';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
+  excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [nodePolyfills()],
   commonjs: {
