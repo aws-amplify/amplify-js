@@ -1,5 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { AmplifyIcon } from './amplify-icon'
+import { AmplifyIcon } from './amplify-icon';
 import { icons } from './icons';
 
 /** Helper functions */
@@ -7,15 +7,6 @@ async function snapshotTestIcon(iconName: string) {
   const page = await newSpecPage({
     components: [AmplifyIcon],
     html: `<amplify-icon name='${iconName}'></amplify-icon>`,
-  });
-
-  expect(page.root).toMatchSnapshot();
-}
-
-async function snapshotOverrideTestIcon(iconName: string) {
-  const page = await newSpecPage({
-    components: [AmplifyIcon],
-    html: `<amplify-icon name='${iconName}' override-style='true'></amplify-icon>`,
   });
 
   expect(page.root).toMatchSnapshot();
