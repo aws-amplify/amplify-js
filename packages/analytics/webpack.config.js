@@ -8,6 +8,7 @@ module.exports = {
 		'@aws-amplify/core',
 		'aws-sdk/clients/pinpoint',
 		'aws-sdk/clients/kinesis',
+		'aws-sdk/clients/firehose',
 	],
 	output: {
 		filename: '[name].js',

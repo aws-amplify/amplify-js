@@ -24,6 +24,7 @@ export default class Parser {
 				userPoolWebClientId: config['aws_user_pools_web_client_id'],
 				region: config['aws_cognito_region'],
 				identityPoolId: config['aws_cognito_identity_pool_id'],
+        			identityPoolRegion: config['aws_cognito_region'],
 				mandatorySignIn:
 					config['aws_mandatory_sign_in'] === 'enable' ? true : false,
 			};

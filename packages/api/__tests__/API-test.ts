@@ -1,14 +1,18 @@
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-import { Signer, Credentials, Constants } from '@aws-amplify/core';
+import {
+	Signer,
+	Credentials,
+	Constants,
+	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import API, { graphqlOperation } from '../src/API';
 import { GRAPHQL_AUTH_MODE } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
@@ -597,7 +601,7 @@ describe('API test', () => {
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 				})
-			).rejects.toThrowError('No userPool');
+			).rejects.toThrow();
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
@@ -787,7 +791,9 @@ describe('API test', () => {
 
 			jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
 
-			const spyon_Graphql = jest.spyOn(API.prototype, '_graphql');
+			const spyon_pubsub = jest
+				.spyOn(PubSub, 'subscribe')
+				.mockImplementation(jest.fn(() => Observable.of({})));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -801,8 +807,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-
-			PubSub.subscribe = jest.fn(() => Observable.of({}));
 
 			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
                 subscribeToEventComments(eventId: $eventId) {
@@ -823,11 +827,11 @@ describe('API test', () => {
 				})
 				.subscribe();
 
-			expect(spyon_Graphql).toBeCalledWith(
+			expect(spyon_pubsub).toBeCalledWith(
+				'',
 				expect.objectContaining({
-					authMode: 'OPENID_CONNECT',
-				}),
-				{}
+					authenticationType: 'OPENID_CONNECT',
+				})
 			);
 		});
 
@@ -875,7 +879,7 @@ describe('API test', () => {
 						expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 						const subscribeOptions = PubSub.subscribe.mock.calls[0][1];
 						expect(subscribeOptions.provider).toBe(
-							INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER
+							INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
 						);
 						done();
 					},

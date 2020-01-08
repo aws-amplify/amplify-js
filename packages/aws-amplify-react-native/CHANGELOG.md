@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@2.2.3...aws-amplify-react-native@3.1.0) (2019-11-15)
+
+
+### Features
+
+* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+
+
+
+
 ## [2.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@2.2.2...aws-amplify-react-native@2.2.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify-react-native
