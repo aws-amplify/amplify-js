@@ -18,22 +18,22 @@
 
 ### Depends on
 
-- [amplify-form-section](../amplify-form-section)
-- [amplify-link](../amplify-link)
 - [amplify-input](../amplify-input)
 - [amplify-radio-button](../amplify-radio-button)
+- [amplify-form-section](../amplify-form-section)
+- [amplify-link](../amplify-link)
 
 ### Graph
 
 ```mermaid
 graph TD;
-  amplify-verify-contact --> amplify-form-section
-  amplify-verify-contact --> amplify-link
   amplify-verify-contact --> amplify-input
   amplify-verify-contact --> amplify-radio-button
+  amplify-verify-contact --> amplify-form-section
+  amplify-verify-contact --> amplify-link
+  amplify-radio-button --> amplify-label
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
-  amplify-radio-button --> amplify-label
   amplify-authenticator --> amplify-verify-contact
   style amplify-verify-contact fill:#f9f,stroke:#333,stroke-width:4px
 ```
