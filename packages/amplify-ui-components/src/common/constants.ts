@@ -122,6 +122,13 @@ export const UNABLE_TO_SETUP_MFA_AT_THIS_TIME = 'Failed! Unable to configure MFA
 export const SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:';
 export const LESS_THAN_TWO_MFA_VALUES_MESSAGE = 'Less than two mfa types available';
 
+// Verify Contact
+export const VERIFY_CONTACT_HEADER_TEXT = 'Account recovery requires verified contact information';
+export const VERIFY_CONTACT_SUBMIT_LABEL = 'Submit';
+export const VERIFY_CONTACT_VERIFY_LABEL = 'Verify';
+export const VERIFY_CONTACT_EMAIL_LABEL = 'Email';
+export const VERIFY_CONTACT_PHONE_LABEL = 'Phone Number';
+
 // Common events
 export const SUCCESS = 'SUCCESS';
 export const FAILURE = 'FAILURE';

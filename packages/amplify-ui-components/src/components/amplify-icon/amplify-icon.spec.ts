@@ -12,11 +12,26 @@ async function snapshotTestIcon(iconName: string) {
   expect(page.root).toMatchSnapshot();
 }
 
+async function snapshotOverrideTestIcon(iconName: string) {
+  const page = await newSpecPage({
+    components: [AmplifyIcon],
+    html: `<amplify-icon name='${iconName}' override-style='true'></amplify-icon>`,
+  });
+
+  expect(page.root).toMatchSnapshot();
+}
+
 /** Tests */
 describe('amplify-icon spec:', () => {
   describe('Render logic ->', () => {
     Object.keys(icons).map(name => {
       it(`renders ${name} correctly`, async () => snapshotTestIcon(name));
+    });
+  });
+  describe('Component logic ->', () => {
+    it(`has overrideStyle false by default`, async () => {
+      const icon = new AmplifyIcon();
+      expect(icon.overrideStyle).toBe(false);
     });
   });
 });

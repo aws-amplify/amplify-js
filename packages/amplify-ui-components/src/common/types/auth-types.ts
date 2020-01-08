@@ -18,7 +18,7 @@ export enum AuthState {
   SettingMFA = 'settingMFA',
   TOTPSetup = 'TOTPSetup',
   CustomConfirmSignIn = 'customConfirmSignIn',
-  VerifyContact = 'verifycontact',
+  VerifyContact = 'verifyContact',
 }
 
 export interface FederatedConfig {
@@ -67,6 +67,10 @@ export interface CognitoUserInterface {
   userSub?: string;
   challengeName: string;
   challengeParam: { [key: string]: any };
+  unverified?: {
+    email?: string;
+    phone_number?: string;
+  };
 }
 
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;

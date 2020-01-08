@@ -1,9 +1,6 @@
 # amplify-totp
 
-
-
 <!-- Auto Generated Below -->
-
 
 ## Properties
 
@@ -12,13 +9,12 @@
 | `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
 | `user`                  | --        | Used in order to configure TOTP for a user                                      | `CognitoUserInterface`                              | `undefined` |
 
-
 ## Dependencies
 
 ### Used by
 
- - [amplify-authenticator](../amplify-authenticator)
- - [amplify-select-mfa-type](../amplify-select-mfa-type)
+- [amplify-authenticator](../amplify-authenticator)
+- [amplify-select-mfa-type](../amplify-select-mfa-type)
 
 ### Depends on
 
@@ -26,6 +22,7 @@
 - [amplify-form-field](../amplify-form-field)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-totp-setup --> amplify-form-section
@@ -40,6 +37,6 @@ graph TD;
   style amplify-totp-setup fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_
