@@ -164,7 +164,9 @@ export default class AWSS3Provider implements StorageProvider {
 			});
 		}
 
-		if (expires) params.ResponseExpires = expires;
+		if (expires) {
+			params.Expires = expires;
+		}
 		if (cacheControl) params.ResponseCacheControl = cacheControl;
 		if (contentDisposition)
 			params.ResponseContentDisposition = contentDisposition;
