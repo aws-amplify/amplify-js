@@ -68,7 +68,7 @@ const countrylist = [
 	{ countryCode: 'CW', value: '599', label: 'Curacao (+599)' },
 	{ countryCode: 'CY', value: '90392', label: 'Cyprus North (+90392)' },
 	{ countryCode: 'CY', value: '357', label: 'Cyprus South (+357)' },
-	{ countryCode: 'CZ', value: '42', label: 'Czech Republic (+42)' },
+	{ countryCode: 'CZ', value: '420', label: 'Czech Republic (+420)' },
 	{ countryCode: 'DK', value: '45', label: 'Denmark (+45)' },
 	{ countryCode: 'DJ', value: '253', label: 'Djibouti (+253)' },
 	{ countryCode: 'DM', value: '1809', label: 'Dominica (+1809)' },
