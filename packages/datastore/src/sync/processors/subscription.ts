@@ -85,7 +85,6 @@ class SubscriptionProcessor {
 		ownerField?: string;
 		ownerValue?: string;
 	} {
-		debugger;
 		let result;
 		const rules = getAuthorizationRules(model, transformerMutationType);
 
