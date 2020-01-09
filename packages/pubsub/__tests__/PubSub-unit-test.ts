@@ -174,12 +174,12 @@ describe('PubSub', () => {
 				value: 'my message',
 				provider: awsIotProvider,
 			};
-			var obs = pubsub.subscribe('topicA').subscribe({
+			const obs = pubsub.subscribe('topicA').subscribe({
 				next: data => {
 					expect(data).toEqual(expectedData);
 					done();
 				},
-				close: () => console.log('done'),
+				complete: () => console.log('done'),
 				error: error => console.log('error', error),
 			});
 
@@ -230,7 +230,7 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			pubsub.subscribe('topic').subscribe({
+			pubsub.subscribe('topic', { clientId: '123' }).subscribe({
 				error: () => done(),
 			});
 
