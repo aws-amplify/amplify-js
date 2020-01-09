@@ -171,12 +171,12 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledWith('getObject', {
 				Bucket: 'bucket',
 				Key: 'public/key',
+				Expires: 123456789,
 				ResponseCacheControl: 'no-cache',
 				ResponseContentDisposition: 'attachment; filename="filename.jpg"',
 				ResponseContentEncoding: 'identity',
 				ResponseContentLanguage: 'en-US',
 				ResponseContentType: 'multipart/form-data; boundary=something',
-				ResponseExpires: 123456789,
 			});
 
 			spyon.mockClear();
@@ -368,7 +368,7 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledWith('getObject', {
 				Bucket: 'bucket',
 				Key: 'public/key',
-				ResponseExpires: 1200,
+				Expires: 1200,
 			});
 
 			spyon.mockClear();
