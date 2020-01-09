@@ -290,7 +290,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - ui-components/master
           requires:
             - build
       - integ_react_predictions:
@@ -300,7 +299,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - ui-components/master
           requires:
             - integ_setup
       - integ_react_auth:
@@ -310,7 +308,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - ui-components/master
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -320,7 +317,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - ui-components/master
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -330,7 +326,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - ui-components/master
           requires:
             - integ_setup
       - deploy:
@@ -341,7 +336,6 @@ workflows:
                 - master
                 - beta
                 - 1.0-stable
-                - ui-components/master
           requires:
             - unit_test
             - integ_react_predictions
