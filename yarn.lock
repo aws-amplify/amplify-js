@@ -3169,11 +3169,6 @@
   resolved "https://registry.yarnpkg.com/@stencil/react-output-target/-/react-output-target-0.0.2.tgz#7619fd7ef6d5f511bdc09e5436321e8d5223daaf"
   integrity sha512-sIja4vhkQgHZcNt0kChvL3blX74xP/STSAbchLyg2oMCBQU1KxfPYgiw/3zs7NVZsbEDMAVak8bM/oorNQJZYw==
 
-"@stencil/state-tunnel@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@stencil/state-tunnel/-/state-tunnel-1.0.1.tgz#21324f494ad719732505c8134099e415ac4c3c81"
-  integrity sha512-DYG8uROgL9hkjVTCtCfRBb0d3FwpiFB0muRrNZQ2X1Qo5hxMuNNji76/ILddqeq0AfgkKCW82xrMPDpy+rNIhQ==
-
 "@storybook/addon-a11y@^5.2.5":
   version "5.2.8"
   resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-5.2.8.tgz#30ca043dd376711eed9dd4443410d70754050178"
