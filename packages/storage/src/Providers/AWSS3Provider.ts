@@ -135,6 +135,14 @@ export default class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
+		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+		if (cacheControl) params.ResponseCacheControl = cacheControl;
+		if (contentDisposition)
+			params.ResponseContentDisposition = contentDisposition;
+		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
+		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
+		if (contentType) params.ResponseContentType = contentType;
+
 		if (download === true) {
 			return new Promise<any>((res, rej) => {
 				s3.getObject(params, (err, data) => {
@@ -167,12 +175,6 @@ export default class AWSS3Provider implements StorageProvider {
 		if (expires) {
 			params.Expires = expires;
 		}
-		if (cacheControl) params.ResponseCacheControl = cacheControl;
-		if (contentDisposition)
-			params.ResponseContentDisposition = contentDisposition;
-		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
-		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
-		if (contentType) params.ResponseContentType = contentType;
 
 		return new Promise<string>((res, rej) => {
 			try {
