@@ -20,3 +20,12 @@ export const labelMap = {
 export const composePhoneNumber = (countryCode, local_phone_number) => {
 	return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
 };
+
+export const linkButtonStyle = {
+	border: '0',
+	fontSize: 'inherit',
+	padding: '0',
+	color: '#f90',
+	cursor: 'pointer',
+	backgroundColor: 'transparent',
+};
