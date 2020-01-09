@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@aws-amplify/core": "^2.2.1",
-    "@react-native-community/push-notification-ios": "^1.0.2"
+    "@react-native-community/push-notification-ios": "1.0.3"
   },
   "peerdependencies": {
     "react-native": "^0.55.0"
