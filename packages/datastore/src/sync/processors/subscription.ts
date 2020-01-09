@@ -2,8 +2,7 @@ import '@aws-amplify/pubsub';
 
 import Observable from 'zen-observable-ts';
 
-import API, { GraphQLResult } from '@aws-amplify/api';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api/lib-esm/types';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
@@ -21,7 +20,7 @@ export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
 }
 
-enum USER_CREDENTIALS {
+export enum USER_CREDENTIALS {
 	'none',
 	'unauth',
 	'auth',
@@ -78,14 +77,15 @@ class SubscriptionProcessor {
 		model: SchemaModel,
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
-		cognitoTokenPayload: { [field: string]: any } | undefined,
-		oidcTokenPayload: { [field: string]: any } | undefined
+		cognitoTokenPayload: { [field: string]: any } = {},
+		oidcTokenPayload: { [field: string]: any } = {}
 	): {
 		authMode: GRAPHQL_AUTH_MODE;
 		isOwner: boolean;
 		ownerField?: string;
 		ownerValue?: string;
 	} {
+		debugger;
 		let result;
 		const rules = getAuthorizationRules(model, transformerMutationType);
 
@@ -95,11 +95,7 @@ class SubscriptionProcessor {
 		);
 
 		if (apiKeyAuth) {
-			result = { authMode: GRAPHQL_AUTH_MODE.API_KEY, isOwner: false };
-		}
-
-		if (result) {
-			return result;
+			return { authMode: GRAPHQL_AUTH_MODE.API_KEY, isOwner: false };
 		}
 
 		// check if has iam authorization
@@ -112,7 +108,7 @@ class SubscriptionProcessor {
 			);
 
 			if (iamPublicAuth) {
-				result = { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
+				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
 			}
 
 			const iamPrivateAuth =
@@ -122,12 +118,8 @@ class SubscriptionProcessor {
 				);
 
 			if (iamPrivateAuth) {
-				result = { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
+				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
 			}
-		}
-
-		if (result) {
-			return result;
 		}
 
 		// if not check if has groups authorization and token has groupClaim allowed for cognito token
@@ -135,23 +127,21 @@ class SubscriptionProcessor {
 			rule => rule.authStrategy === 'group' && rule.provider === 'userPools'
 		);
 
-		groupAuthRules.forEach(groupAuthRule => {
+		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
 			// validate token agains groupClaim
 			const userGroups: string[] =
 				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
 
-			userGroups.forEach(userGroup => {
-				if (groupAuthRule.groups.find(group => group === userGroup)) {
-					result = {
-						authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-						isOwner: false,
-					};
-				}
+			return userGroups.find(userGroup => {
+				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
 
-		if (result) {
-			return result;
+		if (validCognitoGroup) {
+			return {
+				authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				isOwner: false,
+			};
 		}
 
 		// if not check if has groups authorization and token has groupClaim allowed for oidc token
@@ -159,23 +149,21 @@ class SubscriptionProcessor {
 			rule => rule.authStrategy === 'group' && rule.provider === 'oidc'
 		);
 
-		groupAuthRules.forEach(groupAuthRule => {
+		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
 			// validate token agains groupClaim
 			const userGroups: string[] =
 				oidcTokenPayload[groupAuthRule.groupClaim] || [];
 
-			userGroups.forEach(userGroup => {
-				if (groupAuthRule.groups.find(group => group === userGroup)) {
-					result = {
-						authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-						isOwner: false,
-					};
-				}
+			userGroups.find(userGroup => {
+				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
 
-		if (result) {
-			return result;
+		if (validOidcGroup) {
+			return {
+				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+				isOwner: false,
+			};
 		}
 
 		// check if has owner auth authorization and token ownerField for cognito token
@@ -315,7 +303,7 @@ class SubscriptionProcessor {
 										if (!ownerValue) {
 											// Check if there is an owner field, check where this error should be located
 											observer.error(
-												'Owner field required, sign in is need in order to perform this operation'
+												'Owner field required, sign in is needed in order to perform this operation'
 											);
 											return;
 										}

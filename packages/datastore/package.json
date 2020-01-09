@@ -31,7 +31,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/uuid": "3.4.5"
+    "@types/uuid": "3.4.5",
+    "fake-indexeddb": "3.0.0"
   },
   "dependencies": {
     "@aws-amplify/api": "^2.1.2",
