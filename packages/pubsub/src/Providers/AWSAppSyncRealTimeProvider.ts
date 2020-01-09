@@ -489,10 +489,12 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	private _timeoutDisconnect() {
 		this.subscriptionObserverMap.forEach(({ observer }) => {
-			observer.error({
-				errors: [{ ...new GraphQLError(`Timeout disconnect`) }],
-			});
-			observer.complete();
+			if (!observer.closed) {
+				observer.error({
+					errors: [{ ...new GraphQLError(`Timeout disconnect`) }],
+				});
+				observer.complete();
+			}
 		});
 		this.subscriptionObserverMap = new Map();
 		if (this.awsRealTimeSocket) {
@@ -503,9 +505,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	private _timeoutStartSubscriptionAck(subscriptionId) {
-		const { observer, query, variables } = this.subscriptionObserverMap.get(
-			subscriptionId
-		);
+		const { observer, query, variables } =
+			this.subscriptionObserverMap.get(subscriptionId) || {};
+		if (!observer) {
+			return;
+		}
 		this.subscriptionObserverMap.set(subscriptionId, {
 			observer,
 			query,
@@ -513,17 +517,19 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 		});
 
-		observer.error({
-			errors: [
-				{
-					...new GraphQLError(
-						`Subscription timeout ${JSON.stringify({ query, variables })}`
-					),
-				},
-			],
-		});
-		// Cleanup will be automatically executed
-		observer.complete();
+		if (observer && !observer.closed) {
+			observer.error({
+				errors: [
+					{
+						...new GraphQLError(
+							`Subscription timeout ${JSON.stringify({ query, variables })}`
+						),
+					},
+				],
+			});
+			// Cleanup will be automatically executed
+			observer.complete();
+		}
 		logger.debug(
 			'timeoutStartSubscription',
 			JSON.stringify({ query, variables })
