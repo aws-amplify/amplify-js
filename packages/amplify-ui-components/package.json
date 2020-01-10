@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui-components",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Stencil Component Starter",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -30,9 +30,9 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^1.5.0",
-    "@aws-amplify/core": "^1.2.4",
-    "@aws-amplify/xr": "^0.2.4",
+    "@aws-amplify/auth": "^1.6.0",
+    "@aws-amplify/core": "^1.3.0",
+    "@aws-amplify/xr": "^0.3.0",
     "emotion": "^10.0.9",
     "qrcode": "^1.4.4"
   },
@@ -69,6 +69,5 @@
       "pre-push": "npm run test"
     }
   },
-  "peerDependencies": {},
   "license": "Apache-2.0"
 }

@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@1.2.4...@aws-amplify/core@1.3.0) (2020-01-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** expose tree-shaking for Webpack ([d1e5616](https://github.com/aws-amplify/amplify-js/commit/d1e561609e2f1098fc0f12aa2a2411042d7d4e12))
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
+
+
+### Features
+
+* **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
+* **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws-amplify/amplify-js/commit/d73d5e14b5e6a46b36dc00045029693a229046d4))
+* append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@1.2.3...@aws-amplify/core@1.2.4) (2019-10-29)
 
 **Note:** Version bump only for package @aws-amplify/core

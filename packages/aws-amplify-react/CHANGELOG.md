@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.4...aws-amplify-react@2.6.0) (2020-01-10)
+
+
+### Bug Fixes
+
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
+
+
+### Features
+
+* **aws-amplify-react): publish ES2015/ESM artifacts:** publish ES2015/ESM artifacts ([3a60350](https://github.com/aws-amplify/amplify-js/commit/3a6035028c2b61744bd1154e7125eed38339b140))
+* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
 ## [2.5.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.3...aws-amplify-react@2.5.4) (2019-10-29)
 
 **Note:** Version bump only for package aws-amplify-react
