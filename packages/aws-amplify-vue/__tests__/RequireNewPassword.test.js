@@ -100,11 +100,11 @@ describe('RequireNewPassword', () => {
 		});
 		it('...should render the header from props', () => {
 			const el = wrapper.find(`.${AmplifyUI.sectionHeader}`).element;
-			expect(el.textContent).toEqual(header);
+			expect(el.textContent.trim()).toEqual(header);
 		});
 		it('...should call signIn when signIn button is clicked', () => {
 			const el = wrapper.find(
-				`.${AmplifyUI.sectionFooterSecondaryContent} > .${AmplifyUI.a}`
+				`.${AmplifyUI.sectionFooterSecondaryContent} > button`
 			);
 			el.trigger('click');
 			expect(mockSignIn).toHaveBeenCalled();

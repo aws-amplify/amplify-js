@@ -132,23 +132,25 @@ describe('ConfirmSignUp', () => {
 
 		it('...should render the header from props', () => {
 			const el = wrapper.find(`.${AmplifyUI.sectionHeader}`).element;
-			expect(el.textContent).toEqual(header);
+			expect(el.textContent.trim()).toEqual(header);
 		});
 
 		it('...should call confirm when confirm button is clicked', () => {
-			const el = wrapper.find('button');
+			const el = wrapper.find('span > button');
 			el.trigger('click');
 			expect(mockConfirm).toHaveBeenCalled();
 		});
 
 		it('...should call resend when resend is clicked', () => {
-			const el = wrapper.find(`.${AmplifyUI.hint} > .${AmplifyUI.a}`);
+			const el = wrapper.find(`.${AmplifyUI.hint} > button`);
 			el.trigger('click');
 			expect(mockResend).toHaveBeenCalled();
 		});
 
 		it('...should call signIn when signIn button is clicked', () => {
-			const el = wrapper.find(`span > .${AmplifyUI.a}`);
+			const el = wrapper.find(
+				`.${AmplifyUI.sectionFooterSecondaryContent} > button`
+			);
 			el.trigger('click');
 			expect(mockSignIn).toHaveBeenCalled();
 		});

@@ -143,7 +143,7 @@ describe('SignIn', () => {
 
 		it('...should render the header from props', () => {
 			const el = wrapper.find(`.${AmplifyUI.sectionHeader}`).element;
-			expect(el.textContent).toEqual(header);
+			expect(el.textContent.trim()).toEqual(header);
 		});
 
 		it('...should get the passed username', () => {
@@ -159,14 +159,14 @@ describe('SignIn', () => {
 		});
 
 		it('...should not call forgot when reset link is clicked', () => {
-			const el = wrapper.find(`.${AmplifyUI.hint} > a`);
+			const el = wrapper.find(`.${AmplifyUI.hint} > button`);
 			el.trigger('click');
 			expect(mockForgot).toHaveBeenCalled();
 		});
 
 		it('...should call signUp when signUp link is clicked', () => {
 			const el = wrapper.find(
-				`.${AmplifyUI.sectionFooterSecondaryContent} > a`
+				`.${AmplifyUI.sectionFooterSecondaryContent} > button`
 			);
 			el.trigger('click');
 			expect(mockSignUp).toHaveBeenCalled();
