@@ -1,5 +1,5 @@
 import { Config } from '@stencil/core';
-import { angularOutputTarget, ValueAccessorConfig } from '@stencil/angular-output-target';
+import { angularOutputTarget } from '@stencil/angular-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
@@ -22,14 +22,6 @@ export const config: Config = {
     angularOutputTarget({
       componentCorePackage: '@aws-amplify/ui-components',
       directivesProxyFile: '../amplify-ui-angular/src/directives/proxies.ts',
-      valueAccessorConfigs: [
-        // {
-        //   elementSelectors: ['demo-component'],
-        //   event: 'slideChanged',
-        //   targetAttr: 'value',
-        //   type: 'number',
-        // },
-      ],
     }),
     reactOutputTarget({
       componentCorePackage: '@aws-amplify/ui-components',
