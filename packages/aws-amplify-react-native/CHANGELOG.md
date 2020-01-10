@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@3.1.0...aws-amplify-react-native@3.2.0) (2020-01-10)
+
+
+### Features
+
+* **aws-amplify-react-native:** Upgrade graphql peer dependendency to v14 ([#4645](https://github.com/aws-amplify/amplify-js/issues/4645)) ([a811091](https://github.com/aws-amplify/amplify-js/commit/a811091e5bd5c22fee44ea9b4be503b6499b42ce))
+
+
+
+
+
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@2.2.3...aws-amplify-react-native@3.1.0) (2019-11-15)
 
 
