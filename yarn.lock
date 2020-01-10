@@ -3152,10 +3152,10 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@stencil/core@^1.8.0":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.8.1.tgz#9b27487db4ef4acabf2267ef09fee24bb32e5912"
-  integrity sha512-VV8bJF6ZeOZyVUQEK4a24O+V4RXUxgAWSHonkNgbJVk7Z+hxfJMBTLGy6uZa9/5/IcKXqrTutIL9giV8WeNkHA==
+"@stencil/core@^1.8.4":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-1.8.5.tgz#354eb8d5ce0a201014d804258e36111e55ca38f9"
+  integrity sha512-mrlpXKHkTmbXdQkdpHn6phkzeYox8NHj2lN0JJgXIWmAKq0ZneWf0fjn3CAcRPbt+CG2QD5s1vKiwyQqKPBZKQ==
   dependencies:
     typescript "3.7.2"
 
