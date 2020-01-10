@@ -2,12 +2,6 @@ import { Component, State, h } from '@stencil/core';
 import { AuthenticatorExample } from './authenticator-example';
 import example4 from './example4';
 import sceneExample from './scene-example';
-import Auth from '@aws-amplify/auth';
-import XR from '@aws-amplify/xr';
-import awsexports from './src/aws-exports';
-
-Auth.configure(awsexports);
-XR.configure(awsexports);
 
 const examples = [AuthenticatorExample, example4, sceneExample];
 
