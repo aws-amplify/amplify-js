@@ -312,6 +312,7 @@ workflows:
               only:
                 - release
                 - master
+                - ui-components/master
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -320,6 +321,7 @@ workflows:
               only:
                 - release
                 - master
+                - ui-components/master
           requires:
             - integ_setup
       - deploy:
