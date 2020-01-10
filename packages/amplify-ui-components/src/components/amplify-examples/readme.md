@@ -2,20 +2,24 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Dependencies
 
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-authenticator](../amplify-authenticator)
+- [amplify-select-mfa-type](../amplify-select-mfa-type)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
 - [amplify-scene](../amplify-scene)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-select-mfa-type
   amplify-examples --> rock-paper-scissor
   amplify-examples --> rock-paper-scissor
   amplify-examples --> amplify-scene
@@ -25,6 +29,8 @@ graph TD;
   amplify-authenticator --> amplify-confirm-sign-up
   amplify-authenticator --> amplify-forgot-password
   amplify-authenticator --> amplify-require-new-password
+  amplify-authenticator --> amplify-verify-contact
+  amplify-authenticator --> amplify-totp-setup
   amplify-authenticator --> amplify-greetings
   amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
@@ -78,9 +84,19 @@ graph TD;
   amplify-require-new-password --> amplify-form-section
   amplify-require-new-password --> amplify-link
   amplify-require-new-password --> amplify-auth-fields
+  amplify-verify-contact --> amplify-input
+  amplify-verify-contact --> amplify-radio-button
+  amplify-verify-contact --> amplify-form-section
+  amplify-verify-contact --> amplify-link
+  amplify-radio-button --> amplify-label
+  amplify-totp-setup --> amplify-form-section
+  amplify-totp-setup --> amplify-form-field
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
+  amplify-select-mfa-type --> amplify-form-section
+  amplify-select-mfa-type --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-totp-setup
   rock-paper-scissor --> amplify-button
   amplify-scene --> amplify-icon-button
   amplify-scene --> amplify-scene-loading
@@ -89,6 +105,6 @@ graph TD;
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

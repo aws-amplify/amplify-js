@@ -1,4 +1,8 @@
-import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Credentials,
+	ConsoleLogger as Logger,
+	appendAmplifyUserAgent,
+} from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
@@ -129,7 +133,9 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			} = {},
 		} = this._config;
 		this.rekognitionClient = new RekognitionClient({ region, credentials });
+		appendAmplifyUserAgent(this.rekognitionClient);
 		this.textractClient = new TextractClient({ region, credentials });
+		appendAmplifyUserAgent(this.textractClient);
 		let inputDocument: Document;
 
 		try {
@@ -223,6 +229,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				} = {},
 			} = this._config;
 			this.rekognitionClient = new RekognitionClient({ region, credentials });
+			appendAmplifyUserAgent(this.rekognitionClient);
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
 				.then(data => {
@@ -338,6 +345,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		// default arguments
 
 		this.rekognitionClient = new RekognitionClient({ region, credentials });
+		appendAmplifyUserAgent(this.rekognitionClient);
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
 			.then(data => (inputImage = data))

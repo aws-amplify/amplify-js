@@ -43,11 +43,18 @@ const appendUserAgentMiddleware = next => args => {
 };
 
 export const appendAmplifyUserAgent = client => {
-	client.middlewareStack.add(appendUserAgentMiddleware, {
-		step: 'build',
-		priority: 0,
-		tags: { CUSTOM_USER_AGENT: true },
-	});
+	if (
+		typeof client !== undefined &&
+		client &&
+		typeof client.middlewareStack !== undefined &&
+		client.middlewareStack
+	) {
+		client.middlewareStack.add(appendUserAgentMiddleware, {
+			step: 'build',
+			priority: 0,
+			tags: { CUSTOM_USER_AGENT: true },
+		});
+	}
 };
 
 /**

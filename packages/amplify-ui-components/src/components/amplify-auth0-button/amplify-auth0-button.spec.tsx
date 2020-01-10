@@ -5,16 +5,16 @@ import * as stories from './amplify-auth0-button.stories';
 
 const {
   default: { title },
-  ...specs
+  ...templates
 } = stories;
 
 const components = [AmplifyAuth0Button];
 
 describe(title, () => {
   describe('stories', () => {
-    Object.entries(specs).forEach(([name, spec]) => {
+    Object.entries(templates).forEach(([name, template]) => {
       it(name, async () => {
-        const page = await newSpecPage({ components, html: spec() });
+        const page = await newSpecPage({ components, template });
 
         expect(page.root).toMatchSnapshot();
       });

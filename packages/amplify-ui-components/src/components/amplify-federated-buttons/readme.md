@@ -2,23 +2,21 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Properties
 
 | Property                | Attribute        | Description                                                                                                                    | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
 | ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
 | `authState`             | `auth-state`     | The current authentication state.                                                                                              | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
-| `federated`             | --               | Federated credentials & configuration.                                                                                         | `FederatedConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `{}`               |
+| `federated`             | --               | Federated credentials & configuration.                                                                                         | `FederatedConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `undefined`        |
 | `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void`                                                                                                                                                                                                                                                                                                                                                                                                                                           | `undefined`        |
 | `overrideStyle`         | `override-style` | (Optional) Override default styling                                                                                            | `boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `false`            |
-
 
 ## Dependencies
 
 ### Used by
 
- - [amplify-federated-sign-in](../amplify-federated-sign-in)
- - [amplify-sign-in](../amplify-sign-in)
+- [amplify-federated-sign-in](../amplify-federated-sign-in)
+- [amplify-sign-in](../amplify-sign-in)
 
 ### Depends on
 
@@ -29,6 +27,7 @@
 - [amplify-auth0-button](../amplify-auth0-button)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-federated-buttons --> amplify-google-button
@@ -47,6 +46,6 @@ graph TD;
   style amplify-federated-buttons fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_
