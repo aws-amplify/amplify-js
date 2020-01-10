@@ -4453,6 +4453,7 @@ exports[`signUp with signUpConfig render correctly with authState signUp 1`] = `
     >
       <Component
         data-test="sign-up-create-account-button"
+        disabled={false}
         onClick={[Function]}
         theme={
           Object {
@@ -8911,6 +8912,7 @@ exports[`signUp without signUpConfig prop normal case render correctly with auth
     >
       <Component
         data-test="sign-up-create-account-button"
+        disabled={false}
         onClick={[Function]}
         theme={
           Object {

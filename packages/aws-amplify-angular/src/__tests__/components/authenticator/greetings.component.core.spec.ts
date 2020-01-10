@@ -75,14 +75,16 @@ describe('GreetingsComponentCore: ', () => {
 		expect(rootEl).toBeTruthy();
 	});
 
-	it('...should call onSignOut when "a" tag is clicked', () => {
+	it('...should call onSignOut when button clicked', () => {
 		fixtureComponent.signedIn = true;
 		fixtureComponent.authState = {
 			state: 'signedIn',
 			user: {},
 		};
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector('a');
+		const a = fixture.debugElement.nativeElement.querySelector(
+			'.amplify-form-link'
+		);
 		a.click();
 		expect(onSignOutSpy).toHaveBeenCalled();
 		expect(signOutSpy).toHaveBeenCalled();

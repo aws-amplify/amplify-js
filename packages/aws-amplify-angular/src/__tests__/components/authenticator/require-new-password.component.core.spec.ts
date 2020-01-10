@@ -90,16 +90,20 @@ describe('RequireNewPasswordComponentCore: ', () => {
 			user: { challengeParam: {} },
 		};
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector('button');
+		const button = fixture.debugElement.nativeElement.querySelector(
+			'.amplify-form-button'
+		);
 		button.click();
 		expect(onSubmitSpy).toHaveBeenCalled();
 		expect(completeNewPasswordSpy).toHaveBeenCalled();
 	});
 
-	it('...should call onSignIn when "a" tag is clicked', () => {
+	it('...should call onSignIn when back to sign is clicked', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector('a');
+		const a = fixture.debugElement.nativeElement.querySelector(
+			'.amplify-form-link'
+		);
 		a.click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});
