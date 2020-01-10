@@ -833,9 +833,9 @@ export namespace Components {
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a dismissable `x` for the Toast component
-    */
-    'onClose': () => void;
+     * Used in order to add a dismissable `x` for the Toast component
+     */
+    onClose: () => void;
   }
   interface AmplifyTooltip {
     /**
@@ -2051,9 +2051,9 @@ declare namespace LocalJSX {
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a dismissable `x` for the Toast component
-    */
-    'onClose'?: () => void;
+     * Used in order to add a dismissable `x` for the Toast component
+     */
+    onClose?: () => void;
   }
   interface AmplifyTooltip {
     /**
