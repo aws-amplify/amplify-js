@@ -11,129 +11,160 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import { Linking } from "react-native";
+import { Linking } from 'react-native';
 
 import { Logger, Hub } from '@aws-amplify/core';
-import { default as Auth, CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
+import {
+	default as Auth,
+	CognitoHostedUIIdentityProvider,
+} from '@aws-amplify/auth';
 
 const logger = new Logger('withOAuth');
 
-export default (Comp) => {
-    let listeners = [];
+export default Comp => {
+	let listeners = [];
 
-    return class WithOAuth extends React.Component {
-        constructor(props) {
-            super(props);
+	return class WithOAuth extends React.Component {
+		constructor(props) {
+			super(props);
+			this._isMounted = false;
+			const config = this._getOAuthConfig();
 
-            const config = this._getOAuthConfig();
+			const { urlOpener = defaultUrlOpener } = config;
 
-            const {
-                urlOpener = defaultUrlOpener,
-            } = config;
+			this.urlOpener = urlOpener;
 
-            this.urlOpener = urlOpener;
+			this.hostedUISignIn = this.hostedUISignIn.bind(this);
+			this.signOut = this.signOut.bind(this);
+			this.urlOpener = this.urlOpener.bind(this);
 
-            this.hostedUISignIn = this.hostedUISignIn.bind(this);
-            this.signOut = this.signOut.bind(this);
-            this.urlOpener = this.urlOpener.bind(this);
+			this.state = {
+				user: null,
+				error: null,
+				loading: false,
+			};
 
-            this.state = {
-                user: null,
-                error: null,
-            };
+			listeners.forEach(listener => Hub.remove('auth', listener));
+			listeners = [this];
+			this.onHubCapsule = this.onHubCapsule.bind(this);
+			Hub.listen('auth', this.onHubCapsule);
+		}
 
-            listeners.forEach(listener => Hub.remove('auth', listener));
-            listeners = [this];
-            this.onHubCapsule = this.onHubCapsule.bind(this);
-            Hub.listen('auth', this.onHubCapsule);
-        }
+		componentDidMount() {
+			this._isMounted = true;
+			this.setState({ loading: true }, () => {
+				Auth.currentAuthenticatedUser()
+					.then(user => {
+						this.setState({ user, loading: false });
+					})
+					.catch(error => {
+						logger.debug(error);
+						this.setState({ user: null, loading: false });
+					});
+			});
+		}
+		componentWillUnmount() {
+			this._isMounted = false;
+			return;
+		}
+		onHubCapsule(capsule) {
+			// The Auth module will emit events when user signs in, signs out, etc
+			if (!this._isMounted) return;
+			const { channel, payload } = capsule;
 
-        componentDidMount() {
-            Auth.currentAuthenticatedUser().then(user => {
-                this.setState({ user })
-            }).catch(error => {
-                logger.debug(error);
+			if (channel === 'auth') {
+				switch (payload.event) {
+					case 'signIn':
+					case 'cognitoHostedUI': {
+						Auth.currentAuthenticatedUser().then(user => {
+							logger.debug('signed in');
+							this.setState({ user, error: null, loading: false });
+						});
+						break;
+					}
+					case 'signOut': {
+						logger.debug('signed out');
+						this.setState({ user: null, error: null, loading: false });
+						break;
+					}
+					case 'signIn_failure':
+					case 'cognitoHostedUI_failure': {
+						logger.debug('not signed in');
+						this.setState({
+							user: null,
+							error: decodeURIComponent(payload.data),
+							loading: false,
+						});
+						break;
+					}
+					default:
+						break;
+				}
+			}
+		}
 
-                this.setState({ user: null });
-            });
-        }
+		_getOAuthConfig() {
+			if (!Auth || typeof Auth.configure !== 'function') {
+				throw new Error(
+					'No Auth module found, please ensure @aws-amplify/auth is imported'
+				);
+			}
 
-        onHubCapsule(capsule) {
-            // The Auth module will emit events when user signs in, signs out, etc
-            const { channel, payload } = capsule;
+			const { oauth = undefined } = Auth.configure();
 
-            if (channel === 'auth') {
-                switch (payload.event) {
-                    case 'signIn':
-                    case 'cognitoHostedUI': {
-                        Auth.currentAuthenticatedUser().then(user => {
-                            logger.debug('signed in');
+			// to keep backward compatibility
+			const cognitoHostedUIConfig =
+				oauth && (oauth.domain ? oauth : oauth.awsCognito);
+			const config = this.props.oauth_config || cognitoHostedUIConfig;
 
-                            this.setState({ user, error: null });
-                        });
-                        break;
-                    }
-                    case 'signOut': {
-                        logger.debug('signed out');
-                        this.setState({ user: null, error: null });
-                        break;
-                    }
-                    case 'signIn_failure':
-                    case 'cognitoHostedUI_failure': {
-                        logger.debug('not signed in');
-                        this.setState({ user: null, error: decodeURIComponent(payload.data) });
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        }
+			return config;
+		}
 
-        _getOAuthConfig() {
-            if (!Auth || typeof Auth.configure !== 'function') {
-                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-            }
+		hostedUISignIn(provider) {
+			this.setState({ loading: true }, () =>
+				Auth.federatedSignIn({ provider })
+			);
+		}
 
-            const { oauth = undefined } = Auth.configure();
+		signOut() {
+			return Auth.signOut().catch(error => logger.warn(error));
+		}
 
-            // to keep backward compatibility
-            const cognitoHostedUIConfig = oauth && (oauth.domain ? oauth : oauth.awsCognito);
-            const config = this.props.oauth_config || cognitoHostedUIConfig;
+		render() {
+			const { user: oAuthUser, error: oAuthError, loading } = this.state;
+			const { oauth_config: _, ...otherProps } = this.props;
 
-            return config;
-        }
+			const oAuthProps = {
+				loading,
+				oAuthUser,
+				oAuthError,
+				hostedUISignIn: this.hostedUISignIn.bind(
+					this,
+					CognitoHostedUIIdentityProvider.Cognito
+				),
+				facebookSignIn: this.hostedUISignIn.bind(
+					this,
+					CognitoHostedUIIdentityProvider.Facebook
+				),
+				amazonSignIn: this.hostedUISignIn.bind(
+					this,
+					CognitoHostedUIIdentityProvider.Amazon
+				),
+				googleSignIn: this.hostedUISignIn.bind(
+					this,
+					CognitoHostedUIIdentityProvider.Google
+				),
+				customProviderSignIn: provider => this.hostedUISignIn(provider),
+				signOut: this.signOut,
+			};
 
-        hostedUISignIn(provider) {
-            Auth.federatedSignIn({ provider });
-        }
-
-        signOut() {
-            return Auth.signOut().catch(error => logger.warn(error));
-        }
-
-        render() {
-            const { user: oAuthUser, error: oAuthError } = this.state;
-            const { oauth_config: _, ...otherProps } = this.props;
-
-            const oAuthProps = {
-                oAuthUser,
-                oAuthError,
-                hostedUISignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Cognito),
-                facebookSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Facebook),
-                amazonSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Amazon),
-                googleSignIn: this.hostedUISignIn.bind(this, CognitoHostedUIIdentityProvider.Google),
-                customProviderSignIn: provider => this.hostedUISignIn(provider),
-                signOut: this.signOut,
-            };
-
-            return <Comp {...oAuthProps} {...otherProps} />;
-        }
-    }
+			return <Comp {...oAuthProps} {...otherProps} />;
+		}
+	};
 };
 
 const defaultUrlOpener = (url, redirectUrl) => {
-    logger.debug(`opening url: ${url}, redirectUrl: ${redirectUrl}`);
+	logger.debug(`opening url: ${url}, redirectUrl: ${redirectUrl}`);
 
-    return Linking.openURL(url);
-}
+	return Linking.openURL(url);
+};

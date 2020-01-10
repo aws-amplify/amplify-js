@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class S3ImageClass {
-  data: any;
+	data: any;
 }

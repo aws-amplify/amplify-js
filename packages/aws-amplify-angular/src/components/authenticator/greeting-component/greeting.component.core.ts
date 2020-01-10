@@ -13,58 +13,88 @@
  */
 // tslint:enable
 
+import { UsernameAttributes } from '../types';
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
+
 const template = `
 <div class="amplify-greeting" *ngIf="signedIn">
     <div class="amplify-greeting-text">{{ greeting }}</div>
     <div class="amplify-greeting-flex-spacer"></div>
     <a class="amplify-form-link amplify-greeting-sign-out"
       (click)="onSignOut()"
-    >{{ this.amplifyService.i18n().get('Sign out') }}</a>
+      data-test="${auth.greeting.signOutButton}"
+    >{{ this.amplifyService.i18n().get('Sign Out') }}</a>
 </div>
 `;
 
 @Component({
-  selector: 'amplify-auth-greetings-core',
-  template
+	selector: 'amplify-auth-greetings-core',
+	template,
 })
 export class GreetingComponentCore implements OnInit {
-  signedIn: boolean;
-  greeting: string;
-  protected logger: any;
+	signedIn: boolean;
+	greeting: string;
+	_usernameAttributes: string = 'username';
+	protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('GreetingComponent');
-    this.subscribe();
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		this.logger = this.amplifyService.logger('GreetingComponent');
+		this.subscribe();
+	}
 
-  @Input()
-  authState: AuthState;
+	@Input()
+	authState: AuthState;
 
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    }
-  }
+	@Input()
+	set usernameAttributes(usernameAttributes: string) {
+		this._usernameAttributes = usernameAttributes;
+	}
 
-  subscribe() {
-    this.amplifyService.authStateChange$
-      .subscribe(state => this.setAuthState(state));
-  }
+	ngOnInit() {
+		if (!this.amplifyService.auth()) {
+			throw new Error('Auth module not registered on AmplifyService provider');
+		}
+	}
 
-  setAuthState(authState: AuthState) {
-    this.authState = authState;
-    this.signedIn = authState.state === 'signedIn';
+	subscribe() {
+		this.amplifyService.authStateChange$.subscribe(state =>
+			this.setAuthState(state)
+		);
+	}
 
-    this.greeting = this.signedIn
-      ? this.amplifyService.i18n()
-      .get("Hello, {{username}}").replace('{{username}}', authState.user.username)
-      : "";
-  }
+	setAuthState(authState: AuthState) {
+		this.authState = authState;
+		this.signedIn = authState.state === 'signedIn';
 
-  onSignOut() {
-    this.amplifyService.auth().signOut();
-  }
+		let username = '';
+		if (authState.user) {
+			if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+				username = authState.user.attributes
+					? authState.user.attributes.email
+					: authState.user.username;
+			} else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+				username = authState.user.attributes
+					? authState.user.attributes.phone_number
+					: authState.user.username;
+			} else {
+				username = authState.user.username;
+			}
+		}
+
+		this.greeting = this.signedIn
+			? this.amplifyService
+					.i18n()
+					.get('Hello, {{username}}')
+					.replace('{{username}}', username)
+			: '';
+	}
+
+	onSignOut() {
+		this.amplifyService.auth().signOut();
+	}
 }

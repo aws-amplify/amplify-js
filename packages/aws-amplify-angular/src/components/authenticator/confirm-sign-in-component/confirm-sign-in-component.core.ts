@@ -16,13 +16,14 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
+import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
-  <div class="amplify-form-container">
-    <div class="amplify-form-body">
-    <div class="amplify-form-header">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
-      <div class="amplify-form-row">
+  <div class="amplify-form-container" data-test="${auth.confirmSignIn.section}">
+    <div class="amplify-form-body" data-test="${auth.confirmSignIn.bodySection}">
+    <div class="amplify-form-header" data-test="${auth.confirmSignIn.headerSection}">{{ this.amplifyService.i18n().get('Confirm Sign in') }}</div>
+      <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
         <label class="amplify-input-label" for="code">
           {{ this.amplifyService.i18n().get('Confirmation Code *') }}
         </label>
@@ -33,19 +34,28 @@ const template = `
           class="amplify-form-input"
           type="text"
           placeholder="{{ this.amplifyService.i18n().get('Enter your Code') }}"
+          data-test="${auth.confirmSignIn.codeInput}"
         />
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
-            <a class="amplify-form-link" (click)="onSignIn()">
-              {{ this.amplifyService.i18n().get('Back to Sign in') }}
+            <a 
+              class="amplify-form-link"
+              (click)="onSignIn()"
+              data-test="${auth.confirmSignIn.backToSignInLink}"
+              >
+                {{ this.amplifyService.i18n().get('Back to Sign in') }}
             </a>
           </div>
         </div>
         <div class="amplify-form-cell-right">
-          <button class="amplify-form-button"
-            (click)="onConfirm()">{{ this.amplifyService.i18n().get('Confirm') }}</button>
+          <button
+            class="amplify-form-button"
+            data-test="${auth.confirmSignIn.confirmButton}"
+            (click)="onConfirm()"
+            >
+              {{ this.amplifyService.i18n().get('Confirm') }}</button>
         </div>
       </div>
       </div>
@@ -61,74 +71,81 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-in-core',
-  template
+	selector: 'amplify-auth-confirm-sign-in-core',
+	template,
 })
 export class ConfirmSignInComponentCore implements OnInit {
-  _authState: AuthState;
-  _show: boolean;
-  code: string;
-  errorMessage: string;
-  protected logger: any;
+	_authState: AuthState;
+	_show: boolean;
+	code: string;
+	errorMessage: string;
+	protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('ConfiSignInComponent');
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		this.logger = this.amplifyService.logger('ConfiSignInComponent');
+	}
 
-  @Input()
-  set data(data: any) {
-    this._authState = data.authState;
-    this._show = data.authState.state === 'confirmSignIn';
-  }
+	@Input()
+	set data(data: any) {
+		this.hide = data.hide ? data.hide : this.hide;
+		this._authState = data.authState;
+		this._show = data.authState.state === 'confirmSignIn';
+	}
 
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'confirmSignIn';
-  }
+	@Input()
+	set authState(authState: AuthState) {
+		this._authState = authState;
+		this._show = authState.state === 'confirmSignIn';
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    }
-  }
+	@Input() hide: string[] = [];
 
-  setCode(code: string) {
-    this.code = code;
-  }
+	ngOnInit() {
+		if (!this.amplifyService.auth()) {
+			throw new Error('Auth module not registered on AmplifyService provider');
+		}
+	}
 
-  onConfirm() {
-    const { user } = this._authState;
-    const { challengeName } = user;
-    const mfaType = challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
-    this.amplifyService.auth()
-      .confirmSignIn(
-        user,
-        this.code,
-        mfaType
-      )
-      .then(() => {
-        this.onAlertClose();
-        this.amplifyService.setAuthState({ state: 'signedIn', user });
-      })
-      .catch(err => this._setError(err));
-  }
+	shouldHide(comp) {
+		return this.hide.filter(item => item === comp).length > 0;
+	}
 
-  onSignIn() {
-    this.onAlertClose();
-    this.amplifyService.setAuthState({ state: 'signIn', user: null });
-  }
+	setCode(code: string) {
+		this.code = code;
+	}
 
-  onAlertClose() {
-    this._setError(null);
-  }
+	onConfirm() {
+		const { user } = this._authState;
+		const { challengeName } = user;
+		const mfaType =
+			challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
+		this.amplifyService
+			.auth()
+			.confirmSignIn(user, this.code, mfaType)
+			.then(() => {
+				this.onAlertClose();
+				this.amplifyService.setAuthState({ state: 'signedIn', user });
+			})
+			.catch(err => this._setError(err));
+	}
 
-  _setError(err) {
-    if (!err) {
-      this.errorMessage = null;
-      return;
-    }
+	onSignIn() {
+		this.onAlertClose();
+		this.amplifyService.setAuthState({ state: 'signIn', user: null });
+	}
 
-    this.errorMessage = err.message || err;
-  }
+	onAlertClose() {
+		this._setError(null);
+	}
+
+	_setError(err) {
+		if (!err) {
+			this.errorMessage = null;
+			return;
+		}
+
+		this.errorMessage = err.message || err;
+	}
 }

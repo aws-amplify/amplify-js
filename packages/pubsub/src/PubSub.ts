@@ -13,91 +13,164 @@
 // import '../Common/Polyfills';
 import * as Observable from 'zen-observable';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
-import { AWSAppSyncProvider } from './Providers';
+import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
 export default class PubSub {
+	private _options: PubSubOptions;
 
-    private _options: PubSubOptions;
+	private _pluggables: PubSubProvider[];
 
-    private _pluggables: PubSubProvider[];
+	/**
+	 * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
+	 */
+	private _awsAppSyncProvider: AWSAppSyncProvider;
 
-    /**
-     * Initialize PubSub with AWS configurations
-     * 
-     * @param {PubSubOptions} options - Configuration object for PubSub
-     */
-    constructor(options: PubSubOptions) {
-        this._options = options;
-        logger.debug('PubSub Options', this._options);
-        this._pluggables = [];
-        this.subscribe = this.subscribe.bind(this);
-    }
+	/**
+	 * Internal instance of AWSAppSyncRealTimeProvider used by the API category to subscribe to AppSync
+	 */
+	private _awsAppSyncRealTimeProvider: AWSAppSyncRealTimeProvider;
 
-    public getModuleName() {
-        return 'PubSub';
-    }
+	/**
+	 * Lazy instantiate AWSAppSyncProvider when it is required by the API category
+	 */
+	private get awsAppSyncProvider() {
+		if (!this._awsAppSyncProvider) {
+			this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
+		}
+		return this._awsAppSyncProvider;
+	}
 
-    /**
-     * Configure PubSub part with configurations
-     * 
-     * @param {PubSubOptions} config - Configuration for PubSub
-     * @return {Object} - The current configuration
-     */
-    configure(options: PubSubOptions) {
-        const opt = options ? options.PubSub || options : {};
-        logger.debug('configure PubSub', { opt });
+	/**
+	 * Lazy instantiate AWSAppSyncRealTimeProvider when it is required by the API category
+	 */
+	private get awsAppSyncRealTimeProvider() {
+		if (!this._awsAppSyncRealTimeProvider) {
+			this._awsAppSyncRealTimeProvider = new AWSAppSyncRealTimeProvider(
+				this._options
+			);
+		}
+		return this._awsAppSyncRealTimeProvider;
+	}
 
-        this._options = Object.assign({}, this._options, opt);
+	/**
+	 * Initialize PubSub with AWS configurations
+	 *
+	 * @param {PubSubOptions} options - Configuration object for PubSub
+	 */
+	constructor(options: PubSubOptions) {
+		this._options = options;
+		logger.debug('PubSub Options', this._options);
+		this._pluggables = [];
+		this.subscribe = this.subscribe.bind(this);
+	}
 
-        if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region &&
-            !this._pluggables.find(p => p.getProviderName() === 'AWSAppSyncProvider')) {
-            this.addPluggable(new AWSAppSyncProvider());
-        }
+	public getModuleName() {
+		return 'PubSub';
+	}
 
-        this._pluggables.map((pluggable) => pluggable.configure(this._options));
+	/**
+	 * Configure PubSub part with configurations
+	 *
+	 * @param {PubSubOptions} config - Configuration for PubSub
+	 * @return {Object} - The current configuration
+	 */
+	configure(options: PubSubOptions) {
+		const opt = options ? options.PubSub || options : {};
+		logger.debug('configure PubSub', { opt });
 
-        return this._options;
-    }
+		this._options = Object.assign({}, this._options, opt);
 
-    /**
-     * add plugin into Analytics category
-     * @param {Object} pluggable - an instance of the plugin
-     */
-    public async addPluggable(pluggable: PubSubProvider) {
-        if (pluggable && pluggable.getCategory() === 'PubSub') {
-            this._pluggables.push(pluggable);
+		this._pluggables.map(pluggable => pluggable.configure(this._options));
 
-            const config = pluggable.configure(this._options);
+		return this._options;
+	}
 
-            return config;
-        }
-    }
+	/**
+	 * add plugin into Analytics category
+	 * @param {Object} pluggable - an instance of the plugin
+	 */
+	public async addPluggable(pluggable: PubSubProvider) {
+		if (pluggable && pluggable.getCategory() === 'PubSub') {
+			this._pluggables.push(pluggable);
 
-    async publish(topics: string[] | string, msg: any, options: ProvidertOptions) {
-        return this._pluggables.map(provider => provider.publish(topics, msg, options));
-    }
+			const config = pluggable.configure(this._options);
 
-    subscribe(topics: string[] | string, options: ProvidertOptions): Observable<any> {
-        logger.debug('subscribe options', options);
+			return config;
+		}
+	}
 
-        return new Observable(observer => {
-            const observables = this._pluggables.map(provider => ({
-                provider,
-                observable: provider.subscribe(topics, options),
-            }));
+	private getProviderByName(providerName) {
+		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
+			return this.awsAppSyncProvider;
+		}
+		if (providerName === INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER) {
+			return this.awsAppSyncRealTimeProvider;
+		}
 
-            const subscriptions = observables.map(({ provider, observable }) => observable.subscribe({
-                start: console.error,
-                next: value => observer.next({ provider, value }),
-                error: error => observer.error({ provider, error }),
-                // complete: observer.complete, // TODO: when all completed, complete the outer one
-            }));
+		return this._pluggables.find(
+			pluggable => pluggable.getProviderName() === providerName
+		);
+	}
 
-            return () => subscriptions.forEach(subscription => subscription.unsubscribe());
-        });
-    }
+	private getProviders(options: ProvidertOptions = {}) {
+		const { provider: providerName } = options;
+		if (!providerName) {
+			return this._pluggables;
+		}
+
+		const provider = this.getProviderByName(providerName);
+		if (!provider) {
+			throw new Error(`Could not find provider named ${providerName}`);
+		}
+
+		return [provider];
+	}
+
+	async publish(
+		topics: string[] | string,
+		msg: any,
+		options?: ProvidertOptions
+	) {
+		return Promise.all(
+			this.getProviders(options).map(provider =>
+				provider.publish(topics, msg, options)
+			)
+		);
+	}
+
+	subscribe(
+		topics: string[] | string,
+		options?: ProvidertOptions
+	): Observable<any> {
+		logger.debug('subscribe options', options);
+
+		const providers = this.getProviders(options);
+
+		return new Observable(observer => {
+			const observables = providers.map(provider => ({
+				provider,
+				observable: provider.subscribe(topics, options),
+			}));
+
+			const subscriptions = observables.map(({ provider, observable }) =>
+				observable.subscribe({
+					start: console.error,
+					next: value => observer.next({ provider, value }),
+					error: error => observer.error({ provider, error }),
+					// complete: observer.complete, // TODO: when all completed, complete the outer one
+				})
+			);
+
+			return () =>
+				subscriptions.forEach(subscription => subscription.unsubscribe());
+		});
+	}
 }

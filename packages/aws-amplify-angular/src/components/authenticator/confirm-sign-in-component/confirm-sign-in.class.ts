@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class ConfirmSignInClass {
-  data: any;
+	data: any;
 }

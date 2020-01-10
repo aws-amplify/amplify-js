@@ -27,15 +27,15 @@ const template = `
     <ng-content select="[form-footer]"></ng-content>
   </div>
 </div>
-`
+`;
 
 @Component({
-  selector: 'amplify-form',
-  template: template
+	selector: 'amplify-form',
+	template: template,
 })
 export class FormComponent {
-  @Input()
-  set title(title: string) {
-    this.title = title;
-  }
+	@Input()
+	set title(title: string) {
+		this.title = title;
+	}
 }

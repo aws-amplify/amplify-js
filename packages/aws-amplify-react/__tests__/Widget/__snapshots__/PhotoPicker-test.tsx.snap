@@ -1,0 +1,393 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PhotoPicker test render test render with previewSrc 1`] = `
+<Component
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "amazonSignInButton": Object {},
+      "button": Object {},
+      "container": Object {},
+      "facebookSignInButton": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "googleSignInButton": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "label": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
+      "oAuthSignInButton": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+      "toast": Object {},
+    }
+  }
+>
+  <Component
+    hint="Add your photos by clicking below"
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Photos
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    The image has been selected
+  </Component>
+  <Picker
+    accept="image/*"
+    onPick={[Function]}
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+    title="Select a Photo"
+  />
+</Component>
+`;
+
+exports[`PhotoPicker test render test render without previewSrc 1`] = `
+<Component
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "amazonSignInButton": Object {},
+      "button": Object {},
+      "container": Object {},
+      "facebookSignInButton": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "googleSignInButton": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "label": Object {},
+      "nav": Object {},
+      "navBar": Object {},
+      "navButton": Object {},
+      "navItem": Object {},
+      "navRight": Object {},
+      "oAuthSignInButton": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+      "toast": Object {},
+    }
+  }
+>
+  <Component
+    hint="Add your photos by clicking below"
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    Photos
+  </Component>
+  <Component
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+  >
+    <Component
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "amazonSignInButton": Object {},
+          "button": Object {},
+          "container": Object {},
+          "facebookSignInButton": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "googleSignInButton": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "label": Object {},
+          "nav": Object {},
+          "navBar": Object {},
+          "navButton": Object {},
+          "navItem": Object {},
+          "navRight": Object {},
+          "oAuthSignInButton": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+          "toast": Object {},
+        }
+      }
+    />
+  </Component>
+  <Picker
+    accept="image/*"
+    onPick={[Function]}
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "amazonSignInButton": Object {},
+        "button": Object {},
+        "container": Object {},
+        "facebookSignInButton": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "googleSignInButton": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "label": Object {},
+        "nav": Object {},
+        "navBar": Object {},
+        "navButton": Object {},
+        "navItem": Object {},
+        "navRight": Object {},
+        "oAuthSignInButton": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+        "toast": Object {},
+      }
+    }
+    title="Select a Photo"
+  />
+</Component>
+`;
