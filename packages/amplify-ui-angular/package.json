@@ -28,7 +28,7 @@
 		"dist/"
 	],
 	"dependencies": {
-		"@aws-amplify/ui-components": "latest",
+		"@aws-amplify/ui-components": "*",
 		"tslib": "^1.9.3"
 	},
 	"peerDependencies": {
