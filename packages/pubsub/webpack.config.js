@@ -2,13 +2,19 @@ module.exports = {
 	entry: {
 		'aws-amplify-pubsub.min': './lib-esm/index.js',
 	},
-	externals: ['@aws-amplify/core'],
+	externals: [
+		'graphql',
+		'@aws-amplify/auth',
+		'@aws-amplify/cache',
+		'@aws-amplify/core',
+	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
 		library: 'aws_amplify_pubsub',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
+		globalObject: 'this',
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},

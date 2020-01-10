@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
@@ -61,7 +60,7 @@ export interface IAuthenticatorState {
 	showToast?: boolean;
 }
 
-export default class Authenticator extends Component<
+export default class Authenticator extends React.Component<
 	IAuthenticatorProps,
 	IAuthenticatorState
 > {
@@ -86,15 +85,16 @@ export default class Authenticator extends Component<
 			Amplify.configure(config);
 		}
 		this._isMounted = true;
-		// the workaround for Cognito Hosted UI
-		// don't check the user immediately if redirected back from Hosted UI
-		// instead waiting for the hub event sent from Auth module
-		// the item in the localStorage is a mark to indicate whether
-		// the app is redirected back from Hosted UI or not
+		// The workaround for Cognito Hosted UI:
+		// Don't check the user immediately if redirected back from Hosted UI as
+		// it might take some time for credentials to be available, instead
+		// wait for the hub event sent from Auth module. This item in the
+		// localStorage is a mark to indicate whether the app is just redirected
+		// back from Hosted UI or not and is set in Auth:handleAuthResponse.
 		const byHostedUI = localStorage.getItem(
-			Constants.SIGNING_IN_WITH_HOSTEDUI_KEY
+			Constants.REDIRECTED_FROM_HOSTED_UI
 		);
-		localStorage.removeItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+		localStorage.removeItem(Constants.REDIRECTED_FROM_HOSTED_UI);
 		if (byHostedUI !== 'true') this.checkUser();
 	}
 
@@ -152,9 +152,6 @@ export default class Authenticator extends Component<
 					break;
 				case 'customGreetingSignOut':
 					this.handleStateChange('signIn', null);
-					break;
-				case 'parsingCallbackUrl':
-					localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
 					break;
 				default:
 					break;
@@ -243,27 +240,17 @@ export default class Authenticator extends Component<
 
 		const default_children = [
 			<Greetings federated={federated} />,
-			// @ts-ignore
 			<SignIn federated={federated} />,
-			// @ts-ignore
 			<ConfirmSignIn />,
-			// @ts-ignore
 			<RequireNewPassword />,
-			// @ts-ignore
 			<SignUp signUpConfig={signUpConfig} />,
-			// @ts-ignore
 			<ConfirmSignUp />,
-			// @ts-ignore
 			<VerifyContact />,
-			// @ts-ignore
 			<ForgotPassword />,
-			// @ts-ignore
 			<TOTPSetup />,
-			// @ts-ignore
 			<Loading />,
 		];
 
-		// @ts-ignore
 		const props_children_override = React.Children.map(
 			props_children,
 			child => child.props.override
@@ -275,7 +262,6 @@ export default class Authenticator extends Component<
 		const render_props_children = React.Children.map(
 			props_children,
 			(child, index) => {
-				// @ts-ignore
 				return React.cloneElement(child, {
 					key: 'aws-amplify-authenticator-props-children-' + index,
 					theme,
@@ -294,7 +280,6 @@ export default class Authenticator extends Component<
 		const render_default_children = hideDefault
 			? []
 			: React.Children.map(default_children, (child, index) => {
-					// @ts-ignore
 					return React.cloneElement(child, {
 						key: 'aws-amplify-authenticator-default-children-' + index,
 						theme,

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Component } from 'react';
 
 import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
@@ -31,7 +30,10 @@ export interface IFederatedButtonsProps {
 	theme: any;
 }
 
-export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
+export class FederatedButtons extends React.Component<
+	IFederatedButtonsProps,
+	{}
+> {
 	google(google_client_id) {
 		if (!google_client_id) {
 			return null;
@@ -96,7 +98,6 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
 			return null;
 		}
 		const { theme, onStateChange } = this.props;
-		// @ts-ignore
 		return (
 			<Auth0Button
 				label={auth0 ? auth0.label : undefined}
@@ -109,7 +110,6 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
 
 	render() {
 		const { authState } = this.props;
-		// @ts-ignore
 		if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) {
 			return null;
 		}
@@ -169,7 +169,7 @@ export class FederatedButtons extends Component<IFederatedButtonsProps, {}> {
 	}
 }
 
-export default class FederatedSignIn extends Component<any, any> {
+export default class FederatedSignIn extends React.Component<any, any> {
 	render() {
 		const { authState, onStateChange } = this.props;
 		const federated = this.props.federated || {};

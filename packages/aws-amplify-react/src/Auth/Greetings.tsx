@@ -20,19 +20,11 @@ import {
 	Nav,
 	NavRight,
 	NavItem,
-	NavButton,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import Constants from './common/constants';
 import SignOut from './SignOut';
-import {
-	withGoogle,
-	withAmazon,
-	withFacebook,
-	withOAuth,
-	withAuth0,
-} from './Provider';
+import { withGoogle, withAmazon, withFacebook, withAuth0 } from './Provider';
 import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Greetings');
@@ -89,7 +81,7 @@ export default class Greetings extends AuthPiece<
 
 	onHubCapsule(capsule) {
 		if (this._isMounted) {
-			const { channel, payload, source } = capsule;
+			const { channel, payload } = capsule;
 			if (channel === 'auth' && payload.event === 'signIn') {
 				this.setState({
 					authState: 'signedIn',
@@ -149,7 +141,6 @@ export default class Greetings extends AuthPiece<
 		}
 
 		const message = typeof greeting === 'function' ? greeting(name) : greeting;
-		const { federated } = this.props;
 
 		return (
 			<span>

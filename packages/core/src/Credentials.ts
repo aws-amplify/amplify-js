@@ -100,9 +100,7 @@ export class Credentials {
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
 		const { provider, user } = federatedInfo;
-		let token = federatedInfo.token;
-		let expires_at = federatedInfo.expires_at;
-		let identity_id = federatedInfo.identity_id;
+		let { token, expires_at, identity_id } = federatedInfo;
 
 		const that = this;
 		logger.debug('checking if federated jwt token expired');
