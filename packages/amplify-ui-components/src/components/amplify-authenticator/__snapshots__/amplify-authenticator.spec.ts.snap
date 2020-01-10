@@ -4,9 +4,7 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`forgot pa
 <amplify-authenticator initial-auth-state="forgotpassword">
   <!---->
   <amplify-forgot-password></amplify-forgot-password>
-  <div hidden="">
-    <amplify-greetings></amplify-greetings>
-  </div>
+  <div hidden=""></div>
 </amplify-authenticator>
 `;
 
@@ -14,9 +12,7 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\`
 <amplify-authenticator>
   <!---->
   <amplify-sign-in></amplify-sign-in>
-  <div hidden="">
-    <amplify-greetings></amplify-greetings>
-  </div>
+  <div hidden=""></div>
 </amplify-authenticator>
 `;
 
@@ -24,8 +20,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\`
 <amplify-authenticator initial-auth-state="signup">
   <!---->
   <amplify-sign-up></amplify-sign-up>
-  <div hidden="">
-    <amplify-greetings></amplify-greetings>
-  </div>
+  <div hidden=""></div>
 </amplify-authenticator>
 `;
