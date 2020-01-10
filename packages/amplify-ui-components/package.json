@@ -37,7 +37,7 @@
     "qrcode": "^1.4.4"
   },
   "devDependencies": {
-    "@stencil/core": "^1.8.0",
+    "@stencil/core": "^1.8.4",
     "@stencil/state-tunnel": "^1.0.1",
     "@storybook/addon-a11y": "^5.2.5",
     "@storybook/addon-actions": "^5.2.5",

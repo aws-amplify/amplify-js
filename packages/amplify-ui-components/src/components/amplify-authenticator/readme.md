@@ -93,10 +93,10 @@ graph TD;
   amplify-require-new-password --> amplify-form-section
   amplify-require-new-password --> amplify-link
   amplify-require-new-password --> amplify-auth-fields
-  amplify-verify-contact --> amplify-form-section
-  amplify-verify-contact --> amplify-link
   amplify-verify-contact --> amplify-input
   amplify-verify-contact --> amplify-radio-button
+  amplify-verify-contact --> amplify-form-section
+  amplify-verify-contact --> amplify-link
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
