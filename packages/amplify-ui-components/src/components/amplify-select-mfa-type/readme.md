@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property       | Attribute | Description                                                            | Type                           | Default                                   |
@@ -10,11 +11,12 @@
 | `authData`     | --        | Current authenticated user in order to sign requests properly for TOTP | `CognitoUserInterface`         | `undefined`                               |
 | `handleSubmit` | --        | Fires when Verify is clicked                                           | `(submitEvent: Event) => void` | `submitEvent => this.verify(submitEvent)` |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-examples](../amplify-examples)
+ - [amplify-examples](../amplify-examples)
 
 ### Depends on
 
@@ -23,7 +25,6 @@
 - [amplify-totp-setup](../amplify-totp-setup)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-select-mfa-type --> amplify-form-section
@@ -41,6 +42,6 @@ graph TD;
   style amplify-select-mfa-type fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
