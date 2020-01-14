@@ -2,7 +2,6 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Properties
 
 | Property           | Attribute            | Description                                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default            |
@@ -10,12 +9,11 @@
 | `federated`        | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `undefined`        |
 | `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ConfirmSignIn \| AuthState.ConfirmSignUp \| AuthState.CustomConfirmSignIn \| AuthState.ForgotPassword \| AuthState.Loading \| AuthState.ResetPassword \| AuthState.SettingMFA \| AuthState.SignIn \| AuthState.SignOut \| AuthState.SignUp \| AuthState.SignedIn \| AuthState.SignedOut \| AuthState.SigningUp \| AuthState.TOTPSetup \| AuthState.VerifyContact \| AuthState.VerifyingAttributes \| AuthState.confirmingSignInCustomFlow \| AuthState.confirmingSignUpCustomFlow` | `AuthState.SignIn` |
 
-
 ## Dependencies
 
 ### Used by
 
- - [amplify-examples](../amplify-examples)
+- [amplify-examples](../amplify-examples)
 
 ### Depends on
 
@@ -31,6 +29,7 @@
 - context-consumer
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-authenticator --> amplify-sign-in
@@ -108,6 +107,6 @@ graph TD;
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_
