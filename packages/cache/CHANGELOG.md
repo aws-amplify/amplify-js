@@ -5,25 +5,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@1.1.4...@aws-amplify/cache@1.2.0) (2020-01-10)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/cache:** expose tree-shaking for Webpack ([32061ac](https://github.com/aws-amplify/amplify-js/commit/32061ac8cdd16f0b0a675912b29e0dbfc44513fb))
-
+- **@aws-amplify/cache:** expose tree-shaking for Webpack ([32061ac](https://github.com/aws-amplify/amplify-js/commit/32061ac8cdd16f0b0a675912b29e0dbfc44513fb))
 
 ### Features
 
-* **@aws-amplify/cache:** publish ES2015/ESM artifacts ([22da40e](https://github.com/aws-amplify/amplify-js/commit/22da40e4a72827bce51059b34fa45e5ea3f2367c))
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
+- **@aws-amplify/cache:** publish ES2015/ESM artifacts ([22da40e](https://github.com/aws-amplify/amplify-js/commit/22da40e4a72827bce51059b34fa45e5ea3f2367c))
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@1.1.3...@aws-amplify/cache@1.1.4) (2019-10-29)
 

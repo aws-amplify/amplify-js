@@ -12,6 +12,9 @@
   "files": [
     "dist/"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "eslint --fix --ext .js,.ts,.tsx .",

@@ -5,24 +5,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@1.2.4...@aws-amplify/pubsub@1.3.0) (2020-01-10)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/pubsub:** fix ZenObservable import ([#3406](https://github.com/aws-amplify/amplify-js/issues/3406)) ([f25d4c2](https://github.com/aws-amplify/amplify-js/commit/f25d4c2902ec6593dbb8730dd5f5c8219c3d395b))
-
+- **@aws-amplify/pubsub:** fix ZenObservable import ([#3406](https://github.com/aws-amplify/amplify-js/issues/3406)) ([f25d4c2](https://github.com/aws-amplify/amplify-js/commit/f25d4c2902ec6593dbb8730dd5f5c8219c3d395b))
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@1.2.3...@aws-amplify/pubsub@1.2.4) (2019-10-29)
 
