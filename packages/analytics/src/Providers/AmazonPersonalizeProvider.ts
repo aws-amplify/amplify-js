@@ -17,9 +17,9 @@ import {
 	JS,
 	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient';
-import { PutEventsCommand } from '@aws-sdk/client-personalize-events-browser/commands/PutEventsCommand';
-import { PutEventsInput } from '@aws-sdk/client-personalize-events-browser/types/PutEventsInput';
+import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events/PersonalizeEventsClient';
+import { PutEventsCommand } from '@aws-sdk/client-personalize-events/commands/PutEventsCommand';
+// import { PutEventsInput } from '@aws-sdk/client-personalize-events/types/PutEventsInput';
 import {
 	SessionInfo,
 	RequestParams,
@@ -261,7 +261,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				);
 				events.push(eventPayload);
 			}
-			const payload = <PutEventsInput>{};
+			const payload: any = {}; // = <PutEventsInput>{};
 			payload.trackingId = sessionInfo.trackingId;
 			payload.sessionId = sessionInfo.sessionId;
 			payload.userId = sessionInfo.userId;

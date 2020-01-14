@@ -13,9 +13,9 @@
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import { InteractionsOptions, InteractionsMessage } from '../types';
-import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
-import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
-import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
+import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service/LexRuntimeServiceClient';
+import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service/commands/PostTextCommand';
+import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service/commands/PostContentCommand';
 import {
 	ConsoleLogger as Logger,
 	Credentials,

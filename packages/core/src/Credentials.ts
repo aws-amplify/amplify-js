@@ -14,7 +14,7 @@ import {
 import {
 	CognitoIdentityClient,
 	GetIdCommand,
-} from '@aws-sdk/client-cognito-identity-browser';
+} from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
 
 const logger = new Logger('Credentials');
