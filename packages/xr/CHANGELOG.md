@@ -5,25 +5,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [0.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@0.2.4...@aws-amplify/xr@0.3.0) (2020-01-10)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/xr:** fix usage of default -> named import ([92bcff5](https://github.com/aws-amplify/amplify-js/commit/92bcff5ff519ef3d1e6719920803f3896a26b95c))
-
+- **@aws-amplify/xr:** fix usage of default -> named import ([92bcff5](https://github.com/aws-amplify/amplify-js/commit/92bcff5ff519ef3d1e6719920803f3896a26b95c))
 
 ### Features
 
-* **@aws-amplify/xr:** publish ES2015/ESM artifacts ([6298193](https://github.com/aws-amplify/amplify-js/commit/62981935836b14591db047b1cda6fb18e882a95b))
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
+- **@aws-amplify/xr:** publish ES2015/ESM artifacts ([6298193](https://github.com/aws-amplify/amplify-js/commit/62981935836b14591db047b1cda6fb18e882a95b))
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [0.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@0.2.3...@aws-amplify/xr@0.2.4) (2019-10-29)
 
