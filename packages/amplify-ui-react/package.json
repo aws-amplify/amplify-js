@@ -3,6 +3,9 @@
 	"sideEffects": false,
 	"version": "0.0.1",
 	"description": "React specific wrapper for @aws-amplify/ui-components",
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"

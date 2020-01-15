@@ -3,6 +3,9 @@
 	"sideEffects": false,
 	"version": "0.0.1",
 	"description": "Vue specific wrapper for @aws-amplify/ui-components",
+	"publishConfig": {
+		"access": "public"
+	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
