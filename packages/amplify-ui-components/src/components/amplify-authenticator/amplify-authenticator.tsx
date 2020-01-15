@@ -1,6 +1,5 @@
-import { Component, State, Prop, h } from '@stencil/core';
+import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
-import { AuthStateTunnel } from '../../data/auth-state';
 import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
 import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
@@ -98,18 +97,13 @@ export class AmplifyAuthenticator {
   }
 
   render() {
-    const tunnelState = {
-      authState: this.authState,
-      onAuthStateChange: this.onAuthStateChange,
-    };
-
     return (
-      <AuthStateTunnel.Provider state={tunnelState}>
+      <Host>
         {this.renderAuthComponent(this.authState)}
         <div hidden={this.authState !== AuthState.SignedIn}>
           <slot />
         </div>
-      </AuthStateTunnel.Provider>
+      </Host>
     );
   }
 }

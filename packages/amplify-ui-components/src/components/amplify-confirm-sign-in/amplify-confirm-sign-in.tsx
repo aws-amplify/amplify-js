@@ -25,7 +25,7 @@ const logger = new Logger('ConfirmSignIn');
 })
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
-  @Prop() handleSubmit: (Event) => void = event => this.confirm(event);
+  @Prop() handleSubmit: (Event: Event) => void = event => this.confirm(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in confirm sign in component */

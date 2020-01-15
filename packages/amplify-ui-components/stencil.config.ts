@@ -1,7 +1,10 @@
 import { Config } from '@stencil/core';
+import { angularOutputTarget } from '@stencil/angular-output-target';
+import { reactOutputTarget } from '@stencil/react-output-target';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
+  excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [nodePolyfills()],
   commonjs: {
@@ -15,6 +18,15 @@ export const config: Config = {
     },
   },
   outputTargets: [
+    // See: https://github.com/ionic-team/stencil-ds-plugins#angular
+    angularOutputTarget({
+      componentCorePackage: '@aws-amplify/ui-components',
+      directivesProxyFile: '../amplify-ui-angular/src/directives/proxies.ts',
+    }),
+    reactOutputTarget({
+      componentCorePackage: '@aws-amplify/ui-components',
+      proxiesFile: '../amplify-ui-react/src/components.ts',
+    }),
     { type: 'dist' },
     { type: 'docs-readme' },
     {

@@ -28,7 +28,6 @@
 - [amplify-verify-contact](../amplify-verify-contact)
 - [amplify-totp-setup](../amplify-totp-setup)
 - [amplify-greetings](../amplify-greetings)
-- context-consumer
 
 ### Graph
 ```mermaid
@@ -42,7 +41,6 @@ graph TD;
   amplify-authenticator --> amplify-verify-contact
   amplify-authenticator --> amplify-totp-setup
   amplify-authenticator --> amplify-greetings
-  amplify-authenticator --> context-consumer
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-federated-buttons

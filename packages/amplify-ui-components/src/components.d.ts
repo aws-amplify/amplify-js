@@ -174,7 +174,7 @@ export namespace Components {
     /**
     * Fires when confirm sign in form is submitted
     */
-    'handleSubmit': (Event) => void;
+    'handleSubmit': (Event: Event) => void;
     /**
     * Used for header text in confirm sign in component
     */
@@ -748,7 +748,7 @@ export namespace Components {
     /**
     * Fires when sign in form is submitted
     */
-    'handleSubmit': (Event) => void;
+    'handleSubmit': (Event: Event) => void;
     /**
     * Used for header text in sign in component
     */
@@ -1392,7 +1392,7 @@ declare namespace LocalJSX {
     /**
     * Fires when confirm sign in form is submitted
     */
-    'handleSubmit'?: (Event) => void;
+    'handleSubmit'?: (Event: Event) => void;
     /**
     * Used for header text in confirm sign in component
     */
@@ -1966,7 +1966,7 @@ declare namespace LocalJSX {
     /**
     * Fires when sign in form is submitted
     */
-    'handleSubmit'?: (Event) => void;
+    'handleSubmit'?: (Event: Event) => void;
     /**
     * Used for header text in sign in component
     */
