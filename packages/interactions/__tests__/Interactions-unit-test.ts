@@ -1,9 +1,11 @@
-import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
 import Interactions from '../src/Interactions';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
 import { Credentials } from '@aws-amplify/core';
-import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
-import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
+import {
+	LexRuntimeServiceClient,
+	PostContentCommand,
+	PostTextCommand,
+} from '@aws-sdk/client-lex-runtime-service';
 
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
@@ -26,7 +28,10 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 		}
 	} else if (command instanceof PostContentCommand) {
 		if (command.input.contentType === 'audio/x-l16; sample-rate=16000') {
-			if (command.input.inputStream === 'voice:done') {
+			if (
+				new TextDecoder('utf-8').decode(command.input.inputStream) ===
+				'voice:done'
+			) {
 				const result = {
 					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
@@ -44,7 +49,9 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 				return Promise.resolve(result);
 			}
 		} else {
-			if (command.input.inputStream === 'done') {
+			if (
+				new TextDecoder('utf-8').decode(command.input.inputStream) === 'done'
+			) {
 				const result = {
 					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
@@ -431,7 +438,7 @@ describe('Interactions', () => {
 		});
 
 		describe('Sending messages to bot', () => {
-			test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async () => {
+			test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async done => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -511,7 +518,7 @@ describe('Interactions', () => {
 					},
 				});
 			});
-			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
+			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async done => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));

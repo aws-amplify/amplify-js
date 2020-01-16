@@ -10,12 +10,14 @@ import {
 	TextSyntax,
 	KeyPhrases,
 } from '../types';
-import { ComprehendClient } from '@aws-sdk/client-comprehend-browser/ComprehendClient';
-import { DetectSyntaxCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectSyntaxCommand';
-import { DetectEntitiesCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectEntitiesCommand';
-import { DetectDominantLanguageCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectDominantLanguageCommand';
-import { DetectKeyPhrasesCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectKeyPhrasesCommand';
-import { DetectSentimentCommand } from '@aws-sdk/client-comprehend-browser/commands/DetectSentimentCommand';
+import {
+	ComprehendClient,
+	DetectSyntaxCommand,
+	DetectEntitiesCommand,
+	DetectDominantLanguageCommand,
+	DetectKeyPhrasesCommand,
+	DetectSentimentCommand,
+} from '@aws-sdk/client-comprehend';
 
 export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
 	constructor() {

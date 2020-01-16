@@ -17,13 +17,15 @@ import {
 	Parser,
 	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3Client } from '@aws-sdk/client-s3/S3Client';
+import {
+	S3Client,
+	GetObjectCommand,
+	PutObjectCommand,
+	DeleteObjectCommand,
+	ListObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
-import { GetObjectCommand } from '@aws-sdk/client-s3/commands/GetObjectCommand';
-import { PutObjectCommand } from '@aws-sdk/client-s3/commands/PutObjectCommand';
-import { DeleteObjectCommand } from '@aws-sdk/client-s3/commands/DeleteObjectCommand';
-import { ListObjectsCommand } from '@aws-sdk/client-s3/commands/ListObjectsCommand';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 

@@ -13,9 +13,8 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
+import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObjectsCommand';
 
 /**
  * NOTE - These test cases use Hub.dispatch but they should

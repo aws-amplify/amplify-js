@@ -21,10 +21,12 @@ import {
 	Hub,
 	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { PinpointClient } from '@aws-sdk/client-pinpoint/PinpointClient';
-import { PutEventsCommand } from '@aws-sdk/client-pinpoint/commands/PutEventsCommand';
-import { UpdateEndpointCommand } from '@aws-sdk/client-pinpoint/commands/UpdateEndpointCommand';
-import { GetUserEndpointsCommand } from '@aws-sdk/client-pinpoint/commands/GetUserEndpointsCommand';
+import {
+	PinpointClient,
+	PutEventsCommand,
+	UpdateEndpointCommand,
+	GetUserEndpointsCommand,
+} from '@aws-sdk/client-pinpoint';
 import Cache from '@aws-amplify/cache';
 
 import {

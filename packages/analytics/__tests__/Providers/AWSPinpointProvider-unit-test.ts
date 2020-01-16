@@ -1,8 +1,10 @@
 import { Credentials, ClientDevice } from '@aws-amplify/core';
 import AnalyticsProvider from '../../src/Providers/AWSPinpointProvider';
-import { PinpointClient } from '@aws-sdk/client-pinpoint-browser/PinpointClient';
-import { UpdateEndpointCommand } from '@aws-sdk/client-pinpoint-browser/commands/UpdateEndpointCommand';
-import { PutEventsCommand } from '@aws-sdk/client-pinpoint-browser/commands/PutEventsCommand';
+import {
+	PinpointClient,
+	UpdateEndpointCommand,
+	PutEventsCommand,
+} from '@aws-sdk/client-pinpoint';
 
 const endpointConfigure = {
 	address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
@@ -163,7 +165,7 @@ jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
 
-jest.mock('@aws-sdk/client-pinpoint-browser/PinpointClient');
+jest.mock('@aws-sdk/client-pinpoint');
 
 beforeEach(() => {
 	PinpointClient.prototype.send = jest.fn(async command => {

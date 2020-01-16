@@ -16,8 +16,7 @@ import {
 	Credentials,
 	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { KinesisClient } from '@aws-sdk/client-kinesis/KinesisClient';
-import { PutRecordsCommand } from '@aws-sdk/client-kinesis/commands/PutRecordsCommand';
+import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AWSKinesisProvider');

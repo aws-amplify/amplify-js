@@ -13,9 +13,11 @@
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import { InteractionsOptions, InteractionsMessage } from '../types';
-import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service/LexRuntimeServiceClient';
-import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service/commands/PostTextCommand';
-import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service/commands/PostContentCommand';
+import {
+	LexRuntimeServiceClient,
+	PostTextCommand,
+	PostContentCommand,
+} from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
 	Credentials,
