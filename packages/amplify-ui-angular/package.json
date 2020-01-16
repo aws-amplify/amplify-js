@@ -31,8 +31,7 @@
 		"dist/"
 	],
 	"dependencies": {
-		"@aws-amplify/ui-components": "*",
-		"tslib": "^1.9.3"
+		"@aws-amplify/ui-components": "*"
 	},
 	"devDependencies": {
 		"@angular/compiler-cli": "^7.2.1",
@@ -43,6 +42,7 @@
 		"tsickle": "^0.34.0",
 		"typescript": "3.2.4",
 		"zone.js": "^0.8.28",
+		"tslib": "^1.9.3",
 		"tslint": "^5.12.1"
 	}
 }
