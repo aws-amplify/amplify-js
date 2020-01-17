@@ -10,11 +10,12 @@ const STATIC_FORM_SECTION_FOOTER_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--section-foo
 const AmplifyFormSectionHeader: FunctionalComponent<AmplifyFormSectionHeaderProps> = ({
   headerText,
   overrideStyle = false,
+  testDataPrefix,
 }) => (
   <div>
     <slot name="amplify-form-section-header">
       <div class={styleNuker(overrideStyle, STATIC_SECTION_HEADER_CLASS_NAME, formSectionHeader)}>
-        <h3>{headerText}</h3>
+        <h3 data-test={testDataPrefix + '-header-section'}>{headerText}</h3>
       </div>
     </slot>
   </div>
@@ -48,9 +49,15 @@ export class AmplifyFormSection {
   @Prop() headerText: string = 'Amplify';
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle?: boolean = false;
+  /** String prefix for the data-test attributes in this component primarily used for testing purposes */
+  @Prop() testDataPrefix?: string = 'form-section';
 
   @Prop() primaryFooterContent: string | FunctionalComponent = (
-    <amplify-button type="submit" overrideStyle={this.overrideStyle}>
+    <amplify-button
+      type="submit"
+      overrideStyle={this.overrideStyle}
+      data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}
+    >
       {this.submitButtonText}
     </amplify-button>
   );
@@ -60,7 +67,11 @@ export class AmplifyFormSection {
     return (
       <form onSubmit={this.handleSubmit}>
         <amplify-section overrideStyle={this.overrideStyle}>
-          <AmplifyFormSectionHeader headerText={this.headerText} overrideStyle={this.overrideStyle} />
+          <AmplifyFormSectionHeader
+            headerText={this.headerText}
+            overrideStyle={this.overrideStyle}
+            testDataPrefix={this.testDataPrefix}
+          />
           <slot />
           <AmplifyFormSectionFooter
             primaryContent={this.primaryFooterContent}

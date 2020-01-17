@@ -5,7 +5,6 @@
  * It contains typing information for all components that exist in this project.
  */
 
-
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AuthState,
@@ -14,909 +13,895 @@ import {
   FederatedConfig,
   MFATypesInterface,
 } from './common/types/auth-types';
-import {
-  FormFieldTypes,
-} from './components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  ButtonTypes,
-  TextFieldTypes,
-} from './common/types/ui-types';
-import {
-  FunctionalComponent,
-} from '@stencil/core';
-import {
-  CountryCodeDialOptions,
-} from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
-import {
-  IconNameType,
-} from './components/amplify-icon/icons';
-import {
-  AmplifySceneError,
-} from './components/amplify-scene/amplify-scene-interface';
-import {
-  SelectOptionsNumber,
-  SelectOptionsString,
-} from './components/amplify-select/amplify-select-interface';
+import { FormFieldTypes } from './components/amplify-auth-fields/amplify-auth-fields-interface';
+import { ButtonTypes, TextFieldTypes } from './common/types/ui-types';
+import { FunctionalComponent } from '@stencil/core';
+import { CountryCodeDialOptions } from './components/amplify-country-dial-code/amplify-country-dial-code-interface';
+import { IconNameType } from './components/amplify-icon/icons';
+import { AmplifySceneError } from './components/amplify-scene/amplify-scene-interface';
+import { SelectOptionsNumber, SelectOptionsString } from './components/amplify-select/amplify-select-interface';
 
 export namespace Components {
   interface AmplifyAmazonButton {
     /**
-    * App-specific client ID from Google
-    */
-    'clientId': FederatedConfig['amazonClientId'];
+     * App-specific client ID from Google
+     */
+    clientId: FederatedConfig['amazonClientId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyAuthFields {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields': FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields: FormFieldTypes | string[];
   }
   interface AmplifyAuth0Button {
     /**
-    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
-    */
-    'config': FederatedConfig['auth0Config'];
-    'handleAuthStateChange': AuthStateHandler;
+     * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+     */
+    config: FederatedConfig['auth0Config'];
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyAuthenticator {
     /**
-    * Federated credentials & configuration.
-    */
-    'federated': FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated: FederatedConfig;
     /**
-    * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
-    */
-    'initialAuthState': AuthState;
+     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
+     */
+    initialAuthState: AuthState;
   }
   interface AmplifyButton {
     /**
-    * (Optional) Callback called when a user clicks on the button
-    */
-    'handleButtonClick': (evt: Event) => void;
+     * (Optional) Callback called when a user clicks on the button
+     */
+    handleButtonClick: (evt: Event) => void;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Type of the button: 'button', 'submit' or 'reset'
-    */
-    'type': ButtonTypes;
+     * Type of the button: 'button', 'submit' or 'reset'
+     */
+    type: ButtonTypes;
   }
   interface AmplifyCheckbox {
     /**
-    * If `true`, the checkbox is selected.
-    */
-    'checked': boolean;
+     * If `true`, the checkbox is selected.
+     */
+    checked: boolean;
     /**
-    * If `true`, the checkbox is disabled
-    */
-    'disabled': boolean;
+     * If `true`, the checkbox is disabled
+     */
+    disabled: boolean;
     /**
-    * Field ID used for the 'htmlFor' in the label
-    */
-    'fieldId': string;
+     * Field ID used for the 'htmlFor' in the label
+     */
+    fieldId: string;
     /**
-    * Label for the checkbox
-    */
-    'label': string;
+     * Label for the checkbox
+     */
+    label: string;
     /**
-    * Name of the checkbox
-    */
-    'name'?: string;
+     * Name of the checkbox
+     */
+    name?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Value of the checkbox
-    */
-    'value'?: string;
+     * Value of the checkbox
+     */
+    value?: string;
   }
   interface AmplifyCodeField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId': string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your confirmation code, etc.
-    */
-    'hint': string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your confirmation code, etc.
+     */
+    hint: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the code label
-    */
-    'label': string;
+     * Used for the code label
+     */
+    label: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder': string;
+     * Used for the placeholder label
+     */
+    placeholder: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyConfirmSignIn {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields': FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Fires when confirm sign in form is submitted
-    */
-    'handleSubmit': (Event: Event) => void;
+     * Fires when confirm sign in form is submitted
+     */
+    handleSubmit: (Event: Event) => void;
     /**
-    * Used for header text in confirm sign in component
-    */
-    'headerText': string;
+     * Used for header text in confirm sign in component
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the submit button text in confirm sign in component
-    */
-    'submitButtonText': string;
+     * Used for the submit button text in confirm sign in component
+     */
+    submitButtonText: string;
     /**
-    * Cognito user signing in
-    */
-    'user': CognitoUserInterface;
+     * Cognito user signing in
+     */
+    user: CognitoUserInterface;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors': string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors: string;
   }
   interface AmplifyConfirmSignUp {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields': FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Fires when sign up form is submitted
-    */
-    'handleSubmit': (submitEvent: Event) => void;
+     * Fires when sign up form is submitted
+     */
+    handleSubmit: (submitEvent: Event) => void;
     /**
-    * Used for header text in confirm sign up component
-    */
-    'headerText': string;
+     * Used for header text in confirm sign up component
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the submit button text in confirm sign up component
-    */
-    'submitButtonText': string;
+     * Used for the submit button text in confirm sign up component
+     */
+    submitButtonText: string;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user': CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user: CognitoUserInterface;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors': string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors: string;
   }
   interface AmplifyCountryDialCode {
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId': string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The options of the country dial code select input.
-    */
-    'options': CountryCodeDialOptions;
+     * The options of the country dial code select input.
+     */
+    options: CountryCodeDialOptions;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyEmailField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId': string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the EMAIL label
-    */
-    'label': string;
+     * Used for the EMAIL label
+     */
+    label: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder': string;
+     * Used for the placeholder label
+     */
+    placeholder: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFacebookButton {
     /**
-    * App-specific client ID from Facebook
-    */
-    'appId': FederatedConfig['facebookAppId'];
+     * App-specific client ID from Facebook
+     */
+    appId: FederatedConfig['facebookAppId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyFederatedButtons {
     /**
-    * The current authentication state.
-    */
-    'authState': AuthState;
+     * The current authentication state.
+     */
+    authState: AuthState;
     /**
-    * Federated credentials & configuration.
-    */
-    'federated': FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated: FederatedConfig;
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
-    * The current authentication state.
-    */
-    'authState': AuthState;
+     * The current authentication state.
+     */
+    authState: AuthState;
     /**
-    * Federated credentials & configuration.
-    */
-    'federated': any;
+     * Federated credentials & configuration.
+     */
+    federated: any;
   }
   interface AmplifyForgotPassword {
     /**
-    * The form fields displayed inside of the forgot password form
-    */
-    'formFields': FormFieldTypes;
+     * The form fields displayed inside of the forgot password form
+     */
+    formFields: FormFieldTypes;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * The function called when making a request to reset password
-    */
-    'handleSend': (event: Event) => void;
+     * The function called when making a request to reset password
+     */
+    handleSend: (event: Event) => void;
     /**
-    * The function called when submitting a new password
-    */
-    'handleSubmit': (event: Event) => void;
+     * The function called when submitting a new password
+     */
+    handleSubmit: (event: Event) => void;
     /**
-    * The header text of the forgot password section
-    */
-    'headerText': string;
+     * The header text of the forgot password section
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * The text displayed inside of the submit button for the form
-    */
-    'submitButtonText': string;
+     * The text displayed inside of the submit button for the form
+     */
+    submitButtonText: string;
   }
   interface AmplifyFormField {
     /**
-    * The text of the description.  Goes between the label and the input.
-    */
-    'description': string | null;
+     * The text of the description.  Goes between the label and the input.
+     */
+    description: string | null;
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId': string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
-    */
-    'hint': string | FunctionalComponent | null;
+     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+     */
+    hint: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * The text of the label.  Goes above the input. Ex: 'First name'
-    */
-    'label': string | null;
+     * The text of the label.  Goes above the input. Ex: 'First name'
+     */
+    label: string | null;
     /**
-    * (Optional) String value for the name of the input.
-    */
-    'name'?: string;
+     * (Optional) String value for the name of the input.
+     */
+    name?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The input type.  Can be any HTML input type.
-    */
-    'type'?: TextFieldTypes;
+     * The input type.  Can be any HTML input type.
+     */
+    type?: TextFieldTypes;
     /**
-    * The value of the content inside of the input field
-    */
-    'value': string;
+     * The value of the content inside of the input field
+     */
+    value: string;
   }
   interface AmplifyFormSection {
     /**
-    * (Required) Function called upon submission of form
-    */
-    'handleSubmit': (inputEvent: Event) => void;
+     * (Required) Function called upon submission of form
+     */
+    handleSubmit: (inputEvent: Event) => void;
     /**
-    * Used for form section header
-    */
-    'headerText': string;
+     * Used for form section header
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    'primaryFooterContent': string | FunctionalComponent;
-    'secondaryFooterContent': string | FunctionalComponent | null;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
+    primaryFooterContent: string | FunctionalComponent;
+    secondaryFooterContent: string | FunctionalComponent | null;
     /**
-    * (Optional) Used as a the default value within the default footer slot
-    */
-    'submitButtonText'?: string;
+     * (Optional) Used as a the default value within the default footer slot
+     */
+    submitButtonText?: string;
+    /**
+     * String prefix for the data-test attributes in this component primarily used for testing purposes
+     */
+    testDataPrefix?: string;
   }
   interface AmplifyGoogleButton {
     /**
-    * App-specific client ID from Google
-    */
-    'clientId': FederatedConfig['googleClientId'];
+     * App-specific client ID from Google
+     */
+    clientId: FederatedConfig['googleClientId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyGreetings {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Logo displayed inside of the header
-    */
-    'logo': FunctionalComponent | null;
+     * Logo displayed inside of the header
+     */
+    logo: FunctionalComponent | null;
     /**
-    * Override default styling
-    */
-    'overrideStyle': boolean;
+     * Override default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user': CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user: CognitoUserInterface;
   }
   interface AmplifyHint {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyIcon {
     /**
-    * (Required) Name of icon used to determine the icon rendered
-    */
-    'name': IconNameType;
+     * (Required) Name of icon used to determine the icon rendered
+     */
+    name: IconNameType;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyIconButton {
-    'autoShowTooltip': boolean;
-    'name': IconNameType;
+    autoShowTooltip: boolean;
+    name: IconNameType;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
-    'tooltip': string | null;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
+    tooltip: string | null;
   }
   interface AmplifyInput {
     /**
-    * The text of the description.  Goes just below the label.
-    */
-    'description': string | null;
+     * The text of the description.  Goes just below the label.
+     */
+    description: string | null;
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId': string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * (Optional) String value for the name of the input.
-    */
-    'name'?: string;
+     * (Optional) String value for the name of the input.
+     */
+    name?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * The input type.  Can be any HTML input type.
-    */
-    'type'?: TextFieldTypes;
+     * The input type.  Can be any HTML input type.
+     */
+    type?: TextFieldTypes;
     /**
-    * The value of the content inside of the input field
-    */
-    'value': string;
+     * The value of the content inside of the input field
+     */
+    value: string;
   }
   interface AmplifyLabel {
-    'htmlFor': string;
-    'overrideStyle': boolean;
+    htmlFor: string;
+    overrideStyle: boolean;
   }
   interface AmplifyLink {
-    'overrideStyle': boolean;
-    'role': string;
+    overrideStyle: boolean;
+    role: string;
   }
   interface AmplifyNav {}
   interface AmplifyOauthButton {
-    'config': FederatedConfig['oauthConfig'];
+    config: FederatedConfig['oauthConfig'];
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyPasswordField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId': string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your password, etc.
-    */
-    'hint': string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your password, etc.
+     */
+    hint: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the password label
-    */
-    'label': string;
+     * Used for the password label
+     */
+    label: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder': string;
+     * Used for the placeholder label
+     */
+    placeholder: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyPhoneField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId': string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your confirmation code, etc.
-    */
-    'hint': string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your confirmation code, etc.
+     */
+    hint: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the Phone label
-    */
-    'label': string;
+     * Used for the Phone label
+     */
+    label: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder': string;
+     * Used for the placeholder label
+     */
+    placeholder: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value': string;
+     * The value of the content inside of the input field
+     */
+    value: string;
   }
   interface AmplifyRadioButton {
     /**
-    * If `true`, the radio button is selected.
-    */
-    'checked': boolean;
+     * If `true`, the radio button is selected.
+     */
+    checked: boolean;
     /**
-    * If `true`, the checkbox is disabled
-    */
-    'disabled': boolean;
+     * If `true`, the checkbox is disabled
+     */
+    disabled: boolean;
     /**
-    * Field ID used for the 'for' in the label
-    */
-    'fieldId': string;
+     * Field ID used for the 'for' in the label
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Label for the radio button
-    */
-    'label': string;
+     * Label for the radio button
+     */
+    label: string;
     /**
-    * (Optional) Name of radio button
-    */
-    'name'?: string;
+     * (Optional) Name of radio button
+     */
+    name?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * (Optional) Value of radio button
-    */
-    'value'?: string;
+     * (Optional) Value of radio button
+     */
+    value?: string;
   }
   interface AmplifyRequireNewPassword {
     /**
-    * The form fields displayed inside of the forgot password form
-    */
-    'formFields': FormFieldTypes;
+     * The form fields displayed inside of the forgot password form
+     */
+    formFields: FormFieldTypes;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * The function called when submitting a new password
-    */
-    'handleSubmit': (event: Event) => void;
+     * The function called when submitting a new password
+     */
+    handleSubmit: (event: Event) => void;
     /**
-    * The header text of the forgot password section
-    */
-    'headerText': string;
+     * The header text of the forgot password section
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * The text displayed inside of the submit button for the form
-    */
-    'submitButtonText': string;
+     * The text displayed inside of the submit button for the form
+     */
+    submitButtonText: string;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user': CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user: CognitoUserInterface;
   }
   interface AmplifyScene {
-    'sceneName': string;
+    sceneName: string;
   }
   interface AmplifySceneLoading {
-    'loadPercentage': number;
-    'sceneError': AmplifySceneError | null;
-    'sceneName': string;
+    loadPercentage: number;
+    sceneError: AmplifySceneError | null;
+    sceneName: string;
   }
   interface AmplifySection {
-    'overrideStyle'?: boolean;
-    'role': string;
+    overrideStyle?: boolean;
+    role: string;
   }
   interface AmplifySelect {
     /**
-    * Used for id field
-    */
-    'fieldId': string;
+     * Used for id field
+     */
+    fieldId: string;
     /**
-    * The callback, called when the select is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the select is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
-    */
-    'options': SelectOptionsString | SelectOptionsNumber;
+     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+     */
+    options: SelectOptionsString | SelectOptionsNumber;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifySelectMfaType {
     /**
-    * Types of MFA options
-    */
-    'MFATypes': MFATypesInterface;
+     * Types of MFA options
+     */
+    MFATypes: MFATypesInterface;
     /**
-    * Current authenticated user in order to sign requests properly for TOTP
-    */
-    'authData': CognitoUserInterface;
+     * Current authenticated user in order to sign requests properly for TOTP
+     */
+    authData: CognitoUserInterface;
     /**
-    * Fires when Verify is clicked
-    */
-    'handleSubmit': (submitEvent: Event) => void;
+     * Fires when Verify is clicked
+     */
+    handleSubmit: (submitEvent: Event) => void;
   }
   interface AmplifySignIn {
     /**
-    * Federated credentials & configuration.
-    */
-    'federated': FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated: FederatedConfig;
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields': FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Fires when sign in form is submitted
-    */
-    'handleSubmit': (Event: Event) => void;
+     * Fires when sign in form is submitted
+     */
+    handleSubmit: (Event: Event) => void;
     /**
-    * Used for header text in sign in component
-    */
-    'headerText': string;
+     * Used for header text in sign in component
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the submit button text in sign in component
-    */
-    'submitButtonText': string;
+     * Used for the submit button text in sign in component
+     */
+    submitButtonText: string;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors': string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors: string;
   }
   interface AmplifySignInButton {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
-    'provider': 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
+    provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
     /**
-    * Text inside of the Sign Out button
-    */
-    'buttonText': string;
+     * Text inside of the Sign Out button
+     */
+    buttonText: string;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifySignUp {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields': FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Fires when sign up form is submitted
-    */
-    'handleSubmit': (submitEvent: Event) => void;
+     * Fires when sign up form is submitted
+     */
+    handleSubmit: (submitEvent: Event) => void;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'haveAccountText': string;
+     * Used for the submit button text in sign up component
+     */
+    haveAccountText: string;
     /**
-    * Used for header text in sign up component
-    */
-    'headerText': string;
+     * Used for header text in sign up component
+     */
+    headerText: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'signInText': string;
+     * Used for the submit button text in sign up component
+     */
+    signInText: string;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'submitButtonText': string;
+     * Used for the submit button text in sign up component
+     */
+    submitButtonText: string;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors': string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors: string;
   }
   interface AmplifyStrike {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a dismissable `x` for the Toast component
-    */
-    'onClose': () => void;
+     * Used in order to add a dismissable `x` for the Toast component
+     */
+    onClose: () => void;
   }
   interface AmplifyTooltip {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
     /**
-    * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
-    */
-    'shouldAutoShow': boolean;
+     * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
+     */
+    shouldAutoShow: boolean;
     /**
-    * (Required) The text in the tooltip
-    */
-    'text': string;
+     * (Required) The text in the tooltip
+     */
+    text: string;
   }
   interface AmplifyTotpSetup {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * Used in order to configure TOTP for a user
-    */
-    'user': CognitoUserInterface;
+     * Used in order to configure TOTP for a user
+     */
+    user: CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId': string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the username label
-    */
-    'label': string;
+     * Used for the username label
+     */
+    label: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder': string;
+     * Used for the placeholder label
+     */
+    placeholder: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required': boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyVerifyContact {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange': AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle: boolean;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user': CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user: CognitoUserInterface;
   }
   interface RockPaperScissor {
-    'icon': Function;
+    icon: Function;
   }
 }
 
 declare global {
-
-
   interface HTMLAmplifyAmazonButtonElement extends Components.AmplifyAmazonButton, HTMLStencilElement {}
   var HTMLAmplifyAmazonButtonElement: {
     prototype: HTMLAmplifyAmazonButtonElement;
@@ -1259,877 +1244,881 @@ declare global {
 declare namespace LocalJSX {
   interface AmplifyAmazonButton {
     /**
-    * App-specific client ID from Google
-    */
-    'clientId'?: FederatedConfig['amazonClientId'];
+     * App-specific client ID from Google
+     */
+    clientId?: FederatedConfig['amazonClientId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyAuthFields {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields'?: FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields?: FormFieldTypes | string[];
   }
   interface AmplifyAuth0Button {
     /**
-    * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
-    */
-    'config'?: FederatedConfig['auth0Config'];
-    'handleAuthStateChange'?: AuthStateHandler;
+     * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+     */
+    config?: FederatedConfig['auth0Config'];
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyAuthenticator {
     /**
-    * Federated credentials & configuration.
-    */
-    'federated'?: FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated?: FederatedConfig;
     /**
-    * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
-    */
-    'initialAuthState'?: AuthState;
+     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
+     */
+    initialAuthState?: AuthState;
   }
   interface AmplifyButton {
     /**
-    * (Optional) Callback called when a user clicks on the button
-    */
-    'handleButtonClick'?: (evt: Event) => void;
+     * (Optional) Callback called when a user clicks on the button
+     */
+    handleButtonClick?: (evt: Event) => void;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Type of the button: 'button', 'submit' or 'reset'
-    */
-    'type'?: ButtonTypes;
+     * Type of the button: 'button', 'submit' or 'reset'
+     */
+    type?: ButtonTypes;
   }
   interface AmplifyCheckbox {
     /**
-    * If `true`, the checkbox is selected.
-    */
-    'checked'?: boolean;
+     * If `true`, the checkbox is selected.
+     */
+    checked?: boolean;
     /**
-    * If `true`, the checkbox is disabled
-    */
-    'disabled'?: boolean;
+     * If `true`, the checkbox is disabled
+     */
+    disabled?: boolean;
     /**
-    * Field ID used for the 'htmlFor' in the label
-    */
-    'fieldId'?: string;
+     * Field ID used for the 'htmlFor' in the label
+     */
+    fieldId?: string;
     /**
-    * Label for the checkbox
-    */
-    'label'?: string;
+     * Label for the checkbox
+     */
+    label?: string;
     /**
-    * Name of the checkbox
-    */
-    'name'?: string;
+     * Name of the checkbox
+     */
+    name?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Value of the checkbox
-    */
-    'value'?: string;
+     * Value of the checkbox
+     */
+    value?: string;
   }
   interface AmplifyCodeField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId'?: string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your confirmation code, etc.
-    */
-    'hint'?: string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your confirmation code, etc.
+     */
+    hint?: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the code label
-    */
-    'label'?: string;
+     * Used for the code label
+     */
+    label?: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder'?: string;
+     * Used for the placeholder label
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyConfirmSignIn {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields'?: FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Fires when confirm sign in form is submitted
-    */
-    'handleSubmit'?: (Event: Event) => void;
+     * Fires when confirm sign in form is submitted
+     */
+    handleSubmit?: (Event: Event) => void;
     /**
-    * Used for header text in confirm sign in component
-    */
-    'headerText'?: string;
+     * Used for header text in confirm sign in component
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the submit button text in confirm sign in component
-    */
-    'submitButtonText'?: string;
+     * Used for the submit button text in confirm sign in component
+     */
+    submitButtonText?: string;
     /**
-    * Cognito user signing in
-    */
-    'user'?: CognitoUserInterface;
+     * Cognito user signing in
+     */
+    user?: CognitoUserInterface;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors'?: string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors?: string;
   }
   interface AmplifyConfirmSignUp {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields'?: FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Fires when sign up form is submitted
-    */
-    'handleSubmit'?: (submitEvent: Event) => void;
+     * Fires when sign up form is submitted
+     */
+    handleSubmit?: (submitEvent: Event) => void;
     /**
-    * Used for header text in confirm sign up component
-    */
-    'headerText'?: string;
+     * Used for header text in confirm sign up component
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the submit button text in confirm sign up component
-    */
-    'submitButtonText'?: string;
+     * Used for the submit button text in confirm sign up component
+     */
+    submitButtonText?: string;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user'?: CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user?: CognitoUserInterface;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors'?: string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors?: string;
   }
   interface AmplifyCountryDialCode {
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId'?: string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The options of the country dial code select input.
-    */
-    'options'?: CountryCodeDialOptions;
+     * The options of the country dial code select input.
+     */
+    options?: CountryCodeDialOptions;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyEmailField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId'?: string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the EMAIL label
-    */
-    'label'?: string;
+     * Used for the EMAIL label
+     */
+    label?: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder'?: string;
+     * Used for the placeholder label
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyExamples {}
   interface AmplifyFacebookButton {
     /**
-    * App-specific client ID from Facebook
-    */
-    'appId'?: FederatedConfig['facebookAppId'];
+     * App-specific client ID from Facebook
+     */
+    appId?: FederatedConfig['facebookAppId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyFederatedButtons {
     /**
-    * The current authentication state.
-    */
-    'authState'?: AuthState;
+     * The current authentication state.
+     */
+    authState?: AuthState;
     /**
-    * Federated credentials & configuration.
-    */
-    'federated'?: FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated?: FederatedConfig;
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
-    * The current authentication state.
-    */
-    'authState'?: AuthState;
+     * The current authentication state.
+     */
+    authState?: AuthState;
     /**
-    * Federated credentials & configuration.
-    */
-    'federated'?: any;
+     * Federated credentials & configuration.
+     */
+    federated?: any;
   }
   interface AmplifyForgotPassword {
     /**
-    * The form fields displayed inside of the forgot password form
-    */
-    'formFields'?: FormFieldTypes;
+     * The form fields displayed inside of the forgot password form
+     */
+    formFields?: FormFieldTypes;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * The function called when making a request to reset password
-    */
-    'handleSend'?: (event: Event) => void;
+     * The function called when making a request to reset password
+     */
+    handleSend?: (event: Event) => void;
     /**
-    * The function called when submitting a new password
-    */
-    'handleSubmit'?: (event: Event) => void;
+     * The function called when submitting a new password
+     */
+    handleSubmit?: (event: Event) => void;
     /**
-    * The header text of the forgot password section
-    */
-    'headerText'?: string;
+     * The header text of the forgot password section
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * The text displayed inside of the submit button for the form
-    */
-    'submitButtonText'?: string;
+     * The text displayed inside of the submit button for the form
+     */
+    submitButtonText?: string;
   }
   interface AmplifyFormField {
     /**
-    * The text of the description.  Goes between the label and the input.
-    */
-    'description'?: string | null;
+     * The text of the description.  Goes between the label and the input.
+     */
+    description?: string | null;
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId'?: string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
-    */
-    'hint'?: string | FunctionalComponent | null;
+     * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+     */
+    hint?: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * The text of the label.  Goes above the input. Ex: 'First name'
-    */
-    'label'?: string | null;
+     * The text of the label.  Goes above the input. Ex: 'First name'
+     */
+    label?: string | null;
     /**
-    * (Optional) String value for the name of the input.
-    */
-    'name'?: string;
+     * (Optional) String value for the name of the input.
+     */
+    name?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The input type.  Can be any HTML input type.
-    */
-    'type'?: TextFieldTypes;
+     * The input type.  Can be any HTML input type.
+     */
+    type?: TextFieldTypes;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyFormSection {
     /**
-    * (Required) Function called upon submission of form
-    */
-    'handleSubmit'?: (inputEvent: Event) => void;
+     * (Required) Function called upon submission of form
+     */
+    handleSubmit?: (inputEvent: Event) => void;
     /**
-    * Used for form section header
-    */
-    'headerText'?: string;
+     * Used for form section header
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    'primaryFooterContent'?: string | FunctionalComponent;
-    'secondaryFooterContent'?: string | FunctionalComponent | null;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
+    primaryFooterContent?: string | FunctionalComponent;
+    secondaryFooterContent?: string | FunctionalComponent | null;
     /**
-    * (Optional) Used as a the default value within the default footer slot
-    */
-    'submitButtonText'?: string;
+     * (Optional) Used as a the default value within the default footer slot
+     */
+    submitButtonText?: string;
+    /**
+     * String prefix for the data-test attributes in this component primarily used for testing purposes
+     */
+    testDataPrefix?: string;
   }
   interface AmplifyGoogleButton {
     /**
-    * App-specific client ID from Google
-    */
-    'clientId'?: FederatedConfig['googleClientId'];
+     * App-specific client ID from Google
+     */
+    clientId?: FederatedConfig['googleClientId'];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyGreetings {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Logo displayed inside of the header
-    */
-    'logo'?: FunctionalComponent | null;
+     * Logo displayed inside of the header
+     */
+    logo?: FunctionalComponent | null;
     /**
-    * Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user'?: CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user?: CognitoUserInterface;
   }
   interface AmplifyHint {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyIcon {
     /**
-    * (Required) Name of icon used to determine the icon rendered
-    */
-    'name'?: IconNameType;
+     * (Required) Name of icon used to determine the icon rendered
+     */
+    name?: IconNameType;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyIconButton {
-    'autoShowTooltip'?: boolean;
-    'name'?: IconNameType;
+    autoShowTooltip?: boolean;
+    name?: IconNameType;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-    'tooltip'?: string | null;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
+    tooltip?: string | null;
   }
   interface AmplifyInput {
     /**
-    * The text of the description.  Goes just below the label.
-    */
-    'description'?: string | null;
+     * The text of the description.  Goes just below the label.
+     */
+    description?: string | null;
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * The ID of the field.  Should match with its corresponding input's ID.
-    */
-    'fieldId'?: string;
+     * The ID of the field.  Should match with its corresponding input's ID.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * (Optional) String value for the name of the input.
-    */
-    'name'?: string;
+     * (Optional) String value for the name of the input.
+     */
+    name?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * The input type.  Can be any HTML input type.
-    */
-    'type'?: TextFieldTypes;
+     * The input type.  Can be any HTML input type.
+     */
+    type?: TextFieldTypes;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyLabel {
-    'htmlFor'?: string;
-    'overrideStyle'?: boolean;
+    htmlFor?: string;
+    overrideStyle?: boolean;
   }
   interface AmplifyLink {
-    'overrideStyle'?: boolean;
-    'role'?: string;
+    overrideStyle?: boolean;
+    role?: string;
   }
   interface AmplifyNav {}
   interface AmplifyOauthButton {
-    'config'?: FederatedConfig['oauthConfig'];
+    config?: FederatedConfig['oauthConfig'];
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyPasswordField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId'?: string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your password, etc.
-    */
-    'hint'?: string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your password, etc.
+     */
+    hint?: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the password label
-    */
-    'label'?: string;
+     * Used for the password label
+     */
+    label?: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder'?: string;
+     * Used for the placeholder label
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyPhoneField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId'?: string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Used as the hint in case you forgot your confirmation code, etc.
-    */
-    'hint'?: string | FunctionalComponent | null;
+     * Used as the hint in case you forgot your confirmation code, etc.
+     */
+    hint?: string | FunctionalComponent | null;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the Phone label
-    */
-    'label'?: string;
+     * Used for the Phone label
+     */
+    label?: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder'?: string;
+     * Used for the placeholder label
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyRadioButton {
     /**
-    * If `true`, the radio button is selected.
-    */
-    'checked'?: boolean;
+     * If `true`, the radio button is selected.
+     */
+    checked?: boolean;
     /**
-    * If `true`, the checkbox is disabled
-    */
-    'disabled'?: boolean;
+     * If `true`, the checkbox is disabled
+     */
+    disabled?: boolean;
     /**
-    * Field ID used for the 'for' in the label
-    */
-    'fieldId'?: string;
+     * Field ID used for the 'for' in the label
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Label for the radio button
-    */
-    'label'?: string;
+     * Label for the radio button
+     */
+    label?: string;
     /**
-    * (Optional) Name of radio button
-    */
-    'name'?: string;
+     * (Optional) Name of radio button
+     */
+    name?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
-    */
-    'placeholder'?: string;
+     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
+     */
+    placeholder?: string;
     /**
-    * (Optional) Value of radio button
-    */
-    'value'?: string;
+     * (Optional) Value of radio button
+     */
+    value?: string;
   }
   interface AmplifyRequireNewPassword {
     /**
-    * The form fields displayed inside of the forgot password form
-    */
-    'formFields'?: FormFieldTypes;
+     * The form fields displayed inside of the forgot password form
+     */
+    formFields?: FormFieldTypes;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * The function called when submitting a new password
-    */
-    'handleSubmit'?: (event: Event) => void;
+     * The function called when submitting a new password
+     */
+    handleSubmit?: (event: Event) => void;
     /**
-    * The header text of the forgot password section
-    */
-    'headerText'?: string;
+     * The header text of the forgot password section
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * The text displayed inside of the submit button for the form
-    */
-    'submitButtonText'?: string;
+     * The text displayed inside of the submit button for the form
+     */
+    submitButtonText?: string;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user'?: CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user?: CognitoUserInterface;
   }
   interface AmplifyScene {
-    'sceneName'?: string;
+    sceneName?: string;
   }
   interface AmplifySceneLoading {
-    'loadPercentage'?: number;
-    'sceneError'?: AmplifySceneError | null;
-    'sceneName'?: string;
+    loadPercentage?: number;
+    sceneError?: AmplifySceneError | null;
+    sceneName?: string;
   }
   interface AmplifySection {
-    'overrideStyle'?: boolean;
-    'role'?: string;
+    overrideStyle?: boolean;
+    role?: string;
   }
   interface AmplifySelect {
     /**
-    * Used for id field
-    */
-    'fieldId'?: string;
+     * Used for id field
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the select is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the select is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
-    */
-    'options'?: SelectOptionsString | SelectOptionsNumber;
+     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
+     */
+    options?: SelectOptionsString | SelectOptionsNumber;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifySelectMfaType {
     /**
-    * Types of MFA options
-    */
-    'MFATypes'?: MFATypesInterface;
+     * Types of MFA options
+     */
+    MFATypes?: MFATypesInterface;
     /**
-    * Current authenticated user in order to sign requests properly for TOTP
-    */
-    'authData'?: CognitoUserInterface;
+     * Current authenticated user in order to sign requests properly for TOTP
+     */
+    authData?: CognitoUserInterface;
     /**
-    * Fires when Verify is clicked
-    */
-    'handleSubmit'?: (submitEvent: Event) => void;
+     * Fires when Verify is clicked
+     */
+    handleSubmit?: (submitEvent: Event) => void;
   }
   interface AmplifySignIn {
     /**
-    * Federated credentials & configuration.
-    */
-    'federated'?: FederatedConfig;
+     * Federated credentials & configuration.
+     */
+    federated?: FederatedConfig;
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields'?: FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Fires when sign in form is submitted
-    */
-    'handleSubmit'?: (Event: Event) => void;
+     * Fires when sign in form is submitted
+     */
+    handleSubmit?: (Event: Event) => void;
     /**
-    * Used for header text in sign in component
-    */
-    'headerText'?: string;
+     * Used for header text in sign in component
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the submit button text in sign in component
-    */
-    'submitButtonText'?: string;
+     * Used for the submit button text in sign in component
+     */
+    submitButtonText?: string;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors'?: string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors?: string;
   }
   interface AmplifySignInButton {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-    'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
+    provider?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
     /**
-    * Text inside of the Sign Out button
-    */
-    'buttonText'?: string;
+     * Text inside of the Sign Out button
+     */
+    buttonText?: string;
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifySignUp {
     /**
-    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
-    */
-    'formFields'?: FormFieldTypes | string[];
+     * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: 'username'|'password'|'email'|'code'|'default',     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
+     */
+    formFields?: FormFieldTypes | string[];
     /**
-    * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Fires when sign up form is submitted
-    */
-    'handleSubmit'?: (submitEvent: Event) => void;
+     * Fires when sign up form is submitted
+     */
+    handleSubmit?: (submitEvent: Event) => void;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'haveAccountText'?: string;
+     * Used for the submit button text in sign up component
+     */
+    haveAccountText?: string;
     /**
-    * Used for header text in sign up component
-    */
-    'headerText'?: string;
+     * Used for header text in sign up component
+     */
+    headerText?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Overrides default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'signInText'?: string;
+     * Used for the submit button text in sign up component
+     */
+    signInText?: string;
     /**
-    * Used for the submit button text in sign up component
-    */
-    'submitButtonText'?: string;
+     * Used for the submit button text in sign up component
+     */
+    submitButtonText?: string;
     /**
-    * Engages when invalid actions occur, such as missing field, etc.
-    */
-    'validationErrors'?: string;
+     * Engages when invalid actions occur, such as missing field, etc.
+     */
+    validationErrors?: string;
   }
   interface AmplifyStrike {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
   }
   interface AmplifyToast {
     /**
-    * Used in order to add a dismissable `x` for the Toast component
-    */
-    'onClose'?: () => void;
+     * Used in order to add a dismissable `x` for the Toast component
+     */
+    onClose?: () => void;
   }
   interface AmplifyTooltip {
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
-    */
-    'shouldAutoShow'?: boolean;
+     * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
+     */
+    shouldAutoShow?: boolean;
     /**
-    * (Required) The text in the tooltip
-    */
-    'text'?: string;
+     * (Required) The text in the tooltip
+     */
+    text?: string;
   }
   interface AmplifyTotpSetup {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * Used in order to configure TOTP for a user
-    */
-    'user'?: CognitoUserInterface;
+     * Used in order to configure TOTP for a user
+     */
+    user?: CognitoUserInterface;
   }
   interface AmplifyUsernameField {
     /**
-    * Will disable the input if set to true
-    */
-    'disabled'?: boolean;
+     * Will disable the input if set to true
+     */
+    disabled?: boolean;
     /**
-    * Based on the type of field e.g. sign in, sign up, forgot password, etc.
-    */
-    'fieldId'?: string;
+     * Based on the type of field e.g. sign in, sign up, forgot password, etc.
+     */
+    fieldId?: string;
     /**
-    * The callback, called when the input is modified by the user.
-    */
-    'handleInputChange'?: (inputEvent: Event) => void;
+     * The callback, called when the input is modified by the user.
+     */
+    handleInputChange?: (inputEvent: Event) => void;
     /**
-    * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
-    */
-    'inputProps'?: object;
+     * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+     */
+    inputProps?: object;
     /**
-    * Used for the username label
-    */
-    'label'?: string;
+     * Used for the username label
+     */
+    label?: string;
     /**
-    * Used for the placeholder label
-    */
-    'placeholder'?: string;
+     * Used for the placeholder label
+     */
+    placeholder?: string;
     /**
-    * The required flag in order to make an input required prior to submitting a form
-    */
-    'required'?: boolean;
+     * The required flag in order to make an input required prior to submitting a form
+     */
+    required?: boolean;
     /**
-    * The value of the content inside of the input field
-    */
-    'value'?: string;
+     * The value of the content inside of the input field
+     */
+    value?: string;
   }
   interface AmplifyVerifyContact {
     /**
-    * Passed from the Authenticator component in order to change Authentication state
-    */
-    'handleAuthStateChange'?: AuthStateHandler;
+     * Passed from the Authenticator component in order to change Authentication state
+     */
+    handleAuthStateChange?: AuthStateHandler;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
+     * (Optional) Override default styling
+     */
+    overrideStyle?: boolean;
     /**
-    * Used for the username to be passed to resend code
-    */
-    'user'?: CognitoUserInterface;
+     * Used for the username to be passed to resend code
+     */
+    user?: CognitoUserInterface;
   }
   interface RockPaperScissor {
-    'icon'?: Function;
-    'onIconChange'?: (event: CustomEvent<any>) => void;
+    icon?: Function;
+    onIconChange?: (event: CustomEvent<any>) => void;
   }
 
   interface IntrinsicElements {
@@ -2186,8 +2175,7 @@ declare namespace LocalJSX {
 
 export { LocalJSX as JSX };
 
-
-declare module "@stencil/core" {
+declare module '@stencil/core' {
   export namespace JSX {
     interface IntrinsicElements {
       'amplify-amazon-button': LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
@@ -2197,15 +2185,22 @@ declare module "@stencil/core" {
       'amplify-button': LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
       'amplify-checkbox': LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
       'amplify-code-field': LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
-      'amplify-confirm-sign-in': LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
-      'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
-      'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
+      'amplify-confirm-sign-in': LocalJSX.AmplifyConfirmSignIn &
+        JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
+      'amplify-confirm-sign-up': LocalJSX.AmplifyConfirmSignUp &
+        JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
+      'amplify-country-dial-code': LocalJSX.AmplifyCountryDialCode &
+        JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
       'amplify-email-field': LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
       'amplify-examples': LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
-      'amplify-facebook-button': LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;
-      'amplify-federated-buttons': LocalJSX.AmplifyFederatedButtons & JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
-      'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
-      'amplify-forgot-password': LocalJSX.AmplifyForgotPassword & JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
+      'amplify-facebook-button': LocalJSX.AmplifyFacebookButton &
+        JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;
+      'amplify-federated-buttons': LocalJSX.AmplifyFederatedButtons &
+        JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
+      'amplify-federated-sign-in': LocalJSX.AmplifyFederatedSignIn &
+        JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
+      'amplify-forgot-password': LocalJSX.AmplifyForgotPassword &
+        JSXBase.HTMLAttributes<HTMLAmplifyForgotPasswordElement>;
       'amplify-form-field': LocalJSX.AmplifyFormField & JSXBase.HTMLAttributes<HTMLAmplifyFormFieldElement>;
       'amplify-form-section': LocalJSX.AmplifyFormSection & JSXBase.HTMLAttributes<HTMLAmplifyFormSectionElement>;
       'amplify-google-button': LocalJSX.AmplifyGoogleButton & JSXBase.HTMLAttributes<HTMLAmplifyGoogleButtonElement>;
@@ -2221,12 +2216,14 @@ declare module "@stencil/core" {
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
-      'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+      'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword &
+        JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
       'amplify-section': LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
       'amplify-select': LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
-      'amplify-select-mfa-type': LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;
+      'amplify-select-mfa-type': LocalJSX.AmplifySelectMfaType &
+        JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;
       'amplify-sign-in': LocalJSX.AmplifySignIn & JSXBase.HTMLAttributes<HTMLAmplifySignInElement>;
       'amplify-sign-in-button': LocalJSX.AmplifySignInButton & JSXBase.HTMLAttributes<HTMLAmplifySignInButtonElement>;
       'amplify-sign-out': LocalJSX.AmplifySignOut & JSXBase.HTMLAttributes<HTMLAmplifySignOutElement>;
@@ -2241,5 +2238,3 @@ declare module "@stencil/core" {
     }
   }
 }
-
-

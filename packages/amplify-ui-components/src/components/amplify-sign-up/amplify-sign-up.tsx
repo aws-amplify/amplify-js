@@ -7,6 +7,7 @@ import {
   SIGN_IN_TEXT,
   SIGN_UP_USERNAME_PLACEHOLDER,
   SIGN_UP_PASSWORD_PLACEHOLDER,
+  SIGN_UP_EMAIL_PLACEHOLDER,
   PHONE_SUFFIX,
   COUNTRY_DIAL_CODE_DEFAULT,
   COUNTRY_DIAL_CODE_SUFFIX,
@@ -69,6 +70,7 @@ export class AmplifySignUp {
     },
     {
       type: 'email',
+      placeholder: SIGN_UP_EMAIL_PLACEHOLDER,
       required: true,
       handleInputChange: event => this.handleEmailChange(event),
     },
@@ -76,6 +78,9 @@ export class AmplifySignUp {
       type: 'phone',
       required: true,
       handleInputChange: event => this.handlePhoneNumberChange(event),
+      inputProps: {
+        'data-test': 'phone-number-input',
+      },
     },
   ];
   /** Passed from the Authenticator component in order to change Authentication state
@@ -164,6 +169,7 @@ export class AmplifySignUp {
         headerText={this.headerText}
         overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-up'}
       >
         <amplify-auth-fields formFields={this.formFields} />
         <div slot="amplify-form-section-footer">

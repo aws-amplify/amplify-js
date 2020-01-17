@@ -1,10 +1,11 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import { formSectionFooter } from '../amplify-form-section/amplify-form-section.style';
 
 import {
   HEADER_TEXT,
-  SUBMIT_BUTTON_TEXT,
+  SIGN_IN_SUBMIT_BUTTON_TEXT,
   CREATE_ACCOUNT_TEXT,
   NO_ACCOUNT_TEXT,
   NO_AUTH_MODULE_FOUND,
@@ -29,7 +30,7 @@ export class AmplifySignIn {
   /** Used for header text in sign in component */
   @Prop() headerText: string = HEADER_TEXT;
   /** Used for the submit button text in sign in component */
-  @Prop() submitButtonText: string = SUBMIT_BUTTON_TEXT;
+  @Prop() submitButtonText: string = SIGN_IN_SUBMIT_BUTTON_TEXT;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
@@ -52,7 +53,35 @@ export class AmplifySignIn {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[];
+  @Prop() formFields: FormFieldTypes | string[] = [
+    {
+      type: 'username',
+      required: true,
+      handleInputChange: event => this.handleUsernameChange(event),
+      inputProps: {
+        'data-test': 'username-input',
+      },
+    },
+    {
+      type: 'password',
+      hint: (
+        <div>
+          {FORGOT_PASSWORD_TEXT}{' '}
+          <amplify-link
+            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+            data-test="sign-in-forgot-password-link"
+          >
+            {RESET_PASSWORD_TEXT}
+          </amplify-link>
+        </div>
+      ),
+      required: true,
+      handleInputChange: event => this.handlePasswordChange(event),
+      inputProps: {
+        'data-test': 'sign-in-password-input',
+      },
+    },
+  ];
 
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
@@ -60,29 +89,6 @@ export class AmplifySignIn {
   @State() username: string;
   /* The password value in the sign-in form */
   @State() password: string;
-
-  componentWillLoad() {
-    this.formFields = [
-      {
-        type: 'username',
-        required: true,
-        handleInputChange: event => this.handleUsernameChange(event),
-      },
-      {
-        type: 'password',
-        hint: (
-          <div>
-            {FORGOT_PASSWORD_TEXT}{' '}
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}>
-              {RESET_PASSWORD_TEXT}
-            </amplify-link>
-          </div>
-        ),
-        required: true,
-        handleInputChange: event => this.handlePasswordChange(event),
-      },
-    ];
-  }
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -159,14 +165,7 @@ export class AmplifySignIn {
         headerText={this.headerText}
         overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
-        secondaryFooterContent={
-          <span>
-            {NO_ACCOUNT_TEXT}{' '}
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignUp)}>
-              {CREATE_ACCOUNT_TEXT}
-            </amplify-link>
-          </span>
-        }
+        testDataPrefix={'sign-in'}
       >
         <amplify-federated-buttons
           handleAuthStateChange={this.handleAuthStateChange}
@@ -177,6 +176,22 @@ export class AmplifySignIn {
         {!isEmpty(this.federated) && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
 
         <amplify-auth-fields formFields={this.formFields} />
+        <div slot="amplify-form-section-footer">
+          <div class={formSectionFooter}>
+            <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-in-sign-in-button">
+              {this.submitButtonText}
+            </amplify-button>
+            <span>
+              {NO_ACCOUNT_TEXT}{' '}
+              <amplify-link
+                onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                data-test="sign-in-create-account-link"
+              >
+                {CREATE_ACCOUNT_TEXT}
+              </amplify-link>
+            </span>
+          </div>
+        </div>
       </amplify-form-section>
     );
   }

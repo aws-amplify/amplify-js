@@ -2,7 +2,6 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Dependencies
 
 ### Depends on
@@ -15,6 +14,7 @@
 - [amplify-scene](../amplify-scene)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
@@ -37,6 +37,7 @@ graph TD;
   amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
+  amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-federated-buttons --> amplify-google-button
@@ -104,6 +105,6 @@ graph TD;
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_
