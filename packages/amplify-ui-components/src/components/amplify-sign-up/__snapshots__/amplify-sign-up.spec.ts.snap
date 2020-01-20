@@ -2,18 +2,18 @@
 
 exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form by default 1`] = `
 <amplify-sign-up>
-  <amplify-form-section headertext="Create a new account">
+  <amplify-form-section headertext="Create a new account" testdataprefix="sign-up">
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
       <div class="css-1r8ajg4">
         <span>
           Have an account?
-          <amplify-link>
+          <amplify-link data-test="sign-up-sign-in-link">
             Sign in
           </amplify-link>
         </span>
-        <amplify-button type="submit">
-          Create account
+        <amplify-button data-test="sign-up-create-account-button" type="submit">
+          Create Account
         </amplify-button>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Dependencies
 
 ### Depends on
@@ -14,7 +15,6 @@
 - [amplify-scene](../amplify-scene)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
@@ -105,6 +105,6 @@ graph TD;
   style amplify-examples fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
