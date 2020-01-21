@@ -101,6 +101,15 @@ export namespace GraphQLScalarType {
 	}
 }
 
+export type AuthorizationRule = {
+	identityClaim: string;
+	ownerField: string;
+	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
+	groupClaim: string;
+	groups: [string];
+	authStrategy: 'owner' | 'group' | 'private' | 'public';
+};
+
 export function isGraphQLScalarType(
 	obj: any
 ): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType'> {
