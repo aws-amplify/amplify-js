@@ -6,6 +6,7 @@ interface BaseFormSectionProps {
 
 export interface AmplifyFormSectionHeaderProps extends BaseFormSectionProps {
   headerText: string;
+  testDataPrefix?: string;
 }
 
 export interface AmplifyFormSectionFooterProps extends BaseFormSectionProps {

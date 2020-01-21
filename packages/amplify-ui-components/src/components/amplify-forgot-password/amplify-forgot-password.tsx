@@ -41,6 +41,9 @@ export class AmplifyForgotPassword {
         required: true,
         handleInputChange: event => this.handleUsernameChange(event),
         value: this.username,
+        inputProps: {
+          'data-test': 'username-input',
+        },
       },
     ];
   }
@@ -116,8 +119,14 @@ export class AmplifyForgotPassword {
         overrideStyle={this.overrideStyle}
         handleSubmit={submitFn}
         secondaryFooterContent={
-          <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>{BACK_TO_SIGN_IN}</amplify-link>
+          <amplify-link
+            onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+            data-test="forgot-password-back-to-sign-in-link"
+          >
+            {BACK_TO_SIGN_IN}
+          </amplify-link>
         }
+        testDataPrefix={'forgot-password'}
       >
         <amplify-auth-fields formFields={this.formFields} />
       </amplify-form-section>

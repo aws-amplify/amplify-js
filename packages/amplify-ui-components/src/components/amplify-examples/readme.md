@@ -37,6 +37,7 @@ graph TD;
   amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
+  amplify-sign-in --> amplify-button
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
   amplify-federated-buttons --> amplify-google-button

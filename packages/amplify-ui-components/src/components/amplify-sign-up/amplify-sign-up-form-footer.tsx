@@ -11,9 +11,12 @@ export const AmplifySignUpFormFooter: FC<AmplifySignUpFormFooterProps> = ({
 }) => (
   <div class={signUpFormFooter}>
     <span>
-      {haveAcccountText} <amplify-link onClick={() => handleAuthStateChange('signin')}>{signInText}</amplify-link>
+      {haveAcccountText}{' '}
+      <amplify-link onClick={() => handleAuthStateChange('signin')} data-test="sign-up-sign-in-link">
+        {signInText}
+      </amplify-link>
     </span>
-    <amplify-button type="submit" overrideStyle={overrideStyle}>
+    <amplify-button type="submit" overrideStyle={overrideStyle} data-test="sign-up-create-account-button">
       {submitButtonText}
     </amplify-button>
   </div>

@@ -54,9 +54,9 @@ export const COUNTRY_DIAL_CODE_DEFAULT = '+1';
 
 // Sign In common constants
 // TODO: Change to SIGN_IN_HEADER_TEXT
-export const HEADER_TEXT = 'Sign into your account';
+export const HEADER_TEXT = 'Sign in to your account';
 // TODO: Change to SIGN_IN_SUBMIT_BUTTON_TEXT
-export const SUBMIT_BUTTON_TEXT = 'Sign in';
+export const SIGN_IN_SUBMIT_BUTTON_TEXT = 'Sign In';
 export const CREATE_ACCOUNT_TEXT = 'Create account';
 export const NO_ACCOUNT_TEXT = 'No account?';
 export const CONFIRM_SMS_CODE = 'Confirm SMS Code';
@@ -69,11 +69,12 @@ export const SIGN_IN_WITH_AWS = 'Sign in with AWS';
 
 // Sign Up common constants
 export const SIGN_UP_HEADER_TEXT = 'Create a new account';
-export const SIGN_UP_SUBMIT_BUTTON_TEXT = 'Create account';
+export const SIGN_UP_SUBMIT_BUTTON_TEXT = 'Create Account';
 export const HAVE_ACCOUNT_TEXT = 'Have an account?';
 export const SIGN_IN_TEXT = 'Sign in';
-export const SIGN_UP_USERNAME_PLACEHOLDER = 'Create a username';
-export const SIGN_UP_PASSWORD_PLACEHOLDER = 'Create a password';
+export const SIGN_UP_USERNAME_PLACEHOLDER = 'Username';
+export const SIGN_UP_PASSWORD_PLACEHOLDER = 'Password';
+export const SIGN_UP_EMAIL_PLACEHOLDER = 'Email';
 
 // Confirm Sign Up common constants
 export const CONFIRM_SIGN_UP_HEADER_TEXT = 'Confirm Sign up';
