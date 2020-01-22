@@ -6,6 +6,7 @@ exemptLabels:
   - security
   - feature-request
   - to-be-triaged
+  - to-be-reproduced
   - bug
   - tracked
   - question
