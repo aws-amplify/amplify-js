@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@2.2.1...@aws-amplify/analytics@2.2.2) (2020-01-10)
+
+
+### Bug Fixes
+
+* [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@2.2.0...@aws-amplify/analytics@2.2.1) (2019-12-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@2.1.0...@aws-amplify/analytics@2.2.0) (2019-12-03)
+
+
+### Features
+
+* **analytics:** Add analytics provider for AWS Firehose ([#2823](https://github.com/aws-amplify/amplify-js/issues/2823)) ([29103ae](https://github.com/aws-amplify/amplify-js/commit/29103ae0b2d76dba66e3dc856d77c4c2ffb0e687))
+* **analytics:** Allow sending batch events ([#4377](https://github.com/aws-amplify/amplify-js/issues/4377)) ([6e7d693](https://github.com/aws-amplify/amplify-js/commit/6e7d69337d8fe8295f03d4d0441576cffb2a21f9))
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@1.3.4...@aws-amplify/analytics@2.1.0) (2019-11-15)
+
+
+### Features
+
+* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+
+
+
+
 ## [1.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@1.3.3...@aws-amplify/analytics@1.3.4) (2019-10-29)
 
 
