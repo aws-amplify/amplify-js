@@ -1,8 +1,7 @@
-import { MutationEvent } from '.';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
+	AuthorizationRule,
 	GraphQLCondition,
-	isAssociatedWith,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -17,9 +16,9 @@ import {
 	SchemaModel,
 } from '../types';
 import { exhaustiveCheck } from '../util';
+import { MutationEvent } from './';
 
 enum GraphQLOperationType {
-	SUBSCRIBE = 'subscription',
 	LIST = 'query',
 	CREATE = 'mutation',
 	UPDATE = 'mutation',
@@ -107,6 +106,87 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 	return result;
 }
 
+export function getAuthorizationRules(
+	modelDefinition: SchemaModel,
+	transformerOpType: TransformerMutationType
+): AuthorizationRule[] {
+	// Searching for owner authorization on attributes
+	const authConfig = []
+		.concat(modelDefinition.attributes)
+		.find(attr => attr && attr.type === 'auth');
+
+	const { properties: { rules = [] } = {} } = authConfig || {};
+
+	const resultRules: AuthorizationRule[] = [];
+	// Multiple rules can be declared for allow: owner
+	rules.forEach(rule => {
+		// setting defaults for backwards compatibility with old cli
+		const {
+			identityClaim = 'cognito:username',
+			ownerField = 'owner',
+			operations = ['create', 'update', 'delete'],
+			provider = 'userPools',
+			groupClaim = 'cognito:groups',
+			allow: authStrategy = 'iam',
+			groups = [],
+		} = rule;
+
+		const isOperationAuthorized = operations.find(
+			operation => operation.toLowerCase() === transformerOpType.toLowerCase()
+		);
+
+		if (isOperationAuthorized) {
+			const rule = {
+				identityClaim,
+				ownerField,
+				provider,
+				groupClaim,
+				authStrategy,
+				groups,
+			};
+
+			// owner rules has least priority
+			if (authStrategy === 'owner') {
+				resultRules.push(rule);
+			} else {
+				resultRules.unshift(rule);
+			}
+		}
+	});
+
+	return resultRules;
+}
+
+export function buildSubscriptionGraphQLOperation(
+	modelDefinition: SchemaModel,
+	transformerMutationType: TransformerMutationType,
+	isOwnerAuthorization: boolean,
+	ownerField: string
+): [TransformerMutationType, string, string] {
+	const selectionSet = generateSelectionSet(modelDefinition);
+
+	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
+
+	const opName = `on${transformerMutationType}${typeName}`;
+	let docArgs = '';
+	let opArgs = '';
+
+	if (isOwnerAuthorization) {
+		docArgs = `($${ownerField}: String!)`;
+		opArgs = `(${ownerField}: $${ownerField})`;
+	}
+
+	return [
+		transformerMutationType,
+		opName,
+		`subscription operation${docArgs}{
+			${opName}${opArgs}{
+				${selectionSet}
+			}
+		}`,
+	];
+}
+
 export function buildGraphQLOperation(
 	modelDefinition: SchemaModel,
 	graphQLOpType: keyof typeof GraphQLOperationType
@@ -118,20 +198,9 @@ export function buildGraphQLOperation(
 	let operation: string;
 	let documentArgs: string = ' ';
 	let operationArgs: string = ' ';
-	let subscriptions: [TransformerMutationType, string][] = [];
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
-		case 'SUBSCRIBE':
-			subscriptions = [
-				TransformerMutationType.CREATE,
-				TransformerMutationType.UPDATE,
-				TransformerMutationType.DELETE,
-			].map(op => {
-				const opName = `on${op}${typeName}`;
-				return [op, opName];
-			});
-			break;
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
 			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
@@ -170,18 +239,6 @@ export function buildGraphQLOperation(
 
 		default:
 			exhaustiveCheck(graphQLOpType);
-	}
-
-	if (subscriptions.length > 0) {
-		return subscriptions.map(([opType, opName]) => [
-			opType,
-			opName,
-			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-			${opName}${operationArgs}{
-				${selectionSet}
-			}
-		}`,
-		]);
 	}
 
 	return [

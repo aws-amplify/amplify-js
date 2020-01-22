@@ -80,6 +80,19 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				reference: {
+					name: 'reference',
+					isArray: false,
+					type: {
+						model: 'Post',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'referencePostId',
+					},
+				},
 				blog: {
 					name: 'blog',
 					isArray: false,
