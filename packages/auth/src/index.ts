@@ -12,8 +12,8 @@
  */
 
 import { AuthClass, CognitoHostedUIIdentityProvider } from './Auth';
-import { CognitoUser, CookieStorage } from 'amazon-cognito-identity-js';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { CognitoUser, CookieStorage, setUserAgent } from 'amazon-cognito-identity-js';
+import { Amplify, ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
 
@@ -22,6 +22,7 @@ let _instance: AuthClass = null;
 if (!_instance) {
 	logger.debug('Create Auth Instance');
 	_instance = new AuthClass(null);
+	setUserAgent(Platform.userAgent);
 }
 
 const Auth = _instance;

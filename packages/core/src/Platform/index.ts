@@ -33,6 +33,10 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	}
 }
 
+export const appendToAmplifyUserAgent = content => {
+	if (content) Platform.userAgent.concat(' ', content);
+}
+
 const appendUserAgentMiddleware = next => args => {
 	const { request } = args;
 	appendToUserAgent(request, Platform.userAgent);

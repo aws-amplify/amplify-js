@@ -4,3 +4,7 @@ export default UserAgent;
 function UserAgent() {}
 // public
 UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
+
+export const setUserAgent = userAgent => {
+	UserAgent.prototype.userAgent = userAgent;
+};
