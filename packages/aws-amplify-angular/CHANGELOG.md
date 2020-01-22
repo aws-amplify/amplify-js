@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.2...aws-amplify-angular@4.1.3) (2020-01-10)
+
+
+### Bug Fixes
+
+* correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
+
+
+
+
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.1...aws-amplify-angular@4.1.2) (2019-12-18)
 
 **Note:** Version bump only for package aws-amplify-angular

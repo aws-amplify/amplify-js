@@ -144,7 +144,8 @@ const initSchema = (userSchema: Schema) => {
 				.filter(
 					field =>
 						field.association &&
-						field.association.connectionType === 'BELONGS_TO'
+						field.association.connectionType === 'BELONGS_TO' &&
+						(<ModelFieldType>field.type).model !== model.name
 				)
 				.forEach(field => wea.push((<ModelFieldType>field.type).model));
 
