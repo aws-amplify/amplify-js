@@ -782,7 +782,6 @@ describe('StorageProvider test', () => {
 				Bucket: 'bucket',
 				Prefix: 'public/path',
 			});
-
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 		});
@@ -832,6 +831,39 @@ describe('StorageProvider test', () => {
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 			spyon2.mockClear();
+		});
+
+		test('list object with maxKeys', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3.prototype, 'listObjects');
+			expect.assertions(2);
+			expect(
+				await storage.list('path', { level: 'public', maxKeys: 1 })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0]).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/path',
+				MaxKeys: 1,
+			});
+
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
 		});
 
 		test('list object failed', async () => {

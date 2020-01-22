@@ -380,7 +380,7 @@ export default class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track } = opt;
+		const { bucket, track, maxKeys } = opt;
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
@@ -390,6 +390,7 @@ export default class AWSS3Provider implements StorageProvider {
 		const params = {
 			Bucket: bucket,
 			Prefix: final_path,
+			MaxKeys: maxKeys,
 		};
 
 		return new Promise<any>((res, rej) => {
