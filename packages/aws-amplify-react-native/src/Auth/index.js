@@ -69,6 +69,8 @@ export function withAuthenticator(
 					includeGreetings,
 					authenticatorComponents,
 					signUpConfig,
+					federated,
+					theme,
 				};
 			}
 		}
@@ -101,7 +103,7 @@ export function withAuthenticator(
 							authState={authState}
 							authData={authData}
 							onStateChange={this.handleAuthStateChange}
-							theme={theme}
+							theme={this.authConfig.theme}
 							usernameAttributes={this.authConfig.usernameAttributes}
 						/>
 						<Comp
@@ -125,7 +127,8 @@ export function withAuthenticator(
 					onStateChange={this.handleAuthStateChange}
 					children={this.authConfig.authenticatorComponents}
 					usernameAttributes={this.authConfig.usernameAttributes}
-					theme={theme}
+					federated={this.authConfig.federated}
+					theme={this.authConfig.theme}
 				/>
 			);
 		}
