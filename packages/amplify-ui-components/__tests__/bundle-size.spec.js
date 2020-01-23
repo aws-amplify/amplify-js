@@ -11,7 +11,6 @@ function formatBytes(bytes, decimals = 0) {
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
@@ -19,10 +18,11 @@ function formatBytes(bytes, decimals = 0) {
 
 describe('@amplify/ui-components bundle size', () => {
   it('should match snapshot', async () => {
-    const sizes = new Map();
     const stats = await globby('**', { cwd: dist, stats: true });
-
-    stats.forEach(stat => sizes.set(stat.path, formatBytes(stat.size)));
+    const sizes = stats.reduce((acc, stat) => {
+      acc[stat.path] = formatBytes(stat.size);
+      return acc;
+    }, {});
 
     expect(sizes).toMatchSnapshot();
   });
