@@ -1,12 +1,19 @@
 import { Config } from '@stencil/core';
 import { angularOutputTarget } from '@stencil/angular-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
+import externals from 'rollup-plugin-node-externals';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export const config: Config = {
   excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
-  plugins: [nodePolyfills()],
+  plugins: [
+    externals({
+      // deps to include in externals (default: [])
+      include: ['@aws-amplify/auth', '@aws-amplify/core'],
+    }),
+    nodePolyfills(),
+  ],
   commonjs: {
     namedExports: {
       '@aws-sdk/client-cognito-identity-browser': ['CognitoIdentityClient', 'GetIdCommand'],
