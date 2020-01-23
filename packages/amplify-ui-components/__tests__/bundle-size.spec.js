@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable @typescript-eslint/no-var-requires */
 const globby = require('globby');
 const path = require('path');
 
