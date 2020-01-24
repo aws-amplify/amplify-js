@@ -36,7 +36,14 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "^2.2.0",
-    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.7",
+    "@aws-sdk/client-comprehend": "^1.0.0-alpha.11",
+    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.10",
+    "@aws-sdk/client-polly": "^1.0.0-alpha.10",
+    "@aws-sdk/client-rekognition": "^1.0.0-alpha.11",
+    "@aws-sdk/client-textract": "^1.0.0-alpha.11",
+    "@aws-sdk/client-translate": "^1.0.0-alpha.11",
+    "@aws-sdk/eventstream-marshaller": "^1.0.0-alpha.5",
+    "@aws-sdk/util-utf8-node": "^1.0.0-alpha.2",
     "@types/text-encoding": "^0.0.35",
     "text-encoding": "^0.7.0"
   },

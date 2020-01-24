@@ -125,7 +125,7 @@ describe('StorageProvider test', () => {
 		});
 	});
 
-	describe.skip('get test', async () => {
+	describe('get test', async () => {
 		test('get object without download', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
