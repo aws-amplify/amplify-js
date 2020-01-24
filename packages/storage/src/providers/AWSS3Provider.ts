@@ -168,6 +168,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
+			console.log('from createRequest', request);
 			const url = formatUrl(
 				(await signer.presignRequest(request, params.Expires)) as any
 			);

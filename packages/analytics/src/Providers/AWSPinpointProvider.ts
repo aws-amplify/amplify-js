@@ -24,6 +24,7 @@ import {
 import {
 	PinpointClient,
 	PutEventsCommand,
+	PutEventsCommandInput,
 	UpdateEndpointCommand,
 	GetUserEndpointsCommand,
 } from '@aws-sdk/client-pinpoint';
@@ -39,6 +40,7 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
+import { EventsBatch } from 'aws-sdk/clients/pinpoint';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -261,15 +263,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const endpointContext = {};
 
-		const eventParams = {
+		const eventParams: PutEventsCommandInput = {
 			ApplicationId: appId,
 			EventsRequest: {
 				BatchItem: {},
 			},
 		};
 
-		eventParams.EventsRequest.BatchItem[endpointId] = {};
-		const endpointObj = eventParams.EventsRequest.BatchItem[endpointId];
+		const endpointObj: EventsBatch = {} as EventsBatch;
 		endpointObj.Endpoint = endpointContext;
 		endpointObj.Events = {
 			[eventId]: {
@@ -280,6 +281,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				Session: session,
 			},
 		};
+		eventParams.EventsRequest.BatchItem[endpointId] = endpointObj;
 
 		return eventParams;
 	}
@@ -290,7 +292,6 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			config: { endpointId },
 		} = params;
 		const eventParams = this._generateBatchItemContext(params);
-
 		const command: PutEventsCommand = new PutEventsCommand(eventParams);
 
 		try {

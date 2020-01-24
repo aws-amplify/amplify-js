@@ -208,9 +208,7 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
 		appendAmplifyUserAgent(cognitoClient);
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
@@ -271,9 +269,7 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
 		appendAmplifyUserAgent(cognitoClient);
 		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
 			logins,
@@ -308,9 +304,7 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
 		appendAmplifyUserAgent(cognitoClient);
 
 		/* 

@@ -165,8 +165,6 @@ jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
 
-jest.mock('@aws-sdk/client-pinpoint');
-
 beforeEach(() => {
 	PinpointClient.prototype.send = jest.fn(async command => {
 		if (command instanceof UpdateEndpointCommand) {
@@ -302,10 +300,8 @@ describe('AnalyticsProvider test', () => {
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
 				});
-
 				const params = { event: { name: 'custom event', immediate: true } };
 				await analytics.record(params, { resolve, reject });
-
 				expect(spyon.mock.calls[0][0].input).toEqual({
 					ApplicationId: 'appId',
 					EventsRequest: {

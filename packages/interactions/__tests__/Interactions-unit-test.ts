@@ -28,10 +28,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 		}
 	} else if (command instanceof PostContentCommand) {
 		if (command.input.contentType === 'audio/x-l16; sample-rate=16000') {
-			if (
-				new TextDecoder('utf-8').decode(command.input.inputStream) ===
-				'voice:done'
-			) {
+			if (command.input.inputStream === 'voice:done') {
 				const result = {
 					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
@@ -49,9 +46,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 				return Promise.resolve(result);
 			}
 		} else {
-			if (
-				new TextDecoder('utf-8').decode(command.input.inputStream) === 'done'
-			) {
+			if (command.input.inputStream === 'done') {
 				const result = {
 					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
@@ -101,6 +96,10 @@ class AWSLexProviderWrong extends AbstractInteractionsProvider {
 		});
 	}
 }
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
 
 describe('Interactions', () => {
 	describe('constructor test', () => {
@@ -438,15 +437,14 @@ describe('Interactions', () => {
 		});
 
 		describe('Sending messages to bot', () => {
-			test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async done => {
+			test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -518,15 +516,15 @@ describe('Interactions', () => {
 					},
 				});
 			});
-			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async done => {
+
+			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -777,7 +775,10 @@ describe('Interactions', () => {
 				}
 			});
 
-			test('Adding custom pluggin happy path', async () => {
+			test('Adding custom plugin happy path', async () => {
+				jest
+					.spyOn(Credentials, 'get')
+					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 				const configuration = {
 					Interactions: {
 						bots: {
