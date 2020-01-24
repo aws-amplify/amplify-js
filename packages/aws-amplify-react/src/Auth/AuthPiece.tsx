@@ -46,15 +46,15 @@ export interface IAuthPieceState {
 }
 
 export default class AuthPiece<
-	Props extends IAuthPieceProps,
-	State extends IAuthPieceState
-> extends React.Component<Props, State> {
+	P extends IAuthPieceProps,
+	S extends IAuthPieceState
+> extends React.Component<P, S> {
 	public _validAuthStates: string[];
 	public _isHidden: boolean;
 	public inputs: any;
 	public phone_number: any;
 
-	constructor(props) {
+	constructor(props: P) {
 		super(props);
 
 		this.inputs = {};

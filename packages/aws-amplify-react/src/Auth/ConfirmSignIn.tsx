@@ -37,11 +37,11 @@ export interface IConfirmSignInState extends IAuthPieceState {
 	mfaType: string;
 }
 
-export default class ConfirmSignIn extends AuthPiece<
-	IAuthPieceProps,
-	IConfirmSignInState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class ConfirmSignIn<
+	P extends IAuthPieceProps,
+	S extends IConfirmSignInState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this._validAuthStates = ['confirmSignIn'];
@@ -49,7 +49,7 @@ export default class ConfirmSignIn extends AuthPiece<
 		this.checkContact = this.checkContact.bind(this);
 		this.state = {
 			mfaType: 'SMS',
-		};
+		} as S;
 	}
 
 	checkContact(user) {

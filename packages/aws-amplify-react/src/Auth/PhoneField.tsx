@@ -21,10 +21,13 @@ interface IPhoneFieldProps {
 
 interface IPhoneFieldState {}
 
-class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
+class PhoneField<
+	P extends IPhoneFieldProps,
+	S extends IPhoneFieldState
+> extends React.Component<P, S> {
 	private inputs: any;
 
-	constructor(props) {
+	constructor(props: P) {
 		super(props);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.composePhoneNumber = this.composePhoneNumber.bind(this);

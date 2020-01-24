@@ -19,18 +19,20 @@ export interface IAuthStateWrapperState {
 	error?: any;
 }
 
-export default class AuthStateWrapper extends React.Component<
-	IAuthStateWrapperProps,
-	IAuthStateWrapperState
-> {
-	constructor(props) {
+export default class AuthStateWrapper<
+	P extends IAuthStateWrapperProps,
+	S extends IAuthStateWrapperState
+> extends React.Component<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this.handleStateChange = this.handleStateChange.bind(this);
 		this.handleAuthEvent = this.handleAuthEvent.bind(this);
 		this.checkUser = this.checkUser.bind(this);
 
-		this.state = { authState: props.authState || 'signIn' };
+		this.state = {
+			authState: props.authState || 'signIn',
+		} as S;
 	}
 
 	componentWillMount() {

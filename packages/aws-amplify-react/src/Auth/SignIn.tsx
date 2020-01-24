@@ -48,15 +48,18 @@ export interface ISignInState extends IAuthPieceState {
 	loading?: boolean;
 }
 
-export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
-	constructor(props: ISignInProps) {
+export default class SignIn<
+	P extends ISignInProps,
+	S extends ISignInState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this.checkContact = this.checkContact.bind(this);
 		this.signIn = this.signIn.bind(this);
 
 		this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
-		this.state = {};
+		this.state = {} as S;
 	}
 
 	checkContact(user) {

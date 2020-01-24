@@ -22,11 +22,11 @@ import {
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-export default class Loading extends AuthPiece<
-	IAuthPieceProps,
-	IAuthPieceState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class Loading<
+	P extends IAuthPieceProps,
+	S extends IAuthPieceState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this._validAuthStates = ['loading'];

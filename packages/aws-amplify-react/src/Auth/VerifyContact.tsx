@@ -38,18 +38,18 @@ export interface IVerifyContactState extends IAuthPieceState {
 	verifyAttr: any;
 }
 
-export default class VerifyContact extends AuthPiece<
-	IAuthPieceProps,
-	IVerifyContactState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class VerifyContact<
+	P extends IAuthPieceProps,
+	S extends IVerifyContactState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this._validAuthStates = ['verifyContact'];
 		this.verify = this.verify.bind(this);
 		this.submit = this.submit.bind(this);
 
-		this.state = { verifyAttr: null };
+		this.state = { verifyAttr: null } as S;
 	}
 
 	verify() {

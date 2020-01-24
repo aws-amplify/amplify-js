@@ -56,14 +56,17 @@ export interface ISignUpProps extends IAuthPieceProps {
 	signUpConfig?: ISignUpConfig;
 }
 
-export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
+export default class SignUp<
+	P extends ISignUpProps,
+	S extends IAuthPieceState
+> extends AuthPiece<P, S> {
 	public defaultSignUpFields: ISignUpField[];
 	public header: string;
 	public signUpFields: ISignUpField[];
 
-	constructor(props: ISignUpProps) {
+	constructor(props: P) {
 		super(props);
-		this.state = { requestPending: false };
+		this.state = { requestPending: false } as S;
 
 		this._validAuthStates = ['signUp'];
 		this.signUp = this.signUp.bind(this);
@@ -136,7 +139,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				});
 			}
 
-			/* 
+			/*
             sort fields based on following rules:
             1. Fields with displayOrder are sorted before those without displayOrder
             2. Fields with conflicting displayOrder are sorted alphabetically by key

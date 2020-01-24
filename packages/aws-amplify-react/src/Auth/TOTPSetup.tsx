@@ -21,11 +21,11 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('TOTPSetup');
 
-export default class TOTPSetup extends AuthPiece<
-	IAuthPieceProps,
-	IAuthPieceState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class TOTPSetup<
+	P extends IAuthPieceProps,
+	S extends IAuthPieceState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this._validAuthStates = ['TOTPSetup'];
@@ -33,7 +33,7 @@ export default class TOTPSetup extends AuthPiece<
 		this.checkContact = this.checkContact.bind(this);
 	}
 
-	checkContact(user) {
+	checkContact(user): void {
 		if (!Auth || typeof Auth.verifiedContact !== 'function') {
 			throw new Error(
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
@@ -49,7 +49,7 @@ export default class TOTPSetup extends AuthPiece<
 		});
 	}
 
-	onTOTPEvent(event, data, user) {
+	onTOTPEvent(event, data, user): void {
 		logger.debug('on totp event', event, data);
 		// const user = this.props.authData;
 		if (event === 'Setup TOTP') {
@@ -59,7 +59,7 @@ export default class TOTPSetup extends AuthPiece<
 		}
 	}
 
-	showComponent(theme) {
+	showComponent(theme): React.ReactNode {
 		const { hide } = this.props;
 		if (hide && hide.includes(TOTPSetup)) {
 			return null;

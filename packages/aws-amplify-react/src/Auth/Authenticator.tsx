@@ -60,14 +60,14 @@ export interface IAuthenticatorState {
 	showToast?: boolean;
 }
 
-export default class Authenticator extends React.Component<
-	IAuthenticatorProps,
-	IAuthenticatorState
-> {
+export default class Authenticator<
+	P extends IAuthenticatorProps,
+	S extends IAuthenticatorState
+> extends React.Component<P, S> {
 	public _initialAuthState: string;
 	public _isMounted: boolean;
 
-	constructor(props) {
+	public constructor(props: P) {
 		super(props);
 
 		this.handleStateChange = this.handleStateChange.bind(this);
@@ -75,7 +75,9 @@ export default class Authenticator extends React.Component<
 		this.onHubCapsule = this.onHubCapsule.bind(this);
 
 		this._initialAuthState = this.props.authState || 'signIn';
-		this.state = { authState: 'loading' };
+		this.state = {
+			authState: 'loading',
+		} as S;
 		Hub.listen('auth', this.onHubCapsule);
 	}
 

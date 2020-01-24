@@ -39,16 +39,19 @@ export interface ISignOutState extends IAuthPieceState {
 	stateFromStorage?: any;
 }
 
-export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
+export default class SignOut<
+	P extends ISignOutProps,
+	S extends ISignOutState
+> extends AuthPiece<P, S> {
 	public _isMounted: boolean;
 
-	constructor(props: ISignOutProps) {
+	constructor(props: P) {
 		super(props);
 
 		this.signOut = this.signOut.bind(this);
 		this.onHubCapsule = this.onHubCapsule.bind(this);
 		Hub.listen('auth', this.onHubCapsule);
-		this.state = {};
+		this.state = {} as S;
 	}
 
 	componentDidMount() {

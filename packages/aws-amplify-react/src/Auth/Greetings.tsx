@@ -41,15 +41,15 @@ export interface IGreetingsState extends IAuthPieceState {
 	stateFromStorage?: boolean;
 }
 
-export default class Greetings extends AuthPiece<
-	IGreetingsProps,
-	IGreetingsState
-> {
+export default class Greetings<
+	P extends IGreetingsProps,
+	S extends IGreetingsState
+> extends AuthPiece<P, S> {
 	private _isMounted: boolean;
 
-	constructor(props: IGreetingsProps) {
+	constructor(props: P) {
 		super(props);
-		this.state = {};
+		this.state = {} as S;
 		this.onHubCapsule = this.onHubCapsule.bind(this);
 		this.inGreeting = this.inGreeting.bind(this);
 		Hub.listen('auth', this.onHubCapsule);

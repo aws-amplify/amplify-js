@@ -41,18 +41,18 @@ export interface IForgotPasswordState extends IAuthPieceState {
 	delivery: any;
 }
 
-export default class ForgotPassword extends AuthPiece<
-	IAuthPieceProps,
-	IForgotPasswordState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class ForgotPassword<
+	P extends IAuthPieceProps,
+	S extends IForgotPasswordState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this.send = this.send.bind(this);
 		this.submit = this.submit.bind(this);
 
 		this._validAuthStates = ['forgotPassword'];
-		this.state = { delivery: null };
+		this.state = { delivery: null } as S;
 	}
 
 	send() {

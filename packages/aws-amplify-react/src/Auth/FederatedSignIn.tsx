@@ -30,10 +30,10 @@ export interface IFederatedButtonsProps {
 	theme: any;
 }
 
-export class FederatedButtons extends React.Component<
-	IFederatedButtonsProps,
-	{}
-> {
+export class FederatedButtons<
+	P extends IFederatedButtonsProps,
+	S extends {}
+> extends React.Component<P, S> {
 	google(google_client_id) {
 		if (!google_client_id) {
 			return null;

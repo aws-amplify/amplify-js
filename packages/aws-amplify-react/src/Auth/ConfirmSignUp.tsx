@@ -35,11 +35,11 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('ConfirmSignUp');
 
-export default class ConfirmSignUp extends AuthPiece<
-	IAuthPieceProps,
-	IAuthPieceState
-> {
-	constructor(props: IAuthPieceProps) {
+export default class ConfirmSignUp<
+	P extends IAuthPieceProps,
+	S extends IAuthPieceState
+> extends AuthPiece<P, S> {
+	constructor(props: P) {
 		super(props);
 
 		this._validAuthStates = ['confirmSignUp'];
