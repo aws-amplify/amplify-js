@@ -1,5 +1,6 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { spawnSync } = require('child_process');
 const globby = require('globby');
 const path = require('path');
 
@@ -18,6 +19,13 @@ function formatBytes(bytes, decimals = 0) {
 }
 
 describe('@amplify/ui-components bundle size', () => {
+  beforeAll(() => {
+    spawnSync('yarn', ['build'], {
+      cwd: path.resolve(__dirname, '..'),
+      stdio: 'inherit',
+    });
+  });
+
   it('should match snapshot', async () => {
     const stats = await globby('**', { cwd: dist, stats: true });
     const sizes = stats.reduce((acc, stat) => {
