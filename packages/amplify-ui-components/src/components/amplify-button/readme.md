@@ -17,6 +17,7 @@
 ### Used by
 
  - [amplify-form-section](../amplify-form-section)
+ - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-out](../amplify-sign-out)
  - [amplify-sign-up](../amplify-sign-up)
  - [rock-paper-scissor](../amplify-examples/rock-paper-scissor)
@@ -25,6 +26,7 @@
 ```mermaid
 graph TD;
   amplify-form-section --> amplify-button
+  amplify-sign-in --> amplify-button
   amplify-sign-out --> amplify-button
   amplify-sign-up --> amplify-button
   rock-paper-scissor --> amplify-button

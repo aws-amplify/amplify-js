@@ -428,6 +428,10 @@ export namespace Components {
     * (Optional) Used as a the default value within the default footer slot
     */
     'submitButtonText'?: string;
+    /**
+    * String prefix for the data-test attributes in this component primarily used for testing purposes
+    */
+    'testDataPrefix'?: string;
   }
   interface AmplifyGoogleButton {
     /**
@@ -1646,6 +1650,10 @@ declare namespace LocalJSX {
     * (Optional) Used as a the default value within the default footer slot
     */
     'submitButtonText'?: string;
+    /**
+    * String prefix for the data-test attributes in this component primarily used for testing purposes
+    */
+    'testDataPrefix'?: string;
   }
   interface AmplifyGoogleButton {
     /**

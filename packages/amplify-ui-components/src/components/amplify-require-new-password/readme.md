@@ -1,7 +1,5 @@
 # amplify-require-new-password
 
-
-
 <!-- Auto Generated Below -->
 
 

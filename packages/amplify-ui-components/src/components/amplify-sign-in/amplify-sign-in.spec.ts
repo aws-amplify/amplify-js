@@ -62,11 +62,11 @@ describe('amplify-sign-in spec:', () => {
     });
 
     it('should render `headerText` to `Sign into your account` by default', () => {
-      expect(signIn.headerText).toEqual('Sign into your account');
+      expect(signIn.headerText).toEqual('Sign in to your account');
     });
 
     it('should render `submitButtonText` to `Sign in` by default', () => {
-      expect(signIn.submitButtonText).toEqual('Sign in');
+      expect(signIn.submitButtonText).toEqual('Sign In');
     });
 
     it('should render `overrideStyle` to false by default', () => {

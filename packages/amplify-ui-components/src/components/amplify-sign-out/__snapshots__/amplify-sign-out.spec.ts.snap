@@ -2,7 +2,7 @@
 
 exports[`amplify-sign-out spec: Render logic -> should render a \`sign out\` button by default 1`] = `
 <amplify-sign-out>
-  <amplify-button>
+  <amplify-button data-test="sign-out-button">
     Sign Out
   </amplify-button>
 </amplify-sign-out>

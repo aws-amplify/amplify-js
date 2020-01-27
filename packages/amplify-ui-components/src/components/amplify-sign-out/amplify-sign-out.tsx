@@ -38,7 +38,11 @@ export class AmplifySignOut {
 
   render() {
     return (
-      <amplify-button overrideStyle={this.overrideStyle} onClick={event => this.signOut(event)}>
+      <amplify-button
+        overrideStyle={this.overrideStyle}
+        onClick={event => this.signOut(event)}
+        data-test="sign-out-button"
+      >
         {this.buttonText}
       </amplify-button>
     );

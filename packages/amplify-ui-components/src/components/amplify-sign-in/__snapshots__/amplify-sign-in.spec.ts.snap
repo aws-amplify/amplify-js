@@ -2,51 +2,116 @@
 
 exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form by default 1`] = `
 <amplify-sign-in>
-  <amplify-form-section headertext="Sign into your account">
+  <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-ejevcw">
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          Sign In
+        </amplify-button>
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+      </div>
+    </div>
   </amplify-form-section>
 </amplify-sign-in>
 `;
 
 exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederatedObject 1`] = `
 <amplify-sign-in>
-  <amplify-form-section headertext="Sign into your account">
+  <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-ejevcw">
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          Sign In
+        </amplify-button>
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+      </div>
+    </div>
   </amplify-form-section>
 </amplify-sign-in>
 `;
 
 exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`] = `
 <amplify-sign-in>
-  <amplify-form-section headertext="Sign into your account">
+  <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-strike>
       or
     </amplify-strike>
     <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-ejevcw">
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          Sign In
+        </amplify-button>
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+      </div>
+    </div>
   </amplify-form-section>
 </amplify-sign-in>
 `;
 
 exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederatedAndOverrideStyle 1`] = `
 <amplify-sign-in>
-  <amplify-form-section headertext="Sign into your account" overridestyle="">
+  <amplify-form-section headertext="Sign in to your account" overridestyle="" testdataprefix="sign-in">
     <amplify-federated-buttons overridestyle=""></amplify-federated-buttons>
     <amplify-strike overridestyle="">
       or
     </amplify-strike>
     <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-ejevcw">
+        <amplify-button data-test="sign-in-sign-in-button" overridestyle="" type="submit">
+          Sign In
+        </amplify-button>
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+      </div>
+    </div>
   </amplify-form-section>
 </amplify-sign-in>
 `;
 
 exports[`amplify-sign-in spec: amplify-sign-in stories stories withOverrideStyle 1`] = `
 <amplify-sign-in>
-  <amplify-form-section headertext="Sign into your account">
+  <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
+    <div slot="amplify-form-section-footer">
+      <div class="css-ejevcw">
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          Sign In
+        </amplify-button>
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+      </div>
+    </div>
   </amplify-form-section>
 </amplify-sign-in>
 `;
