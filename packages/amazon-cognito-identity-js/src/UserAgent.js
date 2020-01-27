@@ -3,8 +3,20 @@ export default UserAgent;
 // constructor
 function UserAgent() {}
 // public
-UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
+UserAgent.prototype.userAgent = '';
 
-export const setUserAgent = userAgent => {
-	UserAgent.prototype.userAgent = userAgent;
+export const appendToCognitoUserAgent = content => {
+	if (content) {
+		if (
+			!UserAgent.prototype.userAgent ||
+			UserAgent.prototype.userAgent === ''
+		) {
+			UserAgent.prototype.userAgent = content;
+		} else {
+			UserAgent.prototype.userAgent = UserAgent.prototype.userAgent.concat(
+				' ',
+				content
+			);
+		}
+	}
 };

@@ -34,7 +34,7 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 }
 
 export const appendToAmplifyUserAgent = content => {
-	if (content) Platform.userAgent.concat(' ', content);
+	if (content) Platform.userAgent = Platform.userAgent.concat(' ', content);
 }
 
 const appendUserAgentMiddleware = next => args => {
