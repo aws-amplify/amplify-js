@@ -6,6 +6,10 @@ import {
 	EventObject,
 	EventMap,
 } from '../types';
+import {
+	PutEventsCommand,
+	PutEventsCommandOutput,
+} from '@aws-sdk/client-pinpoint';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
@@ -100,7 +104,8 @@ export default class EventsBuffer {
 		const batchEventParams = this._generateBatchEventParams(eventMap);
 
 		try {
-			const data = await this._client.putEvents(batchEventParams).promise();
+			const command: PutEventsCommand = new PutEventsCommand(batchEventParams);
+			const data: PutEventsCommandOutput = await this._client.send(command);
 			this._processPutEventsSuccessResponse(data, eventMap);
 		} catch (err) {
 			return this._handlePutEventsFailure(err, eventMap);
