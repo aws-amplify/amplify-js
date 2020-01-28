@@ -135,9 +135,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
-			expect.assertions(2);
+			expect.assertions(3);
 			expect(await storage.get('key', { downloaded: false })).toBe('url');
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/public/key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('get object with tracking', async () => {
@@ -151,12 +154,14 @@ describe('StorageProvider test', () => {
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			const spyon2 = jest.spyOn(Hub, 'dispatch');
 
-			expect.assertions(3);
+			expect.assertions(4);
 			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
 				'url'
 			);
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/public/key');
-
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 			expect(spyon2).toBeCalledWith(
 				'storage',
 				{
@@ -235,9 +240,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
-			expect.assertions(2);
+			expect.assertions(3);
 			expect(await storage.get('key', { level: 'private' })).toBe('url');
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/private/id/key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/private/id/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('sets an empty custom public key', async () => {
@@ -254,7 +262,10 @@ describe('StorageProvider test', () => {
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			await storage.get('my_key', { customPrefix: { public: '' } });
 			console.log(spyon);
-			expect(spyon.mock.calls[0][0]).toEqual('/bucket/my_key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/my_key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('sets a custom key for public accesses', async () => {
@@ -272,7 +283,10 @@ describe('StorageProvider test', () => {
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			await storage.get('my_key', { customPrefix: { public: '123/' } });
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/123/my_key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/123/my_key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('get object with expires option', async () => {
@@ -287,9 +301,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
-			expect.assertions(3);
+			expect.assertions(4);
 			expect(await storage.get('key', { expires: 1200 })).toBe('url');
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/public/key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 
 			// For test to be deterministic, let's assume a 100 ms difference between when the date
 			// was created in the source vs in the test.
@@ -311,9 +328,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
-			expect.assertions(3);
+			expect.assertions(4);
 			expect(await storage.get('key')).toBe('url');
-			expect(spyon.mock.calls[0][0].path).toEqual('/bucket/public/key');
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 
 			// For test to be deterministic, let's assume a 100 ms difference between when the date
 			// was created in the source vs in the test. 900 secs is default
@@ -335,15 +355,16 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
-			expect.assertions(2);
+			expect.assertions(3);
 			expect(
 				await storage.get('key', {
 					level: 'protected',
 					identityId: 'identityId',
 				})
 			).toBe('url');
-			expect(spyon.mock.calls[0][0].path).toEqual(
-				'/bucket/protected/identityId/key'
+			expect(spyon.mock.calls[0][0].path).toEqual('/protected/identityId/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
 		});
 
