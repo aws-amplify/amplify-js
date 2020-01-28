@@ -1,0 +1,36 @@
+import { UsernameFieldOutput } from '../types';
+import { OnInit } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+export declare class ForgotPasswordComponentCore implements OnInit {
+    protected amplifyService: AmplifyService;
+    _authState: AuthState;
+    _show: boolean;
+    _usernameAttributes: string;
+    username: string;
+    code: string;
+    password: string;
+    errorMessage: string;
+    code_sent: boolean;
+    protected logger: any;
+    local_phone_number: string;
+    country_code: string;
+    email: string;
+    constructor(amplifyService: AmplifyService);
+    data: any;
+    hide: string[];
+    shouldHide(comp: any): boolean;
+    authState: AuthState;
+    ngOnInit(): void;
+    usernameAttributes: string;
+    setCode(code: string): void;
+    setPassword(password: string): void;
+    getforgotPwUsername(): string;
+    onSend(): void;
+    onSubmit(): void;
+    onSignIn(): void;
+    onAlertClose(): void;
+    _setError(err: any): void;
+    getUsernameLabel(): any;
+    onUsernameFieldChanged(event: UsernameFieldOutput): void;
+}

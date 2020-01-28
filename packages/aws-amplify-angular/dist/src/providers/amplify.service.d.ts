@@ -1,0 +1,32 @@
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Logger } from '@aws-amplify/core';
+import { AuthState } from './auth.state';
+export declare class AmplifyService {
+    private modules;
+    private _auth;
+    private _analytics;
+    private _storage;
+    private _api;
+    private _cache;
+    private _pubsub;
+    private _interactions;
+    private _logger;
+    private _xr;
+    private _i18n;
+    private _authState;
+    authStateChange$: Observable<AuthState>;
+    constructor(modules?: any);
+    auth(): any;
+    analytics(): any;
+    storage(): any;
+    api(): any;
+    interactions(): any;
+    cache(): any;
+    pubsub(): any;
+    logger(name: any, level?: any): Logger;
+    xr(): any;
+    i18n(): any;
+    authState(): Subject<AuthState>;
+    setAuthState(state: AuthState): void;
+}

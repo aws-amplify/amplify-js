@@ -1,0 +1,51 @@
+import { OnInit } from '@angular/core';
+import { PhoneFieldOutput } from '../types';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+export declare class SignUpField {
+    label: string;
+    key: string;
+    required?: boolean;
+    type?: string;
+    displayOrder?: number;
+    invalid?: boolean;
+    custom?: boolean;
+    signUpWith?: boolean;
+}
+export declare class SignUpComponentCore implements OnInit {
+    protected amplifyService: AmplifyService;
+    _authState: AuthState;
+    _show: boolean;
+    _signUpConfig: any;
+    _usernameAttributes: string;
+    user: any;
+    local_phone_number: string;
+    country_code: string;
+    header: string;
+    defaultSignUpFields: SignUpField[];
+    signUpFields: SignUpField[];
+    errorMessage: string;
+    hiddenFields: any;
+    passwordPolicy: string;
+    defaultCountryCode: string;
+    protected logger: any;
+    constructor(amplifyService: AmplifyService);
+    data: any;
+    hide: string[];
+    usernameAttributes: string;
+    authState: AuthState;
+    signUpConfig: any;
+    ngOnInit(): void;
+    shouldHide(comp: any): boolean;
+    onSignUp(): void;
+    onSignIn(): void;
+    needPrefix(key: any): boolean;
+    onConfirmSignUp(): void;
+    sortFields(): void;
+    onAlertClose(): void;
+    removeHiddenFields(): SignUpField[];
+    validate(): any[];
+    _setError(err: any): void;
+    getUsernameLabel(): any;
+    onPhoneFieldChanged(event: PhoneFieldOutput): void;
+}

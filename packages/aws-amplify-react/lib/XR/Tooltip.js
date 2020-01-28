@@ -1,0 +1,29 @@
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+/*
+ * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var React = require('react');
+var AmplifyUI = require('@aws-amplify/ui');
+var Tooltip = function(props) {
+	var classes = '' + AmplifyUI.tooltip;
+	if (props.autoShowTooltip) {
+		classes = AmplifyUI.tooltip + ' ' + AmplifyUI.autoShowTooltip;
+	}
+	return React.createElement(
+		'div',
+		{ className: classes, 'data-text': props.text },
+		props.children
+	);
+};
+exports.default = Tooltip;
+//# sourceMappingURL=Tooltip.js.map

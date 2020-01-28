@@ -1,0 +1,40 @@
+import { OnInit } from '@angular/core';
+import { AmplifyService } from '../../../providers/amplify.service';
+import { AuthState } from '../../../providers/auth.state';
+import { UsernameFieldOutput } from '../types';
+export declare class SignInComponentCore implements OnInit {
+    protected amplifyService: AmplifyService;
+    _authState: AuthState;
+    _show: boolean;
+    _usernameAttributes: string;
+    username: string;
+    password: string;
+    errorMessage: string;
+    local_phone_number: string;
+    country_code: string;
+    email: string;
+    signInUsername: string;
+    protected logger: any;
+    constructor(amplifyService: AmplifyService);
+    data: any;
+    hide: string[];
+    authState: AuthState;
+    usernameAttributes: string;
+    ngOnInit(): void;
+    shouldHide(comp: any): boolean;
+    setUsername(username: string): void;
+    setPassword(password: string): void;
+    onSignIn(): void;
+    onAlertClose(): void;
+    getUserObj(): {
+        username: string;
+        email: string;
+        local_phone_number: string;
+        courtry_code: string;
+    };
+    onForgotPassword(): void;
+    onSignUp(): void;
+    _setError(err: any): void;
+    onUsernameFieldChanged(event: UsernameFieldOutput): void;
+    getSignInUsername(): string;
+}

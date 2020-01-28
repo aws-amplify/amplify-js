@@ -1,0 +1,1 @@
+{"version":3,"file":"auth.state.js","sourceRoot":"","sources":["../../../src/providers/auth.state.ts"],"names":[],"mappings":"","sourcesContent":["export interface AuthState {\n\tstate: string; // signedOut, signedIn, mfaRequired, newPasswordRequired\n\tuser: any;\n}\n"]}

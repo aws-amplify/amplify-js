@@ -1,0 +1,1 @@
+[{"__symbolic":"module","version":4,"metadata":{},"exports":[{"from":"./src/aws-amplify-angular.module","export":["AmplifyAngularModule"]},{"from":"./src/aws-amplify-ionic-module","export":["AmplifyIonicModule"]},{"from":"./src/providers","export":["AmplifyService","AmplifyModules"]}]}]
