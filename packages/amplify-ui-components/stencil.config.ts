@@ -24,12 +24,6 @@ export const config: Config = {
       '@aws-sdk/eventstream-marshaller': ['EventStreamMarshaller'],
     },
   },
-  bundles: [
-    { components: ['amplify-amazon-button', 'amplify-auth-fields', 'amplify-auth0-button', 'amplify-authenticator', 'amplify-sign-in'] },
-    { components: ['amplify-confirm-sign-in', 'amplify-confirm-sign-up', 'amplify-facebook-button', 'amplify-federated-buttons', 'amplify-federated-sign-in'] },
-    { components: ['amplify-google-button', 'amplify-forgot-password', 'amplify-select-mfa-type', 'amplify-sign-out', 'amplify-sign-up'] },
-    { components: ['amplify-totp-setup', 'amplify-verify-contact'] },
-  ],
   outputTargets: [
     // See: https://github.com/ionic-team/stencil-ds-plugins#angular
     angularOutputTarget({
