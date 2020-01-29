@@ -97,6 +97,7 @@ export default class AuthClass {
 	private _oAuthHandler: OAuth;
 	private _storage;
 	private _storageSync;
+	private _handleAuthResponseCalled: boolean = false;
 
 	/**
 	 * Initialize Auth with AWS configurations
@@ -1717,6 +1718,8 @@ export default class AuthClass {
 			}
 		}
 
+		this._handleAuthResponseCalled = false;
+
 		if (
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
@@ -1790,6 +1793,13 @@ export default class AuthClass {
 		if (!this._config.userPoolId) {
 			throw new Error(`OAuth responses require a User Pool defined in config`);
 		}
+
+		// this fixes the Expo federatedSignIn issue where this method gets called multiple times
+		if (this._handleAuthResponseCalled) {
+			return;
+		}
+
+		this._handleAuthResponseCalled = true;
 
 		dispatchAuthEvent(
 			'parsingCallbackUrl',
