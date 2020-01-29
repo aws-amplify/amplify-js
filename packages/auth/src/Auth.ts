@@ -106,6 +106,7 @@ export default class AuthClass {
 	constructor(config: AuthOptions) {
 		this.configure(config);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
+		this._handleAuthResponseCalled = false;
 
 		if (AWS.config) {
 			AWS.config.update({ customUserAgent: Constants.userAgent });
