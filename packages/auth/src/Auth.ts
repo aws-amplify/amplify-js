@@ -225,12 +225,8 @@ export default class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
-			urlListener(async ({ url }) => {
-				try {
-					await this._handleAuthResponse(url);
-				} catch (err) {
-					logger.debug('Error found while handling url response', err);
-				}
+			urlListener(({ url }) => {
+				this._handleAuthResponse(url);
 			});
 		}
 
@@ -1904,7 +1900,6 @@ export default class AuthClass {
 					err,
 					`A failure occurred when returning state`
 				);
-				throw err;
 			}
 		}
 	}
