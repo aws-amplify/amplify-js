@@ -225,8 +225,12 @@ export default class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
-			urlListener(({ url }) => {
-				this._handleAuthResponse(url);
+			urlListener(async ({ url }) => {
+				try {
+					await this._handleAuthResponse(url);
+				} catch (err) {
+					logger.debug('Error found while handling url response', err);
+				}
 			});
 		}
 
