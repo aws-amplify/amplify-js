@@ -225,7 +225,7 @@ export default class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
-			var d = [];
+			const d = [];
 			urlListener(({ url }) => {
 				if (!d.includes(url)) {
 					d.push(url);
