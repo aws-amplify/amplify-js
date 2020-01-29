@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.2...@aws-amplify/pushnotification@2.1.3) (2020-01-10)
+
+
+### Bug Fixes
+
+* **dependencies:** pin version for push-notification-ios ([#4696](https://github.com/aws-amplify/amplify-js/issues/4696)) ([c06f8c9](https://github.com/aws-amplify/amplify-js/commit/c06f8c93b7bf0cb7ed47fac68cd2cd63c97785da))
+
+
+
+
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.1...@aws-amplify/pushnotification@2.1.2) (2019-12-18)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

@@ -23,6 +23,7 @@ declare class PostModel {
 	readonly id: string;
 	readonly title: string;
 	readonly blog?: BlogModel;
+	readonly reference?: PostModel;
 	readonly comments?: CommentModel[];
 	readonly authors?: PostAuthorJoinModel[];
 	constructor(init: ModelInit<PostModel>);
