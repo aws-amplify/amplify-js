@@ -12,7 +12,7 @@
  */
 
 import { AuthClass, CognitoHostedUIIdentityProvider } from './Auth';
-import { CognitoUser, CookieStorage } from 'amazon-cognito-identity-js';
+import { CognitoUser, CookieStorage, appendToCognitoUserAgent } from 'amazon-cognito-identity-js';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
@@ -36,4 +36,5 @@ export {
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
+	appendToCognitoUserAgent
 };

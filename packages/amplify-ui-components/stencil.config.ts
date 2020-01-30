@@ -8,10 +8,10 @@ export const config: Config = {
   excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [
-    externals({
-      // deps to include in externals (default: [])
-      include: ['@aws-amplify/auth', '@aws-amplify/core'],
-    }),
+    // externals({
+    //   // deps to include in externals (default: [])
+    //   include: ['@aws-amplify/auth', '@aws-amplify/core'],
+    // }),
     nodePolyfills(),
   ],
   commonjs: {

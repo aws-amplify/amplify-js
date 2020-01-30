@@ -1,6 +1,3 @@
-import { appendToAmplifyUserAgent } from '@aws-amplify/core';
-appendToAmplifyUserAgent('@aws-amplify/ui-angular');
-
 // DIRECTIVES
 export * from './directives/proxies';
 

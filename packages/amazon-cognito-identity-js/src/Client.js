@@ -54,7 +54,6 @@ export default class Client {
 			.then(data => {
 				// return parsed body stream
 				if (response.ok) return callback(null, data);
-				responseJsonData = data;
 
 				// Taken from aws-sdk-js/lib/protocol/json.js
 				// eslint-disable-next-line no-underscore-dangle
