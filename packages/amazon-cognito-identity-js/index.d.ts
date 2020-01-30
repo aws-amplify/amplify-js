@@ -371,4 +371,10 @@ declare module 'amazon-cognito-identity-js' {
 		removeItem(key: string): void;
 		clear(): void;
 	}
+
+	export class UserAgent {
+		constructor();
+	}
+
+	export const appendToCognitoUserAgent;
 }
