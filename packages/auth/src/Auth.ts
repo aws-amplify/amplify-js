@@ -229,15 +229,11 @@ export default class AuthClass {
 			// See https://github.com/aws-amplify/amplify-js/issues/4388
 			const usedResponseUrls = {};
 			urlListener(({ url }) => {
-				console.log('urlListener', url, usedResponseUrls);
 				if (usedResponseUrls[url]) {
 					return;
 				}
 
 				usedResponseUrls[url] = true;
-
-				console.log('urlListener responseUrls', usedResponseUrls);
-
 				this._handleAuthResponse(url);
 			});
 		}
