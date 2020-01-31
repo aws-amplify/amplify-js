@@ -44,9 +44,9 @@
 	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "^0.1.0-preview.4",
-		"@aws-sdk/client-cognito-identity": "^1.0.0-alpha.11",
-		"@aws-sdk/credential-provider-cognito-identity": "^1.0.0-alpha.9",
-		"@aws-sdk/node-http-handler": "^1.0.0-alpha.6",
+		"@aws-sdk/client-cognito-identity": "^1.0.0-alpha.13",
+		"@aws-sdk/credential-provider-cognito-identity": "^1.0.0-alpha.11",
+		"@aws-sdk/node-http-handler": "^1.0.0-alpha.7",
 		"@aws-sdk/types": "^1.0.0-alpha.4",
 		"@aws-sdk/util-hex-encoding": "^1.0.0-alpha.2",
 		"@aws-sdk/util-user-agent-browser": "^1.0.0-alpha.6",

@@ -37,7 +37,7 @@
   "dependencies": {
     "@aws-amplify/core": "^2.2.0",
     "@aws-sdk/client-comprehend": "^1.0.0-alpha.11",
-    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.10",
+    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.11",
     "@aws-sdk/client-polly": "^1.0.0-alpha.10",
     "@aws-sdk/client-rekognition": "^1.0.0-alpha.11",
     "@aws-sdk/client-textract": "^1.0.0-alpha.11",
