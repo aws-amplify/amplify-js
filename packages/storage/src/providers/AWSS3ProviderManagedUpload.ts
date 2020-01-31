@@ -21,6 +21,9 @@ import {
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
+	CompleteMultipartUploadCommandInput,
+	UploadPartCommandOutput,
+	UploadPartCommandInput,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { fromString } from '@aws-sdk/util-buffer-from';
@@ -155,12 +158,12 @@ export class AWSS3ProviderManagedUpload {
 	 * @VisibleFotTesting
 	 */
 	protected async uploadParts(uploadId: string, parts: BodyPart[]) {
-		const promises: Array<Promise<any /*UploadPartOutput*/>> = [];
+		const promises: Array<Promise<UploadPartCommandOutput>> = [];
 		for (const part of parts) {
 			this.setupEventListener(part);
-			const uploadPartCommandInput: any /*UploadPartInput*/ = {
+			const uploadPartCommandInput: UploadPartCommandInput = {
 				PartNumber: part.partNumber,
-				Body: part.bodyPart,
+				Body: new TextEncoder().encode(part.bodyPart),
 				UploadId: uploadId,
 				Key: this.params.Key,
 				Bucket: this.params.Bucket,
@@ -170,7 +173,7 @@ export class AWSS3ProviderManagedUpload {
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
-			const allResults: Array<any /*UploadPartOutput*/> = await Promise.all(
+			const allResults: Array<UploadPartCommandOutput> = await Promise.all(
 				promises
 			);
 			// The order of resolved promises is the same as input promise order.
@@ -191,12 +194,13 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private async finishMultiPartUpload(uploadId: string) {
-		const input: any /*CompleteMultipartUploadInput*/ = {
+		const input: CompleteMultipartUploadCommandInput = {
 			Bucket: this.params.Bucket,
 			Key: this.params.Key,
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.multiPartMap },
 		};
+		console.log(input);
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
