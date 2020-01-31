@@ -11,20 +11,16 @@
  * and limitations under the License.
  */
 
-import {
-	BrowserHttpOptions,
-	HttpHandler,
-	HttpHandlerOptions,
-	HttpRequest,
-	HttpResponse,
-} from '@aws-sdk/types';
+import { HeaderBag, HttpHandlerOptions } from '@aws-sdk/types';
+import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { BrowserHttpOptions } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('axios-http-handler');
 
-export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
+export class AxiosHttpHandler implements HttpHandler {
 	constructor(
 		private readonly httpOptions: BrowserHttpOptions = {},
 		private readonly emitter?: any
@@ -36,9 +32,9 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 	}
 
 	handle(
-		request: HttpRequest<Blob>,
+		request: HttpRequest,
 		options: HttpHandlerOptions
-	): Promise<HttpResponse<Blob>> {
+	): Promise<{ response: HttpResponse }> {
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
 		const emitter = this.emitter;
 
@@ -69,9 +65,11 @@ export class AxiosHttpHandler implements HttpHandler<Blob, BrowserHttpOptions> {
 		const raceOfPromises = [
 			axios(axiosRequest).then(response => {
 				return {
-					headers: response.headers,
-					statusCode: response.status,
-					body: response.data,
+					response: new HttpResponse({
+						headers: response.headers,
+						statusCode: response.status,
+						body: response.data,
+					}),
 				};
 			}),
 			requestTimeout(requestTimeoutInMs),

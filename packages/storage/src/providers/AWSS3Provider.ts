@@ -490,7 +490,8 @@ export class AWSS3Provider implements StorageProvider {
 			region,
 			credentials,
 			...localTestingConfig,
-			httpHandler: new AxiosHttpHandler({}, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
+			// httpHandler: new AxiosHttpHandler({}, emitter),
 		});
 		appendAmplifyUserAgent(s3client);
 		return s3client;

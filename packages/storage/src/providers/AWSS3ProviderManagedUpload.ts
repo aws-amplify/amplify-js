@@ -15,20 +15,13 @@ import {
 	ConsoleLogger as Logger,
 	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
-import { formatUrl } from '@aws-sdk/util-format-url';
-import { createRequest } from '@aws-sdk/util-create-request';
-import { PutObjectCommand } from '@aws-sdk/client-s3-browser/commands/PutObjectCommand';
-import { CreateMultipartUploadCommand } from '@aws-sdk/client-s3-browser/commands/CreateMultipartUploadCommand';
 import {
+	S3Client,
+	PutObjectCommand,
+	CreateMultipartUploadCommand,
 	UploadPartCommand,
-	UploadPartInput,
-	UploadPartOutput,
-} from '@aws-sdk/client-s3-browser/commands/UploadPartCommand';
-import {
 	CompleteMultipartUploadCommand,
-	CompleteMultipartUploadInput,
-} from '@aws-sdk/client-s3-browser/commands/CompleteMultipartUploadCommand';
+} from '@aws-sdk/client-s3';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
@@ -79,7 +72,7 @@ export class AWSS3ProviderManagedUpload {
 			return s3.send(putObjectCommand);
 		} else {
 			// Step 1: Initiate the multi part upload
-			const uploadId = await this.createMultiPartUpload_old();
+			const uploadId = await this.createMultiPartUpload();
 
 			// Step 2: Upload chunks in parallel as requested
 			const numberOfPartsToUpload = Math.ceil(
@@ -106,7 +99,7 @@ export class AWSS3ProviderManagedUpload {
 			}
 
 			// Step 3: Finalize the upload such that S3 can recreate the file
-			return await this.finishMultiPartUpload_old(uploadId);
+			return await this.finishMultiPartUpload(uploadId);
 		}
 	}
 
@@ -133,7 +126,6 @@ export class AWSS3ProviderManagedUpload {
 		return parts;
 	}
 
-	/* Enable after V3 sdk fixes it
 	private async createMultiPartUpload() {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand({
 			Bucket: this.params.Bucket,
@@ -145,7 +137,6 @@ export class AWSS3ProviderManagedUpload {
 		logger.debug(response.UploadId);
 		return response.UploadId;
 	}
-	*/
 
 	private async createMultiPartUpload_old() {
 		const s3 = new S3(this.opts);
@@ -164,10 +155,10 @@ export class AWSS3ProviderManagedUpload {
 	 * @VisibleFotTesting
 	 */
 	protected async uploadParts(uploadId: string, parts: BodyPart[]) {
-		const promises: Array<Promise<UploadPartOutput>> = [];
+		const promises: Array<Promise<any /*UploadPartOutput*/>> = [];
 		for (const part of parts) {
 			this.setupEventListener(part);
-			const uploadPartCommandInput: UploadPartInput = {
+			const uploadPartCommandInput: any /*UploadPartInput*/ = {
 				PartNumber: part.partNumber,
 				Body: part.bodyPart,
 				UploadId: uploadId,
@@ -179,7 +170,9 @@ export class AWSS3ProviderManagedUpload {
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
-			const allResults: Array<UploadPartOutput> = await Promise.all(promises);
+			const allResults: Array<any /*UploadPartOutput*/> = await Promise.all(
+				promises
+			);
 			// The order of resolved promises is the same as input promise order.
 			for (let i = 0; i < allResults.length; i++) {
 				this.multiPartMap.push({
@@ -197,9 +190,8 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	/* Enable after V3 sdk fixes it
 	private async finishMultiPartUpload(uploadId: string) {
-		const input: CompleteMultipartUploadInput = {
+		const input: any /*CompleteMultipartUploadInput*/ = {
 			Bucket: this.params.Bucket,
 			Key: this.params.Key,
 			UploadId: uploadId,
@@ -212,7 +204,6 @@ export class AWSS3ProviderManagedUpload {
 		logger.debug(data);
 		return data.Key;
 	}
-	*/
 
 	private async finishMultiPartUpload_old(uploadId: string) {
 		const input = {
@@ -348,7 +339,7 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			credentials,
 			...localTestingConfig,
-			httpHandler: new AxiosHttpHandler({}, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
 		appendAmplifyUserAgent(client);
 		return client;
