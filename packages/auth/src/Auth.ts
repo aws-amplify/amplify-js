@@ -225,7 +225,7 @@ export class AuthClass {
 			});
 		}
 
-
+		appendToCognitoUserAgent(Platform.userAgent);
 
 		dispatchAuthEvent(
 			'configured',
@@ -420,7 +420,6 @@ export class AuthClass {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
-		appendToCognitoUserAgent(Platform.userAgent);
 
 		let username = null;
 		let password = null;

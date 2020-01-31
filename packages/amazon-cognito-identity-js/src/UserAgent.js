@@ -6,7 +6,7 @@ function UserAgent() {}
 UserAgent.prototype.userAgent = 'amazon-cognito-identity-js';
 
 export const appendToCognitoUserAgent = content => {
-	if (content || !UserAgent.prototype.userAgent.includes(content)) {
+	if (content && !UserAgent.prototype.userAgent.includes(content)) {
 		if (
 			!UserAgent.prototype.userAgent ||
 			UserAgent.prototype.userAgent === ''
