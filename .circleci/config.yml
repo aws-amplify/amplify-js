@@ -185,12 +185,18 @@ jobs:
             cd amplify-js/packages/aws-amplify-angular
             yarn link
       - run:
+          name: 'Link @aws-amplify/analytics'
+          command: |
+            cd amplify-js/packages/analytics
+            yarn link
+      - run:
           name: 'Install Angular Authenticator sample'
           command: |
             cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-angular
+            yarn link @aws-amplify/analytics
       - run:
           name: 'Start Angular Authenticator Sample server in background'
           command: |
@@ -215,6 +221,11 @@ jobs:
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
+          name: 'Install Vue Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn
+      - run:
           name: 'Link aws-amplify'
           command: |
             cd amplify-js/packages/aws-amplify
@@ -224,13 +235,6 @@ jobs:
           command: |
             cd amplify-js/packages/aws-amplify-vue
             yarn link
-      - run:
-          name: 'Install Vue Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-vue
       - run:
           name: 'Start Vue Authenticator Sample server in background'
           command: |
@@ -285,6 +289,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - build
       - integ_react_predictions:
@@ -293,6 +298,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_react_auth:
@@ -301,6 +307,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -309,6 +316,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -317,6 +325,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - deploy:
@@ -326,6 +335,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - 1.0-stable
           requires:
             - unit_test
             - integ_react_predictions

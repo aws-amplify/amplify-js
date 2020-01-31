@@ -6,10 +6,11 @@ import {
 	SpeechToTextOutput,
 } from '../../src/types';
 import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
-import { TranslateClient } from '@aws-sdk/client-translate-browser/TranslateClient';
-import { TranslateTextCommand } from '@aws-sdk/client-translate-browser/commands/TranslateTextCommand';
-import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
-import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
+import {
+	TranslateClient,
+	TranslateTextCommand,
+} from '@aws-sdk/client-translate';
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 TranslateClient.prototype.send = jest.fn(command => {

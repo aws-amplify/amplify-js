@@ -15,13 +15,17 @@ import {
 	Hub,
 	Credentials,
 	Parser,
+	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
+import {
+	S3Client,
+	GetObjectCommand,
+	PutObjectCommand,
+	DeleteObjectCommand,
+	ListObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
-import { GetObjectCommand } from '@aws-sdk/client-s3-browser/commands/GetObjectCommand';
-import { DeleteObjectCommand } from '@aws-sdk/client-s3-browser/commands/DeleteObjectCommand';
-import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObjectsCommand';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
@@ -482,13 +486,14 @@ export class AWSS3Provider implements StorageProvider {
 			};
 		}
 
-		const client = new S3Client({
+		const s3client = new S3Client({
 			region,
 			credentials,
 			...localTestingConfig,
 			httpHandler: new AxiosHttpHandler({}, emitter),
 		});
-		return client;
+		appendAmplifyUserAgent(s3client);
+		return s3client;
 	}
 }
 

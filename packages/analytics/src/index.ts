@@ -14,13 +14,7 @@
 import { AnalyticsClass } from './Analytics';
 import { AnalyticsProvider } from './types';
 
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	Linking,
-	Platform,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
 let endpointUpdated = false;
@@ -44,7 +38,7 @@ export { AnalyticsProvider, Analytics, AnalyticsClass };
 export * from './Providers';
 
 const listener = capsule => {
-	const { channel, payload, source } = capsule;
+	const { channel, payload } = capsule;
 	logger.debug('on hub capsule ' + channel, payload);
 
 	switch (channel) {
@@ -85,39 +79,28 @@ const authEvent = payload => {
 		return;
 	}
 
+	const recordAuthEvent = async eventName => {
+		if (authConfigured && analyticsConfigured) {
+			try {
+				return await Analytics.record({ name: `_userauth.${eventName}` });
+			} catch (err) {
+				logger.debug(
+					`Failed to send the ${eventName} event automatically`,
+					err
+				);
+			}
+		}
+	};
+
 	switch (event) {
 		case 'signIn':
-			if (authConfigured && analyticsConfigured) {
-				Analytics.record({
-					name: '_userauth.sign_in',
-				}).catch(e => {
-					logger.debug('Failed to send the sign in event automatically', e);
-				});
-			}
-			break;
+			return recordAuthEvent('sign_in');
 		case 'signUp':
-			if (authConfigured && analyticsConfigured) {
-				Analytics.record({
-					name: '_userauth.sign_up',
-				}).catch(e => {
-					logger.debug('Failed to send the sign up event automatically', e);
-				});
-			}
-			break;
+			return recordAuthEvent('sign_up');
 		case 'signOut':
-			break;
+			return recordAuthEvent('sign_out');
 		case 'signIn_failure':
-			if (authConfigured && analyticsConfigured) {
-				Analytics.record({
-					name: '_userauth.auth_fail',
-				}).catch(e => {
-					logger.debug(
-						'Failed to send the sign in failure event automatically',
-						e
-					);
-				});
-			}
-			break;
+			return recordAuthEvent('auth_fail');
 		case 'configured':
 			authConfigured = true;
 			if (authConfigured && analyticsConfigured) {

@@ -1,8 +1,9 @@
 import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
-import { TranslateClient } from '@aws-sdk/client-translate-browser/TranslateClient';
-import { TranslateTextCommand } from '@aws-sdk/client-translate-browser/commands/TranslateTextCommand';
-import { PollyClient } from '@aws-sdk/client-polly-browser/PollyClient';
-import { SynthesizeSpeechCommand } from '@aws-sdk/client-polly-browser/commands/SynthesizeSpeechCommand';
+import {
+	TranslateClient,
+	TranslateTextCommand,
+} from '@aws-sdk/client-translate';
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -16,6 +17,7 @@ import {
 	Credentials,
 	ConsoleLogger as Logger,
 	Signer,
+	appendAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
 	EventStreamMarshaller,
@@ -65,6 +67,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 
 		this.translateClient = new TranslateClient({ region, credentials });
+		appendAmplifyUserAgent(this.translateClient);
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
 			TargetLanguageCode: targetLanguageCode,
@@ -108,6 +111,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 
 		this.pollyClient = new PollyClient({ region, credentials });
+		appendAmplifyUserAgent(this.pollyClient);
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',
 			Text: input.textToSpeech.source.text,

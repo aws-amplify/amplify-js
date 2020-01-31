@@ -3,6 +3,7 @@ import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
+import { appendAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -13,7 +14,7 @@ import {
 import {
 	CognitoIdentityClient,
 	GetIdCommand,
-} from '@aws-sdk/client-cognito-identity-browser';
+} from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
 
 const logger = new Logger('Credentials');
@@ -207,9 +208,8 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
+		appendAmplifyUserAgent(cognitoClient);
 
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
@@ -219,11 +219,34 @@ export class CredentialsClass {
 			};
 			credentials = fromCognitoIdentity(cognitoIdentityParams)();
 		} else {
-			const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
-				identityPoolId,
-				client: cognitoClient,
+			/*
+			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
+			https://git.io/JeDxU
+
+			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
+			*/
+			const credentialsProvider: CredentialProvider = async () => {
+				const { IdentityId } = await cognitoClient.send(
+					new GetIdCommand({
+						IdentityPoolId: identityPoolId,
+					})
+				);
+				this._identityId = IdentityId;
+				const cognitoIdentityParams: FromCognitoIdentityParameters = {
+					client: cognitoClient,
+					identityId: IdentityId,
+				};
+
+				const credentialsFromCognitoIdentity = fromCognitoIdentity(
+					cognitoIdentityParams
+				);
+
+				return credentialsFromCognitoIdentity();
 			};
-			credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
+
+			credentials = credentialsProvider().catch(async err => {
+				throw err;
+			});
 		}
 
 		return this._loadCredentials(credentials, 'guest', false, null)
@@ -270,9 +293,8 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
+		appendAmplifyUserAgent(cognitoClient);
 		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
 			logins,
 			identityPoolId,
@@ -306,9 +328,8 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
-			signer: {} as any,
 		});
-		cognitoClient.middlewareStack.remove('SIGNATURE');
+		appendAmplifyUserAgent(cognitoClient);
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
@@ -316,7 +337,7 @@ export class CredentialsClass {
 
 			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
 		*/
-		let credentials: CredentialProvider = async () => {
+		const credentialsProvider: CredentialProvider = async () => {
 			const { IdentityId } = await cognitoClient.send(
 				new GetIdCommand({
 					IdentityPoolId: identityPoolId,
@@ -331,10 +352,16 @@ export class CredentialsClass {
 				identityId: IdentityId,
 			};
 
-			credentials = fromCognitoIdentity(cognitoIdentityParams);
+			const credentialsFromCognitoIdentity = fromCognitoIdentity(
+				cognitoIdentityParams
+			);
 
-			return credentials();
+			return credentialsFromCognitoIdentity();
 		};
+
+		const credentials = credentialsProvider().catch(async err => {
+			throw err;
+		});
 
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
