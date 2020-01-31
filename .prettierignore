@@ -4,3 +4,4 @@
 **/yarn.lock
 **/package-lock.json
 **/.eslintrc.js
+docs/api
