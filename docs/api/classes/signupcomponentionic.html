@@ -930,14 +930,17 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#_signupconfig" class="tsd-kind-icon">_sign<wbr>UpConfig</a>
 			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#_usernameattributes" class="tsd-kind-icon">_username<wbr>Attributes</a>
+			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 				<a href="signupcomponentionic.html#amplifyservice" class="tsd-kind-icon">amplify<wbr>Service</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-				<a href="signupcomponentionic.html#countries" class="tsd-kind-icon">countries</a>
+				<a href="signupcomponentionic.html#country_code" class="tsd-kind-icon">country_<wbr>code</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-				<a href="signupcomponentionic.html#country_code" class="tsd-kind-icon">country_<wbr>code</a>
+				<a href="signupcomponentionic.html#defaultcountrycode" class="tsd-kind-icon">default<wbr>Country<wbr>Code</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#defaultsignupfields" class="tsd-kind-icon">default<wbr>Sign<wbr>UpFields</a>
@@ -950,6 +953,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#hiddenfields" class="tsd-kind-icon">hidden<wbr>Fields</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#hide" class="tsd-kind-icon">hide</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#local_phone_number" class="tsd-kind-icon">local_<wbr>phone_<wbr>number</a>
@@ -975,8 +981,14 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#signupconfig" class="tsd-kind-icon">sign<wbr>UpConfig</a>
 			</li>
+			<li class=" tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#usernameattributes" class="tsd-kind-icon">username<wbr>Attributes</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#_seterror" class="tsd-kind-icon">_set<wbr>Error</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#getusernamelabel" class="tsd-kind-icon">get<wbr>Username<wbr>Label</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#needprefix" class="tsd-kind-icon">need<wbr>Prefix</a>
@@ -987,14 +999,11 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#onalertclose" class="tsd-kind-icon">on<wbr>Alert<wbr>Close</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="signupcomponentionic.html#oncodechange" class="tsd-kind-icon">on<wbr>Code<wbr>Change</a>
-			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#onconfirmsignup" class="tsd-kind-icon">on<wbr>Confirm<wbr>Sign<wbr>Up</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="signupcomponentionic.html#onnumberchange" class="tsd-kind-icon">on<wbr>Number<wbr>Change</a>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#onphonefieldchanged" class="tsd-kind-icon">on<wbr>Phone<wbr>Field<wbr>Changed</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#onsignin" class="tsd-kind-icon">on<wbr>Sign<wbr>In</a>
@@ -1007,6 +1016,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="signupcomponentionic.html#setprop" class="tsd-kind-icon">set<wbr>Prop</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a href="signupcomponentionic.html#shouldhide" class="tsd-kind-icon">should<wbr>Hide</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 				<a href="signupcomponentionic.html#sortfields" class="tsd-kind-icon">sort<wbr>Fields</a>
@@ -1036,7 +1048,7 @@ img { max-width: 100%; }
 	<section class="tsd-panel">
 		<h3>Implements</h3>
 		<ul class="tsd-hierarchy">
-			<li><span class="tsd-signature-type">any</span></li>
+			<li><span class="tsd-signature-type">OnInit</span></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -1055,13 +1067,15 @@ img { max-width: 100%; }
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#_authstate" class="tsd-kind-icon">_auth<wbr>State</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#_show" class="tsd-kind-icon">_show</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#_signupconfig" class="tsd-kind-icon">_sign<wbr>UpConfig</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#_usernameattributes" class="tsd-kind-icon">_username<wbr>Attributes</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="signupcomponentionic.html#amplifyservice" class="tsd-kind-icon">amplify<wbr>Service</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#countries" class="tsd-kind-icon">countries</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#country_code" class="tsd-kind-icon">country_<wbr>code</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#defaultcountrycode" class="tsd-kind-icon">default<wbr>Country<wbr>Code</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#defaultsignupfields" class="tsd-kind-icon">default<wbr>Sign<wbr>UpFields</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#errormessage" class="tsd-kind-icon">error<wbr>Message</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#header" class="tsd-kind-icon">header</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#hiddenfields" class="tsd-kind-icon">hidden<wbr>Fields</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#hide" class="tsd-kind-icon">hide</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#local_phone_number" class="tsd-kind-icon">local_<wbr>phone_<wbr>number</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="signupcomponentionic.html#logger" class="tsd-kind-icon">logger</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#passwordpolicy" class="tsd-kind-icon">password<wbr>Policy</a></li>
@@ -1075,22 +1089,24 @@ img { max-width: 100%; }
 						<li class="tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#authstate" class="tsd-kind-icon">auth<wbr>State</a></li>
 						<li class="tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#data" class="tsd-kind-icon">data</a></li>
 						<li class="tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#signupconfig" class="tsd-kind-icon">sign<wbr>UpConfig</a></li>
+						<li class="tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#usernameattributes" class="tsd-kind-icon">username<wbr>Attributes</a></li>
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#_seterror" class="tsd-kind-icon">_set<wbr>Error</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#getusernamelabel" class="tsd-kind-icon">get<wbr>Username<wbr>Label</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#needprefix" class="tsd-kind-icon">need<wbr>Prefix</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#ngoninit" class="tsd-kind-icon">ng<wbr>OnInit</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#onalertclose" class="tsd-kind-icon">on<wbr>Alert<wbr>Close</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signupcomponentionic.html#oncodechange" class="tsd-kind-icon">on<wbr>Code<wbr>Change</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#onconfirmsignup" class="tsd-kind-icon">on<wbr>Confirm<wbr>Sign<wbr>Up</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signupcomponentionic.html#onnumberchange" class="tsd-kind-icon">on<wbr>Number<wbr>Change</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#onphonefieldchanged" class="tsd-kind-icon">on<wbr>Phone<wbr>Field<wbr>Changed</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#onsignin" class="tsd-kind-icon">on<wbr>Sign<wbr>In</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#onsignup" class="tsd-kind-icon">on<wbr>Sign<wbr>Up</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#removehiddenfields" class="tsd-kind-icon">remove<wbr>Hidden<wbr>Fields</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="signupcomponentionic.html#setprop" class="tsd-kind-icon">set<wbr>Prop</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#shouldhide" class="tsd-kind-icon">should<wbr>Hide</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#sortfields" class="tsd-kind-icon">sort<wbr>Fields</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="signupcomponentionic.html#validate" class="tsd-kind-icon">validate</a></li>
 					</ul>
@@ -1111,7 +1127,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Overrides <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#constructor">constructor</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L126">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L105">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:105</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1134,7 +1150,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#_authstate">_authState</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L116">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:116</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L108">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:108</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1145,7 +1161,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#_show">_show</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L117">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:117</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L109">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:109</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1156,7 +1172,18 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#_signupconfig">_signUpConfig</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L118">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:118</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L110">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:110</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<a name="_usernameattributes" class="tsd-anchor"></a>
+			<h3>_username<wbr>Attributes</h3>
+			<div class="tsd-signature tsd-kind-icon">_username<wbr>Attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;username&quot;</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#_usernameattributes">_usernameAttributes</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L111">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:111</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1167,40 +1194,40 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Overrides <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#amplifyservice">amplifyService</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L128">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:128</a></li>
-				</ul>
-			</aside>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-			<a name="countries" class="tsd-anchor"></a>
-			<h3>countries</h3>
-			<div class="tsd-signature tsd-kind-icon">countries<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
-			<aside class="tsd-sources">
-				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#countries">countries</a></p>
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L122">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:122</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L107">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:107</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="country_code" class="tsd-anchor"></a>
 			<h3>country_<wbr>code</h3>
-			<div class="tsd-signature tsd-kind-icon">country_<wbr>code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;1&quot;</span></div>
+			<div class="tsd-signature tsd-kind-icon">country_<wbr>code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;1&quot;</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#country_code">country_code</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L121">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:121</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L114">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:114</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<a name="defaultcountrycode" class="tsd-anchor"></a>
+			<h3>default<wbr>Country<wbr>Code</h3>
+			<div class="tsd-signature tsd-kind-icon">default<wbr>Country<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#defaultcountrycode">defaultCountryCode</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L121">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:121</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="defaultsignupfields" class="tsd-anchor"></a>
 			<h3>default<wbr>Sign<wbr>UpFields</h3>
-			<div class="tsd-signature tsd-kind-icon">default<wbr>Sign<wbr>UpFields<span class="tsd-signature-symbol">:</span> <a href="signupfield.html" class="tsd-signature-type">SignUpField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;defaultSignUpFieldAssets</span></div>
+			<div class="tsd-signature tsd-kind-icon">default<wbr>Sign<wbr>UpFields<span class="tsd-signature-symbol">:</span> <a href="signupfield.html" class="tsd-signature-type">SignUpField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = defaultSignUpFieldAssets</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#defaultsignupfields">defaultSignUpFields</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L124">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:124</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L116">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:116</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1211,29 +1238,40 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#errormessage">errorMessage</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L126">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:126</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L118">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:118</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="header" class="tsd-anchor"></a>
 			<h3>header</h3>
-			<div class="tsd-signature tsd-kind-icon">header<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Create a new account&quot;</span></div>
+			<div class="tsd-signature tsd-kind-icon">header<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Create a new account&quot;</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#header">header</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L123">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:123</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L115">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:115</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="hiddenfields" class="tsd-anchor"></a>
 			<h3>hidden<wbr>Fields</h3>
-			<div class="tsd-signature tsd-kind-icon">hidden<wbr>Fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+			<div class="tsd-signature tsd-kind-icon">hidden<wbr>Fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = []</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#hiddenfields">hiddenFields</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L127">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:127</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L119">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:119</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<a name="hide" class="tsd-anchor"></a>
+			<h3>hide</h3>
+			<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#hide">hide</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L164">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:164</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1244,7 +1282,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#local_phone_number">local_phone_number</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L120">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:120</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L113">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:113</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1255,7 +1293,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#logger">logger</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L129">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:129</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L122">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:122</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1266,18 +1304,18 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#passwordpolicy">passwordPolicy</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L128">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:128</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L120">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:120</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="signupfields" class="tsd-anchor"></a>
 			<h3>sign<wbr>UpFields</h3>
-			<div class="tsd-signature tsd-kind-icon">sign<wbr>UpFields<span class="tsd-signature-symbol">:</span> <a href="signupfield.html" class="tsd-signature-type">SignUpField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;this.defaultSignUpFields</span></div>
+			<div class="tsd-signature tsd-kind-icon">sign<wbr>UpFields<span class="tsd-signature-symbol">:</span> <a href="signupfield.html" class="tsd-signature-type">SignUpField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = this.defaultSignUpFields</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#signupfields">signUpFields</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L125">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:125</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L117">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:117</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1288,7 +1326,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#user">user</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L119">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:119</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L112">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:112</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1298,33 +1336,44 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
 			<a name="authstate" class="tsd-anchor"></a>
 			<h3>auth<wbr>State</h3>
-			<div class="tsd-signature tsd-kind-icon">auth<wbr>State<span class="tsd-signature-symbol">:</span> </div>
+			<div class="tsd-signature tsd-kind-icon">auth<wbr>State<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#authstate">authState</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L161">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:161</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L179">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:179</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
 			<a name="data" class="tsd-anchor"></a>
 			<h3>data</h3>
-			<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> </div>
+			<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#data">data</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L137">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:137</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L131">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:131</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
 			<a name="signupconfig" class="tsd-anchor"></a>
 			<h3>sign<wbr>UpConfig</h3>
-			<div class="tsd-signature tsd-kind-icon">sign<wbr>UpConfig<span class="tsd-signature-symbol">:</span> </div>
+			<div class="tsd-signature tsd-kind-icon">sign<wbr>UpConfig<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#signupconfig">signUpConfig</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L167">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:167</a></li>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L185">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:185</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-set-signature tsd-parent-kind-class tsd-is-inherited">
+			<a name="usernameattributes" class="tsd-anchor"></a>
+			<h3>username<wbr>Attributes</h3>
+			<div class="tsd-signature tsd-kind-icon">username<wbr>Attributes<span class="tsd-signature-symbol">:</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#usernameattributes">usernameAttributes</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L167">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:167</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1342,7 +1391,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#_seterror">_setError</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L353">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:353</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L406">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:406</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1356,17 +1405,35 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+			<a name="getusernamelabel" class="tsd-anchor"></a>
+			<h3>get<wbr>Username<wbr>Label</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Username<wbr>Label<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#getusernamelabel">getUsernameLabel</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L415">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:415</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 			<a name="needprefix" class="tsd-anchor"></a>
 			<h3>need<wbr>Prefix</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-				<li class="tsd-signature tsd-kind-icon">need<wbr>Prefix<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">need<wbr>Prefix<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#needprefix">needPrefix</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L244">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:244</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L295">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:295</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1375,7 +1442,7 @@ img { max-width: 100%; }
 							<h5>key: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1390,7 +1457,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#ngoninit">ngOnInit</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L188">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:188</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L206">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:206</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1408,32 +1475,9 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#onalertclose">onAlertClose</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L321">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:321</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L374">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:374</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="oncodechange" class="tsd-anchor"></a>
-			<h3>on<wbr>Code<wbr>Change</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">on<wbr>Code<wbr>Change<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L136">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:136</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>val: <span class="tsd-signature-type">any</span></h5>
-						</li>
-					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
@@ -1449,30 +1493,31 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#onconfirmsignup">onConfirmSignUp</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L254">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:254</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L307">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:307</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="onnumberchange" class="tsd-anchor"></a>
-			<h3>on<wbr>Number<wbr>Change</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">on<wbr>Number<wbr>Change<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+			<a name="onphonefieldchanged" class="tsd-anchor"></a>
+			<h3>on<wbr>Phone<wbr>Field<wbr>Changed</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Phone<wbr>Field<wbr>Changed<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../globals.html#phonefieldoutput" class="tsd-signature-type">PhoneFieldOutput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#onphonefieldchanged">onPhoneFieldChanged</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L140">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:140</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L421">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:421</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>val: <span class="tsd-signature-type">any</span></h5>
+							<h5>event: <a href="../globals.html#phonefieldoutput" class="tsd-signature-type">PhoneFieldOutput</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1490,7 +1535,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#onsignin">onSignIn</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L239">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:239</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L290">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:290</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1508,7 +1553,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#onsignup">onSignUp</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L195">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:195</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L217">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:217</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1526,7 +1571,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#removehiddenfields">removeHiddenFields</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L325">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:325</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L378">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:378</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="signupfield.html" class="tsd-signature-type">SignUpField</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -1543,7 +1588,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L132">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts#L112">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.ionic.ts:112</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1553,6 +1598,30 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+			<a name="shouldhide" class="tsd-anchor"></a>
+			<h3>should<wbr>Hide</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<li class="tsd-signature tsd-kind-icon">should<wbr>Hide<span class="tsd-signature-symbol">(</span>comp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#shouldhide">shouldHide</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L213">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:213</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>comp: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1567,7 +1636,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#sortfields">sortFields</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L260">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:260</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L315">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:315</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1585,7 +1654,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="signupcomponentcore.html">SignUpComponentCore</a>.<a href="signupcomponentcore.html#validate">validate</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L331">aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:331</a></li>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts#L384">packages/aws-amplify-angular/src/components/authenticator/sign-up-component/sign-up.component.core.ts:384</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h4>
