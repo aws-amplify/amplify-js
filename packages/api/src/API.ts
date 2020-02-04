@@ -19,12 +19,11 @@ import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,
 	Constants,
+	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
-import { v4 as uuid } from 'uuid';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('API');
@@ -43,7 +42,6 @@ export default class APIClass {
 	 */
 	private _options;
 	private _api = null;
-	private _pubSub = Amplify.PubSub;
 
 	/**
 	 * Initialize Storage with AWS configuration
@@ -369,7 +367,11 @@ export default class APIClass {
 			case 'mutation':
 				return this._graphql({ query, variables, authMode });
 			case 'subscription':
-				return this._graphqlSubscribe({ query, variables, authMode });
+				return this._graphqlSubscribe({
+					query,
+					variables,
+					authMode,
+				});
 		}
 
 		throw new Error(`invalid operation type: ${operationType}`);
@@ -397,8 +399,8 @@ export default class APIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
 					: { Authorization: null })),
-			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
+			...(await graphql_headers({ query, variables })),
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: Constants.userAgent,
 			}),
@@ -448,72 +450,31 @@ export default class APIClass {
 		return response;
 	}
 
-	private clientIdentifier = uuid();
-
 	private _graphqlSubscribe({
 		query,
 		variables,
-		authMode,
-	}: GraphQLOptions): Observable<object> {
+		authMode: defaultAuthenticationType,
+	}: GraphQLOptions): Observable<any> {
+		const {
+			aws_appsync_region: region,
+			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
+			aws_appsync_authenticationType,
+			aws_appsync_apiKey: apiKey,
+			graphql_headers = () => ({}),
+		} = this._options;
+		const authenticationType =
+			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+
 		if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
-			return new Observable(observer => {
-				let handle = null;
-
-				(async () => {
-					const { aws_appsync_authenticationType } = this._options;
-					const authenticationType = authMode || aws_appsync_authenticationType;
-					const additionalheaders = {
-						...(authenticationType === 'API_KEY'
-							? {
-									'x-amz-subscriber-id': this.clientIdentifier,
-							  }
-							: {}),
-					};
-
-					try {
-						const {
-							extensions: { subscription },
-						} = await this._graphql(
-							{ query, variables, authMode },
-							additionalheaders
-						);
-
-						const { newSubscriptions } = subscription;
-
-						const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(
-							p => newSubscriptions[p].topic
-						);
-
-						const observable = Amplify.PubSub.subscribe(newTopics, {
-							...subscription,
-							provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-						});
-
-						handle = observable.subscribe({
-							next: data => observer.next(data),
-							complete: () => observer.complete(),
-							error: data => {
-								const error = { ...data };
-								if (!error.errors) {
-									error.errors = [
-										{
-											...new GraphQLError('Network Error'),
-										},
-									];
-								}
-								observer.error(error);
-							},
-						});
-					} catch (error) {
-						observer.error(error);
-					}
-				})();
-
-				return () => {
-					if (handle) {
-						handle.unsubscribe();
-					}
-				};
+			return Amplify.PubSub.subscribe('', {
+				provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+				appSyncGraphqlEndpoint,
+				authenticationType,
+				apiKey,
+				query: print(query),
+				region,
+				variables,
+				graphql_headers,
 			});
 		} else {
 			logger.debug('No pubsub module applied for subscription');

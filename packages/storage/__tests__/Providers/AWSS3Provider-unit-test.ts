@@ -127,7 +127,7 @@ describe('StorageProvider test', () => {
 		});
 	});
 
-	describe('get test', async () => {
+	describe('get test', () => {
 		test('get object without download', async () => {
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
@@ -142,6 +142,41 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledWith('getObject', {
 				Bucket: 'bucket',
 				Key: 'public/key',
+			});
+
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
+		});
+
+		test('get object with custom response headers', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(credentials);
+				});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
+			expect.assertions(2);
+			expect(
+				await storage.get('key', {
+					cacheControl: 'no-cache',
+					contentDisposition: 'attachment; filename="filename.jpg"',
+					contentEncoding: 'identity',
+					contentLanguage: 'en-US',
+					contentType: 'multipart/form-data; boundary=something',
+					expires: 123456789,
+				})
+			).toBe('url');
+			expect(spyon).toBeCalledWith('getObject', {
+				Bucket: 'bucket',
+				Key: 'public/key',
+				Expires: 123456789,
+				ResponseCacheControl: 'no-cache',
+				ResponseContentDisposition: 'attachment; filename="filename.jpg"',
+				ResponseContentEncoding: 'identity',
+				ResponseContentLanguage: 'en-US',
+				ResponseContentType: 'multipart/form-data; boundary=something',
 			});
 
 			spyon.mockClear();
@@ -747,7 +782,6 @@ describe('StorageProvider test', () => {
 				Bucket: 'bucket',
 				Prefix: 'public/path',
 			});
-
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 		});
@@ -797,6 +831,39 @@ describe('StorageProvider test', () => {
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 			spyon2.mockClear();
+		});
+
+		test('list object with maxKeys', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3.prototype, 'listObjects');
+			expect.assertions(2);
+			expect(
+				await storage.list('path', { level: 'public', maxKeys: 1 })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0]).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/path',
+				MaxKeys: 1,
+			});
+
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
 		});
 
 		test('list object failed', async () => {

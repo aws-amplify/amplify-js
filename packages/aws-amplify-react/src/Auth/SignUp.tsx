@@ -25,7 +25,6 @@ import {
 	FormField,
 	Input,
 	InputLabel,
-	SelectInput,
 	Button,
 	Link,
 	SectionFooterPrimaryContent,
@@ -38,10 +37,9 @@ import countryDialCodes from './common/country-dial-codes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
+	ISignUpField,
 } from './common/default-sign-up-fields';
 import { UsernameAttributes } from './common/types';
-import { ISignUpField } from './common/default-sign-up-fields';
-import { valid } from 'semver';
 import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
@@ -65,6 +63,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 	constructor(props: ISignUpProps) {
 		super(props);
+		this.state = { requestPending: false };
 
 		this._validAuthStates = ['signUp'];
 		this.signUp = this.signUp.bind(this);
@@ -117,7 +116,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
 			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
-				// @ts-ignore
 				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
 			});
 		}
@@ -128,7 +126,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				!this.props.signUpConfig.hideAllDefaults
 			) {
 				// see if fields passed to component should override defaults
-				this.defaultSignUpFields.forEach((f, i) => {
+				this.defaultSignUpFields.forEach(f => {
 					const matchKey = this.signUpFields.findIndex(d => {
 						return d.key === f.key;
 					});
@@ -189,10 +187,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	getDefaultDialCode() {
 		return this.props.signUpConfig &&
 			this.props.signUpConfig.defaultCountryCode &&
-			// @ts-ignore
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -206,11 +203,13 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	}
 
 	signUp() {
+		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
 		}
 		const validation = this.validate();
 		if (validation && validation.length > 0) {
+			this.setState({ requestPending: false });
 			return this.error(
 				`The following fields need to be filled out: ${validation.join(', ')}`
 			);
@@ -232,7 +231,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 		inputKeys.forEach((key, index) => {
 			if (
-				// @ts-ignore
 				!['username', 'password', 'checkedValue', 'dial_code'].includes(key)
 			) {
 				if (
@@ -268,13 +266,17 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		}
 		Auth.signUp(signup_info)
 			.then(data => {
+				this.setState({ requestPending: false });
 				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
-			.catch(err => this.error(err));
+			.catch(err => {
+				this.setState({ requestPending: false });
+				return this.error(err);
+			});
 	}
 
-	showComponent(theme) {
+	showComponent(theme): React.ReactNode {
 		const { hide } = this.props;
 		if (hide && hide.includes(SignUp)) {
 			return null;
@@ -332,6 +334,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				<SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
 					<SectionFooterPrimaryContent theme={theme}>
 						<Button
+							disabled={this.state.requestPending}
 							onClick={this.signUp}
 							theme={theme}
 							data-test={auth.signUp.createAccountButton}

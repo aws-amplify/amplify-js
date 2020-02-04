@@ -31,6 +31,7 @@
             :placeholder="$Amplify.I18n.get(getPlaceholder)"
             autofocus 
             v-on:keyup="emitPhoneNumberChanged" 
+            v-on:input="local_phone_number = $event.target.value"
             v-bind:data-test="auth.genericAttrs.phoneNumberInput"
         />
     </div>

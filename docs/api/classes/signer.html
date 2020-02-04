@@ -918,10 +918,10 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-class">
 		<a href="signer.html" class="tsd-kind-icon">Signer</a>
 		<ul>
-			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 				<a href="signer.html#sign" class="tsd-kind-icon">sign</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 				<a href="signer.html#signurl" class="tsd-kind-icon">sign<wbr>Url</a>
 			</li>
 		</ul>
@@ -956,36 +956,140 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-index-panel">
 			<div class="tsd-index-content">
 				<section class="tsd-index-section ">
-					<h3>Properties</h3>
+					<h3>Methods</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="signer.html#sign" class="tsd-kind-icon">sign</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="signer.html#signurl" class="tsd-kind-icon">sign<wbr>Url</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="signer.html#sign" class="tsd-kind-icon">sign</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="signer.html#signurl" class="tsd-kind-icon">sign<wbr>Url</a></li>
 					</ul>
 				</section>
 			</div>
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Properties</h2>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 			<a name="sign" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> sign</h3>
-			<div class="tsd-signature tsd-kind-icon">sign<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">sign</a><span class="tsd-signature-symbol"> =&nbsp;sign</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Signer.ts#L396">core/src/Signer.ts:396</a></li>
-				</ul>
-			</aside>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+				<li class="tsd-signature tsd-kind-icon">sign<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, access_info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, service_info<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/core/src/Signer.ts#L298">packages/core/src/Signer.ts:298</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Sign a HTTP request, add &#39;Authorization&#39; header to request param</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>method</dt>
+							<dd><p>sign</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Signer</p>
+							</dd>
+							<dt>static</dt>
+							<dd></dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>request: <span class="tsd-signature-type">any</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>HTTP request object</p>
+								<pre>
+request: {
+method: GET | POST | PUT ...
+url: ...,
+headers: {
+header1: ...
+},
+data: data
+}
+</pre>
+							</div>
+						</li>
+						<li>
+							<h5>access_info: <span class="tsd-signature-type">any</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>AWS access credential info</p>
+								<pre>
+access_info: {
+access_key: ...,
+secret_key: ...,
+session_token: ...
+}
+</pre>
+							</div>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> service_info: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<p>Signed HTTP request</p>
+				</li>
+			</ul>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 			<a name="signurl" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> sign<wbr>Url</h3>
-			<div class="tsd-signature tsd-kind-icon">sign<wbr>Url<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">signUrl</a><span class="tsd-signature-symbol"> =&nbsp;signUrl</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/core/src/Signer.ts#L397">core/src/Signer.ts:397</a></li>
-				</ul>
-			</aside>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>Url<span class="tsd-signature-symbol">(</span>urlToSign<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, accessInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, serviceInfo<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, expiration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>Url<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, accessInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, serviceInfo<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, expiration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/core/src/Signer.ts#L348">packages/core/src/Signer.ts:348</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>urlToSign: <span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li>
+							<h5>accessInfo: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> serviceInfo: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> expiration: <span class="tsd-signature-type">number</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/8015d159/packages/core/src/Signer.ts#L354">packages/core/src/Signer.ts:354</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>request: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5>accessInfo: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> serviceInfo: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> expiration: <span class="tsd-signature-type">number</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+				</li>
+			</ul>
 		</section>
 	</section>
 	<footer>
