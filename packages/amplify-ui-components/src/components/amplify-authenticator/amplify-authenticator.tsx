@@ -1,7 +1,7 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
-import { Auth } from '@aws-amplify/auth';
+import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
@@ -21,6 +21,7 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
 
   async componentWillLoad() {
+    appendToCognitoUserAgent('amplify-ui');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     if (byHostedUI !== 'true') await this.checkUser();
