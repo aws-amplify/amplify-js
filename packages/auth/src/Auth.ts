@@ -225,7 +225,15 @@ export default class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
+			// Prevents _handleAuthResponse from being called multiple times in Expo
+			// See https://github.com/aws-amplify/amplify-js/issues/4388
+			const usedResponseUrls = {};
 			urlListener(({ url }) => {
+				if (usedResponseUrls[url]) {
+					return;
+				}
+
+				usedResponseUrls[url] = true;
 				this._handleAuthResponse(url);
 			});
 		}
@@ -1812,6 +1820,7 @@ export default class AuthClass {
 			.find(([k]) => k === 'access_token' || k === 'error');
 
 		if (hasCodeOrError || hasTokenOrError) {
+			this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 			try {
 				const {
 					accessToken,
@@ -1832,7 +1841,7 @@ export default class AuthClass {
 					logger.debug('AWS credentials', credentials);
 				}
 
-				/* 
+				/*
                 Prior to the request we do sign the custom state along with the state we set. This check will verify
                 if there is a dash indicated when setting custom state from the request. If a dash is contained
                 then there is custom state present on the state string.
@@ -1899,7 +1908,6 @@ export default class AuthClass {
 					err,
 					`A failure occurred when returning state`
 				);
-				throw err;
 			}
 		}
 	}
