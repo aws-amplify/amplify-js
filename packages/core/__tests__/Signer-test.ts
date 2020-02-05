@@ -1,5 +1,5 @@
 jest.mock('../src/Facet', () => {
-	let ret = { util: { crypto: { lib: {} }, date: {} } };
+	let ret = { util: { crypto: { lib: {} } } };
 	ret['util']['crypto']['lib']['createHmac'] = () => {
 		const update = () => {
 			return {
