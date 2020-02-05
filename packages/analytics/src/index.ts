@@ -23,7 +23,7 @@ let analyticsConfigured = false;
 
 let _instance: AnalyticsClass = null;
 
-if (!_instance) {
+if (typeof _instance === 'undefined' || !_instance) {
 	logger.debug('Create Analytics Instance');
 	_instance = new AnalyticsClass();
 }

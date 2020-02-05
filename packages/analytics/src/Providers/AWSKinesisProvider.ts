@@ -14,7 +14,7 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
@@ -223,8 +223,8 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		this._kinesis = new KinesisClient({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(this._kinesis);
 		return true;
 	}
 

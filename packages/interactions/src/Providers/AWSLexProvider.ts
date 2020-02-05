@@ -21,7 +21,7 @@ import {
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 
 const logger = new Logger('AWSLexProvider');
@@ -100,8 +100,8 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
 			region: this._config[botname].region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(this.lexRuntimeServiceClient);
 
 		let params;
 		if (typeof message === 'string') {

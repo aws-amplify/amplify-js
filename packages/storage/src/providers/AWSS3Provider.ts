@@ -15,7 +15,7 @@ import {
 	Hub,
 	Credentials,
 	Parser,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -489,10 +489,10 @@ export class AWSS3Provider implements StorageProvider {
 		const s3client = new S3Client({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
-		appendAmplifyUserAgent(s3client);
 		return s3client;
 	}
 }
