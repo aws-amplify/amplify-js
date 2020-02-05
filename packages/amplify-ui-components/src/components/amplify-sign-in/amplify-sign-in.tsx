@@ -145,6 +145,7 @@ export class AmplifySignIn {
         this.checkContact(user);
       }
     } catch (error) {
+      console.log('caught');
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });

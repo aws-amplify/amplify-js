@@ -17,6 +17,8 @@ export class AmplifyAuthenticator {
   @State() authState: AuthState = AuthState.Loading;
 
   @State() authData: CognitoUserInterface;
+  @State() showToast: boolean = false;
+
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
 
@@ -70,6 +72,12 @@ export class AmplifyAuthenticator {
     logger.info(`authState has been updated to ${this.authState}`);
   };
 
+  onAuthEvent = event => {
+    if (event.type === 'error') {
+      this.showToast = true;
+    }
+  };
+
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.SignIn:
@@ -100,6 +108,7 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
+        {this.showToast ? <amplify-toast /> : null}
         {this.renderAuthComponent(this.authState)}
         <div hidden={this.authState !== AuthState.SignedIn}>
           <slot />
