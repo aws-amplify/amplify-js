@@ -30,6 +30,38 @@
 - [amplify-auth-fields](../amplify-auth-fields)
 - [amplify-link](../amplify-link)
 - [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
+- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
 
 ### Graph
 ```mermaid
@@ -38,8 +70,136 @@ graph TD;
   amplify-sign-up --> amplify-auth-fields
   amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
+  amplify-sign-up --> amplify-link
+  amplify-sign-up --> amplify-button
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-username-field
+  amplify-auth-fields --> amplify-password-field
+  amplify-auth-fields --> amplify-email-field
+  amplify-auth-fields --> amplify-code-field
+  amplify-auth-fields --> amplify-phone-field
+  amplify-auth-fields --> amplify-form-field
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field

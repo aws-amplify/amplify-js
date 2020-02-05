@@ -3,7 +3,7 @@
 exports[`amplify-button spec: Render logic -> renders with button text FOO 1`] = `
 <amplify-button>
   <!---->
-  <button class="amplify-ui--button css-1iso3kp" type="button">
+  <button class="amplify-ui--button css-10vflz7" type="button">
     FOO
   </button>
 </amplify-button>
@@ -12,7 +12,7 @@ exports[`amplify-button spec: Render logic -> renders with button text FOO 1`] =
 exports[`amplify-button spec: Render logic -> renders with danger class when button type is reset 1`] = `
 <amplify-button type="reset">
   <!---->
-  <button class="amplify-ui--button css-13x64y8" type="reset">
+  <button class="amplify-ui--button css-1drdjnn" type="reset">
     FOO
   </button>
 </amplify-button>
@@ -21,7 +21,7 @@ exports[`amplify-button spec: Render logic -> renders with danger class when but
 exports[`amplify-button spec: Render logic -> renders with no button text 1`] = `
 <amplify-button>
   <!---->
-  <button class="amplify-ui--button css-1iso3kp" type="button"></button>
+  <button class="amplify-ui--button css-10vflz7" type="button"></button>
 </amplify-button>
 `;
 

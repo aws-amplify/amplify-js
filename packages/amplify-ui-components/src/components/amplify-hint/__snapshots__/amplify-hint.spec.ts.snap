@@ -3,7 +3,7 @@
 exports[`amplify-hint spec: Render logic -> renders with hint text FOO 1`] = `
 <amplify-hint>
   <!---->
-  <div class="amplify-ui--hint css-k9ji7b">
+  <div class="amplify-ui--hint css-1tereo9">
     FOO
   </div>
 </amplify-hint>
@@ -12,7 +12,7 @@ exports[`amplify-hint spec: Render logic -> renders with hint text FOO 1`] = `
 exports[`amplify-hint spec: Render logic -> renders with no hint text 1`] = `
 <amplify-hint>
   <!---->
-  <div class="amplify-ui--hint css-k9ji7b"></div>
+  <div class="amplify-ui--hint css-1tereo9"></div>
 </amplify-hint>
 `;
 

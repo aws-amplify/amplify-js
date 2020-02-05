@@ -15,76 +15,41 @@ import { injectGlobal } from 'emotion'
 injectGlobal`
   :root {
     /* Colors */
-    --amazon-orange: #ff9900;
-    --light-amazon-orange: #ffac31;
-    --dark-amazon-orange: #e88b01;
-    --squid-ink: #232f3e;
-    --light-squid-ink: #31465f;
-    --deep-squid-ink: #152939;
-    --grey: #828282;
-    --light-grey: #c4c4c4;
-    --silver: #e1e4ea;
-    --dark-blue: #31465f;
-    --red: #dd3f5b;
-    --white: #ffffff;
-    --light-blue: #00a1c9;
+    --amplify-amazon-orange: #ff9900;
+    --amplify-light-amazon-orange: #ffac31;
+    --amplify-dark-amazon-orange: #e88b01;
+    --amplify-squid-ink: #232f3e;
+    --amplify-light-squid-ink: #31465f;
+    --amplify-deep-squid-ink: #152939;
+    --amplify-grey: #828282;
+    --amplify-light-grey: #c4c4c4;
+    --amplify-silver: #e1e4ea;
+    --amplify-dark-blue: #31465f;
+    --amplify-red: #dd3f5b;
+    --amplify-white: #ffffff;
+    --amplify-light-blue: #00a1c9;
     --amplify-yellow-warning: #f8d047;
     --amplify-red-problem: #cc1454;
 
     /* Theme */
     /* All of the variables below can be used within any application that does an @import inside of their application */
-    --button-color: var(--white);
-    --button-background-color: var(--amazon-orange);
-    --button-background-color-danger: var(--color-danger);
-    --button-click: var(--dark-amazon-orange);
-    --section-background-color: var(--white);
-    --section-header-color: var(--deep-squid-ink);
-    --label-color: var(--deep-squid-ink);
-    --link-color: var(--amazon-orange);
-    --hint-color: var(--grey);
-    --form-color: var(--white);
-    --input-color: var(--deep-squid-ink);
-    --input-background-color: var(--white);
-    --input-border-color: var(--light-grey);
-    --primary-font-size: 1em;
-    --secondary-font-size: 0.875em;
-    --third-font-size: 0.813em;
+    --amplify-button-color: var(--amplify-white);
+    --amplify-button-background-color: var(--amplify-amazon-orange);
+    --amplify-button-background-color-danger: var(--amplify-color-danger);
+    --amplify-button-click: var(--amplify-dark-amazon-orange);
+    --amplify-section-background-color: var(--amplify-white);
+    --amplify-section-header-color: var(--amplify-deep-squid-ink);
+    --amplify-label-color: var(--amplify-deep-squid-ink);
+    --amplify-link-color: var(--amplify-amazon-orange);
+    --amplify-hint-color: var(--amplify-grey);
+    --amplify-form-color: var(--amplify-white);
+    --amplify-input-color: var(--amplify-deep-squid-ink);
+    --amplify-input-background-color: var(--amplify-white);
+    --amplify-input-border-color: var(--amplify-light-grey);
+    --amplify-primary-font-size: 1em;
+    --amplify-secondary-font-size: 0.875em;
+    --amplify-third-font-size: 0.813em;
 
-    --font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
-    --body-background: #f8f4f4;
-
-    /** Angular Theme **/
-    --component-width-desktop: 460px;
-    --component-width-mobile: 100%;
-
-    --color-primary: #ff9900;
-    --color-primary-accent: #232f3e;
-    --color-primary-highlight: #ffc46d;
-
-    --color-background: #232f3e;
-
-    --color-secondary: #152939;
-    --color-secondary-accent: #31465f;
-
-    --color-danger: #dd3f5b;
-    --color-error: #d0021b;
-
-    --color-accent-brown: #828282;
-    --color-accent-blue: #e1e4ea;
-
-    --gradient-blaze: linear-gradient(270deg, #ffc300 0%, #ff9000 100%);
-
-    --color-blue: #007eb9;
-    --color-purple: #527fff;
-    --color-gray: #828282;
-    --color-white: #ffffff;
-
-    --input-border: 1px solid #c4c4c4;
-    --input-padding: 0.5em 0.5em 0.3em 1em;
-
-    --box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
-    --button-height: 42px;
-
-    --interactions-conversation-height: 250px;
+    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
   }
 `;

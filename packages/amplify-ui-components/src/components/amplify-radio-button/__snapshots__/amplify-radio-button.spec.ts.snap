@@ -2,7 +2,7 @@
 
 exports[`amplify-radio-button spec: Render logic -> should render a radio button with no label and a type of radio for input by default 1`] = `
 <amplify-radio-button>
-  <span class="amplify-ui--radio-button css-iud8ha">
+  <span class="amplify-ui--radio-button css-1dhdakb">
     <input placeholder="" type="radio">
     <amplify-label></amplify-label>
   </span>

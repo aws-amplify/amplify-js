@@ -3,14 +3,14 @@
 exports[`amplify-tooltip spec: Render logic -> should render a normal tooltip by default 1`] = `
 <amplify-tooltip>
   <!---->
-  <div class="amplify-ui--tooltip css-w8fhyi"></div>
+  <div class="amplify-ui--tooltip css-kga9yu"></div>
 </amplify-tooltip>
 `;
 
 exports[`amplify-tooltip spec: Render logic -> should render an automatically-shown tooltip 1`] = `
 <amplify-tooltip should-auto-show="true">
   <!---->
-  <div class="amplify-ui--tooltip css-8zqv9r"></div>
+  <div class="amplify-ui--tooltip css-1udymob"></div>
 </amplify-tooltip>
 `;
 
