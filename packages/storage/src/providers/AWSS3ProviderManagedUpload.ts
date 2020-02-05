@@ -36,7 +36,7 @@ const logger = new Logger('AWSS3ProviderManagedUpload');
 const localTestingStorageEndpoint = 'http://localhost:20005';
 
 export declare interface BodyPart {
-	bodyPart: string;
+	bodyPart: any;
 	partNumber: number;
 	emitter: any;
 	etag?: string;
@@ -163,13 +163,14 @@ export class AWSS3ProviderManagedUpload {
 			this.setupEventListener(part);
 			const uploadPartCommandInput: UploadPartCommandInput = {
 				PartNumber: part.partNumber,
-				Body: new TextEncoder().encode(part.bodyPart),
+				Body: part.bodyPart,
 				UploadId: uploadId,
 				Key: this.params.Key,
 				Bucket: this.params.Bucket,
 			};
 			const uploadPartCommand = new UploadPartCommand(uploadPartCommandInput);
 			const s3 = this._createNewS3Client(this.opts, part.emitter);
+			s3.middlewareStack.remove('SET_CONTENT_LENGTH');
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
