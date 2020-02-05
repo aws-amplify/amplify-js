@@ -12,6 +12,7 @@
  */
 
 import { ConsoleLogger as Logger } from './Logger';
+import * as Util from './Util';
 import { AWS } from './Facet';
 
 const logger = new Logger('Signer'),
@@ -299,7 +300,7 @@ export default class Signer {
 		request.headers = request.headers || {};
 
 		// datetime string and date string
-		const dt = AWS['util']['date'].getDate(),
+		const dt = Util.Date.getDateWithClockOffset(),
 			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
 			d_str = dt_str.substr(0, 8);
 
@@ -370,8 +371,7 @@ export default class Signer {
 		const body: any =
 			typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
 
-		const now = AWS['util']['date']
-			.getDate()
+		const now = Util.Date.getDateWithClockOffset()
 			.toISOString()
 			.replace(/[:\-]|\.\d{3}/g, '');
 		const today = now.substr(0, 8);
