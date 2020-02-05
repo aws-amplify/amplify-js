@@ -1,4 +1,4 @@
-import { Credentials, appendAmplifyUserAgent } from '@aws-amplify/core';
+import { Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
 import { AbstractInterpretPredictionsProvider } from '../types/Providers';
 
 import {
@@ -52,8 +52,8 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			const comprehendClient = new ComprehendClient({
 				credentials,
 				region,
+				customUserAgent: getAmplifyUserAgent(),
 			});
-			appendAmplifyUserAgent(comprehendClient);
 
 			const doAll = interpretType === InterpretTextCategories.ALL;
 

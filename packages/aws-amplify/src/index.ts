@@ -44,9 +44,10 @@ export {
 } from '@aws-amplify/core';
 
 import { Amplify, ServiceWorker } from '@aws-amplify/core';
-
+import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 
+Amplify.Auth = Auth;
 Amplify.Cache = Cache;
 Amplify.ServiceWorker = ServiceWorker;
 

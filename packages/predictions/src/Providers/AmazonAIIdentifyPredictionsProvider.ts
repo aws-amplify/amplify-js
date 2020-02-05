@@ -1,7 +1,7 @@
 import {
 	Credentials,
 	ConsoleLogger as Logger,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
@@ -126,10 +126,16 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				defaults: { format: configFormat = 'PLAIN' } = {},
 			} = {},
 		} = this._config;
-		this.rekognitionClient = new RekognitionClient({ region, credentials });
-		appendAmplifyUserAgent(this.rekognitionClient);
-		this.textractClient = new TextractClient({ region, credentials });
-		appendAmplifyUserAgent(this.textractClient);
+		this.rekognitionClient = new RekognitionClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		this.textractClient = new TextractClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
 		let inputDocument: Document;
 
 		try {
@@ -222,8 +228,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					defaults: { type = 'LABELS' } = {},
 				} = {},
 			} = this._config;
-			this.rekognitionClient = new RekognitionClient({ region, credentials });
-			appendAmplifyUserAgent(this.rekognitionClient);
+			this.rekognitionClient = new RekognitionClient({
+				region,
+				credentials,
+				customUserAgent: getAmplifyUserAgent(),
+			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
 				.then(data => {
@@ -338,8 +347,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		} = this._config;
 		// default arguments
 
-		this.rekognitionClient = new RekognitionClient({ region, credentials });
-		appendAmplifyUserAgent(this.rekognitionClient);
+		this.rekognitionClient = new RekognitionClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
 			.then(data => (inputImage = data))

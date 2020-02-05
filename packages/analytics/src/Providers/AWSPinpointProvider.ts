@@ -19,7 +19,7 @@ import {
 	Signer,
 	JS,
 	Hub,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
 	PinpointClient,
@@ -605,8 +605,11 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = this._config;
 		logger.debug('init clients with credentials', credentials);
-		this.pinpointClient = new PinpointClient({ region, credentials });
-		appendAmplifyUserAgent(this.pinpointClient);
+		this.pinpointClient = new PinpointClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
 			// if the identity has remained the same, pass the updated client to the buffer

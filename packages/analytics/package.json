@@ -5,7 +5,10 @@
   "main": "./index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": [
+    "./lib-esm/index.js",
+    "./lib/index.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -39,9 +42,9 @@
   "dependencies": {
     "@aws-amplify/cache": "^2.1.1",
     "@aws-amplify/core": "^2.2.0",
-    "@aws-sdk/client-kinesis": "^1.0.0-alpha.13",
-    "@aws-sdk/client-personalize-events": "^1.0.0-alpha.11",
-    "@aws-sdk/client-pinpoint": "^1.0.0-alpha.11",
+    "@aws-sdk/client-kinesis": "^1.0.0-alpha.14",
+    "@aws-sdk/client-personalize-events": "^1.0.0-alpha.12",
+    "@aws-sdk/client-pinpoint": "^1.0.0-alpha.12",
     "uuid": "^3.2.1"
   },
   "jest": {

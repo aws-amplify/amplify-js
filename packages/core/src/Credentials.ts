@@ -3,7 +3,7 @@ import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
-import { appendAmplifyUserAgent } from './Platform';
+import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -205,11 +205,14 @@ export class CredentialsClass {
 
 		// Removing the signature middleware and passing empty credentials and signer
 		// because https://github.com/aws/aws-sdk-js-v3/issues/354
+		console.log('fromCognitoIdentity', fromCognitoIdentity);
+		console.log('CognitoIdentityClient', CognitoIdentityClient);
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(cognitoClient);
+		console.log(cognitoClient);
 
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
@@ -293,8 +296,8 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(cognitoClient);
 		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
 			logins,
 			identityPoolId,
@@ -328,8 +331,8 @@ export class CredentialsClass {
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(cognitoClient);
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
