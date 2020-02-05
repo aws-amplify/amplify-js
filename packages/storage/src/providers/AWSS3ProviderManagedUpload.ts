@@ -13,7 +13,7 @@
 
 import {
 	ConsoleLogger as Logger,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -344,8 +344,8 @@ export class AWSS3ProviderManagedUpload {
 			credentials,
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter),
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(client);
 		return client;
 	}
 }
