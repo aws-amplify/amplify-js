@@ -27,7 +27,7 @@ jest.mock('../src/Facet', () => {
 });
 
 import Signer from '../src/Signer';
-import * as Amplify from '../src';
+import { DateUtils } from '../src';
 
 describe('Signer test', () => {
 	describe('sign test', () => {
@@ -46,10 +46,7 @@ describe('Signer test', () => {
 				.spyOn(Date.prototype, 'toISOString')
 				.mockReturnValueOnce('0');
 
-			const getDateSpy = jest.spyOn(
-				Amplify.DateUtils,
-				'getDateWithClockOffset'
-			);
+			const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
 
 			const res = {
 				headers: {
