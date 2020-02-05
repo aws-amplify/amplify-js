@@ -46,7 +46,10 @@ describe('Signer test', () => {
 				.spyOn(Date.prototype, 'toISOString')
 				.mockReturnValueOnce('0');
 
-			const getDateSpy = jest.spyOn(Amplify.Date, 'getDateWithClockOffset');
+			const getDateSpy = jest.spyOn(
+				Amplify.DateUtils,
+				'getDateWithClockOffset'
+			);
 
 			const res = {
 				headers: {

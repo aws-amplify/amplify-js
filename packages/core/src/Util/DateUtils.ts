@@ -5,7 +5,7 @@
  * @see https://github.com/aws/aws-sdk-js/blob/6edf586dcc1de7fe8fbfbbd9a0d2b1847921e6e1/lib/util.js#L262
  */
 
-const DateUtils = {
+export const DateUtils = {
 	clockOffset: 0,
 
 	getDateWithClockOffset() {
@@ -24,5 +24,3 @@ const DateUtils = {
 		DateUtils.clockOffset = offset;
 	},
 };
-
-export { DateUtils as Date };

@@ -1,4 +1,4 @@
-import { Date as DateUtils } from './Date';
+import { DateUtils } from './DateUtils';
 
 // Mock Date (https://github.com/facebook/jest/issues/2234#issuecomment-308121037)
 const staticDate = new Date('2020-01-01');
@@ -13,7 +13,6 @@ Date = class extends Date {
 describe('Date', () => {
 	describe('getDateWithClockOffset()', () => {
 		it('should return a new Date()', () => {
-			console.log(new Date());
 			expect(DateUtils.getDateWithClockOffset()).toEqual(new Date());
 		});
 	});
