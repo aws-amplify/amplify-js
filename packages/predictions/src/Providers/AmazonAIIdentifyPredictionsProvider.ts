@@ -89,7 +89,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
 					.then(buffer => {
-						res({ Bytes: buffer });
+						res({ Bytes: new Uint8Array(buffer) });
 					})
 					.catch(err => rej(err));
 			} else if (isBytesSource(source)) {
@@ -97,9 +97,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
 						.then(buffer => {
-							res({ Bytes: buffer });
+							res({ Bytes: new Uint8Array(buffer) });
 						})
 						.catch(err => rej(err));
+				}
+				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
+					res({ Bytes: new Uint8Array(bytes) } as Image);
 				}
 				// everything else can be directly passed to Rekognition / Textract.
 				res({ Bytes: bytes } as Image);
