@@ -19,11 +19,17 @@ export const DateUtils = {
 		}
 	},
 
+	/**
+	 * @returns {number} Clock offset in milliseconds
+	 */
 	getClockOffset() {
 		return DateUtils.clockOffset;
 	},
 
-	setClockOffset(offset: null | number) {
+	/**
+	 * @param {number} offset Clock offset in milliseconds
+	 */
+	setClockOffset(offset: number) {
 		DateUtils.clockOffset = offset;
 	},
 };
