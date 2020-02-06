@@ -13,7 +13,7 @@ import {
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
 
-import { Logger, isEmpty } from '@aws-amplify/core';
+import { Logger, isEmpty, Hub } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 const logger = new Logger('SignIn');
@@ -145,7 +145,10 @@ export class AmplifySignIn {
         this.checkContact(user);
       }
     } catch (error) {
-      console.log('caught');
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });

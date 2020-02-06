@@ -2,6 +2,7 @@ import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
 import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
@@ -17,12 +18,19 @@ export class AmplifyAuthenticator {
   @State() authState: AuthState = AuthState.Loading;
 
   @State() authData: CognitoUserInterface;
-  @State() showToast: boolean = false;
+  @State() toastMessage: string = '';
 
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
 
   async componentWillLoad() {
+    Hub.listen('auth-error', data => {
+      const { payload } = data;
+      if (payload.event === 'toastError' && payload.message) {
+        this.toastMessage = payload.message;
+      }
+    });
+
     appendToCognitoUserAgent('amplify-ui');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
@@ -72,12 +80,6 @@ export class AmplifyAuthenticator {
     logger.info(`authState has been updated to ${this.authState}`);
   };
 
-  onAuthEvent = event => {
-    if (event.type === 'error') {
-      this.showToast = true;
-    }
-  };
-
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.SignIn:
@@ -108,7 +110,14 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        {this.showToast ? <amplify-toast /> : null}
+        {this.toastMessage !== '' ? (
+          <amplify-toast
+            message={this.toastMessage}
+            onClose={() => {
+              this.toastMessage = '';
+            }}
+          />
+        ) : null}
         {this.renderAuthComponent(this.authState)}
         <div hidden={this.authState !== AuthState.SignedIn}>
           <slot />

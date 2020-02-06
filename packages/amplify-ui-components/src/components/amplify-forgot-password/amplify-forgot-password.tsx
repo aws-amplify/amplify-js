@@ -5,7 +5,7 @@ import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND }
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
-import { Logger } from '@aws-amplify/core';
+import { Logger, Hub } from '@aws-amplify/core';
 
 const logger = new Logger('ForgotPassword');
 
@@ -89,6 +89,10 @@ export class AmplifyForgotPassword {
       this.delivery = data.CodeDeliveryDetails;
     } catch (error) {
       logger.error(error);
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       throw new Error(error);
     }
   }
@@ -107,6 +111,10 @@ export class AmplifyForgotPassword {
       this.delivery = null;
     } catch (error) {
       logger.error(error);
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       throw new Error(error);
     }
   }

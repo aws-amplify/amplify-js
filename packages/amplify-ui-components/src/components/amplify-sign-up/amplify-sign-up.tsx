@@ -19,6 +19,7 @@ import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
 
 @Component({
   tag: 'amplify-sign-up',
@@ -159,6 +160,10 @@ export class AmplifySignUp {
 
       this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
     } catch (error) {
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       throw new Error(error);
     }
   }

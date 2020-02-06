@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { Logger, isEmpty } from '@aws-amplify/core';
+import { Logger, isEmpty, Hub } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { totpSetup } from './amplify-totp-setup.style';
@@ -61,6 +61,10 @@ export class AmplifyTOTPSetup {
         this.handleAuthStateChange(AuthState.VerifyContact, newUser);
       }
     } catch (error) {
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       throw new Error(error);
     }
   }
@@ -82,6 +86,10 @@ export class AmplifyTOTPSetup {
     try {
       this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
     } catch (error) {
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       throw new Error(error);
     }
   }
@@ -102,6 +110,10 @@ export class AmplifyTOTPSetup {
 
       this.generateQRCode(this.code);
     } catch (error) {
+      Hub.dispatch('auth-error', {
+        event: 'toastError',
+        message: error.message,
+      });
       logger.debug(TOTP_SETUP_FAILURE, error);
       throw new Error(error);
     }
