@@ -1,11 +1,11 @@
 import { css } from 'emotion';
 
 export const buttonTypeReset = css`
-  background-color: var(--button-background-color-danger);
+  background-color: var(--amplify-button-background-color-danger);
 `;
 
 export const buttonTypeSafe = css`
-  background-color: var(--button-background-color);
+  background-color: var(--amplify-button-background-color);
 `;
 
 export const button = css`
@@ -22,7 +22,7 @@ export const button = css`
   cursor: pointer;
   user-select: none;
   background-image: none;
-  color: var(--button-color);
+  color: var(--amplify-button-color);
   border-color: #ccc;
   text-transform: uppercase;
   padding: 14px;

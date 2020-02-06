@@ -2,19 +2,19 @@
 
 exports[`amplify-input spec: Render logic -> renders correct HTML 1`] = `
 <amplify-input>
-  <input class="amplify-ui--input css-9k9t2f" placeholder="" type="text">
+  <input class="amplify-ui--input css-bwrwh8" placeholder="" type="text">
 </amplify-input>
 `;
 
 exports[`amplify-input spec: Render logic -> renders with a name for the input 1`] = `
 <amplify-input name="seattle">
-  <input class="amplify-ui--input css-9k9t2f" name="seattle" placeholder="" type="text">
+  <input class="amplify-ui--input css-bwrwh8" name="seattle" placeholder="" type="text">
 </amplify-input>
 `;
 
 exports[`amplify-input spec: Render logic -> renders with complex prop: inputProps spread on the input element 1`] = `
 <amplify-input>
-  <input autocomplete="off" class="amplify-ui--input css-9k9t2f" max="10" min="3" placeholder="" type="text">
+  <input autocomplete="off" class="amplify-ui--input css-bwrwh8" max="10" min="3" placeholder="" type="text">
 </amplify-input>
 `;
 

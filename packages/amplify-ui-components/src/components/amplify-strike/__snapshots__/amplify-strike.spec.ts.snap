@@ -10,9 +10,9 @@ exports[`amplify-strike stories withOverrideStyle 1`] = `
 `;
 
 exports[`amplify-strike stories withText 1`] = `
-<amplify-strike class="amplify-ui--strike css-7iij57">
+<amplify-strike class="amplify-ui--strike css-1ket5td">
   <!---->
-  <span class="amplify-ui--strike css-zjnd08">
+  <span class="amplify-ui--strike css-15gu3cp">
     or
   </span>
 </amplify-strike>

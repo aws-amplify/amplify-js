@@ -8,7 +8,7 @@ export const signInButton = css`
     margin-bottom: 10px;
     cursor: pointer;
     padding: 0;
-    color: var(--deep-squid-ink);
+    color: var(--amplify-deep-squid-ink);
     font-size: 14px;
     box-sizing: content-box;
 
@@ -18,9 +18,9 @@ export const signInButton = css`
   }
 
   &.amazon button {
-    background-color: var(--amazon-orange);
+    background-color: var(--amplify-amazon-orange);
     border: none;
-    color: var(--white);
+    color: var(--amplify-white);
     font-family: 'Amazon Ember';
   }
 
@@ -35,19 +35,19 @@ export const signInButton = css`
     background-color: #4267b2;
     border-color: #4267b2;
     font-family: 'Helvetica Neue';
-    color: var(--white);
+    color: var(--amplify-white);
   }
 
   &.google button {
     background-color: #4285f4;
     font-family: Roboto;
     border: 1px solid #4285f4;
-    color: var(--white);
+    color: var(--amplify-white);
   }
 
   &.oauth button {
-    background-color: var(--white);
-    color: var(--deep-squid-ink);
+    background-color: var(--amplify-white);
+    color: var(--amplify-deep-squid-ink);
   }
 
   .icon {
@@ -76,7 +76,7 @@ export const signInButton = css`
   }
 
   &.google .icon {
-    background-color: var(--white);
+    background-color: var(--amplify-white);
     border-radius: 4px 0 0 4px;
     height: 28px;
     width: 28px;

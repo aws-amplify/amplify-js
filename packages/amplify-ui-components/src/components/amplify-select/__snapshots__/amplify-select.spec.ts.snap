@@ -2,7 +2,7 @@
 
 exports[`amplify-select spec: Render logic -> should render an empty \`placeholder\` label and value of \`1\` by default 1`] = `
 <amplify-select>
-  <select class="amplify-ui--amplify-select css-ynt9n9">
+  <select class="amplify-ui--amplify-select css-11ejdn9">
     <option value="1"></option>
   </select>
 </amplify-select>

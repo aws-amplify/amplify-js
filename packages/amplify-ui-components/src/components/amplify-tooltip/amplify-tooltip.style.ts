@@ -4,14 +4,14 @@ export const tooltip = css`
   display: inline;
   position: relative;
   font-size: 12px;
-  font-family: var(--font-family);
+  font-family: var(--amplify-font-family);
   margin: 0 0 0 16px;
 
   :after {
-    background-color: var(--deep-squid-ink);
+    background-color: var(--amplify-deep-squid-ink);
     border-radius: 2px;
     bottom: 46px;
-    color: var(--white);
+    color: var(--amplify-white);
     content: attr(data-text);
     text-decoration: none;
     padding: 10px;
@@ -29,7 +29,7 @@ export const tooltip = css`
   
   :before {
     border: solid;
-    border-color: var(--deep-squid-ink) transparent transparent transparent;
+    border-color: var(--amplify-deep-squid-ink) transparent transparent transparent;
     border-width: 5px;
     bottom: 36px;
     content:"";

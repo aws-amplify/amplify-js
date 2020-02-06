@@ -6,7 +6,7 @@ export const checkbox = css`
   width: 100%;
   padding: 16px;
   font-size: 14px;
-  font-family: var(--font-family);
+  font-family: var(--amplify-font-family);
   input {
     margin-right: 12px;
   }

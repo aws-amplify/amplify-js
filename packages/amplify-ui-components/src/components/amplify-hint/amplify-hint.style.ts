@@ -1,9 +1,9 @@
 import { css } from 'emotion';
 
 export const hint = css`
-  color: var(--hint-color);
-  font-family: var(--font-family);
+  color: var(--amplify-hint-color);
+  font-family: var(--amplify-font-family);
   font-weight: 300;
-  font-size: var(--third-font-size);
+  font-size: var(--amplify-third-font-size);
   margin-bottom: 2.625rem;
 `;
