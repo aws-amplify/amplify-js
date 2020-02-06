@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { injectGlobal } from 'emotion'
+import { injectGlobal } from 'emotion';
 
 injectGlobal`
   :root {
