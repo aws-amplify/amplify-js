@@ -3,8 +3,9 @@
 exports[`amplify-toast spec: Render logic -> should render an empty link tag by default with a warning icon 1`] = `
 <amplify-toast>
   <!---->
-  <div class="css-1ia6xsv">
+  <div class="css-1ha065d">
     <amplify-icon class="css-ur29dh" name="warning"></amplify-icon>
+    <span></span>
     <a class="css-1s6iclz"></a>
   </div>
 </amplify-toast>

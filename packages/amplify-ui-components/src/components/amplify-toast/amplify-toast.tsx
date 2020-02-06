@@ -20,7 +20,7 @@ export class AmplifyToast {
     return (
       <div class={toast}>
         <amplify-icon class={toastIcon} name="warning" />
-        <span>{this.message}</span>
+        {this.message !== '' && <span>{this.message}</span>}
         <slot />
         <a class={toastClose} onClick={this.onClose} />
       </div>
