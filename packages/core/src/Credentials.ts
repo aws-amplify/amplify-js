@@ -205,14 +205,11 @@ export class CredentialsClass {
 
 		// Removing the signature middleware and passing empty credentials and signer
 		// because https://github.com/aws/aws-sdk-js-v3/issues/354
-		console.log('fromCognitoIdentity', fromCognitoIdentity);
-		console.log('CognitoIdentityClient', CognitoIdentityClient);
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
 		});
-		console.log(cognitoClient);
 
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
