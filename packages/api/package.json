@@ -42,7 +42,7 @@
     "@aws-amplify/api-graphql": "^1.0.0"
   },
   "peerDependencies": {
-    "@aws-amplify/pubsub": "^1.2.4"
+    "@aws-amplify/pubsub": "^2.1.1"
   },
   "jest": {
     "globals": {

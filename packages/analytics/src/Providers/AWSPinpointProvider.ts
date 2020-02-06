@@ -28,6 +28,7 @@ import {
 	UpdateEndpointCommand,
 	GetUserEndpointsCommand,
 } from '@aws-sdk/client-pinpoint';
+import { EventsBatch } from '@aws-sdk/client-pinpoint/models';
 import Cache from '@aws-amplify/cache';
 
 import {
@@ -40,7 +41,6 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
-import { EventsBatch } from 'aws-sdk/clients/pinpoint';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
