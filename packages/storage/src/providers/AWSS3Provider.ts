@@ -28,6 +28,7 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
+import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -487,6 +488,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
+			urlParser: parseUrl,
 		});
 		return s3client;
 	}

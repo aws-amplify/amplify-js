@@ -41,6 +41,7 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
+import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -609,6 +610,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
+			urlParser: parseUrl,
 		});
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
