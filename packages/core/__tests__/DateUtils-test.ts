@@ -1,4 +1,4 @@
-import { DateUtils } from './DateUtils';
+import { DateUtils } from '../src/Util/DateUtils';
 
 // Mock Date (https://github.com/facebook/jest/issues/2234#issuecomment-308121037)
 const staticDate = new Date('2020-01-01');
