@@ -19,9 +19,6 @@ module.exports = {
 		extensions: ['.js', '.json'],
 	},
 	mode: 'production',
-	node: {
-		fs: 'empty',
-	},
 	module: {
 		rules: [
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
