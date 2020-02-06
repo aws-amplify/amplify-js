@@ -6,6 +6,9 @@
  */
 
 export const DateUtils = {
+	/**
+	 * Milliseconds to offset the date to compensate for clock skew between device & services
+	 */
 	clockOffset: 0,
 
 	getDateWithClockOffset() {
