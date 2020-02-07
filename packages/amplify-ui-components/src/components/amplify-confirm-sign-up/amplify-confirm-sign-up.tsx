@@ -14,7 +14,7 @@ import {
 import { AuthState, CognitoUserInterface, AuthStateHandler } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { Hub } from '@aws-amplify/core';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -105,10 +105,7 @@ export class AmplifyConfirmSignUp {
       await Auth.resendSignUp(this.username);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
-      Hub.dispatch('auth-error', {
-        event: 'toastError',
-        message: error.message,
-      });
+      dispatchToastHubEvent(error);
       throw new Error(error);
     }
   }
@@ -128,10 +125,7 @@ export class AmplifyConfirmSignUp {
 
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
-      Hub.dispatch('auth-error', {
-        event: 'toastError',
-        message: error.message,
-      });
+      dispatchToastHubEvent(error);
       throw new Error(error);
     }
   }

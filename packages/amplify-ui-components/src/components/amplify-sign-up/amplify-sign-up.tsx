@@ -19,7 +19,7 @@ import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
-import { Hub } from '@aws-amplify/core';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-sign-up',
@@ -129,7 +129,9 @@ export class AmplifySignUp {
   }
 
   composePhoneNumberInput(phoneNumber: PhoneNumberInterface) {
-    if (!phoneNumber.phoneNumberValue) throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
+    if (!phoneNumber.phoneNumberValue) {
+      throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
+    }
 
     const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()\s]/g, '');
 
@@ -146,24 +148,20 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    const signUpAttrs: AmplifySignUpAttributes = {
-      username: this.username,
-      password: this.password,
-      attributes: {
-        email: this.email,
-        phone_number: this.composePhoneNumberInput(this.phoneNumber),
-      },
-    };
-
     try {
-      const data = await Auth.signUp(signUpAttrs);
+      const signUpAttrs: AmplifySignUpAttributes = {
+        username: this.username,
+        password: this.password,
+        attributes: {
+          email: this.email,
+          phone_number: this.composePhoneNumberInput(this.phoneNumber),
+        },
+      };
 
+      const data = await Auth.signUp(signUpAttrs);
       this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
     } catch (error) {
-      Hub.dispatch('auth-error', {
-        event: 'toastError',
-        message: error.message,
-      });
+      dispatchToastHubEvent(error);
       throw new Error(error);
     }
   }

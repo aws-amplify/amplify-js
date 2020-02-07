@@ -1,6 +1,12 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
-import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
+import {
+  NO_AUTH_MODULE_FOUND,
+  SIGNING_IN_WITH_HOSTEDUI_KEY,
+  AUTHENTICATOR_AUTHSTATE,
+  TOAST_AUTH_ERROR_CHANNEL,
+  TOAST_AUTH_ERROR_EVENT,
+} from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub } from '@aws-amplify/core';
 import { Logger } from '@aws-amplify/core';
@@ -24,9 +30,9 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
 
   async componentWillLoad() {
-    Hub.listen('auth-error', data => {
+    Hub.listen(TOAST_AUTH_ERROR_CHANNEL, data => {
       const { payload } = data;
-      if (payload.event === 'toastError' && payload.message) {
+      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
         this.toastMessage = payload.message;
       }
     });
@@ -105,6 +111,12 @@ export class AmplifyAuthenticator {
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }
+  }
+
+  async componentDidUnload() {
+    Hub.remove(TOAST_AUTH_ERROR_CHANNEL, () => {
+      logger.info('Toast auth listener removed');
+    });
   }
 
   render() {

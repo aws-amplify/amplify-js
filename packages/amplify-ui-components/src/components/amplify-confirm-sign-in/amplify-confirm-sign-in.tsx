@@ -14,8 +14,9 @@ import {
   CONFIRM_TOTP_CODE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { Logger, isEmpty, Hub } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -110,10 +111,7 @@ export class AmplifyConfirmSignIn {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
       this.checkContact(this.user);
     } catch (error) {
-      Hub.dispatch('auth-error', {
-        event: 'toastError',
-        message: error.message,
-      });
+      dispatchToastHubEvent(error);
       logger.error(error);
       throw new Error(error);
     }
