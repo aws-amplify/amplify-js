@@ -6,10 +6,9 @@ import sceneExample from './scene-example';
 
 import Auth from '@aws-amplify/auth';
 import XR from '@aws-amplify/xr';
-import awsexports from './src/aws-exports';
 
-Auth.configure(awsexports);
-XR.configure(awsexports);
+Auth.configure({});
+XR.configure({});
 
 const examples = [AuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
 
