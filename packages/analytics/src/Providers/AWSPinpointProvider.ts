@@ -520,6 +520,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _removeUnusedEndpoints(appId, userId) {
 		return new Promise((res, rej) => {
+			// TODO: re-write with Promise (during refactor pt. 2)
 			this.pinpointClient.getUserEndpoints(
 				{
 					ApplicationId: appId,
