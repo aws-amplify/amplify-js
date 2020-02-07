@@ -40,9 +40,7 @@
   "dependencies": {
     "@aws-amplify/core": "^2.2.0",
     "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.14",
-    "@aws-sdk/url-parser-node": "^1.0.0-alpha.4",
-    "@types/text-encoding": "^0.0.35",
-    "text-encoding": "^0.7.0"
+    "@aws-sdk/url-parser-node": "^1.0.0-alpha.4"
   },
   "jest": {
     "globals": {
