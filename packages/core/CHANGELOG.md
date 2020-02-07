@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.2...@aws-amplify/core@2.2.4) (2020-02-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Revert environment checks ([#4803](https://github.com/aws-amplify/amplify-js/issues/4803)) ([d92f3d8](https://github.com/aws-amplify/amplify-js/commit/d92f3d8df057c8dcb61a77b648bfc6d9efc2fd02)), closes [#4678](https://github.com/aws-amplify/amplify-js/issues/4678)
+* **@aws-amplify/core:** Support clock skew ([#4844](https://github.com/aws-amplify/amplify-js/issues/4844)) ([8156cc9](https://github.com/aws-amplify/amplify-js/commit/8156cc9c84713541c236e41a8928f03368052bef))
+* **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+
+
+
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.1...@aws-amplify/core@2.2.2) (2020-01-10)
 
 
