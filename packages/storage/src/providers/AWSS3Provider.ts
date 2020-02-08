@@ -15,17 +15,20 @@ import {
 	Hub,
 	Credentials,
 	Parser,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
+import {
+	S3Client,
+	GetObjectCommand,
+	PutObjectCommand,
+	DeleteObjectCommand,
+	ListObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
-import { GetObjectCommand } from '@aws-sdk/client-s3-browser/commands/GetObjectCommand';
-import { PutObjectCommand } from '@aws-sdk/client-s3-browser/commands/PutObjectCommand';
-import { DeleteObjectCommand } from '@aws-sdk/client-s3-browser/commands/DeleteObjectCommand';
-import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObjectsCommand';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
+import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -482,9 +485,10 @@ export class AWSS3Provider implements StorageProvider {
 		const s3client = new S3Client({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
+			urlParser: parseUrl,
 		});
-		appendAmplifyUserAgent(s3client);
 		return s3client;
 	}
 }

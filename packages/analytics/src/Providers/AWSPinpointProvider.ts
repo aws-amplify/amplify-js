@@ -19,12 +19,16 @@ import {
 	Signer,
 	JS,
 	Hub,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { PinpointClient } from '@aws-sdk/client-pinpoint-browser/PinpointClient';
-import { PutEventsCommand } from '@aws-sdk/client-pinpoint-browser/commands/PutEventsCommand';
-import { UpdateEndpointCommand } from '@aws-sdk/client-pinpoint-browser/commands/UpdateEndpointCommand';
-import { GetUserEndpointsCommand } from '@aws-sdk/client-pinpoint-browser/commands/GetUserEndpointsCommand';
+import {
+	PinpointClient,
+	PutEventsCommand,
+	PutEventsCommandInput,
+	UpdateEndpointCommand,
+	GetUserEndpointsCommand,
+} from '@aws-sdk/client-pinpoint';
+import { EventsBatch } from '@aws-sdk/client-pinpoint/models';
 import Cache from '@aws-amplify/cache';
 
 import {
@@ -37,6 +41,7 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
+import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -259,15 +264,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const endpointContext = {};
 
-		const eventParams = {
+		const eventParams: PutEventsCommandInput = {
 			ApplicationId: appId,
 			EventsRequest: {
 				BatchItem: {},
 			},
 		};
 
-		eventParams.EventsRequest.BatchItem[endpointId] = {};
-		const endpointObj = eventParams.EventsRequest.BatchItem[endpointId];
+		const endpointObj: EventsBatch = {} as EventsBatch;
 		endpointObj.Endpoint = endpointContext;
 		endpointObj.Events = {
 			[eventId]: {
@@ -278,6 +282,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				Session: session,
 			},
 		};
+		eventParams.EventsRequest.BatchItem[endpointId] = endpointObj;
 
 		return eventParams;
 	}
@@ -288,7 +293,6 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			config: { endpointId },
 		} = params;
 		const eventParams = this._generateBatchItemContext(params);
-
 		const command: PutEventsCommand = new PutEventsCommand(eventParams);
 
 		try {
@@ -602,8 +606,12 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = this._config;
 		logger.debug('init clients with credentials', credentials);
-		this.pinpointClient = new PinpointClient({ region, credentials });
-		appendAmplifyUserAgent(this.pinpointClient);
+		this.pinpointClient = new PinpointClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+			urlParser: parseUrl,
+		});
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
 			// if the identity has remained the same, pass the updated client to the buffer

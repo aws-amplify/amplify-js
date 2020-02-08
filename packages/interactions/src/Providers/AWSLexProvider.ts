@@ -13,13 +13,15 @@
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import { InteractionsOptions, InteractionsMessage } from '../types';
-import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
-import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
-import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
+import {
+	LexRuntimeServiceClient,
+	PostTextCommand,
+	PostContentCommand,
+} from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 
 const logger = new Logger('AWSLexProvider');
@@ -98,8 +100,8 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
 			region: this._config[botname].region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(this.lexRuntimeServiceClient);
 
 		let params;
 		if (typeof message === 'string') {

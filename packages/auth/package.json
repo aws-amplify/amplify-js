@@ -8,7 +8,10 @@
   "react-native": {
     "./index": "./lib/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./lib-esm/index.js",
+    "./lib/index.js"
+  ],
   "publishConfig": {
     "access": "public"
   },

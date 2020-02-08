@@ -13,12 +13,15 @@
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSKinesisProvider } from './index';
-import * as Firehose from 'aws-sdk/clients/firehose';
+import {
+	PutRecordBatchCommand,
+	FirehoseClient,
+} from '@aws-sdk/client-firehose';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
 export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
-	private _kinesisFirehose;
+	private _kinesisFirehose: FirehoseClient;
 
 	constructor(config?) {
 		super(config);
@@ -67,16 +70,16 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 				'with records',
 				records[streamName]
 			);
-			this._kinesisFirehose.putRecordBatch(
-				{
-					Records: records[streamName],
-					DeliveryStreamName: streamName,
-				},
-				err => {
-					if (err) logger.debug('Failed to upload records to Kinesis', err);
-					else logger.debug('Upload records to stream', streamName);
-				}
-			);
+
+			this._kinesisFirehose
+				.send(
+					new PutRecordBatchCommand({
+						Records: records[streamName],
+						DeliveryStreamName: streamName,
+					})
+				)
+				.then(res => logger.debug('Upload records to stream', streamName))
+				.catch(err => logger.debug('Failed to upload records to Kinesis', err));
 		});
 	}
 
@@ -101,7 +104,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 
 	private _initFirehose(region, credentials) {
 		logger.debug('initialize kinesis firehose with credentials', credentials);
-		this._kinesisFirehose = new Firehose({
+		this._kinesisFirehose = new FirehoseClient({
 			apiVersion: '2015-08-04',
 			region,
 			credentials,

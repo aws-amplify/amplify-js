@@ -49,7 +49,7 @@ export interface RecordEventPayload {
 	eventId: string;
 	eventType: string;
 	sentAt: number;
-	properties?: Properties;
+	properties?: string;
 }
 
 export interface RecordEventListPayload extends BasePayload {
