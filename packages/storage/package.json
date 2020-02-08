@@ -44,6 +44,7 @@
     "@aws-sdk/url-parser-node": "^1.0.0-alpha.4",
     "@aws-sdk/util-create-request": "^1.0.0-alpha.9",
     "@aws-sdk/util-format-url": "^1.0.0-alpha.4",
+    "events": "^3.1.0",
     "sinon": "^7.5.0"
   },
   "jest": {
