@@ -14,7 +14,6 @@
 export {
 	Analytics,
 	AnalyticsClass,
-	// AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,

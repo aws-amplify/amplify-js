@@ -162,8 +162,6 @@ async function buildES5(typeScriptCompiler) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
-		resolveJsonModule: true,
-		skipLibCheck: true,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
@@ -204,8 +202,6 @@ function buildES6(typeScriptCompiler) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
-		resolveJsonModule: true,
-		skipLibCheck: true,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix

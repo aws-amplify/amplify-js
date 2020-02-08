@@ -95,7 +95,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		Object.assign(params, {
 			config: this._config,
 			credentials,
-			sentAt: new Date().getTime() / 1000,
+			sentAt: new Date(),
 		});
 		const { eventType, properties } = params.event;
 
@@ -143,6 +143,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			}
 			return;
 		}
+
 		return this.putToBuffer(requestParams);
 	}
 
@@ -349,7 +350,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		const { eventData, sentAt } = params;
 		const trackPayload = <RecordEventPayload>{};
 		trackPayload.sentAt = sentAt;
-		trackPayload.properties = eventData.properties;
+		trackPayload.properties =
+			eventData.properties && JSON.stringify(eventData.properties);
 		trackPayload.eventId =
 			this._sessionManager.getTimerKey() + sessionInfo.sessionId;
 		trackPayload.eventType = eventData.eventType;

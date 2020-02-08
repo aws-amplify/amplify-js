@@ -20,7 +20,6 @@ import Amplify, { Logger, I18n } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import { authDecorator } from './auth.decorator';
 
-import '@aws-amplify/analytics';
 import { Analytics } from '@aws-amplify/analytics';
 
 import { Auth } from '@aws-amplify/auth';

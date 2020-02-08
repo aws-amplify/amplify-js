@@ -16,6 +16,7 @@ import {
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
+import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('Credentials');
 
@@ -205,14 +206,12 @@ export class CredentialsClass {
 
 		// Removing the signature middleware and passing empty credentials and signer
 		// because https://github.com/aws/aws-sdk-js-v3/issues/354
-		console.log('fromCognitoIdentity', fromCognitoIdentity);
-		console.log('CognitoIdentityClient', CognitoIdentityClient);
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
+			urlParser: parseUrl,
 		});
-		console.log(cognitoClient);
 
 		let credentials = undefined;
 		if (identityId && identityId !== 'undefined') {
@@ -297,6 +296,7 @@ export class CredentialsClass {
 			region,
 			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
+			urlParser: parseUrl,
 		});
 		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
 			logins,
@@ -332,6 +332,7 @@ export class CredentialsClass {
 			region,
 			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
+			urlParser: parseUrl,
 		});
 
 		/* 

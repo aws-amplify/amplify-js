@@ -8,7 +8,10 @@
   "react-native": {
     "./index": "./lib/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./lib-esm/index.js",
+    "./lib/index.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -36,8 +39,9 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "^2.2.0",
-    "@aws-sdk/client-s3": "^1.0.0-alpha.9",
-    "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.10",
+    "@aws-sdk/client-s3": "^1.0.0-alpha.12",
+    "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.11",
+    "@aws-sdk/url-parser-node": "^1.0.0-alpha.4",
     "@aws-sdk/util-create-request": "^1.0.0-alpha.9",
     "@aws-sdk/util-format-url": "^1.0.0-alpha.4",
     "sinon": "^7.5.0"
