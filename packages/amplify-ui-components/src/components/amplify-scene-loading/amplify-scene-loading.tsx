@@ -12,7 +12,7 @@ import {
 
 @Component({
   tag: 'amplify-scene-loading',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifySceneLoading {
   /* The name of the scene being loaded */

@@ -2,7 +2,7 @@ import { Component, Prop, h } from '@stencil/core';
 import { EMAIL_SUFFIX, EMAIL_LABEL, EMAIL_PLACEHOLDER } from '../../common/constants';
 @Component({
   tag: 'amplify-email-field',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyEmailField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

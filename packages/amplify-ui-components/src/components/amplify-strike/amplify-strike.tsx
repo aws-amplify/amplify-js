@@ -8,7 +8,7 @@ const STATIC_STRIKE_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--strike`;
 
 @Component({
   tag: 'amplify-strike',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyStrike {
   /** (Optional) Override default styling */

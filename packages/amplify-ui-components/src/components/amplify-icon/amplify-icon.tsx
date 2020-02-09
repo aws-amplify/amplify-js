@@ -9,7 +9,7 @@ const STATIC_ICON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--icon`;
 
 @Component({
   tag: 'amplify-icon',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyIcon {
   /** (Required) Name of icon used to determine the icon rendered */

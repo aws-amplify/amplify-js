@@ -14,14 +14,14 @@ import {
   CONFIRM_TOTP_CODE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { Logger, isEmpty } from '@aws-amplify/core';
+import { Logger, isEmpty, Hub } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 const logger = new Logger('ConfirmSignIn');
 
 @Component({
   tag: 'amplify-confirm-sign-in',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
@@ -35,7 +35,9 @@ export class AmplifyConfirmSignIn {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
+    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
+  };
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing

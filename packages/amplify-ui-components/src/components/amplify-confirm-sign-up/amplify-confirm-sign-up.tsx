@@ -14,10 +14,11 @@ import {
 import { AuthState, CognitoUserInterface, AuthStateHandler } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyConfirmSignUp {
   /** Fires when sign up form is submitted */
@@ -50,7 +51,9 @@ export class AmplifyConfirmSignUp {
   /** Passed from the Authenticator component in order to change Authentication states
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
+    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
+  };
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
 

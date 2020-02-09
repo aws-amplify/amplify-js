@@ -3,7 +3,7 @@ import { USERNAME_SUFFIX, USERNAME_LABEL, USERNAME_PLACEHOLDER } from '../../com
 
 @Component({
   tag: 'amplify-username-field',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

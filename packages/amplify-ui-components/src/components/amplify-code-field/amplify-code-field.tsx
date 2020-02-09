@@ -3,7 +3,7 @@ import { CODE_SUFFIX, CODE_LABEL, CODE_PLACEHOLDER } from '../../common/constant
 
 @Component({
   tag: 'amplify-code-field',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyCodeField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

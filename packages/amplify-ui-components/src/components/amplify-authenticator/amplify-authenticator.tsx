@@ -2,29 +2,30 @@ import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
-import { Logger } from '@aws-amplify/core';
+import { Hub, Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
 
 @Component({
   tag: 'amplify-authenticator',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyAuthenticator {
   /** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
   @Prop() initialAuthState: AuthState = AuthState.SignIn;
-  /** Used as a flag in order to trigger the content displayed */
-  @State() authState: AuthState = AuthState.Loading;
-
-  @State() authData: CognitoUserInterface;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
+
+  @State() authState: AuthState = AuthState.Loading;
+  @State() authData: CognitoUserInterface;
 
   async componentWillLoad() {
     appendToCognitoUserAgent('amplify-ui');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     if (byHostedUI !== 'true') await this.checkUser();
+
+    Hub.listen('AuthenticatorState', data => this.onAuthStateChange(data.payload.event as AuthState));
   }
 
   async checkUser() {
@@ -73,38 +74,39 @@ export class AmplifyAuthenticator {
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.SignIn:
-        return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
+        return (
+          <slot name="sign-in">
+            <amplify-sign-in federated={this.federated} />
+          </slot>
+        );
       case AuthState.ConfirmSignIn:
-        return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-confirm-sign-in user={this.authData} />;
       case AuthState.SignUp:
-        return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
+        return (
+          <slot name="sign-up">
+            <amplify-sign-up />
+          </slot>
+        );
       case AuthState.ConfirmSignUp:
-        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-confirm-sign-up user={this.authData} />;
       case AuthState.ForgotPassword:
-        return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
+        return <amplify-forgot-password />;
       case AuthState.ResetPassword:
-        return <amplify-require-new-password handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-require-new-password user={this.authData} />;
       case AuthState.VerifyContact:
-        return <amplify-verify-contact handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-verify-contact user={this.authData} />;
       case AuthState.TOTPSetup:
-        return <amplify-totp-setup handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-totp-setup user={this.authData} />;
       case AuthState.Loading:
         return <div>Loading...</div>;
       case AuthState.SignedIn:
-        return <amplify-greetings handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return <amplify-greetings user={this.authData} />;
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }
   }
 
   render() {
-    return (
-      <Host>
-        {this.renderAuthComponent(this.authState)}
-        <div hidden={this.authState !== AuthState.SignedIn}>
-          <slot />
-        </div>
-      </Host>
-    );
+    return <Host>{this.renderAuthComponent(this.authState)}</Host>;
   }
 }

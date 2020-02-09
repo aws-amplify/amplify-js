@@ -7,7 +7,7 @@ const STATIC_CHECKBOX_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--checkbox`;
 
 @Component({
   tag: 'amplify-checkbox',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyCheckbox {
   /** (Optional) Overrides default styling */

@@ -2,7 +2,8 @@ import { h } from '@stencil/core';
 
 const Authenticator = () => (
   <amplify-authenticator>
-    <h1>My App</h1>
+    <amplify-sign-in slot="signIn" headerText="meow" />
+    <amplify-sign-up slot="signUp" headerText="meow2" />
   </amplify-authenticator>
 );
 

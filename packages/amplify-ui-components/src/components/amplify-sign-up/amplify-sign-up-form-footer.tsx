@@ -1,6 +1,5 @@
 import { FunctionalComponent as FC, h } from '@stencil/core';
 import { AmplifySignUpFormFooterProps } from './amplify-sign-up-interface';
-import { signUpFormFooter } from './amplify-sign-up.styles';
 
 export const AmplifySignUpFormFooter: FC<AmplifySignUpFormFooterProps> = ({
   submitButtonText,
@@ -9,7 +8,7 @@ export const AmplifySignUpFormFooter: FC<AmplifySignUpFormFooterProps> = ({
   overrideStyle = false,
   handleAuthStateChange,
 }) => (
-  <div class={signUpFormFooter}>
+  <div class="sign-up-form-footer">
     <span>
       {haveAcccountText}{' '}
       <amplify-link onClick={() => handleAuthStateChange('signin')} data-test="sign-up-sign-in-link">

@@ -7,7 +7,7 @@ const STATIC_TOOLTIP_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--tooltip`;
 
 @Component({
   tag: 'amplify-tooltip',
-  shadow: false,
+  shadow: true,
 })
 
 export class AmplifyTooltip {

@@ -12,7 +12,7 @@ const SCENE_DOM_ID = 'scene-dom-id';
 
 @Component({
   tag: 'amplify-scene',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyScene {
   /* The name of the scene being downloaded and rendered */

@@ -9,7 +9,7 @@ const STATIC_SIGN_IN_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--sign-in-button`;
 
 @Component({
   tag: 'amplify-sign-in-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifySignInButton {
   /** (Optional) Override default styling */

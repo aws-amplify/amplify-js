@@ -8,6 +8,8 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-sign-in](../amplify-sign-in)
+- [amplify-sign-up](../amplify-sign-up)
 - [amplify-authenticator](../amplify-authenticator)
 - [amplify-select-mfa-type](../amplify-select-mfa-type)
 - [rock-paper-scissor](rock-paper-scissor)
@@ -18,6 +20,8 @@
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-sign-in
+  amplify-examples --> amplify-sign-up
   amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-select-mfa-type
   amplify-examples --> rock-paper-scissor

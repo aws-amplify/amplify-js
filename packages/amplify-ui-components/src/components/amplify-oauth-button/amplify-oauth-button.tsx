@@ -6,7 +6,7 @@ import { FederatedConfig } from '../../common/types/auth-types';
 
 @Component({
   tag: 'amplify-oauth-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyOAuthButton {
   @Prop() config: FederatedConfig['oauthConfig'] = {};

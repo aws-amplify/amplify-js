@@ -4,7 +4,7 @@ import { toast, toastClose, toastIcon } from './amplify-toast.style';
 
 @Component({
   tag: 'amplify-toast',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */

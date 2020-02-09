@@ -1,7 +1,4 @@
 import { Component, Prop, h } from '@stencil/core';
-import { select } from './amplify-select.style';
-import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 import {
   SelectOptionsString,
   SelectOptionsNumber,
@@ -9,12 +6,12 @@ import {
   SelectOptionString,
 } from './amplify-select-interface';
 
-const STATIC_SELECT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--amplify-select`;
 const DEFAULT_SELECT_OPTION = [{ label: '', value: 1 }];
 
 @Component({
   tag: 'amplify-select',
-  shadow: false,
+  styleUrl: 'amplify-select.scss',
+  shadow: true,
 })
 export class AmplifySelect {
   /** (Optional) Overrides default styling */
@@ -37,12 +34,7 @@ export class AmplifySelect {
 
   render() {
     return (
-      <select
-        name={this.fieldId}
-        id={this.fieldId}
-        class={styleNuker(this.overrideStyle, STATIC_SELECT_CLASS_NAME, select)}
-        onChange={this.handleInputChange}
-      >
+      <select name={this.fieldId} id={this.fieldId} class="select" onChange={this.handleInputChange}>
         {this.contructSelectOptions(this.options)}
       </select>
     );

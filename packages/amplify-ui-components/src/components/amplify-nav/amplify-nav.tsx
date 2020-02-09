@@ -3,7 +3,7 @@ import { nav } from './amplify-nav.style';
 
 @Component({
   tag: 'amplify-nav',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyNav {
   render() {

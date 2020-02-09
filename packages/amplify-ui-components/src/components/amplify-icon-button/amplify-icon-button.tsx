@@ -7,7 +7,7 @@ import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 const STATIC_ICON_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--button`;
 @Component({
   tag: 'amplify-icon-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyIconButton {
   /* The name of the icon used inside of the button */

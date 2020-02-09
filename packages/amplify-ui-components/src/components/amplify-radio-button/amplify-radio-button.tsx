@@ -7,7 +7,7 @@ const STATIC_RADIO_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--radio-button`;
 
 @Component({
   tag: 'amplify-radio-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyRadioButton {
   /** The callback, called when the input is modified by the user. */
