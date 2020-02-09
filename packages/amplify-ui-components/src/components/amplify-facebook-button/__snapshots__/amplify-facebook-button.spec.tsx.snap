@@ -2,9 +2,11 @@
 
 exports[`amplify-facebook-button stories defaults 1`] = `
 <amplify-facebook-button>
-  <amplify-sign-in-button provider="facebook">
-    <script async="" defer="" src="https://connect.facebook.net/en_US/sdk.js"></script>
-    Sign In with Facebook
-  </amplify-sign-in-button>
+  <mock:shadow-root>
+    <amplify-sign-in-button provider="facebook">
+      <script async="" defer="" src="https://connect.facebook.net/en_US/sdk.js"></script>
+      Sign In with Facebook
+    </amplify-sign-in-button>
+  </mock:shadow-root>
 </amplify-facebook-button>
 `;

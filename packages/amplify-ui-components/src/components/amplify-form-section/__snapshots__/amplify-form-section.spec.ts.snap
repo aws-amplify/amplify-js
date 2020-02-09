@@ -2,84 +2,84 @@
 
 exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
 <amplify-form-section>
-  <!---->
-  <form>
-    <amplify-section>
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-m2crxr">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-25p8x5">
-            <amplify-button data-test="form-section-form-section-button" type="submit">
-              Submit
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section>
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" type="submit">
+                Submit
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;
 
 exports[`amplify-form-section spec: Render logic -> should render a form section with a submit button text of \`Go\` 1`] = `
 <amplify-form-section submit-button-text="Go">
-  <!---->
-  <form>
-    <amplify-section>
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-m2crxr">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-25p8x5">
-            <amplify-button data-test="form-section-form-section-button" type="submit">
-              Go
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section>
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" type="submit">
+                Go
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;
 
 exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
 <amplify-form-section override-style="true">
-  <!---->
-  <form>
-    <amplify-section overridestyle="">
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer">
-            <amplify-button data-test="form-section-form-section-button" overridestyle="" type="submit">
-              Submit
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section overridestyle="">
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" overridestyle="" type="submit">
+                Submit
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;
