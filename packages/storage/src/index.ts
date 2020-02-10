@@ -23,7 +23,6 @@ const getInstance = () => {
 	if (_instance) {
 		return _instance;
 	}
-	console.log('Create Storage Instance, log');
 	logger.debug('Create Storage Instance, debug');
 	_instance = new StorageClass();
 	_instance.vault = new StorageClass();

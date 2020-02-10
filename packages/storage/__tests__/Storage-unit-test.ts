@@ -227,7 +227,6 @@ describe('Storage', () => {
 
 		test('vault level is always private', () => {
 			const storage = StorageCategory;
-			console.log('StorageCategory is ', StorageCategory);
 			expect.assertions(3);
 			storage.vault.configure = jest.fn().mockImplementation(configure => {
 				expect(configure).toEqual({
