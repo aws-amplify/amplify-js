@@ -9,7 +9,7 @@
 
 | Property  | Attribute | Description                                                    | Type         | Default     |
 | --------- | --------- | -------------------------------------------------------------- | ------------ | ----------- |
-| `message` | `message` |                                                                | `string`     | `undefined` |
+| `message` | `message` |                                                                | `string`     | `''`        |
 | `onClose` | --        | Used in order to add a dismissable `x` for the Toast component | `() => void` | `undefined` |
 
 

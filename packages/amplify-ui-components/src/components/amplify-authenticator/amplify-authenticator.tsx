@@ -4,7 +4,7 @@ import {
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
   AUTHENTICATOR_AUTHSTATE,
-  TOAST_AUTH_ERROR_CHANNEL,
+  UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
@@ -30,7 +30,7 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
 
   async componentWillLoad() {
-    Hub.listen(TOAST_AUTH_ERROR_CHANNEL, data => {
+    Hub.listen(UI_AUTH_CHANNEL, data => {
       const { payload } = data;
       if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
         this.toastMessage = payload.message;
@@ -114,7 +114,7 @@ export class AmplifyAuthenticator {
   }
 
   async componentDidUnload() {
-    Hub.remove(TOAST_AUTH_ERROR_CHANNEL, () => {
+    Hub.remove(UI_AUTH_CHANNEL, () => {
       logger.info('Toast auth listener removed');
     });
   }
@@ -122,7 +122,7 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        {this.toastMessage !== '' ? (
+        {this.toastMessage && this.toastMessage !== '' ? (
           <amplify-toast
             message={this.toastMessage}
             onClose={() => {

@@ -134,6 +134,6 @@ export const VERIFY_CONTACT_PHONE_LABEL = 'Phone Number';
 export const SUCCESS = 'SUCCESS';
 export const FAILURE = 'FAILURE';
 
-//Hub Events and Channels
-export const TOAST_AUTH_ERROR_CHANNEL = 'UI Comp - AuthError';
-export const TOAST_AUTH_ERROR_EVENT = 'toastAuthError';
+// Hub Events and Channels
+export const UI_AUTH_CHANNEL = 'UI Auth';
+export const TOAST_AUTH_ERROR_EVENT = 'ToastAuthError';

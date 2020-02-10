@@ -1,8 +1,8 @@
 import { cx } from 'emotion';
 import { Hub } from '@aws-amplify/core';
-import { TOAST_AUTH_ERROR_CHANNEL, TOAST_AUTH_ERROR_EVENT } from './constants';
+import { UI_AUTH_CHANNEL, TOAST_AUTH_ERROR_EVENT } from './constants';
 
-interface Error {
+interface ToastError {
   code: string;
   name: string;
   message: string;
@@ -13,8 +13,8 @@ export const styleNuker = (override: boolean, cn: string, ecn: string): string =
 export const styleBranch = (branch: boolean, baseClass: string, branchClassA: string, branchClassB: string): string =>
   branch ? cx(baseClass, branchClassA) : cx(baseClass, branchClassB);
 
-export const dispatchToastHubEvent = (error: Error) => {
-  Hub.dispatch(TOAST_AUTH_ERROR_CHANNEL, {
+export const dispatchToastHubEvent = (error: ToastError) => {
+  Hub.dispatch(UI_AUTH_CHANNEL, {
     event: TOAST_AUTH_ERROR_EVENT,
     message: error.message,
   });

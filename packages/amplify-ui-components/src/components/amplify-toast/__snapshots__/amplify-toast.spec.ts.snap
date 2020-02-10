@@ -5,7 +5,6 @@ exports[`amplify-toast spec: Render logic -> should render an empty link tag by 
   <!---->
   <div class="css-6ffwst">
     <amplify-icon class="css-ur29dh" name="warning"></amplify-icon>
-    <span></span>
     <a class="css-1gnfe7k"></a>
   </div>
 </amplify-toast>
