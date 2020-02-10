@@ -5,14 +5,13 @@ jest.mock('../src/vendor/dom-utils', () => {
 });
 
 import {
-	AWS,
 	ClientDevice,
 	Parser,
 	ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
-import { default as Analytics } from '../src/Analytics';
+import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
 
 const options: AnalyticsOptions = {

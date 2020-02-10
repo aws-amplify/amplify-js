@@ -42,6 +42,7 @@ export class APIClass {
 		this._options = options;
 		this._restApi = new RestAPIClass(options);
 		this._graphqlApi = new GraphQLAPIClass(options);
+		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -158,17 +159,4 @@ export class APIClass {
 	}
 }
 
-let _instance: APIClass = null;
-
-if (!_instance) {
-	logger.debug('Creating API Instance');
-	_instance = new APIClass(null);
-	Amplify.register(_instance);
-}
-
-export { _instance as API };
-
-/**
- * @deprecated use named import
- */
-export default APIClass;
+export const API = new APIClass(null);

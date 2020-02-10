@@ -31,6 +31,7 @@ export class RestAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
+		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -254,12 +255,4 @@ export class RestAPIClass {
 	}
 }
 
-let _instance: RestAPIClass = null;
-
-if (!_instance) {
-	logger.debug('Creating Rest API Instance');
-	_instance = new RestAPIClass(null);
-	Amplify.register(_instance);
-}
-
-export { _instance as RestAPI };
+export const RestAPI = new RestAPIClass(null);

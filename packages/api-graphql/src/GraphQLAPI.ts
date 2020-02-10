@@ -52,6 +52,7 @@ export class GraphQLAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
+		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -323,12 +324,4 @@ export class GraphQLAPIClass {
 	}
 }
 
-let _instance: GraphQLAPIClass = null;
-
-if (!_instance) {
-	logger.debug('Creating GraphQL API Instance');
-	_instance = new GraphQLAPIClass(null);
-	Amplify.register(_instance);
-}
-
-export { _instance as GraphQLAPI };
+export const GraphQLAPI = new GraphQLAPIClass(null);

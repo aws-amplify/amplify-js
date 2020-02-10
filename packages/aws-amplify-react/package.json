@@ -5,10 +5,7 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "sideEffects": [
-    "./lib-esm/index.js",
-    "./lib/index.js"
-  ],
+  "sideEffects": false,
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage --updateSnapshot --maxWorkers 2",
     "build-with-test": "npm test && npm run build",

@@ -1988,8 +1988,4 @@ export class AuthClass {
 	}
 }
 
-/**
- * @deprecated use named import
- */
-
-export default AuthClass;
+export const Auth = new AuthClass(null);

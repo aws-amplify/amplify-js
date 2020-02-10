@@ -2,7 +2,7 @@ import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
-import Storage from '../storage/storage';
+import { ExclusiveStorage as Storage } from '../storage/storage';
 import {
 	ConflictHandler,
 	ErrorHandler,
