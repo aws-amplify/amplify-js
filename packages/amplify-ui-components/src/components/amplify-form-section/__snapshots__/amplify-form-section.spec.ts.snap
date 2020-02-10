@@ -7,7 +7,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-1oug79q">
+          <div class="amplify-ui--section-header css-m2crxr">
             <h3 data-test="form-section-header-section">
               Amplify
             </h3>
@@ -16,7 +16,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-ejevcw">
+          <div class="amplify-ui--section-footer css-25p8x5">
             <amplify-button data-test="form-section-form-section-button" type="submit">
               Submit
             </amplify-button>
@@ -35,7 +35,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-1oug79q">
+          <div class="amplify-ui--section-header css-m2crxr">
             <h3 data-test="form-section-header-section">
               Amplify
             </h3>
@@ -44,7 +44,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-ejevcw">
+          <div class="amplify-ui--section-footer css-25p8x5">
             <amplify-button data-test="form-section-form-section-button" type="submit">
               Go
             </amplify-button>

@@ -3,7 +3,7 @@
 exports[`amplify-link spec: Render logic -> should render a link by default 1`] = `
 <amplify-link>
   <!---->
-  <a class="amplify-ui--link css-3x35s3" role="navigation"></a>
+  <a class="amplify-ui--link css-145vlig" role="navigation"></a>
 </amplify-link>
 `;
 

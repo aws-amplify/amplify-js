@@ -3,7 +3,7 @@
 exports[`amplify-label spec: Render logic -> should render a label by default 1`] = `
 <amplify-label>
   <!---->
-  <label class="amplify-ui--label css-uiv44s"></label>
+  <label class="amplify-ui--label css-1sps3ku"></label>
 </amplify-label>
 `;
 

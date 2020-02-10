@@ -5,7 +5,7 @@ exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form 
   <amplify-form-section headertext="Create a new account" testdataprefix="sign-up">
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-1r8ajg4">
+      <div class="css-14i8v8l">
         <span>
           Have an account?
           <amplify-link data-test="sign-up-sign-in-link">

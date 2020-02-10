@@ -4,17 +4,17 @@ export const link = css`
   color: #ff9900;
   cursor: pointer;
   :link {
-    color: var(--amazon-orange);
+    color: var(--amplify-amazon-orange);
     text-decoration: none;
   }
 
   :hover {
-    color: var(--light-amazon-orange);
+    color: var(--amplify-light-amazon-orange);
     text-decoration: underline;
   }
   
   :active {
-    color: var(--button-click);
+    color: var(--amplify-button-click);
     text-decoration: underline;
   }
 `;

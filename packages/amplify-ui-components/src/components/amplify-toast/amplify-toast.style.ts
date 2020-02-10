@@ -14,12 +14,12 @@ export const toast = css`
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
   padding: 16px;
-  background-color: var(--dark-blue);
-  font-size: var(--secondary-font-size);
-  color: var(--white);
+  background-color: var(--amplify-dark-blue);
+  font-size: var(--amplify-secondary-font-size);
+  color: var(--amplify-white);
   box-sizing: border-box;
   border-radius: 5px;
-  font-family: var(--font-family);
+  font-family: var(--amplify-font-family);
 
   > span {
     margin-right: 10px;
@@ -44,12 +44,12 @@ export const toastClose = css`
     top: 50%;
     left: 0;
     margin-top: -1px;
-    background: var(--light-grey);
+    background: var(--amplify-light-grey);
   }
 
   :hover::before,
   :hover::after {
-    background: var(--red);
+    background: var(--amplify-red);
   }
 
   ::before {

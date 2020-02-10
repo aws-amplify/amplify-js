@@ -6,7 +6,7 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-ejevcw">
+      <div class="css-25p8x5">
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           Sign In
         </amplify-button>
@@ -28,7 +28,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-ejevcw">
+      <div class="css-25p8x5">
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           Sign In
         </amplify-button>
@@ -53,7 +53,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
     </amplify-strike>
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-ejevcw">
+      <div class="css-25p8x5">
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           Sign In
         </amplify-button>
@@ -78,7 +78,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederatedAndO
     </amplify-strike>
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-ejevcw">
+      <div class="css-25p8x5">
         <amplify-button data-test="sign-in-sign-in-button" overridestyle="" type="submit">
           Sign In
         </amplify-button>
@@ -100,7 +100,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withOverrideStyle
     <amplify-federated-buttons></amplify-federated-buttons>
     <amplify-auth-fields></amplify-auth-fields>
     <div slot="amplify-form-section-footer">
-      <div class="css-ejevcw">
+      <div class="css-25p8x5">
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           Sign In
         </amplify-button>

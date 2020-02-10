@@ -3,7 +3,7 @@ import { css } from 'emotion';
 export const section = css`
   position: relative;
   margin-bottom: 20px;
-  background-color: var(--section-background-color);
+  background-color: var(--amplify-section-background-color);
   padding: 35px 40px;
   text-align: left;
   display: inline-block;
@@ -11,5 +11,5 @@ export const section = css`
   border-radius: 6px;
   box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  font-family: var(--font-family);
+  font-family: var(--amplify-font-family);
 `;

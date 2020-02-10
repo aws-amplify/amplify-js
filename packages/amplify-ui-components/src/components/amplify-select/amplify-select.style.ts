@@ -3,10 +3,10 @@ import { css } from 'emotion';
 export const select = css`
   padding: 14px;
   font-size: 14px;
-  color: var(--deep-squid-ink);
-  background-color: var(--white);
+  color: var(--amplify-deep-squid-ink);
+  background-color: var(--amplify-white);
   background-image: none;
-  border: 1px solid var(--input-border-color);
+  border: 1px solid var(--amplify-input-border-color);
   border-radius: 3px 0 0 3px;
   box-sizing: border-box;
   -webkit-appearance: none;
@@ -24,6 +24,6 @@ export const select = css`
 
   :focus {
     outline: none;
-    border-color: var(--amazon-orange);
+    border-color: var(--amplify-amazon-orange);
   }
 `;
