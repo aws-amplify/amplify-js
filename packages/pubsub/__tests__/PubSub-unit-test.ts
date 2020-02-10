@@ -1,4 +1,4 @@
-import PubSub from '../src/PubSub';
+import { PubSubClass as PubSub } from '../src/PubSub';
 import {
 	MqttOverWSProvider,
 	AWSAppSyncProvider,

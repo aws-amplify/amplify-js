@@ -19,8 +19,12 @@ const logger = new Logger('Storage');
 
 let _instance: StorageClass = null;
 
-if (!_instance) {
-	logger.debug('Create Storage Instance');
+const getInstance = () => {
+	if (_instance) {
+		return _instance;
+	}
+	console.log('Create Storage Instance, log');
+	logger.debug('Create Storage Instance, debug');
 	_instance = new StorageClass();
 	_instance.vault = new StorageClass();
 
@@ -41,11 +45,16 @@ if (!_instance) {
 		logger.debug('storage vault configure called');
 		_instance.vault.configure(vaultConfig);
 	};
-}
+	return _instance;
+};
 
-const Storage = _instance;
+export const Storage: StorageClass = getInstance();
 
+/**
+ * @deprecated use named import
+ */
 export default Storage;
-export { Storage, StorageClass };
+
+export { StorageClass };
 export * from './providers';
 export * from './types';

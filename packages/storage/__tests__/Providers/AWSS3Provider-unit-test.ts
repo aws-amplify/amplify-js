@@ -261,7 +261,6 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			await storage.get('my_key', { customPrefix: { public: '' } });
-			console.log(spyon);
 			expect(spyon.mock.calls[0][0].path).toEqual('/my_key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'

@@ -11,28 +11,38 @@
  * and limitations under the License.
  */
 
+import { Amplify, ServiceWorker } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
+
+/** Always importing Auth when users import Amplify such that
+	for unauthenticated access (no sign in and sign up),
+	users don't have to import Auth explicitly **/
+Amplify.Auth = Auth;
+Amplify.Cache = Cache;
+Amplify.ServiceWorker = ServiceWorker;
+
 export {
 	Analytics,
-	AnalyticsClass,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
-export { Auth, AuthClass } from '@aws-amplify/auth';
+
+export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { PubSub, PubSubClass } from '@aws-amplify/pubsub';
+export { PubSub } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
-export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
+export { Interactions } from '@aws-amplify/interactions';
 export * from '@aws-amplify/ui';
-export { XR, XRClass } from '@aws-amplify/xr';
+export { XR } from '@aws-amplify/xr';
 export {
 	Predictions,
 	AmazonAIPredictionsProvider,
 } from '@aws-amplify/predictions';
 export {
-	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
 	JS,
@@ -42,13 +52,7 @@ export {
 	ServiceWorker,
 } from '@aws-amplify/core';
 
-import { Amplify, ServiceWorker } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
-
-Amplify.Auth = Auth;
-Amplify.Cache = Cache;
-Amplify.ServiceWorker = ServiceWorker;
+export { Amplify };
 
 /**
  * @deprecated use named import

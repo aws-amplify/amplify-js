@@ -1,4 +1,4 @@
-import Interactions from '../src/Interactions';
+import { InteractionsClass as Interactions } from '../src/Interactions';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
 import { Credentials } from '@aws-amplify/core';
 import {

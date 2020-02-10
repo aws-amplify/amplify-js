@@ -8,10 +8,7 @@
   "react-native": {
     "./index": "./lib/index.js"
   },
-  "sideEffects": [
-    "./lib-esm/index.js",
-    "./lib/index.js"
-  ],
+  "sideEffects": false,
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",

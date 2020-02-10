@@ -1,6 +1,6 @@
 import AWSStorageProvider from '../src/providers/AWSS3Provider';
-import { default as Storage } from '../src/Storage';
-import StorageCategory from '../src';
+import { Storage as StorageClass } from '../src/Storage';
+import { Storage as StorageCategory } from '../src';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -20,13 +20,13 @@ const options = {
 describe('Storage', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 		});
 	});
 
 	describe('getPluggable test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
@@ -39,7 +39,7 @@ describe('Storage', () => {
 
 	describe('removePluggable test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
@@ -52,7 +52,7 @@ describe('Storage', () => {
 
 	describe('configure test', () => {
 		test('configure with aws-exports file', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -70,7 +70,7 @@ describe('Storage', () => {
 		});
 
 		test('configure with bucket and region', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				bucket: 'bucket',
@@ -88,7 +88,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Storage object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				Storage: {
@@ -108,7 +108,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Provider object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				AWSS3: {
@@ -128,7 +128,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Storage and Provider object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				Storage: {
@@ -150,7 +150,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket name only', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -168,7 +168,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket, region and with Storage attribute', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -188,7 +188,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket, region and with Provider attribute', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -207,7 +207,7 @@ describe('Storage', () => {
 			});
 		});
 		test('backwards compatible issue, second configure call', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -227,6 +227,7 @@ describe('Storage', () => {
 
 		test('vault level is always private', () => {
 			const storage = StorageCategory;
+			console.log('StorageCategory is ', StorageCategory);
 			expect.assertions(3);
 			storage.vault.configure = jest.fn().mockImplementation(configure => {
 				expect(configure).toEqual({
@@ -261,7 +262,7 @@ describe('Storage', () => {
 		});
 
 		test('backwards compatible issue, third configure call track', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -282,7 +283,7 @@ describe('Storage', () => {
 		});
 
 		test('backwards compatible issue, third configure to update level', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
 				aws_user_files_s3_bucket_region: 'region',
@@ -301,7 +302,7 @@ describe('Storage', () => {
 		});
 
 		test('should add server side encryption to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'testBucket',
 				aws_user_files_s3_bucket_region: 'imaregion',
@@ -321,7 +322,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerAlgorithm to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'thisIsABucket',
 				aws_user_files_s3_bucket_region: 'whatregionareyou',
@@ -339,7 +340,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerKey to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'buckbuckbucket',
 				aws_user_files_s3_bucket_region: 'thisisaregion',
@@ -357,7 +358,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerKeyMD5 to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'buckbuckbucaket',
 				aws_user_files_s3_bucket_region: 'ohnoregion',
@@ -375,7 +376,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSEKMSKeyId to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'bucket2',
 				aws_user_files_s3_bucket_region: 'region1',
@@ -393,7 +394,7 @@ describe('Storage', () => {
 		});
 
 		test('should not add randomKeyId to storage config object when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'bucket2',
 				aws_user_files_s3_bucket_region: 'region1',
@@ -410,7 +411,7 @@ describe('Storage', () => {
 		});
 
 		test('should add customPrefix to AWSS3 provider object if is defined', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'i_am_a_bucket',
 				aws_user_files_s3_bucket_region: 'IAD',
@@ -439,7 +440,7 @@ describe('Storage', () => {
 		});
 
 		test('should not add customPrefix to AWSS3 provider object if value is undefined', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'you_dont_know_this_bucket',
 				aws_user_files_s3_bucket_region: 'WD3',
@@ -467,7 +468,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -491,7 +492,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -515,7 +516,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -539,7 +540,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);

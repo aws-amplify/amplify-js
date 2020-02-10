@@ -3,7 +3,7 @@ import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v1 as uuid1, v4 as uuid4 } from 'uuid';
 import Observable from 'zen-observable-ts';
 import { isPredicatesAll, ModelPredicateCreator } from '../predicates';
-import Storage from '../storage/storage';
+import { ExclusiveStorage as Storage } from '../storage/storage';
 import { SyncEngine } from '../sync';
 import {
 	ConflictHandler,
