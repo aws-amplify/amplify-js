@@ -1,8 +1,8 @@
 {
   "name": "@aws-amplify/api",
-  "version": "2.1.1",
+  "version": "2.1.5",
   "description": "Api category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {

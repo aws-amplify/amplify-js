@@ -218,7 +218,15 @@ export class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
+			// Prevents _handleAuthResponse from being called multiple times in Expo
+			// See https://github.com/aws-amplify/amplify-js/issues/4388
+			const usedResponseUrls = {};
 			urlListener(({ url }) => {
+				if (usedResponseUrls[url]) {
+					return;
+				}
+
+				usedResponseUrls[url] = true;
 				this._handleAuthResponse(url);
 			});
 		}
@@ -1809,6 +1817,7 @@ export class AuthClass {
 			.find(([k]) => k === 'access_token' || k === 'error');
 
 		if (hasCodeOrError || hasTokenOrError) {
+			this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 			try {
 				const {
 					accessToken,
@@ -1898,7 +1907,6 @@ export class AuthClass {
 					err,
 					`A failure occurred when returning state`
 				);
-				throw err;
 			}
 		}
 	}

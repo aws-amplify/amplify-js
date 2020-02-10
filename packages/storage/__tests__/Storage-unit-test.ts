@@ -460,7 +460,7 @@ describe('Storage', () => {
 		});
 	});
 
-	describe('get test', async () => {
+	describe('get test', () => {
 		test('get object without download', async () => {
 			const get_spyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'get')

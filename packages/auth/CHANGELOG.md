@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.3...@aws-amplify/auth@2.1.5) (2020-02-07)
+
+### Bug Fixes
+
+- **auth:** prevent urlListener from firing auth flow twice with the same URL ([#4798](https://github.com/aws-amplify/amplify-js/issues/4798)) ([cf8738a](https://github.com/aws-amplify/amplify-js/commit/cf8738ac5e7961a163ce158a7383bc27f693475f))
+- **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.2...@aws-amplify/auth@2.1.3) (2020-01-10)
+
+### Bug Fixes
+
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.1...@aws-amplify/auth@2.1.2) (2019-12-18)
+
+### Bug Fixes
+
+- **@aws-amplify/auth:** Adjust Cognito error message checking for dis… ([#4546](https://github.com/aws-amplify/amplify-js/issues/4546)) ([2d4d24b](https://github.com/aws-amplify/amplify-js/commit/2d4d24b004e8a52901b673265abbf4fb7241c4e4)), closes [#4544](https://github.com/aws-amplify/amplify-js/issues/4544)
+
 ## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.0...@aws-amplify/auth@2.1.1) (2019-12-03)
 
 **Note:** Version bump only for package @aws-amplify/auth

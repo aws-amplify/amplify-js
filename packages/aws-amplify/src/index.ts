@@ -27,10 +27,7 @@ export { default as Cache } from '@aws-amplify/cache';
 export { Interactions, InteractionsClass } from '@aws-amplify/interactions';
 export * from '@aws-amplify/ui';
 export { XR, XRClass } from '@aws-amplify/xr';
-export {
-	Predictions,
-	AmazonAIPredictionsProvider,
-} from '@aws-amplify/predictions';
+export { Predictions } from '@aws-amplify/predictions';
 export {
 	Amplify,
 	ConsoleLogger as Logger,

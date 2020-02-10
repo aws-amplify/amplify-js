@@ -144,7 +144,8 @@ const initSchema = (userSchema: Schema) => {
 				.filter(
 					field =>
 						field.association &&
-						field.association.connectionType === 'BELONGS_TO'
+						field.association.connectionType === 'BELONGS_TO' &&
+						(<ModelFieldType>field.type).model !== model.name
 				)
 				.forEach(field => wea.push((<ModelFieldType>field.type).model));
 
@@ -791,13 +792,16 @@ function getNamespace(): SchemaNamespace {
 	return namespace;
 }
 
-const dataStore = {
-	query,
-	save,
-	delete: remove,
-	observe,
-	configure,
-	clear,
-};
+class DataStore {
+	static getModuleName() {
+		return 'DataStore';
+	}
+	static query = query;
+	static save = save;
+	static delete = remove;
+	static observe = observe;
+	static configure = configure;
+	static clear = clear;
+}
 
-export { initSchema, dataStore };
+export { initSchema, DataStore };

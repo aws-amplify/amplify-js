@@ -121,17 +121,55 @@ describe('signUp without signUpConfig prop', () => {
 			spyon_changeState.mockClear();
 		});
 
-		test('state.requestPending should be true when signUp execution begins', () => {
+		test('state.requestPending should be true when signUp execution begins', async () => {
 			const wrapper = shallow(<SignUp />);
 			wrapper.setProps({
 				authState: 'signUp',
 				theme: AmplifyTheme,
 			});
 
+			const event_username = {
+				target: {
+					name: 'username',
+					value: 'user1',
+				},
+			};
+			const event_password = {
+				target: {
+					name: 'password',
+					value: 'abc',
+				},
+			};
+
+			const event_email = {
+				target: {
+					name: 'email',
+					value: 'email@amazon.com',
+				},
+			};
+			const phone_number = '+12345678999';
+
+			wrapper
+				.find(Input)
+				.at(0)
+				.simulate('change', event_username);
+			wrapper
+				.find(Input)
+				.at(1)
+				.simulate('change', event_password);
+			wrapper
+				.find(Input)
+				.at(2)
+				.simulate('change', event_email);
+			wrapper
+				.find(PhoneField)
+				.at(0)
+				.simulate('changeText', phone_number);
+
 			const button = wrapper.find(Button);
 			expect(button.props().disabled).toEqual(false);
 
-			button.simulate('click');
+			await button.simulate('click');
 			expect(wrapper.state().requestPending).toEqual(true);
 		});
 

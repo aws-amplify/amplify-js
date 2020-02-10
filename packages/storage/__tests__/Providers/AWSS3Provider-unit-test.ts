@@ -125,7 +125,7 @@ describe('StorageProvider test', () => {
 		});
 	});
 
-	describe('get test', async () => {
+	describe('get test', () => {
 		test('get object without download', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -141,6 +141,44 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
+		});
+
+		test('get object with custom response headers', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(credentials);
+				});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
+			expect.assertions(4);
+			expect(
+				await storage.get('key', {
+					cacheControl: 'no-cache',
+					contentDisposition: 'attachment; filename="filename.jpg"',
+					contentEncoding: 'identity',
+					contentLanguage: 'en-US',
+					contentType: 'multipart/form-data; boundary=something',
+					expires: 123456789,
+				})
+			).toBe('url');
+			console.log(spyon.mock.calls[0][0]);
+			expect(spyon.mock.calls[0][0].query).toEqual({
+				'response-cache-control': 'no-cache',
+				'response-content-disposition': 'attachment; filename="filename.jpg"',
+				'response-content-encoding': 'identity',
+				'response-content-language': 'en-US',
+				'response-content-type': 'multipart/form-data; boundary=something',
+				'x-id': 'GetObject',
+			});
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
 		});
 
 		test('get object with tracking', async () => {
@@ -692,6 +730,7 @@ describe('StorageProvider test', () => {
 				Bucket: 'bucket',
 				Prefix: 'public/path',
 			});
+			spyon.mockClear();
 		});
 
 		test('list object with track', async () => {
@@ -734,6 +773,39 @@ describe('StorageProvider test', () => {
 				'Storage',
 				Symbol.for('amplify_default')
 			);
+		});
+
+		test('list object with maxKeys', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			expect.assertions(2);
+			expect(
+				await storage.list('path', { level: 'public', maxKeys: 1 })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/path',
+				MaxKeys: 1,
+			});
+
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
 		});
 
 		test('list object failed', async () => {

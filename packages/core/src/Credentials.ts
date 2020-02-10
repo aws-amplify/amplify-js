@@ -20,6 +20,8 @@ import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('Credentials');
 
+const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
+
 export class CredentialsClass {
 	private _config;
 	private _credentials;
@@ -29,6 +31,7 @@ export class CredentialsClass {
 	private _storage;
 	private _storageSync;
 	private _identityId;
+	private _nextCredentialsRefresh: Number;
 
 	constructor(config) {
 		this.configure(config);
@@ -165,7 +168,7 @@ export class CredentialsClass {
 		const delta = 10 * 60; // 10 minutes in seconds
 		const { expiration } = credentials; // returns unix time stamp
 
-		if (expiration > ts + delta) {
+		if (expiration > ts + delta && ts < this._nextCredentialsRefresh) {
 			return false;
 		}
 		return true;
@@ -389,6 +392,7 @@ export class CredentialsClass {
 					that._credentials = credentials;
 					that._credentials.authenticated = authenticated;
 					that._credentials_source = source;
+					that._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 					if (source === 'federated') {
 						const user = info.user;
 						const { provider, token, expires_at } = info;

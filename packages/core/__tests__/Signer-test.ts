@@ -1,4 +1,5 @@
 import Signer from '../src/Signer';
+import { DateUtils } from '../src';
 
 jest.mock('@aws-sdk/util-hex-encoding', () => ({
 	...jest.requireActual('@aws-sdk/util-hex-encoding'),
@@ -24,6 +25,8 @@ describe('Signer test', () => {
 				.spyOn(Date.prototype, 'toISOString')
 				.mockReturnValueOnce('0');
 
+			const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
+
 			const res = {
 				headers: {
 					Authorization:
@@ -40,6 +43,7 @@ describe('Signer test', () => {
 					region: 'aregion',
 				})
 			).toEqual(res);
+			expect(getDateSpy).toHaveBeenCalledTimes(1);
 
 			spyon.mockClear();
 		});
