@@ -8,6 +8,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",

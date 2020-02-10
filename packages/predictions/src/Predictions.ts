@@ -26,7 +26,7 @@ import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Predictions');
 
-export class Predictions {
+export class PredictionsClass {
 	private _options: PredictionsOptions;
 
 	private _convertPluggables: AbstractConvertPredictionsProvider[];
@@ -246,7 +246,4 @@ export class Predictions {
 	}
 }
 
-/**
- * @deprecated use named import
- */
-export default Predictions;
+export const Predictions = new PredictionsClass({});

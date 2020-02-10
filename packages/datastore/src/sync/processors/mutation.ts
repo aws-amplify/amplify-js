@@ -7,7 +7,7 @@ import {
 import Observable from 'zen-observable-ts';
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import Storage from '../../storage/storage';
+import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
 	ConflictHandler,
 	DISCARD,

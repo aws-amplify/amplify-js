@@ -8,10 +8,7 @@
   "react-native": {
     "./index": "./lib/index.js"
   },
-  "sideEffects": [
-    "./lib-esm/index.js",
-    "./lib/index.js"
-  ],
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -39,7 +36,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "^2.2.0",
-    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.14",
+    "@aws-sdk/client-lex-runtime-service": "^1.0.0-alpha.16",
     "@aws-sdk/url-parser-node": "^1.0.0-alpha.4"
   },
   "jest": {

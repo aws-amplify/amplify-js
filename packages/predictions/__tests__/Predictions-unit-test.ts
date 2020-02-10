@@ -1,12 +1,5 @@
-import {
-	AWS,
-	ClientDevice,
-	Parser,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
 import { PredictionsOptions, TranslateTextInput } from '../src/types';
-import { default as Predictions } from '../src/Predictions';
+import { PredictionsClass } from '../src/Predictions';
 import { default as AWSConvertPredictionsProvider } from '../src/Providers/AmazonAIConvertPredictionsProvider';
 import { default as AWSIdentifyPredictionsProvider } from '../src/Providers/AmazonAIIdentifyPredictionsProvider';
 import { default as AWSInterpretPredictionsProvider } from '../src/Providers/AmazonAIInterpretPredictionsProvider';
@@ -19,7 +12,9 @@ const options: PredictionsOptions = {
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {
 		test('happy and the only case', () => {
-			expect(new Predictions(options).getModuleName()).toMatch('Predictions');
+			expect(new PredictionsClass(options).getModuleName()).toMatch(
+				'Predictions'
+			);
 		});
 	});
 
@@ -88,7 +83,7 @@ describe('Predictions test', () => {
 			const topLevelSpy = jest
 				.spyOn(topLevelProvider, 'configure')
 				.mockImplementation(() => {});
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			predictions.addPluggable(convertProvider);
 			predictions.addPluggable(identifyProvider);
 			predictions.addPluggable(topLevelProvider);
@@ -142,7 +137,7 @@ describe('Predictions test', () => {
 		};
 
 		// configure the predictions category first before adding pluggables
-		const predictions = new Predictions(options);
+		const predictions = new PredictionsClass(options);
 		predictions.configure(configureOptions);
 
 		const convertProvider = new AWSConvertPredictionsProvider();
@@ -173,7 +168,7 @@ describe('Predictions test', () => {
 
 	describe('addPluggable tests', () => {
 		test('multiple pluggable types added', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const convertProvider = new AWSConvertPredictionsProvider();
 			const identifyProvider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(convertProvider);
@@ -187,7 +182,7 @@ describe('Predictions test', () => {
 		});
 
 		test('error case with multiple pluggables of same name', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
 			try {
@@ -202,7 +197,7 @@ describe('Predictions test', () => {
 
 	describe('getPluggable tests', () => {
 		test('happy case convert', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
 			expect(
@@ -210,7 +205,7 @@ describe('Predictions test', () => {
 			).toBeInstanceOf(AWSConvertPredictionsProvider);
 		});
 		test('happy case identify', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(provider);
 			expect(
@@ -218,7 +213,7 @@ describe('Predictions test', () => {
 			).toBeInstanceOf(AWSIdentifyPredictionsProvider);
 		});
 		test('happy case interpret', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSInterpretPredictionsProvider();
 			predictions.addPluggable(provider);
 			expect(
@@ -227,7 +222,7 @@ describe('Predictions test', () => {
 		});
 
 		test('happy case top level predictions provider', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSPredictionsProvider();
 			predictions.addPluggable(provider);
 			expect(
@@ -235,7 +230,7 @@ describe('Predictions test', () => {
 			).toBeInstanceOf(AWSPredictionsProvider);
 		});
 		test('error case no provider configured', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			// predictions.addPluggable(provider); // No pluggable is added
 			expect(predictions.getPluggable(provider.getProviderName())).toBeNull();
@@ -244,7 +239,7 @@ describe('Predictions test', () => {
 
 	describe('removePluggable tests', () => {
 		test('happy case convert', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const convertProvider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(convertProvider);
 			predictions.removePluggable(convertProvider.getProviderName());
@@ -253,7 +248,7 @@ describe('Predictions test', () => {
 			).toBeNull();
 		});
 		test('happy case identify', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const identifyProvider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(identifyProvider);
 			predictions.removePluggable(identifyProvider.getProviderName());
@@ -262,7 +257,7 @@ describe('Predictions test', () => {
 			).toBeNull();
 		});
 		test('happy case interpret', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const interpretProvider = new AWSInterpretPredictionsProvider();
 			predictions.addPluggable(interpretProvider);
 			predictions.removePluggable(interpretProvider.getProviderName());
@@ -272,7 +267,7 @@ describe('Predictions test', () => {
 		});
 
 		test('happy case top level predictions provider', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const topLevelProvider = new AWSPredictionsProvider();
 			predictions.addPluggable(topLevelProvider);
 			predictions.removePluggable(topLevelProvider.getProviderName());
@@ -284,7 +279,7 @@ describe('Predictions test', () => {
 
 	describe('convert tests', () => {
 		test('happy case with one convert pluggable', async () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
 			const input: TranslateTextInput = {
@@ -300,7 +295,7 @@ describe('Predictions test', () => {
 			expect(convertSpy).toHaveBeenCalledTimes(1);
 		});
 		test('happy case with one top level pluggable', async () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSPredictionsProvider();
 			predictions.addPluggable(provider);
 			const input: TranslateTextInput = {
@@ -316,7 +311,7 @@ describe('Predictions test', () => {
 			expect(convertSpy).toHaveBeenCalledTimes(1);
 		});
 		test('error case with no convert pluggable', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSIdentifyPredictionsProvider(); // Not the convert provider
 			predictions.addPluggable(provider);
 			const input: TranslateTextInput = {
@@ -332,7 +327,7 @@ describe('Predictions test', () => {
 			}
 		});
 		test('error case with one convert and one top level pluggable and no pluggable name', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			predictions.addPluggable(new AWSPredictionsProvider()); // Top level provider
 			predictions.addPluggable(new AWSConvertPredictionsProvider()); // Convert provider
 			const input: TranslateTextInput = {
@@ -348,7 +343,7 @@ describe('Predictions test', () => {
 			}
 		});
 		test('error case with wrong pluggable name provided', () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
 			const input: TranslateTextInput = {
@@ -363,7 +358,7 @@ describe('Predictions test', () => {
 			}
 		});
 		test('happy case with pluggable name provided', async () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
 			const input: TranslateTextInput = {
@@ -381,7 +376,7 @@ describe('Predictions test', () => {
 			expect(convertSpy).toHaveBeenCalledTimes(1);
 		});
 		test('happy case with one convert and one top level pluggable and pluggable name provided', async () => {
-			const predictions = new Predictions(options);
+			const predictions = new PredictionsClass(options);
 			const topLevelProvider = new AWSPredictionsProvider();
 			const convertProvider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(topLevelProvider); // Top level provider

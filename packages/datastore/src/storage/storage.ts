@@ -345,4 +345,4 @@ class ExclusiveStorage implements StorageFacade {
 	}
 }
 
-export default ExclusiveStorage;
+export { ExclusiveStorage };
