@@ -196,7 +196,7 @@ function buildES6(typeScriptCompiler) {
 		downlevelIteration: true,
 		jsx: jsx,
 		sourceMap: true,
-		target: 'es2015',
+		target: 'es5',
 		module: 'es2015',
 		moduleResolution: 'node',
 		declaration: true,
