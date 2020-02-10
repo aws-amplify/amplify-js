@@ -68,7 +68,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            # git checkout modularization
+            git checkout modularization
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -337,6 +337,7 @@ workflows:
                 - master
                 - beta
                 - 1.0-stable
+                - modularization
           requires:
             - unit_test
             - integ_react_predictions
