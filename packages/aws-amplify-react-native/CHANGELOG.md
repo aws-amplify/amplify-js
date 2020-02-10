@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@3.2.0...aws-amplify-react-native@3.2.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@3.1.0...aws-amplify-react-native@3.2.0) (2020-01-10)
 
 
