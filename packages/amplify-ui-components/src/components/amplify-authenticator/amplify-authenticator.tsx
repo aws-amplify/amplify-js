@@ -90,19 +90,47 @@ export class AmplifyAuthenticator {
           </slot>
         );
       case AuthState.ConfirmSignUp:
-        return <amplify-confirm-sign-up user={this.authData} />;
+        return (
+          <slot name="confirm-sign-up">
+            <amplify-confirm-sign-up user={this.authData} />
+          </slot>
+        );
       case AuthState.ForgotPassword:
-        return <amplify-forgot-password />;
+        return (
+          <slot name="forgot-password">
+            <amplify-forgot-password />
+          </slot>
+        );
       case AuthState.ResetPassword:
-        return <amplify-require-new-password user={this.authData} />;
+        return (
+          <slot name="require-new-password">
+            <amplify-require-new-password user={this.authData} />
+          </slot>
+        );
       case AuthState.VerifyContact:
-        return <amplify-verify-contact user={this.authData} />;
+        return (
+          <slot name="verify-contact">
+            <amplify-verify-contact user={this.authData} />
+          </slot>
+        );
       case AuthState.TOTPSetup:
-        return <amplify-totp-setup user={this.authData} />;
+        return (
+          <slot name="totp-setup">
+            <amplify-totp-setup user={this.authData} />
+          </slot>
+        );
       case AuthState.Loading:
-        return <div>Loading...</div>;
+        return (
+          <slot name="loading">
+            <div>Loading...</div>
+          </slot>
+        );
       case AuthState.SignedIn:
-        return <amplify-greetings user={this.authData} />;
+        return (
+          <slot name="greetings">
+            <amplify-greetings user={this.authData} />
+          </slot>
+        );
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }

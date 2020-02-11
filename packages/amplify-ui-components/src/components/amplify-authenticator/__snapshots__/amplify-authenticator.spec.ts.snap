@@ -3,7 +3,9 @@
 exports[`amplify-authenticator spec: Render logic -> should render a \`forgot password\` if initialAuthState is \`forgotpassword\` 1`] = `
 <amplify-authenticator initial-auth-state="forgotpassword">
   <mock:shadow-root>
-    <amplify-forgot-password></amplify-forgot-password>
+    <slot name="forgot-password">
+      <amplify-forgot-password></amplify-forgot-password>
+    </slot>
   </mock:shadow-root>
 </amplify-authenticator>
 `;
