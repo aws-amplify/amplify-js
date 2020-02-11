@@ -24,6 +24,8 @@ import {
 	CompleteMultipartUploadCommandInput,
 	UploadPartCommandOutput,
 	UploadPartCommandInput,
+	ListPartsCommand,
+	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { fromString } from '@aws-sdk/util-buffer-from';
@@ -140,18 +142,6 @@ export class AWSS3ProviderManagedUpload {
 		return response.UploadId;
 	}
 
-	// private async createMultiPartUpload_old() {
-	// 	const s3 = new S3(this.opts);
-	// 	const data = await s3
-	// 		.createMultipartUpload({
-	// 			Bucket: this.params.Bucket,
-	// 			Key: this.params.Key,
-	// 			ContentType: this.params.ContentType,
-	// 		})
-	// 		.promise();
-	// 	return data.UploadId;
-	// }
-
 	/**
 	 * @private Not to be extended outside of tests
 	 * @VisibleFotTesting
@@ -200,7 +190,6 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.multiPartMap },
 		};
-		console.log(input);
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
@@ -208,18 +197,6 @@ export class AWSS3ProviderManagedUpload {
 		logger.debug(data);
 		return data.Key;
 	}
-
-	// private async finishMultiPartUpload_old(uploadId: string) {
-	// 	const input = {
-	// 		Bucket: this.params.Bucket,
-	// 		Key: this.params.Key,
-	// 		UploadId: uploadId,
-	// 		MultipartUpload: { Parts: this.multiPartMap },
-	// 	};
-	// 	const s3 = new S3(this.opts);
-	// 	const data = await s3.completeMultipartUpload(input).promise();
-	// 	return data.Key;
-	// }
 
 	private async checkIfUploadCancelled(uploadId: string) {
 		if (this.cancel) {
@@ -251,15 +228,16 @@ export class AWSS3ProviderManagedUpload {
 		};
 
 		// TODO FIXME
-		// const s3 = new S3(this.opts);
-		// await s3.abortMultipartUpload(input).promise();
+		const s3 = this._createNewS3Client(this.opts);
+		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
+		await s3.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
-		// const data = await s3.listParts(input).promise();
+		const data = await s3.send(new ListPartsCommand(input));
 
-		// if (data && data.Parts && data.Parts.length > 0) {
-		// 	throw new Error('Multi Part upload clean up failed');
-		// }
+		if (data && data.Parts && data.Parts.length > 0) {
+			throw new Error('Multi Part upload clean up failed');
+		}
 	}
 
 	private setupEventListener(part: BodyPart) {

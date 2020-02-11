@@ -164,7 +164,6 @@ describe('StorageProvider test', () => {
 					expires: 123456789,
 				})
 			).toBe('url');
-			console.log(spyon.mock.calls[0][0]);
 			expect(spyon.mock.calls[0][0].query).toEqual({
 				'response-cache-control': 'no-cache',
 				'response-content-disposition': 'attachment; filename="filename.jpg"',

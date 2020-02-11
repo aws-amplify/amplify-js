@@ -17,7 +17,6 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
 import { parseUrl } from '@aws-sdk/url-parser-node';
-import { AxiosHttpHandler } from './Util/axios-http-handler';
 
 const logger = new Logger('Credentials');
 
@@ -215,7 +214,6 @@ export class CredentialsClass {
 			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
 			urlParser: parseUrl,
-			requestHandler: new AxiosHttpHandler({}),
 		});
 
 		let credentials = undefined;
