@@ -3,7 +3,7 @@
 exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and empty label by default 1`] = `
 <amplify-checkbox>
   <mock:shadow-root>
-    <span class="amplify-ui--checkbox css-x67pf6">
+    <span class="checkbox">
       <input type="checkbox">
       <amplify-label></amplify-label>
     </span>
@@ -14,7 +14,7 @@ exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an
 exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an input type of checkbox and label 1`] = `
 <amplify-checkbox label="Seattle">
   <mock:shadow-root>
-    <span class="amplify-ui--checkbox css-x67pf6">
+    <span class="checkbox">
       <input type="checkbox">
       <amplify-label>
         Seattle
@@ -27,7 +27,7 @@ exports[`amplify-checkbox spec: Render logic -> should render a checkbox with an
 exports[`amplify-checkbox spec: Render logic -> should render with only a class of \`amplify-ui--checkbox\` when style override is true 1`] = `
 <amplify-checkbox override-style="true">
   <mock:shadow-root>
-    <span class="amplify-ui--checkbox">
+    <span class="checkbox">
       <input type="checkbox">
       <amplify-label></amplify-label>
     </span>

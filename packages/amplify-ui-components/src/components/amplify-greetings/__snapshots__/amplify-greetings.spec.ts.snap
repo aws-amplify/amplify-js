@@ -3,7 +3,7 @@
 exports[`amplify-greetings spec: Render logic -> should render 1`] = `
 <amplify-greetings>
   <mock:shadow-root>
-    <header class="amplify-ui--greetings css-1xadjc9">
+    <header class="greetings">
       <amplify-nav>
         <amplify-sign-out></amplify-sign-out>
       </amplify-nav>

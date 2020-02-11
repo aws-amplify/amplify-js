@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const strike = css`
+.strike {
   display: block;
   width: 100%;
   text-align: center;
@@ -8,11 +6,11 @@ export const strike = css`
   line-height: 0.1em;
   margin: 32px 0;
   color: var(--amplify-grey);
-`;
+}
 
-export const strikeContent = css`
+.strike-content {
   background: var(--amplify-form-color);
   padding: 0 25px;
   font-size: 14px;
   font-weight: 500;
-`;
+}

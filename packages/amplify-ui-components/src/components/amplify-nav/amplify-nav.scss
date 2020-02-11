@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const nav = css`
+.nav {
   display: flex;
   flex: 1 1 0%;
   justify-content: flex-end;
@@ -8,4 +6,4 @@ export const nav = css`
   > * {
     margin: 0 0.5em;
   }
-`;
+}

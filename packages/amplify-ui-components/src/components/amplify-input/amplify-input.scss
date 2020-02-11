@@ -15,4 +15,8 @@
     outline: none;
     border-color: orange;
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }

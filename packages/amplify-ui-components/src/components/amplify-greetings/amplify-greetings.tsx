@@ -1,15 +1,11 @@
 import { Component, h, Prop, State, Watch, FunctionalComponent } from '@stencil/core';
-import { greetings } from './amplify-greetings.style';
 import { AuthStateHandler, CognitoUserInterface, AuthState } from '../../common/types/auth-types';
-import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
 
 import { Hub } from '@aws-amplify/core';
 
-const STATIC_GREETINGS_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--greetings`;
-
 @Component({
   tag: 'amplify-greetings',
+  styleUrl: 'amplify-greetings.scss',
   shadow: true,
 })
 export class AmplifyGreetings {
@@ -34,7 +30,7 @@ export class AmplifyGreetings {
 
   render() {
     return (
-      <header class={styleNuker(this.overrideStyle, STATIC_GREETINGS_CLASS_NAME, greetings)}>
+      <header class="greetings">
         {// TODO: user <amplify-logo> instead of <span>
         this.logo && <span>Logo</span>}
         <amplify-nav>

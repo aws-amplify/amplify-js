@@ -4,7 +4,6 @@ import QRCode from 'qrcode';
 import { Logger, isEmpty, Hub } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
-import { totpSetup } from './amplify-totp-setup.style';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import {
   NO_AUTH_MODULE_FOUND,
@@ -23,6 +22,7 @@ const logger = new Logger('TOTP');
 
 @Component({
   tag: 'amplify-totp-setup',
+  styleUrl: 'amplify-totp-setup.scss',
   shadow: true,
 })
 export class AmplifyTOTPSetup {
@@ -42,7 +42,7 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
 
-  componentWillLoad() {
+  componentWillRender() {
     this.setup();
   }
 
@@ -147,7 +147,7 @@ export class AmplifyTOTPSetup {
         submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
         handleSubmit={event => this.verifyTotpToken(event)}
       >
-        <div class={totpSetup}>
+        <div class="totp-setup">
           <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
           <amplify-form-field
             label={TOTP_LABEL}

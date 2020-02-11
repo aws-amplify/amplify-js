@@ -3,9 +3,9 @@
 exports[`amplify-scene spec: Render logic -> should render 1`] = `
 <amplify-scene-loading scenename="{'scene1'}">
   <mock:shadow-root>
-    <div class="css-1rxjahl" data-test="sumerianScene.loading">
-      <div class="css-1hs3667">
-        <div class="css-1gjm50j">
+    <div class="loading-overlay" data-test="sumerianScene.loading">
+      <div class="loading-container">
+        <div class="loading-logo">
           <slot name="amplify-scene-loading-logo">
             <svg viewBox="0 0 800 481" xmlns="http://www.w3.org/2000/svg">
               <g fillRule="evenodd" id="Page-1">
@@ -18,9 +18,9 @@ exports[`amplify-scene spec: Render logic -> should render 1`] = `
             </svg>
           </slot>
         </div>
-        <div class="css-1e66nic"></div>
-        <div class="css-1jqcxdg">
-          <div class="css-10z28f2" style="width: 0%;"></div>
+        <div class="loading-scene-name"></div>
+        <div class="loading-bar">
+          <div class="loading-bar-fill" style="width: 0%;"></div>
         </div>
       </div>
     </div>
@@ -31,9 +31,9 @@ exports[`amplify-scene spec: Render logic -> should render 1`] = `
 exports[`amplify-scene spec: Render logic -> should render with 'loadPercentage' 1`] = `
 <amplify-scene-loading loadpercentage="{50}" scenename="{'scene1'}">
   <mock:shadow-root>
-    <div class="css-1rxjahl" data-test="sumerianScene.loading">
-      <div class="css-1hs3667">
-        <div class="css-1gjm50j">
+    <div class="loading-overlay" data-test="sumerianScene.loading">
+      <div class="loading-container">
+        <div class="loading-logo">
           <slot name="amplify-scene-loading-logo">
             <svg viewBox="0 0 800 481" xmlns="http://www.w3.org/2000/svg">
               <g fillRule="evenodd" id="Page-1">
@@ -46,9 +46,9 @@ exports[`amplify-scene spec: Render logic -> should render with 'loadPercentage'
             </svg>
           </slot>
         </div>
-        <div class="css-1e66nic"></div>
-        <div class="css-1jqcxdg">
-          <div class="css-10z28f2" style="width: 0%;"></div>
+        <div class="loading-scene-name"></div>
+        <div class="loading-bar">
+          <div class="loading-bar-fill" style="width: 0%;"></div>
         </div>
       </div>
     </div>
@@ -59,9 +59,9 @@ exports[`amplify-scene spec: Render logic -> should render with 'loadPercentage'
 exports[`amplify-scene spec: Render logic -> should render with 'sceneError' 1`] = `
 <amplify-scene-loading object]}="" sceneerror="{[object" scenename="{'scene1'}">
   <mock:shadow-root>
-    <div class="css-1rxjahl" data-test="sumerianScene.loading">
-      <div class="css-1hs3667">
-        <div class="css-1gjm50j">
+    <div class="loading-overlay" data-test="sumerianScene.loading">
+      <div class="loading-container">
+        <div class="loading-logo">
           <slot name="amplify-scene-loading-logo">
             <svg viewBox="0 0 800 481" xmlns="http://www.w3.org/2000/svg">
               <g fillRule="evenodd" id="Page-1">
@@ -74,9 +74,9 @@ exports[`amplify-scene spec: Render logic -> should render with 'sceneError' 1`]
             </svg>
           </slot>
         </div>
-        <div class="css-1e66nic"></div>
-        <div class="css-1jqcxdg">
-          <div class="css-10z28f2" style="width: 0%;"></div>
+        <div class="loading-scene-name"></div>
+        <div class="loading-bar">
+          <div class="loading-bar-fill" style="width: 0%;"></div>
         </div>
       </div>
     </div>

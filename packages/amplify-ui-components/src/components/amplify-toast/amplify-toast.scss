@@ -1,10 +1,8 @@
-import { css } from 'emotion';
-
-export const toastIcon = css`
+.toast-icon {
   padding-right: 5px;
-`;
+}
 
-export const toast = css`
+.toast {
   display: flex;
   justify-content: space-between;
   position: absolute;
@@ -24,9 +22,9 @@ export const toast = css`
   > span {
     margin-right: 10px;
   }
-`;
+}
 
-export const toastClose = css`
+.toast-close {
   margin-left: auto;
   align-self: center;
   position: relative;
@@ -66,4 +64,4 @@ export const toastClose = css`
     -o-transform: rotate(-45deg);
     transform: rotate(-45deg);
   }
-`;
+}

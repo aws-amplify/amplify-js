@@ -1,12 +1,8 @@
 import { Component, Prop, h } from '@stencil/core';
-import { radioButton } from './amplify-radio-button.style';
-import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_RADIO_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--radio-button`;
 
 @Component({
   tag: 'amplify-radio-button',
+  styleUrl: 'amplify-radio-button.scss',
   shadow: true,
 })
 export class AmplifyRadioButton {
@@ -31,7 +27,7 @@ export class AmplifyRadioButton {
 
   render() {
     return (
-      <span class={styleNuker(this.overrideStyle, STATIC_RADIO_BUTTON_CLASS_NAME, radioButton)}>
+      <span class="radio-button">
         <input
           type="radio"
           name={this.name}

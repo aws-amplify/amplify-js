@@ -20,12 +20,14 @@ export class AmplifyAuthenticator {
   @State() authData: CognitoUserInterface;
 
   async componentWillLoad() {
+    Hub.listen('AuthenticatorState', data =>
+      this.onAuthStateChange(data.payload.event as AuthState, data.payload.data),
+    );
+
     appendToCognitoUserAgent('amplify-ui');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     if (byHostedUI !== 'true') await this.checkUser();
-
-    Hub.listen('AuthenticatorState', data => this.onAuthStateChange(data.payload.event as AuthState));
   }
 
   async checkUser() {

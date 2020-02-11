@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const signInButton = css`
+.sign-in-button {
   button {
     position: relative;
     width: 100%;
@@ -93,4 +91,4 @@ export const signInButton = css`
     text-overflow: ellipsis;
     text-align: center;
   }
-`;
+}

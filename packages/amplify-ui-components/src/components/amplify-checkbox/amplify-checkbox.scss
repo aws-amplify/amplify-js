@@ -1,6 +1,5 @@
-import { css } from 'emotion';
-
-export const radioButton = css`
+.checkbox {
+  margin-bottom: 22px;
   display: block;
   width: 100%;
   padding: 16px;
@@ -9,4 +8,4 @@ export const radioButton = css`
   input {
     margin-right: 12px;
   }
-`;
+}
