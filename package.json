@@ -10,7 +10,7 @@
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
 		"coverage": "codecov || exit 0",
-		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/",
+		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
 		"build": "lerna run build --stream",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
 		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
@@ -22,7 +22,8 @@
 		"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
 		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
-		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'"
+		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
+		"publish:modularization": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=preview --preid=preview --exact"
 	},
 	"husky": {
 		"hooks": {
@@ -70,7 +71,7 @@
 		"ts-jest": "^24.x.x",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
-		"typedoc": "^0.11.0",
+		"typedoc": "^0.16.9",
 		"typescript": "~3.6.4",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"uuid-validate": "^0.0.3",
@@ -78,6 +79,10 @@
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
 		"winston": "^3.2.1"
+	},
+	"resolutions": {
+		"@aws-crypto/sha256-browser": "1.0.0-alpha.0",
+		"@aws-crypto/sha256-js": "1.0.0-alpha.0"
 	},
 	"jest": {
 		"resetMocks": true,

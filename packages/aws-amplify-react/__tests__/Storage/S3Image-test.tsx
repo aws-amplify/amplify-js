@@ -19,6 +19,12 @@ describe('S3Image', () => {
 			expect(wrapper).toMatchSnapshot();
 		});
 
+		test('render with className', () => {
+			const wrapper = shallow(<S3Image className="shadow" />);
+
+			expect(wrapper).toMatchSnapshot();
+		});
+
 		test('render with picker true', () => {
 			const wrapper = shallow(<S3Image picker />);
 

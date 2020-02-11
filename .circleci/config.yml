@@ -52,6 +52,7 @@ jobs:
             yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
+            yarn run test --scope amazon-cognito-identity-js
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
@@ -67,7 +68,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            # git checkout modularization
+            git checkout modularization
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -336,6 +337,7 @@ workflows:
                 - master
                 - beta
                 - 1.0-stable
+                - modularization
           requires:
             - unit_test
             - integ_react_predictions

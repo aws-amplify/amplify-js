@@ -10,20 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Interactions as InteractionsClass } from './Interactions';
-
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('Interactions');
-
-let _instance: InteractionsClass = null;
-
-if (!_instance) {
-	logger.debug('Create Interactions Instance');
-	_instance = new InteractionsClass(null);
-}
-
-const Interactions = _instance;
+import { Interactions } from './Interactions';
 
 /**
  * @deprecated use named import
@@ -32,4 +19,4 @@ export default Interactions;
 
 export * from './Providers/AWSLexProvider';
 
-export { Interactions, InteractionsClass };
+export { Interactions };

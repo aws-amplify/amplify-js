@@ -24,7 +24,7 @@ import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
-export class PubSub {
+export class PubSubClass {
 	private _options: PubSubOptions;
 
 	private _pluggables: PubSubProvider[];
@@ -177,7 +177,4 @@ export class PubSub {
 	}
 }
 
-/**
- * @deprecated use named import
- */
-export default PubSub;
+export const PubSub = new PubSubClass(null);
