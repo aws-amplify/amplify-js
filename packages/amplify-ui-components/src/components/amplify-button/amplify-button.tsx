@@ -15,10 +15,8 @@ export class AmplifyButton {
   @Prop() overrideStyle: boolean = false;
 
   render() {
-    // const emotionButtonClass = styleBranch(this.type === 'reset', button, buttonTypeReset, buttonTypeSafe);
     return (
       <button
-        // class={styleNuker(this.overrideStyle, STATIC_BUTTON_CLASS_NAME, emotionButtonClass)}
         class={{
           button: true,
         }}

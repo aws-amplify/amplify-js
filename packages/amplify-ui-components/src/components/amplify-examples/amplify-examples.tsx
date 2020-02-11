@@ -1,10 +1,11 @@
 import { Component, State, h } from '@stencil/core';
 import { AuthenticatorExample } from './authenticator-example';
+import { CustomAuthenticatorExample } from './custom-authenticator-example';
 import TOTPAuthenticatorExample from './auth-totp-example';
 import example4 from './example4';
 import sceneExample from './scene-example';
 
-const examples = [AuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
+const examples = [AuthenticatorExample, CustomAuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
 
 (window as any).LOG_LEVEL = 'DEBUG';
 

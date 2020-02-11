@@ -9,10 +9,10 @@ export const config: Config = {
   excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [
-    // externals({
-    //   // deps to include in externals (default: [])
-    //   include: ['@aws-amplify/auth', '@aws-amplify/core'],
-    // }),
+    externals({
+      // deps to include in externals (default: [])
+      include: ['@aws-amplify/auth', '@aws-amplify/core'],
+    }),
     nodePolyfills(),
     sass()
   ],
@@ -43,6 +43,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  // globalScript: 'src/global/index.ts',
   globalStyle: 'src/global/theme.css'
 };

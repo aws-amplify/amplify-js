@@ -8,6 +8,7 @@
 ### Depends on
 
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-authenticator](../amplify-authenticator)
 - [amplify-sign-in](../amplify-sign-in)
 - [amplify-sign-up](../amplify-sign-up)
 - [amplify-authenticator](../amplify-authenticator)
@@ -19,6 +20,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-sign-in
   amplify-examples --> amplify-sign-up
