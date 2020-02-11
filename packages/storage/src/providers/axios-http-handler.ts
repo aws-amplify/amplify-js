@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { HeaderBag, HttpHandlerOptions } from '@aws-sdk/types';
+import { HttpHandlerOptions } from '@aws-sdk/types';
 import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method } from 'axios';

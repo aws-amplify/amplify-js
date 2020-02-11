@@ -20,7 +20,6 @@ import {
 import {
 	S3Client,
 	GetObjectCommand,
-	PutObjectCommand,
 	DeleteObjectCommand,
 	ListObjectsCommand,
 } from '@aws-sdk/client-s3';
