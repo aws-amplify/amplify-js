@@ -106,7 +106,6 @@ export class AmplifyConfirmSignUp {
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 
@@ -126,7 +125,6 @@ export class AmplifyConfirmSignUp {
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 

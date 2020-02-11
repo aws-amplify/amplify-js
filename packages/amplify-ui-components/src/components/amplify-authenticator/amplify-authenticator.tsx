@@ -125,12 +125,13 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        {this.toastMessage && this.toastMessage !== '' ? (
+        {this.toastMessage ? (
           <amplify-toast
             message={this.toastMessage}
             onClose={() => {
               this.toastMessage = '';
             }}
+            data-test="authenticator-error"
           />
         ) : null}
         {this.renderAuthComponent(this.authState)}

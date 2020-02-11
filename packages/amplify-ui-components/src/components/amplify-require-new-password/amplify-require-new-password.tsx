@@ -70,8 +70,6 @@ export class AmplifyRequireNewPassword {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
-      logger.error(error);
-      throw new Error(error);
     }
   }
 
@@ -103,8 +101,6 @@ export class AmplifyRequireNewPassword {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
-      logger.error(error);
-      throw new Error(error);
     }
   }
 

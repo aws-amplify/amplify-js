@@ -63,7 +63,6 @@ export class AmplifyTOTPSetup {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 
@@ -85,7 +84,6 @@ export class AmplifyTOTPSetup {
       this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
     } catch (error) {
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 
@@ -107,7 +105,6 @@ export class AmplifyTOTPSetup {
     } catch (error) {
       dispatchToastHubEvent(error);
       logger.debug(TOTP_SETUP_FAILURE, error);
-      throw new Error(error);
     }
   }
 

@@ -89,9 +89,7 @@ export class AmplifyForgotPassword {
       ];
       this.delivery = data.CodeDeliveryDetails;
     } catch (error) {
-      logger.error(error);
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 
@@ -108,9 +106,7 @@ export class AmplifyForgotPassword {
       this.handleAuthStateChange(AuthState.SignIn);
       this.delivery = null;
     } catch (error) {
-      logger.error(error);
       dispatchToastHubEvent(error);
-      throw new Error(error);
     }
   }
 

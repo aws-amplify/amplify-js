@@ -146,7 +146,6 @@ export class AmplifySignIn {
         this.checkContact(user);
       }
     } catch (error) {
-      logger.error('error', error);
       dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
@@ -154,8 +153,6 @@ export class AmplifySignIn {
       } else if (error.code === 'PasswordResetRequiredException') {
         logger.debug('the user requires a new password');
         this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
-      } else {
-        throw new Error(error);
       }
     } finally {
       this.loading = false;
