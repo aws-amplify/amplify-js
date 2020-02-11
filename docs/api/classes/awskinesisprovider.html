@@ -921,6 +921,15 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-constructor tsd-parent-kind-class">
 				<a href="awskinesisprovider.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a href="awskinesisprovider.html#_config" class="tsd-kind-icon">_config</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a href="awskinesisprovider.html#_init" class="tsd-kind-icon">_init</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a href="awskinesisprovider.html#_sendevents" class="tsd-kind-icon">_send<wbr>Events</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awskinesisprovider.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
@@ -947,13 +956,18 @@ img { max-width: 100%; }
 		<ul class="tsd-hierarchy">
 			<li>
 				<span class="target">AWSKinesisProvider</span>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="awskinesisfirehoseprovider.html" class="tsd-signature-type">AWSKinesisFirehoseProvider</a>
+					</li>
+				</ul>
 			</li>
 		</ul>
 	</section>
 	<section class="tsd-panel">
 		<h3>Implements</h3>
 		<ul class="tsd-hierarchy">
-			<li><span class="tsd-signature-type">any</span></li>
+			<li><a href="../interfaces/analyticsprovider.html" class="tsd-signature-type">AnalyticsProvider</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -966,9 +980,17 @@ img { max-width: 100%; }
 						<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="awskinesisprovider.html#constructor" class="tsd-kind-icon">constructor</a></li>
 					</ul>
 				</section>
+				<section class="tsd-index-section tsd-is-private-protected">
+					<h3>Properties</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="awskinesisprovider.html#_config" class="tsd-kind-icon">_config</a></li>
+					</ul>
+				</section>
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="awskinesisprovider.html#_init" class="tsd-kind-icon">_init</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="awskinesisprovider.html#_sendevents" class="tsd-kind-icon">_send<wbr>Events</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awskinesisprovider.html#configure" class="tsd-kind-icon">configure</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awskinesisprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awskinesisprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
@@ -991,7 +1013,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L32">analytics/src/Providers/AWSKinesisProvider.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L30">packages/analytics/src/Providers/AWSKinesisProvider.ts:30</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1005,8 +1027,70 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 	</section>
+	<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+			<a name="_config" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _config</h3>
+			<div class="tsd-signature tsd-kind-icon">_config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L27">packages/analytics/src/Providers/AWSKinesisProvider.ts:27</a></li>
+				</ul>
+			</aside>
+		</section>
+	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+			<a name="_init" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _init</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<li class="tsd-signature tsd-kind-icon">_init<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, credentials<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L198">packages/analytics/src/Providers/AWSKinesisProvider.ts:198</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>config: <span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5>credentials: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+			<a name="_sendevents" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _send<wbr>Events</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<li class="tsd-signature tsd-kind-icon">_send<wbr>Events<span class="tsd-signature-symbol">(</span>group<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L153">packages/analytics/src/Providers/AWSKinesisProvider.ts:153</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>group: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="configure" class="tsd-anchor"></a>
 			<h3>configure</h3>
@@ -1017,7 +1101,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L87">analytics/src/Providers/AWSKinesisProvider.ts:87</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L78">packages/analytics/src/Providers/AWSKinesisProvider.ts:78</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1047,8 +1131,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/analyticsprovider.html">AnalyticsProvider</a>.<a href="../interfaces/analyticsprovider.html#getcategory">getCategory</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L72">analytics/src/Providers/AWSKinesisProvider.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L63">packages/analytics/src/Providers/AWSKinesisProvider.ts:63</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1069,8 +1154,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/analyticsprovider.html">AnalyticsProvider</a>.<a href="../interfaces/analyticsprovider.html#getprovidername">getProviderName</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L79">analytics/src/Providers/AWSKinesisProvider.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L70">packages/analytics/src/Providers/AWSKinesisProvider.ts:70</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1092,7 +1178,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L100">analytics/src/Providers/AWSKinesisProvider.ts:100</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L91">packages/analytics/src/Providers/AWSKinesisProvider.ts:91</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1117,13 +1203,13 @@ img { max-width: 100%; }
 			<a name="updateendpoint" class="tsd-anchor"></a>
 			<h3>update<wbr>Endpoint</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">update<wbr>Endpoint<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">update<wbr>Endpoint<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/analytics/src/Providers/AWSKinesisProvider.ts#L109">analytics/src/Providers/AWSKinesisProvider.ts:109</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Providers/AWSKinesisProvider.ts#L100">packages/analytics/src/Providers/AWSKinesisProvider.ts:100</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1132,7 +1218,7 @@ img { max-width: 100%; }
 							<h5>params: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

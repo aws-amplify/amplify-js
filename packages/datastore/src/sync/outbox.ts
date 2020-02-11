@@ -1,6 +1,6 @@
 import { MutationEvent } from '.';
 import { ModelPredicateCreator } from '../predicates';
-import Storage, { StorageFacade } from '../storage/storage';
+import { ExclusiveStorage as Storage, StorageFacade } from '../storage/storage';
 import {
 	InternalSchema,
 	NamespaceResolver,

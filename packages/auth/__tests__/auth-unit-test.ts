@@ -213,7 +213,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 });
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
-import Auth from '../src/Auth';
+import { AuthClass as Auth } from '../src/Auth';
 import Cache from '@aws-amplify/cache';
 import {
 	CookieStorage,
@@ -2736,6 +2736,16 @@ describe('auth unit test', () => {
 				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					throw new Error('no user logged in');
+				});
+
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => {
+					return {
+						setItem() {
+							return null;
+						},
+					};
 				});
 		});
 

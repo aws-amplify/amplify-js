@@ -10,20 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { XRClass } from './XR';
+import { XR } from './XR';
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('XR');
-
-let _instance: XRClass = null;
-
-if (!_instance) {
-	logger.debug('Create XR Instance');
-	_instance = new XRClass(null);
-}
-
-export const XR = _instance;
+export { XR };
 
 /**
  * @deprecated use named import
@@ -31,7 +20,5 @@ export const XR = _instance;
 export default XR;
 
 export * from './Providers/SumerianProvider';
-
-export { XRClass };
 
 export * from './Errors';

@@ -977,7 +977,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/auth/src/OAuth/OAuth.ts#L47">auth/src/OAuth/OAuth.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/OAuth/OAuth.ts#L44">packages/auth/src/OAuth/OAuth.ts:44</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1014,7 +1014,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/auth/src/OAuth/OAuth.ts#L182">auth/src/OAuth/OAuth.ts:182</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/OAuth/OAuth.ts#L194">packages/auth/src/OAuth/OAuth.ts:194</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1031,19 +1031,19 @@ img { max-width: 100%; }
 			<a name="oauthsignin" class="tsd-anchor"></a>
 			<h3>oauth<wbr>Sign<wbr>In</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">oauth<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>responseType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, domain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, redirectSignIn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, provider<span class="tsd-signature-symbol">?: </span><a href="../enums/cognitohosteduiidentityprovider.html" class="tsd-signature-type">CognitoHostedUIIdentityProvider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">oauth<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>responseType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, domain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, redirectSignIn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, provider<span class="tsd-signature-symbol">?: </span><a href="../enums/cognitohosteduiidentityprovider.html" class="tsd-signature-type">CognitoHostedUIIdentityProvider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, customState<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/auth/src/OAuth/OAuth.ts#L64">auth/src/OAuth/OAuth.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/OAuth/OAuth.ts#L61">packages/auth/src/OAuth/OAuth.ts:61</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> responseType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;code&quot;</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> responseType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;code&quot;</span></h5>
 						</li>
 						<li>
 							<h5>domain: <span class="tsd-signature-type">string</span></h5>
@@ -1055,7 +1055,10 @@ img { max-width: 100%; }
 							<h5>clientId: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> provider: <a href="../enums/cognitohosteduiidentityprovider.html" class="tsd-signature-type">CognitoHostedUIIdentityProvider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;CognitoHostedUIIdentityProvider.Cognito</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> provider: <a href="../enums/cognitohosteduiidentityprovider.html" class="tsd-signature-type">CognitoHostedUIIdentityProvider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = CognitoHostedUIIdentityProvider.Cognito</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customState: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1066,16 +1069,16 @@ img { max-width: 100%; }
 			<a name="signout" class="tsd-anchor"></a>
 			<h3>sign<wbr>Out</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">sign<wbr>Out<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>Out<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/9fc0e596/packages/auth/src/OAuth/OAuth.ts#L221">auth/src/OAuth/OAuth.ts:221</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/OAuth/OAuth.ts#L246">packages/auth/src/OAuth/OAuth.ts:246</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

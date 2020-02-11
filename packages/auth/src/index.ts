@@ -11,29 +11,11 @@
  * and limitations under the License.
  */
 
-import { AuthClass, CognitoHostedUIIdentityProvider } from './Auth';
+import { Auth, CognitoHostedUIIdentityProvider } from './Auth';
 import { CognitoUser, CookieStorage } from 'amazon-cognito-identity-js';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('Auth');
-
-let _instance: AuthClass = null;
-
-if (!_instance) {
-	logger.debug('Create Auth Instance');
-	_instance = new AuthClass(null);
-}
-
-const Auth = _instance;
 
 /**
  * @deprecated use named import
  */
 export default Auth;
-export {
-	Auth,
-	AuthClass,
-	CognitoUser,
-	CookieStorage,
-	CognitoHostedUIIdentityProvider,
-};
+export { Auth, CognitoUser, CookieStorage, CognitoHostedUIIdentityProvider };
