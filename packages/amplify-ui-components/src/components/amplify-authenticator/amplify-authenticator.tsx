@@ -114,8 +114,11 @@ export class AmplifyAuthenticator {
   }
 
   async componentDidUnload() {
-    Hub.remove(UI_AUTH_CHANNEL, () => {
-      logger.info('Toast auth listener removed');
+    Hub.remove(UI_AUTH_CHANNEL, data => {
+      const { payload } = data;
+      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
+        this.toastMessage = payload.message;
+      }
     });
   }
 
