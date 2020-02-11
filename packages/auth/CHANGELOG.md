@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.3...@aws-amplify/auth@2.1.5) (2020-02-07)
+
+
+### Bug Fixes
+
+* **auth:** prevent urlListener from firing auth flow twice with the same URL  ([#4798](https://github.com/aws-amplify/amplify-js/issues/4798)) ([cf8738a](https://github.com/aws-amplify/amplify-js/commit/cf8738ac5e7961a163ce158a7383bc27f693475f))
+* **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+
+
+
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.2...@aws-amplify/auth@2.1.3) (2020-01-10)
 
 

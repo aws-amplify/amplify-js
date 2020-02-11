@@ -8,6 +8,8 @@ import Amplify from './Amplify';
 
 const logger = new Logger('Credentials');
 
+const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
+
 export class Credentials {
 	private _config;
 	private _credentials;
@@ -16,6 +18,7 @@ export class Credentials {
 	private _refreshHandlers = {};
 	private _storage;
 	private _storageSync;
+	private _nextCredentialsRefresh: Number;
 
 	constructor(config) {
 		this.configure(config);
@@ -158,7 +161,11 @@ export class Credentials {
 		const ts = new Date().getTime();
 		const delta = 10 * 60 * 1000; // 10 minutes
 		const { expired, expireTime } = credentials;
-		if (!expired && expireTime > ts + delta) {
+		if (
+			!expired &&
+			expireTime > ts + delta &&
+			ts < this._nextCredentialsRefresh
+		) {
 			return false;
 		}
 		return true;
@@ -327,6 +334,7 @@ export class Credentials {
 				that._credentials = credentials;
 				that._credentials.authenticated = authenticated;
 				that._credentials_source = source;
+				that._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 				if (source === 'federated') {
 					const user = Object.assign(
 						{ id: this._credentials.identityId },
