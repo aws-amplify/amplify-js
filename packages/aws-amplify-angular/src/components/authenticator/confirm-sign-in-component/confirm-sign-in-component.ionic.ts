@@ -60,9 +60,7 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
 	code: string;
 	errorMessage: string;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }

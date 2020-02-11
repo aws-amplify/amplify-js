@@ -55,9 +55,7 @@ const template = `
 	template,
 })
 export class UsernameFieldComponentIonic extends UsernameFieldComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }
