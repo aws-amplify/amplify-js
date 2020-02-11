@@ -159,7 +159,7 @@ describe('multi part upload tests', () => {
 						ETag: 'test_etag_' + command.input.PartNumber,
 					});
 				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.resolve({ Key: testParams.key });
+					return Promise.resolve({ Key: testParams.Key });
 				}
 			});
 
@@ -168,7 +168,7 @@ describe('multi part upload tests', () => {
 		const data = await uploader.upload();
 
 		// Testing multi part upload functionality
-		// TODO FIXME expect(data).toBe(testParams.Key);
+		expect(data).toBe(testParams.Key);
 		expect(s3ServiceCallSpy).toBeCalledTimes(4);
 
 		// Create multipart upload call

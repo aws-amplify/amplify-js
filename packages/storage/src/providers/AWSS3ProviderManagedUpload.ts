@@ -194,7 +194,6 @@ export class AWSS3ProviderManagedUpload {
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
 		const data = await s3.send(completeUploadCommand);
-		logger.debug(data);
 		return data.Key;
 	}
 
@@ -227,7 +226,6 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 		};
 
-		// TODO FIXME
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
 		await s3.send(new AbortMultipartUploadCommand(input));
