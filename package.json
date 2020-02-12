@@ -80,10 +80,6 @@
 		"webpack-cli": "^3.1.0",
 		"winston": "^3.2.1"
 	},
-	"resolutions": {
-		"@aws-crypto/sha256-browser": "1.0.0-alpha.0",
-		"@aws-crypto/sha256-js": "1.0.0-alpha.0"
-	},
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
